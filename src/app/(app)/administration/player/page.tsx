@@ -17,7 +17,7 @@ const achievements = [
 
 export default function PlayerProfilePage() {
     const user = {
-        name: 'Alex "CyberSlasher" Doe',
+        name: "Alex 'CyberSlasher' Doe",
         email: 'alex.doe@prodvor.com',
         role: 'Игрок',
         avatar: 'https://placehold.co/100x100.png',
