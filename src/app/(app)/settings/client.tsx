@@ -21,7 +21,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { updateProfileSettings } from './actions';
+import { updateProfileSettings, updatePassword } from './actions';
 
 const mockActivityLog = `
 - 2024-09-27 10:00: Login from IP 89.123.45.67 (Moscow, RU) on Chrome, Windows.
@@ -75,6 +75,19 @@ const profileFormSchema = z.object({
 
 type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
+
+const passwordFormSchema = z.object({
+  currentPassword: z.string().min(1, { message: "Текущий пароль не может быть пустым." }),
+  newPassword: z.string().min(8, { message: "Новый пароль должен содержать не менее 8 символов." }),
+  confirmPassword: z.string()
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Пароли не совпадают.",
+  path: ["confirmPassword"],
+});
+
+type PasswordFormValues = z.infer<typeof passwordFormSchema>;
+
+
 type SettingsClientProps = {
   user: User & {
     location: string;
@@ -86,9 +99,10 @@ export default function SettingsClient({ user }: SettingsClientProps) {
     const { toast } = useToast();
     const initials = user.name.split(' ').map((n) => n[0]).join('');
 
-    const [isPending, startTransition] = React.useTransition();
+    const [isProfilePending, startProfileTransition] = React.useTransition();
+    const [isPasswordPending, startPasswordTransition] = React.useTransition();
     
-    const form = useForm<ProfileFormValues>({
+    const profileForm = useForm<ProfileFormValues>({
         resolver: zodResolver(profileFormSchema),
         defaultValues: {
             name: user.name,
@@ -98,12 +112,33 @@ export default function SettingsClient({ user }: SettingsClientProps) {
     });
 
     const onProfileSubmit = (data: ProfileFormValues) => {
-        startTransition(async () => {
+        startProfileTransition(async () => {
             const result = await updateProfileSettings(data);
             if(result?.success) {
                 toast({ title: 'Успех!', description: result.success });
             } else if (result?.error) {
                  toast({ variant: 'destructive', title: 'Ошибка!', description: result.error });
+            }
+        });
+    };
+    
+    const passwordForm = useForm<PasswordFormValues>({
+        resolver: zodResolver(passwordFormSchema),
+        defaultValues: {
+            currentPassword: "",
+            newPassword: "",
+            confirmPassword: "",
+        },
+    });
+
+    const onPasswordSubmit = (data: PasswordFormValues) => {
+        startPasswordTransition(async () => {
+            const result = await updatePassword(data);
+            if (result?.success) {
+                toast({ title: 'Успех!', description: result.success });
+                passwordForm.reset();
+            } else if (result?.error) {
+                toast({ variant: 'destructive', title: 'Ошибка!', description: result.error });
             }
         });
     };
@@ -167,8 +202,8 @@ export default function SettingsClient({ user }: SettingsClientProps) {
 
                 {/* Profile Tab */}
                 <TabsContent value="profile" className="mt-6">
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onProfileSubmit)}>
+                    <Form {...profileForm}>
+                        <form onSubmit={profileForm.handleSubmit(onProfileSubmit)}>
                             <Card>
                                 <CardHeader>
                                     <CardTitle>Публичный профиль</CardTitle>
@@ -187,12 +222,12 @@ export default function SettingsClient({ user }: SettingsClientProps) {
                                     </div>
                                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <FormField
-                                            control={form.control}
+                                            control={profileForm.control}
                                             name="name"
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Имя</FormLabel>
-                                                    <FormControl><Input {...field} disabled={isPending} /></FormControl>
+                                                    <FormControl><Input {...field} disabled={isProfilePending} /></FormControl>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
@@ -202,30 +237,30 @@ export default function SettingsClient({ user }: SettingsClientProps) {
                                             <Input id="email" type="email" defaultValue={user.email} disabled />
                                         </div>
                                         <FormField
-                                            control={form.control}
+                                            control={profileForm.control}
                                             name="city"
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Город</FormLabel>
-                                                    <FormControl><Input {...field} disabled={isPending} /></FormControl>
+                                                    <FormControl><Input {...field} disabled={isProfilePending} /></FormControl>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
                                          <FormField
-                                            control={form.control}
+                                            control={profileForm.control}
                                             name="sport"
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel>Основной вид спорта</FormLabel>
-                                                    <FormControl><Input {...field} disabled={isPending} /></FormControl>
+                                                    <FormControl><Input {...field} disabled={isProfilePending} /></FormControl>
                                                     <FormMessage />
                                                 </FormItem>
                                             )}
                                         />
                                     </div>
-                                     <Button type="submit" disabled={isPending}>
-                                        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                     <Button type="submit" disabled={isProfilePending}>
+                                        {isProfilePending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                         Сохранить изменения
                                     </Button>
                                 </CardContent>
@@ -236,84 +271,112 @@ export default function SettingsClient({ user }: SettingsClientProps) {
 
                 {/* Security Tab */}
                 <TabsContent value="security" className="mt-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Пароль и безопасность</CardTitle>
-                            <CardDescription>Управляйте паролем и настройками входа.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="space-y-2">
-                                <Label htmlFor="current-password">Текущий пароль</Label>
-                                <Input id="current-password" type="password" />
-                            </div>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="new-password">Новый пароль</Label>
-                                    <Input id="new-password" type="password" />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="confirm-password">Подтвердите пароль</Label>
-                                    <Input id="confirm-password" type="password" />
-                                </div>
-                            </div>
-                            <Button onClick={() => handleSave('Пароль')}>Сменить пароль</Button>
-
-                            <div className="mt-6 border-t pt-6">
-                                <Label className="text-lg font-semibold">Двухфакторная аутентификация</Label>
-                                <div className="mt-2 flex items-center justify-between rounded-lg border p-4">
-                                    <div>
-                                        <p className="font-medium">Включить 2FA</p>
-                                        <p className="text-sm text-muted-foreground">Добавьте дополнительный уровень защиты вашему аккаунту.</p>
-                                    </div>
-                                    <Switch id="2fa-switch" checked={is2faEnabled} onCheckedChange={setIs2faEnabled} />
-                                </div>
-                            </div>
-                             <div className="mt-6 border-t pt-6 space-y-4">
-                                 <div className="flex items-center justify-between">
-                                    <Label className="text-lg font-semibold">Рекомендации по безопасности от ИИ</Label>
-                                    <Button variant="outline" onClick={handleCheckSecurity} disabled={isLoading}>
-                                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
-                                        Проверить сейчас
-                                    </Button>
-                                 </div>
-                                {isLoading && (
-                                    <div className="space-y-2">
-                                        <Skeleton className="h-16 w-full"/>
-                                        <Skeleton className="h-16 w-full"/>
-                                    </div>
-                                )}
-                                {error && (
-                                    <Alert variant="destructive">
-                                        <AlertTriangle className="h-4 w-4" />
-                                        <AlertTitle>Ошибка</AlertTitle>
-                                        <AlertDescription>{error}</AlertDescription>
-                                    </Alert>
-                                )}
-                                {!isLoading && !error && aiResult && (
-                                     <div className="space-y-2">
-                                        {aiResult.recommendations.length > 0 ? (
-                                            aiResult.recommendations.map((rec, index) => (
-                                                <SecurityRecommendationCard key={index} recommendation={rec} />
-                                            ))
-                                        ) : (
-                                            <SecurityRecommendationCard recommendation={{
-                                                title: "Всё в порядке!",
-                                                description: "Мы не обнаружили подозрительной активности в вашем аккаунте. Так держать!",
-                                                severity: "low"
-                                            }} />
+                    <Form {...passwordForm}>
+                        <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Пароль и безопасность</CardTitle>
+                                    <CardDescription>Управляйте паролем и настройками входа.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
+                                     <FormField
+                                        control={passwordForm.control}
+                                        name="currentPassword"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Текущий пароль</FormLabel>
+                                                <FormControl><Input type="password" {...field} disabled={isPasswordPending} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
                                         )}
+                                    />
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        <FormField
+                                            control={passwordForm.control}
+                                            name="newPassword"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Новый пароль</FormLabel>
+                                                    <FormControl><Input type="password" {...field} disabled={isPasswordPending} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                         <FormField
+                                            control={passwordForm.control}
+                                            name="confirmPassword"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Подтвердите пароль</FormLabel>
+                                                    <FormControl><Input type="password" {...field} disabled={isPasswordPending} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
                                     </div>
-                                )}
-                                 {!isLoading && !aiResult && !error && (
-                                    <Card className="bg-muted/50 border-dashed">
-                                        <CardHeader>
-                                            <CardDescription>Нажмите кнопку "Проверить сейчас", чтобы ИИ проанализировал активность вашего аккаунта и дал персональные рекомендации по безопасности.</CardDescription>
-                                        </CardHeader>
-                                    </Card>
-                                 )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                                    <Button type="submit" disabled={isPasswordPending}>
+                                        {isPasswordPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Сменить пароль
+                                    </Button>
+                                    
+                                     <div className="mt-6 border-t pt-6">
+                                        <Label className="text-lg font-semibold">Двухфакторная аутентификация</Label>
+                                        <div className="mt-2 flex items-center justify-between rounded-lg border p-4">
+                                            <div>
+                                                <p className="font-medium">Включить 2FA</p>
+                                                <p className="text-sm text-muted-foreground">Добавьте дополнительный уровень защиты вашему аккаунту.</p>
+                                            </div>
+                                            <Switch id="2fa-switch" checked={is2faEnabled} onCheckedChange={setIs2faEnabled} />
+                                        </div>
+                                    </div>
+                                     <div className="mt-6 border-t pt-6 space-y-4">
+                                         <div className="flex items-center justify-between">
+                                            <Label className="text-lg font-semibold">Рекомендации по безопасности от ИИ</Label>
+                                            <Button variant="outline" onClick={handleCheckSecurity} disabled={isLoading}>
+                                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
+                                                Проверить сейчас
+                                            </Button>
+                                         </div>
+                                        {isLoading && (
+                                            <div className="space-y-2">
+                                                <Skeleton className="h-16 w-full"/>
+                                                <Skeleton className="h-16 w-full"/>
+                                            </div>
+                                        )}
+                                        {error && (
+                                            <Alert variant="destructive">
+                                                <AlertTriangle className="h-4 w-4" />
+                                                <AlertTitle>Ошибка</AlertTitle>
+                                                <AlertDescription>{error}</AlertDescription>
+                                            </Alert>
+                                        )}
+                                        {!isLoading && !error && aiResult && (
+                                             <div className="space-y-2">
+                                                {aiResult.recommendations.length > 0 ? (
+                                                    aiResult.recommendations.map((rec, index) => (
+                                                        <SecurityRecommendationCard key={index} recommendation={rec} />
+                                                    ))
+                                                ) : (
+                                                    <SecurityRecommendationCard recommendation={{
+                                                        title: "Всё в порядке!",
+                                                        description: "Мы не обнаружили подозрительной активности в вашем аккаунте. Так держать!",
+                                                        severity: "low"
+                                                    }} />
+                                                )}
+                                            </div>
+                                        )}
+                                         {!isLoading && !aiResult && !error && (
+                                            <Card className="bg-muted/50 border-dashed">
+                                                <CardHeader>
+                                                    <CardDescription>Нажмите кнопку "Проверить сейчас", чтобы ИИ проанализировал активность вашего аккаунта и дал персональные рекомендации по безопасности.</CardDescription>
+                                                </CardHeader>
+                                            </Card>
+                                         )}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </form>
+                    </Form>
                 </TabsContent>
                 
                 {/* Privacy Tab */}
