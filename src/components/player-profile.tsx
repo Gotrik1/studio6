@@ -1,3 +1,5 @@
+'use client';
+
 import dynamic from 'next/dynamic';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -13,21 +15,27 @@ import { Skeleton } from './ui/skeleton';
 
 const OverviewTab = dynamic(() => import('@/components/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+  ssr: false,
 });
 const StatsTab = dynamic(() => import('@/components/player-profile-tabs/stats-tab').then(mod => mod.StatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
+  ssr: false,
 });
 const CareerTab = dynamic(() => import('@/components/player-profile-tabs/career-tab').then(mod => mod.CareerTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+  ssr: false,
 });
 const AchievementsTab = dynamic(() => import('@/components/player-profile-tabs/achievements-tab').then(mod => mod.AchievementsTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+  ssr: false,
 });
 const TeamsTab = dynamic(() => import('@/components/player-profile-tabs/teams-tab').then(mod => mod.TeamsTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+  ssr: false,
 });
 const GalleryTab = dynamic(() => import('@/components/player-profile-tabs/gallery-tab').then(mod => mod.GalleryTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+  ssr: false,
 });
 
 

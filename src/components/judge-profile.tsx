@@ -1,3 +1,5 @@
+'use client';
+
 import dynamic from 'next/dynamic';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -9,9 +11,11 @@ import { Skeleton } from './ui/skeleton';
 
 const JudgeStatsTab = dynamic(() => import('@/components/judge-profile-tabs/stats-tab').then(mod => mod.JudgeStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
+  ssr: false,
 });
 const JudgeAchievementsTab = dynamic(() => import('@/components/judge-profile-tabs/achievements-tab').then(mod => mod.JudgeAchievementsTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+  ssr: false,
 });
 
 type JudgeProfileProps = {

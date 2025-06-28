@@ -199,7 +199,7 @@ export default async function AppLayout({
             <SidebarMenuItem>
               <CollapsibleSidebarMenuItem icon={<FolderKanban />} title="Документы">
                   <SidebarMenuSubItem>
-                      <SidebarMenuSubButton href="/documents/architecture">Архитектура</SidebarMenuSubButton>
+                      <SidebarMenuSubButton href="/documents/architecture">Архитектура (FSD)</SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                   <SidebarMenuSubItem>
                       <SidebarMenuSubButton href="/documents/backend-roadmap">Бэкенд Roadmap</SidebarMenuSubButton>
