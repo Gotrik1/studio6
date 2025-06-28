@@ -1,5 +1,5 @@
 
-import { getSession } from "@/shared/lib/session";
+import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import ProfileClient from "./client";
 
