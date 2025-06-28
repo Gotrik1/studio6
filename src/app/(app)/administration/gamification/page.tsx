@@ -1,21 +1,27 @@
 
 'use client';
 
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { PD_RATES, PD_LIMITS } from "@/config/gamification";
+import { PD_RATES as initialPdRates, PD_LIMITS as initialPdLimits } from "@/config/gamification";
 import { achievementCatalog } from "@/lib/mock-data/achievements";
 import { lootboxPrizes } from "@/lib/mock-data/store";
 import { leaderboardData, teamLeaderboardData } from "@/lib/mock-data/leaderboards";
 import { Badge } from "@/components/ui/badge";
-import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem, BarChart3, AlertTriangle } from "lucide-react";
+import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem, BarChart3, AlertTriangle, Pencil } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ranks } from "@/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 const achievementIcons = {
     Trophy, Star, Shield, Gem, Crown, Rocket, Swords, Medal, Award
@@ -67,6 +73,42 @@ const chartConfig = {
 
 
 export default function GamificationAdminPage() {
+    const { toast } = useToast();
+    const [rates, setRates] = useState(initialPdRates);
+    const [limits, setLimits] = useState(initialPdLimits);
+    
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [editingItem, setEditingItem] = useState<{ key: string; label: string; value: number | string; type: 'rate' | 'limit' } | null>(null);
+    const [currentValue, setCurrentValue] = useState('');
+
+    const handleEditClick = (key: string, label: string, value: number | string, type: 'rate' | 'limit') => {
+        setEditingItem({ key, label, value, type });
+        setCurrentValue(String(value));
+        setIsDialogOpen(true);
+    };
+
+    const handleSave = () => {
+        if (!editingItem) return;
+
+        const updatedValue = editingItem.type === 'rate' ? parseInt(currentValue, 10) : currentValue;
+        
+        if (isNaN(updatedValue as number) && editingItem.type === 'rate') {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Значение должно быть числом.' });
+            return;
+        }
+
+        if (editingItem.type === 'rate') {
+            setRates(prev => ({ ...prev, [editingItem.key as keyof typeof prev]: updatedValue as number }));
+        } else {
+            setLimits(prev => ({ ...prev, [editingItem.key as keyof typeof prev]: updatedValue as string }));
+        }
+
+        toast({ title: 'Успех!', description: `Значение для "${editingItem.label}" было обновлено.` });
+        setIsDialogOpen(false);
+        setEditingItem(null);
+    };
+
+
     return (
         <div className="space-y-6">
             <div className="space-y-2">
@@ -76,7 +118,7 @@ export default function GamificationAdminPage() {
                 </p>
             </div>
 
-            <Tabs defaultValue="ranks">
+            <Tabs defaultValue="rules">
                 <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="rules"><Gamepad2 className="mr-2 h-4 w-4" />Правила PD</TabsTrigger>
                     <TabsTrigger value="ranks"><Award className="mr-2 h-4 w-4"/>Ранги</TabsTrigger>
@@ -101,10 +143,17 @@ export default function GamificationAdminPage() {
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
-                                        {Object.entries(PD_RATES).map(([key, value]) => (
+                                        {Object.entries(rates).map(([key, value]) => (
                                             <TableRow key={key}>
                                                 <TableCell className="font-medium">{key}</TableCell>
-                                                <TableCell className="text-right font-bold text-primary">{value} PD</TableCell>
+                                                <TableCell className="text-right font-bold text-primary">
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        {value} PD
+                                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditClick(key, key, value, 'rate')}>
+                                                            <Pencil className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -117,10 +166,15 @@ export default function GamificationAdminPage() {
                                 <CardDescription>Правила для предотвращения злоупотреблений.</CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">
-                                {Object.entries(PD_LIMITS).map(([key, value]) => (
-                                     <div key={key} className="flex items-center justify-between rounded-lg border p-4">
+                                {Object.entries(limits).map(([key, value]) => (
+                                     <div key={key} className="flex items-center justify-between rounded-lg border p-3">
                                         <p className="font-medium">{key}</p>
-                                        <Badge variant="secondary">{value}</Badge>
+                                        <div className="flex items-center gap-2">
+                                            <Badge variant="secondary">{value}</Badge>
+                                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditClick(key, key, value, 'limit')}>
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                     </div>
                                 ))}
                                 <div className="flex items-center justify-between rounded-lg border p-4">
@@ -385,6 +439,31 @@ export default function GamificationAdminPage() {
                     </div>
                 </TabsContent>
             </Tabs>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Редактирование "{editingItem?.label}"</DialogTitle>
+                        <DialogDescription>
+                            Введите новое значение и нажмите "Сохранить".
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                        <Label htmlFor="value-input">Значение</Label>
+                        <Input
+                            id="value-input"
+                            value={currentValue}
+                            onChange={(e) => setCurrentValue(e.target.value)}
+                            type={editingItem?.type === 'rate' ? 'number' : 'text'}
+                            className="mt-2"
+                        />
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Отмена</Button>
+                        <Button onClick={handleSave}>Сохранить</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
