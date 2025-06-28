@@ -78,7 +78,7 @@ export default function PDEconomyPage() {
                             </div>
 
                             <div className="text-center">
-                                <ArrowRight size={48} className="mx-auto rotate-90 md:rotate-0 text-muted-foreground animate-pulse-slow" />
+                                <ArrowRight size={48} className="mx-auto rotate-90 md:rotate-0 text-muted-foreground" />
                             </div>
 
                             <div className="flex flex-col items-center gap-4 text-center">
