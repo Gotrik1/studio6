@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,27 +10,12 @@ import { PlusCircle, Search, SlidersHorizontal, Map } from "lucide-react";
 import Image from 'next/image';
 import Link from 'next/link';
 import { Separator } from "@/components/ui/separator";
-import { fetchTeams, type Team } from "@/lib/api/teams";
 import { Skeleton } from '@/components/ui/skeleton';
+import { useTeams } from '@/context/team-provider';
 
 export default function TeamsPage() {
-  const [teams, setTeams] = useState<Team[]>([]);
+  const { teams, loading } = useTeams();
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function getTeams() {
-      try {
-        const fetchedTeams = await fetchTeams();
-        setTeams(fetchedTeams);
-      } catch (error) {
-        console.error("Failed to fetch teams:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    getTeams();
-  }, []);
 
   const filteredTeams = useMemo(() => {
     if (!searchQuery) return teams;

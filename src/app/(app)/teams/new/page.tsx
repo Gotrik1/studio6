@@ -12,9 +12,15 @@ import { useToast } from '@/hooks/use-toast';
 import { createTeam } from '@/ai/flows/create-team-flow';
 import { generateTeamAvatar } from '@/ai/flows/generate-team-avatar-flow';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useRouter } from 'next/navigation';
+import { useTeams } from '@/context/team-provider';
+import { useSession } from '@/lib/session-client';
 
 export default function NewTeamPage() {
     const { toast } = useToast();
+    const router = useRouter();
+    const { addTeam } = useTeams();
+    const { user } = useSession();
     
     // State for text generation
     const [teamDescription, setTeamDescription] = useState('');
@@ -77,11 +83,22 @@ export default function NewTeamPage() {
             });
             return;
         }
-        // In a real app, this would send data to the backend to create the team.
+        
+        addTeam({
+            name: teamName,
+            motto: teamMotto,
+            logo: generatedAvatar,
+            dataAiHint: logoDescription || 'team logo',
+            captain: user?.name || 'Вы',
+            game: 'Valorant', // Placeholder game
+        });
+        
         toast({
             title: 'Команда создана!',
             description: `Команда "${teamName}" успешно создана и готова к покорению вершин!`,
         });
+
+        router.push('/teams');
     };
 
     return (
