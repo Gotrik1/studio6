@@ -23,6 +23,7 @@ import { Label } from "@/components/ui/label";
 import { ShoppingBag } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { JoinRequestAnalysisDialog } from "@/components/join-request-analysis-dialog";
 
 const team = {
   name: "Кибер Орлы",
@@ -91,6 +92,14 @@ export default function TeamProfilePage() {
     const [isRequestSent, setIsRequestSent] = useState(false);
     const [currentRoster, setCurrentRoster] = useState(initialRoster);
     const [joinRequests, setJoinRequests] = useState(initialJoinRequests);
+
+    const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState<(typeof initialJoinRequests)[0] | null>(null);
+
+    const handleOpenAnalysis = (request: typeof initialJoinRequests[0]) => {
+        setSelectedRequest(request);
+        setIsAnalysisDialogOpen(true);
+    };
 
     const handleAssistantOpenChange = (open: boolean) => {
         if (open) {
@@ -585,7 +594,7 @@ export default function TeamProfilePage() {
                         <CardContent className="space-y-4">
                             {joinRequests.length > 0 ? (
                                 joinRequests.map((request) => (
-                                    <Card key={request.name} className="flex items-center justify-between p-4">
+                                    <Card key={request.name} className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
                                         <div className="flex items-center gap-4">
                                             <Avatar>
                                                 <AvatarImage src={request.avatar} alt={request.name} data-ai-hint={request.avatarHint} />
@@ -597,6 +606,9 @@ export default function TeamProfilePage() {
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
+                                            <Button size="sm" variant="outline" onClick={() => handleOpenAnalysis(request)}>
+                                                <BrainCircuit className="mr-2 h-4 w-4" />AI-анализ
+                                            </Button>
                                             <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleAcceptRequest(request)}>
                                                 <Check className="mr-2 h-4 w-4" />Принять
                                             </Button>
@@ -618,6 +630,12 @@ export default function TeamProfilePage() {
                 </TabsContent>
 
             </Tabs>
+             <JoinRequestAnalysisDialog
+                isOpen={isAnalysisDialogOpen}
+                onOpenChange={setIsAnalysisDialogOpen}
+                request={selectedRequest}
+                teamNeeds="Команде нужен уверенный смоукер (controller), способный на клатчи. Стиль игры - агрессивный, с быстрыми выходами на точки."
+            />
         </div>
     );
 }
