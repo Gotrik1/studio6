@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -13,7 +14,10 @@ import { Button } from "@/components/ui/button";
 import type { disputedMatches } from "@/lib/mock-data/judge-center";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Separator } from "./ui/separator";
-import { ImageIcon, MessageSquare, Shield } from "lucide-react";
+import { ImageIcon, MessageSquare, Shield, BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
+import { analyzeDispute, type AnalyzeDisputeOutput } from '@/ai/flows/analyze-dispute-flow';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Skeleton } from './ui/skeleton';
 
 type DisputedMatch = (typeof disputedMatches)[0];
 
@@ -25,10 +29,53 @@ interface DisputeResolutionDialogProps {
 }
 
 export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve }: DisputeResolutionDialogProps) {
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [aiResult, setAiResult] = useState<AnalyzeDisputeOutput | null>(null);
+  const [aiError, setAiError] = useState<string | null>(null);
+
   if (!match) return null;
+  
+  const handleAnalyzeDispute = async () => {
+      if (!match) return;
+
+      setIsAnalyzing(true);
+      setAiResult(null);
+      setAiError(null);
+
+      // Mock evidence for the demo
+      const mockEvidence = {
+          team1Evidence: "Chat log shows team 2 player admitting to using a bug. Screenshot of final score: 9-12.",
+          team2Evidence: "Player claims they were joking in chat. Provided video shows unusual lag at the time of the alleged incident."
+      };
+
+      try {
+          const result = await analyzeDispute({
+              team1Name: match.team1.name,
+              team2Name: match.team2.name,
+              disputeReason: match.reason,
+              ...mockEvidence,
+          });
+          setAiResult(result);
+      } catch (e) {
+          console.error(e);
+          setAiError("Не удалось получить рекомендацию от ИИ. Пожалуйста, попробуйте позже.");
+      } finally {
+          setIsAnalyzing(false);
+      }
+  };
+
+  const onOpenChangeHandler = (open: boolean) => {
+    if (!open) {
+      // Reset state when closing dialog
+      setAiResult(null);
+      setAiError(null);
+      setIsAnalyzing(false);
+    }
+    onOpenChange(open);
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen} onOpenChange={onOpenChangeHandler}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Рассмотрение спора: {match.team1.name} vs {match.team2.name}</DialogTitle>
@@ -72,8 +119,41 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                 </div>
             </div>
              <Separator />
+             <div>
+                <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-sm">Помощник судьи (AI)</h4>
+                    <Button variant="outline" size="sm" onClick={handleAnalyzeDispute} disabled={isAnalyzing}>
+                        {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
+                        Проанализировать
+                    </Button>
+                </div>
+                {isAnalyzing && (
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-1/3" />
+                        <Skeleton className="h-8 w-full" />
+                    </div>
+                )}
+                 {aiError && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Ошибка</AlertTitle>
+                        <AlertDescription>{aiError}</AlertDescription>
+                    </Alert>
+                )}
+                {aiResult && (
+                    <Alert>
+                        <Sparkles className="h-4 w-4" />
+                        <AlertTitle>Рекомендация ИИ (Уверенность: {aiResult.confidence})</AlertTitle>
+                        <AlertDescription className="space-y-2">
+                           <p><strong>Вердикт:</strong> {aiResult.recommendation}</p>
+                           <p><strong>Обоснование:</strong> {aiResult.reasoning}</p>
+                        </AlertDescription>
+                    </Alert>
+                )}
+             </div>
+             <Separator />
             <div>
-                <h4 className="font-semibold text-sm mb-2">Решение</h4>
+                <h4 className="font-semibold text-sm mb-2">Вынести решение</h4>
                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button className="flex-1" onClick={() => onResolve(match.id, `победа присуждена ${match.team1.name}`)}>
                         <Shield className="mr-2 h-4 w-4"/>Победа {match.team1.name}
@@ -88,7 +168,7 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
             </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChange(false)}>Закрыть</Button>
+          <Button variant="ghost" onClick={() => onOpenChangeHandler(false)}>Закрыть</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
