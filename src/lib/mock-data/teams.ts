@@ -8,6 +8,7 @@ export const teams = [
     rank: 1,
     members: 5,
     slug: 'cyber-eagles',
+    game: 'Valorant',
   },
   {
     name: 'Ледяные Драконы',
@@ -18,6 +19,7 @@ export const teams = [
     rank: 2,
     members: 5,
     slug: '#',
+    game: 'CS:GO 2',
   },
   {
     name: 'Вихревые Гадюки',
@@ -28,6 +30,7 @@ export const teams = [
     rank: 3,
     members: 5,
     slug: '#',
+    game: 'Valorant',
   },
   {
     name: 'Квантовые Квазары',
@@ -38,6 +41,7 @@ export const teams = [
     rank: 4,
     members: 4,
     slug: '#',
+    game: 'Apex Legends',
   },
   {
     name: 'Стальные Титаны',
@@ -48,5 +52,6 @@ export const teams = [
     rank: 5,
     members: 5,
     slug: '#',
+    game: 'CS:GO 2',
   },
 ];

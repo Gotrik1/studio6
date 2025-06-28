@@ -9,7 +9,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 import { userList } from '@/lib/mock-data/users';
 import { teams as allTeams } from '@/lib/mock-data/teams';
 import { allTournaments } from '@/lib/mock-data/tournaments';
@@ -31,6 +31,7 @@ const TeamSchema = z.object({
   rank: z.number(),
   members: z.number(),
   slug: z.string(),
+  game: z.string(),
 });
 
 const TournamentSchema = z.object({
@@ -71,8 +72,9 @@ const searchPlatformData = ai.defineTool(
 
     const teams = allTeams.filter(t =>
       t.name.toLowerCase().includes(lowercasedQuery) ||
-      t.motto.toLowerCase().includes(lowercasedQuery)
-    ).map(t => ({name: t.name, motto: t.motto, logo: t.logo, dataAiHint: t.dataAiHint, rank: t.rank, members: t.members, slug: t.slug}));
+      t.motto.toLowerCase().includes(lowercasedQuery) ||
+      t.game.toLowerCase().includes(lowercasedQuery)
+    ).map(t => ({name: t.name, motto: t.motto, logo: t.logo, dataAiHint: t.dataAiHint, rank: t.rank, members: t.members, slug: t.slug, game: t.game}));
 
     const tournaments = allTournaments.filter(t =>
       t.name.toLowerCase().includes(lowercasedQuery) ||
