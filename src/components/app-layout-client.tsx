@@ -49,6 +49,7 @@ import {
   Radio,
   Bot,
   Briefcase,
+  UserPlus,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -210,6 +211,14 @@ export default function AppLayoutClient({ user, children }: AppLayoutClientProps
                         <Link href="/chats">
                         <MessageSquare />
                         Чаты
+                        </Link>
+                    </SidebarMenuButton>
+                    </SidebarMenuItem>
+                     <SidebarMenuItem>
+                    <SidebarMenuButton asChild tooltip="Друзья">
+                        <Link href="/friends">
+                        <UserPlus />
+                        Друзья
                         </Link>
                     </SidebarMenuButton>
                     </SidebarMenuItem>

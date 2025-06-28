@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { logout } from "@/lib/actions"
 import type { User } from "@/lib/types"
+import Link from 'next/link'
 
 export function UserNav({ user }: { user: User }) {
   const initials = user.name
@@ -43,11 +44,14 @@ export function UserNav({ user }: { user: User }) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            Профиль
+          <DropdownMenuItem asChild>
+            <Link href="/profile">Профиль</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            Настройки
+          <DropdownMenuItem asChild>
+            <Link href="/friends">Друзья</Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/settings">Настройки</Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
