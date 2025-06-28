@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import * as React from 'react';
+import Image from 'next/image';
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +23,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { updateProfileSettings, updatePassword } from './actions';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { generateUserAvatar } from '@/ai/flows/generate-user-avatar-flow';
 
 const mockActivityLog = `
 - 2024-09-27 10:00: Login from IP 89.123.45.67 (Moscow, RU) on Chrome, Windows.
@@ -102,6 +105,14 @@ export default function SettingsClient({ user }: SettingsClientProps) {
     const [isProfilePending, startProfileTransition] = React.useTransition();
     const [isPasswordPending, startPasswordTransition] = React.useTransition();
     
+    // Avatar State
+    const [currentUserAvatar, setCurrentUserAvatar] = React.useState(user.avatar);
+    const [isAvatarDialogOpen, setIsAvatarDialogOpen] = React.useState(false);
+    const [isGeneratingAvatar, setIsGeneratingAvatar] = React.useState(false);
+    const [avatarPrompt, setAvatarPrompt] = React.useState('');
+    const [generatedAvatar, setGeneratedAvatar] = React.useState<string | null>(null);
+    const [avatarError, setAvatarError] = React.useState<string | null>(null);
+    
     const profileForm = useForm<ProfileFormValues>({
         resolver: zodResolver(profileFormSchema),
         defaultValues: {
@@ -181,6 +192,35 @@ export default function SettingsClient({ user }: SettingsClientProps) {
             setIsLoading(false);
         }
     };
+    
+    const handleGenerateAvatar = async () => {
+        if (!avatarPrompt) return;
+        setIsGeneratingAvatar(true);
+        setAvatarError(null);
+        setGeneratedAvatar(null);
+        try {
+            const result = await generateUserAvatar({ prompt: avatarPrompt });
+            setGeneratedAvatar(result.avatarDataUri);
+        } catch (e) {
+            console.error(e);
+            setAvatarError("Не удалось сгенерировать изображение. Попробуйте другой запрос.");
+        } finally {
+            setIsGeneratingAvatar(false);
+        }
+    };
+
+    const handleApplyAvatar = () => {
+        if (generatedAvatar) {
+            setCurrentUserAvatar(generatedAvatar);
+            setIsAvatarDialogOpen(false);
+            setGeneratedAvatar(null);
+            toast({
+                title: "Аватар обновлен!",
+                description: "Ваш новый аватар успешно применен.",
+            });
+        }
+    };
+
 
     return (
         <div className="space-y-6">
@@ -212,11 +252,11 @@ export default function SettingsClient({ user }: SettingsClientProps) {
                                 <CardContent className="space-y-6">
                                     <div className="flex items-center gap-6">
                                         <Avatar className="h-20 w-20">
-                                            <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="user avatar" />
+                                            <AvatarImage src={currentUserAvatar} alt={user.name} data-ai-hint="user avatar" />
                                             <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
                                         </Avatar>
                                         <div className="flex gap-2">
-                                            <Button type="button">Сменить аватар</Button>
+                                            <Button type="button" onClick={() => setIsAvatarDialogOpen(true)}>Сменить аватар</Button>
                                             <Button type="button" variant="ghost">Удалить</Button>
                                         </div>
                                     </div>
@@ -494,6 +534,43 @@ export default function SettingsClient({ user }: SettingsClientProps) {
                     </Card>
                 </TabsContent>
             </Tabs>
+
+            <Dialog open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Сгенерировать аватар с помощью ИИ</DialogTitle>
+                        <DialogDescription>
+                            Опишите, какой аватар вы хотите видеть. Будьте креативны!
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div>
+                            <Label htmlFor="avatar-prompt">Ваш запрос:</Label>
+                            <Input 
+                                id="avatar-prompt"
+                                value={avatarPrompt}
+                                onChange={(e) => setAvatarPrompt(e.target.value)}
+                                placeholder="Например, киберпанк-ниндзя с неоновыми катанами"
+                                disabled={isGeneratingAvatar}
+                            />
+                        </div>
+                        <Button onClick={handleGenerateAvatar} disabled={isGeneratingAvatar || !avatarPrompt} className="w-full">
+                            {isGeneratingAvatar ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
+                            {isGeneratingAvatar ? 'Генерация...' : 'Сгенерировать'}
+                        </Button>
+                        {avatarError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{avatarError}</AlertDescription></Alert>}
+                        <div className="flex justify-center items-center h-48 w-full rounded-md border border-dashed bg-muted/50">
+                            {isGeneratingAvatar && <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>}
+                            {generatedAvatar && <Image src={generatedAvatar} alt="Generated Avatar" width={192} height={192} className="rounded-md object-contain" />}
+                            {!isGeneratingAvatar && !generatedAvatar && <p className="text-sm text-muted-foreground">Здесь появится результат</p>}
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="secondary" onClick={() => setIsAvatarDialogOpen(false)}>Отмена</Button>
+                        <Button onClick={handleApplyAvatar} disabled={!generatedAvatar}>Применить</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
