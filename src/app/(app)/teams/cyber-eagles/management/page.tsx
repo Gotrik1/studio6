@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -10,17 +11,124 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { UserPlus, Trash2, Coins, Upload, Shield, Users, Settings, BrainCircuit } from 'lucide-react';
+import { UserPlus, Trash2, Coins, Upload, Shield, Users, Settings, BrainCircuit, Handshake, Sparkles, Loader2, Copy } from 'lucide-react';
 import { teams } from '@/lib/mock-data/teams';
 import { teamPdHistory } from '@/lib/mock-data/team-details';
 import { teamRoster, joinRequests as initialJoinRequests } from '@/lib/mock-data/team-details';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { JoinRequestAnalysisDialog } from '@/components/join-request-analysis-dialog';
+import { generateSponsorshipPitch } from '@/ai/flows/generate-sponsorship-pitch';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const team = teams.find(t => t.slug === 'cyber-eagles');
 
 type JoinRequest = (typeof initialJoinRequests)[0];
+
+
+function SponsorshipTab({ teamName }: { teamName: string }) {
+    const { toast } = useToast();
+    const [achievements, setAchievements] = useState('Топ-1 команда платформы, победители Summer Kickoff 2024.');
+    const [goals, setGoals] = useState('Финансирование поездки на международный LAN-турнир, покупка новой формы.');
+    const [audience, setAudience] = useState('Активная аудитория в 50,000+ подписчиков в соцсетях, в основном 16-25 лет.');
+    const [isLoading, setIsLoading] = useState(false);
+    const [pitch, setPitch] = useState<string | null>(null);
+
+    const handleGenerate = async () => {
+        setIsLoading(true);
+        setPitch(null);
+        try {
+            const result = await generateSponsorshipPitch({
+                teamName,
+                achievements,
+                goals,
+                audience,
+            });
+            setPitch(result.pitch);
+        } catch (e) {
+            console.error(e);
+            toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: 'Не удалось сгенерировать питч.',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleCopy = () => {
+        if (pitch) {
+            navigator.clipboard.writeText(pitch);
+            toast({ title: 'Питч скопирован!' });
+        }
+    };
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>AI-Генератор питчей для спонсоров</CardTitle>
+                    <CardDescription>Заполните ключевую информацию о команде, и ИИ создаст профессиональное предложение для спонсоров.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="achievements">Ключевые достижения</Label>
+                        <Textarea id="achievements" value={achievements} onChange={(e) => setAchievements(e.target.value)} />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="goals">Цели и потребности</Label>
+                        <Textarea id="goals" value={goals} onChange={(e) => setGoals(e.target.value)} />
+                    </div>
+                     <div className="space-y-2">
+                        <Label htmlFor="audience">Аудитория и медиа</Label>
+                        <Textarea id="audience" value={audience} onChange={(e) => setAudience(e.target.value)} />
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button onClick={handleGenerate} disabled={isLoading}>
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Сгенерировать питч
+                    </Button>
+                </CardFooter>
+            </Card>
+            <Card>
+                <CardHeader>
+                    <CardTitle>Результат</CardTitle>
+                     <CardDescription>Сгенерированное предложение. Вы можете отредактировать его прямо здесь.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    {isLoading && (
+                        <div className="space-y-2">
+                             <Skeleton className="h-32 w-full" />
+                             <Skeleton className="h-10 w-1/3" />
+                        </div>
+                    )}
+                    {!isLoading && !pitch && (
+                         <div className="text-center text-muted-foreground py-10">
+                            <p>Результат генерации появится здесь.</p>
+                        </div>
+                    )}
+                    {pitch && (
+                        <Textarea
+                            value={pitch}
+                            onChange={(e) => setPitch(e.target.value)}
+                            className="h-72"
+                        />
+                    )}
+                </CardContent>
+                {pitch && (
+                     <CardFooter>
+                        <Button variant="secondary" onClick={handleCopy}>
+                            <Copy className="mr-2 h-4 w-4" />
+                            Копировать текст
+                        </Button>
+                    </CardFooter>
+                )}
+            </Card>
+        </div>
+    );
+}
 
 export default function TeamManagementPage() {
     const { toast } = useToast();
@@ -88,11 +196,12 @@ export default function TeamManagementPage() {
             </div>
 
             <Tabs defaultValue="overview">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="overview"><Settings className="mr-2 h-4 w-4"/>Основное</TabsTrigger>
                     <TabsTrigger value="roster"><Users className="mr-2 h-4 w-4"/>Состав</TabsTrigger>
                     <TabsTrigger value="requests"><UserPlus className="mr-2 h-4 w-4"/>Заявки</TabsTrigger>
                     <TabsTrigger value="finances"><Coins className="mr-2 h-4 w-4"/>Финансы</TabsTrigger>
+                    <TabsTrigger value="sponsorship"><Handshake className="mr-2 h-4 w-4"/>Спонсорство</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="mt-4">
@@ -221,6 +330,10 @@ export default function TeamManagementPage() {
                             </Table>
                         </CardContent>
                     </Card>
+                </TabsContent>
+
+                 <TabsContent value="sponsorship" className="mt-4">
+                    <SponsorshipTab teamName={team.name} />
                 </TabsContent>
             </Tabs>
             <JoinRequestAnalysisDialog
