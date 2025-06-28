@@ -52,6 +52,7 @@ import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-men
 import { BottomNav } from "@/components/bottom-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ThemeCustomizer } from "@/components/theme-customizer";
+import { NotificationsPopover } from "@/components/notifications-popover";
 
 export default async function AppLayout({
   children,
@@ -280,6 +281,7 @@ export default async function AppLayout({
           <div className="flex-1">
             {/* Can add breadcrumbs or page title here */}
           </div>
+          <NotificationsPopover />
           <ThemeCustomizer />
           <ThemeToggle />
           <UserNav user={user} />
