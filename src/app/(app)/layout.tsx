@@ -8,8 +8,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
@@ -172,48 +170,23 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <CollapsibleSidebarMenuItem icon={<FolderKanban />} title="Документы">
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/documents/architecture">Архитектура</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/documents/backend-roadmap">Бэкенд Roadmap</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/documents/backend-production">Готовность к продакшену</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                </CollapsibleSidebarMenuItem>
+              <CollapsibleSidebarMenuItem icon={<FolderKanban />} title="Документы">
+                  <SidebarMenuSubItem>
+                      <SidebarMenuSubButton href="/documents/architecture">Архитектура</SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                  <SidebarMenuSubItem>
+                      <SidebarMenuSubButton href="/documents/backend-roadmap">Бэкенд Roadmap</SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                  <SidebarMenuSubItem>
+                      <SidebarMenuSubButton href="/documents/backend-production">Готовность к продакшену</SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+              </CollapsibleSidebarMenuItem>
             </SidebarMenuItem>
             <SidebarMenuItem>
-                <CollapsibleSidebarMenuItem icon={<Shield />} title="Администрирование">
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/administration/administrator">Администратор</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/administration/moderator">Модератор</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/administration/player">Игрок (Капитан)</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/administration/coach">Тренер</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/administration/judge">Судья</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/administration/manager">Менеджер</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/administration/fan">Болельщик</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/administration/sponsor">Спонсор</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                    <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/administration/organizer">Организатор</SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                </CollapsibleSidebarMenuItem>
+                <SidebarMenuButton href="/administration" tooltip="Администрирование">
+                  <Shield />
+                  Администрирование
+                </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
