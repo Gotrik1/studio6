@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ShoppingBag } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 
 const team = {
   name: "Кибер Орлы",
@@ -68,6 +69,12 @@ export default function TeamProfilePage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     
+    // State for AI Assistant Dialog
+    const [isAssistantDialogOpen, setIsAssistantDialogOpen] = useState(false);
+    const [teamActivity, setTeamActivity] = useState("Последние 3 матча: 2 победы, 1 поражение. Игрок 'Shadow' показал отличный результат в клатчах. Были проблемы со связью у 'Gadget' во время матча с 'Квантовыми Квазарами'.");
+    const [teamGoals, setTeamGoals] = useState("Главная цель - победа в 'Summer Kickoff 2024'. Улучшить коммуникацию и отработать стратегии на карте Ascent.");
+    const [relevantContent, setRelevantContent] = useState("Анализ последних игр от тренера: https://example.com/analysis");
+
     // State for avatar generation
     const [teamLogo, setTeamLogo] = useState(team.logo);
     const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
@@ -77,18 +84,20 @@ export default function TeamProfilePage() {
     const [avatarError, setAvatarError] = useState<string | null>(null);
 
     const handleGenerateSummary = async () => {
+        if (!teamActivity || !teamGoals) {
+            setError("Поля 'Активность команды' и 'Цели команды' обязательны для заполнения.");
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         setAiResult(null);
 
         try {
-            const input = {
-                teamActivity: "Последние 3 матча: 2 победы, 1 поражение. Игрок 'Shadow' показал отличный результат в клатчах. Были проблемы со связью у 'Gadget' во время матча с 'Квантовыми Квазарами'.",
-                teamGoals: "Главная цель - победа в 'Summer Kickoff 2024'. Улучшить коммуникацию и отработать стратегии на карте Ascent.",
-                relevantContent: "Анализ последних игр от тренера: https://example.com/analysis"
-            };
+            const input = { teamActivity, teamGoals, relevantContent };
             const result = await aiTeamAssistant(input);
             setAiResult(result);
+            setIsAssistantDialogOpen(false); // Close dialog on success
         } catch (e) {
             console.error(e);
             setError("Не удалось получить сводку от ИИ. Пожалуйста, попробуйте снова.");
@@ -421,10 +430,45 @@ export default function TeamProfilePage() {
                             <CardDescription>Получите краткую сводку по последней активности команды и рекомендации от нашего ИИ.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <Button onClick={handleGenerateSummary} disabled={isLoading}>
-                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                {isLoading ? 'Анализ...' : 'Сгенерировать сводку'}
-                            </Button>
+                             <Dialog open={isAssistantDialogOpen} onOpenChange={setIsAssistantDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button>Сгенерировать сводку</Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-[625px]">
+                                    <DialogHeader>
+                                        <DialogTitle>Данные для AI-помощника</DialogTitle>
+                                        <DialogDescription>
+                                            Предоставьте контекст, чтобы ИИ мог сгенерировать точную сводку и полезные рекомендации.
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="grid gap-4 py-4">
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="team-activity">Активность команды</Label>
+                                            <Textarea id="team-activity" value={teamActivity} onChange={(e) => setTeamActivity(e.target.value)} placeholder="Опишите недавние матчи, результаты, ключевые моменты..." className="min-h-[100px]" />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Label htmlFor="team-goals">Цели команды</Label>
+                                            <Textarea id="team-goals" value={teamGoals} onChange={(e) => setTeamGoals(e.target.value)} placeholder="На чем команда сосредоточена в данный момент?" />
+                                        </div>
+                                         <div className="grid gap-2">
+                                            <Label htmlFor="relevant-content">Дополнительный контент (необязательно)</Label>
+                                            <Textarea id="relevant-content" value={relevantContent} onChange={(e) => setRelevantContent(e.target.value)} placeholder="Ссылки на реплеи, статьи, заметки тренера..."/>
+                                        </div>
+                                    </div>
+                                    <DialogFooter>
+                                        <Button onClick={handleGenerateSummary} disabled={isLoading}>
+                                            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                            {isLoading ? 'Анализ...' : 'Сгенерировать'}
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                            
+                            {isLoading && (
+                                <div className="flex justify-center items-center h-40 border border-dashed rounded-md">
+                                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                                </div>
+                            )}
                             
                             {error && (
                                 <Alert variant="destructive">
