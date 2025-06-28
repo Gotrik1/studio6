@@ -161,9 +161,11 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Центр Судей">
-                <Gavel />
-                Центр Судей
+              <SidebarMenuButton asChild tooltip="Центр Судей">
+                <Link href="/judge-center">
+                  <Gavel />
+                  Центр Судей
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
