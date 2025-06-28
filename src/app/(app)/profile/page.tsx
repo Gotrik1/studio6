@@ -1,17 +1,6 @@
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
-import dynamic from 'next/dynamic';
-import { Skeleton } from '@/components/ui/skeleton';
-
-const PlayerProfile = dynamic(() => import('@/components/player-profile').then(mod => mod.PlayerProfile), {
-    loading: () => <div className="space-y-6">
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-64 w-full" />
-    </div>,
-    ssr: false,
-});
-
+import ProfileClient from "./client";
 
 export default async function ProfilePage() {
   const user = await getSession();
@@ -26,5 +15,5 @@ export default async function ProfilePage() {
       isVerified: true,
   }
 
-  return <PlayerProfile user={userProfile} isCurrentUser={true} />;
+  return <ProfileClient user={userProfile} isCurrentUser={true} />;
 }

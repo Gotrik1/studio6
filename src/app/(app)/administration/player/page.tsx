@@ -1,14 +1,4 @@
-import dynamic from 'next/dynamic';
-import { Skeleton } from '@/components/ui/skeleton';
-
-const PlayerProfile = dynamic(() => import('@/components/player-profile').then(mod => mod.PlayerProfile), {
-    loading: () => <div className="space-y-6">
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-64 w-full" />
-    </div>,
-    ssr: false,
-});
+import PlayerClient from "./client";
 
 export default function PlayerProfilePage() {
     const user = {
@@ -22,5 +12,5 @@ export default function PlayerProfilePage() {
         isVerified: true,
     };
 
-  return <PlayerProfile user={user} isCurrentUser={false} />;
+  return <PlayerClient user={user} isCurrentUser={false} />;
 }

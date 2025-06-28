@@ -52,14 +52,14 @@ const testimonials = [
     name: "Елена 'Valkyrie' Смирнова",
     role: "Организатор 'Urals Cyber Cup'",
     avatar: "https://placehold.co/100x100.png",
-    dataAiHint: "business woman",
+    dataAiHint: "event organizer",
     text: "Организация турнира на 64 команды раньше была головной болью. Теперь всё в одном месте — от регистрации до финальной сетки. Это просто спасение."
   },
   {
     name: "Sponsor Inc.",
     role: "Партнер платформы",
     avatar: "https://placehold.co/100x100.png",
-    dataAiHint: "corporate logo",
+    dataAiHint: "sponsor logo",
     text: "Мы нашли несколько перспективных команд для поддержки благодаря ProDvor. Это отличная площадка для инвестиций в будущее киберспорта."
   }
 ];
@@ -93,7 +93,7 @@ export default function LandingPage() {
             layout="fill"
             objectFit="cover"
             className="brightness-50"
-            data-ai-hint="esports stadium"
+            data-ai-hint="esports arena"
           />
           <div className="relative z-10 flex h-full flex-col items-center justify-center text-center text-primary-foreground">
             <h1 className="font-headline text-5xl font-bold md:text-7xl">Твой путь в большой спорт</h1>
@@ -154,7 +154,7 @@ export default function LandingPage() {
             </p>
           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2">
             <div className="overflow-hidden rounded-lg border">
-              <Image src="https://placehold.co/800x600.png" alt="Профиль игрока" width={800} height={600} className="transition-transform hover:scale-105" data-ai-hint="user profile dashboard" />
+              <Image src="https://placehold.co/800x600.png" alt="Профиль игрока" width={800} height={600} className="transition-transform hover:scale-105" data-ai-hint="player statistics" />
             </div>
              <div className="overflow-hidden rounded-lg border">
               <Image src="https://placehold.co/800x600.png" alt="Турнирная сетка" width={800} height={600} className="transition-transform hover:scale-105" data-ai-hint="tournament bracket" />
