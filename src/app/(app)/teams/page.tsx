@@ -7,71 +7,11 @@ import { PlusCircle, Search, SlidersHorizontal, Map } from "lucide-react";
 import Image from 'next/image';
 import Link from 'next/link';
 import { Separator } from "@/components/ui/separator";
+import { fetchTeams, type Team } from "@/lib/api/teams";
 
-const teams = [
-  {
-    name: "Кибер Орлы",
-    slug: "cyber-eagles",
-    motto: "Выше всех, быстрее всех, сильнее всех!",
-    captain: "Alex 'CyberSlasher' Doe",
-    members: 5,
-    rank: 1,
-    logo: "https://placehold.co/128x128.png",
-    dataAiHint: "eagle logo"
-  },
-  {
-    name: "Вихревые Гадюки",
-    slug: "#",
-    motto: "Один укус, и ты в лобби.",
-    captain: "Jane 'Venom' Doe",
-    members: 5,
-    rank: 2,
-    logo: "https://placehold.co/128x128.png",
-    dataAiHint: "snake logo"
-  },
-  {
-    name: "Квантовые Квазары",
-    slug: "#",
-    motto: "Ярче тысячи солнц.",
-    captain: "Alex 'Nova' Ray",
-    members: 5,
-    rank: 3,
-    logo: "https://placehold.co/128x128.png",
-    dataAiHint: "galaxy logo"
-  },
-  {
-    name: "Багровые Крестоносцы",
-    slug: "#",
-    motto: "За честь и славу!",
-    captain: "Sam 'The-Rock' Stone",
-    members: 4,
-    rank: 4,
-    logo: "https://placehold.co/128x128.png",
-    dataAiHint: "knight logo"
-  },
-    {
-    name: "Стальные Титаны",
-    slug: "#",
-    motto: "Несокрушимая воля, несгибаемая сталь.",
-    captain: "Max 'Titan' Iron",
-    members: 5,
-    rank: 5,
-    logo: "https://placehold.co/128x128.png",
-    dataAiHint: "robot titan"
-  },
-  {
-    name: "Призрачные Волки",
-    slug: "#",
-    motto: "Мы тень, что приносит победу.",
-    captain: "Yuri 'Ghost' Volkov",
-    members: 5,
-    rank: 6,
-    logo: "https://placehold.co/128x128.png",
-    dataAiHint: "wolf logo"
-  },
-];
+export default async function TeamsPage() {
+  const teams: Team[] = await fetchTeams();
 
-export default function TeamsPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
