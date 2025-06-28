@@ -1,14 +1,34 @@
+import dynamic from 'next/dynamic';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Award, Users, Trophy, Target, Medal, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Star, BrainCircuit, Link as LinkIcon, CheckCircle } from "lucide-react";
-import Image from "next/image";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/lib/session";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/lib/mock-data";
+import { Skeleton } from './ui/skeleton';
+
+const OverviewTab = dynamic(() => import('@/components/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
+  loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+});
+const StatsTab = dynamic(() => import('@/components/player-profile-tabs/stats-tab').then(mod => mod.StatsTab), {
+  loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
+});
+const CareerTab = dynamic(() => import('@/components/player-profile-tabs/career-tab').then(mod => mod.CareerTab), {
+  loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+});
+const AchievementsTab = dynamic(() => import('@/components/player-profile-tabs/achievements-tab').then(mod => mod.AchievementsTab), {
+  loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+});
+const TeamsTab = dynamic(() => import('@/components/player-profile-tabs/teams-tab').then(mod => mod.TeamsTab), {
+  loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+});
+const GalleryTab = dynamic(() => import('@/components/player-profile-tabs/gallery-tab').then(mod => mod.GalleryTab), {
+  loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+});
 
 
 type PlayerProfileProps = {
@@ -85,157 +105,27 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
         </TabsList>
 
         <TabsContent value="overview">
-            <Card>
-                <CardHeader>
-                    <CardTitle>Последние матчи</CardTitle>
-                    <CardDescription>{isCurrentUser ? "Результаты ваших недавних игр." : "Результаты недавних игр."}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        {recentMatches.map((match) => (
-                            <div key={match.id} className="flex items-center justify-between rounded-lg border p-4">
-                                <div className="flex flex-col gap-1 text-center">
-                                    <p className="font-semibold">{match.teamA}</p>
-                                    <p className={`font-bold text-2xl ${match.scoreA > match.scoreB ? 'text-primary' : 'text-destructive'}`}>{match.scoreA}</p>
-                                </div>
-                                <div className="text-center">
-                                    <p className="text-sm text-muted-foreground">{match.game}</p>
-                                    <p className="font-bold">VS</p>
-                                    <Badge variant="outline">{match.map}</Badge>
-                                </div>
-                                <div className="flex flex-col gap-1 text-center">
-                                    <p className="font-semibold">{match.teamB}</p>
-                                    <p className={`font-bold text-2xl ${match.scoreB > match.scoreA ? 'text-primary' : 'text-destructive'}`}>{match.scoreB}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
+          <OverviewTab recentMatches={recentMatches} isCurrentUser={isCurrentUser} />
         </TabsContent>
 
         <TabsContent value="stats">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <Card>
-              <CardHeader>
-                <CardDescription>Матчи</CardDescription>
-                <CardTitle className="font-headline text-4xl">218</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardDescription>Победы</CardDescription>
-                <CardTitle className="font-headline text-4xl">152</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardDescription>Поражения</CardDescription>
-                <CardTitle className="font-headline text-4xl">61</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardDescription>Голы</CardDescription>
-                <CardTitle className="font-headline text-4xl">88</CardTitle>
-              </CardHeader>
-            </Card>
-          </div>
+          <StatsTab />
         </TabsContent>
         
         <TabsContent value="career">
-            <Card>
-                <CardHeader>
-                    <CardTitle>История карьеры</CardTitle>
-                    <CardDescription>{isCurrentUser ? "Ваш путь от новичка до капитана." : "Путь игрока от новичка до капитана."}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                   {careerHistory.map((item, index) => (
-                       <div key={index} className="flex items-start gap-4">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                                <Briefcase className="h-5 w-5 text-muted-foreground"/>
-                            </div>
-                            <div>
-                                <h4 className="font-semibold">{item.teamName} <span className="text-sm font-normal text-muted-foreground">({item.period})</span></h4>
-                                <p className="text-sm font-medium">Роль: {item.role}</p>
-                                <p className="text-sm text-muted-foreground mt-1">{item.review}</p>
-                            </div>
-                       </div>
-                   ))}
-                </CardContent>
-            </Card>
+            <CareerTab careerHistory={careerHistory} isCurrentUser={isCurrentUser} />
         </TabsContent>
 
         <TabsContent value="achievements">
-          <Card>
-            <CardContent className="p-6">
-              <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4">
-                {achievements.map((ach) => (
-                  <div key={ach.name} className={`flex flex-col items-center text-center ${ach.unlocked ? '' : 'opacity-40'}`}>
-                    <div className={`flex h-16 w-16 items-center justify-center rounded-full border-2 ${ach.unlocked ? 'border-accent bg-accent/20 text-accent' : 'border-dashed'}`}>
-                      <ach.icon className="h-8 w-8" />
-                    </div>
-                    <p className="mt-2 font-semibold">{ach.name}</p>
-                    <p className="text-xs text-muted-foreground">{ach.description}</p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+          <AchievementsTab achievements={achievements} />
         </TabsContent>
         
         <TabsContent value="teams">
-          <Card>
-            <CardHeader>
-                <CardTitle>{isCurrentUser ? "Мои команды" : "Команды"}</CardTitle>
-                <CardDescription>{isCurrentUser ? "Команды, в которых вы состоите." : `Команды, в которых состоит ${user.name}`}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {teams.map((team) => (
-                      <Link href="#" key={team.name} className="block h-full">
-                          <Card className="flex h-full flex-col items-center p-6 text-center transition-all hover:shadow-lg">
-                            <Image 
-                              src={team.logo} 
-                              alt={`Логотип ${team.name}`} 
-                              width={80} 
-                              height={80} 
-                              className="rounded-full border"
-                              data-ai-hint={team.dataAiHint}
-                            />
-                            <CardTitle className="mt-4 font-headline">{team.name}</CardTitle>
-                            <CardDescription>{team.role}</CardDescription>
-                          </Card>
-                      </Link>
-                  ))}
-              </div>
-            </CardContent>
-          </Card>
+          <TeamsTab teams={teams} isCurrentUser={isCurrentUser} userName={user.name} />
         </TabsContent>
         
         <TabsContent value="gallery">
-            <Card>
-              <CardHeader>
-                  <CardTitle>Галерея</CardTitle>
-                  <CardDescription>{isCurrentUser ? "Ваши фото и видео с матчей." : "Фото и видео с матчей."}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                      {gallery.map((item, index) => (
-                          <div key={index} className="overflow-hidden rounded-lg border">
-                              <Image 
-                                  src={item.src} 
-                                  alt={item.alt} 
-                                  width={600} 
-                                  height={400} 
-                                  className="aspect-video h-full w-full object-cover transition-transform hover:scale-105"
-                                  data-ai-hint={item.dataAiHint}
-                              />
-                          </div>
-                      ))}
-                  </div>
-              </CardContent>
-            </Card>
+          <GalleryTab gallery={gallery} isCurrentUser={isCurrentUser} />
         </TabsContent>
       </Tabs>
     </div>
