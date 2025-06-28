@@ -1,3 +1,7 @@
+
+'use client';
+
+import { useState, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -13,7 +17,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Search, Mail, Send, MessageCircle } from "lucide-react";
+import { Search, Mail, Send, MessageCircle, FileQuestion } from "lucide-react";
 import { SupportContactForm } from "@/components/support-contact-form";
 
 const faqCategories = [
@@ -59,6 +63,26 @@ const faqCategories = [
 ];
 
 export default function SupportPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const filteredFaq = useMemo(() => {
+    if (!searchQuery) {
+      return faqCategories;
+    }
+
+    const lowercasedQuery = searchQuery.toLowerCase();
+    
+    return faqCategories.map(category => {
+      const filteredQuestions = category.questions.filter(faq => 
+        faq.q.toLowerCase().includes(lowercasedQuery) ||
+        faq.a.toLowerCase().includes(lowercasedQuery)
+      );
+
+      return { ...category, questions: filteredQuestions };
+    }).filter(category => category.questions.length > 0);
+
+  }, [searchQuery]);
+
   return (
     <div className="space-y-8">
       <div className="text-center">
@@ -73,6 +97,8 @@ export default function SupportPage() {
           <Input
             placeholder="Поиск по базе знаний..."
             className="h-12 w-full pl-12 text-base"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>
@@ -87,19 +113,27 @@ export default function SupportPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Accordion type="single" collapsible className="w-full">
-                {faqCategories.map((category) => (
-                  <div key={category.category}>
-                    <h3 className="mt-6 mb-2 font-headline text-xl font-semibold">{category.category}</h3>
-                    {category.questions.map((faq) => (
-                      <AccordionItem key={faq.q} value={faq.q}>
-                        <AccordionTrigger>{faq.q}</AccordionTrigger>
-                        <AccordionContent>{faq.a}</AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </div>
-                ))}
-              </Accordion>
+              {filteredFaq.length > 0 ? (
+                <Accordion type="single" collapsible className="w-full">
+                  {filteredFaq.map((category) => (
+                    <div key={category.category}>
+                      <h3 className="mt-6 mb-2 font-headline text-xl font-semibold">{category.category}</h3>
+                      {category.questions.map((faq) => (
+                        <AccordionItem key={faq.q} value={faq.q}>
+                          <AccordionTrigger>{faq.q}</AccordionTrigger>
+                          <AccordionContent>{faq.a}</AccordionContent>
+                        </AccordionItem>
+                      ))}
+                    </div>
+                  ))}
+                </Accordion>
+              ) : (
+                <div className="flex h-48 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
+                    <FileQuestion className="h-12 w-12 mb-4 text-muted-foreground" />
+                    <h3 className="text-xl font-semibold">Ничего не найдено</h3>
+                    <p className="text-muted-foreground mt-1">По вашему запросу нет совпадений. Попробуйте переформулировать.</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
