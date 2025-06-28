@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { MatchDetails } from "@/lib/mock-data/match-details";
+import { Progress } from "@/components/ui/progress";
 
 const OverviewTab = dynamic(() => import('@/components/match-details-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -117,10 +118,20 @@ export default function MatchDetailsClient({ match }: MatchDetailsClientProps) {
             <CardTitle className="flex items-center gap-2"><Coins className="h-6 w-6 text-amber-400" /> Ставки на матч</CardTitle>
             <CardDescription>Победитель забирает банк. Ставки принимаются до начала матча.</CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col items-center gap-4 sm:flex-row sm:justify-around">
-            <div className="text-center">
-                <p className="font-semibold">{match.team1.name}</p>
-                <p className="font-headline text-2xl font-bold">{team1Bet.toLocaleString()} PD</p>
+        <CardContent className="flex flex-col items-center gap-6">
+           <div className="w-full max-w-lg space-y-2">
+                <div className="flex justify-between font-bold text-lg">
+                    <span>{match.team1.name}</span>
+                    <span>{match.team2.name}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Progress value={totalBet > 0 ? (team1Bet / totalBet) * 100 : 50} className="h-3 [&>div]:bg-primary" />
+                    <Progress value={totalBet > 0 ? (team2Bet / totalBet) * 100 : 50} className="h-3 scale-x-[-1] [&>div]:bg-destructive" />
+                </div>
+                <div className="flex justify-between text-sm text-muted-foreground">
+                    <span className="font-semibold">{team1Bet.toLocaleString()} PD</span>
+                    <span className="font-semibold">{team2Bet.toLocaleString()} PD</span>
+                </div>
             </div>
             <div className="text-center space-y-2">
                 <p className="text-sm text-muted-foreground">Общий банк</p>
@@ -169,10 +180,6 @@ export default function MatchDetailsClient({ match }: MatchDetailsClientProps) {
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-            </div>
-            <div className="text-center">
-                <p className="font-semibold">{match.team2.name}</p>
-                <p className="font-headline text-2xl font-bold">{team2Bet.toLocaleString()} PD</p>
             </div>
         </CardContent>
       </Card>
