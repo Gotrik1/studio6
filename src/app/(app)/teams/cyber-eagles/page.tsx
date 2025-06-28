@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2 } from "lucide-react";
+import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2, Pencil } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { teamPdHistory } from "@/lib/mock-data/gamification";
@@ -15,7 +15,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { aiTeamAssistant, type AiTeamAssistantOutput } from '@/ai/flows/ai-team-assistant';
+import { generateTeamAvatar } from "@/ai/flows/generate-team-avatar-flow";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const team = {
   name: "Кибер Орлы",
@@ -62,6 +66,14 @@ export default function TeamProfilePage() {
     const [aiResult, setAiResult] = useState<AiTeamAssistantOutput | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    
+    // State for avatar generation
+    const [teamLogo, setTeamLogo] = useState(team.logo);
+    const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+    const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
+    const [avatarPrompt, setAvatarPrompt] = useState("An eagle logo, esports style, blue and white");
+    const [generatedAvatar, setGeneratedAvatar] = useState<string | null>(null);
+    const [avatarError, setAvatarError] = useState<string | null>(null);
 
     const handleGenerateSummary = async () => {
         setIsLoading(true);
@@ -81,6 +93,30 @@ export default function TeamProfilePage() {
             setError("Не удалось получить сводку от ИИ. Пожалуйста, попробуйте снова.");
         } finally {
             setIsLoading(false);
+        }
+    };
+    
+    const handleGenerateAvatar = async () => {
+        if (!avatarPrompt) return;
+        setIsGeneratingAvatar(true);
+        setAvatarError(null);
+        setGeneratedAvatar(null);
+        try {
+            const result = await generateTeamAvatar({ prompt: avatarPrompt });
+            setGeneratedAvatar(result.avatarDataUri);
+        } catch (e) {
+            console.error(e);
+            setAvatarError("Не удалось сгенерировать изображение. Попробуйте другой запрос.");
+        } finally {
+            setIsGeneratingAvatar(false);
+        }
+    };
+
+    const handleApplyAvatar = () => {
+        if (generatedAvatar) {
+            setTeamLogo(generatedAvatar);
+            setIsAvatarDialogOpen(false);
+            setGeneratedAvatar(null);
         }
     };
 
@@ -103,10 +139,54 @@ export default function TeamProfilePage() {
                     </div>
                 </CardHeader>
                 <CardContent className="relative flex flex-col items-center gap-4 p-6 pt-0 text-center sm:flex-row sm:text-left">
-                    <Avatar className="-mt-12 h-24 w-24 shrink-0 border-4 border-background sm:h-32 sm:w-32">
-                        <AvatarImage src={team.logo} alt={team.name} data-ai-hint={team.logoHint} />
-                        <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
+                    <Dialog open={isAvatarDialogOpen} onOpenChange={setIsAvatarDialogOpen}>
+                        <div className="relative -mt-12 shrink-0">
+                            <Avatar className="h-24 w-24 border-4 border-background sm:h-32 sm:w-32">
+                                <AvatarImage src={teamLogo} alt={team.name} data-ai-hint={team.logoHint} />
+                                <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                             <DialogTrigger asChild>
+                                <Button size="icon" className="group absolute bottom-1 right-1 h-8 w-8 rounded-full">
+                                    <Pencil className="h-4 w-4 transition-transform group-hover:scale-110" />
+                                    <span className="sr-only">Сгенерировать логотип</span>
+                                </Button>
+                            </DialogTrigger>
+                        </div>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Сгенерировать логотип с помощью ИИ</DialogTitle>
+                                <DialogDescription>
+                                    Опишите, какой логотип вы хотите видеть. Например, "злой медведь в хоккейной маске, стиль киберпанк".
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4">
+                                <div>
+                                    <Label htmlFor="avatar-prompt">Ваш запрос:</Label>
+                                    <Input 
+                                        id="avatar-prompt"
+                                        value={avatarPrompt}
+                                        onChange={(e) => setAvatarPrompt(e.target.value)}
+                                        placeholder="Например, огненный феникс, векторный стиль"
+                                        disabled={isGeneratingAvatar}
+                                    />
+                                </div>
+                                <Button onClick={handleGenerateAvatar} disabled={isGeneratingAvatar} className="w-full">
+                                    {isGeneratingAvatar ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
+                                    {isGeneratingAvatar ? 'Генерация...' : 'Сгенерировать'}
+                                </Button>
+                                {avatarError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{avatarError}</AlertDescription></Alert>}
+                                <div className="flex justify-center items-center h-48 w-full rounded-md border border-dashed bg-muted/50">
+                                    {isGeneratingAvatar && <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>}
+                                    {generatedAvatar && <Image src={generatedAvatar} alt="Generated Avatar" width={192} height={192} className="rounded-md object-contain" />}
+                                    {!isGeneratingAvatar && !generatedAvatar && <p className="text-sm text-muted-foreground">Здесь появится результат</p>}
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button variant="secondary" onClick={() => setIsAvatarDialogOpen(false)}>Отмена</Button>
+                                <Button onClick={handleApplyAvatar} disabled={!generatedAvatar}>Применить</Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                     <div className="flex-1 space-y-2">
                         <CardTitle className="font-headline text-3xl sm:text-4xl">{team.name}</CardTitle>
                         <CardDescription className="italic">"{team.motto}"</CardDescription>
