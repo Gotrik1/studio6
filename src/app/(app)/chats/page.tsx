@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, KeyboardEvent } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,17 +14,16 @@ import { Search, Phone, Video, Smile, Paperclip, Send, MoreVertical, PlusCircle,
 import { chatList as mockChatList } from '@/lib/mock-data/chats';
 import { cn } from '@/lib/utils';
 import type { User } from '@/lib/session';
+import { useSession } from '@/lib/session-client';
 
 type Chat = (typeof mockChatList)[0];
 
 export default function ChatsPage() {
+    const { user: currentUser, loading: userLoading } = useSession();
     const [chatList, setChatList] = useState(mockChatList);
     const [activeChat, setActiveChat] = useState<Chat | null>(chatList[0] || null);
     const [newMessage, setNewMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    
-    // In a real app, this would come from the session
-    const currentUser: User = { name: 'You', email: '', role: '', avatar: 'https://placehold.co/40x40.png' };
 
     const filteredChats = useMemo(() => {
         if (!searchQuery) return chatList;
@@ -34,7 +33,7 @@ export default function ChatsPage() {
     }, [chatList, searchQuery]);
 
     const handleSendMessage = () => {
-        if (!newMessage.trim() || !activeChat) return;
+        if (!newMessage.trim() || !activeChat || !currentUser) return;
 
         const message = {
             sender: 'me' as const,
@@ -63,7 +62,7 @@ export default function ChatsPage() {
         setNewMessage('');
     };
     
-    const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
         if (event.key === 'Enter' && !event.shiftKey) {
             event.preventDefault();
             handleSendMessage();
@@ -74,10 +73,23 @@ export default function ChatsPage() {
         // Find the full chat object from the list to ensure we have the latest message history
         const fullChat = chatList.find(c => c.id === chat.id);
         if (fullChat) {
-            setActiveChat(fullChat);
+            // Mark messages as read by resetting unreadCount
+            const updatedChat = { ...fullChat, unreadCount: 0 };
+            const updatedChatList = chatList.map(c => c.id === chat.id ? updatedChat : c);
+            
+            setActiveChat(updatedChat);
+            setChatList(updatedChatList);
         }
     }
 
+
+    if (userLoading) {
+        return <div>Загрузка...</div>
+    }
+
+    if (!currentUser) {
+        return <div>Пожалуйста, войдите в систему.</div>
+    }
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 h-[calc(100vh-theme(spacing.16)-2*theme(spacing.4))]">
