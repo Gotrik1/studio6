@@ -8,11 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { matchesList as allMatches } from "@/lib/mock-data/matches";
-import { Calendar, PlusCircle, Search, SlidersHorizontal, Swords, Video } from "lucide-react";
+import { Calendar, PlusCircle, Search, Swords, Video } from "lucide-react";
 import Link from "next/link";
+
+const statusFilters = ["Все", "Идет", "Предстоящий", "Завершен"];
 
 export default function MatchesPage() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState('Все');
 
   const getStatusVariant = (status: string) => {
     switch (status) {
@@ -28,17 +31,18 @@ export default function MatchesPage() {
   };
 
   const filteredMatches = useMemo(() => {
-    const lowercasedQuery = searchQuery.toLowerCase();
-    if (!lowercasedQuery) {
-      return allMatches;
-    }
+    return allMatches.filter(match => {
+      const lowercasedQuery = searchQuery.toLowerCase();
+      const matchesSearch = !lowercasedQuery ||
+        match.team1.name.toLowerCase().includes(lowercasedQuery) ||
+        match.team2.name.toLowerCase().includes(lowercasedQuery) ||
+        match.tournament.toLowerCase().includes(lowercasedQuery);
+      
+      const matchesFilter = activeFilter === 'Все' || match.status === activeFilter;
 
-    return allMatches.filter(match => 
-      match.team1.name.toLowerCase().includes(lowercasedQuery) ||
-      match.team2.name.toLowerCase().includes(lowercasedQuery) ||
-      match.tournament.toLowerCase().includes(lowercasedQuery)
-    );
-  }, [searchQuery]);
+      return matchesSearch && matchesFilter;
+    });
+  }, [searchQuery, activeFilter]);
 
   return (
     <div className="space-y-6">
@@ -65,10 +69,18 @@ export default function MatchesPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline" className="w-full md:w-auto">
-              <SlidersHorizontal className="mr-2 h-4 w-4" />
-              Фильтры
-            </Button>
+            <div className="flex gap-2">
+              {statusFilters.map((filter) => (
+                <Button
+                  key={filter}
+                  variant={activeFilter === filter ? "default" : "outline"}
+                  onClick={() => setActiveFilter(filter)}
+                  className="w-full md:w-auto"
+                >
+                  {filter}
+                </Button>
+              ))}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
