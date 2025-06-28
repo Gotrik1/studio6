@@ -56,7 +56,7 @@ const prompt = ai.definePrompt({
 export const generatePlatformNews = ai.defineFlow(
     {
         name: 'generatePlatformNewsFlow',
-        inputSchema: z.null(),
+        inputSchema: z.void(),
         outputSchema: GeneratePlatformNewsOutputSchema,
     },
     async () => {
