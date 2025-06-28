@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const session = request.cookies.get('session');
   const { pathname } = request.nextUrl;
 
-  const isPublicPath = pathname === '/login' || pathname === '/';
+  const isPublicPath = pathname === '/auth' || pathname === '/';
 
   // If the user has a session...
   if (session) {
@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
     // If the user does not have a session and is trying to access a protected path...
     if (!isPublicPath) {
       // redirect them to the login page.
-      return NextResponse.redirect(new URL('/login', request.url));
+      return NextResponse.redirect(new URL('/auth', request.url));
     }
   }
 

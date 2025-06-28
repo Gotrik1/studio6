@@ -19,7 +19,7 @@ const achievements = [
 
 export default async function ProfilePage() {
   const user = await getSession();
-  if (!user) redirect('/login');
+  if (!user) redirect('/auth');
 
   const initials = user.name.split(' ').map((n) => n[0]).join('');
 

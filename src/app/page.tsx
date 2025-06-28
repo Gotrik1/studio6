@@ -75,10 +75,10 @@ export default function LandingPage() {
           </Link>
           <nav className="flex items-center gap-4">
             <Button variant="ghost" asChild>
-              <Link href="/login">Войти</Link>
+              <Link href="/auth">Войти</Link>
             </Button>
             <Button asChild>
-              <Link href="/login">Начать бесплатно</Link>
+              <Link href="/auth">Начать бесплатно</Link>
             </Button>
           </nav>
         </div>
@@ -102,7 +102,7 @@ export default function LandingPage() {
             </p>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row">
               <Button size="lg" asChild className="font-semibold">
-                <Link href="/login">Начать играть</Link>
+                <Link href="/auth">Начать играть</Link>
               </Button>
               <Button size="lg" variant="secondary" className="font-semibold">
                 Скачать приложение

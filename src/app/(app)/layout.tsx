@@ -47,7 +47,7 @@ export default async function AppLayout({
   const user = await getSession();
 
   if (!user) {
-    redirect("/login");
+    redirect("/auth");
   }
 
   return (
