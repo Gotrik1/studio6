@@ -8,9 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { promotionsList as initialPromotionsList, sponsorsList } from "@/lib/mock-data/promotions";
-import { Clock, Gift, Megaphone, PlusCircle, Users, CheckCircle } from "lucide-react";
+import { Clock, Gift, PlusCircle, Users, CheckCircle, Coins } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from '@/hooks/use-toast';
+import { pdHistory } from '@/lib/mock-data/gamification';
 
 type Promotion = (typeof initialPromotionsList)[0];
 
@@ -18,15 +19,27 @@ export default function PromotionsPage() {
     const { toast } = useToast();
     const [promotions, setPromotions] = useState<Promotion[]>(initialPromotionsList);
     const [participatedPromoIds, setParticipatedPromoIds] = useState<string[]>([]);
+    const [pdBalance, setPdBalance] = useState(() => pdHistory.reduce((sum, item) => sum + item.value, 0));
 
-    const handleParticipate = (promoId: string) => {
+    const handleParticipate = (promo: Promotion) => {
+        if (pdBalance < promo.cost) {
+            toast({
+                variant: 'destructive',
+                title: "Недостаточно средств",
+                description: `Вам нужно ${promo.cost} PD для участия в этой акции.`,
+            });
+            return;
+        }
+
+        setPdBalance(prev => prev - promo.cost);
         setPromotions(promotions.map(p => 
-            p.id === promoId ? { ...p, participants: p.participants + 1 } : p
+            p.id === promo.id ? { ...p, participants: p.participants + 1 } : p
         ));
-        setParticipatedPromoIds([...participatedPromoIds, promoId]);
+        setParticipatedPromoIds([...participatedPromoIds, promo.id]);
+        
         toast({
             title: "Вы успешно зарегистрировались!",
-            description: `Вы теперь участник акции "${promotions.find(p => p.id === promoId)?.name}".`,
+            description: `Вы теперь участник акции "${promo.name}". ${promo.cost > 0 ? `С вашего счета списано ${promo.cost} PD.` : ''}`,
         });
     };
 
@@ -51,10 +64,16 @@ export default function PromotionsPage() {
                         Участвуйте в конкурсах и акциях от наших партнеров и выигрывайте призы.
                     </p>
                 </div>
-                <Button>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Создать акцию
-                </Button>
+                 <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2 font-bold text-primary shadow-inner">
+                        <Coins className="h-5 w-5"/>
+                        <span className="text-lg">{pdBalance.toLocaleString()} PD</span>
+                    </div>
+                    <Button>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Создать акцию
+                    </Button>
+                </div>
             </div>
 
             <Tabs defaultValue="current">
@@ -67,6 +86,7 @@ export default function PromotionsPage() {
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                             {activePromotions.map((promo) => {
                                 const isParticipating = participatedPromoIds.includes(promo.id);
+                                const canAfford = pdBalance >= promo.cost;
                                 return (
                                 <Card key={promo.id} className="flex flex-col overflow-hidden transition-all hover:shadow-md">
                                     <CardHeader className="relative h-40 w-full p-0">
@@ -78,6 +98,15 @@ export default function PromotionsPage() {
                                             data-ai-hint={promo.imageHint}
                                         />
                                         <Badge variant={getStatusVariant(promo.status)} className="absolute right-2 top-2">{promo.status}</Badge>
+                                        <Badge variant="secondary" className="absolute left-2 top-2 flex items-center gap-1">
+                                            {promo.cost > 0 ? (
+                                                <>
+                                                   <Coins className="h-3 w-3" /> {promo.cost} PD
+                                                </>
+                                            ) : (
+                                                'Бесплатно'
+                                            )}
+                                        </Badge>
                                     </CardHeader>
                                     <CardContent className="flex-1 p-6">
                                         <p className="text-sm font-semibold text-primary">{promo.sponsor}</p>
@@ -91,8 +120,8 @@ export default function PromotionsPage() {
                                     <CardFooter className="bg-muted/50 p-4">
                                         <Button 
                                             className="w-full"
-                                            onClick={() => handleParticipate(promo.id)}
-                                            disabled={isParticipating || promo.status !== 'Активна'}
+                                            onClick={() => handleParticipate(promo)}
+                                            disabled={isParticipating || promo.status !== 'Активна' || !canAfford}
                                         >
                                             {isParticipating ? (
                                                 <>

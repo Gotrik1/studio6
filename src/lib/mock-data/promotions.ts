@@ -9,7 +9,8 @@ export const promotionsList = [
     participants: 128,
     status: "Активна",
     image: "https://placehold.co/600x400.png",
-    imageHint: "gaming headset"
+    imageHint: "gaming headset",
+    cost: 50,
   },
   {
     id: "promo-2",
@@ -20,7 +21,8 @@ export const promotionsList = [
     participants: 256,
     status: "Активна",
     image: "https://placehold.co/600x400.png",
-    imageHint: "energy drink can"
+    imageHint: "energy drink can",
+    cost: 100,
   },
   {
     id: "promo-3",
@@ -31,7 +33,8 @@ export const promotionsList = [
     participants: 78,
     status: "Скоро",
     image: "https://placehold.co/600x400.png",
-    imageHint: "futuristic city"
+    imageHint: "futuristic city",
+    cost: 0,
   },
   {
     id: "promo-4",
@@ -42,7 +45,8 @@ export const promotionsList = [
     participants: 45,
     status: "Завершена",
     image: "https://placehold.co/600x400.png",
-    imageHint: "t-shirt design"
+    imageHint: "t-shirt design",
+    cost: 0,
   }
 ];
 
