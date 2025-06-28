@@ -1,15 +1,18 @@
+
+'use client';
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRight, Calendar, Check, Trophy, Users, FileText, PlusCircle, Megaphone, UserPlus } from "lucide-react";
+import { ArrowRight, Calendar, Check, Trophy, Users, FileText, PlusCircle, Megaphone, UserPlus, MoreHorizontal } from "lucide-react";
 import { TournamentBracket } from "@/components/tournament-bracket";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useToast } from "@/hooks/use-toast";
 
 const bracketData = {
   rounds: [
@@ -44,7 +47,7 @@ const bracketData = {
   ],
 };
 
-const participants = [
+const initialParticipants = [
   { id: 1, name: 'Кибер Орлы', logo: 'https://placehold.co/40x40.png', dataAiHint: "eagle logo", status: 'Оплачено', captain: "Alex 'CyberSlasher' Doe", profileUrl: '/teams/cyber-eagles' },
   { id: 2, name: 'Ледяные Драконы', logo: 'https://placehold.co/40x40.png', dataAiHint: "dragon logo", status: 'Оплачено', captain: "Frosty", profileUrl: '#' },
   { id: 3, name: 'Квантовые Квазары', logo: 'https://placehold.co/40x40.png', dataAiHint: "galaxy logo", status: 'Ожидает оплаты', captain: "Alex 'Nova' Ray", profileUrl: '#' },
@@ -65,6 +68,16 @@ const getStatusVariant = (status: string) => {
 }
 
 export default function TournamentPage() {
+  const [participants, setParticipants] = useState(initialParticipants);
+  const { toast } = useToast();
+
+  const handleAction = (message: string) => {
+      toast({
+          title: "Действие выполнено",
+          description: message,
+      });
+  };
+
   return (
     <div className="space-y-6">
       <Card className="overflow-hidden">
@@ -134,11 +147,26 @@ export default function TournamentPage() {
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4"/></Button>
                                     </DropdownMenuTrigger>
-                                    <DropdownMenuContent>
-                                        <DropdownMenuItem>Просмотреть профиль</DropdownMenuItem>
-                                        <DropdownMenuItem>Отправить сообщение</DropdownMenuItem>
-                                        <DropdownMenuItem>Изменить статус оплаты</DropdownMenuItem>
-                                        <DropdownMenuItem className="text-destructive">Исключить из турнира</DropdownMenuItem>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuItem asChild>
+                                            <Link href={team.profileUrl}>Просмотреть профиль</Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleAction(`Сообщение отправлено капитану команды "${team.name}".`)}>
+                                            Отправить сообщение
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem onClick={() => handleAction(`Статус оплаты для команды "${team.name}" изменен.`)}>
+                                            Изменить статус оплаты
+                                        </DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem 
+                                            className="text-destructive focus:bg-destructive/10 focus:text-destructive" 
+                                            onClick={() => {
+                                                setParticipants(prev => prev.filter(p => p.id !== team.id));
+                                                handleAction(`Команда "${team.name}" исключена из турнира.`);
+                                            }}
+                                        >
+                                            Исключить из турнира
+                                        </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                            </div>
