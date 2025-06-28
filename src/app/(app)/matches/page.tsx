@@ -1,13 +1,19 @@
+
+'use client';
+
+import { useState, useMemo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { matchesList } from "@/lib/mock-data/matches";
+import { matchesList as allMatches } from "@/lib/mock-data/matches";
 import { Calendar, PlusCircle, Search, SlidersHorizontal, Swords, Video } from "lucide-react";
 import Link from "next/link";
 
 export default function MatchesPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+
   const getStatusVariant = (status: string) => {
     switch (status) {
       case "Завершен":
@@ -20,6 +26,19 @@ export default function MatchesPage() {
         return "secondary";
     }
   };
+
+  const filteredMatches = useMemo(() => {
+    const lowercasedQuery = searchQuery.toLowerCase();
+    if (!lowercasedQuery) {
+      return allMatches;
+    }
+
+    return allMatches.filter(match => 
+      match.team1.name.toLowerCase().includes(lowercasedQuery) ||
+      match.team2.name.toLowerCase().includes(lowercasedQuery) ||
+      match.tournament.toLowerCase().includes(lowercasedQuery)
+    );
+  }, [searchQuery]);
 
   return (
     <div className="space-y-6">
@@ -39,7 +58,12 @@ export default function MatchesPage() {
           <div className="flex flex-col gap-4 md:flex-row">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input placeholder="Поиск по команде, турниру или игре..." className="w-full pl-10" />
+              <Input 
+                placeholder="Поиск по команде, турниру или игре..." 
+                className="w-full pl-10" 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
             <Button variant="outline" className="w-full md:w-auto">
               <SlidersHorizontal className="mr-2 h-4 w-4" />
@@ -49,8 +73,8 @@ export default function MatchesPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {matchesList.length > 0 ? (
-              matchesList.map((match) => (
+            {filteredMatches.length > 0 ? (
+              filteredMatches.map((match) => (
                 <Card key={match.id} className="transition-shadow hover:shadow-md">
                   <div className="flex flex-col items-center justify-between gap-4 p-4 sm:flex-row">
                     <div className="flex w-full items-center justify-between sm:w-auto sm:justify-start sm:gap-4">
@@ -94,13 +118,9 @@ export default function MatchesPage() {
               ))
             ) : (
               <div className="flex h-48 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
-                <Swords className="h-12 w-12 mb-4 text-muted-foreground" />
+                <Search className="h-12 w-12 mb-4 text-muted-foreground" />
                 <CardTitle>Матчи не найдены</CardTitle>
-                <CardDescription className="mt-2">Похоже, по вашим фильтрам ничего нет. Попробуйте создать свой матч!</CardDescription>
-                <Button className="mt-4">
-                  <PlusCircle className="mr-2 h-4 w-4" />
-                  Создать матч
-                </Button>
+                <CardDescription className="mt-2">По вашему запросу ничего не найдено. Попробуйте изменить поисковый запрос.</CardDescription>
               </div>
             )}
           </div>
