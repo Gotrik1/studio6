@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -33,8 +33,6 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
   const [aiResult, setAiResult] = useState<AnalyzeDisputeOutput | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
 
-  if (!match) return null;
-  
   const handleAnalyzeDispute = async () => {
       if (!match) return;
 
@@ -42,7 +40,6 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
       setAiResult(null);
       setAiError(null);
 
-      // Mock evidence for the demo
       const mockEvidence = {
           team1Evidence: "Chat log shows team 2 player admitting to using a bug. Screenshot of final score: 9-12.",
           team2Evidence: "Player claims they were joking in chat. Provided video shows unusual lag at the time of the alleged incident."
@@ -64,15 +61,22 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
       }
   };
 
+  useEffect(() => {
+    if (isOpen && match) {
+        handleAnalyzeDispute();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, match]);
+
   const onOpenChangeHandler = (open: boolean) => {
     if (!open) {
-      // Reset state when closing dialog
       setAiResult(null);
       setAiError(null);
-      setIsAnalyzing(false);
     }
     onOpenChange(open);
   };
+  
+  if (!match) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChangeHandler}>
@@ -124,11 +128,11 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                     <h4 className="font-semibold text-sm">Помощник судьи (AI)</h4>
                     <Button variant="outline" size="sm" onClick={handleAnalyzeDispute} disabled={isAnalyzing}>
                         {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
-                        Проанализировать
+                        Проанализировать заново
                     </Button>
                 </div>
                 {isAnalyzing && (
-                    <div className="space-y-2">
+                    <div className="space-y-2 p-4 border border-dashed rounded-lg">
                         <Skeleton className="h-4 w-1/3" />
                         <Skeleton className="h-8 w-full" />
                     </div>
@@ -144,7 +148,7 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                     <Alert>
                         <Sparkles className="h-4 w-4" />
                         <AlertTitle>Рекомендация ИИ (Уверенность: {aiResult.confidence})</AlertTitle>
-                        <AlertDescription className="space-y-2">
+                        <AlertDescription className="space-y-2 mt-2">
                            <p><strong>Вердикт:</strong> {aiResult.recommendation}</p>
                            <p><strong>Обоснование:</strong> {aiResult.reasoning}</p>
                         </AlertDescription>
