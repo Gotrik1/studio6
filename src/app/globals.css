@@ -95,3 +95,60 @@ html {
     font-family: theme('fontFamily.headline');
   }
 }
+
+@layer utilities {
+  .shadow-inner-glow {
+    position: relative;
+    overflow: hidden;
+  }
+  .shadow-inner-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 2rem 0.5rem hsl(var(--primary) / 0.1);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .animated-slogan span {
+    opacity: 0;
+    transform: translateY(20px);
+    display: inline-block;
+    animation: slogan-fade-in 0.5s ease-out forwards;
+  }
+  
+  .animated-slogan span:nth-child(1) { animation-delay: 0.1s; }
+  .animated-slogan span:nth-child(2) { animation-delay: 0.2s; }
+  .animated-slogan span:nth-child(3) { animation-delay: 0.3s; }
+  .animated-slogan span:nth-child(4) { animation-delay: 0.4s; }
+  .animated-slogan span:nth-child(5) { animation-delay: 0.5s; }
+
+  .pulsing-button {
+    animation: pulse 2s infinite;
+  }
+}
+
+@keyframes slogan-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px hsl(var(--primary) / 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+  }
+}

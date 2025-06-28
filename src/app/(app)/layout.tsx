@@ -153,6 +153,14 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Монетизация">
+                <Link href="/monetization">
+                  <Crown />
+                  Монетизация
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
               <SidebarMenuButton tooltip="Центр Судей">
                 <Gavel />
                 Центр Судей
