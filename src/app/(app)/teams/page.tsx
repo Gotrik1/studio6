@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import Link from 'next/link';
 const teams = [
   {
     name: "Кибер Орлы",
+    slug: "cyber-eagles",
     captain: "John 'EagleEye' Smith",
     members: 5,
     rank: 1,
@@ -17,6 +19,7 @@ const teams = [
   },
   {
     name: "Вихревые Гадюки",
+    slug: "#",
     captain: "Jane 'Venom' Doe",
     members: 5,
     rank: 2,
@@ -25,6 +28,7 @@ const teams = [
   },
   {
     name: "Квантовые Квазары",
+    slug: "#",
     captain: "Alex 'Nova' Ray",
     members: 5,
     rank: 3,
@@ -33,6 +37,7 @@ const teams = [
   },
   {
     name: "Багровые Крестоносцы",
+    slug: "#",
     captain: "Sam 'The-Rock' Stone",
     members: 4,
     rank: 4,
@@ -63,7 +68,7 @@ export default function TeamsPage() {
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {teams.map((team) => (
-          <Link href="#" key={team.name} className="flex h-full">
+          <Link href={team.slug === "#" ? "#" : `/teams/${team.slug}`} key={team.name} className="flex h-full">
             <Card className="flex w-full flex-col transition-all hover:shadow-md">
               <CardHeader className="items-center">
                 <Image 
