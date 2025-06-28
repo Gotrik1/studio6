@@ -27,6 +27,7 @@ import {
   BrainCircuit,
   Loader2,
   FileQuestion,
+  Trash2,
 } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
@@ -37,6 +38,8 @@ import { Input } from "@/components/ui/input";
 import { generateContent } from "@/ai/flows/generate-content-flow";
 import { useSession } from "@/lib/session-client";
 import { cn } from "@/lib/utils";
+import { generatePostImage } from "@/ai/flows/generate-post-image-flow";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const initialFeedItems = [
   {
@@ -155,6 +158,9 @@ export default function DashboardPage() {
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState("all");
 
+  const [postImage, setPostImage] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+
   const filteredFeedItems = useMemo(() => {
     if (activeFilter === "all") {
       return feedItems;
@@ -187,6 +193,7 @@ export default function DashboardPage() {
       type: "player_post",
       content: {
         text: postContent,
+        ...(postImage && { image: postImage, imageHint: "AI generated" }),
       },
       stats: {
         likes: 0,
@@ -216,6 +223,7 @@ export default function DashboardPage() {
           description: "Вы уже получили максимальную награду за посты на сегодня.",
       });
       setPostContent("");
+      setPostImage(null);
       return;
     }
 
@@ -231,6 +239,7 @@ export default function DashboardPage() {
         description: description,
     });
     setPostContent("");
+    setPostImage(null);
   };
 
   const handleGeneratePost = async () => {
@@ -258,6 +267,31 @@ export default function DashboardPage() {
         });
     } finally {
         setIsGenerating(false);
+    }
+  };
+
+  const handleGenerateImage = async () => {
+    if (!postContent.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Пустой пост",
+        description: "Сначала напишите что-нибудь, чтобы сгенерировать изображение.",
+      });
+      return;
+    }
+    setIsGeneratingImage(true);
+    try {
+      const result = await generatePostImage(postContent);
+      setPostImage(result.imageDataUri);
+    } catch (e) {
+      console.error(e);
+      toast({
+        variant: "destructive",
+        title: "Ошибка генерации изображения",
+        description: "Не удалось создать изображение. Попробуйте снова.",
+      });
+    } finally {
+      setIsGeneratingImage(false);
     }
   };
 
@@ -295,12 +329,23 @@ export default function DashboardPage() {
                   value={postContent}
                   onChange={(e) => setPostContent(e.target.value)}
                 />
+                 {isGeneratingImage && <Skeleton className="mt-2 h-48 w-full rounded-lg" />}
+                 {postImage && !isGeneratingImage && (
+                    <div className="relative mt-2">
+                        <Image src={postImage} alt="Сгенерированное изображение" width={800} height={400} className="rounded-lg border object-cover aspect-video"/>
+                        <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={() => setPostImage(null)}>
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                )}
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2 text-muted-foreground">
-                    <Button variant="ghost" size="icon"><ImageIcon className="h-5 w-5"/></Button>
+                    <Button variant="ghost" size="icon" onClick={handleGenerateImage} disabled={isGeneratingImage} title="Сгенерировать изображение по тексту">
+                      {isGeneratingImage ? <Loader2 className="h-5 w-5 animate-spin" /> : <ImageIcon className="h-5 w-5 text-purple-500" />}
+                    </Button>
                      <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
                         <DialogTrigger asChild>
-                            <Button variant="ghost" size="icon">
+                            <Button variant="ghost" size="icon" title="Сгенерировать текст поста">
                                 <BrainCircuit className="h-5 w-5 text-primary" />
                             </Button>
                         </DialogTrigger>
