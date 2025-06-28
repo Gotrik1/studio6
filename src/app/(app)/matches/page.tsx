@@ -94,6 +94,7 @@ export default function MatchesPage() {
               ))
             ) : (
               <div className="flex h-48 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
+                <Swords className="h-12 w-12 mb-4 text-muted-foreground" />
                 <CardTitle>Матчи не найдены</CardTitle>
                 <CardDescription className="mt-2">Похоже, по вашим фильтрам ничего нет. Попробуйте создать свой матч!</CardDescription>
                 <Button className="mt-4">

@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Map, SlidersHorizontal, PlusCircle, Star, Sun, Trash2, RefreshCcw, MapPin, ShowerHead, Shirt } from "lucide-react";
+import { Search, Map, SlidersHorizontal, PlusCircle, Star, Sun, Trash2, RefreshCcw, MapPin, ShowerHead, Shirt, Calendar } from "lucide-react";
 import Image from 'next/image';
 import { Separator } from "@/components/ui/separator";
 import { venuesList, myBookings } from "@/lib/mock-data";
@@ -87,6 +87,7 @@ export default function BookingPage() {
                     </div>
                 ) : (
                      <div className="flex h-40 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
+                        <Calendar className="h-10 w-10 mb-4 text-muted-foreground" />
                         <p className="text-lg font-semibold">У вас пока нет бронирований</p>
                         <p className="mt-1 text-muted-foreground">Найдите площадку ниже и запланируйте свою первую игру!</p>
                     </div>

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PlusCircle, Users, Calendar } from "lucide-react";
+import { PlusCircle, Users, Calendar, Trophy } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -67,45 +67,61 @@ export default function TournamentsPage() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {tournaments.map((tournament) => (
-          <Link href={tournament.slug} key={tournament.name} className="flex h-full">
-            <Card className="flex w-full flex-col overflow-hidden transition-all hover:shadow-md">
-              <CardHeader className="p-0">
-                <Image 
-                  src={tournament.image} 
-                  alt={tournament.name} 
-                  width={600} 
-                  height={400} 
-                  className="aspect-video object-cover"
-                  data-ai-hint={tournament.dataAiHint}
-                />
-              </CardHeader>
-              <CardContent className="flex-1 p-6">
-                <Badge variant="secondary" className="mb-2">{tournament.game}</Badge>
-                <CardTitle className="font-headline">{tournament.name}</CardTitle>
-                <CardDescription className="font-bold text-accent">{tournament.prize} Призовой фонд</CardDescription>
-                <div className="mt-4 flex items-center space-x-4 text-sm text-muted-foreground">
-                  <div className="flex items-center">
-                    <Users className="mr-1.5 h-4 w-4" />
-                    <span>{tournament.participants} Команд</span>
+        {tournaments.length > 0 ? (
+          tournaments.map((tournament) => (
+            <Link href={tournament.slug} key={tournament.name} className="flex h-full">
+              <Card className="flex w-full flex-col overflow-hidden transition-all hover:shadow-md">
+                <CardHeader className="p-0">
+                  <Image 
+                    src={tournament.image} 
+                    alt={tournament.name} 
+                    width={600} 
+                    height={400} 
+                    className="aspect-video object-cover"
+                    data-ai-hint={tournament.dataAiHint}
+                  />
+                </CardHeader>
+                <CardContent className="flex-1 p-6">
+                  <Badge variant="secondary" className="mb-2">{tournament.game}</Badge>
+                  <CardTitle className="font-headline">{tournament.name}</CardTitle>
+                  <CardDescription className="font-bold text-accent">{tournament.prize} Призовой фонд</CardDescription>
+                  <div className="mt-4 flex items-center space-x-4 text-sm text-muted-foreground">
+                    <div className="flex items-center">
+                      <Users className="mr-1.5 h-4 w-4" />
+                      <span>{tournament.participants} Команд</span>
+                    </div>
+                    <div className="flex items-center">
+                      <Calendar className="mr-1.5 h-4 w-4" />
+                      <span>{tournament.date}</span>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <Calendar className="mr-1.5 h-4 w-4" />
-                    <span>{tournament.date}</span>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between bg-muted/50 p-6">
-                 <Badge variant={
-                    tournament.status === 'Регистрация' ? 'default' : 
-                    tournament.status === 'Идет' ? 'destructive' : 'outline'
-                  }>
-                    {tournament.status}
-                  </Badge>
-              </CardFooter>
+                </CardContent>
+                <CardFooter className="flex justify-between bg-muted/50 p-6">
+                  <Badge variant={
+                      tournament.status === 'Регистрация' ? 'default' : 
+                      tournament.status === 'Идет' ? 'destructive' : 'outline'
+                    }>
+                      {tournament.status}
+                    </Badge>
+                </CardFooter>
+              </Card>
+            </Link>
+          ))
+        ) : (
+          <div className="md:col-span-2 xl:col-span-3">
+             <Card>
+                <CardContent className="flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
+                    <Trophy className="h-12 w-12 mb-4 text-muted-foreground" />
+                    <h3 className="text-xl font-semibold">Турниры не найдены</h3>
+                    <p className="mt-1 text-muted-foreground">Похоже, сейчас нет активных турниров. Почему бы не создать свой?</p>
+                    <Button className="mt-4">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Создать турнир
+                    </Button>
+                </CardContent>
             </Card>
-          </Link>
-        ))}
+          </div>
+        )}
       </div>
     </div>
   );

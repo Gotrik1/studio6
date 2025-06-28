@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Users2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,10 @@ type User = (typeof userList)[0];
 export const UserTable: FC<{ users: User[] }> = ({ users }) => {
     if (users.length === 0) {
         return (
-            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center">
-                <p className="text-lg font-semibold">Пользователи не найдены</p>
-                <p className="text-muted-foreground">В этой категории пока нет пользователей.</p>
+            <div className="flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 text-center">
+                <Users2 className="h-12 w-12 mb-4 text-muted-foreground" />
+                <h3 className="text-xl font-semibold">Пользователи не найдены</h3>
+                <p className="text-muted-foreground">В этой категории пока нет никого. Попробуйте изменить фильтры.</p>
             </div>
         );
     }

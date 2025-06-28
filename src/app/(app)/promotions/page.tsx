@@ -19,6 +19,9 @@ export default function PromotionsPage() {
         }
     };
 
+    const activePromotions = promotionsList.filter(p => p.status !== 'Завершена');
+    const pastPromotions = promotionsList.filter(p => p.status === 'Завершена');
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -39,41 +42,76 @@ export default function PromotionsPage() {
                     <TabsTrigger value="current">Текущие акции</TabsTrigger>
                     <TabsTrigger value="past">Прошедшие</TabsTrigger>
                 </TabsList>
-                <TabsContent value="current">
-                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 mt-4">
-                        {promotionsList.filter(p => p.status !== 'Завершена').map((promo) => (
-                            <Card key={promo.name} className="flex flex-col overflow-hidden transition-all hover:shadow-md">
-                                <CardHeader className="relative h-40 w-full p-0">
-                                     <Image 
-                                        src={promo.image} 
-                                        alt={promo.name} 
-                                        fill 
-                                        className="object-cover"
-                                        data-ai-hint={promo.imageHint}
-                                    />
-                                    <Badge variant={getStatusVariant(promo.status)} className="absolute right-2 top-2">{promo.status}</Badge>
-                                </CardHeader>
-                                <CardContent className="flex-1 p-6">
-                                    <p className="text-sm font-semibold text-primary">{promo.sponsor}</p>
-                                    <CardTitle className="mt-1 font-headline">{promo.name}</CardTitle>
-                                    <CardDescription className="mt-2 line-clamp-2">{promo.description}</CardDescription>
-                                     <div className="mt-4 flex items-center space-x-4 text-sm text-muted-foreground">
-                                        <div className="flex items-center"><Gift className="mr-1.5 h-4 w-4" />{promo.prize}</div>
-                                        <div className="flex items-center"><Users className="mr-1.5 h-4 w-4" />{promo.participants}</div>
-                                    </div>
-                                </CardContent>
-                                <CardFooter className="bg-muted/50 p-4">
-                                    <Button className="w-full">Участвовать</Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
+                <TabsContent value="current" className="mt-4">
+                     {activePromotions.length > 0 ? (
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                            {activePromotions.map((promo) => (
+                                <Card key={promo.name} className="flex flex-col overflow-hidden transition-all hover:shadow-md">
+                                    <CardHeader className="relative h-40 w-full p-0">
+                                        <Image 
+                                            src={promo.image} 
+                                            alt={promo.name} 
+                                            fill 
+                                            className="object-cover"
+                                            data-ai-hint={promo.imageHint}
+                                        />
+                                        <Badge variant={getStatusVariant(promo.status)} className="absolute right-2 top-2">{promo.status}</Badge>
+                                    </CardHeader>
+                                    <CardContent className="flex-1 p-6">
+                                        <p className="text-sm font-semibold text-primary">{promo.sponsor}</p>
+                                        <CardTitle className="mt-1 font-headline">{promo.name}</CardTitle>
+                                        <CardDescription className="mt-2 line-clamp-2">{promo.description}</CardDescription>
+                                        <div className="mt-4 flex items-center space-x-4 text-sm text-muted-foreground">
+                                            <div className="flex items-center"><Gift className="mr-1.5 h-4 w-4" />{promo.prize}</div>
+                                            <div className="flex items-center"><Users className="mr-1.5 h-4 w-4" />{promo.participants}</div>
+                                        </div>
+                                    </CardContent>
+                                    <CardFooter className="bg-muted/50 p-4">
+                                        <Button className="w-full">Участвовать</Button>
+                                    </CardFooter>
+                                </Card>
+                            ))}
+                        </div>
+                     ) : (
+                        <div className="flex h-40 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
+                            <Gift className="h-10 w-10 mb-4 text-muted-foreground" />
+                            <h3 className="text-lg font-semibold">Активных акций пока нет</h3>
+                            <p className="mt-1 text-muted-foreground">Загляните позже или создайте свою собственную!</p>
+                        </div>
+                     )}
                 </TabsContent>
-                <TabsContent value="past">
-                     <div className="flex h-40 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
-                        <p className="text-lg font-semibold">Архив акций пуст</p>
-                        <p className="mt-1 text-muted-foreground">Здесь будут отображаться завершенные акции и их победители.</p>
-                    </div>
+                <TabsContent value="past" className="mt-4">
+                     {pastPromotions.length > 0 ? (
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                            {pastPromotions.map((promo) => (
+                                <Card key={promo.name} className="flex flex-col overflow-hidden transition-all hover:shadow-md opacity-70">
+                                    <CardHeader className="relative h-40 w-full p-0">
+                                        <Image 
+                                            src={promo.image} 
+                                            alt={promo.name} 
+                                            fill 
+                                            className="object-cover"
+                                            data-ai-hint={promo.imageHint}
+                                        />
+                                        <Badge variant={getStatusVariant(promo.status)} className="absolute right-2 top-2">{promo.status}</Badge>
+                                    </CardHeader>
+                                    <CardContent className="flex-1 p-6">
+                                        <p className="text-sm font-semibold text-primary">{promo.sponsor}</p>
+                                        <CardTitle className="mt-1 font-headline">{promo.name}</CardTitle>
+                                    </CardContent>
+                                    <CardFooter className="bg-muted/50 p-4">
+                                        <Button className="w-full" variant="outline" disabled>Архив</Button>
+                                    </CardFooter>
+                                </Card>
+                            ))}
+                        </div>
+                     ) : (
+                        <div className="flex h-40 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
+                            <Clock className="h-10 w-10 mb-4 text-muted-foreground" />
+                            <h3 className="text-lg font-semibold">Архив акций пуст</h3>
+                            <p className="mt-1 text-muted-foreground">Здесь будут отображаться завершенные акции и их победители.</p>
+                        </div>
+                     )}
                 </TabsContent>
             </Tabs>
             
