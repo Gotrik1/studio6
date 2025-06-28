@@ -10,12 +10,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FileCheck, AlertTriangle, Calendar, Gavel, Video, MessageSquare, Check, X } from "lucide-react";
 import { matchesToReview as initialMatchesToReview, disputedMatches as initialDisputedMatches, mySchedule } from "@/lib/mock-data/judge-center";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from '@/lib/utils';
+import { DisputeResolutionDialog } from '@/components/dispute-resolution-dialog';
+
+type DisputedMatch = (typeof initialDisputedMatches)[0];
 
 export default function JudgeCenterPage() {
     const { toast } = useToast();
     const [matchesToReview, setMatchesToReview] = useState(initialMatchesToReview);
     const [disputedMatches, setDisputedMatches] = useState(initialDisputedMatches);
+
+    const [isDisputeDialogOpen, setIsDisputeDialogOpen] = useState(false);
+    const [selectedDispute, setSelectedDispute] = useState<DisputedMatch | null>(null);
 
     const handleReviewAction = (matchId: string, action: 'approve' | 'reject') => {
         setMatchesToReview(prev => prev.filter(match => match.id !== matchId));
@@ -25,24 +30,19 @@ export default function JudgeCenterPage() {
         });
     };
 
-    const handleDisputeAction = (matchId: string) => {
-        setDisputedMatches(prev => 
-            prev.map(match => 
-                match.id === matchId ? { ...match, status: 'Изучается' } : match
-            )
-        );
-        toast({
-            title: `Спор по матчу ${matchId} взят в работу.`,
-            description: "Вы будете уведомлены о результате.",
-        });
-    };
-    
-    const getStatusBadgeVariant = (status: string) => {
-        if (status === 'Ожидает решения') return 'default';
-        if (status === 'Изучается') return 'secondary';
-        return 'outline';
+    const handleOpenDisputeDialog = (match: DisputedMatch) => {
+        setSelectedDispute(match);
+        setIsDisputeDialogOpen(true);
     };
 
+    const handleResolveDispute = (matchId: string, resolution: string) => {
+        setDisputedMatches(prev => prev.filter(match => match.id !== matchId));
+        setIsDisputeDialogOpen(false);
+        toast({
+            title: "Спор разрешен!",
+            description: `Решение по матчу ${matchId}: ${resolution}.`,
+        });
+    };
 
     return (
         <div className="space-y-6">
@@ -139,10 +139,10 @@ export default function JudgeCenterPage() {
                                              <p className="text-sm text-muted-foreground pt-2 border-t mt-2">Причина спора: <span className="text-foreground font-medium">{match.reason}</span></p>
                                         </div>
                                          <div className="flex flex-col items-center gap-2">
-                                            <Badge variant={getStatusBadgeVariant(match.status)}>{match.status}</Badge>
-                                            <Button size="sm" onClick={() => handleDisputeAction(match.id)} disabled={match.status === 'Изучается'}>
+                                            <Badge variant="default">{match.status}</Badge>
+                                            <Button size="sm" onClick={() => handleOpenDisputeDialog(match)}>
                                                 <Gavel className="mr-2 h-4 w-4"/>
-                                                {match.status === 'Изучается' ? 'В работе' : 'Рассмотреть дело'}
+                                                Рассмотреть дело
                                             </Button>
                                         </div>
                                     </CardContent>
@@ -193,6 +193,12 @@ export default function JudgeCenterPage() {
                     </Card>
                 </TabsContent>
             </Tabs>
+            <DisputeResolutionDialog
+                isOpen={isDisputeDialogOpen}
+                onOpenChange={setIsDisputeDialogOpen}
+                match={selectedDispute}
+                onResolve={handleResolveDispute}
+            />
         </div>
     );
 }
