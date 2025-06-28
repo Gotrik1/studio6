@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Gavel } from "lucide-react";
@@ -19,7 +19,7 @@ export default function ModerationQueuePage() {
         setIsDialogOpen(true);
     };
 
-    const handleResolveReport = (reportId: string, action: string) => {
+    const handleResolveReport = (reportId: string) => {
         setReports(prev => prev.filter(r => r.id !== reportId));
         setIsDialogOpen(false);
     };

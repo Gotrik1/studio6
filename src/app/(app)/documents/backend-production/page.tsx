@@ -5,7 +5,7 @@ export default function BackendProductionPage() {
     return (
       <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 bg-card text-card-foreground rounded-lg shadow-sm">
         <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl dark:prose-invert max-w-none space-y-6">
-          <h1 className="font-headline text-4xl font-bold border-b pb-2">Оценка готовности платформы "ProDvor" к продакшену</h1>
+          <h1 className="font-headline text-4xl font-bold border-b pb-2">Оценка готовности платформы &quot;ProDvor&quot; к продакшену</h1>
           
           <section>
             <p><strong>Версия:</strong> 1.1</p>
@@ -19,7 +19,7 @@ export default function BackendProductionPage() {
             <h2 className="font-headline text-3xl font-bold">1. Общая оценка</h2>
             <p><strong>Текущий статус:</strong> <strong>Профессиональный, многофункциональный прототип.</strong></p>
             <p><strong>Готовность к продакшену (приблизительно): 40%</strong></p>
-            <p>Платформа "ProDvor" на данный момент представляет собой великолепно спроектированный и технологически современный прототип. Архитектура, основанная на Feature-Sliced Design (FSD), и выбранный стек (Next.js, TypeScript, Genkit) закладывают прочный фундамент для будущего масштабирования.</p>
+            <p>Платформа &quot;ProDvor&quot; на данный момент представляет собой великолепно спроектированный и технологически современный прототип. Архитектура, основанная на Feature-Sliced Design (FSD), и выбранный стек (Next.js, TypeScript, Genkit) закладывают прочный фундамент для будущего масштабирования.</p>
             <p><strong>Основной вывод:</strong> Фронтенд-часть и архитектура проекта готовы на ~90%, но полное отсутствие бэкенда, настоящей системы безопасности и тестов не позволяет считать проект готовым к запуску. Основной фокус должен быть направлен на реализацию серверной части.</p>
             <p>Однако для перехода в продакшен требуется замена всех временных (моковых) решений на реальные, работающие сервисы. <strong>Проект НЕ готов к продакшену.</strong></p>
           </section>

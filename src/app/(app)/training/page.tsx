@@ -3,15 +3,16 @@
 
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Award, BookOpen, BrainCircuit, CheckCircle, Dumbbell, Goal, Loader2, Sparkles, Youtube, AlertCircle, ShieldCheck, TrendingUp, TrendingDown } from "lucide-react";
+import { BookOpen, BrainCircuit, Goal, Loader2, Sparkles, Youtube, AlertCircle, ShieldCheck, TrendingUp, TrendingDown } from "lucide-react";
 import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@/ai/flows/analyze-player-performance-flow';
 import { generateTrainingPlan, type GenerateTrainingPlanOutput } from '@/ai/flows/generate-training-plan-flow';
 import { analyzeSecurity, type AnalyzeSecurityOutput } from '@/ai/flows/analyze-security-flow';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Checkbox } from '@/components/ui/checkbox';
 
 const mockActivityLog = `
 - 2024-09-27 10:00: Login from IP 89.123.45.67 (Moscow, RU) on Chrome, Windows.
@@ -161,7 +162,7 @@ export default function TrainingCenterPage() {
         <div className="space-y-6">
             <div className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight flex items-center gap-3">
-                    <Dumbbell className="h-8 w-8 text-primary" />
+                    <BrainCircuit className="h-8 w-8 text-primary" />
                     AI-Коуч Центр
                 </h1>
                 <p className="text-muted-foreground">

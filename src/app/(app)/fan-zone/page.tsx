@@ -1,9 +1,9 @@
+
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { HeartPulse, Medal, Rss, Calendar, ThumbsUp, MessageCircle } from 'lucide-react';
 import { fanLeaderboard, weeklyPoll, followedTeamsFeed, followedTeamsMatches } from '@/lib/mock-data/fan-zone';

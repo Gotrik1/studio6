@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from 'next/image';
@@ -5,10 +6,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/icons';
 import { Gamepad2, Users, Trophy } from 'lucide-react';
-import { useTheme } from 'next-themes';
 
 export default function LandingPage() {
-    const { theme } = useTheme();
 
     const featureCards = [
         {

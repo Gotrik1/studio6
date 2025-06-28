@@ -13,7 +13,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Search, Phone, Video, Smile, Paperclip, Send, MoreVertical, PlusCircle, MessageSquare, MessagesSquare, Lightbulb, Loader2, Bot } from "lucide-react";
 import { chatList as mockChatList } from '@/lib/mock-data/chats';
 import { cn } from '@/lib/utils';
-import type { User } from '@/lib/session';
 import { useSession } from '@/lib/session-client';
 import { useToast } from '@/hooks/use-toast';
 import { suggestReply } from '@/ai/flows/suggest-reply-flow';

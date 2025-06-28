@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
@@ -16,7 +17,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Search, Mail, Send, MessageCircle, FileQuestion, Bot, User, Loader2 } from "lucide-react";
+import { Search, Mail, Send, MessageCircle, FileQuestion, Bot, Loader2 } from "lucide-react";
 import { SupportContactForm } from "@/components/support-contact-form";
 import { faqCategories } from '@/lib/mock-data/faq';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -123,6 +124,7 @@ function AiAssistantSection() {
             const aiMessage: ChatMessage = { sender: 'ai', text: aiResponseText };
             setMessages(prev => [...prev.slice(0, -1), aiMessage]);
         } catch(e) {
+            console.error(e);
             const errorMessage: ChatMessage = { sender: 'ai', text: 'Произошла ошибка. Пожалуйста, попробуйте еще раз.' };
             setMessages(prev => [...prev.slice(0, -1), errorMessage]);
         } finally {
@@ -161,7 +163,7 @@ function AiAssistantSection() {
                     <div className="h-full flex flex-col justify-center items-center text-center text-muted-foreground">
                         <MessageCircle className="h-12 w-12 mb-4"/>
                         <p className="font-semibold">Задайте свой вопрос</p>
-                        <p className="text-sm">Например: "Как мне сменить роль в профиле?"</p>
+                        <p className="text-sm">Например: &quot;Как мне сменить роль в профиле?&quot;</p>
                     </div>
                 )}
             </ScrollArea>

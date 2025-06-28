@@ -1,10 +1,8 @@
 
 'use client';
 import dynamic from 'next/dynamic';
-import { getSession } from "@/shared/lib/session";
-import type { User } from "@/shared/lib/types";
-import SettingsClient from "./client";
-import { Skeleton } from '@/shared/ui/skeleton';
+import { getSession } from "@/lib/session";
+import { Skeleton } from '@/components/ui/skeleton';
 
 const SettingsPageComponent = dynamic(
   () => import('@/pages/settings').then((mod) => mod.SettingsPage),
@@ -28,7 +26,3 @@ export default async function SettingsPage() {
 
   return <SettingsPageComponent user={userWithSettings} />;
 }
-
-// This client file is now obsolete, but we'll keep it for reference during the refactor.
-// It will be deleted in a subsequent step.
-// All logic from the original SettingsClient has been moved to /src/pages/settings/index.tsx

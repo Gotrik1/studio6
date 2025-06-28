@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search as SearchIcon, Users, Trophy, User, Hash, Gamepad2, Skull, Loader2 } from "lucide-react";
@@ -26,7 +27,7 @@ export default function SearchPage() {
     const [results, setResults] = useState<SmartSearchOutput>({ users: [], teams: [], tournaments: [] });
 
     // Debounced search function
-    const debouncedSearch = useCallback(
+    const debouncedSearch = React.useRef(
         debounce(async (searchQuery: string) => {
             if (!searchQuery.trim()) {
                 setResults({ users: [], teams: [], tournaments: [] });
@@ -44,9 +45,8 @@ export default function SearchPage() {
             } finally {
                 setIsLoading(false);
             }
-        }, 500), // 500ms debounce delay
-        []
-    );
+        }, 500)
+    ).current;
 
     useEffect(() => {
         if (query.trim()) {
@@ -173,7 +173,7 @@ const TeamResults = ({ teams }: { teams: TeamResult[] }) => (
                             <Image src={team.logo} alt={team.name} width={48} height={48} className="rounded-full border" data-ai-hint={team.dataAiHint} />
                             <div>
                                 <CardTitle className="text-lg">{team.name}</CardTitle>
-                                <CardDescription className="text-xs italic">"{team.motto}"</CardDescription>
+                                <CardDescription className="text-xs italic">&quot;{team.motto}&quot;</CardDescription>
                             </div>
                         </CardHeader>
                         <CardContent className="p-4 pt-0 flex justify-between text-sm">

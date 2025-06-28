@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { friendsList, incomingRequests as initialIncoming, outgoingRequests as initialOutgoing } from '@/lib/mock-data/friends';
-import { Users, UserPlus, Send, Check, X, MessageSquare, Trash2, Search } from 'lucide-react';
+import { Users, Send, Check, X, MessageSquare, Trash2, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';

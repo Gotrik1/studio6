@@ -2,11 +2,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { FileCheck, AlertTriangle, Calendar, Gavel, Video, MessageSquare, Check, X } from "lucide-react";
 import { matchesToReview as initialMatchesToReview, disputedMatches as initialDisputedMatches, mySchedule } from "@/lib/mock-data/judge-center";
 import { useToast } from "@/hooks/use-toast";

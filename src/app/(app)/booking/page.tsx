@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Map, PlusCircle, Star, Sun, Trash2, RefreshCcw, MapPin, ShowerHead, Shirt, Calendar, ChevronDown, Loader2 } from "lucide-react";
+import { Search, PlusCircle, Star, Sun, Trash2, RefreshCcw, MapPin, ShowerHead, Shirt, Calendar, ChevronDown, Loader2 } from "lucide-react";
 import Image from 'next/image';
 import { Separator } from "@/components/ui/separator";
 import { venuesList as initialVenuesList, myBookings as initialMyBookings } from "@/lib/mock-data/booking";
@@ -16,6 +16,7 @@ import {
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
+  AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
@@ -121,7 +122,7 @@ export default function BookingPage() {
             
             return matchesSurface && matchesPrice && matchesFeatures;
         });
-    }, [aiVenues, filters, hasSearched]);
+    }, [aiVenues, filters, hasSearched, initialVenuesList]);
     
     const handleBookVenue = (venue: Venue) => {
         const newBooking = {
@@ -129,7 +130,7 @@ export default function BookingPage() {
             venueName: venue.name,
             date: '30 сентября 2024', // Example date
             time: '20:00 - 21:00',     // Example time
-            status: 'Подтверждено' as 'Подтверждено',
+            status: 'Подтверждено' as const,
         };
         setMyBookings([newBooking, ...myBookings]);
         toast({
@@ -139,7 +140,7 @@ export default function BookingPage() {
     };
 
     const handleCancelBooking = (bookingId: string) => {
-        setMyBookings(myBookings.map(b => b.id === bookingId ? { ...b, status: 'Отменено' as 'Отменено' } : b));
+        setMyBookings(myBookings.map(b => b.id === bookingId ? { ...b, status: 'Отменено' as const } : b));
         toast({
             title: "Бронирование отменено",
             variant: "destructive",
@@ -352,7 +353,7 @@ export default function BookingPage() {
                                             <AlertDialogHeader>
                                                 <AlertDialogTitle>Подтвердите бронирование</AlertDialogTitle>
                                                 <AlertDialogDescription>
-                                                    Вы собираетесь забронировать площадку "{venue.name}". Это действие нельзя будет отменить сразу. Вы уверены?
+                                                    Вы собираетесь забронировать площадку &quot;{venue.name}&quot;. Это действие нельзя будет отменить сразу. Вы уверены?
                                                 </AlertDialogDescription>
                                             </AlertDialogHeader>
                                             <AlertDialogFooter>

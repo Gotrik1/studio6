@@ -35,7 +35,7 @@ export default function BackendRoadmapPage() {
             <h3 className="font-headline text-2xl font-semibold">1.3. Формат ответов и пагинация</h3>
             <ul>
                 <li><strong>Успешные запросы:</strong> <code>200 OK</code>, <code>201 Created</code>. Тело ответа — JSON с запрошенными данными.</li>
-                <li><strong>Для списков:</strong> Ответы должны поддерживать пагинацию через query-параметры (<code>?page=1&limit=20</code>) и возвращать объект вида: <code>{"data": [...], "meta": {"total": 100, "page": 1, "limit": 20}}</code>.</li>
+                <li><strong>Для списков:</strong> Ответы должны поддерживать пагинацию через query-параметры (<code>?page=1&limit=20</code>) и возвращать объект вида: <code>{`{"data": [...], "meta": {"total": 100, "page": 1, "limit": 20}}`}</code>.</li>
                 <li><strong>Ошибки:</strong>
                     <ul className="pl-4 mt-2 list-disc list-inside">
                         <li><code>400 Bad Request</code>: Ошибка валидации данных. В теле ответа желательно возвращать объект с описанием ошибок по полям.</li>

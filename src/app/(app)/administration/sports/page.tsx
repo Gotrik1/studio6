@@ -125,7 +125,7 @@ export default function SportsAdminPage() {
 
             toast({
                 title: 'Успех!',
-                description: `Вид спорта "${sportName}" был обновлен.`,
+                description: `Вид спорта &quot;${sportName}&quot; был обновлен.`,
             });
 
         } else {
@@ -138,7 +138,7 @@ export default function SportsAdminPage() {
             
             toast({
                 title: 'Успех!',
-                description: `Новый вид спорта "${sportName}" был добавлен.`,
+                description: `Новый вид спорта &quot;${sportName}&quot; был добавлен.`,
             });
         }
 
@@ -154,7 +154,7 @@ export default function SportsAdminPage() {
         }
         toast({
             title: 'Вид спорта удален',
-            description: `Дисциплина "${sportName}" была успешно удалена.`,
+            description: `Дисциплина &quot;${sportName}&quot; была успешно удалена.`,
         });
     };
     
@@ -224,7 +224,7 @@ export default function SportsAdminPage() {
                                                         <AlertDialogHeader>
                                                             <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                Это действие необратимо. Вы действительно хотите удалить вид спорта "{sport.name}"?
+                                                                Это действие необратимо. Вы действительно хотите удалить вид спорта &quot;{sport.name}&quot;?
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>
@@ -283,7 +283,7 @@ export default function SportsAdminPage() {
                                                         <AlertDialogHeader>
                                                             <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
                                                             <AlertDialogDescription>
-                                                                Это действие необратимо. Вы действительно хотите удалить вид спорта "{sport.name}"?
+                                                                Это действие необратимо. Вы действительно хотите удалить вид спорта &quot;{sport.name}&quot;?
                                                             </AlertDialogDescription>
                                                         </AlertDialogHeader>
                                                         <AlertDialogFooter>

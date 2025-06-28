@@ -4,8 +4,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Handshake, BrainCircuit, Loader2, AlertCircle, Sparkles, Send } from "lucide-react";
-import Image from "next/link";
+import { Handshake, BrainCircuit, Loader2, Sparkles, Send } from "lucide-react";
 import Link from "next/link";
 import { teamsSeekingSponsorship, type TeamSeekingSponsorship } from "@/lib/mock-data/sponsorship";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';

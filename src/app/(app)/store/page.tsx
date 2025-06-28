@@ -1,16 +1,15 @@
 
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { pdHistory } from '@/lib/mock-data/gamification';
 import { storeItems, lootboxPrizes, partnerOffers, ticketEvents, recentDonors } from '@/lib/mock-data/store';
-import { Coins, Gem, Palette, Shield, ShoppingCart, Gift, Sparkles, Handshake, Heart, Ticket, ShoppingBag, Loader2 } from 'lucide-react';
+import { Coins, Gem, Palette, Shield, ShoppingCart, Handshake, Heart, Ticket, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -68,7 +67,7 @@ export default function StorePage() {
 
         toast({
             title: "Поздравляем с покупкой!",
-            description: `"${item.name}" добавлен в ваш инвентарь.`,
+            description: `'${item.name}' добавлен в ваш инвентарь.`,
         });
     };
 
@@ -131,7 +130,7 @@ export default function StorePage() {
 
             toast({
                 title: "Вот это удача!",
-                description: `Предмет "${finalPrize.name}" добавлен в ваш инвентарь!`,
+                description: `Предмет '${finalPrize.name}' добавлен в ваш инвентарь!`,
             });
         }
     };
@@ -182,11 +181,11 @@ export default function StorePage() {
                                     <Image src="https://placehold.co/200x200.png" alt="Lootbox" width={200} height={200} data-ai-hint="treasure chest" className="drop-shadow-lg"/>
                                 </div>
                                 <div className="md:col-span-2 p-6">
-                                    <CardTitle className="font-headline text-2xl">Кейс "Летний сезон"</CardTitle>
+                                    <CardTitle className="font-headline text-2xl">Кейс &quot;Летний сезон&quot;</CardTitle>
                                     <CardDescription>Откройте кейс и получите случайный эксклюзивный предмет этого сезона. Шанс выпадения редкого предмета — 5%!</CardDescription>
                                     <div className="mt-4 flex items-center gap-4">
                                         <Button size="lg" className="font-bold" onClick={handleLootboxOpen}>
-                                            <Gift className="mr-2 h-5 w-5" />
+                                            <Gem className="mr-2 h-5 w-5" />
                                             Открыть за 100 PD
                                         </Button>
                                         <p className="text-sm text-muted-foreground">Содержит рамки, темы и значки.</p>
@@ -293,7 +292,7 @@ export default function StorePage() {
                                             return;
                                         }
                                         setPdBalance(p => p - offer.price);
-                                        toast({ title: "Предложение активировано!", description: `Промокод для "${offer.title}" будет отправлен вам в личные сообщения.` });
+                                        toast({ title: "Предложение активировано!", description: `Промокод для '${offer.title}' будет отправлен вам в личные сообщения.` });
                                     }} disabled={!canAfford}>
                                         <Handshake className='mr-2 h-4 w-4'/>
                                         Получить за {offer.price} PD
@@ -362,7 +361,7 @@ export default function StorePage() {
                                             return;
                                         }
                                         setPdBalance(p => p - event.price);
-                                        toast({ title: "Билет куплен!", description: `Билет на "${event.name}" добавлен в ваш профиль.` });
+                                        toast({ title: "Билет куплен!", description: `Билет на '${event.name}' добавлен в ваш профиль.` });
                                     }} disabled={!canAfford}>
                                         <Ticket className='mr-2 h-4 w-4' />
                                         Купить билет за {event.price} PD

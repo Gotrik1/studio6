@@ -16,7 +16,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
-import { ranks, type Rank } from '@/config/ranks';
+import { ranks } from '@/config/ranks';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
@@ -65,7 +65,7 @@ export default function LeaderboardsPage() {
     const [periodFilter, setPeriodFilter] = useState('season');
 
     const filteredPlayers = useMemo(() => {
-        let players = [...leaderboardData].map(p => ({ ...p })); // Create a copy to avoid mutation
+        const players = [...leaderboardData].map(p => ({ ...p })); // Create a copy to avoid mutation
 
         // Simulate data changes based on the period filter
         if (periodFilter === 'month') {

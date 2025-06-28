@@ -4,7 +4,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { User } from '@/lib/types';
-import { z } from 'zod';
 
 // Login action
 export async function authenticate(
@@ -49,16 +48,16 @@ export async function authenticate(
 }
 
 // Registration action
-const registrationSchema = z.object({
-  name: z.string(),
-  email: z.string().email(),
-  password: z.string(),
-  dob: z.date(),
-  role: z.string(),
-  terms: z.boolean(),
-});
+type RegistrationValues = {
+  name: string;
+  email: string;
+  password: string;
+  dob: Date;
+  role: string;
+  terms: boolean;
+};
 
-export async function register(values: z.infer<typeof registrationSchema>) {
+export async function register(values: RegistrationValues) {
     try {
         // In a real application, you would:
         // 1. Validate the data with Zod (already done on the client, but good to re-validate on server).

@@ -73,7 +73,7 @@ export default async function WelcomePage() {
                                 <Award className="h-8 w-8 text-amber-500 shrink-0"/>
                                 <div>
                                     <CardTitle className="text-lg">Приветственный бонус</CardTitle>
-                                    <CardDescription>За регистрацию вы получаете <span className="font-bold text-green-500">+25 PD</span> и достижение "Новичок в деле"! </CardDescription>
+                                    <CardDescription>За регистрацию вы получаете <span className="font-bold text-green-500">+25 PD</span> и достижение &quot;Новичок в деле&quot;! </CardDescription>
                                 </div>
                             </CardHeader>
                         </Card>
@@ -93,7 +93,7 @@ export default async function WelcomePage() {
                     <Button asChild size="lg" className="w-full sm:w-auto">
                         <Link href="/dashboard">К ленте новостей!</Link>
                     </Button>
-                    <p className="text-xs text-muted-foreground">Вы всегда можете найти подсказки в разделе "Поддержка".</p>
+                    <p className="text-xs text-muted-foreground">Вы всегда можете найти подсказки в разделе &quot;Поддержка&quot;.</p>
                 </CardFooter>
             </Card>
         </div>
