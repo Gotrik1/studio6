@@ -1,4 +1,5 @@
 
+'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -13,6 +14,8 @@ import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ranks } from "@/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 
 const achievementIcons = {
     Trophy, Star, Shield, Gem, Crown, Rocket, Swords, Medal, Award
@@ -41,6 +44,27 @@ const getRankIcon = (rank: number) => {
     return null;
 }
 
+const rankDistributionData = [
+  { rank: "Возьмите меня", players: 157 },
+  { rank: "Уже бегу", players: 432 },
+  { rank: "Упорный", players: 689 },
+  { rank: "Уличный боец", players: 521 },
+  { rank: "Кто ты, воин?", players: 312 },
+  { rank: "Гроза района", players: 189 },
+  { rank: "Первый среди равных", players: 98 },
+  { rank: "Познавший дзен", players: 45 },
+  { rank: "Неоспоримый", players: 21 },
+  { rank: "Первый после бога", players: 7 },
+  { rank: "Анигилятор", players: 3 },
+];
+
+const chartConfig = {
+  players: {
+    label: "Игроки",
+    color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig;
+
 
 export default function GamificationAdminPage() {
     return (
@@ -52,7 +76,7 @@ export default function GamificationAdminPage() {
                 </p>
             </div>
 
-            <Tabs defaultValue="rules">
+            <Tabs defaultValue="ranks">
                 <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="rules"><Gamepad2 className="mr-2 h-4 w-4" />Правила PD</TabsTrigger>
                     <TabsTrigger value="ranks"><Award className="mr-2 h-4 w-4"/>Ранги</TabsTrigger>
@@ -143,39 +167,83 @@ export default function GamificationAdminPage() {
                 </TabsContent>
                 
                 <TabsContent value="ranks" className="mt-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Система рангов</CardTitle>
-                            <CardDescription>Всего 11 уровней мастерства, отражающих прогресс игрока.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <TooltipProvider>
-                                {ranks.map((rank) => (
-                                    <Card key={rank.name} className="p-4 transition-shadow hover:shadow-md">
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-4">
-                                                <Award className={cn("h-8 w-8 shrink-0", rank.color)} />
-                                                <div>
-                                                    <Tooltip>
-                                                        <TooltipTrigger asChild>
-                                                            <p className={cn("font-headline text-lg font-bold cursor-help", rank.color)}>{rank.name}</p>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>{rank.description}</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                    <p className="text-sm text-muted-foreground">{rank.description}</p>
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                        <div className="lg:col-span-3">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Система рангов</CardTitle>
+                                    <CardDescription>Всего 11 уровней мастерства, отражающих прогресс игрока.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    <TooltipProvider>
+                                        {ranks.map((rank) => (
+                                            <Card key={rank.name} className="p-4 transition-shadow hover:shadow-md">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-4">
+                                                        <Award className={cn("h-8 w-8 shrink-0", rank.color)} />
+                                                        <div>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <p className={cn("font-headline text-lg font-bold cursor-help", rank.color)}>{rank.name}</p>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <p>{rank.description}</p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                            <p className="text-sm text-muted-foreground">{rank.description}</p>
+                                                        </div>
+                                                    </div>
+                                                    <Badge variant="secondary" className="font-mono whitespace-nowrap">
+                                                        {rank.minPoints.toLocaleString()} - {rank.maxPoints === Infinity ? '∞' : rank.maxPoints.toLocaleString()} PD
+                                                    </Badge>
                                                 </div>
-                                            </div>
-                                            <Badge variant="secondary" className="font-mono whitespace-nowrap">
-                                                {rank.minPoints.toLocaleString()} - {rank.maxPoints === Infinity ? '∞' : rank.maxPoints.toLocaleString()} PD
-                                            </Badge>
-                                        </div>
-                                    </Card>
-                                ))}
-                            </TooltipProvider>
-                        </CardContent>
-                    </Card>
+                                            </Card>
+                                        ))}
+                                    </TooltipProvider>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="lg:col-span-2">
+                             <Card>
+                                <CardHeader>
+                                    <CardTitle>Распределение по рангам</CardTitle>
+                                    <CardDescription>Количество игроков на каждом уровне.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <ChartContainer config={chartConfig} className="min-h-[450px] w-full">
+                                        <BarChart
+                                            accessibilityLayer
+                                            data={rankDistributionData}
+                                            layout="vertical"
+                                            margin={{ left: 10, top: 10, right: 10 }}
+                                        >
+                                            <CartesianGrid horizontal={false} />
+                                            <YAxis
+                                                dataKey="rank"
+                                                type="category"
+                                                tickLine={false}
+                                                tickMargin={10}
+                                                axisLine={false}
+                                                className="text-xs"
+                                                width={120}
+                                            />
+                                            <XAxis dataKey="players" type="number" hide />
+                                            <ChartTooltip
+                                                cursor={false}
+                                                content={<ChartTooltipContent indicator="dot" />}
+                                            />
+                                            <Bar
+                                                dataKey="players"
+                                                layout="vertical"
+                                                fill="var(--color-players)"
+                                                radius={4}
+                                            />
+                                        </BarChart>
+                                    </ChartContainer>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="achievements" className="mt-4">
