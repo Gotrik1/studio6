@@ -1,3 +1,5 @@
+'use server';
+
 import { config } from 'dotenv';
 config();
 
@@ -12,8 +14,3 @@ import '@/ai/flows/tts-flow.ts';
 import '@/ai/flows/dialogue-generation-flow.ts';
 import '@/ai/flows/multi-speaker-tts-flow.ts';
 import '@/ai/flows/generate-post-image-flow.ts';
-import '@/ai/flows/smart-search-flow.ts';
-import '@/ai/flows/generate-tournament-details-flow.ts';
-import '@/ai/flows/generate-tournament-image-flow.ts';
-import '@/ai/flows/suggest-reply-flow.ts';
-import '@/ai/flows/analyze-dispute-flow.ts';
