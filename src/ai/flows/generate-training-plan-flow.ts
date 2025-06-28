@@ -10,7 +10,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
 
-export const GenerateTrainingPlanInputSchema = z.object({
+const GenerateTrainingPlanInputSchema = z.object({
   analysis: z.object({
     strengths: z.array(z.string()).describe("Player's key strengths."),
     weaknesses: z.array(z.string()).describe("Player's key weaknesses."),
@@ -19,7 +19,7 @@ export const GenerateTrainingPlanInputSchema = z.object({
 });
 export type GenerateTrainingPlanInput = z.infer<typeof GenerateTrainingPlanInputSchema>;
 
-export const GenerateTrainingPlanOutputSchema = z.object({
+const GenerateTrainingPlanOutputSchema = z.object({
   weeklyFocus: z.string().describe("The main area of focus for the week's training."),
   drills: z.array(z.object({
     name: z.string().describe("Name of the training drill."),
