@@ -16,8 +16,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Roboto', 'sans-serif', ...fontFamily.sans],
-        headline: ['Montserrat', 'sans-serif', ...fontFamily.sans],
+        body: ['Inter', 'sans-serif', ...fontFamily.sans],
+        headline: ['Space Grotesk', 'sans-serif', ...fontFamily.sans],
         code: ['monospace', ...fontFamily.mono],
       },
       colors: {
