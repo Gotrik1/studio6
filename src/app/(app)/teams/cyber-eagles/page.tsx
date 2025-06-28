@@ -287,8 +287,8 @@ export default function TeamProfilePage() {
                                 </Button>
                                 {avatarError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{avatarError}</AlertDescription></Alert>}
                                 <div className="flex justify-center items-center h-48 w-full rounded-md border border-dashed bg-muted/50">
-                                    {isGeneratingAvatar && <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>}
-                                    {generatedAvatar && <Image src={generatedAvatar} alt="Generated Avatar" width={192} height={192} className="rounded-md object-contain" />}
+                                    {isGeneratingAvatar && <Loader2 className="h-10 w-10 animate-spin text-muted-foreground"/>}
+                                    {generatedAvatar && <Image src={generatedAvatar} alt="Generated Avatar" width={200} height={200} className="rounded-md object-contain" />}
                                     {!isGeneratingAvatar && !generatedAvatar && <p className="text-sm text-muted-foreground">Здесь появится результат</p>}
                                 </div>
                             </div>
