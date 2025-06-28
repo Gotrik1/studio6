@@ -34,6 +34,7 @@ const recentActivities = [
 
 const managementLinks = [
   { name: "Управление пользователями", href: "/administration/users", icon: Users2 },
+  { name: "Очередь модерации", href: "/administration/moderation-queue", icon: Gavel },
   { name: "Геймификация", href: "/administration/gamification", icon: Gamepad2 },
   { name: "Виды спорта", href: "/administration/sports", icon: Activity },
 ];
@@ -150,7 +151,7 @@ export default function AdministrationDashboardPage() {
         <h2 className="font-headline text-2xl font-bold">Быстрый доступ</h2>
         <div className="space-y-2">
           <h3 className="text-sm font-medium text-muted-foreground">Управление</h3>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
               {managementLinks.map(link => (
                   <Link href={link.href} key={link.name}>
                       <Card className="flex items-center p-4 transition-all hover:shadow-md hover:bg-muted/50">
