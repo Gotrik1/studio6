@@ -1,7 +1,6 @@
-
 'use client';
 import dynamic from 'next/dynamic';
-import { getSession } from "@/lib/session";
+import { useSession } from "@/lib/session-client";
 import { Skeleton } from '@/components/ui/skeleton';
 
 const SettingsPageComponent = dynamic(
@@ -13,8 +12,8 @@ const SettingsPageComponent = dynamic(
 );
 
 // We still need the server component to fetch session data
-export default async function SettingsPage() {
-  const user = await getSession();
+export default function SettingsPage() {
+  const { user } = useSession();
 
   // In a real app, user settings would also be fetched.
   // We augment the session user with mock settings data.

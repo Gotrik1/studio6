@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,12 +11,11 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { disputedMatches } from "@/lib/mock-data/judge-center";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarImage } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 import { ImageIcon, MessageSquare, Shield, BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { analyzeDispute, type AnalyzeDisputeOutput } from '@/ai/flows/analyze-dispute-flow';
 import { Alert, AlertDescription, AlertTitle } from './alert';
-import { Skeleton } from './ui/skeleton';
 
 type DisputedMatch = (typeof disputedMatches)[0];
 
@@ -133,8 +131,8 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                 </div>
                 {isAnalyzing && (
                     <div className="space-y-2 p-4 border border-dashed rounded-lg">
-                        <Skeleton className="h-4 w-1/3" />
-                        <Skeleton className="h-8 w-full" />
+                        <div className="h-4 w-1/3" />
+                        <div className="h-8 w-full" />
                     </div>
                 )}
                  {aiError && (

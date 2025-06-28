@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { BookOpen, Youtube, Goal, Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar, Award, Loader2, TrendingUp, TrendingDown, Sparkles, AlertCircleIcon } from "lucide-react";
+import { BookOpen, Youtube, Goal, Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar, Award, Loader2, TrendingUp, TrendingDown, Sparkles, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/lib/types";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/lib/mock-data/profiles";
@@ -17,7 +17,7 @@ import { Skeleton } from './ui/skeleton';
 import { PD_SOURCE_DETAILS, type PD_SOURCE_TYPE } from '@/config/gamification';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { getRankByPoints, type Rank } from "@/config/ranks";
+import { getRankByPoints } from "@/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
@@ -200,7 +200,7 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
                         )}
                         {analysisError && (
                              <Alert variant="destructive">
-                                <AlertCircleIcon className="h-4 w-4" />
+                                <AlertCircle className="h-4 w-4" />
                                 <AlertTitle>Ошибка анализа</AlertTitle>
                                 <AlertDescription>{analysisError}</AlertDescription>
                             </Alert>
@@ -228,7 +228,7 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
                                     </div>
                                 ) : planError ? (
                                     <Alert variant="destructive">
-                                        <AlertCircleIcon className="h-4 w-4" />
+                                        <AlertCircle className="h-4 w-4" />
                                         <AlertTitle>Ошибка генерации плана</AlertTitle>
                                         <AlertDescription>{planError}</AlertDescription>
                                     </Alert>

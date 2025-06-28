@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef } from 'react';
@@ -46,7 +45,6 @@ export default function StorePage() {
     // Lootbox state
     const [isLootboxOpen, setIsLootboxOpen] = useState(false);
     const [isSpinning, setIsSpinning] = useState(false);
-    const [wonPrize, setWonPrize] = useState<Prize | null>(null);
     const [roulettePrizes, setRoulettePrizes] = useState<Prize[]>([]);
     const [winningIndex, setWinningIndex] = useState<number | null>(null);
     const rouletteRef = useRef<HTMLDivElement>(null);
@@ -80,7 +78,6 @@ export default function StorePage() {
         setPdBalance(prev => prev - 100);
         
         // Reset state for a new spin
-        setWonPrize(null);
         setIsSpinning(true);
         if (rouletteRef.current) {
             rouletteRef.current.style.transition = 'none';
@@ -116,7 +113,6 @@ export default function StorePage() {
         setIsSpinning(false);
         if (winningIndex !== null) {
             const finalPrize = roulettePrizes[winningIndex];
-            setWonPrize(finalPrize);
             
             const prizeAsInventoryItem: InventoryItem = {
                  id: `prize-${finalPrize.name}-${Date.now()}`, 

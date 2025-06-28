@@ -1,5 +1,3 @@
-import { Trophy, CalendarPlus, Users, ClipboardList, Star, Award } from "lucide-react";
-
 export const organizerUser = {
     name: 'Event Horizon Inc.',
     email: 'events@horizon.com',

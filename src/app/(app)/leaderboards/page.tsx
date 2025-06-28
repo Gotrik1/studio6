@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -80,7 +79,7 @@ export default function LeaderboardsPage() {
         // 'season' uses the original order and ELO
 
         // Filter by role
-        let roleFilteredPlayers = players;
+        const roleFilteredPlayers = players;
         if (roleFilter !== 'all') {
             const roleMap = {
                 'player': 'Игрок',
@@ -88,7 +87,7 @@ export default function LeaderboardsPage() {
                 'judge': 'Судья'
             };
             const targetRole = roleMap[roleFilter as keyof typeof roleMap];
-            roleFilteredPlayers = players.filter(player => player.role === targetRole);
+            return players.filter(player => player.role === targetRole).sort((a, b) => b.elo - a.elo).map((p, index) => ({ ...p, rank: index + 1 }));
         }
 
         // Re-calculate ranks based on the new order and ELO

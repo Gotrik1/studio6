@@ -1,16 +1,15 @@
-
 'use client';
 
 export default function ArchitecturePage() {
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 bg-card text-card-foreground rounded-lg shadow-sm">
       <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl dark:prose-invert max-w-none space-y-6">
-        <h1 className="font-headline text-4xl font-bold border-b pb-2">Архитектура Проекта "ProDvor" (Feature-Sliced Design)</h1>
+        <h1 className="font-headline text-4xl font-bold border-b pb-2">Архитектура Проекта &quot;ProDvor&quot; (Feature-Sliced Design)</h1>
         
         <section>
           <p><strong>Версия:</strong> 2.0</p>
           <p><strong>Дата последнего обновления:</strong> 28.07.2024</p>
-          <p className="mt-4 text-muted-foreground">Этот документ является основным техническим руководством для разработчиков фронтенд-части платформы "ProDvor" и описывает внедренную архитектурную методологию <strong>Feature-Sliced Design (FSD)</strong>.</p>
+          <p className="mt-4 text-muted-foreground">Этот документ является основным техническим руководством для разработчиков фронтенд-части платформы &quot;ProDvor&quot; и описывает внедренную архитектурную методологию <strong>Feature-Sliced Design (FSD)</strong>.</p>
         </section>
         
         <hr />
@@ -31,7 +30,7 @@ export default function ArchitecturePage() {
 
         <section>
           <h2 className="font-headline text-3xl font-bold">2. Структура слоев</h2>
-          <p>Проект "ProDvor" строго следует иерархии слоев FSD. Каждый слой имеет свое назначение, и импорты разрешены только от верхних слоев к нижним (например, <code>widgets</code> может импортировать из <code>features</code>, но не наоборот).</p>
+          <p>Проект &quot;ProDvor&quot; строго следует иерархии слоев FSD. Каждый слой имеет свое назначение, и импорты разрешены только от верхних слоев к нижним (например, <code>widgets</code> может импортировать из <code>features</code>, но не наоборот).</p>
           
           <div className="space-y-4">
             <div className="rounded-lg border p-4">
@@ -69,7 +68,7 @@ export default function ArchitecturePage() {
         
         <section>
             <h2 className="font-headline text-3xl font-bold">3. Правила импорта</h2>
-            <p><strong>Золотое правило:</strong> Модуль может импортировать только те модули, что находятся на слоях ниже него. Импорт "вбок" (между слайсами одного слоя) или "вверх" строго запрещен.</p>
+            <p><strong>Золотое правило:</strong> Модуль может импортировать только те модули, что находятся на слоях ниже него. Импорт &quot;вбок&quot; (между слайсами одного слоя) или &quot;вверх&quot; строго запрещен.</p>
             <ul>
                 <li>✅ <strong>Правильно:</strong> <code>widget/UserProfile</code> импортирует <code>feature/send-friend-request</code>.</li>
                 <li>❌ <strong>Неправильно:</strong> <code>feature/send-friend-request</code> импортирует <code>widget/UserProfile</code>.</li>

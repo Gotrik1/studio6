@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -12,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import type { Report } from "@/lib/mock-data/moderation";
-import { BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
+import { Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { analyzeReport, type AnalyzeReportOutput } from '@/ai/flows/analyze-report-flow';
 import { Alert, AlertDescription, AlertTitle } from './alert';
 import { Badge } from './ui/badge';

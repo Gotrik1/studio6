@@ -1,8 +1,5 @@
-
 'use client';
 
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -32,7 +29,7 @@ interface TournamentBracketProps {
   rounds: Round[];
 }
 
-const MatchCard = ({ match, isFinalRound }: { match: Match; isFinalRound: boolean }) => {
+const MatchCard = ({ match }: { match: Match }) => {
     const scores = match.score?.split('-').map(s => parseInt(s, 10));
     const score1 = scores?.[0] ?? 0;
     const score2 = scores?.[1] ?? 0;
@@ -111,7 +108,7 @@ export function TournamentBracket({ rounds }: TournamentBracketProps) {
                         <div className={cn("flex flex-col", roundIndex === 0 ? "gap-4" : roundIndex === 1 ? "gap-[5.5rem]" : "gap-[14.5rem]")}>
                             {round.matches.map((match, matchIndex) => (
                                 <div key={match.id} className="relative flex items-center">
-                                    <MatchCard match={match} isFinalRound={round.name === 'Чемпион'} />
+                                    <MatchCard match={match} />
 
                                     {/* Линии для соединения */}
                                     {roundIndex < rounds.length - 2 && (

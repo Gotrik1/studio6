@@ -1,23 +1,22 @@
-
 'use client';
 
 export default function VisionAndPrinciplesPage() {
     return (
       <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 bg-card text-card-foreground rounded-lg shadow-sm">
         <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl dark:prose-invert max-w-none space-y-6">
-          <h1 className="font-headline text-4xl font-bold border-b pb-2">Видение и Принципы Проекта «ProDvor»</h1>
+          <h1 className="font-headline text-4xl font-bold border-b pb-2">Видение и Принципы Проекта &laquo;ProDvor&raquo;</h1>
           
           <section>
             <p><strong>Версия:</strong> 1.0</p>
             <p><strong>Дата:</strong> 29.07.2024</p>
-            <p className="mt-4 text-muted-foreground">Этот документ является «конституцией» проекта. Он определяет миссию, цели и фундаментальные принципы, на которых строится платформа, и служит ориентиром для всех участников команды — от разработчиков до менеджеров по продукту.</p>
+            <p className="mt-4 text-muted-foreground">Этот документ является &laquo;конституцией&raquo; проекта. Он определяет миссию, цели и фундаментальные принципы, на которых строится платформа, и служит ориентиром для всех участников команды — от разработчиков до менеджеров по продукту.</p>
           </section>
           
           <hr />
   
           <section>
             <h2 className="font-headline text-3xl font-bold">1. Миссия проекта</h2>
-            <p><strong>Миссия «ProDvor» — стереть границы между любительским и профессиональным спортом, создав единую, доступную и мотивирующую цифровую экосистему.</strong></p>
+            <p><strong>Миссия &laquo;ProDvor&raquo; — стереть границы между любительским и профессиональным спортом, создав единую, доступную и мотивирующую цифровую экосистему.</strong></p>
             <p>Мы верим, что каждый талантливый игрок, будь то во дворе с футбольным мячом или дома за компьютером, заслуживает шанс быть замеченным и возможность построить свою спортивную карьеру. Наша платформа — это социальный лифт для спортсменов и киберспортсменов, предоставляющий им все необходимые инструменты для роста, соревнований и самореализации.</p>
           </section>
 
@@ -35,7 +34,7 @@ export default function VisionAndPrinciplesPage() {
 
             <h3 className="font-headline text-2xl font-semibold">2.2. Техническая философия (Performant, Scalable, Maintainable)</h3>
             <ul>
-                <li><strong>Производительность:</strong> Мы используем Next.js с App Router и серверные компоненты для минимизации клиентского JavaScript и достижения максимальной производительности "из коробки".</li>
+                <li><strong>Производительность:</strong> Мы используем Next.js с App Router и серверные компоненты для минимизации клиентского JavaScript и достижения максимальной производительности &quot;из коробки&quot;.</li>
                 <li><strong>Масштабируемость:</strong> Архитектура Feature-Sliced Design (FSD) позволяет нам добавлять новые функции, не нарушая существующие, и легко масштабировать проект по мере роста команды и функционала.</li>
                 <li><strong>Поддерживаемость:</strong> Строгая типизация с TypeScript, модульная структура и четкие правила зависимостей делают код предсказуемым и легким для понимания новыми разработчиками.</li>
             </ul>

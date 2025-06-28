@@ -1,5 +1,3 @@
-import { Handshake, Megaphone, DollarSign, Target, Users, Award } from "lucide-react";
-
 export const sponsorUser = {
   name: 'Sponsor Corp',
   email: 'contact@sponsorcorp.com',

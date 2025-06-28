@@ -1,5 +1,3 @@
-import { Gavel, Trophy, CalendarDays, Shield, Scale, ClipboardCheck } from "lucide-react";
-
 export const judgeUser = {
   name: 'Судья Джуди',
   email: 'judy.j@prodvor.com',

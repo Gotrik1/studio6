@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { User } from "@/lib/types";
@@ -23,32 +22,15 @@ import {
   Newspaper,
   User as UserIcon,
   Users,
-  MapPin,
   Search,
-  Dumbbell,
   Trophy,
-  BarChart3,
   Award,
-  Gavel,
-  HeartPulse,
-  Handshake,
-  MessageSquare,
-  Crown,
+  LifeBuoy,
   Settings,
   FolderKanban,
   Shield,
   BrainCircuit,
-  Swords,
-  LifeBuoy,
-  Megaphone,
-  Coins,
-  Gem,
   Palette,
-  AudioLines,
-  Briefcase,
-  UserPlus,
-  TrendingUp,
-  ClipboardList,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -111,7 +93,7 @@ export default function AppLayoutClient({ user, children }: AppLayoutClientProps
                       </SidebarMenuSubItem>
                     </CollapsibleSidebarMenuItem>
 
-                    <CollapsibleSidebarMenuItem icon={<TrendingUp />} title="Развитие">
+                    <CollapsibleSidebarMenuItem icon={<BrainCircuit />} title="Развитие">
                       <SidebarMenuSubItem>
                           <SidebarMenuSubButton href="/training">AI-Коуч</SidebarMenuSubButton>
                           <SidebarMenuSubButton href="/quests">Квесты</SidebarMenuSubButton>

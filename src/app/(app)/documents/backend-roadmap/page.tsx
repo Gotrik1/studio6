@@ -1,11 +1,10 @@
-
 'use client';
 
 export default function BackendRoadmapPage() {
     return (
       <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 bg-card text-card-foreground rounded-lg shadow-sm">
         <article className="prose prose-sm sm:prose-base lg:prose-lg xl:prose-xl 2xl:prose-2xl dark:prose-invert max-w-none space-y-6">
-          <h1 className="font-headline text-4xl font-bold border-b pb-2">План-требования к Backend API для проекта "ProDvor"</h1>
+          <h1 className="font-headline text-4xl font-bold border-b pb-2">План-требования к Backend API для проекта &quot;ProDvor&quot;</h1>
           
           <section>
             <p><strong>Версия:</strong> 1.5</p>
@@ -127,4 +126,3 @@ export default function BackendRoadmapPage() {
       </div>
     )
   }
-  

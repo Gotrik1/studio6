@@ -159,7 +159,7 @@ export default function ThemeDemoPage() {
                 </TableHeader>
                 <TableBody>
                   <TableRow>
-                    <TableCell>Тема "Киберпанк"</TableCell>
+                    <TableCell>Тема &quot;Киберпанк&quot;</TableCell>
                     <TableCell><Badge variant="outline">В наличии</Badge></TableCell>
                     <TableCell className="text-right">$25.00</TableCell>
                   </TableRow>

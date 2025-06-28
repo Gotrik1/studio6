@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Bot, User, Send, Loader2 } from 'lucide-react';
+import { Bot, Send, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSession } from '@/lib/session-client';
 import { askTeamChatbot } from '@/ai/flows/team-chatbot-flow';
@@ -107,7 +107,7 @@ export function TeamChatbot({ teamId }: TeamChatbotProps) {
                         <div className="h-full flex flex-col justify-center items-center text-center text-muted-foreground">
                             <Bot className="h-12 w-12 mb-4"/>
                             <p className="font-semibold">Я — AI-помощник вашей команды</p>
-                            <p className="text-sm">Спросите меня: "Когда следующая игра?"</p>
+                            <p className="text-sm">Спросите меня: &quot;Когда следующая игра?&quot;</p>
                         </div>
                     )}
                 </ScrollArea>

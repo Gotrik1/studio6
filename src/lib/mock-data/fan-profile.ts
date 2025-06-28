@@ -1,5 +1,4 @@
 'use client';
-import { Star, Ticket, MessageSquare, Heart, UserPlus, Award } from "lucide-react";
 
 export const fanUser = {
   name: 'Верный Ларри',

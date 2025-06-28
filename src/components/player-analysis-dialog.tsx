@@ -10,7 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, TrendingUp, TrendingDown } from "lucide-react";
+import { Loader2, AlertCircle, Sparkles, TrendingUp, TrendingDown } from "lucide-react";
 import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@/ai/flows/analyze-player-performance-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { CoachedPlayer } from '@/lib/mock-data/coach-players';

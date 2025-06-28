@@ -4,7 +4,6 @@ import { Check, Palette } from 'lucide-react';
 import { useAccentTheme } from '@/app/providers/accent-theme-provider';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { cn } from '@/lib/utils';
 
 const themes = [
   { name: 'blue', color: 'hsl(217, 91%, 60%)' },

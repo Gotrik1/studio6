@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState } from "react";
@@ -133,7 +132,7 @@ export default function GamificationAdminPage() {
         } else {
             setLimits(prev => ({ ...prev, [editingItem.key as keyof typeof prev]: updatedValue as string }));
         }
-        toast({ title: 'Успех!', description: `Значение для &quot;${editingItem.label}&quot; было обновлено.` });
+        toast({ title: 'Успех!', description: `Значение для "${editingItem.label}" было обновлено.` });
         setIsRateLimitDialogOpen(false);
         setEditingItem(null);
     };
@@ -152,14 +151,14 @@ export default function GamificationAdminPage() {
         }
         if (editingAchievement) {
             setAchievements(achievements.map(ach => ach.name === editingAchievement.name ? { ...currentAchievementData } as Achievement : ach));
-            toast({ title: 'Успех!', description: `Достижение &quot;${name}&quot; обновлено.` });
+            toast({ title: 'Успех!', description: `Достижение "${name}" обновлено.` });
         } else {
             if (achievements.some(ach => ach.name === name)) {
                  toast({ variant: 'destructive', title: 'Ошибка', description: 'Достижение с таким названием уже существует.' });
                  return;
             }
             setAchievements(prev => [...prev, { ...currentAchievementData } as Achievement]);
-            toast({ title: 'Успех!', description: `Достижение &quot;${name}&quot; добавлено.` });
+            toast({ title: 'Успех!', description: `Достижение "${name}" добавлено.` });
         }
         setIsAchievementDialogOpen(false);
         setEditingAchievement(null);
@@ -167,7 +166,7 @@ export default function GamificationAdminPage() {
 
     const handleAchievementDelete = (achievementName: string) => {
         setAchievements(prev => prev.filter(ach => ach.name !== achievementName));
-        toast({ title: 'Достижение удалено', description: `&quot;${achievementName}&quot; было успешно удалено.`, variant: 'destructive' });
+        toast({ title: 'Достижение удалено', description: `"${achievementName}" было успешно удалено.`, variant: 'destructive' });
     };
 
     const handleRankEditClick = (rank: Rank | null) => {
@@ -185,14 +184,14 @@ export default function GamificationAdminPage() {
 
         if (editingRank) {
             setRanks(ranks.map(r => r.name === editingRank.name ? { ...currentRankData } as Rank : r));
-            toast({ title: 'Успех!', description: `Ранг &quot;${name}&quot; обновлен.` });
+            toast({ title: 'Успех!', description: `Ранг "${name}" обновлен.` });
         } else {
              if (ranks.some(r => r.name === name)) {
                  toast({ variant: 'destructive', title: 'Ошибка', description: 'Ранг с таким названием уже существует.' });
                  return;
             }
             setRanks(prev => [...prev, { ...currentRankData } as Rank].sort((a,b) => a.minPoints - b.minPoints));
-            toast({ title: 'Успех!', description: `Ранг &quot;${name}&quot; добавлен.` });
+            toast({ title: 'Успех!', description: `Ранг "${name}" добавлен.` });
         }
         
         setIsRankDialogOpen(false);
@@ -201,7 +200,7 @@ export default function GamificationAdminPage() {
     
     const handleRankDelete = (rankName: string) => {
         setRanks(prev => prev.filter(r => r.name !== rankName));
-        toast({ title: 'Ранг удален', description: `&quot;${rankName}&quot; был успешно удален.`, variant: 'destructive' });
+        toast({ title: 'Ранг удален', description: `"${rankName}" был успешно удален.`, variant: 'destructive' });
     };
 
 
@@ -269,7 +268,7 @@ export default function GamificationAdminPage() {
                                             <Badge variant="secondary">{value}</Badge>
                                              <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRateLimitClick(key, key, value, 'limit')}>
                                                 <Pencil className="h-4 w-4" />
-                                            </Button>
+                                             </Button>
                                         </div>
                                     </div>
                                 ))}

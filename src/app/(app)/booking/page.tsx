@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -122,7 +121,7 @@ export default function BookingPage() {
             
             return matchesSurface && matchesPrice && matchesFeatures;
         });
-    }, [aiVenues, filters, hasSearched, initialVenuesList]);
+    }, [aiVenues, filters, hasSearched]);
     
     const handleBookVenue = (venue: Venue) => {
         const newBooking = {
@@ -140,7 +139,7 @@ export default function BookingPage() {
     };
 
     const handleCancelBooking = (bookingId: string) => {
-        setMyBookings(myBookings.map(b => b.id === bookingId ? { ...b, status: 'Отменено' as const } : b));
+        setMyBookings(myBookings.map(b => b.id === bookingId ? { ...b, status: 'Отменено' } : b));
         toast({
             title: "Бронирование отменено",
             variant: "destructive",

@@ -2,20 +2,15 @@
 
 // UI components
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 
 // Icons
 import { Gavel, Users, ShieldCheck, DollarSign } from 'lucide-react';
 
 // Mock data
 import { reportsQueue } from '@/lib/mock-data/moderation';
-import { userList } from '@/lib/mock-data/users';
 
 // Other imports
-import Link from "next/link";
 import { Bar, BarChart, CartesianGrid, XAxis, ResponsiveContainer, YAxis, Tooltip } from "recharts";
 
 const data = [
@@ -29,7 +24,6 @@ const data = [
 ];
 
 export function AdminDashboardPage() {
-    const recentUsers = userList.slice(0, 5);
     const pendingReports = reportsQueue.slice(0, 3);
 
     return (

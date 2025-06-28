@@ -1,5 +1,3 @@
-import { Briefcase, Handshake, Users, DollarSign, FileText, Award } from "lucide-react";
-
 export const managerUser = {
   name: 'Джерри Магуайр',
   email: 'jerry.m@prodvor.com',

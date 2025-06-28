@@ -1,5 +1,3 @@
-import { Gavel, Shield, MessageSquareX, UserX, UserCheck, Eye } from "lucide-react";
-
 export const moderatorUser = {
   name: 'Модератор Макс',
   email: 'max.mod@prodvor.com',

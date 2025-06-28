@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -125,7 +124,7 @@ export default function SportsAdminPage() {
 
             toast({
                 title: 'Успех!',
-                description: `Вид спорта &quot;${sportName}&quot; был обновлен.`,
+                description: `Вид спорта "${sportName}" был обновлен.`,
             });
 
         } else {
@@ -138,7 +137,7 @@ export default function SportsAdminPage() {
             
             toast({
                 title: 'Успех!',
-                description: `Новый вид спорта &quot;${sportName}&quot; был добавлен.`,
+                description: `Новый вид спорта "${sportName}" был добавлен.`,
             });
         }
 
@@ -154,7 +153,7 @@ export default function SportsAdminPage() {
         }
         toast({
             title: 'Вид спорта удален',
-            description: `Дисциплина &quot;${sportName}&quot; была успешно удалена.`,
+            description: `Дисциплина "${sportName}" была успешно удалена.`,
         });
     };
     

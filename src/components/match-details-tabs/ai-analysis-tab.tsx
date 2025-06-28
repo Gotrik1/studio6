@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, User, MessageCircle, BarChart3, Medal, Trophy, Mic } from "lucide-react";
+import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { MatchDetails } from "@/lib/mock-data/match-details";
 import { analyzeMatchReport, type AnalyzeMatchReportOutput } from "@/ai/flows/analyze-match-report-flow";
