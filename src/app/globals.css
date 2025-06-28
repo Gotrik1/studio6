@@ -3,84 +3,78 @@
 @tailwind utilities;
 
 /* CUSTOM SCROLLBAR HIDING */
-/* Hide scrollbar for Chrome, Safari and Opera */
 ::-webkit-scrollbar {
   display: none;
   width: 0px;
   height: 0px;
 }
-/* Hide scrollbar for IE, Edge */
 * {
-  -ms-overflow-style: none;
+  -ms-overflow-style: none; /* IE and Edge */
 }
-/* Hide scrollbar for Firefox */
 html {
-  scrollbar-width: none;
+  scrollbar-width: none; /* Firefox */
 }
-/* END CUSTOM SCROLLBAR HIDING */
 
 @layer base {
-  body,
-  body.adult-theme {
-    /* ADULT LIGHT THEME ("Porsche" - clean, premium, energetic) */
-    --background: 0 0% 99%; /* Almost white */
-    --foreground: 222.2 84% 4.9%; /* Very dark gray */
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 217 91% 60%; /* Vibrant Blue */
-    --primary-foreground: 210 40% 98%; /* White for text on primary */
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 220 9% 46.1%;
-    --accent: 210 40% 94%; /* Slightly darker accent */
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 100%;
-    --input: 0 0% 100%;
-    --ring: 217 91% 60%; /* Vibrant Blue for focus rings */
-    --radius: 0.75rem;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --radius: 0.5rem;
 
-    --primary-rgb: 37, 108, 243; /* RGB for the new blue */
-
-    --sidebar-background: var(--background);
-    --sidebar-foreground: var(--foreground);
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: var(--accent);
-    --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: var(--border);
-    --sidebar-ring: var(--ring);
-  }
-
-  .dark body.adult-theme {
-    /* ADULT DARK THEME (Premium Dark - "Lamborghini") */
-    --background: 214 25% 25%; /* Dark, desaturated cyan */
-    --foreground: 210 20% 98%;
-    --card: 214 25% 28%; /* Slightly lighter card background */
-    --card-foreground: 210 20% 98%;
-    --popover: 214 25% 22%; /* Slightly darker popover */
-    --popover-foreground: 210 20% 98%;
-    --primary: 217 91% 60%; /* Vibrant Blue */
-    --primary-foreground: 210 40% 98%; /* White for text on primary buttons */
-    --secondary: 214 25% 32%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 214 25% 30%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217 91% 60%; /* Accent is the same as primary for glow */
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 85.7% 97.3%;
-    --border: 214 25% 28%;
-    --input: 214 25% 28%;
+    /* Default Theme: Blue */
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
     --ring: 217 91% 60%;
-    --radius: 0.75rem;
+  }
 
-    --primary-rgb: 37, 108, 243; /* RGB for the new blue */
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 217 91% 60%;
+  }
 
+  /* Accent Color Themes */
+  .theme-blue { --primary: 217 91% 60%; --primary-foreground: 210 40% 98%; --ring: 217 91% 60%; }
+  .theme-green { --primary: 142 71% 45%; --primary-foreground: 142 71% 95%; --ring: 142 71% 45%; }
+  .theme-yellow { --primary: 48 96% 51%; --primary-foreground: 48 96% 10%; --ring: 48 96% 51%; }
+  .theme-orange { --primary: 25 95% 53%; --primary-foreground: 25 95% 95%; --ring: 25 95% 53%; }
+  .theme-red { --primary: 0 84% 60%; --primary-foreground: 0 84% 98%; --ring: 0 84% 60%; }
+  .theme-purple { --primary: 262 83% 58%; --primary-foreground: 262 83% 98%; --ring: 262 83% 58%; }
+  .theme-pink { --primary: 340 95% 68%; --primary-foreground: 340 95% 10%; --ring: 340 95% 68%; }
+  .theme-cyan { --primary: 199 98% 48%; --primary-foreground: 199 98% 98%; --ring: 199 98% 48%; }
+  
+  .dark.theme-red { --destructive: 0 72% 51%; }
+
+  /* Sidebar variables */
+  :root, .dark {
     --sidebar-background: var(--background);
     --sidebar-foreground: var(--foreground);
     --sidebar-primary: var(--primary);
@@ -89,54 +83,6 @@ html {
     --sidebar-accent-foreground: var(--accent-foreground);
     --sidebar-border: var(--border);
     --sidebar-ring: var(--ring);
-  }
-
-  body.youth-theme {
-    /* YOUTH LIGHT THEME */
-    --background: 45 95% 97%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 340 95% 58%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 45 95% 90%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 340 95% 58%;
-    --radius: 1rem;
-  }
-
-  .dark body.youth-theme {
-    /* YOUTH DARK THEME */
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 340 95% 68%;
-    --primary-foreground: 240 10% 3.9%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 45 95% 15%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 340 95% 68%;
-    --radius: 1rem;
   }
 }
 

@@ -43,10 +43,12 @@ import {
   Megaphone,
   Coins,
   Gem,
+  Palette,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeCustomizer } from "@/components/theme-customizer";
 
 export default async function AppLayout({
   children,
@@ -215,6 +217,14 @@ export default async function AppLayout({
                   </SidebarMenuSubItem>
               </CollapsibleSidebarMenuItem>
             </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Демо темы">
+                <Link href="/theme-demo">
+                  <Palette />
+                  Демо темы
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             {(user.role === 'Администратор' || user.role === 'Admin') && (
               <SidebarMenuItem>
                   <SidebarMenuButton asChild tooltip="Администрирование">
@@ -234,6 +244,7 @@ export default async function AppLayout({
           <div className="flex-1">
             {/* Can add breadcrumbs or page title here */}
           </div>
+          <ThemeCustomizer />
           <ThemeToggle />
           <UserNav user={user} />
         </header>
