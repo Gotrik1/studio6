@@ -37,6 +37,8 @@ import '@/ai/flows/analyze-report-flow.ts';
 import '@/ai/flows/generate-sponsorship-pitch.ts';
 import '@/ai/flows/sponsorship-scout-flow.ts';
 import '@/ai/flows/generate-match-post-flow.ts';
+import '@/ai/flows/generate-platform-news-flow.ts';
+
 
 
 
