@@ -110,7 +110,7 @@ export default function ChatsPage() {
                     if (!prev) return null;
                     const newMessages = prev.messages?.slice(0, -1) || [];
                     newMessages.push(aiResponseMessage);
-                    return { ...prev, messages: newMessages, lastMessage: { text: `AI: ${aiResponseMessage.text.substring(0, 30)}...`, time: aiResponseMessage.time } };
+                    return { ...prev, messages: newMessages };
                 });
             } catch (error) {
                 console.error(error);

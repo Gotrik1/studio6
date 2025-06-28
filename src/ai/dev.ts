@@ -21,7 +21,6 @@ import '@/ai/flows/smart-search-flow.ts';
 import '@/ai/flows/suggest-reply-flow.ts';
 import '@/ai/flows/analyze-join-request-flow.ts';
 import '@/ai/flows/generate-tournament-wizard-flow.ts';
-import '@/ai/flows/team-chatbot-flow.ts';
 import '@/ai/flows/analyze-match-challenge-flow.ts';
 import '@/ai/flows/support-chatbot-flow.ts';
 import '@/ai/flows/analyze-role-change-flow.ts';
