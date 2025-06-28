@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import {
     Card,
     CardContent,
@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { teamSports as initialTeamSports, individualSports as initialIndividualSports } from "@/lib/mock-data/sports";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Search, Trash2 } from "lucide-react";
+import { PlusCircle, Search, Trash2, Pencil } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from '@/components/ui/input';
 import {
@@ -29,7 +29,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog"
 import {
   AlertDialog,
@@ -47,6 +46,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast";
 
 type Sport = { id: string, name: string };
+type SportType = 'team' | 'individual';
 
 export default function SportsAdminPage() {
     const { toast } = useToast();
@@ -54,10 +54,41 @@ export default function SportsAdminPage() {
     const [individualSports, setIndividualSports] = useState<Sport[]>(initialIndividualSports);
     const [searchQuery, setSearchQuery] = useState('');
     
+    // State for the modal
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [newSportName, setNewSportName] = useState('');
-    const [newSportId, setNewSportId] = useState('');
-    const [newSportType, setNewSportType] = useState('team');
+    const [sportToEdit, setSportToEdit] = useState<Sport | null>(null);
+    const [sportName, setSportName] = useState('');
+    const [sportId, setSportId] = useState('');
+    const [sportType, setSportType] = useState<SportType>('team');
+
+    const isEditMode = sportToEdit !== null;
+
+    useEffect(() => {
+        if (!isDialogOpen) {
+            setSportToEdit(null);
+        } else {
+            if (isEditMode && sportToEdit) {
+                setSportName(sportToEdit.name);
+                setSportId(sportToEdit.id);
+                // Find which list it belongs to for the radio button
+                if (teamSports.some(s => s.id === sportToEdit.id)) {
+                    setSportType('team');
+                } else {
+                    setSportType('individual');
+                }
+            } else {
+                // Reset for add mode
+                setSportName('');
+                setSportId('');
+                setSportType('team');
+            }
+        }
+    }, [isDialogOpen, isEditMode, sportToEdit, teamSports]);
+    
+    const handleOpenDialog = (sport: Sport | null = null) => {
+        setSportToEdit(sport);
+        setIsDialogOpen(true);
+    };
 
     const filteredTeamSports = useMemo(() => {
         return teamSports.filter(sport =>
@@ -73,8 +104,8 @@ export default function SportsAdminPage() {
         );
     }, [individualSports, searchQuery]);
     
-    const handleAddSport = () => {
-        if (!newSportName || !newSportId) {
+    const handleSaveSport = () => {
+        if (!sportName || !sportId) {
             toast({
                 variant: 'destructive',
                 title: 'Ошибка',
@@ -83,22 +114,34 @@ export default function SportsAdminPage() {
             return;
         }
 
-        const newSport = { name: newSportName, id: newSportId };
+        if (isEditMode) {
+            const updateList = (list: Sport[]) => list.map(s => s.id === sportId ? { ...s, name: sportName } : s);
 
-        if (newSportType === 'team') {
-            setTeamSports(prev => [...prev, newSport].sort((a,b) => a.name.localeCompare(b.name)));
+            if (sportType === 'team') {
+                setTeamSports(updateList);
+            } else {
+                setIndividualSports(updateList);
+            }
+
+            toast({
+                title: 'Успех!',
+                description: `Вид спорта "${sportName}" был обновлен.`,
+            });
+
         } else {
-            setIndividualSports(prev => [...prev, newSport].sort((a,b) => a.name.localeCompare(b.name)));
+            const newSport = { name: sportName, id: sportId };
+            if (sportType === 'team') {
+                setTeamSports(prev => [...prev, newSport].sort((a,b) => a.name.localeCompare(b.name)));
+            } else {
+                setIndividualSports(prev => [...prev, newSport].sort((a,b) => a.name.localeCompare(b.name)));
+            }
+            
+            toast({
+                title: 'Успех!',
+                description: `Новый вид спорта "${sportName}" был добавлен.`,
+            });
         }
-        
-        toast({
-            title: 'Успех!',
-            description: `Новый вид спорта "${newSportName}" был добавлен.`,
-        });
 
-        setNewSportName('');
-        setNewSportId('');
-        setNewSportType('team');
         setIsDialogOpen(false);
     };
 
@@ -114,6 +157,10 @@ export default function SportsAdminPage() {
             description: `Дисциплина "${sportName}" была успешно удалена.`,
         });
     };
+    
+    const dialogTitle = isEditMode ? "Редактировать вид спорта" : "Добавить вид спорта";
+    const dialogDescription = isEditMode ? "Измените название вида спорта. ID изменить нельзя." : "Введите детали нового вида спорта. ID должен быть уникальным.";
+    const dialogButtonText = isEditMode ? "Сохранить изменения" : "Добавить";
 
     return (
         <div className="space-y-6">
@@ -124,48 +171,10 @@ export default function SportsAdminPage() {
                         Просмотр и управление всеми доступными видами спорта на платформе.
                     </p>
                 </div>
-                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                        <Button>
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Добавить новый вид спорта
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Добавить вид спорта</DialogTitle>
-                            <DialogDescription>
-                                Введите детали нового вида спорта. ID должен быть уникальным.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="name" className="text-right">Название</Label>
-                                <Input id="name" value={newSportName} onChange={(e) => setNewSportName(e.target.value)} className="col-span-3" />
-                            </div>
-                            <div className="grid grid-cols-4 items-center gap-4">
-                                <Label htmlFor="id" className="text-right">ID</Label>
-                                <Input id="id" value={newSportId} onChange={(e) => setNewSportId(e.target.value)} className="col-span-3" placeholder="e.g., team_new_sport" />
-                            </div>
-                             <div className="grid grid-cols-4 items-center gap-4">
-                                <Label className="text-right">Тип</Label>
-                                <RadioGroup defaultValue="team" onValueChange={setNewSportType} className="col-span-3 flex gap-4">
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="team" id="r1" />
-                                        <Label htmlFor="r1">Командный</Label>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                        <RadioGroupItem value="individual" id="r2" />
-                                        <Label htmlFor="r2">Индивидуальный</Label>
-                                    </div>
-                                </RadioGroup>
-                            </div>
-                        </div>
-                        <DialogFooter>
-                            <Button onClick={handleAddSport}>Добавить</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                 <Button onClick={() => handleOpenDialog()}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Добавить новый вид спорта
+                </Button>
             </div>
             
              <div className="relative">
@@ -193,7 +202,7 @@ export default function SportsAdminPage() {
                                     <TableRow>
                                         <TableHead>Название</TableHead>
                                         <TableHead>ID</TableHead>
-                                        <TableHead className="w-[100px] text-right">Действия</TableHead>
+                                        <TableHead className="w-[120px] text-right">Действия</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -202,6 +211,9 @@ export default function SportsAdminPage() {
                                             <TableCell className="font-medium">{sport.name}</TableCell>
                                             <TableCell className="font-mono text-xs">{sport.id}</TableCell>
                                             <TableCell className="text-right">
+                                                <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" onClick={() => handleOpenDialog(sport)}>
+                                                    <Pencil className="h-4 w-4" />
+                                                </Button>
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
                                                         <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
@@ -249,7 +261,7 @@ export default function SportsAdminPage() {
                                     <TableRow>
                                         <TableHead>Название</TableHead>
                                         <TableHead>ID</TableHead>
-                                        <TableHead className="w-[100px] text-right">Действия</TableHead>
+                                        <TableHead className="w-[120px] text-right">Действия</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -258,6 +270,9 @@ export default function SportsAdminPage() {
                                             <TableCell className="font-medium">{sport.name}</TableCell>
                                             <TableCell className="font-mono text-xs">{sport.id}</TableCell>
                                             <TableCell className="text-right">
+                                                 <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" onClick={() => handleOpenDialog(sport)}>
+                                                    <Pencil className="h-4 w-4" />
+                                                </Button>
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
                                                         <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
@@ -292,6 +307,42 @@ export default function SportsAdminPage() {
                     </CardContent>
                 </Card>
             </div>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                        <DialogTitle>{dialogTitle}</DialogTitle>
+                        <DialogDescription>{dialogDescription}</DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="name" className="text-right">Название</Label>
+                            <Input id="name" value={sportName} onChange={(e) => setSportName(e.target.value)} className="col-span-3" />
+                        </div>
+                        <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="id" className="text-right">ID</Label>
+                            <Input id="id" value={sportId} onChange={(e) => setSportId(e.target.value)} className="col-span-3" placeholder="e.g., team_new_sport" disabled={isEditMode} />
+                        </div>
+                         <div className="grid grid-cols-4 items-center gap-4">
+                            <Label className="text-right">Тип</Label>
+                            <RadioGroup value={sportType} onValueChange={(v) => setSportType(v as SportType)} className="col-span-3 flex gap-4" disabled={isEditMode}>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="team" id="r1" />
+                                    <Label htmlFor="r1">Командный</Label>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <RadioGroupItem value="individual" id="r2" />
+                                    <Label htmlFor="r2">Индивидуальный</Label>
+                                </div>
+                            </RadioGroup>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Отмена</Button>
+                        <Button onClick={handleSaveSport}>{dialogButtonText}</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
