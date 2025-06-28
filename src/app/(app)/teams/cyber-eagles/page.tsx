@@ -1,7 +1,7 @@
 
 'use client';
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const TeamDetailsPage = dynamic(
   () => import('@/pages/team-details').then((mod) => mod.TeamDetailsPage),
