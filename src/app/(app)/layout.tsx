@@ -46,6 +46,7 @@ import {
   Palette,
   AudioLines,
   Radio,
+  Bot,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -201,6 +202,14 @@ export default async function AppLayout({
                 <Link href="/ai-analysis">
                   <BrainCircuit />
                   ИИ-Анализ
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="AI-Чат">
+                <Link href="/ai-chat">
+                  <Bot />
+                  AI-Чат
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
