@@ -31,7 +31,7 @@ export async function authenticate(
         path: '/',
       });
 
-      redirect('/dashboard');
+      redirect('/welcome');
     } else {
       return 'Неверные данные. Пожалуйста, попробуйте еще раз.';
     }

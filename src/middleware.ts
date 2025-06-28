@@ -6,6 +6,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const isPublicPath = pathname === '/auth' || pathname === '/';
+  const isWelcomePath = pathname === '/welcome';
 
   // If the user has a session...
   if (session) {
@@ -25,5 +26,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: '/((?!api|_next/static|_next/image|favicon.ico).*)',
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
