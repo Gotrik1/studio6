@@ -19,6 +19,7 @@ import { useToast } from '@/hooks/use-toast';
 import { JoinRequestAnalysisDialog } from '@/components/join-request-analysis-dialog';
 import { generateSponsorshipPitch } from '@/ai/flows/generate-sponsorship-pitch';
 import { Skeleton } from '@/components/ui/skeleton';
+import { AITeamAssistantTab } from '@/components/ai-team-assistant-tab';
 
 const team = teams.find(t => t.slug === 'cyber-eagles');
 
@@ -195,12 +196,13 @@ export default function TeamManagementPage() {
             </div>
 
             <Tabs defaultValue="overview">
-                <TabsList className="grid w-full grid-cols-5">
+                <TabsList className="grid w-full grid-cols-6">
                     <TabsTrigger value="overview"><Settings className="mr-2 h-4 w-4"/>Основное</TabsTrigger>
                     <TabsTrigger value="roster"><Users className="mr-2 h-4 w-4"/>Состав</TabsTrigger>
                     <TabsTrigger value="requests"><UserPlus className="mr-2 h-4 w-4"/>Заявки</TabsTrigger>
                     <TabsTrigger value="finances"><Coins className="mr-2 h-4 w-4"/>Финансы</TabsTrigger>
                     <TabsTrigger value="sponsorship"><Handshake className="mr-2 h-4 w-4"/>Спонсорство</TabsTrigger>
+                    <TabsTrigger value="ai-assistant"><BrainCircuit className="mr-2 h-4 w-4"/>AI Ассистент</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="mt-4">
@@ -333,6 +335,10 @@ export default function TeamManagementPage() {
 
                  <TabsContent value="sponsorship" className="mt-4">
                     <SponsorshipTab teamName={team.name} />
+                </TabsContent>
+
+                 <TabsContent value="ai-assistant" className="mt-4">
+                    <AITeamAssistantTab />
                 </TabsContent>
             </Tabs>
             <JoinRequestAnalysisDialog
