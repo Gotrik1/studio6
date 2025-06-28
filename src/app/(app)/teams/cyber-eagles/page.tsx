@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2, Pencil } from "lucide-react";
+import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2, Pencil, Trash2, UserPlus, Check, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { teamPdHistory } from "@/lib/mock-data/gamification";
@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ShoppingBag } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 
 const team = {
   name: "Кибер Орлы",
@@ -45,6 +46,11 @@ const roster = [
   { name: "Dmitry 'Gadget' Kuznetsov", role: "Зачинщик", avatar: "https://placehold.co/100x100.png", avatarHint: "tech savvy gamer" },
 ];
 
+const initialJoinRequests = [
+    { name: "Перспективный_Игрок", role: "Универсал", avatar: "https://placehold.co/100x100.png", avatarHint: "gamer profile" },
+    { name: "Свободный_Агент", role: "Зачинщик", avatar: "https://placehold.co/100x100.png", avatarHint: "anonymous person" },
+];
+
 const achievements = [
     { name: "Чемпионы Summer Kickoff 2024", icon: Trophy, description: "1-е место в летнем сезоне" },
     { name: "Прорыв года", icon: Star, description: "Награда от сообщества ProDvor" },
@@ -65,6 +71,7 @@ const sponsors = [
 ]
 
 export default function TeamProfilePage() {
+    const { toast } = useToast();
     const [aiResult, setAiResult] = useState<AiTeamAssistantOutput | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -82,6 +89,11 @@ export default function TeamProfilePage() {
     const [avatarPrompt, setAvatarPrompt] = useState("An eagle logo, esports style, blue and white");
     const [generatedAvatar, setGeneratedAvatar] = useState<string | null>(null);
     const [avatarError, setAvatarError] = useState<string | null>(null);
+
+    // New state for roster management
+    const [isRequestSent, setIsRequestSent] = useState(false);
+    const [currentRoster, setCurrentRoster] = useState(roster);
+    const [joinRequests, setJoinRequests] = useState(initialJoinRequests);
 
     const handleGenerateSummary = async () => {
         if (!teamActivity || !teamGoals) {
@@ -130,6 +142,41 @@ export default function TeamProfilePage() {
         }
     };
 
+    const handleJoinRequest = () => {
+        setIsRequestSent(true);
+        toast({
+            title: "Заявка отправлена!",
+            description: "Капитан команды рассмотрит вашу заявку в ближайшее время.",
+        });
+    };
+
+    const handleAcceptRequest = (request: typeof initialJoinRequests[0]) => {
+        setCurrentRoster(prev => [...prev, { ...request, name: request.name.trim() }]);
+        setJoinRequests(prev => prev.filter(r => r.name !== request.name));
+        toast({
+            title: "Игрок принят!",
+            description: `${request.name.trim()} теперь в команде.`,
+        });
+    };
+
+    const handleDeclineRequest = (request: typeof initialJoinRequests[0]) => {
+        setJoinRequests(prev => prev.filter(r => r.name !== request.name));
+        toast({
+            title: "Заявка отклонена",
+            description: `Заявка от ${request.name.trim()} была отклонена.`,
+            variant: "destructive",
+        });
+    };
+    
+    const handleRemoveFromRoster = (playerName: string) => {
+        setCurrentRoster(prev => prev.filter(p => p.name !== playerName));
+        toast({
+            title: "Игрок удален",
+            description: `${playerName} был удален из состава.`,
+            variant: "destructive",
+        });
+    };
+
     return (
         <div className="space-y-6">
             <Card className="overflow-hidden">
@@ -144,7 +191,10 @@ export default function TeamProfilePage() {
                     <div className="absolute bottom-4 right-4 flex gap-2">
                         <Button variant="outline" size="icon"><Share2 className="h-5 w-5"/></Button>
                         <Button variant="outline" size="icon"><Gem className="h-5 w-5"/></Button>
-                        <Button><Users className="mr-2 h-5 w-5"/>Вступить в команду</Button>
+                        <Button onClick={handleJoinRequest} disabled={isRequestSent}>
+                            <Users className="mr-2 h-5 w-5"/>
+                            {isRequestSent ? "Заявка отправлена" : "Вступить в команду"}
+                        </Button>
                         <Button variant="secondary"><Settings className="mr-2 h-5 w-5"/>Управлять</Button>
                     </div>
                 </CardHeader>
@@ -211,7 +261,7 @@ export default function TeamProfilePage() {
             </Card>
 
             <Tabs defaultValue="roster">
-                <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7">
+                <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8">
                     <TabsTrigger value="roster"><Users className="mr-2 h-4 w-4"/>Состав</TabsTrigger>
                     <TabsTrigger value="matches"><Swords className="mr-2 h-4 w-4"/>Матчи</TabsTrigger>
                     <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
@@ -219,6 +269,10 @@ export default function TeamProfilePage() {
                     <TabsTrigger value="about"><Newspaper className="mr-2 h-4 w-4"/>О команде</TabsTrigger>
                     <TabsTrigger value="bank"><Banknote className="mr-2 h-4 w-4"/>Банк команды</TabsTrigger>
                     <TabsTrigger value="ai-assistant"><BrainCircuit className="mr-2 h-4 w-4"/>AI Помощник</TabsTrigger>
+                    <TabsTrigger value="requests">
+                        <UserPlus className="mr-2 h-4 w-4"/>Заявки
+                        {joinRequests.length > 0 && <Badge className="ml-2">{joinRequests.length}</Badge>}
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="roster">
@@ -231,8 +285,8 @@ export default function TeamProfilePage() {
                             <Button><PlusCircle className="mr-2 h-4 w-4"/>Пригласить игрока</Button>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
-                            {roster.map(player => (
-                                <Card key={player.name} className="flex flex-col items-center p-4 text-center transition-shadow hover:shadow-md">
+                            {currentRoster.map(player => (
+                                <Card key={player.name} className="group relative flex flex-col items-center p-4 text-center transition-shadow hover:shadow-md">
                                     <Avatar className="h-20 w-20">
                                         <AvatarImage src={player.avatar} alt={player.name} data-ai-hint={player.avatarHint} />
                                         <AvatarFallback>{player.name.split(' ').map(n=>n[0]).join('')}</AvatarFallback>
@@ -241,6 +295,15 @@ export default function TeamProfilePage() {
                                         <p className="font-semibold">{player.name}</p>
                                         <p className="text-sm text-muted-foreground">{player.role}</p>
                                     </div>
+                                    <Button 
+                                        variant="destructive" 
+                                        size="icon" 
+                                        className="absolute top-2 right-2 h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100"
+                                        onClick={() => handleRemoveFromRoster(player.name)}
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                        <span className="sr-only">Удалить из состава</span>
+                                    </Button>
                                 </Card>
                             ))}
                         </CardContent>
@@ -500,6 +563,48 @@ export default function TeamProfilePage() {
                         </CardContent>
                     </Card>
                 </TabsContent>
+                
+                <TabsContent value="requests">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Заявки на вступление</CardTitle>
+                            <CardDescription>Игроки, желающие присоединиться к вашей команде. Эта вкладка видна только капитану.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {joinRequests.length > 0 ? (
+                                joinRequests.map((request) => (
+                                    <Card key={request.name} className="flex items-center justify-between p-4">
+                                        <div className="flex items-center gap-4">
+                                            <Avatar>
+                                                <AvatarImage src={request.avatar} alt={request.name} data-ai-hint={request.avatarHint} />
+                                                <AvatarFallback>{request.name.trim().charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className="font-semibold">{request.name}</p>
+                                                <p className="text-sm text-muted-foreground">{request.role}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleAcceptRequest(request)}>
+                                                <Check className="mr-2 h-4 w-4" />Принять
+                                            </Button>
+                                            <Button size="sm" variant="destructive" onClick={() => handleDeclineRequest(request)}>
+                                                <X className="mr-2 h-4 w-4" />Отклонить
+                                            </Button>
+                                        </div>
+                                    </Card>
+                                ))
+                            ) : (
+                                <div className="text-center text-muted-foreground py-10">
+                                    <UserPlus className="mx-auto h-12 w-12 mb-4" />
+                                    <h3 className="text-lg font-semibold">Нет новых заявок</h3>
+                                    <p>Как только кто-то захочет вступить в команду, вы увидите его здесь.</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
             </Tabs>
         </div>
     );
