@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { BrainCircuit, Loader2, AlertCircle, Sparkles, User, Shield, BarChart2 } from "lucide-react";
 import { analyzeJoinRequest, type AnalyzeJoinRequestOutput } from '@/ai/flows/analyze-join-request-flow';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Alert, AlertDescription, AlertTitle } from './alert';
 import { Skeleton } from './ui/skeleton';
 import { Badge } from './ui/badge';
 
