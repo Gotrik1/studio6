@@ -32,6 +32,6 @@ export const teamPdHistory = [
 ];
 
 export const joinRequests = [
-    { id: 'join-1', name: 'NewbiePlayer123', avatar: 'https://placehold.co/40x40.png', role: 'Дуэлянт', rating: 1800 },
-    { id: 'join-2', name: 'AspiringPro', avatar: 'https://placehold.co/40x40.png', role: 'Смоукер', rating: 2100 },
+    { id: 'join-1', name: 'NewbiePlayer123', avatar: 'https://placehold.co/40x40.png', avatarHint: 'anonymous gamer', role: 'Дуэлянт', rating: 1800 },
+    { id: 'join-2', name: 'AspiringPro', avatar: 'https://placehold.co/40x40.png', avatarHint: 'pro gamer headset', role: 'Смоукер', rating: 2100 },
 ];
