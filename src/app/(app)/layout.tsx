@@ -184,12 +184,14 @@ export default async function AppLayout({
                   </SidebarMenuSubItem>
               </CollapsibleSidebarMenuItem>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-                <SidebarMenuButton href="/administration" tooltip="Администрирование">
-                  <Shield />
-                  Администрирование
-                </SidebarMenuButton>
-            </SidebarMenuItem>
+            {user.role === 'Admin' && (
+              <SidebarMenuItem>
+                  <SidebarMenuButton href="/administration" tooltip="Администрирование">
+                    <Shield />
+                    Администрирование
+                  </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
           </SidebarMenu>
         </SidebarContent>
       </Sidebar>
