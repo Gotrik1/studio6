@@ -2,6 +2,7 @@
 
 
 
+
 export const achievements = [
   { name: "Лучший новичок", icon: "Award", description: "Выиграть награду лучшего новичка сезона.", unlocked: true },
   { name: "Золотая нога", icon: "Star", description: "Забить 50 голов за сезон.", unlocked: true },
@@ -343,7 +344,7 @@ export const sponsorsList = [
 export const pdHistory = [
     { id: 'pd-1', timestamp: '2024-09-26T10:00:00Z', source: 'MATCH_COMPLETION', value: 10, refId: 'match-123' },
     { id: 'pd-2', timestamp: '2024-09-26T10:05:00Z', source: 'GOAL_ASSIST_SAVE', value: 5, refId: 'match-123' },
-    { id: 'pd-3', timestamp: '2024-09-25T18:30:00Z', source: 'MEDIA_POST', value: 3, refId: 'post-456' },
+    { id: 'pd-3', timestamp: '2024-09-25T18:30:00Z', source: 'MEDIA_POST_TIER_1', value: 3, refId: 'post-456' },
     { id: 'pd-4', timestamp: '2024-09-25T14:00:00Z', source: 'REFEREE_MATCH', value: 15, refId: 'match-121' },
     { id: 'pd-5', timestamp: '2024-09-24T11:00:00Z', source: 'INVITE_FRIEND', value: 10, refId: 'user-789' },
     { id: 'pd-6', timestamp: '2024-09-23T20:15:00Z', source: 'HELP_NEWBIE', value: 7, refId: 'user-xyz' },
@@ -387,4 +388,13 @@ export const storeItems = [
         image: 'https://placehold.co/600x400.png',
         imageHint: 'gold frame'
     },
+];
+
+export const lootboxPrizes: { name: string; rarity: 'Обычный' | 'Редкий' | 'Эпический'; image: string; imageHint: string; }[] = [
+    { name: "Рамка 'Неон'", rarity: 'Обычный', image: 'https://placehold.co/128x128.png', imageHint: 'neon frame' },
+    { name: "Стикер 'GG WP'", rarity: 'Обычный', image: 'https://placehold.co/128x128.png', imageHint: 'sticker ggwp' },
+    { name: "Тема 'Лес'", rarity: 'Обычный', image: 'https://placehold.co/128x128.png', imageHint: 'forest theme' },
+    { name: "Рамка 'Пламя'", rarity: 'Редкий', image: 'https://placehold.co/128x128.png', imageHint: 'fire frame' },
+    { name: "Значок 'MVP'", rarity: 'Редкий', image: 'https://placehold.co/128x128.png', imageHint: 'mvp badge' },
+    { name: "Рамка 'Легенда'", rarity: 'Эпический', image: 'https://placehold.co/128x128.png', imageHint: 'legendary frame' },
 ];
