@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar } from "lucide-react";
+import { Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar, Award } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/lib/session";
 import { achievements, teams, recentMatches, gallery, careerHistory, pdHistory } from "@/lib/mock-data";
@@ -17,6 +17,9 @@ import { Skeleton } from './ui/skeleton';
 import { PD_SOURCE_DETAILS, type PD_SOURCE_TYPE } from '@/config/gamification';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { getRankByPoints, type Rank } from "@/config/ranks";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { cn } from '@/lib/utils';
 
 const OverviewTab = dynamic(() => import('@/components/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -56,6 +59,7 @@ type PlayerProfileProps = {
 export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const totalPd = pdHistory.reduce((sum, item) => sum + item.value, 0);
+  const rank = getRankByPoints(totalPd);
 
   return (
     <div className="space-y-6">
@@ -75,6 +79,22 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
               <Badge>{user.role}</Badge>
               <Badge variant="secondary">{user.status}</Badge>
               <Badge variant="outline">PRO Пользователь</Badge>
+              {rank && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge variant="outline" className="cursor-help border-amber-500/50">
+                        <Award className={cn("mr-1.5 h-3.5 w-3.5", rank.color)} />
+                        {rank.name}
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="font-semibold">{rank.name}</p>
+                      <p className="text-sm text-muted-foreground">{rank.description}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
              <div className="flex items-center justify-center gap-4 pt-2 text-sm text-muted-foreground sm:justify-start">
                 <div className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {user.location}</div>

@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ranks } from "@/config/ranks";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const achievementIcons = {
     Trophy, Star, Shield, Gem, Crown, Rocket, Swords, Medal, Award
@@ -48,8 +50,9 @@ export default function GamificationAdminPage() {
             </div>
 
             <Tabs defaultValue="rules">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="rules"><Gamepad2 className="mr-2 h-4 w-4" />Правила PD</TabsTrigger>
+                    <TabsTrigger value="ranks"><Award className="mr-2 h-4 w-4"/>Ранги</TabsTrigger>
                     <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4" />Достижения</TabsTrigger>
                     <TabsTrigger value="lootboxes"><Gift className="mr-2 h-4 w-4" />Кейсы</TabsTrigger>
                     <TabsTrigger value="leaderboards"><BarChart3 className="mr-2 h-4 w-4"/>Рейтинги</TabsTrigger>
@@ -104,6 +107,42 @@ export default function GamificationAdminPage() {
                             </CardContent>
                         </Card>
                     </div>
+                </TabsContent>
+                
+                <TabsContent value="ranks" className="mt-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Система рангов</CardTitle>
+                            <CardDescription>Всего 11 уровней мастерства, отражающих прогресс игрока.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <TooltipProvider>
+                                {ranks.map((rank) => (
+                                    <Card key={rank.name} className="p-4 transition-shadow hover:shadow-md">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <Award className={cn("h-8 w-8 shrink-0", rank.color)} />
+                                                <div>
+                                                    <Tooltip>
+                                                        <TooltipTrigger asChild>
+                                                            <p className={cn("font-headline text-lg font-bold cursor-help", rank.color)}>{rank.name}</p>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p>{rank.description}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                    <p className="text-sm text-muted-foreground">{rank.description}</p>
+                                                </div>
+                                            </div>
+                                            <Badge variant="secondary" className="font-mono whitespace-nowrap">
+                                                {rank.minPoints.toLocaleString()} - {rank.maxPoints === Infinity ? '∞' : rank.maxPoints.toLocaleString()} PD
+                                            </Badge>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </TooltipProvider>
+                        </CardContent>
+                    </Card>
                 </TabsContent>
 
                 <TabsContent value="achievements" className="mt-4">
