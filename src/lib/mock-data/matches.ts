@@ -1,3 +1,4 @@
+
 export const matchesList = [
   {
     id: 'match-1',
@@ -7,7 +8,7 @@ export const matchesList = [
     tournament: "Summer Kickoff 2024 - Финал",
     status: "Завершен",
     date: "17 августа 2024",
-    href: "/match-details"
+    href: "/matches/cyber-eagles-vs-ice-dragons"
   },
   {
     id: 'match-2',
