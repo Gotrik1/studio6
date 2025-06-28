@@ -1,8 +1,9 @@
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Link from "next/link";
-import { Shield, Gavel, User, Award, Briefcase, Star, Handshake, Trophy, Scale } from "lucide-react";
+import { Shield, Gavel, User, Award, Briefcase, Star, Handshake, Trophy, Scale, Users2 } from "lucide-react";
 
 const roles = [
+  { name: "Управление пользователями", href: "/administration/users", icon: Users2, description: "Просмотр и поиск всех пользователей." },
   { name: "Администратор", href: "/administration/administrator", icon: Shield, description: "Полный доступ к системе." },
   { name: "Модератор", href: "/administration/moderator", icon: Gavel, description: "Управление контентом и жалобами." },
   { name: "Игрок (Капитан)", href: "/administration/player", icon: User, description: "Профиль капитана команды." },
@@ -20,7 +21,7 @@ export default function AdministrationHubPage() {
       <div className="space-y-2">
         <h1 className="font-headline text-3xl font-bold tracking-tight">Панель администрирования</h1>
         <p className="text-muted-foreground">
-          Просмотр макетов профилей для различных ролей на платформе.
+          Просмотр макетов профилей и управление пользователями платформы.
         </p>
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
