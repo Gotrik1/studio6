@@ -206,14 +206,6 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="AI-Чат">
-                <Link href="/ai-chat">
-                  <Bot />
-                  AI-Чат
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Генерация речи">
                 <Link href="/tts">
                   <AudioLines />

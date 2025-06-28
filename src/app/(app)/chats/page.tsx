@@ -10,19 +10,32 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Search, Phone, Video, Smile, Paperclip, Send, MoreVertical, PlusCircle, MessageSquare, MessagesSquare, Lightbulb, Loader2 } from "lucide-react";
+import { Search, Phone, Video, Smile, Paperclip, Send, MoreVertical, PlusCircle, MessageSquare, MessagesSquare, Lightbulb, Loader2, Bot } from "lucide-react";
 import { chatList as mockChatList } from '@/lib/mock-data/chats';
 import { cn } from '@/lib/utils';
 import type { User } from '@/lib/session';
 import { useSession } from '@/lib/session-client';
 import { useToast } from '@/hooks/use-toast';
 import { suggestReply } from '@/ai/flows/suggest-reply-flow';
+import { askTeamChatbot } from '@/ai/flows/team-chatbot-flow';
 
-type Chat = (typeof mockChatList)[0];
+type Message = {
+    sender: 'me' | 'other' | 'ai';
+    text: string;
+    time: string;
+    isThinking?: boolean;
+};
+type Chat = (typeof mockChatList)[0] & { messages?: Message[] };
+
+const aiHelperUser = {
+    name: 'AI-помощник',
+    avatar: 'https://placehold.co/40x40.png',
+    dataAiHint: 'brain circuit',
+};
 
 export default function ChatsPage() {
     const { user: currentUser, loading: userLoading } = useSession();
-    const [chatList, setChatList] = useState(mockChatList);
+    const [chatList, setChatList] = useState<Chat[]>(mockChatList);
     const [activeChat, setActiveChat] = useState<Chat | null>(chatList[0] || null);
     const [newMessage, setNewMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
@@ -32,6 +45,7 @@ export default function ChatsPage() {
     // AI Suggestions state
     const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isSuggesting, setIsSuggesting] = useState(false);
+    const [isSending, setIsSending] = useState(false);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -48,68 +62,91 @@ export default function ChatsPage() {
         );
     }, [chatList, searchQuery]);
 
-    const handleSendMessage = () => {
-        if (!newMessage.trim() || !activeChat || !currentUser) return;
+    const handleSendMessage = async () => {
+        if (!newMessage.trim() || !activeChat || !currentUser || isSending) return;
 
-        const userMessage = {
-            sender: 'me' as const,
+        setIsSending(true);
+        const userMessage: Message = {
+            sender: 'me',
             text: newMessage.trim(),
             time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
         };
-        
-        const currentChatId = activeChat.id;
-        setSuggestions([]); // Clear suggestions
-
-        const updateChatWithNewMessage = (chatToUpdate: Chat, message: typeof userMessage, isReply: boolean): Chat => {
-            const lastMessageText = isReply ? message.text : `Вы: ${message.text}`;
-            return {
-                ...chatToUpdate,
-                messages: [...(chatToUpdate.messages || []), message],
-                lastMessage: {
-                    text: lastMessageText,
-                    time: message.time,
-                },
-                unreadCount: isReply ? (chatToUpdate.id === activeChat?.id ? 0 : (chatToUpdate.unreadCount || 0) + 1) : chatToUpdate.unreadCount,
-            }
-        };
-        
-        let userUpdatedChat: Chat | undefined;
-        const userUpdatedList = chatList.map(c => {
-            if (c.id === currentChatId) {
-                userUpdatedChat = updateChatWithNewMessage(c, userMessage, false);
-                return userUpdatedChat;
-            }
-            return c;
-        });
-
-        if (userUpdatedChat) {
-            setActiveChat(userUpdatedChat);
-            setChatList([userUpdatedChat, ...userUpdatedList.filter(c => c.id !== currentChatId)]);
-        }
         setNewMessage('');
+        setSuggestions([]);
 
-        setTimeout(() => {
-            const replies = [ "Понял, спасибо!", "Хорошо, буду на месте.", "Отлично, договорились." ];
-            const replyText = replies[Math.floor(Math.random() * replies.length)];
-            const replyMessage = { sender: 'other' as const, text: replyText, time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) };
+        // Immediately update UI with user's message
+        const newChatListWithUserMessage = chatList.map(c => 
+            c.id === activeChat.id ? { ...c, messages: [...(c.messages || []), userMessage], lastMessage: { text: `Вы: ${userMessage.text}`, time: userMessage.time } } : c
+        );
+        const updatedActiveChat = newChatListWithUserMessage.find(c => c.id === activeChat.id)!;
+        setChatList([updatedActiveChat, ...newChatListWithUserMessage.filter(c => c.id !== activeChat.id)]);
+        setActiveChat(updatedActiveChat);
+        
+        const isTeamChat = activeChat.id === 'chat-1';
+        const aiTrigger = '@AI-помощник';
+
+        if (isTeamChat && userMessage.text.toLowerCase().startsWith(aiTrigger.toLowerCase())) {
+            const query = userMessage.text.substring(aiTrigger.length).trim();
+            const thinkingMessage: Message = { sender: 'ai', text: 'Думаю...', time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }), isThinking: true };
             
-            setChatList(prevList => {
-                let replyUpdatedChat: Chat | undefined;
-                const replyUpdatedList = prevList.map(c => {
-                    if (c.id === currentChatId) {
-                        replyUpdatedChat = updateChatWithNewMessage(c, replyMessage, true);
-                        return replyUpdatedChat;
+            // Show thinking indicator
+            setChatList(prev => prev.map(c => c.id === activeChat.id ? { ...c, messages: [...(c.messages || []), thinkingMessage] } : c));
+            setActiveChat(prev => prev ? { ...prev, messages: [...(prev.messages || []), thinkingMessage] } : null);
+
+            try {
+                const aiResponseText = await askTeamChatbot({ teamId: 'cyber-eagles', query });
+                const aiResponseMessage: Message = { sender: 'ai', text: aiResponseText, time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) };
+                
+                // Replace thinking message with actual response
+                 setChatList(prev => prev.map(c => {
+                    if (c.id === activeChat.id) {
+                        const newMessages = c.messages?.slice(0, -1) || [];
+                        newMessages.push(aiResponseMessage);
+                        return { ...c, messages: newMessages, lastMessage: { text: `AI: ${aiResponseMessage.text.substring(0, 30)}...`, time: aiResponseMessage.time } };
                     }
                     return c;
+                }));
+                setActiveChat(prev => {
+                    if (!prev) return null;
+                    const newMessages = prev.messages?.slice(0, -1) || [];
+                    newMessages.push(aiResponseMessage);
+                    return { ...prev, messages: newMessages, lastMessage: { text: `AI: ${aiResponseMessage.text.substring(0, 30)}...`, time: aiResponseMessage.time } };
                 });
+            } catch (error) {
+                console.error(error);
+                const errorMessage: Message = { sender: 'ai', text: 'Извините, произошла ошибка. Попробуйте снова.', time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) };
+                 setChatList(prev => prev.map(c => {
+                    if (c.id === activeChat.id) {
+                        const newMessages = c.messages?.slice(0, -1) || [];
+                        newMessages.push(errorMessage);
+                        return { ...c, messages: newMessages };
+                    }
+                    return c;
+                }));
+                 setActiveChat(prev => {
+                    if (!prev) return null;
+                    const newMessages = prev.messages?.slice(0, -1) || [];
+                    newMessages.push(errorMessage);
+                    return { ...prev, messages: newMessages };
+                });
+            }
 
-                if (replyUpdatedChat) {
-                    setActiveChat(prevActive => prevActive?.id === currentChatId ? replyUpdatedChat : prevActive);
-                    return [replyUpdatedChat, ...replyUpdatedList.filter(c => c.id !== currentChatId)];
-                }
-                return prevList;
-            });
-        }, 1500);
+        } else {
+            // Simulate a reply from another user
+            setTimeout(() => {
+                const replies = ["Понял, спасибо!", "Хорошо, буду на месте.", "Отлично, договорились."];
+                const replyText = replies[Math.floor(Math.random() * replies.length)];
+                const replyMessage: Message = { sender: 'other', text: replyText, time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) };
+                
+                const newChatListWithReply = chatList.map(c => 
+                    c.id === activeChat.id ? { ...c, messages: [...(c.messages || []), replyMessage], lastMessage: { text: replyMessage.text, time: replyMessage.time }, unreadCount: (c.id === activeChat.id ? 0 : (c.unreadCount || 0) + 1) } : c
+                );
+                const updatedActiveChatWithReply = newChatListWithReply.find(c => c.id === activeChat.id)!;
+                setChatList([updatedActiveChatWithReply, ...newChatListWithReply.filter(c => c.id !== activeChat.id)]);
+                setActiveChat(prev => prev?.id === activeChat.id ? updatedActiveChatWithReply : prev);
+            }, 1500);
+        }
+        setIsSending(false);
     };
     
     const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -127,7 +164,7 @@ export default function ChatsPage() {
             
             setActiveChat(updatedChat);
             setChatList(updatedChatList);
-            setSuggestions([]); // Clear suggestions when changing chat
+            setSuggestions([]);
         }
     }
 
@@ -155,7 +192,6 @@ export default function ChatsPage() {
         setNewMessage(suggestion);
         setSuggestions([]);
     };
-
 
     if (userLoading) return <div>Загрузка...</div>
     if (!currentUser) return <div>Пожалуйста, войдите в систему.</div>
@@ -208,10 +244,24 @@ export default function ChatsPage() {
                             <div className="space-y-6">
                                 {activeChat.messages?.map((message, index) => (
                                     <div key={index} className={cn("flex items-end gap-2", message.sender === 'me' ? "justify-end" : "justify-start")}>
-                                        {message.sender !== 'me' && <Avatar className="h-8 w-8 border"><AvatarImage src={activeChat.avatar} data-ai-hint={activeChat.dataAiHint} /></Avatar>}
-                                        <div className={cn("max-w-xs lg:max-w-md rounded-lg p-3 text-sm shadow-sm", message.sender === 'me' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-background rounded-bl-none")}>
-                                            <p>{message.text}</p>
-                                            <p className="text-xs text-right mt-1 opacity-70">{message.time}</p>
+                                        {message.sender === 'other' && <Avatar className="h-8 w-8 border"><AvatarImage src={activeChat.avatar} data-ai-hint={activeChat.dataAiHint} /></Avatar>}
+                                        {message.sender === 'ai' && <Avatar className="h-8 w-8 border"><AvatarImage src={aiHelperUser.avatar} data-ai-hint={aiHelperUser.dataAiHint}/><AvatarFallback><Bot /></AvatarFallback></Avatar>}
+                                        
+                                        <div className={cn("max-w-xs lg:max-w-md rounded-lg p-3 text-sm shadow-sm", 
+                                            message.sender === 'me' ? "bg-primary text-primary-foreground rounded-br-none" : 
+                                            message.sender === 'ai' ? "bg-muted rounded-bl-none" : "bg-background rounded-bl-none")}>
+                                            
+                                            {message.isThinking ? (
+                                                <div className="flex items-center gap-2">
+                                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                                    <span>{message.text}</span>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    <p className="whitespace-pre-wrap">{message.text}</p>
+                                                    <p className="text-xs text-right mt-1 opacity-70">{message.time}</p>
+                                                </>
+                                            )}
                                         </div>
                                         {message.sender === 'me' && <Avatar className="h-8 w-8 border"><AvatarImage src={currentUser.avatar} data-ai-hint="current user" /></Avatar>}
                                     </div>
@@ -230,21 +280,29 @@ export default function ChatsPage() {
                                 </div>
                             )}
                             <div className="relative">
-                                <Textarea placeholder="Напишите сообщение..." className="pr-36 min-h-[40px] resize-none" rows={1} value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyDown={handleKeyDown}/>
+                                <Textarea 
+                                    placeholder={activeChat.id === 'chat-1' ? "Напишите сообщение или упомяните @AI-помощник..." : "Напишите сообщение..."}
+                                    className="pr-36 min-h-[40px] resize-none" 
+                                    rows={1} 
+                                    value={newMessage} 
+                                    onChange={(e) => setNewMessage(e.target.value)} 
+                                    onKeyDown={handleKeyDown}
+                                    disabled={isSending}
+                                />
                                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                                     <TooltipProvider>
                                         <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <Button variant="ghost" size="icon" onClick={handleSuggestReplies} disabled={isSuggesting}>
+                                                <Button variant="ghost" size="icon" onClick={handleSuggestReplies} disabled={isSuggesting || isSending}>
                                                     {isSuggesting ? <Loader2 className="animate-spin" /> : <Lightbulb />}
                                                 </Button>
                                             </TooltipTrigger>
                                             <TooltipContent><p>AI-подсказки</p></TooltipContent>
                                         </Tooltip>
-                                        <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon"><Smile /></Button></TooltipTrigger><TooltipContent><p>Эмодзи</p></TooltipContent></Tooltip>
-                                        <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon"><Paperclip /></Button></TooltipTrigger><TooltipContent><p>Вложить файл</p></TooltipContent></Tooltip>
+                                        <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" disabled={isSending}><Smile /></Button></TooltipTrigger><TooltipContent><p>Эмодзи</p></TooltipContent></Tooltip>
+                                        <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" disabled={isSending}><Paperclip /></Button></TooltipTrigger><TooltipContent><p>Вложить файл</p></TooltipContent></Tooltip>
                                     </TooltipProvider>
-                                    <Button onClick={handleSendMessage}><Send /></Button>
+                                    <Button onClick={handleSendMessage} disabled={isSending}><Send /></Button>
                                 </div>
                             </div>
                         </div>
