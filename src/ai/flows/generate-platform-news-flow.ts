@@ -31,7 +31,7 @@ const getRecentActivity = ai.defineTool(
     {
         name: 'getRecentActivity',
         description: 'Gets the most recent significant activities on the platform.',
-        inputSchema: z.void(),
+        inputSchema: z.object({}),
         outputSchema: RecentActivitySchema,
     },
     async () => {
@@ -61,7 +61,7 @@ export const generatePlatformNews = ai.defineFlow(
         outputSchema: GeneratePlatformNewsOutputSchema,
     },
     async () => {
-        const { output } = await prompt();
+        const { output } = await prompt({});
         if (!output) {
             throw new Error("Failed to generate platform news.");
         }
