@@ -37,6 +37,7 @@ import {
   FolderKanban,
   Shield,
   BrainCircuit,
+  Swords,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 
@@ -85,6 +86,14 @@ export default async function AppLayout({
                 <Link href="/teams">
                   <Users />
                   Команды
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Матчи">
+                <Link href="/match-details">
+                  <Swords />
+                  Матчи
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
