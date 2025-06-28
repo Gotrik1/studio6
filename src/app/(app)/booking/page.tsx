@@ -74,7 +74,7 @@ export default function BookingPage() {
     };
 
     const handleCancelBooking = (bookingId: string) => {
-        setMyBookings(myBookings.map(b => b.id === bookingId ? { ...b, status: 'Отменено' } : b));
+        setMyBookings(myBookings.map(b => b.id === bookingId ? { ...b, status: 'Отменено' as 'Отменено' } : b));
         toast({
             title: "Бронирование отменено",
             variant: "destructive",
