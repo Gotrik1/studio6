@@ -6,5 +6,12 @@ export default async function SettingsPage() {
   const user = await getSession();
   if (!user) redirect("/auth");
 
-  return <SettingsClient user={user} />;
+  // Augment user data to provide initial values to the form
+  const userSettings = {
+    ...user,
+    location: "Москва",
+    mainSport: "Valorant",
+  };
+
+  return <SettingsClient user={userSettings} />;
 }

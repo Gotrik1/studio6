@@ -1,8 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import * as React from 'react';
+
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,6 +20,8 @@ import { analyzeSecurity, type AnalyzeSecurityOutput } from '@/ai/flows/analyze-
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { updateProfileSettings } from './actions';
 
 const mockActivityLog = `
 - 2024-09-27 10:00: Login from IP 89.123.45.67 (Moscow, RU) on Chrome, Windows.
@@ -61,29 +67,62 @@ const SecurityRecommendationCard = ({ recommendation }: { recommendation: Analyz
     );
 };
 
+const profileFormSchema = z.object({
+  name: z.string().min(2, "Имя должно содержать не менее 2 символов."),
+  city: z.string().min(2, "Город должен содержать не менее 2 символов."),
+  sport: z.string().min(2, "Вид спорта должен содержать не менее 2 символов."),
+});
 
-export default function SettingsClient({ user }: { user: User }) {
+type ProfileFormValues = z.infer<typeof profileFormSchema>;
+
+type SettingsClientProps = {
+  user: User & {
+    location: string;
+    mainSport: string;
+  };
+};
+
+export default function SettingsClient({ user }: SettingsClientProps) {
     const { toast } = useToast();
     const initials = user.name.split(' ').map((n) => n[0]).join('');
 
-    // AI Security State
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [aiResult, setAiResult] = useState<AnalyzeSecurityOutput | null>(null);
+    const [isPending, startTransition] = React.useTransition();
+    
+    const form = useForm<ProfileFormValues>({
+        resolver: zodResolver(profileFormSchema),
+        defaultValues: {
+            name: user.name,
+            city: user.location,
+            sport: user.mainSport,
+        },
+    });
 
-    // Form states
-    const [name, setName] = useState(user.name);
-    const [city, setCity] = useState("Москва");
-    const [sport, setSport] = useState("Valorant");
-    const [is2faEnabled, setIs2faEnabled] = useState(false);
-    const [profileVisibility, setProfileVisibility] = useState('all');
-    const [statsVisibility, setStatsVisibility] = useState('all');
-    const [pmAccess, setPmAccess] = useState('all');
-    const [isInvisible, setIsInvisible] = useState(false);
-    const [emailNews, setEmailNews] = useState(true);
-    const [emailMatches, setEmailMatches] = useState(true);
-    const [emailSocial, setEmailSocial] = useState(false);
-    const [dndMode, setDndMode] = useState(false);
+    const onProfileSubmit = (data: ProfileFormValues) => {
+        startTransition(async () => {
+            const result = await updateProfileSettings(data);
+            if(result?.success) {
+                toast({ title: 'Успех!', description: result.success });
+            } else if (result?.error) {
+                 toast({ variant: 'destructive', title: 'Ошибка!', description: result.error });
+            }
+        });
+    };
+
+    // AI Security State
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [error, setError] = React.useState<string | null>(null);
+    const [aiResult, setAiResult] = React.useState<AnalyzeSecurityOutput | null>(null);
+
+    // Form states for other tabs
+    const [is2faEnabled, setIs2faEnabled] = React.useState(false);
+    const [profileVisibility, setProfileVisibility] = React.useState('all');
+    const [statsVisibility, setStatsVisibility] = React.useState('all');
+    const [pmAccess, setPmAccess] = React.useState('all');
+    const [isInvisible, setIsInvisible] = React.useState(false);
+    const [emailNews, setEmailNews] = React.useState(true);
+    const [emailMatches, setEmailMatches] = React.useState(true);
+    const [emailSocial, setEmailSocial] = React.useState(false);
+    const [dndMode, setDndMode] = React.useState(false);
 
     const handleSave = (section: string) => {
         toast({
@@ -128,43 +167,71 @@ export default function SettingsClient({ user }: { user: User }) {
 
                 {/* Profile Tab */}
                 <TabsContent value="profile" className="mt-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Публичный профиль</CardTitle>
-                            <CardDescription>Эта информация будет видна другим пользователям.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="space-y-6">
-                            <div className="flex items-center gap-6">
-                                <Avatar className="h-20 w-20">
-                                    <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="user avatar" />
-                                    <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex gap-2">
-                                    <Button>Сменить аватар</Button>
-                                    <Button variant="ghost">Удалить</Button>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                <div className="space-y-2">
-                                    <Label htmlFor="name">Имя</Label>
-                                    <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" defaultValue={user.email} disabled />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="city">Город</Label>
-                                    <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="sport">Основной вид спорта</Label>
-                                    <Input id="sport" value={sport} onChange={(e) => setSport(e.target.value)} />
-                                </div>
-                            </div>
-                             <Button onClick={() => handleSave('Профиль')}>Сохранить изменения</Button>
-                        </CardContent>
-                    </Card>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onProfileSubmit)}>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Публичный профиль</CardTitle>
+                                    <CardDescription>Эта информация будет видна другим пользователям.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-6">
+                                    <div className="flex items-center gap-6">
+                                        <Avatar className="h-20 w-20">
+                                            <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="user avatar" />
+                                            <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
+                                        </Avatar>
+                                        <div className="flex gap-2">
+                                            <Button type="button">Сменить аватар</Button>
+                                            <Button type="button" variant="ghost">Удалить</Button>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="name"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Имя</FormLabel>
+                                                    <FormControl><Input {...field} disabled={isPending} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                        <div className="space-y-2">
+                                            <Label htmlFor="email">Email</Label>
+                                            <Input id="email" type="email" defaultValue={user.email} disabled />
+                                        </div>
+                                        <FormField
+                                            control={form.control}
+                                            name="city"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Город</FormLabel>
+                                                    <FormControl><Input {...field} disabled={isPending} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                         <FormField
+                                            control={form.control}
+                                            name="sport"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Основной вид спорта</FormLabel>
+                                                    <FormControl><Input {...field} disabled={isPending} /></FormControl>
+                                                    <FormMessage />
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                     <Button type="submit" disabled={isPending}>
+                                        {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Сохранить изменения
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </form>
+                    </Form>
                 </TabsContent>
 
                 {/* Security Tab */}
