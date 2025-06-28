@@ -17,12 +17,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 
+type StoreItem = (typeof storeItems)[0];
 type Prize = (typeof lootboxPrizes)[0];
 
 export default function StorePage() {
     const { toast } = useToast();
+    const [pdBalance, setPdBalance] = useState(() => pdHistory.reduce((sum, item) => sum + item.value, 0));
     const [purchasedItems, setPurchasedItems] = useState<string[]>([]);
-    const totalPd = pdHistory.reduce((sum, item) => sum + item.value, 0);
 
     // State for lootbox opening
     const [isLootboxOpen, setIsLootboxOpen] = useState(false);
@@ -30,23 +31,36 @@ export default function StorePage() {
     const [wonPrize, setWonPrize] = useState<Prize | null>(null);
     const [spinningPrize, setSpinningPrize] = useState<Prize>(lootboxPrizes[0]);
 
-    const handlePurchase = (itemName: string, itemPrice: number) => {
-        toast({
-            title: "Поздравляем с покупкой!",
-            description: `"${itemName}" теперь в вашей коллекции. Вы стали еще уникальнее!`,
-        });
-    };
-
-    const handleLootboxOpen = () => {
-        if (totalPd < 100) {
+    const handlePurchase = (item: StoreItem) => {
+        if (pdBalance < item.price) {
             toast({
                 variant: 'destructive',
                 title: "Недостаточно средств",
-                description: "Вам нужно больше PD, чтобы открыть кейс.",
+                description: `Вам нужно ${item.price.toLocaleString()} PD для этой покупки.`,
             });
             return;
         }
 
+        setPdBalance(prev => prev - item.price);
+        setPurchasedItems(prev => [...prev, item.id]);
+
+        toast({
+            title: "Поздравляем с покупкой!",
+            description: `"${item.name}" теперь в вашей коллекции.`,
+        });
+    };
+
+    const handleLootboxOpen = () => {
+        if (pdBalance < 100) {
+            toast({
+                variant: 'destructive',
+                title: "Недостаточно средств",
+                description: "Вам нужно 100 PD, чтобы открыть кейс.",
+            });
+            return;
+        }
+
+        setPdBalance(prev => prev - 100);
         setIsLootboxOpen(true);
         setIsSpinning(true);
         setWonPrize(null);
@@ -68,7 +82,6 @@ export default function StorePage() {
                 title: "Вот это удача!",
                 description: `Из кейса выпал предмет: "${finalPrize.name}"! Поздравляем!`,
             });
-            // In a real app, deduct PD and add item to inventory here
         }, spinDuration);
     };
 
@@ -95,7 +108,7 @@ export default function StorePage() {
                     <p className="font-semibold">Ваш баланс:</p>
                     <div className="flex items-center gap-2 rounded-lg bg-background px-3 py-1 font-bold text-primary shadow-inner">
                         <Coins className="h-5 w-5"/>
-                        <span className="text-lg">{totalPd.toLocaleString()} PD</span>
+                        <span className="text-lg">{pdBalance.toLocaleString()} PD</span>
                     </div>
                 </CardContent>
             </Card>
@@ -130,7 +143,7 @@ export default function StorePage() {
                         </Card>
                          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             {storeItems.map((item) => {
-                                const canAfford = totalPd >= item.price;
+                                const canAfford = pdBalance >= item.price;
                                 const isPurchased = purchasedItems.includes(item.id);
 
                                 return (
@@ -163,7 +176,7 @@ export default function StorePage() {
                                             {isPurchased ? (
                                                 <Button className="w-full" disabled>Приобретено</Button>
                                             ) : (
-                                                <Button className="w-full" onClick={() => handlePurchase(item.name, item.price)} disabled={!canAfford}>
+                                                <Button className="w-full" onClick={() => handlePurchase(item)} disabled={!canAfford}>
                                                     <ShoppingCart className="mr-2 h-4 w-4" />
                                                     Купить
                                                 </Button>
@@ -178,7 +191,9 @@ export default function StorePage() {
                 
                 <TabsContent value="partners" className="mt-4">
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        {partnerOffers.map(offer => (
+                        {partnerOffers.map(offer => {
+                            const canAfford = pdBalance >= offer.price;
+                            return (
                             <Card key={offer.id}>
                                 <CardHeader className='flex-row items-center gap-4'>
                                     <Image src={offer.logo} alt={offer.sponsor} width={100} height={40} data-ai-hint={offer.logoHint} className='rounded-md' />
@@ -191,14 +206,21 @@ export default function StorePage() {
                                     <p className='text-sm text-muted-foreground'>{offer.description}</p>
                                 </CardContent>
                                 <CardFooter className='flex-col items-stretch gap-2'>
-                                    <Button className='w-full' onClick={() => handlePurchase(offer.title, offer.price)} disabled={totalPd < offer.price}>
+                                    <Button className='w-full' onClick={() => {
+                                        if (!canAfford) {
+                                            toast({ variant: 'destructive', title: "Недостаточно средств"});
+                                            return;
+                                        }
+                                        setPdBalance(p => p - offer.price);
+                                        toast({ title: "Предложение активировано!", description: `Промокод для "${offer.title}" будет отправлен вам в личные сообщения.` });
+                                    }} disabled={!canAfford}>
                                         <Handshake className='mr-2 h-4 w-4'/>
                                         Получить за {offer.price} PD
                                     </Button>
-                                    {totalPd < offer.price && <p className='text-xs text-destructive text-center'>Недостаточно PD</p>}
+                                    {!canAfford && <p className='text-xs text-destructive text-center'>Недостаточно PD</p>}
                                 </CardFooter>
                             </Card>
-                        ))}
+                        )})}
                     </div>
                 </TabsContent>
 
@@ -241,7 +263,9 @@ export default function StorePage() {
 
                 <TabsContent value="tickets" className="mt-4">
                      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                        {ticketEvents.map(event => (
+                        {ticketEvents.map(event => {
+                            const canAfford = pdBalance >= event.price;
+                            return (
                             <Card key={event.id} className="flex flex-col overflow-hidden">
                                 <CardHeader className='p-0 relative h-40'>
                                      <Image src={event.image} alt={event.name} fill className='object-cover' data-ai-hint={event.imageHint} />
@@ -251,13 +275,20 @@ export default function StorePage() {
                                     <CardDescription>{event.date} - {event.location}</CardDescription>
                                 </CardContent>
                                 <CardFooter>
-                                    <Button className='w-full' onClick={() => handlePurchase(`Билет на ${event.name}`, event.price)} disabled={totalPd < event.price}>
+                                    <Button className='w-full' onClick={() => {
+                                        if (!canAfford) {
+                                            toast({ variant: 'destructive', title: "Недостаточно средств"});
+                                            return;
+                                        }
+                                        setPdBalance(p => p - event.price);
+                                        toast({ title: "Билет куплен!", description: `Билет на "${event.name}" добавлен в ваш профиль.` });
+                                    }} disabled={!canAfford}>
                                         <Ticket className='mr-2 h-4 w-4' />
                                         Купить билет за {event.price} PD
                                     </Button>
                                 </CardFooter>
                             </Card>
-                        ))}
+                        )})}
                     </div>
                 </TabsContent>
             </Tabs>
