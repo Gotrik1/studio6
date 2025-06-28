@@ -15,3 +15,4 @@ import '@/ai/flows/generate-post-image-flow.ts';
 import '@/ai/flows/smart-search-flow.ts';
 import '@/ai/flows/generate-tournament-details-flow.ts';
 import '@/ai/flows/generate-tournament-image-flow.ts';
+import '@/ai/flows/suggest-reply-flow.ts';
