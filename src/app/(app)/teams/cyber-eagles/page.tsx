@@ -77,9 +77,9 @@ export default function TeamProfilePage() {
     const [error, setError] = useState<string | null>(null);
     
     const [isAssistantDialogOpen, setIsAssistantDialogOpen] = useState(false);
-    const [teamActivity, setTeamActivity] = useState("Последние 3 матча: 2 победы, 1 поражение. Игрок 'Shadow' показал отличный результат в клатчах. Были проблемы со связью у 'Gadget' во время матча с 'Квантовыми Квазарами'.");
-    const [teamGoals, setTeamGoals] = useState("Главная цель - победа в 'Summer Kickoff 2024'. Улучшить коммуникацию и отработать стратегии на карте Ascent.");
-    const [relevantContent, setRelevantContent] = useState("Анализ последних игр от тренера: https://example.com/analysis");
+    const [teamActivity, setTeamActivity] = useState("");
+    const [teamGoals, setTeamGoals] = useState("");
+    const [relevantContent, setRelevantContent] = useState("");
 
     const [teamLogo, setTeamLogo] = useState(team.logo);
     const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
@@ -91,6 +91,21 @@ export default function TeamProfilePage() {
     const [isRequestSent, setIsRequestSent] = useState(false);
     const [currentRoster, setCurrentRoster] = useState(initialRoster);
     const [joinRequests, setJoinRequests] = useState(initialJoinRequests);
+
+    const handleAssistantOpenChange = (open: boolean) => {
+        if (open) {
+            const activitySummary = recentMatches
+                .map(m => `Против '${m.opponent}': ${m.result} со счетом ${m.score} на карте ${m.map}.`)
+                .join(' ');
+            setTeamActivity(activitySummary || "Нет данных о недавних матчах.");
+
+            const goalsSummary = `Девиз команды: "${team.motto}". Главная цель - победа в текущих и будущих турнирах, улучшение командной игры и повышение в рейтинге.`;
+            setTeamGoals(goalsSummary);
+
+            setRelevantContent("Анализ последних игр от тренера: https://example.com/analysis");
+        }
+        setIsAssistantDialogOpen(open);
+    };
 
     const handleGenerateSummary = async () => {
         if (!teamActivity || !teamGoals) {
@@ -490,7 +505,7 @@ export default function TeamProfilePage() {
                             <CardDescription>Получите краткую сводку по последней активности команды и рекомендации от нашего ИИ.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                             <Dialog open={isAssistantDialogOpen} onOpenChange={setIsAssistantDialogOpen}>
+                             <Dialog open={isAssistantDialogOpen} onOpenChange={handleAssistantOpenChange}>
                                 <DialogTrigger asChild>
                                     <Button>Сгенерировать сводку</Button>
                                 </DialogTrigger>
