@@ -11,8 +11,10 @@ import { UserTable } from "@/components/user-table";
 import { useToast } from '@/hooks/use-toast';
 import type { userList as UserListType } from '@/lib/mock-data/users';
 import { UserEditDialog } from '@/components/user-edit-dialog';
+import { UserPdDialog } from '@/components/user-pd-dialog';
 
 type User = (typeof UserListType)[0];
+type PdAction = 'credit' | 'debit';
 
 const roles = [
     { value: "all", label: "Все" },
@@ -36,6 +38,11 @@ export default function UserManagementPage() {
     // State for the edit dialog
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+    // New state for PD dialog
+    const [isPdDialogOpen, setIsPdDialogOpen] = useState(false);
+    const [selectedAction, setSelectedAction] = useState<PdAction | null>(null);
+
 
     const filteredUsers = useMemo(() => {
         return users.filter(user => {
@@ -81,6 +88,12 @@ export default function UserManagementPage() {
         });
     };
 
+    const handlePdActionClick = (user: User, action: PdAction) => {
+        setSelectedUser(user);
+        setSelectedAction(action);
+        setIsPdDialogOpen(true);
+    };
+
     return (
         <div className="space-y-6">
             <div className="space-y-2">
@@ -113,7 +126,12 @@ export default function UserManagementPage() {
                         </ScrollArea>
 
                         <TabsContent value={activeTab} className="mt-4">
-                            <UserTable users={filteredUsers} onBanUser={handleBanUser} onEditUser={handleEditUserClick} />
+                            <UserTable
+                                users={filteredUsers}
+                                onBanUser={handleBanUser}
+                                onEditUser={handleEditUserClick}
+                                onPdAction={handlePdActionClick}
+                            />
                         </TabsContent>
                     </Tabs>
                 </CardContent>
@@ -123,6 +141,12 @@ export default function UserManagementPage() {
                 isOpen={isEditDialogOpen}
                 onOpenChange={setIsEditDialogOpen}
                 onUserUpdate={handleUpdateUser}
+            />
+             <UserPdDialog 
+                user={selectedUser}
+                action={selectedAction}
+                isOpen={isPdDialogOpen}
+                onOpenChange={setIsPdDialogOpen}
             />
         </div>
     );

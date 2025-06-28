@@ -2,7 +2,7 @@
 
 import type { FC } from 'react';
 import Link from "next/link";
-import { MoreHorizontal, Gavel, Pencil } from "lucide-react";
+import { MoreHorizontal, Gavel, Pencil, Coins } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { userList } from "@/lib/mock-data/users";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from './ui/dropdown-menu';
-import { useToast } from '@/hooks/use-toast';
 import { Users2 } from 'lucide-react';
 
 type User = (typeof userList)[0];
@@ -19,17 +18,10 @@ interface UserTableProps {
     users: User[];
     onBanUser: (userId: string) => void;
     onEditUser: (user: User) => void;
+    onPdAction: (user: User, action: 'credit' | 'debit') => void;
 }
 
-export const UserTable: FC<UserTableProps> = ({ users, onBanUser, onEditUser }) => {
-    const { toast } = useToast();
-
-    const handleAction = (message: string) => {
-        toast({
-            title: "Действие выполнено",
-            description: message,
-        });
-    };
+export const UserTable: FC<UserTableProps> = ({ users, onBanUser, onEditUser, onPdAction }) => {
     
     if (users.length === 0) {
         return (
@@ -89,10 +81,12 @@ export const UserTable: FC<UserTableProps> = ({ users, onBanUser, onEditUser }) 
                                                 Редактировать
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
-                                            <DropdownMenuItem onClick={() => handleAction(`PD начислены пользователю ${user.name}.`)}>
+                                            <DropdownMenuItem onClick={() => onPdAction(user, 'credit')}>
+                                                <Coins className="mr-2 h-4 w-4 text-green-500" />
                                                 Начислить PD
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => handleAction(`PD списаны у пользователя ${user.name}.`)}>
+                                            <DropdownMenuItem onClick={() => onPdAction(user, 'debit')}>
+                                                <Coins className="mr-2 h-4 w-4 text-red-500" />
                                                 Списать PD
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
