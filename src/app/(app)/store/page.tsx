@@ -6,12 +6,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { pdHistory, storeItems, lootboxPrizes } from '@/lib/mock-data';
-import { Coins, Gem, Palette, Shield, ShoppingCart, Gift, Sparkles, X } from 'lucide-react';
+import { pdHistory, storeItems, lootboxPrizes, partnerOffers, ticketEvents, recentDonors } from '@/lib/mock-data';
+import { Coins, Gem, Palette, Shield, ShoppingCart, Gift, Sparkles, X, Handshake, Heart, Ticket, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 
 type Prize = (typeof lootboxPrizes)[0];
 
@@ -26,11 +29,10 @@ export default function StorePage() {
     const [wonPrize, setWonPrize] = useState<Prize | null>(null);
     const [spinningPrize, setSpinningPrize] = useState<Prize>(lootboxPrizes[0]);
 
-    const handlePurchase = (itemId: string, itemName: string) => {
-        setPurchasedItems([...purchasedItems, itemId]);
+    const handlePurchase = (itemName: string, itemPrice: number) => {
         toast({
             title: "Покупка совершена!",
-            description: `Вы успешно разблокировали: ${itemName}.`,
+            description: `Вы успешно приобрели: ${itemName} за ${itemPrice} PD.`,
         });
     };
 
@@ -85,7 +87,7 @@ export default function StorePage() {
                     <Gem className="h-16 w-16 mb-2 opacity-20" />
                     <CardTitle className="font-headline text-4xl">Магазин ProDvor</CardTitle>
                     <CardDescription className="text-lg text-primary-foreground/80">
-                        Потратьте свои PD на уникальные предметы кастомизации.
+                        Центр экономики вашей игровой вселенной.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="flex items-center justify-end gap-4 border-t bg-muted/50 p-4">
@@ -97,89 +99,164 @@ export default function StorePage() {
                 </CardContent>
             </Card>
 
-            <Card className="border-2 border-primary/50 bg-gradient-to-br from-card to-primary/10 shadow-lg">
-                <div className="grid grid-cols-1 md:grid-cols-3">
-                    <div className="flex items-center justify-center p-6">
-                        <Image src="https://placehold.co/200x200.png" alt="Lootbox" width={200} height={200} data-ai-hint="treasure chest" className="drop-shadow-lg"/>
-                    </div>
-                    <div className="md:col-span-2 p-6">
-                        <CardTitle className="font-headline text-2xl">Кейс "Летний сезон"</CardTitle>
-                        <CardDescription>Откройте кейс и получите случайный эксклюзивный предмет этого сезона. Шанс выпадения редкого предмета — 5%!</CardDescription>
-                        <div className="mt-4 flex items-center gap-4">
-                            <Button size="lg" className="font-bold" onClick={handleLootboxOpen}>
-                                <Gift className="mr-2 h-5 w-5" />
-                                Открыть за 100 PD
-                            </Button>
-                            <p className="text-sm text-muted-foreground">Содержит рамки, темы и значки.</p>
+            <Tabs defaultValue="customization">
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+                    <TabsTrigger value="customization"><ShoppingBag className="mr-2 h-4 w-4"/>Кастомизация</TabsTrigger>
+                    <TabsTrigger value="partners"><Handshake className="mr-2 h-4 w-4"/>Магазин партнеров</TabsTrigger>
+                    <TabsTrigger value="donations"><Heart className="mr-2 h-4 w-4"/>Донаты</TabsTrigger>
+                    <TabsTrigger value="tickets"><Ticket className="mr-2 h-4 w-4"/>Билеты</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="customization" className="mt-4">
+                    <div className="space-y-6">
+                        <Card className="border-2 border-primary/50 bg-gradient-to-br from-card to-primary/10 shadow-lg">
+                            <div className="grid grid-cols-1 md:grid-cols-3">
+                                <div className="flex items-center justify-center p-6">
+                                    <Image src="https://placehold.co/200x200.png" alt="Lootbox" width={200} height={200} data-ai-hint="treasure chest" className="drop-shadow-lg"/>
+                                </div>
+                                <div className="md:col-span-2 p-6">
+                                    <CardTitle className="font-headline text-2xl">Кейс "Летний сезон"</CardTitle>
+                                    <CardDescription>Откройте кейс и получите случайный эксклюзивный предмет этого сезона. Шанс выпадения редкого предмета — 5%!</CardDescription>
+                                    <div className="mt-4 flex items-center gap-4">
+                                        <Button size="lg" className="font-bold" onClick={handleLootboxOpen}>
+                                            <Gift className="mr-2 h-5 w-5" />
+                                            Открыть за 100 PD
+                                        </Button>
+                                        <p className="text-sm text-muted-foreground">Содержит рамки, темы и значки.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </Card>
+                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                            {storeItems.map((item) => {
+                                const canAfford = totalPd >= item.price;
+                                const isPurchased = purchasedItems.includes(item.id);
+
+                                return (
+                                    <Card key={item.id} className="flex flex-col overflow-hidden transition-all hover:shadow-lg">
+                                        <div className="relative">
+                                            <Image
+                                                src={item.image}
+                                                alt={item.name}
+                                                width={600}
+                                                height={400}
+                                                className="aspect-video w-full object-cover"
+                                                data-ai-hint={item.imageHint}
+                                            />
+                                            <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-black/50 px-2 py-1 text-xs font-bold text-white">
+                                                <Coins className="h-3 w-3 text-amber-300" />
+                                                {item.price.toLocaleString()} PD
+                                            </div>
+                                        </div>
+                                        <CardHeader>
+                                            <CardTitle className="font-headline text-lg">{item.name}</CardTitle>
+                                            <CardDescription className="line-clamp-2 text-xs">{item.description}</CardDescription>
+                                        </CardHeader>
+                                        <CardContent className="flex-1">
+                                            <div className="flex items-center text-sm text-muted-foreground">
+                                            {getItemTypeIcon(item.type)}
+                                            <span className="capitalize">{item.type === 'theme' ? 'Тема профиля' : item.type === 'badge' ? 'Значок' : 'Рамка'}</span>
+                                            </div>
+                                        </CardContent>
+                                        <CardFooter className="bg-muted/30 p-4">
+                                            {isPurchased ? (
+                                                <Button className="w-full" disabled>Приобретено</Button>
+                                            ) : (
+                                                <Button className="w-full" onClick={() => handlePurchase(item.name, item.price)} disabled={!canAfford}>
+                                                    <ShoppingCart className="mr-2 h-4 w-4" />
+                                                    Купить
+                                                </Button>
+                                            )}
+                                        </CardFooter>
+                                    </Card>
+                                );
+                            })}
                         </div>
                     </div>
-                </div>
-            </Card>
-
-            <Tabs defaultValue="personal">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="personal">Личные предметы</TabsTrigger>
-                    <TabsTrigger value="team">Командные предметы</TabsTrigger>
-                </TabsList>
-                <TabsContent value="personal" className="mt-4">
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                        {storeItems.map((item) => {
-                            const canAfford = totalPd >= item.price;
-                            const isPurchased = purchasedItems.includes(item.id);
-
-                            return (
-                                <Card key={item.id} className="flex flex-col overflow-hidden transition-all hover:shadow-lg">
-                                    <div className="relative">
-                                        <Image
-                                            src={item.image}
-                                            alt={item.name}
-                                            width={600}
-                                            height={400}
-                                            className="aspect-video w-full object-cover"
-                                            data-ai-hint={item.imageHint}
-                                        />
-                                        <div className="absolute right-2 top-2 flex items-center gap-1 rounded-full bg-black/50 px-2 py-1 text-xs font-bold text-white">
-                                            <Coins className="h-3 w-3 text-amber-300" />
-                                            {item.price.toLocaleString()} PD
-                                        </div>
+                </TabsContent>
+                
+                <TabsContent value="partners" className="mt-4">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        {partnerOffers.map(offer => (
+                            <Card key={offer.id}>
+                                <CardHeader className='flex-row items-center gap-4'>
+                                    <Image src={offer.logo} alt={offer.sponsor} width={100} height={40} data-ai-hint={offer.logoHint} className='rounded-md' />
+                                    <div className='flex-1'>
+                                        <CardTitle>{offer.title}</CardTitle>
+                                        <CardDescription>{offer.sponsor}</CardDescription>
                                     </div>
-                                    <CardHeader>
-                                        <CardTitle className="font-headline text-lg">{item.name}</CardTitle>
-                                        <CardDescription className="line-clamp-2 text-xs">{item.description}</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="flex-1">
-                                        <div className="flex items-center text-sm text-muted-foreground">
-                                           {getItemTypeIcon(item.type)}
-                                           <span className="capitalize">{item.type === 'theme' ? 'Тема профиля' : item.type === 'badge' ? 'Значок' : 'Рамка'}</span>
-                                        </div>
-                                    </CardContent>
-                                    <CardFooter className="bg-muted/30 p-4">
-                                        {isPurchased ? (
-                                            <Button className="w-full" disabled>Приобретено</Button>
-                                        ) : canAfford ? (
-                                            <Button className="w-full" onClick={() => handlePurchase(item.id, item.name)}>
-                                                <ShoppingCart className="mr-2 h-4 w-4" />
-                                                Купить
-                                            </Button>
-                                        ) : (
-                                            <Button asChild variant="secondary" className="w-full">
-                                                <Link href="/pd-economy">
-                                                    <Coins className="mr-2 h-4 w-4" />
-                                                    Заработать PD
-                                                </Link>
-                                            </Button>
-                                        )}
-                                    </CardFooter>
-                                </Card>
-                            );
-                        })}
+                                </CardHeader>
+                                <CardContent>
+                                    <p className='text-sm text-muted-foreground'>{offer.description}</p>
+                                </CardContent>
+                                <CardFooter className='flex-col items-stretch gap-2'>
+                                    <Button className='w-full' onClick={() => handlePurchase(offer.title, offer.price)} disabled={totalPd < offer.price}>
+                                        <Handshake className='mr-2 h-4 w-4'/>
+                                        Получить за {offer.price} PD
+                                    </Button>
+                                    {totalPd < offer.price && <p className='text-xs text-destructive text-center'>Недостаточно PD</p>}
+                                </CardFooter>
+                            </Card>
+                        ))}
                     </div>
                 </TabsContent>
-                <TabsContent value="team" className="mt-4">
-                    <div className="flex h-64 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
-                        <ShoppingCart className="h-12 w-12 mb-4 text-muted-foreground" />
-                        <h3 className="text-xl font-semibold">Магазин для команд скоро появится</h3>
-                        <p className="mt-2 text-muted-foreground">Здесь капитаны смогут приобретать кастомизацию для своей команды.</p>
+
+                <TabsContent value="donations" className="mt-4">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                        <Card className="lg:col-span-2">
+                            <CardHeader>
+                                <CardTitle>Фонд поддержки молодых талантов</CardTitle>
+                                <CardDescription>Ваши PD помогут юным командам оплатить участие в турнирах, купить инвентарь или арендовать площадку. Каждый донат имеет значение!</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex items-center gap-4">
+                                <Input type='number' placeholder='Сумма в PD' className='max-w-xs' />
+                                <Button onClick={() => toast({ title: "Спасибо за вашу поддержку!", description: "Ваше пожертвование поможет будущим чемпионам."})}>
+                                    <Heart className='mr-2 h-4 w-4'/>
+                                    Пожертвовать
+                                </Button>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Недавние донаты</CardTitle>
+                            </CardHeader>
+                             <CardContent className="space-y-4">
+                                {recentDonors.map(donor => (
+                                    <div key={donor.id} className="flex items-center justify-between">
+                                        <div className='flex items-center gap-2'>
+                                            <Avatar className="h-8 w-8">
+                                                <AvatarImage src={donor.avatar} alt={donor.name} data-ai-hint={donor.avatarHint} />
+                                                <AvatarFallback>{donor.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <span className='text-sm font-medium'>{donor.name}</span>
+                                        </div>
+                                        <span className='text-sm font-bold text-primary'>{donor.amount.toLocaleString()} PD</span>
+                                    </div>
+                                ))}
+                            </CardContent>
+                        </Card>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="tickets" className="mt-4">
+                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                        {ticketEvents.map(event => (
+                            <Card key={event.id} className="flex flex-col overflow-hidden">
+                                <CardHeader className='p-0 relative h-40'>
+                                     <Image src={event.image} alt={event.name} fill className='object-cover' data-ai-hint={event.imageHint} />
+                                </CardHeader>
+                                <CardContent className='p-4 flex-1'>
+                                    <CardTitle>{event.name}</CardTitle>
+                                    <CardDescription>{event.date} - {event.location}</CardDescription>
+                                </CardContent>
+                                <CardFooter>
+                                    <Button className='w-full' onClick={() => handlePurchase(`Билет на ${event.name}`, event.price)} disabled={totalPd < event.price}>
+                                        <Ticket className='mr-2 h-4 w-4' />
+                                        Купить билет за {event.price} PD
+                                    </Button>
+                                </CardFooter>
+                            </Card>
+                        ))}
                     </div>
                 </TabsContent>
             </Tabs>
