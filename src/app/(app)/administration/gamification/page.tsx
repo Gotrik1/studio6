@@ -10,7 +10,7 @@ import { achievementCatalog } from "@/lib/mock-data/achievements";
 import { lootboxPrizes } from "@/lib/mock-data/store";
 import { leaderboardData, teamLeaderboardData } from "@/lib/mock-data/leaderboards";
 import { Badge } from "@/components/ui/badge";
-import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem, BarChart3, AlertTriangle, Pencil } from "lucide-react";
+import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem, BarChart3, AlertTriangle, Pencil, PlusCircle, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ranks } from "@/config/ranks";
@@ -22,10 +22,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+
+type Achievement = (typeof achievementCatalog)[0];
 
 const achievementIcons = {
     Trophy, Star, Shield, Gem, Crown, Rocket, Swords, Medal, Award
 };
+const iconKeys = Object.keys(achievementIcons) as (keyof typeof achievementIcons)[];
 
 const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -76,18 +83,25 @@ export default function GamificationAdminPage() {
     const { toast } = useToast();
     const [rates, setRates] = useState(initialPdRates);
     const [limits, setLimits] = useState(initialPdLimits);
+    const [achievements, setAchievements] = useState(achievementCatalog);
     
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    // State for rates/limits editing
+    const [isRateLimitDialogOpen, setIsRateLimitDialogOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<{ key: string; label: string; value: number | string; type: 'rate' | 'limit' } | null>(null);
     const [currentValue, setCurrentValue] = useState('');
 
-    const handleEditClick = (key: string, label: string, value: number | string, type: 'rate' | 'limit') => {
+    // State for achievement editing
+    const [isAchievementDialogOpen, setIsAchievementDialogOpen] = useState(false);
+    const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
+    const [currentAchievementData, setCurrentAchievementData] = useState<Partial<Achievement>>({});
+
+    const handleEditRateLimitClick = (key: string, label: string, value: number | string, type: 'rate' | 'limit') => {
         setEditingItem({ key, label, value, type });
         setCurrentValue(String(value));
-        setIsDialogOpen(true);
+        setIsRateLimitDialogOpen(true);
     };
 
-    const handleSave = () => {
+    const handleRateLimitSave = () => {
         if (!editingItem) return;
 
         const updatedValue = editingItem.type === 'rate' ? parseInt(currentValue, 10) : currentValue;
@@ -104,8 +118,42 @@ export default function GamificationAdminPage() {
         }
 
         toast({ title: 'Успех!', description: `Значение для "${editingItem.label}" было обновлено.` });
-        setIsDialogOpen(false);
+        setIsRateLimitDialogOpen(false);
         setEditingItem(null);
+    };
+
+    const handleAchievementEditClick = (achievement: Achievement | null) => {
+        setEditingAchievement(achievement);
+        setCurrentAchievementData(achievement ? { ...achievement } : { name: '', description: '', rarity: 'Обычная', icon: 'Star', points: 0 });
+        setIsAchievementDialogOpen(true);
+    };
+
+    const handleAchievementSave = () => {
+        const { name, description, rarity, icon, points } = currentAchievementData;
+        if (!name || !description || !rarity || !icon || points === undefined) {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Все поля должны быть заполнены.' });
+            return;
+        }
+
+        if (editingAchievement) {
+            setAchievements(achievements.map(ach => ach.name === editingAchievement.name ? { ...currentAchievementData } as Achievement : ach));
+            toast({ title: 'Успех!', description: `Достижение "${name}" обновлено.` });
+        } else {
+            if (achievements.some(ach => ach.name === name)) {
+                 toast({ variant: 'destructive', title: 'Ошибка', description: 'Достижение с таким названием уже существует.' });
+                 return;
+            }
+            setAchievements(prev => [...prev, { ...currentAchievementData } as Achievement]);
+            toast({ title: 'Успех!', description: `Достижение "${name}" добавлено.` });
+        }
+
+        setIsAchievementDialogOpen(false);
+        setEditingAchievement(null);
+    };
+
+    const handleAchievementDelete = (achievementName: string) => {
+        setAchievements(prev => prev.filter(ach => ach.name !== achievementName));
+        toast({ title: 'Достижение удалено', description: `"${achievementName}" было успешно удалено.`, variant: 'destructive' });
     };
 
 
@@ -149,7 +197,7 @@ export default function GamificationAdminPage() {
                                                 <TableCell className="text-right font-bold text-primary">
                                                     <div className="flex items-center justify-end gap-2">
                                                         {value} PD
-                                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditClick(key, key, value, 'rate')}>
+                                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRateLimitClick(key, key, value, 'rate')}>
                                                             <Pencil className="h-4 w-4" />
                                                         </Button>
                                                     </div>
@@ -171,7 +219,7 @@ export default function GamificationAdminPage() {
                                         <p className="font-medium">{key}</p>
                                         <div className="flex items-center gap-2">
                                             <Badge variant="secondary">{value}</Badge>
-                                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditClick(key, key, value, 'limit')}>
+                                             <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleEditRateLimitClick(key, key, value, 'limit')}>
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
                                         </div>
@@ -302,15 +350,47 @@ export default function GamificationAdminPage() {
 
                 <TabsContent value="achievements" className="mt-4">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Все достижения</CardTitle>
-                            <CardDescription>Полный список ачивок, доступных на платформе.</CardDescription>
+                        <CardHeader className="flex-row items-center justify-between">
+                            <div>
+                                <CardTitle>Все достижения</CardTitle>
+                                <CardDescription>Полный список ачивок, доступных на платформе.</CardDescription>
+                            </div>
+                            <Button onClick={() => handleAchievementEditClick(null)}>
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Добавить
+                            </Button>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                            {achievementCatalog.map((ach) => {
+                            {achievements.map((ach) => {
                                 const Icon = achievementIcons[ach.icon as keyof typeof achievementIcons];
                                 return (
-                                    <Card key={ach.name} className="p-4">
+                                    <Card key={ach.name} className="p-4 group relative">
+                                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                                            <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => handleAchievementEditClick(ach)}>
+                                                <Pencil className="h-4 w-4" />
+                                            </Button>
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="destructive" size="icon" className="h-7 w-7">
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Это действие необратимо. Вы действительно хотите удалить достижение "{ach.name}"?
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Отмена</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleAchievementDelete(ach.name)} className="bg-destructive hover:bg-destructive/90">
+                                                            Удалить
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
                                         <div className="flex items-start gap-4">
                                             <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border ${getRarityColor(ach.rarity)}`}>
                                                 {Icon && <Icon className="h-6 w-6" />}
@@ -440,7 +520,7 @@ export default function GamificationAdminPage() {
                 </TabsContent>
             </Tabs>
 
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <Dialog open={isRateLimitDialogOpen} onOpenChange={setIsRateLimitDialogOpen}>
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>Редактирование "{editingItem?.label}"</DialogTitle>
@@ -459,8 +539,75 @@ export default function GamificationAdminPage() {
                         />
                     </div>
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Отмена</Button>
-                        <Button onClick={handleSave}>Сохранить</Button>
+                        <Button variant="outline" onClick={() => setIsRateLimitDialogOpen(false)}>Отмена</Button>
+                        <Button onClick={handleRateLimitSave}>Сохранить</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isAchievementDialogOpen} onOpenChange={setIsAchievementDialogOpen}>
+                <DialogContent className="sm:max-w-[480px]">
+                    <DialogHeader>
+                        <DialogTitle>{editingAchievement ? "Редактировать достижение" : "Новое достижение"}</DialogTitle>
+                        <DialogDescription>
+                            Заполните информацию о достижении.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="ach-name">Название</Label>
+                            <Input id="ach-name" value={currentAchievementData.name || ''} onChange={(e) => setCurrentAchievementData(prev => ({...prev, name: e.target.value}))} disabled={!!editingAchievement} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="ach-desc">Описание</Label>
+                            <Textarea id="ach-desc" value={currentAchievementData.description || ''} onChange={(e) => setCurrentAchievementData(prev => ({...prev, description: e.target.value}))} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                             <div className="space-y-2">
+                                <Label htmlFor="ach-points">Очки (XP)</Label>
+                                <Input id="ach-points" type="number" value={currentAchievementData.points || 0} onChange={(e) => setCurrentAchievementData(prev => ({...prev, points: parseInt(e.target.value, 10) || 0}))} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="ach-rarity">Редкость</Label>
+                                <Select value={currentAchievementData.rarity} onValueChange={(value: Achievement['rarity']) => setCurrentAchievementData(prev => ({...prev, rarity: value}))}>
+                                    <SelectTrigger id="ach-rarity"><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Обычная">Обычная</SelectItem>
+                                        <SelectItem value="Редкая">Редкая</SelectItem>
+                                        <SelectItem value="Эпическая">Эпическая</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                         <div className="space-y-2">
+                            <Label htmlFor="ach-icon">Иконка</Label>
+                            <Select value={currentAchievementData.icon} onValueChange={(value: Achievement['icon']) => setCurrentAchievementData(prev => ({...prev, icon: value}))}>
+                                <SelectTrigger id="ach-icon">
+                                    <SelectValue>
+                                        {currentAchievementData.icon && (
+                                            <div className="flex items-center gap-2">
+                                                {React.createElement(achievementIcons[currentAchievementData.icon], { className: "h-4 w-4" })}
+                                                <span>{currentAchievementData.icon}</span>
+                                            </div>
+                                        )}
+                                    </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {iconKeys.map(iconKey => (
+                                        <SelectItem key={iconKey} value={iconKey}>
+                                            <div className="flex items-center gap-2">
+                                                {React.createElement(achievementIcons[iconKey], { className: "h-4 w-4" })}
+                                                <span>{iconKey}</span>
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsAchievementDialogOpen(false)}>Отмена</Button>
+                        <Button onClick={handleAchievementSave}>Сохранить</Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
