@@ -23,6 +23,7 @@ import '@/ai/flows/suggest-reply-flow.ts';
 import '@/ai/flows/analyze-join-request-flow.ts';
 import '@/ai/flows/generate-tournament-wizard-flow.ts';
 import '@/ai/flows/analyze-match-challenge-flow.ts';
+import '@/ai/flows/analyze-match-report-flow.ts';
 import '@/ai/flows/support-chatbot-flow.ts';
 import '@/ai/flows/analyze-role-change-flow.ts';
 import '@/ai/flows/generate-user-avatar-flow.ts';
@@ -39,6 +40,7 @@ import '@/ai/flows/sponsorship-scout-flow.ts';
 import '@/ai/flows/generate-match-post-flow.ts';
 import '@/ai/flows/generate-platform-news-flow.ts';
 import '@/ai/flows/generate-team-concept-flow.ts';
+
 
 
 
