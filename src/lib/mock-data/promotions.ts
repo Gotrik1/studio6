@@ -1,3 +1,4 @@
+
 export const promotionsList = [
   {
     name: "Конкурс на лучший игровой момент",
