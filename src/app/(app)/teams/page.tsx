@@ -80,9 +80,11 @@ export default function TeamsPage() {
                 <Card className="flex flex-col items-center justify-center gap-4 rounded-lg border-2 border-dashed bg-muted/50 p-6 text-center transition-colors hover:border-primary">
                     <CardTitle className="font-headline">Создай свою команду</CardTitle>
                     <CardDescription>Собери друзей, выбери название и начни свой путь к славе.</CardDescription>
-                    <Button>
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Создать команду
+                    <Button asChild>
+                        <Link href="/teams/new">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Создать команду
+                        </Link>
                     </Button>
                 </Card>
                 {loading ? (
