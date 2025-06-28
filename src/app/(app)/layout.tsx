@@ -1,5 +1,6 @@
 import { getSession, type User } from "@/lib/session";
 import { redirect } from "next/navigation";
+import Link from 'next/link';
 import {
   SidebarProvider,
   Sidebar,
@@ -64,109 +65,121 @@ export default async function AppLayout({
           </SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/dashboard" tooltip="Лента">
-                <Newspaper />
-                Лента
+              <SidebarMenuButton asChild tooltip="Лента">
+                <Link href="/dashboard">
+                  <Newspaper />
+                  Лента
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/profile" tooltip="Мой профиль">
-                <UserIcon />
-                Мой профиль
+              <SidebarMenuButton asChild tooltip="Мой профиль">
+                <Link href="/profile">
+                  <UserIcon />
+                  Мой профиль
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/teams" tooltip="Команды">
-                <Users />
-                Команды
+              <SidebarMenuButton asChild tooltip="Команды">
+                <Link href="/teams">
+                  <Users />
+                  Команды
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Площадки">
+              <SidebarMenuButton tooltip="Площадки">
                 <MapPin />
                 Площадки
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Поиск">
+              <SidebarMenuButton tooltip="Поиск">
                 <Search />
                 Поиск
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Тренировки">
+              <SidebarMenuButton tooltip="Тренировки">
                 <Dumbbell />
                 Тренировки
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/tournaments" tooltip="Турниры">
-                <Trophy />
-                Турниры
+              <SidebarMenuButton asChild tooltip="Турниры">
+                <Link href="/tournaments">
+                  <Trophy />
+                  Турниры
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Лидерборды">
+              <SidebarMenuButton tooltip="Лидерборды">
                 <BarChart3 />
                 Лидерборды
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Каталог Достижений">
+              <SidebarMenuButton tooltip="Каталог Достижений">
                 <Award />
                 Каталог Достижений
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Фан-зона">
+              <SidebarMenuButton tooltip="Фан-зона">
                 <Star />
                 Фан-зона
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Центр Судей">
+              <SidebarMenuButton tooltip="Центр Судей">
                 <Gavel />
                 Центр Судей
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Мед. Обеспечение">
+              <SidebarMenuButton tooltip="Мед. Обеспечение">
                 <HeartPulse />
                 Мед. Обеспечение
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Спонсоры">
+              <SidebarMenuButton tooltip="Спонсоры">
                 <Handshake />
                 Спонсоры
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="События">
+              <SidebarMenuButton tooltip="События">
                 <Calendar />
                 События
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Чаты">
+              <SidebarMenuButton tooltip="Чаты">
                 <MessageSquare />
                 Чаты
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton href="/monetization" tooltip="PRO-Доступ">
-                <Crown />
-                PRO-Доступ
+              <SidebarMenuButton asChild tooltip="PRO-Доступ">
+                <Link href="/monetization">
+                  <Crown />
+                  PRO-Доступ
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton href="/ai-analysis" tooltip="ИИ-Анализ">
-                <BrainCircuit />
-                ИИ-Анализ
+              <SidebarMenuButton asChild tooltip="ИИ-Анализ">
+                <Link href="/ai-analysis">
+                  <BrainCircuit />
+                  ИИ-Анализ
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton href="#" tooltip="Настройки">
+              <SidebarMenuButton tooltip="Настройки">
                 <Settings />
                 Настройки
               </SidebarMenuButton>
@@ -186,9 +199,11 @@ export default async function AppLayout({
             </SidebarMenuItem>
             {(user.role === 'Администратор' || user.role === 'Admin') && (
               <SidebarMenuItem>
-                  <SidebarMenuButton href="/administration" tooltip="Администрирование">
-                    <Shield />
-                    Администрирование
+                  <SidebarMenuButton asChild tooltip="Администрирование">
+                    <Link href="/administration">
+                      <Shield />
+                      Администрирование
+                    </Link>
                   </SidebarMenuButton>
               </SidebarMenuItem>
             )}
