@@ -8,19 +8,34 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   SidebarInset,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { UserNav } from "@/components/user-nav";
 import { Logo } from "@/components/icons";
 import {
-  Home,
+  Newspaper,
+  User as UserIcon,
   Users,
+  MapPin,
+  Search,
+  Dumbbell,
   Trophy,
-  BarChart,
-  ShieldCheck,
-  BrainCircuit,
+  BarChart3,
+  Award,
+  Star,
+  Gavel,
+  HeartPulse,
+  Handshake,
+  Calendar,
+  MessageSquare,
+  Crown,
+  Settings,
+  FolderKanban,
 } from "lucide-react";
+import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 
 export default async function AppLayout({
   children,
@@ -47,40 +62,119 @@ export default async function AppLayout({
           </SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/dashboard" tooltip="Dashboard">
-                <Home />
-                Dashboard
+              <SidebarMenuButton href="/dashboard" tooltip="Лента">
+                <Newspaper />
+                Лента
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/teams" tooltip="Teams">
+              <SidebarMenuButton href="/profile" tooltip="Мой профиль">
+                <UserIcon />
+                Мой профиль
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton href="/teams" tooltip="Команды">
                 <Users />
-                Teams
+                Команды
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/tournaments" tooltip="Tournaments">
+              <SidebarMenuButton href="#" tooltip="Площадки">
+                <MapPin />
+                Площадки
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton href="#" tooltip="Поиск">
+                <Search />
+                Поиск
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton href="#" tooltip="Тренировки">
+                <Dumbbell />
+                Тренировки
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton href="/tournaments" tooltip="Турниры">
                 <Trophy />
-                Tournaments
+                Турниры
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/profile" tooltip="Profile">
-                <BarChart />
-                Profile & Achievements
+              <SidebarMenuButton href="#" tooltip="Лидерборды">
+                <BarChart3 />
+                Лидерборды
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/ai-analysis" tooltip="AI Analysis">
-                <BrainCircuit />
-                AI Content Analysis
+              <SidebarMenuButton href="#" tooltip="Каталог Достижений">
+                <Award />
+                Каталог Достижений
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton href="/monetization" tooltip="Monetization">
-                <ShieldCheck />
-                PRO Subscriptions
+              <SidebarMenuButton href="#" tooltip="Фан-зона">
+                <Star />
+                Фан-зона
               </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton href="#" tooltip="Центр Судей">
+                <Gavel />
+                Центр Судей
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton href="#" tooltip="Мед. Обеспечение">
+                <HeartPulse />
+                Мед. Обеспечение
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton href="#" tooltip="Спонсоры">
+                <Handshake />
+                Спонсоры
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton href="#" tooltip="События">
+                <Calendar />
+                События
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton href="#" tooltip="Чаты">
+                <MessageSquare />
+                Чаты
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton href="/monetization" tooltip="PRO-Доступ">
+                <Crown />
+                PRO-Доступ
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton href="#" tooltip="Настройки">
+                <Settings />
+                Настройки
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+                <CollapsibleSidebarMenuItem icon={<FolderKanban />} title="Документы">
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/documents/architecture">Архитектура</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/documents/backend-roadmap">Бэкенд Roadmap</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/documents/backend-production">Готовность к продакшену</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                </CollapsibleSidebarMenuItem>
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>
