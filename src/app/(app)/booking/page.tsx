@@ -150,7 +150,7 @@ export default function BookingPage() {
     };
 
     const activeFilterCount =
-        filters.surfaceTypes.length > 0 ? 1 : 0 + // simplified for single select
+        (filters.surfaceTypes.length > 0 ? 1 : 0) +
         filters.features.length +
         (filters.price !== 'any' ? 1 : 0);
 
