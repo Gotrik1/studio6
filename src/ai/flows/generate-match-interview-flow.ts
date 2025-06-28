@@ -8,7 +8,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 import { generateDialogue } from './dialogue-generation-flow';
 import { multiSpeakerTts } from './multi-speaker-tts-flow';
 
