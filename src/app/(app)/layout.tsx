@@ -1,6 +1,6 @@
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
-import { AppLayout } from "@/widgets/app-layout";
+import AppLayoutClient from "@/components/app-layout-client";
 import { TeamProvider } from "@/app/providers/team-provider";
 
 export default async function ApplicationLayout({
@@ -16,9 +16,9 @@ export default async function ApplicationLayout({
 
   return (
     <TeamProvider>
-      <AppLayout user={user}>
+      <AppLayoutClient user={user}>
           {children}
-      </AppLayout>
+      </AppLayoutClient>
     </TeamProvider>
   );
 }
