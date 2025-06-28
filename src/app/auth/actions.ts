@@ -1,8 +1,9 @@
+
 'use server';
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import type { User } from '@/lib/session';
+import type { User } from '@/lib/types';
 import { z } from 'zod';
 
 // Login action

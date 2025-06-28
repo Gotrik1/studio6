@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { User } from './session';
+import type { User } from './types';
 
 export function useSession() {
   const [user, setUser] = useState<User | null>(null);

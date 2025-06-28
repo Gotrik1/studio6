@@ -1,8 +1,9 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { User } from "@/lib/session";
+import type { User } from "@/lib/types";
 
 // Import all mock data for different roles
 import { adminUser, adminAchievements } from "@/lib/mock-data/admin-profile";

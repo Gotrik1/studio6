@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { logout } from "@/lib/actions"
-import type { User } from "@/lib/session"
+import type { User } from "@/lib/types"
 
 export function UserNav({ user }: { user: User }) {
   const initials = user.name

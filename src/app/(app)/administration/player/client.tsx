@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { User } from '@/lib/session';
+import type { User } from '@/lib/types';
 
 const PlayerProfile = dynamic(() => import('@/components/player-profile').then(mod => mod.PlayerProfile), {
     loading: () => <div className="space-y-6">

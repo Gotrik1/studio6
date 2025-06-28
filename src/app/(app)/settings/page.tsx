@@ -1,4 +1,5 @@
-import { getSession, type User } from "@/lib/session";
+import { getSession } from "@/lib/session";
+import type { User } from "@/lib/types";
 import { redirect } from "next/navigation";
 import SettingsClient from "./client";
 

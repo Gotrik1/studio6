@@ -1,11 +1,5 @@
 import { cookies } from 'next/headers';
-
-export type User = {
-  name: string;
-  email: string;
-  role: string;
-  avatar: string;
-};
+import type { User } from '@/lib/types';
 
 export async function getSession(): Promise<User | null> {
   const sessionCookie = cookies().get('session')?.value;

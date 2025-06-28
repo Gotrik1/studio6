@@ -11,7 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { BookOpen, Youtube, Goal, Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar, Award, Loader2, TrendingUp, TrendingDown, Sparkles, AlertCircleIcon } from "lucide-react";
 import Link from "next/link";
-import type { User } from "@/lib/session";
+import type { User } from "@/lib/types";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/lib/mock-data/profiles";
 import { pdHistory } from "@/lib/mock-data/gamification";
 import { Skeleton } from './ui/skeleton';

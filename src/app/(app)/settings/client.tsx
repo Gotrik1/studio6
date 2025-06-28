@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -15,7 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User as UserIcon, KeyRound, Bell, Eye, ShieldAlert, Trash2, BrainCircuit, Loader2, AlertTriangle, ShieldCheck } from "lucide-react";
-import type { User } from "@/lib/session";
+import type { User } from "@/lib/types";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { analyzeSecurity, type AnalyzeSecurityOutput } from '@/ai/flows/analyze-security-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
