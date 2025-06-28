@@ -546,7 +546,7 @@ export default function DashboardPage() {
                                 <div className="flex items-center gap-2 text-sm">
                                     <quest.icon className="h-4 w-4 text-muted-foreground" />
                                     <span className="flex-1 font-medium">{quest.title}</span>
-                                    <Badge variant="secondary" className="flex items-center gap-1"><Coins className="h-3 w-3" />+{quest.reward} PD</Badge>
+                                    <Badge variant="secondary" className="flex items-center gap-1"><Coins className="h-3 w-3"/>+{quest.reward} PD</Badge>
                                 </div>
                                 <Progress value={(quest.currentProgress / quest.goal) * 100} className="mt-1 h-2" />
                                 <div className="flex justify-between items-center mt-1">
@@ -593,6 +593,11 @@ export default function DashboardPage() {
                         </div>
                     </div>
                 </CardContent>
+                <CardFooter>
+                    <Button asChild variant="outline" className="w-full">
+                        <Link href="/quests">Все задания</Link>
+                    </Button>
+                </CardFooter>
             </Card>
 
             <Card>

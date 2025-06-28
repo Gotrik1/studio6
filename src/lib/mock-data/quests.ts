@@ -1,4 +1,4 @@
-import { Swords, MessageCircle, Crown, ShoppingCart, type LucideIcon } from "lucide-react";
+import { Swords, MessageCircle, Crown, ShoppingCart, UserPlus, Trophy, type LucideIcon } from "lucide-react";
 
 export type Quest = {
   id: string;
@@ -8,7 +8,7 @@ export type Quest = {
   goal: number;
   currentProgress: number;
   isClaimed: boolean;
-  type: 'daily' | 'weekly';
+  type: 'daily' | 'weekly' | 'event';
   icon: LucideIcon;
 };
 
@@ -59,5 +59,30 @@ export const weeklyQuests: Quest[] = [
         isClaimed: false,
         type: 'weekly',
         icon: ShoppingCart,
+    },
+    {
+        id: 'weekly-2',
+        title: 'Вербовщик',
+        description: 'Пригласите 2 новых игроков в свою команду.',
+        reward: 150,
+        goal: 2,
+        currentProgress: 1,
+        isClaimed: false,
+        type: 'weekly',
+        icon: UserPlus,
+    }
+];
+
+export const eventQuests: Quest[] = [
+    {
+        id: 'event-1',
+        title: 'Участник Autumn Clash',
+        description: 'Зарегистрируйтесь на турнир Autumn Cyber Clash 2024.',
+        reward: 75,
+        goal: 1,
+        currentProgress: 0,
+        isClaimed: false,
+        type: 'event',
+        icon: Trophy,
     }
 ];

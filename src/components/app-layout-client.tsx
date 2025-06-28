@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { User } from "@/lib/types";
@@ -47,6 +48,7 @@ import {
   Briefcase,
   UserPlus,
   TrendingUp,
+  ClipboardList,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -112,6 +114,7 @@ export default function AppLayoutClient({ user, children }: AppLayoutClientProps
                     <CollapsibleSidebarMenuItem icon={<TrendingUp />} title="Развитие">
                       <SidebarMenuSubItem>
                           <SidebarMenuSubButton href="/training">Тренировки</SidebarMenuSubButton>
+                          <SidebarMenuSubButton href="/quests">Квесты</SidebarMenuSubButton>
                           <SidebarMenuSubButton href="/store">Магазин</SidebarMenuSubButton>
                           <SidebarMenuSubButton href="/promotions">Промо-акции</SidebarMenuSubButton>
                           <SidebarMenuSubButton href="/pd-economy">Экономика PD</SidebarMenuSubButton>
