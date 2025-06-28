@@ -1,17 +1,22 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/lib/session";
-import { achievements, teams, recentMatches, gallery, careerHistory } from "@/lib/mock-data";
+import { achievements, teams, recentMatches, gallery, careerHistory, pdHistory } from "@/lib/mock-data";
 import { Skeleton } from './ui/skeleton';
+import { PD_SOURCE_DETAILS, type PD_SOURCE_TYPE } from '@/config/gamification';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 const OverviewTab = dynamic(() => import('@/components/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -38,7 +43,6 @@ const GalleryTab = dynamic(() => import('@/components/player-profile-tabs/galler
   ssr: false,
 });
 
-
 type PlayerProfileProps = {
   user: User & {
     location: string;
@@ -51,6 +55,7 @@ type PlayerProfileProps = {
 
 export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
+  const totalPd = pdHistory.reduce((sum, item) => sum + item.value, 0);
 
   return (
     <div className="space-y-6">
@@ -103,13 +108,14 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
       </Card>
       
       <Tabs defaultValue="overview">
-        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
+        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-7">
           <TabsTrigger value="overview"><Activity className="mr-2 h-4 w-4"/>Обзор</TabsTrigger>
           <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
           <TabsTrigger value="career"><Briefcase className="mr-2 h-4 w-4"/>Карьера</TabsTrigger>
           <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
           <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4"/>Команды</TabsTrigger>
           <TabsTrigger value="gallery"><GalleryHorizontal className="mr-2 h-4 w-4"/>Галерея</TabsTrigger>
+          <TabsTrigger value="pd-wallet"><Coins className="mr-2 h-4 w-4"/>PD Кошелек</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -134,6 +140,55 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
         
         <TabsContent value="gallery">
           <GalleryTab gallery={gallery} isCurrentUser={isCurrentUser} />
+        </TabsContent>
+
+        <TabsContent value="pd-wallet">
+            <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                            <CardTitle className="text-sm font-medium">Текущий баланс</CardTitle>
+                            <Coins className="h-4 w-4 text-muted-foreground" />
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{totalPd.toLocaleString()} PD</div>
+                            <p className="text-xs text-muted-foreground">Всего заработано за все время</p>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>История начислений</CardTitle>
+                        <CardDescription>Здесь отображаются все ваши операции с PD.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Дата</TableHead>
+                                    <TableHead>Источник</TableHead>
+                                    <TableHead className="text-right">Сумма</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {pdHistory.map((tx) => (
+                                    <TableRow key={tx.id}>
+                                        <TableCell>
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="h-4 w-4 text-muted-foreground"/>
+                                                <span>{format(new Date(tx.timestamp), "d MMMM yyyy, HH:mm", { locale: ru })}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>{PD_SOURCE_DETAILS[tx.source as PD_SOURCE_TYPE]?.description || tx.source}</TableCell>
+                                        <TableCell className="text-right font-medium text-green-500">+{tx.value} PD</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            </div>
         </TabsContent>
       </Tabs>
     </div>

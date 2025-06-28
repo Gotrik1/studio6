@@ -1,4 +1,6 @@
 
+'use client';
+
 import {
   Card,
   CardHeader,
@@ -20,8 +22,12 @@ import {
   Trophy,
   Newspaper,
   Star,
+  Coins,
 } from "lucide-react";
 import Image from "next/image";
+import { useToast } from "@/hooks/use-toast";
+import { PD_RATES } from "@/config/gamification";
+
 
 const feedItems = [
   {
@@ -116,6 +122,22 @@ const getTypeIcon = (type: string) => {
 };
 
 export default function DashboardPage() {
+  const { toast } = useToast();
+
+  const handlePublish = () => {
+    // Here you would normally submit the post to the backend.
+    // We simulate the PD award notification.
+    toast({
+        title: (
+            <div className="flex items-center">
+                <Coins className="mr-2 h-5 w-5 text-amber-400" />
+                <span>+{PD_RATES.MEDIA_POST} PD</span>
+            </div>
+        ),
+        description: "За публикацию нового поста.",
+    });
+  }
+
   return (
     <div className="grid grid-cols-12 gap-6">
       <div className="col-span-12 lg:col-span-8">
@@ -131,7 +153,7 @@ export default function DashboardPage() {
                   <div className="flex gap-2 text-muted-foreground">
                     <Button variant="ghost" size="icon"><ImageIcon className="h-5 w-5"/></Button>
                   </div>
-                  <Button>Опубликовать</Button>
+                  <Button onClick={handlePublish}>Опубликовать</Button>
                 </div>
               </div>
             </CardContent>
