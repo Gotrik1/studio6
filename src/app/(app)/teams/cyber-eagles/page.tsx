@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2, Pencil, Trash2, UserPlus, Check, X, BellRing, Calendar, Bot } from "lucide-react";
+import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2, Pencil, Trash2, UserPlus, Check, X, BellRing, Calendar, Bot, Handshake } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { teamPdHistory } from "@/lib/mock-data/gamification";
@@ -32,6 +32,8 @@ import { pendingInvitations as initialPendingInvitations } from "@/lib/mock-data
 import debounce from 'lodash.debounce';
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSession } from "@/lib/session-client";
+import { generateSponsorshipPitch, type GenerateSponsorshipPitchOutput } from "@/ai/flows/generate-sponsorship-pitch";
+import { currentSponsors, incomingOffers, teamsSeekingSponsorship } from "@/lib/mock-data/sponsorship";
 
 const team = {
   name: "Кибер Орлы",
@@ -73,11 +75,55 @@ const recentMatches = [
   { id: 3, opponent: "Багровые Крестоносцы", score: "13-5", result: "Победа", map: "Haven" },
 ];
 
-const sponsors = [
-    { name: "TechSponsor", logo: "https://placehold.co/150x50.png", logoHint: "corporate logo" },
-    { name: "GamerGear", logo: "https://placehold.co/150x50.png", logoHint: "gaming brand logo" },
-    { name: "Energy Drink Co.", logo: "https://placehold.co/150x50.png", logoHint: "beverage logo" },
-]
+const SponsorshipPitchGenerator = () => {
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
+    const [pitch, setPitch] = useState(teamsSeekingSponsorship[0].pitch);
+
+    const handleGeneratePitch = async () => {
+        setIsLoading(true);
+        try {
+            const result = await generateSponsorshipPitch({
+                teamName: team.name,
+                achievements: 'Топ-1 команда платформы, победители Summer Kickoff 2024.',
+                goals: 'Ищем финансирование для поездок на LAN-турниры и покупку новой формы.',
+                audience: 'Активная фанатская база, более 10,000 подписчиков в социальных сетях, регулярные стримы с высоким онлайном.'
+            });
+            setPitch(result.pitch);
+            toast({ title: 'Питч сгенерирован!', description: 'Вы можете отредактировать его перед публикацией.' });
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось сгенерировать питч.' });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Спонсорский питч</CardTitle>
+                <CardDescription>Это ваша визитная карточка для потенциальных спонсоров. Отредактируйте текст и опубликуйте его, чтобы заявить о поиске поддержки.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Textarea
+                    value={pitch}
+                    onChange={(e) => setPitch(e.target.value)}
+                    className="min-h-[150px]"
+                    placeholder="Расскажите, почему именно ваша команда достойна поддержки..."
+                />
+            </CardContent>
+            <CardFooter className="gap-2">
+                <Button onClick={handleGeneratePitch} disabled={isLoading} variant="outline">
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
+                    Сгенерировать с AI
+                </Button>
+                 <Button onClick={() => toast({ title: 'Питч опубликован!', description: 'Ваша команда теперь видна спонсорам.' })}>
+                    Опубликовать
+                </Button>
+            </CardFooter>
+        </Card>
+    );
+}
 
 export default function TeamProfilePage() {
     const { toast } = useToast();
@@ -367,12 +413,13 @@ export default function TeamProfilePage() {
             </Card>
 
             <Tabs defaultValue="roster">
-                <TabsList className="grid w-full grid-cols-5 sm:grid-cols-10">
+                <TabsList className="grid w-full grid-cols-5 sm:grid-cols-11">
                     <TabsTrigger value="roster"><Users className="mr-2 h-4 w-4"/>Состав</TabsTrigger>
                     <TabsTrigger value="challenges">
                         <BellRing className="mr-2 h-4 w-4"/>Вызовы
                         {incomingChallenges.length > 0 && <Badge className="ml-2">{incomingChallenges.length}</Badge>}
                     </TabsTrigger>
+                    <TabsTrigger value="sponsorship"><Handshake className="mr-2 h-4 w-4"/>Спонсорство</TabsTrigger>
                     <TabsTrigger value="matches"><Swords className="mr-2 h-4 w-4"/>Матчи</TabsTrigger>
                     <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
                     <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
@@ -385,6 +432,59 @@ export default function TeamProfilePage() {
                         {joinRequests.length > 0 && <Badge className="ml-2">{joinRequests.length}</Badge>}
                     </TabsTrigger>
                 </TabsList>
+
+                <TabsContent value="sponsorship">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2">
+                           <SponsorshipPitchGenerator />
+                        </div>
+                        <div className="space-y-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Текущие спонсоры</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                     {currentSponsors.map(sponsor => (
+                                        <div key={sponsor.name} className="flex items-center gap-3">
+                                            <Avatar className="h-10 w-10 border p-1">
+                                                <AvatarImage src={sponsor.logo} className="object-contain" data-ai-hint={sponsor.logoHint} />
+                                                <AvatarFallback>{sponsor.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className="font-semibold">{sponsor.name}</p>
+                                                <Badge variant="secondary">{sponsor.tier}</Badge>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                             <Card>
+                                <CardHeader>
+                                    <CardTitle>Входящие предложения</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {incomingOffers.map(offer => (
+                                        <Card key={offer.id}>
+                                            <CardHeader className="flex-row items-center gap-3 p-3">
+                                                <Avatar className="h-8 w-8">
+                                                    <AvatarImage src={offer.sponsorLogo} data-ai-hint={offer.sponsorLogoHint} />
+                                                </Avatar>
+                                                <p className="font-semibold">{offer.sponsorName}</p>
+                                            </CardHeader>
+                                            <CardContent className="p-3 pt-0">
+                                                <p className="text-xs text-muted-foreground">{offer.offerDetails}</p>
+                                            </CardContent>
+                                            <CardFooter className="p-3 pt-0 flex gap-2">
+                                                <Button size="xs" className="flex-1 bg-green-600 hover:bg-green-700">Принять</Button>
+                                                <Button size="xs" className="flex-1" variant="destructive">Отклонить</Button>
+                                            </CardFooter>
+                                        </Card>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                </TabsContent>
 
                 <TabsContent value="roster">
                     <Card>
@@ -672,7 +772,7 @@ export default function TeamProfilePage() {
                             </ul>
                             <h3 className="pt-4 border-t">Наши спонсоры</h3>
                             <div className="not-prose flex flex-wrap items-center gap-8">
-                                {sponsors.map(sponsor => (
+                                {currentSponsors.map(sponsor => (
                                     <Image key={sponsor.name} src={sponsor.logo} alt={sponsor.name} width={150} height={50} className="brightness-0 dark:brightness-100" data-ai-hint={sponsor.logoHint} />
                                 ))}
                             </div>

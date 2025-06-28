@@ -1,68 +1,144 @@
 
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Handshake } from "lucide-react";
-import Image from "next/image";
+import { Handshake, BrainCircuit, Loader2, AlertCircle, Sparkles, Send } from "lucide-react";
+import Image from "next/link";
 import Link from "next/link";
-import { allSponsors, featuredSponsors } from "@/lib/mock-data/sponsors";
-import { Badge } from "@/components/ui/badge";
+import { teamsSeekingSponsorship, type TeamSeekingSponsorship } from "@/lib/mock-data/sponsorship";
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Textarea } from '@/components/ui/textarea';
+import { sponsorshipScout, type SponsorshipScoutOutput } from '@/ai/flows/sponsorship-scout-flow';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { useToast } from '@/hooks/use-toast';
+
+function SponsorshipOfferDialog() {
+    const { toast } = useToast();
+    // This is a placeholder. In a real app, it would have state and logic.
+    return (
+        <Button onClick={() => toast({ title: "Предложение отправлено!", description: "Команда получила ваше предложение." })}>
+            <Send className="mr-2 h-4 w-4" />
+            Сделать предложение
+        </Button>
+    )
+}
+
+function TeamCard({ team }: { team: TeamSeekingSponsorship }) {
+    return (
+         <Card className="flex flex-col">
+            <CardHeader className="flex-row items-center gap-4">
+                 <Avatar className="h-12 w-12 border">
+                    <AvatarImage src={team.logo} alt={team.name} data-ai-hint={team.logoHint} />
+                    <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                    <CardTitle>{team.name}</CardTitle>
+                    <CardDescription>{team.game}</CardDescription>
+                </div>
+            </CardHeader>
+            <CardContent className="flex-1">
+                <p className="text-sm text-muted-foreground line-clamp-3">{team.pitch}</p>
+            </CardContent>
+            <CardFooter className="flex-col items-start gap-2">
+                <p className="text-xs font-semibold">Что нужно команде:</p>
+                <p className="text-xs text-muted-foreground">{team.needs}</p>
+                <div className="w-full pt-2 flex gap-2">
+                    <Button variant="outline" className="w-full" asChild>
+                        <Link href={`/teams/${team.slug}`}>Профиль</Link>
+                    </Button>
+                    <SponsorshipOfferDialog />
+                </div>
+            </CardFooter>
+        </Card>
+    )
+}
+
 
 export default function SponsorsPage() {
+    const [prompt, setPrompt] = useState('Найди мне молодую, но перспективную команду по Valorant с активной фанатской базой в социальных сетях.');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [result, setResult] = useState<SponsorshipScoutOutput | null>(null);
+
+    const handleSearch = async () => {
+        if (!prompt) {
+            setError('Пожалуйста, опишите ваши цели.');
+            return;
+        }
+        setIsLoading(true);
+        setError(null);
+        setResult(null);
+
+        try {
+            const scoutResult = await sponsorshipScout(prompt);
+            setResult(scoutResult);
+        } catch (e) {
+            console.error(e);
+            setError('Не удалось выполнить поиск. Попробуйте снова.');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="space-y-8">
             <div className="text-center">
                 <Handshake className="mx-auto h-16 w-16 mb-4 text-primary" />
-                <h1 className="font-headline text-4xl font-bold">Наши Партнеры и Спонсоры</h1>
-                <p className="mt-2 text-lg text-muted-foreground">Компании, которые верят в нас и поддерживают развитие дворового спорта.</p>
+                <h1 className="font-headline text-4xl font-bold">Центр Спонсорства</h1>
+                <p className="mt-2 text-lg text-muted-foreground">Находите перспективные команды и заключайте выгодные партнерства.</p>
             </div>
 
-            <section>
-                <h2 className="font-headline text-3xl font-bold mb-6">🏆 Избранные партнеры</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {featuredSponsors.map(sponsor => (
-                        <Card key={sponsor.name} className="overflow-hidden group">
-                            <div className="relative h-48 bg-muted">
-                                <Image src={sponsor.bannerImage} alt={`${sponsor.name} banner`} fill className="object-cover transition-transform group-hover:scale-105" data-ai-hint={sponsor.bannerImageHint} />
-                            </div>
-                            <CardHeader>
-                                <div className="flex items-center gap-4">
-                                    <div className="relative h-16 w-16 shrink-0">
-                                        <Image src={sponsor.logo} alt={sponsor.name} fill className="rounded-lg border p-1 bg-background object-contain" data-ai-hint={sponsor.logoHint} />
-                                    </div>
-                                    <div>
-                                        <CardTitle>{sponsor.name}</CardTitle>
-                                        <CardDescription>{sponsor.slogan}</CardDescription>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-sm text-muted-foreground">{sponsor.description}</p>
-                            </CardContent>
-                            <CardFooter>
-                                <Button asChild className="w-full">
-                                    <Link href={sponsor.websiteUrl} target="_blank">Перейти на сайт</Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
-                    ))}
-                </div>
-            </section>
+            <Card className="shadow-lg border-primary/20">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><BrainCircuit /> AI-Скаут талантов</CardTitle>
+                    <CardDescription>Опишите цели вашей кампании, и наш ИИ подберет команды, которые идеально соответствуют вашим требованиям.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Textarea 
+                        placeholder="Например: 'Ищем команду по CS:GO 2 из Восточной Европы для продвижения нашего нового энергетического напитка...'"
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        disabled={isLoading}
+                        className="min-h-[80px]"
+                    />
+                     <Button onClick={handleSearch} disabled={isLoading}>
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                        {isLoading ? "Идет поиск..." : "Найти команды"}
+                    </Button>
+                </CardContent>
+            </Card>
+
+            {error && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
 
             <section>
-                <h2 className="font-headline text-3xl font-bold mb-6">Все спонсоры</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                    {allSponsors.map(sponsor => (
-                        <Card key={sponsor.name} className="text-center p-6 flex flex-col items-center justify-center transition-all hover:shadow-lg hover:-translate-y-1">
-                            <div className="h-20 w-32 relative mb-4">
-                                <Image src={sponsor.logo} alt={sponsor.name} fill className="object-contain brightness-0 dark:brightness-100" data-ai-hint={sponsor.logoHint} />
-                            </div>
-                            <p className="font-semibold">{sponsor.name}</p>
-                            <Badge variant="secondary" className="mt-2">{sponsor.tier}</Badge>
-                        </Card>
-                    ))}
-                </div>
+                 {isLoading ? (
+                    <div className="space-y-4">
+                        <Skeleton className="h-8 w-1/3 mb-4" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-64 w-full" />)}
+                        </div>
+                    </div>
+                ) : result ? (
+                    <div className="space-y-6">
+                        <div>
+                            <h2 className="font-headline text-2xl font-bold">Рекомендации AI-Скаута</h2>
+                            <p className="text-muted-foreground">{result.reasoning}</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                           {result.recommendations.map(team => <TeamCard key={team.slug} team={team} />)}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="space-y-6">
+                        <h2 className="font-headline text-2xl font-bold">Команды в поиске поддержки</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {teamsSeekingSponsorship.map(team => <TeamCard key={team.slug} team={team} />)}
+                        </div>
+                    </div>
+                )}
             </section>
         </div>
     );
