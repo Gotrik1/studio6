@@ -16,7 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 import { ImageIcon, MessageSquare, Shield, BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { analyzeDispute, type AnalyzeDisputeOutput } from '@/ai/flows/analyze-dispute-flow';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { Alert, AlertDescription, AlertTitle } from './alert';
 import { Skeleton } from './ui/skeleton';
 
 type DisputedMatch = (typeof disputedMatches)[0];
