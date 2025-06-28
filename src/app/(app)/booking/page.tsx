@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Map, SlidersHorizontal, PlusCircle, Star, Sun, Trash2, RefreshCcw, MapPin, ShowerHead, Shirt, Calendar } from "lucide-react";
+import { Search, Map, PlusCircle, Star, Sun, Trash2, RefreshCcw, MapPin, ShowerHead, Shirt, Calendar, ChevronDown } from "lucide-react";
 import Image from 'next/image';
 import { Separator } from "@/components/ui/separator";
 import { venuesList as initialVenuesList, myBookings as initialMyBookings } from "@/lib/mock-data/booking";
@@ -21,19 +21,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-  SheetFooter,
-  SheetClose,
-} from "@/components/ui/sheet";
-import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 
 // Helper data for filters
 const allSurfaceTypes = [...new Set(initialVenuesList.map(v => v.surfaceType))];
@@ -134,13 +124,13 @@ export default function BookingPage() {
         });
     }
 
-    const handleFilterChange = (type: 'surfaceTypes' | 'features', value: string) => {
+    const handleFeatureFilterChange = (feature: string) => {
         setFilters(prev => {
-            const newValues = [...(prev[type] as string[])];
-            if (newValues.includes(value)) {
-                return { ...prev, [type]: newValues.filter(v => v !== value) };
+            const newFeatures = [...prev.features];
+            if (newFeatures.includes(feature)) {
+                return { ...prev, features: newFeatures.filter(f => f !== feature) };
             } else {
-                return { ...prev, [type]: [...newValues, value] };
+                return { ...prev, features: [...newFeatures, feature] };
             }
         });
     };
@@ -152,8 +142,15 @@ export default function BookingPage() {
         }));
     };
 
+    const handleSurfaceTypeChange = (type: string) => {
+        setFilters(prev => ({
+            ...prev,
+            surfaceTypes: type === 'all' ? [] : [type]
+        }));
+    };
+
     const activeFilterCount =
-        filters.surfaceTypes.length +
+        filters.surfaceTypes.length > 0 ? 1 : 0 + // simplified for single select
         filters.features.length +
         (filters.price !== 'any' ? 1 : 0);
 
@@ -171,7 +168,7 @@ export default function BookingPage() {
             </div>
 
             <Card>
-                <CardHeader>
+                <CardHeader className="space-y-4">
                     <div className="flex flex-col gap-4 md:flex-row">
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -182,76 +179,55 @@ export default function BookingPage() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <div className="flex gap-2">
-                            <Sheet>
-                                <SheetTrigger asChild>
-                                    <Button variant="outline" className="w-full md:w-auto relative">
-                                        <SlidersHorizontal className="mr-2 h-4 w-4" />
-                                        Фильтры
-                                        {activeFilterCount > 0 && (
-                                            <Badge className="absolute -right-2 -top-2 h-5 w-5 justify-center p-1">{activeFilterCount}</Badge>
-                                        )}
+                        <Button variant="outline" className="w-full md:w-auto">
+                            <Map className="mr-2 h-4 w-4" />
+                            Показать на карте
+                        </Button>
+                    </div>
+                     <Separator />
+                    <div className="flex flex-col items-center gap-4 md:flex-row">
+                        <span className="text-sm font-medium text-muted-foreground">Фильтры:</span>
+                        <div className="flex flex-wrap gap-2 w-full md:w-auto">
+                            <Select onValueChange={handleSurfaceTypeChange} value={filters.surfaceTypes[0] || 'all'}>
+                                <SelectTrigger className="w-full md:w-[180px]">
+                                    <SelectValue placeholder="Тип покрытия" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">Все покрытия</SelectItem>
+                                    {allSurfaceTypes.map(type => (
+                                        <SelectItem key={type} value={type}>{type}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                             <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="outline" className="w-full md:w-auto">
+                                        Удобства {filters.features.length > 0 && `(${filters.features.length})`}
+                                        <ChevronDown className="ml-2 h-4 w-4" />
                                     </Button>
-                                </SheetTrigger>
-                                <SheetContent>
-                                    <SheetHeader>
-                                        <SheetTitle>Фильтры площадок</SheetTitle>
-                                        <SheetDescription>
-                                            Настройте параметры для более точного поиска.
-                                        </SheetDescription>
-                                    </SheetHeader>
-                                    <div className="space-y-6 py-4">
-                                        <div className="space-y-3">
-                                            <Label>Тип покрытия</Label>
-                                            {allSurfaceTypes.map(type => (
-                                                <div key={type} className="flex items-center space-x-2">
-                                                    <Checkbox 
-                                                        id={`type-${type}`} 
-                                                        checked={filters.surfaceTypes.includes(type)}
-                                                        onCheckedChange={() => handleFilterChange('surfaceTypes', type)}
-                                                    />
-                                                    <label htmlFor={`type-${type}`} className="text-sm font-medium leading-none">{type}</label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                         <div className="space-y-3">
-                                            <Label>Цена</Label>
-                                            <div className="flex items-center space-x-2">
-                                                <Checkbox id="price-free" checked={filters.price === 'free'} onCheckedChange={() => handlePriceFilterChange('free')} />
-                                                <label htmlFor="price-free" className="text-sm font-medium leading-none">Только бесплатные</label>
-                                            </div>
-                                             <div className="flex items-center space-x-2">
-                                                <Checkbox id="price-paid" checked={filters.price === 'paid'} onCheckedChange={() => handlePriceFilterChange('paid')} />
-                                                <label htmlFor="price-paid" className="text-sm font-medium leading-none">Только платные</label>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-3">
-                                            <Label>Удобства</Label>
-                                            {allFeatures.map(feature => (
-                                                <div key={feature} className="flex items-center space-x-2">
-                                                    <Checkbox 
-                                                        id={`feature-${feature}`} 
-                                                        checked={filters.features.includes(feature)}
-                                                        onCheckedChange={() => handleFilterChange('features', feature)}
-                                                    />
-                                                    <label htmlFor={`feature-${feature}`} className="text-sm font-medium leading-none">{feature}</label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <SheetFooter>
-                                         <Button variant="ghost" onClick={() => setFilters(initialFilters)}>Сбросить</Button>
-                                        <SheetClose asChild>
-                                            <Button>Применить</Button>
-                                        </SheetClose>
-                                    </SheetFooter>
-                                </SheetContent>
-                            </Sheet>
-                            <Button variant="outline" className="w-full md:w-auto">
-                                <Map className="mr-2 h-4 w-4" />
-                                Показать на карте
-                            </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent>
+                                    <DropdownMenuLabel>Удобства</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    {allFeatures.map(feature => (
+                                         <DropdownMenuCheckboxItem
+                                            key={feature}
+                                            checked={filters.features.includes(feature)}
+                                            onCheckedChange={() => handleFeatureFilterChange(feature)}
+                                        >
+                                            {feature}
+                                        </DropdownMenuCheckboxItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         </div>
+                        <div className="flex gap-2">
+                             <Button variant={filters.price === 'free' ? 'secondary' : 'outline'} onClick={() => handlePriceFilterChange('free')}>Бесплатно</Button>
+                             <Button variant={filters.price === 'paid' ? 'secondary' : 'outline'} onClick={() => handlePriceFilterChange('paid')}>Платно</Button>
+                        </div>
+                        {activeFilterCount > 0 && (
+                            <Button variant="ghost" onClick={() => setFilters(initialFilters)}>Сбросить ({activeFilterCount})</Button>
+                        )}
                     </div>
                 </CardHeader>
             </Card>
