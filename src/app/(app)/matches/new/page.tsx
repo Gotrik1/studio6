@@ -70,8 +70,13 @@ export default function NewMatchChallengePage() {
         
         toast({
             title: 'Вызов отправлен!',
-            description: `Команде "${selectedTeam.name}" отправлен вызов на матч ${format(selectedDate, "PPP")}.`,
+            description: `Команде "${selectedTeam.name}" отправлен вызов на матч ${format(selectedDate, "PPP")}. Отслеживайте его статус во вкладке "Вызовы" на странице вашей команды.`,
         });
+        
+        setResult(null);
+        setPrompt('');
+        setSelectedTeam(null);
+        setSelectedVenue(null);
     };
 
     return (

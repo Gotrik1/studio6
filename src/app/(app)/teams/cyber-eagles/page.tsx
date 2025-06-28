@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2, Pencil, Trash2, UserPlus, Check, X } from "lucide-react";
+import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2, Pencil, Trash2, UserPlus, Check, X, BellRing, Calendar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { teamPdHistory } from "@/lib/mock-data/gamification";
@@ -24,6 +24,7 @@ import { ShoppingBag } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { JoinRequestAnalysisDialog } from "@/components/join-request-analysis-dialog";
+import { initialIncomingChallenges, initialOutgoingChallenges } from "@/lib/mock-data/challenges";
 
 const team = {
   name: "Кибер Орлы",
@@ -95,6 +96,34 @@ export default function TeamProfilePage() {
 
     const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState<(typeof initialJoinRequests)[0] | null>(null);
+
+    const [incomingChallenges, setIncomingChallenges] = useState(initialIncomingChallenges);
+    const [outgoingChallenges, setOutgoingChallenges] = useState(initialOutgoingChallenges);
+    const [confirmedTeamMatches, setConfirmedTeamMatches] = useState<(typeof initialIncomingChallenges[0])[]>([]);
+
+    const handleAcceptChallenge = (challenge: (typeof initialIncomingChallenges[0])) => {
+        setIncomingChallenges(prev => prev.filter(c => c.id !== challenge.id));
+        setConfirmedTeamMatches(prev => [...prev, challenge]);
+        toast({
+            title: "Вызов принят!",
+            description: `Матч против ${challenge.opponent.name} подтвержден.`,
+        });
+    };
+
+    const handleDeclineChallenge = (challenge: (typeof initialIncomingChallenges[0])) => {
+        setIncomingChallenges(prev => prev.filter(c => c.id !== challenge.id));
+        toast({
+            title: "Вызов отклонен",
+            variant: "destructive",
+        });
+    };
+
+    const handleCancelChallenge = (challengeId: string) => {
+        setOutgoingChallenges(prev => prev.filter(c => c.id !== challengeId));
+         toast({
+            title: "Вызов отменен",
+        });
+    }
 
     const handleOpenAnalysis = (request: typeof initialJoinRequests[0]) => {
         setSelectedRequest(request);
@@ -282,14 +311,18 @@ export default function TeamProfilePage() {
             </Card>
 
             <Tabs defaultValue="roster">
-                <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8">
+                <TabsList className="grid w-full grid-cols-5 sm:grid-cols-9">
                     <TabsTrigger value="roster"><Users className="mr-2 h-4 w-4"/>Состав</TabsTrigger>
+                    <TabsTrigger value="challenges">
+                        <BellRing className="mr-2 h-4 w-4"/>Вызовы
+                        {incomingChallenges.length > 0 && <Badge className="ml-2">{incomingChallenges.length}</Badge>}
+                    </TabsTrigger>
                     <TabsTrigger value="matches"><Swords className="mr-2 h-4 w-4"/>Матчи</TabsTrigger>
                     <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
                     <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
                     <TabsTrigger value="about"><Newspaper className="mr-2 h-4 w-4"/>О команде</TabsTrigger>
-                    <TabsTrigger value="bank"><Banknote className="mr-2 h-4 w-4"/>Банк команды</TabsTrigger>
-                    <TabsTrigger value="ai-assistant"><BrainCircuit className="mr-2 h-4 w-4"/>AI Помощник</TabsTrigger>
+                    <TabsTrigger value="bank"><Banknote className="mr-2 h-4 w-4"/>Банк</TabsTrigger>
+                    <TabsTrigger value="ai-assistant"><BrainCircuit className="mr-2 h-4 w-4"/>AI</TabsTrigger>
                     <TabsTrigger value="requests">
                         <UserPlus className="mr-2 h-4 w-4"/>Заявки
                         {joinRequests.length > 0 && <Badge className="ml-2">{joinRequests.length}</Badge>}
@@ -329,6 +362,95 @@ export default function TeamProfilePage() {
                             ))}
                         </CardContent>
                     </Card>
+                </TabsContent>
+
+                <TabsContent value="challenges">
+                    <div className="space-y-6">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Входящие вызовы ({incomingChallenges.length})</CardTitle>
+                                <CardDescription>Команды, которые хотят сыграть с вами.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {incomingChallenges.length > 0 ? (
+                                    incomingChallenges.map(challenge => (
+                                        <Card key={challenge.id} className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                            <div className="flex-1 flex items-center gap-4">
+                                                <Avatar className="h-10 w-10">
+                                                    <AvatarImage src={challenge.opponent.logo} data-ai-hint={challenge.opponent.logoHint} />
+                                                    <AvatarFallback>{challenge.opponent.name.charAt(0)}</AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <p className="font-semibold">{challenge.opponent.name}</p>
+                                                    <div className="text-xs text-muted-foreground flex flex-wrap gap-x-3 gap-y-1 mt-1">
+                                                        <p className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {challenge.venue}</p>
+                                                        <p className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {format(new Date(challenge.date), 'd MMMM yyyy', { locale: ru })} в {challenge.time}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => handleAcceptChallenge(challenge)}>
+                                                    <Check className="mr-2 h-4 w-4" />Принять
+                                                </Button>
+                                                <Button size="sm" variant="destructive" onClick={() => handleDeclineChallenge(challenge)}>
+                                                    <X className="mr-2 h-4 w-4" />Отклонить
+                                                </Button>
+                                            </div>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-muted-foreground text-center py-4">Нет входящих вызовов.</p>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        {confirmedTeamMatches.length > 0 && (
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Подтвержденные матчи ({confirmedTeamMatches.length})</CardTitle>
+                                    <CardDescription>Эти матчи скоро появятся в общем расписании.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {confirmedTeamMatches.map(match => (
+                                        <Card key={match.id} className="p-4 flex items-center justify-between bg-green-500/10 border-green-500/30">
+                                            <p>Матч против <strong>{match.opponent.name}</strong> подтвержден на <strong>{format(new Date(match.date), 'd MMMM yyyy', { locale: ru })}</strong>.</p>
+                                            <Button variant="ghost" size="sm">Подробнее</Button>
+                                        </Card>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                        )}
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Исходящие вызовы ({outgoingChallenges.length})</CardTitle>
+                                <CardDescription>Вызовы, которые вы отправили другим командам.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {outgoingChallenges.length > 0 ? (
+                                    outgoingChallenges.map(challenge => (
+                                        <Card key={challenge.id} className="p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                            <div className="flex-1 flex items-center gap-4">
+                                                <Avatar className="h-10 w-10">
+                                                    <AvatarImage src={challenge.opponent.logo} data-ai-hint={challenge.opponent.logoHint} />
+                                                    <AvatarFallback>{challenge.opponent.name.charAt(0)}</AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <p className="font-semibold">{challenge.opponent.name}</p>
+                                                    <Badge variant="secondary" className="mt-1">{challenge.status}</Badge>
+                                                </div>
+                                            </div>
+                                            <Button size="sm" variant="outline" onClick={() => handleCancelChallenge(challenge.id)}>
+                                                Отменить вызов
+                                            </Button>
+                                        </Card>
+                                    ))
+                                ) : (
+                                    <p className="text-sm text-muted-foreground text-center py-4">Нет исходящих вызовов.</p>
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="matches">
