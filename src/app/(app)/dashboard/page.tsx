@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Card,
   CardHeader,
@@ -26,6 +26,7 @@ import {
   Coins,
   BrainCircuit,
   Loader2,
+  FileQuestion,
 } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
@@ -35,6 +36,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { generateContent } from "@/ai/flows/generate-content-flow";
 import { useSession } from "@/lib/session-client";
+import { cn } from "@/lib/utils";
 
 const initialFeedItems = [
   {
@@ -128,7 +130,15 @@ const getTypeIcon = (type: string) => {
   }
 };
 
-type FeedItem = typeof initialFeedItems[0];
+type FeedItem = (typeof initialFeedItems)[0];
+
+const filterButtons = [
+    { label: "Все", type: "all" },
+    { label: "Мои команды", type: "team_news" },
+    { label: "Турниры", type: "tournament_announcement" },
+    { label: "Друзья", type: "player_post" },
+    { label: "Рядом", type: "nearby" }, // Placeholder, no logic for this yet
+];
 
 export default function DashboardPage() {
   const { user } = useSession();
@@ -139,6 +149,17 @@ export default function DashboardPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiTopic, setAiTopic] = useState("");
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("all");
+
+  const filteredFeedItems = useMemo(() => {
+    if (activeFilter === "all") {
+      return feedItems;
+    }
+    if (activeFilter === "nearby") { // No data for this filter yet
+      return [];
+    }
+    return feedItems.filter(item => item.type === activeFilter);
+  }, [feedItems, activeFilter]);
 
   const handlePublish = () => {
     if (!postContent.trim() || !user) {
@@ -297,57 +318,67 @@ export default function DashboardPage() {
           </Card>
 
           <div className="space-y-6">
-            {feedItems.map((item) => (
-              <Card key={item.id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={item.author.avatar} data-ai-hint={item.author.avatarHint} />
-                        <AvatarFallback>{item.author.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold">{item.author.name}</p>
-                        <p className="text-xs text-muted-foreground">{item.timestamp}</p>
-                      </div>
-                      <div className="hidden sm:block">{getTypeIcon(item.type)}</div>
+            {filteredFeedItems.length > 0 ? (
+                filteredFeedItems.map((item) => (
+                    <Card key={item.id}>
+                        <CardHeader>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                            <Avatar>
+                                <AvatarImage src={item.author.avatar} data-ai-hint={item.author.avatarHint} />
+                                <AvatarFallback>{item.author.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <p className="font-semibold">{item.author.name}</p>
+                                <p className="text-xs text-muted-foreground">{item.timestamp}</p>
+                            </div>
+                            <div className="hidden sm:block">{getTypeIcon(item.type)}</div>
+                            </div>
+                            <Button variant="ghost" size="icon"><MoreHorizontal className="h-5 w-5" /></Button>
+                        </div>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                        <p className="text-sm">{item.content.text}</p>
+                        {item.content.image && (
+                            <div className="overflow-hidden rounded-lg border">
+                            <Image
+                                src={item.content.image}
+                                alt="Post image"
+                                width={800}
+                                height={400}
+                                className="aspect-video w-full object-cover"
+                                data-ai-hint={item.content.imageHint}
+                            />
+                            </div>
+                        )}
+                        </CardContent>
+                        <CardFooter className="flex justify-between border-t px-6 pt-4">
+                            <div className="flex gap-4">
+                                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                                    <ThumbsUp className="h-4 w-4" />
+                                    <span>{item.stats.likes}</span>
+                                </Button>
+                                <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                                    <MessageCircle className="h-4 w-4" />
+                                    <span>{item.stats.comments}</span>
+                                </Button>
+                            </div>
+                            <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                                <Share2 className="h-4 w-4" />
+                                <span>Поделиться</span>
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                ))
+            ) : (
+                <Card className="flex h-64 flex-col items-center justify-center gap-4 border-2 border-dashed">
+                    <FileQuestion className="h-12 w-12 text-muted-foreground" />
+                    <div className="text-center">
+                        <CardTitle>Нет новостей</CardTitle>
+                        <CardDescription className="mt-2">Попробуйте выбрать другой фильтр или опубликуйте что-нибудь!</CardDescription>
                     </div>
-                     <Button variant="ghost" size="icon"><MoreHorizontal className="h-5 w-5" /></Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm">{item.content.text}</p>
-                  {item.content.image && (
-                    <div className="overflow-hidden rounded-lg border">
-                      <Image
-                        src={item.content.image}
-                        alt="Post image"
-                        width={800}
-                        height={400}
-                        className="aspect-video w-full object-cover"
-                        data-ai-hint={item.content.imageHint}
-                      />
-                    </div>
-                  )}
-                </CardContent>
-                <CardFooter className="flex justify-between border-t px-6 pt-4">
-                    <div className="flex gap-4">
-                         <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                            <ThumbsUp className="h-4 w-4" />
-                            <span>{item.stats.likes}</span>
-                         </Button>
-                         <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                            <MessageCircle className="h-4 w-4" />
-                             <span>{item.stats.comments}</span>
-                         </Button>
-                    </div>
-                     <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                        <Share2 className="h-4 w-4" />
-                        <span>Поделиться</span>
-                     </Button>
-                </CardFooter>
-              </Card>
-            ))}
+                </Card>
+            )}
           </div>
         </div>
       </div>
@@ -358,11 +389,17 @@ export default function DashboardPage() {
                     <CardTitle>Фильтры</CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-wrap gap-2">
-                    <Button variant="secondary" size="sm">Все</Button>
-                    <Button variant="outline" size="sm">Мои команды</Button>
-                    <Button variant="outline" size="sm">Турниры</Button>
-                    <Button variant="outline" size="sm">Друзья</Button>
-                    <Button variant="outline" size="sm">Рядом</Button>
+                    {filterButtons.map(filter => (
+                        <Button 
+                            key={filter.label} 
+                            variant={activeFilter === filter.type ? "secondary" : "outline"} 
+                            size="sm"
+                            onClick={() => setActiveFilter(filter.type)}
+                            disabled={filter.type === 'nearby'}
+                        >
+                            {filter.label}
+                        </Button>
+                    ))}
                 </CardContent>
             </Card>
 
