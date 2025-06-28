@@ -8,13 +8,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { pdHistory } from '@/lib/mock-data/gamification';
 import { storeItems, lootboxPrizes, partnerOffers, ticketEvents, recentDonors } from '@/lib/mock-data/store';
-import { Coins, Gem, Palette, Shield, ShoppingCart, Gift, Sparkles, Handshake, Heart, Ticket, ShoppingBag } from 'lucide-react';
+import { Coins, Gem, Palette, Shield, ShoppingCart, Gift, Sparkles, Handshake, Heart, Ticket, ShoppingBag, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 type StoreItem = (typeof storeItems)[0];
 type Prize = (typeof lootboxPrizes)[0];
@@ -90,7 +91,7 @@ export default function StorePage() {
         // Start animation after a short delay to allow DOM to update
         setTimeout(() => {
             if (rouletteRef.current) {
-                // Each item is 144px wide (w-32 + p-2*2), centered on the 3rd visible item
+                // Each item is 144px wide (w-36), centered on the 3rd visible item
                 const prizeWidth = 144;
                 const offset = rouletteRef.current.clientWidth / 2 - prizeWidth / 2;
                 const targetPosition = targetIndex * prizeWidth;
