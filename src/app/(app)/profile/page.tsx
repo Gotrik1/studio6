@@ -28,7 +28,7 @@ export default async function ProfilePage() {
       <Card>
         <CardHeader className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
           <Avatar className="h-24 w-24 border-4 border-primary">
-            <AvatarImage src={user.avatar} alt={user.name} />
+            <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="esports player" />
             <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
           </Avatar>
           <div className="flex-1 space-y-1">
