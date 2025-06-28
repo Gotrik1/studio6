@@ -1,11 +1,13 @@
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PD_RATES, PD_LIMITS } from "@/config/gamification";
-import { achievementCatalog, lootboxPrizes } from "@/lib/mock-data";
+import { achievementCatalog, lootboxPrizes, leaderboardData, teamLeaderboardData } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
-import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem } from "lucide-react";
+import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const achievementIcons = {
     Trophy, Star, Shield, Gem, Crown, Rocket, Swords, Medal, Award
@@ -27,6 +29,13 @@ const getLootboxRarityColor = (rarity: string) => {
     }
 };
 
+const getRankIcon = (rank: number) => {
+    if (rank === 1) return <Medal className="h-5 w-5 text-amber-400" />;
+    if (rank === 2) return <Medal className="h-5 w-5 text-slate-400" />;
+    if (rank === 3) return <Medal className="h-5 w-5 text-orange-400" />;
+    return null;
+}
+
 
 export default function GamificationAdminPage() {
     return (
@@ -34,15 +43,16 @@ export default function GamificationAdminPage() {
             <div className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Управление геймификацией</h1>
                 <p className="text-muted-foreground">
-                    Обзор и настройка всех игровых механик, правил начисления очков и достижений.
+                    Обзор и настройка всех игровых механик, правил начисления очков, достижений и рейтингов.
                 </p>
             </div>
 
             <Tabs defaultValue="rules">
-                <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="rules"><Gamepad2 className="mr-2 h-4 w-4" />Правила начисления PD</TabsTrigger>
-                    <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4" />Каталог достижений</TabsTrigger>
-                    <TabsTrigger value="lootboxes"><Gift className="mr-2 h-4 w-4" />Кейсы (Lootbox)</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-4">
+                    <TabsTrigger value="rules"><Gamepad2 className="mr-2 h-4 w-4" />Правила PD</TabsTrigger>
+                    <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4" />Достижения</TabsTrigger>
+                    <TabsTrigger value="lootboxes"><Gift className="mr-2 h-4 w-4" />Кейсы</TabsTrigger>
+                    <TabsTrigger value="leaderboards"><BarChart3 className="mr-2 h-4 w-4"/>Рейтинги</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="rules" className="mt-4">
@@ -154,6 +164,85 @@ export default function GamificationAdminPage() {
                             </Table>
                         </CardContent>
                     </Card>
+                </TabsContent>
+
+                 <TabsContent value="leaderboards" className="mt-4">
+                    <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Топ игроков</CardTitle>
+                                <CardDescription>Рейтинг лучших игроков по ELO.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Ранг</TableHead>
+                                            <TableHead>Игрок</TableHead>
+                                            <TableHead className="text-right">ELO</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {leaderboardData.slice(0, 10).map((player) => (
+                                            <TableRow key={player.id}>
+                                                <TableCell className="font-bold flex items-center gap-2">
+                                                    {getRankIcon(player.rank)}
+                                                    <span>#{player.rank}</span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar className="h-8 w-8">
+                                                            <AvatarImage src={player.avatar} alt={player.name} data-ai-hint={player.avatarHint} />
+                                                            <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <span className="font-medium">{player.name}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-right font-semibold text-primary">{player.elo}</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Топ команд</CardTitle>
+                                <CardDescription>Рейтинг самых богатых команд по PD.</CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Ранг</TableHead>
+                                            <TableHead>Команда</TableHead>
+                                            <TableHead className="text-right">Банк PD</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {teamLeaderboardData.slice(0, 10).map((team) => (
+                                            <TableRow key={team.id}>
+                                                <TableCell className="font-bold flex items-center gap-2">
+                                                    {getRankIcon(team.rank)}
+                                                    <span>#{team.rank}</span>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <div className="flex items-center gap-3">
+                                                        <Avatar className="h-8 w-8">
+                                                            <AvatarImage src={team.avatar} alt={team.name} data-ai-hint={team.avatarHint} />
+                                                            <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <span className="font-medium">{team.name}</span>
+                                                    </div>
+                                                </TableCell>
+                                                <TableCell className="text-right font-semibold text-primary">{team.totalPd.toLocaleString()} PD</TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </TabsContent>
             </Tabs>
         </div>
