@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/components/ui/skeleton';
-import type { judgeUser, judgeAchievements } from "@/lib/mock-data/profiles";
+import type { judgeUser, judgeAchievements } from "@/lib/mock-data/judge-profile";
 
 const JudgeProfile = dynamic(() => import('@/components/judge-profile').then(mod => mod.JudgeProfile), {
   loading: () => <div className="space-y-6">
