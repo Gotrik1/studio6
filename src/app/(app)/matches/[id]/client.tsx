@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Video, BarChart, FileText, Coins } from "lucide-react";
+import { Video, BarChart, FileText, Coins, BrainCircuit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -30,6 +30,10 @@ const LineupsTab = dynamic(() => import('@/components/match-details-tabs/lineups
   ssr: false,
 });
 const MediaTab = dynamic(() => import('@/components/match-details-tabs/media-tab').then(mod => mod.MediaTab), {
+  loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+  ssr: false,
+});
+const AiAnalysisTab = dynamic(() => import('@/components/match-details-tabs/ai-analysis-tab').then(mod => mod.AiAnalysisTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
   ssr: false,
 });
@@ -174,11 +178,12 @@ export default function MatchDetailsClient({ match }: MatchDetailsClientProps) {
       </Card>
 
       <Tabs defaultValue="overview">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5">
           <TabsTrigger value="overview">Обзор</TabsTrigger>
           <TabsTrigger value="stats">Статистика</TabsTrigger>
           <TabsTrigger value="lineups">Составы</TabsTrigger>
           <TabsTrigger value="media">Медиа</TabsTrigger>
+          <TabsTrigger value="ai-analysis"><BrainCircuit className="h-4 w-4 mr-2"/>AI-Анализ</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -195,6 +200,10 @@ export default function MatchDetailsClient({ match }: MatchDetailsClientProps) {
 
          <TabsContent value="media">
             <MediaTab media={match.media} />
+        </TabsContent>
+
+        <TabsContent value="ai-analysis">
+            <AiAnalysisTab match={match} />
         </TabsContent>
       </Tabs>
     </div>

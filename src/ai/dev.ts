@@ -29,3 +29,4 @@ import '@/ai/flows/generate-user-avatar-flow.ts';
 import '@/ai/flows/generate-promotion-details-flow.ts';
 import '@/ai/flows/generate-promotion-image-flow.ts';
 import '@/ai/flows/generate-promotion-wizard-flow.ts';
+import '@/ai/flows/analyze-match-report-flow.ts';
