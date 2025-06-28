@@ -1,5 +1,6 @@
 
 
+
 export const achievements = [
   { name: "Лучший новичок", icon: "Award", description: "Выиграть награду лучшего новичка сезона.", unlocked: true },
   { name: "Золотая нога", icon: "Star", description: "Забить 50 голов за сезон.", unlocked: true },
@@ -216,14 +217,6 @@ export const achievementCatalog: { name: string; description: string; icon: "Tro
     { name: "3 из 3", description: "Победы в трёх матчах подряд.", icon: "Star", rarity: "Эпическая", points: 300 },
     { name: "Без сна", description: "Провёл игру в 6 утра.", icon: "Gem", rarity: "Эпическая", points: 500 },
     { name: "Прямой эфир", description: "Стрим с 10+ зрителями.", icon: "Rocket", rarity: "Редкая", points: 100 },
-
-    // Футбол
-    { name: "Дворовый Пирло", description: "10+ голевых передач в сезоне.", icon: "Star", rarity: "Редкая", points: 100 },
-    { name: "Бомбардир", description: "15 голов за сезон.", icon: "Trophy", rarity: "Эпическая", points: 150 },
-
-    // Баскетбол
-    { name: "Районный трёхочковый", description: "10+ трёхочковых в сезоне.", icon: "Star", rarity: "Редкая", points: 100 },
-    { name: "Защита — это нападение", description: "5 блоков за матч.", icon: "Shield", rarity: "Эпическая", points: 75 },
 ];
 
 export const chatList = [
@@ -349,4 +342,43 @@ export const pdHistory = [
     { id: 'pd-5', timestamp: '2024-09-24T11:00:00Z', source: 'INVITE_FRIEND', value: 10, refId: 'user-789' },
     { id: 'pd-6', timestamp: '2024-09-23T20:15:00Z', source: 'HELP_NEWBIE', value: 7, refId: 'user-xyz' },
     { id: 'pd-7', timestamp: '2024-09-23T19:00:00Z', source: 'MATCH_COMPLETION', value: 10, refId: 'match-120' },
+];
+
+export const storeItems = [
+    {
+        id: 'theme-cyberpunk',
+        name: 'Тема "Киберпанк"',
+        description: 'Неоновые огни и мрачное будущее в вашем профиле.',
+        price: 250,
+        type: 'theme',
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'cyberpunk city neon'
+    },
+    {
+        id: 'theme-solar',
+        name: 'Тема "Солнечная система"',
+        description: 'Космический пейзаж для вашего профиля.',
+        price: 250,
+        type: 'theme',
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'solar system'
+    },
+    {
+        id: 'badge-fire',
+        name: 'Анимированный значок "Пламя"',
+        description: 'Покажите всем свой огонь!',
+        price: 500,
+        type: 'badge',
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'animated fire'
+    },
+    {
+        id: 'frame-gold',
+        name: 'Золотая рамка для аватара',
+        description: 'Элитная рамка для элитных игроков.',
+        price: 1000,
+        type: 'frame',
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'gold frame'
+    },
 ];

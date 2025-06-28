@@ -42,6 +42,7 @@ import {
   LifeBuoy,
   Megaphone,
   Coins,
+  Gem,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -141,9 +142,11 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Фан-зона">
-                <Star />
-                Фан-зона
+              <SidebarMenuButton asChild tooltip="Магазин">
+                 <Link href="/store">
+                    <Gem />
+                    Магазин
+                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
