@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Award, Users, Trophy, Target, Swords, Medal } from "lucide-react";
+import { Award, Users, Trophy, Target, Swords, Medal, Share2, MapPin, GalleryHorizontal, Activity } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 const achievements = [
   { name: "Первая победа", icon: Award, description: "Выиграйте свой первый матч.", unlocked: true },
@@ -15,12 +17,32 @@ const achievements = [
   { name: "Ветеран", icon: Medal, description: "Сыграйте 100 матчей.", unlocked: false },
 ];
 
+const teams = [
+  { name: "Кибер Орлы", role: "Капитан", logo: "https://placehold.co/128x128.png", dataAiHint: "eagle logo" },
+  { name: "Ночные Охотники", role: "Игрок", logo: "https://placehold.co/128x128.png", dataAiHint: "wolf logo" },
+];
+
+const recentMatches = [
+  { id: 1, teamA: "Кибер Орлы", scoreA: 13, teamB: "Вихревые Гадюки", scoreB: 9, result: "victory", game: "Valorant", map: "Ascent" },
+  { id: 2, teamA: "Кибер Орлы", scoreA: 7, teamB: "Квантовые Квазары", scoreB: 13, result: "defeat", game: "Valorant", map: "Bind" },
+  { id: 3, teamA: "Ночные Охотники", scoreA: 16, teamB: "Багровые Крестоносцы", scoreB: 14, result: "victory", game: "CS:GO 2", map: "Mirage" },
+];
+
+const gallery = [
+    { src: "https://placehold.co/600x400.png", alt: "Момент с турнира", dataAiHint: "esports gaming" },
+    { src: "https://placehold.co/600x400.png", alt: "Командное фото", dataAiHint: "team photo" },
+    { src: "https://placehold.co/600x400.png", alt: "Победный крик", dataAiHint: "celebration gaming" },
+    { src: "https://placehold.co/600x400.png", alt: "Клатч-момент", dataAiHint: "intense gaming" },
+];
+
 export default function PlayerProfilePage() {
     const user = {
         name: "Alex 'CyberSlasher' Doe",
         email: 'alex.doe@prodvor.com',
         role: 'Игрок',
         avatar: 'https://placehold.co/100x100.png',
+        location: "Москва, Россия",
+        mainSport: "Valorant"
     };
     
     const initials = user.name.split(' ').map((n) => n[0]).join('');
@@ -38,11 +60,18 @@ export default function PlayerProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge>{user.role}</Badge>
-              <Badge variant="secondary">Капитан команды</Badge>
+              <Badge variant="secondary">Уровень 27</Badge>
               <Badge variant="outline">PRO Пользователь</Badge>
             </div>
+             <div className="flex items-center justify-center gap-4 pt-1 text-sm text-muted-foreground sm:justify-start">
+                <div className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {user.location}</div>
+                <div className="flex items-center gap-1"><Activity className="h-4 w-4" /> {user.mainSport}</div>
+            </div>
           </div>
-          <Button>Бросить вызов</Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="icon"><Share2 className="h-4 w-4"/></Button>
+            <Button>Бросить вызов</Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
@@ -55,11 +84,45 @@ export default function PlayerProfilePage() {
         </CardContent>
       </Card>
       
-      <Tabs defaultValue="stats">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="overview">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5">
+          <TabsTrigger value="overview">Обзор</TabsTrigger>
           <TabsTrigger value="stats">Статистика</TabsTrigger>
           <TabsTrigger value="achievements">Достижения</TabsTrigger>
+          <TabsTrigger value="teams">Команды</TabsTrigger>
+          <TabsTrigger value="gallery">Галерея</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="overview">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Последние матчи</CardTitle>
+                    <CardDescription>Результаты недавних игр.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        {recentMatches.map((match) => (
+                            <div key={match.id} className="flex items-center justify-between rounded-lg border p-4">
+                                <div className="flex flex-col gap-1 text-center">
+                                    <p className="font-semibold">{match.teamA}</p>
+                                    <p className={`font-bold text-2xl ${match.scoreA > match.scoreB ? 'text-primary' : 'text-destructive'}`}>{match.scoreA}</p>
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-sm text-muted-foreground">{match.game}</p>
+                                    <p className="font-bold">VS</p>
+                                    <Badge variant="outline">{match.map}</Badge>
+                                </div>
+                                <div className="flex flex-col gap-1 text-center">
+                                    <p className="font-semibold">{match.teamB}</p>
+                                    <p className={`font-bold text-2xl ${match.scoreB > match.scoreA ? 'text-primary' : 'text-destructive'}`}>{match.scoreB}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </TabsContent>
+
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
@@ -88,6 +151,7 @@ export default function PlayerProfilePage() {
             </Card>
           </div>
         </TabsContent>
+        
         <TabsContent value="achievements">
           <Card>
             <CardContent className="p-6">
@@ -105,6 +169,49 @@ export default function PlayerProfilePage() {
             </CardContent>
           </Card>
         </TabsContent>
+        
+        <TabsContent value="teams">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {teams.map((team) => (
+                    <Link href="#" key={team.name} className="block h-full">
+                        <Card className="flex h-full flex-col items-center p-6 text-center transition-all hover:shadow-lg">
+                           <Image 
+                             src={team.logo} 
+                             alt={`Логотип ${team.name}`} 
+                             width={80} 
+                             height={80} 
+                             className="rounded-full border"
+                             data-ai-hint={team.dataAiHint}
+                           />
+                           <CardTitle className="mt-4 font-headline">{team.name}</CardTitle>
+                           <CardDescription>{team.role}</CardDescription>
+                        </Card>
+                    </Link>
+                ))}
+            </div>
+        </TabsContent>
+        
+        <TabsContent value="gallery">
+            <Card>
+                <CardContent className="p-6">
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                        {gallery.map((item, index) => (
+                            <div key={index} className="overflow-hidden rounded-lg border">
+                                <Image 
+                                    src={item.src} 
+                                    alt={item.alt} 
+                                    width={600} 
+                                    height={400} 
+                                    className="aspect-video h-full w-full object-cover transition-transform hover:scale-105"
+                                    data-ai-hint={item.dataAiHint}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </CardContent>
+            </Card>
+        </TabsContent>
+
       </Tabs>
     </div>
   );
