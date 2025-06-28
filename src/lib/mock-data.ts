@@ -189,16 +189,40 @@ export const leaderboardData = [
     { id: 5, rank: 5, name: "Max 'Titan' Iron", avatar: 'https://placehold.co/40x40.png', avatarHint: 'strong gamer', team: 'Стальные Титаны', elo: 2300, wins: 125, losses: 75, profileUrl: '#' },
 ];
 
-export const achievementCatalog = [
-    { name: "Первая победа", description: "Выиграть свой первый матч в рейтинговой игре.", icon: "Trophy", rarity: "Обычная" },
-    { name: "Ветеран", description: "Сыграть 100 матчей.", icon: "Medal", rarity: "Обычная" },
-    { name: "Серия побед", description: "Выиграть 5 матчей подряд.", icon: "Star", rarity: "Редкая" },
-    { name: "Несокрушимый", description: "Выиграть матч, не проиграв ни одного раунда.", icon: "Shield", rarity: "Редкая" },
-    { name: "Мастер на все руки", description: "Победить, играя за 5 разных персонажей/ролей.", icon: "Swords", rarity: "Редкая" },
-    { name: "Командный игрок", description: "Вступить в команду и сыграть 10 матчей в её составе.", icon: "Users", rarity: "Обычная" },
-    { name: "Легенда сезона", description: "Занять 1-е место в рейтинге по итогам сезона.", icon: "Crown", rarity: "Эпическая" },
-    { name: "Ракетный старт", description: "Достигнуть высшего ранга за первый месяц игры.", icon: "Rocket", rarity: "Эпическая" },
-    { name: "Коллекционер", description: "Открыть 20 уникальных достижений.", icon: "Gem", rarity: "Эпическая" },
+export const achievementCatalog: { name: string; description: string; icon: "Trophy" | "Star" | "Shield" | "Gem" | "Crown" | "Rocket" | "Swords" | "Medal" | "Award"; rarity: "Обычная" | "Редкая" | "Эпическая"; points: number }[] = [
+    // Новички (U-6 – U-12)
+    { name: "Я пришёл!", description: "Первый визит на тренировку. Просто появись — это победа!", icon: "Star", rarity: "Обычная", points: 10 },
+    { name: "Юный акробат", description: "Сделал кувырок (можно с видео или фото).", icon: "Star", rarity: "Обычная", points: 20 },
+    { name: "Не сдался", description: "3 тренировки подряд. Фиксируется расписанием.", icon: "Medal", rarity: "Редкая", points: 70 },
+    { name: "Маленький знаток", description: "Назвал 5 правил игры в футбол. Вопросы-ответы с болельщиками.", icon: "Award", rarity: "Редкая", points: 100 },
+    
+    // Юниоры (U-14 – U-18)
+    { name: "Школьный танк", description: "30 отжиманий без остановки.", icon: "Shield", rarity: "Редкая", points: 150 },
+    { name: "Режу газон", description: "2 км < 10 минут, подтверждение трекером.", icon: "Rocket", rarity: "Редкая", points: 200 },
+    { name: "Битва за район", description: "Победа в школьном матче (командно).", icon: "Swords", rarity: "Эпическая", points: 300 },
+    
+    // Наследники и Профи (U-21 – PRO-34)
+    { name: "Гравитация проиграла", description: "100 подтягиваний.", icon: "Trophy", rarity: "Эпическая", points: 500 },
+    { name: "Убежать от скуки", description: "Полумарафон < 2:30.", icon: "Rocket", rarity: "Эпическая", points: 1000 },
+    { name: "Золотой выстрел", description: "Победа в матче в роли капитана.", icon: "Crown", rarity: "Эпическая", points: 300 },
+    
+    // Мастера и Ветераны (M-35+)
+    { name: "Седой, но не старый", description: "Участвовал в 10 играх за год.", icon: "Shield", rarity: "Редкая", points: 300 },
+    { name: "Мастер дзюдо-слов", description: "Провёл тренировку для молодёжной команды (видео).", icon: "Award", rarity: "Эпическая", points: 500 },
+
+    // Общие и весёлые
+    { name: "Дал жару!", description: "Первая победа в рейтинговом матче.", icon: "Trophy", rarity: "Редкая", points: 150 },
+    { name: "3 из 3", description: "Победы в трёх матчах подряд.", icon: "Star", rarity: "Эпическая", points: 300 },
+    { name: "Без сна", description: "Провёл игру в 6 утра.", icon: "Gem", rarity: "Эпическая", points: 500 },
+    { name: "Прямой эфир", description: "Стрим с 10+ зрителями.", icon: "Rocket", rarity: "Редкая", points: 100 },
+
+    // Футбол
+    { name: "Дворовый Пирло", description: "10+ голевых передач в сезоне.", icon: "Star", rarity: "Редкая", points: 100 },
+    { name: "Бомбардир", description: "15 голов за сезон.", icon: "Trophy", rarity: "Эпическая", points: 150 },
+
+    // Баскетбол
+    { name: "Районный трёхочковый", description: "10+ трёхочковых в сезоне.", icon: "Star", rarity: "Редкая", points: 100 },
+    { name: "Защита — это нападение", description: "5 блоков за матч.", icon: "Shield", rarity: "Эпическая", points: 75 },
 ];
 
 export const chatList = [

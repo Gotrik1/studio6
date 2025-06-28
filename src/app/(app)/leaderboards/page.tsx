@@ -1,3 +1,4 @@
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,12 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { achievementCatalog, leaderboardData } from "@/lib/mock-data";
-import { ArrowRight, BarChart3, Medal, Rocket, Shield, Star, Swords, Trophy, Users, Gem, Crown } from "lucide-react";
+import { ArrowRight, BarChart3, Medal, Rocket, Shield, Star, Swords, Trophy, Users, Gem, Crown, Award } from "lucide-react";
 import Link from "next/link";
 
 
 const achievementIcons = {
-    Trophy, Star, Shield, Gem, Crown, Rocket, Swords, Medal
+    Trophy, Star, Shield, Gem, Crown, Rocket, Swords, Medal, Award
 };
 
 const getRarityColor = (rarity: string) => {
@@ -141,7 +142,10 @@ export default function LeaderboardsPage() {
                                             <div className="flex-1">
                                                 <p className="font-semibold">{ach.name}</p>
                                                 <p className="text-xs text-muted-foreground">{ach.description}</p>
-                                                <Badge variant="outline" className={`mt-2 ${getRarityColor(ach.rarity)}`}>{ach.rarity}</Badge>
+                                                <div className="mt-2 flex items-center gap-2">
+                                                    <Badge variant="outline" className={`${getRarityColor(ach.rarity)}`}>{ach.rarity}</Badge>
+                                                    <Badge variant="secondary">+{ach.points} XP</Badge>
+                                                </div>
                                             </div>
                                         </div>
                                     </Card>
