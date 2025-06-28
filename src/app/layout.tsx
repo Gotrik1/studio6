@@ -1,8 +1,8 @@
 import type {Metadata} from 'next';
-import './globals.css';
-import { Toaster } from "@/components/ui/toaster";
-import { ThemeProvider } from '@/components/theme-provider';
-import { AccentThemeProvider } from '@/components/accent-theme-provider';
+import './styles/globals.css';
+import { Toaster } from "@/shared/ui/toaster";
+import { ThemeProvider } from '@/app/providers/theme-provider';
+import { AccentThemeProvider } from '@/app/providers/accent-theme-provider';
 
 export const metadata: Metadata = {
   title: 'ProDvor',

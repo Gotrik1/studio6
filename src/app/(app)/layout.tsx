@@ -1,11 +1,9 @@
-
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
-import AppLayoutClient from "@/components/app-layout-client";
-import type { User } from "@/lib/types";
-import { TeamProvider } from "@/context/team-provider";
+import { AppLayout } from "@/widgets/app-layout";
+import { TeamProvider } from "@/app/providers/team-provider";
 
-export default async function AppLayout({
+export default async function ApplicationLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -18,9 +16,9 @@ export default async function AppLayout({
 
   return (
     <TeamProvider>
-      <AppLayoutClient user={user}>
+      <AppLayout user={user}>
           {children}
-      </AppLayoutClient>
+      </AppLayout>
     </TeamProvider>
   );
 }

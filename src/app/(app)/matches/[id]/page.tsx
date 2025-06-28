@@ -1,5 +1,5 @@
 
-import { getMatchById } from "@/lib/mock-data/match-details";
+import { getMatchById } from "@/entities/match/api/get-match";
 import { notFound } from "next/navigation";
 import MatchDetailsClient from "./client";
 
