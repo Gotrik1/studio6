@@ -1,22 +1,27 @@
 'use client';
 
 import { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic } from "lucide-react";
+import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic, Share2, Copy, Download } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { MatchDetails } from "@/lib/mock-data/match-details";
 import { analyzeMatchReport, type AnalyzeMatchReportOutput } from "@/ai/flows/analyze-match-report-flow";
 import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/ai/flows/generate-match-interview-flow';
+import { generateMatchPost, type GenerateMatchPostOutput } from "@/ai/flows/generate-match-post-flow";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+
 
 interface AiAnalysisTabProps {
     match: MatchDetails;
 }
 
 export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
+    const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<AnalyzeMatchReportOutput | null>(null);
@@ -25,12 +30,18 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
     const [interviewError, setInterviewError] = useState<string | null>(null);
     const [interviewResult, setInterviewResult] = useState<GenerateMatchInterviewOutput | null>(null);
 
+    const [isGeneratingPost, setIsGeneratingPost] = useState(false);
+    const [postError, setPostError] = useState<string | null>(null);
+    const [postResult, setPostResult] = useState<GenerateMatchPostOutput | null>(null);
+
     const handleAnalyze = async () => {
         setIsLoading(true);
         setError(null);
         setResult(null);
         setInterviewResult(null);
         setInterviewError(null);
+        setPostResult(null);
+        setPostError(null);
         
         try {
             const analysisResult = await analyzeMatchReport({
@@ -69,6 +80,41 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
             setInterviewError("Не удалось сгенерировать аудио-интервью.");
         } finally {
             setIsGeneratingInterview(false);
+        }
+    };
+
+    const handleGeneratePost = async () => {
+        if (!result) return;
+        setIsGeneratingPost(true);
+        setPostError(null);
+        setPostResult(null);
+    
+        try {
+            const scoreParts = match.score.split('-').map(s => parseInt(s, 10));
+            const winningTeam = scoreParts[0] > scoreParts[1] ? match.team1.name : match.team2.name;
+            const losingTeam = scoreParts[0] > scoreParts[1] ? match.team2.name : match.team1.name;
+
+            const postData = await generateMatchPost({
+                winningTeam,
+                losingTeam,
+                score: match.score,
+                matchSummary: result.summary
+            });
+            setPostResult(postData);
+        } catch (e) {
+            console.error("AI Post generation failed:", e);
+            setPostError("Не удалось сгенерировать пост.");
+        } finally {
+            setIsGeneratingPost(false);
+        }
+    };
+
+    const handleCopyText = () => {
+        if (postResult?.postText) {
+          navigator.clipboard.writeText(postResult.postText);
+          toast({
+            title: "Текст скопирован!",
+          });
         }
     };
 
@@ -184,6 +230,47 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                                         <div>
                                             <Label htmlFor="interview-script">Скрипт:</Label>
                                             <Textarea id="interview-script" readOnly value={interviewResult.script} className="mt-2 h-40 bg-muted"/>
+                                        </div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        <Card className="bg-background">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><Share2 className="h-5 w-5 text-green-500" /> SMM-Ассистент</CardTitle>
+                                <CardDescription>Создайте пост для социальных сетей о победе в этом матче.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {!postResult && (
+                                    <Button onClick={handleGeneratePost} disabled={isGeneratingPost || !result}>
+                                        {isGeneratingPost ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                                        {result ? 'Создать пост' : 'Сначала сгенерируйте анализ'}
+                                    </Button>
+                                )}
+                                {isGeneratingPost && <div className="space-y-2"><Skeleton className="h-24 w-full" /><Skeleton className="h-10 w-1/3" /></div>}
+                                {postError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{postError}</AlertDescription></Alert>}
+                                {postResult && (
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="post-text">Текст поста</Label>
+                                                <Textarea id="post-text" value={postResult.postText} readOnly className="h-48"/>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Изображение</Label>
+                                                <div className="relative aspect-video w-full overflow-hidden rounded-md border">
+                                                    <Image src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button onClick={handleCopyText}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
+                                            <Button variant="outline" asChild>
+                                                <a href={postResult.imageDataUri} download="match_post_image.png">
+                                                    <Download className="mr-2 h-4 w-4"/> Скачать изображение
+                                                </a>
+                                            </Button>
                                         </div>
                                     </div>
                                 )}
