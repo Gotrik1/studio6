@@ -4,9 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowRight, Calendar, Check, Trophy, Users, FileText, PlusCircle } from "lucide-react";
+import { ArrowRight, Calendar, Check, Trophy, Users, FileText, PlusCircle, Megaphone, UserPlus } from "lucide-react";
 import { TournamentBracket } from "@/components/tournament-bracket";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
 
 
 const bracketData = {
@@ -43,15 +45,24 @@ const bracketData = {
 };
 
 const participants = [
-  { name: 'Кибер Орлы', logo: 'https://placehold.co/40x40.png', dataAiHint: "eagle logo", status: 'Чемпионы', profileUrl: '/teams/cyber-eagles' },
-  { name: 'Ледяные Драконы', logo: 'https://placehold.co/40x40.png', dataAiHint: "dragon logo", status: 'Финалист', profileUrl: '#' },
-  { name: 'Квантовые Квазары', logo: 'https://placehold.co/40x40.png', dataAiHint: "galaxy logo", status: 'Полуфиналист', profileUrl: '#' },
-  { name: 'Багровые Крестоносцы', logo: 'https://placehold.co/40x40.png', dataAiHint: "knight logo", status: 'Полуфиналист', profileUrl: '#' },
-  { name: 'Стальные Титаны', logo: 'https://placehold.co/40x40.png', dataAiHint: "robot titan", status: 'Участник', profileUrl: '#' },
-  { name: 'Вихревые Гадюки', logo: 'https://placehold.co/40x40.png', dataAiHint: "snake logo", status: 'Участник', profileUrl: '#' },
-  { name: 'Призрачные Волки', logo: 'https://placehold.co/40x40.png', dataAiHint: "wolf logo", status: 'Участник', profileUrl: '#' },
-  { name: 'Теневые Коты', logo: 'https://placehold.co/40x40.png', dataAiHint: "cat logo", status: 'Участник', profileUrl: '#' },
+  { id: 1, name: 'Кибер Орлы', logo: 'https://placehold.co/40x40.png', dataAiHint: "eagle logo", status: 'Оплачено', captain: "Alex 'CyberSlasher' Doe", profileUrl: '/teams/cyber-eagles' },
+  { id: 2, name: 'Ледяные Драконы', logo: 'https://placehold.co/40x40.png', dataAiHint: "dragon logo", status: 'Оплачено', captain: "Frosty", profileUrl: '#' },
+  { id: 3, name: 'Квантовые Квазары', logo: 'https://placehold.co/40x40.png', dataAiHint: "galaxy logo", status: 'Ожидает оплаты', captain: "Alex 'Nova' Ray", profileUrl: '#' },
+  { id: 4, name: 'Багровые Крестоносцы', logo: 'https://placehold.co/40x40.png', dataAiHint: "knight logo", status: 'Оплачено', captain: "Sam 'The-Rock' Stone", profileUrl: '#' },
+  { id: 5, name: 'Стальные Титаны', logo: 'https://placehold.co/40x40.png', dataAiHint: "robot titan", status: 'Проблема с оплатой', captain: "Max 'Titan' Iron", profileUrl: '#' },
+  { id: 6, name: 'Вихревые Гадюки', logo: 'https://placehold.co/40x40.png', dataAiHint: "snake logo", status: 'Оплачено', captain: "Jane 'Venom' Doe", profileUrl: '#' },
+  { id: 7, name: 'Призрачные Волки', logo: 'https://placehold.co/40x40.png', dataAiHint: "wolf logo", status: 'Оплачено', captain: "Yuri 'Ghost' Volkov", profileUrl: '#' },
+  { id: 8, name: 'Теневые Коты', logo: 'https://placehold.co/40x40.png', dataAiHint: "cat logo", status: 'Оплачено', captain: "Luna 'Shadow' Meow", profileUrl: '#' },
 ];
+
+const getStatusVariant = (status: string) => {
+    switch(status) {
+        case 'Оплачено': return 'default';
+        case 'Ожидает оплаты': return 'secondary';
+        case 'Проблема с оплатой': return 'destructive';
+        default: return 'outline';
+    }
+}
 
 export default function TournamentPage() {
   return (
@@ -72,8 +83,9 @@ export default function TournamentPage() {
             <p className="mt-1 text-lg text-white/80">Главный Valorant турнир этого лета!</p>
           </div>
           <div className="absolute right-4 top-4 flex gap-2">
-            <Button variant="outline"><FileText className="mr-2 h-4 w-4" />Регламент</Button>
-            <Button><PlusCircle className="mr-2 h-4 w-4" />Подать заявку</Button>
+            <Button variant="outline"><UserPlus className="mr-2 h-4 w-4" />Добавить команду</Button>
+            <Button variant="outline"><Megaphone className="mr-2 h-4 w-4" />Объявление</Button>
+            <Button><PlusCircle className="mr-2 h-4 w-4" />Создать матч</Button>
           </div>
         </CardHeader>
       </Card>
@@ -99,27 +111,40 @@ export default function TournamentPage() {
         <TabsContent value="participants">
             <Card>
                 <CardHeader>
-                    <CardTitle>Команды-участницы</CardTitle>
-                    <CardDescription>Все {participants.length} команд, сражающихся за титул.</CardDescription>
+                    <CardTitle>Управление командами</CardTitle>
+                    <CardDescription>Всего {participants.length} команд, сражающихся за титул.</CardDescription>
                 </CardHeader>
-                <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <CardContent>
+                    <div className="space-y-2">
                     {participants.map((team) => (
-                        <Card key={team.name} className="p-4">
+                        <Card key={team.id} className="flex items-center justify-between p-3">
                            <div className="flex items-center gap-4">
                              <Avatar>
                                 <AvatarImage src={team.logo} alt={team.name} data-ai-hint={team.dataAiHint} />
                                 <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
                              </Avatar>
-                             <div className="flex-1">
+                             <div>
                                 <p className="font-semibold">{team.name}</p>
-                                <Badge variant="secondary">{team.status}</Badge>
+                                <p className="text-sm text-muted-foreground">Капитан: {team.captain}</p>
                              </div>
-                             <Button asChild variant="ghost" size="icon">
-                                 <Link href={team.profileUrl}><ArrowRight className="h-4 w-4"/></Link>
-                             </Button>
+                           </div>
+                           <div className="flex items-center gap-4">
+                                <Badge variant={getStatusVariant(team.status)}>{team.status}</Badge>
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon"><MoreHorizontal className="h-4 w-4"/></Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        <DropdownMenuItem>Просмотреть профиль</DropdownMenuItem>
+                                        <DropdownMenuItem>Отправить сообщение</DropdownMenuItem>
+                                        <DropdownMenuItem>Изменить статус оплаты</DropdownMenuItem>
+                                        <DropdownMenuItem className="text-destructive">Исключить из турнира</DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
                            </div>
                         </Card>
                     ))}
+                    </div>
                 </CardContent>
             </Card>
         </TabsContent>
@@ -138,7 +163,7 @@ export default function TournamentPage() {
                             <p className="text-sm text-muted-foreground">15 августа 2024</p>
                         </div>
                     </div>
-                    <Button variant="outline" size="sm">Смотреть матчи</Button>
+                    <Button variant="outline" size="sm">Управлять матчами</Button>
                 </div>
                  <div className="flex items-center justify-between rounded-lg border p-4">
                     <div className="flex items-center gap-2">
@@ -148,7 +173,7 @@ export default function TournamentPage() {
                             <p className="text-sm text-muted-foreground">16 августа 2024</p>
                         </div>
                     </div>
-                    <Button variant="outline" size="sm">Смотреть матчи</Button>
+                    <Button variant="outline" size="sm">Управлять матчами</Button>
                 </div>
                  <div className="flex items-center justify-between rounded-lg border p-4">
                     <div className="flex items-center gap-2">
@@ -158,7 +183,7 @@ export default function TournamentPage() {
                             <p className="text-sm text-muted-foreground">17 августа 2024</p>
                         </div>
                     </div>
-                    <Button variant="outline" size="sm">Смотреть трансляцию</Button>
+                    <Button variant="outline" size="sm">Управлять матчем</Button>
                 </div>
             </CardContent>
           </Card>
@@ -199,7 +224,7 @@ export default function TournamentPage() {
                     <CardTitle>Спонсоры</CardTitle>
                     <CardDescription>Компании, которые поддерживают турнир.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-wrap gap-4">
+                <CardContent className="flex flex-wrap items-center gap-8">
                     <Image src="https://placehold.co/150x50.png" alt="Sponsor 1" width={150} height={50} data-ai-hint="corporate logo" />
                     <Image src="https://placehold.co/150x50.png" alt="Sponsor 2" width={150} height={50} data-ai-hint="gaming brand logo" />
                     <Image src="https://placehold.co/150x50.png" alt="Sponsor 3" width={150} height={50} data-ai-hint="beverage logo" />

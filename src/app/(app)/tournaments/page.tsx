@@ -72,14 +72,15 @@ export default function TournamentsPage() {
             <Link href={tournament.slug} key={tournament.name} className="flex h-full">
               <Card className="flex w-full flex-col overflow-hidden transition-all hover:shadow-md">
                 <CardHeader className="p-0">
-                  <Image 
-                    src={tournament.image} 
-                    alt={tournament.name} 
-                    width={600} 
-                    height={400} 
-                    className="aspect-video object-cover"
-                    data-ai-hint={tournament.dataAiHint}
-                  />
+                  <div className="relative aspect-video w-full">
+                    <Image 
+                      src={tournament.image} 
+                      alt={tournament.name} 
+                      fill
+                      className="object-cover"
+                      data-ai-hint={tournament.dataAiHint}
+                    />
+                  </div>
                 </CardHeader>
                 <CardContent className="flex-1 p-6">
                   <Badge variant="secondary" className="mb-2">{tournament.game}</Badge>
