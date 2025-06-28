@@ -15,6 +15,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { analyzeSecurity, type AnalyzeSecurityOutput } from '@/ai/flows/analyze-security-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 const mockActivityLog = `
 - 2024-09-27 10:00: Login from IP 89.123.45.67 (Moscow, RU) on Chrome, Windows.
@@ -62,11 +63,34 @@ const SecurityRecommendationCard = ({ recommendation }: { recommendation: Analyz
 
 
 export default function SettingsClient({ user }: { user: User }) {
+    const { toast } = useToast();
     const initials = user.name.split(' ').map((n) => n[0]).join('');
 
+    // AI Security State
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [aiResult, setAiResult] = useState<AnalyzeSecurityOutput | null>(null);
+
+    // Form states
+    const [name, setName] = useState(user.name);
+    const [city, setCity] = useState("Москва");
+    const [sport, setSport] = useState("Valorant");
+    const [is2faEnabled, setIs2faEnabled] = useState(false);
+    const [profileVisibility, setProfileVisibility] = useState('all');
+    const [statsVisibility, setStatsVisibility] = useState('all');
+    const [pmAccess, setPmAccess] = useState('all');
+    const [isInvisible, setIsInvisible] = useState(false);
+    const [emailNews, setEmailNews] = useState(true);
+    const [emailMatches, setEmailMatches] = useState(true);
+    const [emailSocial, setEmailSocial] = useState(false);
+    const [dndMode, setDndMode] = useState(false);
+
+    const handleSave = (section: string) => {
+        toast({
+            title: 'Настройки сохранены!',
+            description: `Ваши настройки в разделе "${section}" были успешно обновлены.`,
+        });
+    };
 
     const handleCheckSecurity = async () => {
         setIsLoading(true);
@@ -123,7 +147,7 @@ export default function SettingsClient({ user }: { user: User }) {
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Имя</Label>
-                                    <Input id="name" defaultValue={user.name} />
+                                    <Input id="name" value={name} onChange={(e) => setName(e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email</Label>
@@ -131,14 +155,14 @@ export default function SettingsClient({ user }: { user: User }) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="city">Город</Label>
-                                    <Input id="city" defaultValue="Москва" />
+                                    <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="sport">Основной вид спорта</Label>
-                                    <Input id="sport" defaultValue="Valorant" />
+                                    <Input id="sport" value={sport} onChange={(e) => setSport(e.target.value)} />
                                 </div>
                             </div>
-                             <Button>Сохранить изменения</Button>
+                             <Button onClick={() => handleSave('Профиль')}>Сохранить изменения</Button>
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -165,7 +189,7 @@ export default function SettingsClient({ user }: { user: User }) {
                                     <Input id="confirm-password" type="password" />
                                 </div>
                             </div>
-                            <Button>Сменить пароль</Button>
+                            <Button onClick={() => handleSave('Пароль')}>Сменить пароль</Button>
 
                             <div className="mt-6 border-t pt-6">
                                 <Label className="text-lg font-semibold">Двухфакторная аутентификация</Label>
@@ -174,7 +198,7 @@ export default function SettingsClient({ user }: { user: User }) {
                                         <p className="font-medium">Включить 2FA</p>
                                         <p className="text-sm text-muted-foreground">Добавьте дополнительный уровень защиты вашему аккаунту.</p>
                                     </div>
-                                    <Switch id="2fa-switch" />
+                                    <Switch id="2fa-switch" checked={is2faEnabled} onCheckedChange={setIs2faEnabled} />
                                 </div>
                             </div>
                              <div className="mt-6 border-t pt-6 space-y-4">
@@ -239,7 +263,7 @@ export default function SettingsClient({ user }: { user: User }) {
                                         <Label htmlFor="profile-visibility">Кто может видеть мой профиль</Label>
                                         <p className="text-xs text-muted-foreground">Определите, кто может просматривать ваш полный профиль.</p>
                                     </div>
-                                    <Select defaultValue="all">
+                                    <Select value={profileVisibility} onValueChange={setProfileVisibility}>
                                         <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">Все</SelectItem>
@@ -253,7 +277,7 @@ export default function SettingsClient({ user }: { user: User }) {
                                         <Label htmlFor="stats-visibility">Кто может видеть мою статистику</Label>
                                         <p className="text-xs text-muted-foreground">Выберите, кому будет доступна ваша игровая статистика.</p>
                                     </div>
-                                    <Select defaultValue="all">
+                                    <Select value={statsVisibility} onValueChange={setStatsVisibility}>
                                         <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">Все</SelectItem>
@@ -267,7 +291,7 @@ export default function SettingsClient({ user }: { user: User }) {
                                         <Label htmlFor="pm-access">Кто может писать мне личные сообщения</Label>
                                          <p className="text-xs text-muted-foreground">Ограничьте круг лиц, которые могут отправлять вам сообщения.</p>
                                     </div>
-                                     <Select defaultValue="all">
+                                     <Select value={pmAccess} onValueChange={setPmAccess}>
                                         <SelectTrigger className="w-[180px]"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">Все</SelectItem>
@@ -280,10 +304,10 @@ export default function SettingsClient({ user }: { user: User }) {
                                         <p className="font-medium">Режим невидимки</p>
                                         <p className="text-sm text-muted-foreground">Скрыть ваш онлайн-статус от других пользователей.</p>
                                     </div>
-                                    <Switch id="invisible-mode" />
+                                    <Switch id="invisible-mode" checked={isInvisible} onCheckedChange={setIsInvisible} />
                                 </div>
                             </div>
-                            <Button>Сохранить настройки приватности</Button>
+                            <Button onClick={() => handleSave('Приватность')}>Сохранить настройки приватности</Button>
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -298,27 +322,21 @@ export default function SettingsClient({ user }: { user: User }) {
                         <CardContent className="space-y-6">
                             <h3 className="text-lg font-medium">Email-уведомления</h3>
                              <div className="space-y-2">
-                                <div className="flex items-center gap-2"><Checkbox id="email-news" defaultChecked /> <Label htmlFor="email-news">Новости и обновления платформы</Label></div>
-                                <div className="flex items-center gap-2"><Checkbox id="email-matches" defaultChecked /> <Label htmlFor="email-matches">Напоминания о матчах</Label></div>
-                                <div className="flex items-center gap-2"><Checkbox id="email-social" /> <Label htmlFor="email-social">Комментарии, лайки и упоминания</Label></div>
+                                <div className="flex items-center gap-2"><Checkbox id="email-news" checked={emailNews} onCheckedChange={(checked) => setEmailNews(Boolean(checked))} /> <Label htmlFor="email-news">Новости и обновления платформы</Label></div>
+                                <div className="flex items-center gap-2"><Checkbox id="email-matches" checked={emailMatches} onCheckedChange={(checked) => setEmailMatches(Boolean(checked))} /> <Label htmlFor="email-matches">Напоминания о матчах</Label></div>
+                                <div className="flex items-center gap-2"><Checkbox id="email-social" checked={emailSocial} onCheckedChange={(checked) => setEmailSocial(Boolean(checked))} /> <Label htmlFor="email-social">Комментарии, лайки и упоминания</Label></div>
                             </div>
 
-                            <div className="border-t pt-6">
-                                <h3 className="text-lg font-medium">Push-уведомления</h3>
-                                <div className="space-y-2 mt-4">
-                                    <div className="flex items-center gap-2"><Checkbox id="push-all" defaultChecked /> <Label htmlFor="push-all">Все push-уведомления</Label></div>
-                                </div>
-                            </div>
                              <div className="border-t pt-6">
                                  <div className="flex items-center justify-between">
                                     <div>
                                         <p className="font-medium">Режим "Не беспокоить"</p>
                                         <p className="text-sm text-muted-foreground">Временно отключить все уведомления.</p>
                                     </div>
-                                    <Switch id="dnd-mode" />
+                                    <Switch id="dnd-mode" checked={dndMode} onCheckedChange={setDndMode} />
                                 </div>
                             </div>
-                            <Button>Сохранить настройки уведомлений</Button>
+                            <Button onClick={() => handleSave('Уведомления')}>Сохранить настройки уведомлений</Button>
                         </CardContent>
                     </Card>
                 </TabsContent>
