@@ -1,3 +1,7 @@
+
+'use client';
+
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -5,7 +9,19 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Map, SlidersHorizontal, PlusCircle, Star, Sun, Trash2, RefreshCcw, MapPin, ShowerHead, Shirt, Calendar } from "lucide-react";
 import Image from 'next/image';
 import { Separator } from "@/components/ui/separator";
-import { venuesList, myBookings } from "@/lib/mock-data/booking";
+import { venuesList as initialVenuesList, myBookings as initialMyBookings } from "@/lib/mock-data/booking";
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { cn } from '@/lib/utils';
 
 const getStatusVariant = (status: string) => {
     switch (status) {
@@ -26,7 +42,43 @@ const getFeatureIcon = (feature: string) => {
     }
 }
 
+type Venue = (typeof initialVenuesList)[0];
+type Booking = (typeof initialMyBookings)[0];
+
 export default function BookingPage() {
+    const { toast } = useToast();
+    const [myBookings, setMyBookings] = useState<Booking[]>(initialMyBookings);
+    
+    const handleBookVenue = (venue: Venue) => {
+        const newBooking = {
+            id: `booking-${Date.now()}`,
+            venueName: venue.name,
+            date: '30 сентября 2024', // Example date
+            time: '20:00 - 21:00',     // Example time
+            status: 'Подтверждено' as 'Подтверждено',
+        };
+        setMyBookings([newBooking, ...myBookings]);
+        toast({
+            title: "Площадка забронирована!",
+            description: `${venue.name} теперь в ваших бронированиях.`,
+        });
+    };
+
+    const handleCancelBooking = (bookingId: string) => {
+        setMyBookings(myBookings.map(b => b.id === bookingId ? { ...b, status: 'Отменено' } : b));
+        toast({
+            title: "Бронирование отменено",
+            variant: "destructive",
+        });
+    }
+    
+    const handleDeleteBooking = (bookingId: string) => {
+        setMyBookings(myBookings.filter(b => b.id !== bookingId));
+        toast({
+            title: "Бронирование удалено из истории",
+        });
+    }
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -61,13 +113,12 @@ export default function BookingPage() {
                 </CardHeader>
             </Card>
 
-            {/* My Bookings Section */}
             <div className="space-y-4">
                 <h2 className="font-headline text-2xl font-bold">Мои бронирования</h2>
                 {myBookings.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                         {myBookings.map((booking) => (
-                            <Card key={booking.id}>
+                            <Card key={booking.id} className={cn(booking.status === 'Отменено' && 'opacity-60')}>
                                 <CardHeader>
                                     <CardTitle className="text-lg">{booking.venueName}</CardTitle>
                                     <CardDescription>{booking.date} в {booking.time}</CardDescription>
@@ -76,9 +127,11 @@ export default function BookingPage() {
                                     <Badge variant={getStatusVariant(booking.status)}>{booking.status}</Badge>
                                     <div className="flex gap-2">
                                         {booking.status === "Отменено" ? (
-                                             <Button variant="ghost" size="icon" title="Удалить из истории"><Trash2 className="h-4 w-4 text-muted-foreground" /></Button>
+                                            <Button variant="ghost" size="icon" title="Удалить из истории" onClick={() => handleDeleteBooking(booking.id)}><Trash2 className="h-4 w-4 text-muted-foreground" /></Button>
+                                        ) : booking.status === "Завершено" ? (
+                                            <Button variant="outline" size="sm"><RefreshCcw className="mr-2 h-4 w-4"/>Повторить</Button>
                                         ) : (
-                                             <Button variant="outline" size="sm"><RefreshCcw className="mr-2 h-4 w-4"/>Повторить</Button>
+                                            <Button variant="destructive" size="sm" onClick={() => handleCancelBooking(booking.id)}>Отменить</Button>
                                         )}
                                     </div>
                                 </CardFooter>
@@ -96,11 +149,10 @@ export default function BookingPage() {
             
             <Separator />
             
-            {/* Available Venues Section */}
              <div className="space-y-4">
                  <h2 className="font-headline text-2xl font-bold">Доступные площадки</h2>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                    {venuesList.map((venue) => (
+                    {initialVenuesList.map((venue) => (
                         <Card key={venue.id} className="flex flex-col overflow-hidden transition-all hover:shadow-md">
                             <div className="relative">
                                 <Image
@@ -135,7 +187,23 @@ export default function BookingPage() {
                                </div>
                             </CardContent>
                             <CardFooter>
-                                <Button className="w-full">Забронировать</Button>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button className="w-full">Забронировать</Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Подтвердите бронирование</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Вы собираетесь забронировать площадку "{venue.name}". Это действие нельзя будет отменить сразу. Вы уверены?
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Отмена</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleBookVenue(venue)}>Подтвердить</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </CardFooter>
                         </Card>
                     ))}
