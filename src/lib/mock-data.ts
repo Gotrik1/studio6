@@ -1,4 +1,4 @@
-import { Award, Users, Trophy, Target, Medal, Star } from "lucide-react";
+import { Award, Users, Trophy, Target, Medal, Star, Gavel, ClipboardCheck, CalendarDays, Shield, Scale } from "lucide-react";
 
 export const achievements = [
   { name: "Лучший новичок", icon: Award, description: "Выиграть награду лучшего новичка сезона.", unlocked: true },
@@ -31,4 +31,20 @@ export const careerHistory = [
     { teamName: "Юниоры 'Пламя'", period: "2018 - 2020", role: "Нападающий", review: "Отличный старт карьеры, показал себя как перспективный игрок." },
     { teamName: "Городская лига 'Вымпел'", period: "2020 - 2022", role: "Полузащитник", review: "Стал ключевым игроком центра поля, много работал над выносливостью." },
     { teamName: "Кибер Орлы", period: "2022 - н.в.", role: "Капитан", review: "Взял на себя лидерские функции, привел команду к нескольким победам в региональных турнирах." },
+];
+
+export const judgeUser = {
+  name: 'Судья Джуди',
+  email: 'judy.j@prodvor.com',
+  role: 'Судья',
+  avatar: 'https://placehold.co/100x100.png',
+};
+
+export const judgeAchievements = [
+  { name: "Первое судейство", icon: Gavel, description: "Отсудить свой первый официальный матч.", unlocked: true },
+  { name: "Турнирный судья", icon: Trophy, description: "Работать судьей на крупном турнире.", unlocked: true },
+  { name: "Железный судья", icon: CalendarDays, description: "Отсудить 50 матчей за один сезон.", unlocked: true },
+  { name: "Награда за честную игру", icon: Shield, description: "Получить рейтинг справедливости 99%+ от игроков.", unlocked: false },
+  { name: "Разрешитель споров", icon: Scale, description: "Успешно разрешить 20 споров по счету.", unlocked: false },
+  { name: "Сертифицированный профи", icon: ClipboardCheck, description: "Пройти профессиональную сертификацию судей.", unlocked: true },
 ];
