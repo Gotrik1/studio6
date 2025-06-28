@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { User } from "@/lib/types";
@@ -15,6 +14,7 @@ import {
   SidebarTrigger,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { UserNav } from "@/components/user-nav";
 import { Logo } from "@/components/icons";
@@ -28,11 +28,9 @@ import {
   Trophy,
   BarChart3,
   Award,
-  Star,
   Gavel,
   HeartPulse,
   Handshake,
-  Calendar,
   MessageSquare,
   Crown,
   Settings,
@@ -46,10 +44,9 @@ import {
   Gem,
   Palette,
   AudioLines,
-  Radio,
-  Bot,
   Briefcase,
   UserPlus,
+  TrendingUp,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -77,222 +74,102 @@ export default function AppLayoutClient({ user, children }: AppLayoutClientProps
                 </SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Лента">
-                        <Link href="/dashboard">
-                        <Newspaper />
-                        Лента
-                        </Link>
-                    </SidebarMenuButton>
+                      <SidebarMenuButton asChild tooltip="Лента">
+                          <Link href="/dashboard"><Newspaper />Лента</Link>
+                      </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Мой профиль">
-                        <Link href="/profile">
-                        <UserIcon />
-                        Мой профиль
-                        </Link>
-                    </SidebarMenuButton>
+                      <SidebarMenuButton asChild tooltip="Поиск">
+                          <Link href="/search"><Search />Поиск</Link>
+                      </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Тренировки">
-                        <Link href="/training">
-                        <Dumbbell />
-                        Тренировки
-                        </Link>
-                    </SidebarMenuButton>
+                      <SidebarMenuButton asChild tooltip="Мой профиль">
+                          <Link href="/profile"><UserIcon />Мой профиль</Link>
+                      </SidebarMenuButton>
                     </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Команды">
-                        <Link href="/teams">
-                        <Users />
-                        Команды
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Матчи">
-                        <Link href="/matches">
-                        <Swords />
-                        Матчи
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Площадки">
-                        <Link href="/booking">
-                        <MapPin />
-                        Площадки
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Поиск">
-                        <Link href="/search">
-                        <Search />
-                        Поиск
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Турниры">
-                        <Link href="/tournaments">
-                        <Trophy />
-                        Турниры
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Лидерборды">
-                        <Link href="/leaderboards">
-                        <BarChart3 />
-                        Лидерборды
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Промо-акции">
-                        <Link href="/promotions">
-                        <Megaphone />
-                        Промо-акции
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Магазин">
-                        <Link href="/store">
-                            <Gem />
-                            Магазин
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Монетизация">
-                        <Link href="/monetization">
-                        <Crown />
-                        Монетизация
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Центр Судей">
-                        <Link href="/judge-center">
-                        <Gavel />
-                        Центр Судей
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Спонсоры">
-                        <Link href="/sponsors">
-                        <Handshake />
-                        Спонсоры
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Фан-зона">
-                        <Link href="/fan-zone">
-                        <HeartPulse />
-                        Фан-зона
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    {(user.role === 'Спонсор') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Мои Кампании">
-                            <Link href="/sponsorship/management">
-                            <Briefcase />
-                            Мои Кампании
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    )}
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Чаты">
-                        <Link href="/chats">
-                        <MessageSquare />
-                        Чаты
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                     <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Друзья">
-                        <Link href="/friends">
-                        <UserPlus />
-                        Друзья
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Экономика PD">
-                        <Link href="/pd-economy">
-                        <Coins />
-                        Экономика PD
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="ИИ-Анализ">
-                        <Link href="/ai-analysis">
-                        <BrainCircuit />
-                        ИИ-Анализ
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Генерация аудио">
-                        <Link href="/audio-generation">
-                        <AudioLines />
-                        Генерация аудио
-                        </Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
+                    
+                    <SidebarSeparator className="my-1" />
+
+                    <CollapsibleSidebarMenuItem icon={<Users />} title="Сообщество">
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/teams">Команды</SidebarMenuSubButton>
+                        <SidebarMenuSubButton href="/chats">Чаты</SidebarMenuSubButton>
+                        <SidebarMenuSubButton href="/friends">Друзья</SidebarMenuSubButton>
+                        <SidebarMenuSubButton href="/fan-zone">Фан-зона</SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </CollapsibleSidebarMenuItem>
+
+                    <CollapsibleSidebarMenuItem icon={<Trophy />} title="Соревнования">
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/matches">Матчи</SidebarMenuSubButton>
+                        <SidebarMenuSubButton href="/tournaments">Турниры</SidebarMenuSubButton>
+                        <SidebarMenuSubButton href="/leaderboards">Лидерборды</SidebarMenuSubButton>
+                        <SidebarMenuSubButton href="/booking">Площадки</SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </CollapsibleSidebarMenuItem>
+
+                    <CollapsibleSidebarMenuItem icon={<TrendingUp />} title="Развитие">
+                      <SidebarMenuSubItem>
+                          <SidebarMenuSubButton href="/training">Тренировки</SidebarMenuSubButton>
+                          <SidebarMenuSubButton href="/store">Магазин</SidebarMenuSubButton>
+                          <SidebarMenuSubButton href="/promotions">Промо-акции</SidebarMenuSubButton>
+                          <SidebarMenuSubButton href="/pd-economy">Экономика PD</SidebarMenuSubButton>
+                          <SidebarMenuSubButton href="/monetization">Монетизация</SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </CollapsibleSidebarMenuItem>
+
+                    <CollapsibleSidebarMenuItem icon={<Award />} title="Роли">
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/judge-center">Центр Судей</SidebarMenuSubButton>
+                        <SidebarMenuSubButton href="/sponsors">Спонсоры</SidebarMenuSubButton>
+                        {(user.role === 'Спонсор') && (
+                          <SidebarMenuSubButton href="/sponsorship/management">Мои Кампании</SidebarMenuSubButton>
+                        )}
+                      </SidebarMenuSubItem>
+                    </CollapsibleSidebarMenuItem>
+
+                    <CollapsibleSidebarMenuItem icon={<BrainCircuit />} title="Инструменты AI">
+                       <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/ai-analysis">Анализ контента</SidebarMenuSubButton>
+                        <SidebarMenuSubButton href="/audio-generation">Генерация аудио</SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </CollapsibleSidebarMenuItem>
+
+                    <SidebarSeparator className="my-1" />
+
                     <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip="Поддержка">
-                        <Link href="/support">
-                        <LifeBuoy />
-                        Поддержка
-                        </Link>
+                        <Link href="/support"><LifeBuoy />Поддержка</Link>
                     </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip="Настройки">
-                        <Link href="/settings">
-                        <Settings />
-                        Настройки
-                        </Link>
+                        <Link href="/settings"><Settings />Настройки</Link>
                     </SidebarMenuButton>
                     </SidebarMenuItem>
+                    
                     <SidebarMenuItem>
                     <CollapsibleSidebarMenuItem icon={<FolderKanban />} title="Документы">
                         <SidebarMenuSubItem>
                             <SidebarMenuSubButton href="/documents/vision-and-principles">Видение и Принципы</SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        <SidebarMenuSubItem>
                             <SidebarMenuSubButton href="/documents/architecture">Архитектура (FSD)</SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        <SidebarMenuSubItem>
                             <SidebarMenuSubButton href="/documents/backend-roadmap">Бэкенд Roadmap</SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        <SidebarMenuSubItem>
                             <SidebarMenuSubButton href="/documents/backend-production">Готовность к продакшену</SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                     </CollapsibleSidebarMenuItem>
                     </SidebarMenuItem>
-                    <SidebarMenuItem>
+
+                     <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip="Демо темы">
-                        <Link href="/theme-demo">
-                        <Palette />
-                        Демо темы
-                        </Link>
+                        <Link href="/theme-demo"><Palette />Демо темы</Link>
                     </SidebarMenuButton>
                     </SidebarMenuItem>
+
                     {(user.role === 'Администратор' || user.role === 'Admin') && (
                     <SidebarMenuItem>
                         <SidebarMenuButton asChild tooltip="Администрирование">
-                            <Link href="/administration">
-                            <Shield />
-                            Администрирование
-                            </Link>
+                            <Link href="/administration"><Shield />Администрирование</Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     )}
