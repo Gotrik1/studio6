@@ -95,6 +95,14 @@ export default async function AppLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Тренировки">
+                <Link href="/training">
+                  <Dumbbell />
+                  Тренировки
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Команды">
                 <Link href="/teams">
