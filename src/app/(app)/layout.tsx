@@ -46,6 +46,7 @@ import {
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default async function AppLayout({
   children,
@@ -233,6 +234,7 @@ export default async function AppLayout({
           <div className="flex-1">
             {/* Can add breadcrumbs or page title here */}
           </div>
+          <ThemeToggle />
           <UserNav user={user} />
         </header>
         <div className="flex-1 overflow-auto p-4 pb-20 sm:p-6 md:pb-6">{children}</div>
