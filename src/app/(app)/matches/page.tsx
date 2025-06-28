@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -51,9 +50,11 @@ export default function MatchesPage() {
           <h1 className="font-headline text-3xl font-bold tracking-tight">Список матчей</h1>
           <p className="text-muted-foreground">Следите за прошедшими, текущими и будущими играми.</p>
         </div>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Создать матч
+        <Button asChild>
+          <Link href="/matches/new">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Создать матч
+          </Link>
         </Button>
       </div>
 
