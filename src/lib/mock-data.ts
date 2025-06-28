@@ -1,6 +1,7 @@
 
 
 
+
 export const achievements = [
   { name: "Лучший новичок", icon: "Award", description: "Выиграть награду лучшего новичка сезона.", unlocked: true },
   { name: "Золотая нога", icon: "Star", description: "Забить 50 голов за сезон.", unlocked: true },
@@ -189,6 +190,11 @@ export const leaderboardData = [
     { id: 3, rank: 3, name: "Alex 'Nova' Ray", avatar: 'https://placehold.co/40x40.png', avatarHint: 'focused gamer', team: 'Квантовые Квазары', elo: 2380, wins: 135, losses: 70, profileUrl: '#' },
     { id: 4, rank: 4, name: "Sam 'The-Rock' Stone", avatar: 'https://placehold.co/40x40.png', avatarHint: 'serious gamer', team: 'Багровые Крестоносцы', elo: 2350, wins: 130, losses: 72, profileUrl: '#' },
     { id: 5, rank: 5, name: "Max 'Titan' Iron", avatar: 'https://placehold.co/40x40.png', avatarHint: 'strong gamer', team: 'Стальные Титаны', elo: 2300, wins: 125, losses: 75, profileUrl: '#' },
+    { id: 6, rank: 6, name: "Yuri 'Ghost' Volkov", avatar: 'https://placehold.co/40x40.png', avatarHint: 'wolf logo', team: 'Призрачные Волки', elo: 2280, wins: 120, losses: 80, profileUrl: '#' },
+    { id: 7, rank: 7, name: "Frosty", avatar: 'https://placehold.co/40x40.png', avatarHint: 'gamer winter', team: 'Ледяные Драконы', elo: 2250, wins: 118, losses: 82, profileUrl: '#' },
+    { id: 8, rank: 8, name: "Olga 'Phoenix' Smirnova", avatar: 'https://placehold.co/40x40.png', avatarHint: 'gamer with headphones', team: 'Кибер Орлы', elo: 2240, wins: 115, losses: 85, profileUrl: '#' },
+    { id: 9, rank: 9, name: "Dmitry 'Gadget' Kuznetsov", avatar: 'https://placehold.co/40x40.png', avatarHint: 'tech savvy gamer', team: 'Кибер Орлы', elo: 2230, wins: 114, losses: 86, profileUrl: '#' },
+    { id: 10, rank: 10, name: "IceQueen", avatar: 'https://placehold.co/40x40.png', avatarHint: 'ice queen', team: 'Ледяные Драконы', elo: 2220, wins: 112, losses: 88, profileUrl: '#' },
 ];
 
 export const achievementCatalog: { name: string; description: string; icon: "Trophy" | "Star" | "Shield" | "Gem" | "Crown" | "Rocket" | "Swords" | "Medal" | "Award"; rarity: "Обычная" | "Редкая" | "Эпическая"; points: number }[] = [

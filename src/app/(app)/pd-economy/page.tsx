@@ -5,7 +5,7 @@ import { useState, useEffect, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Activity, ArrowRight, BadgeCheck, Coins, Crown, Gem, Gift, Handshake, Newspaper, Palette, PlayCircle, Shirt, Swords, Target, Users } from 'lucide-react';
+import { Activity, ArrowRight, BadgeCheck, Coins, Crown, Gem, Gift, Handshake, Newspaper, Palette, PlayCircle, Shirt, Swords, Target, Users, Trophy } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -129,7 +129,7 @@ export default function PDEconomyPage() {
             <section>
                  <Card className="grid md:grid-cols-2 overflow-hidden shadow-lg">
                     <div className="relative group aspect-video">
-                        <Image src="https://placehold.co/800x450.png" alt="What is PD video" fill className="object-cover transition-transform group-hover:scale-105" data-ai-hint="esports economy" />
+                        <Image src="https://placehold.co/800x450.png" alt="Что такое PD видео" fill className="object-cover transition-transform group-hover:scale-105" data-ai-hint="esports economy" />
                         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
                             <PlayCircle className="h-20 w-20 text-white/70 transition-all group-hover:text-white group-hover:scale-110" />
                         </div>

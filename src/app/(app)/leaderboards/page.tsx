@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { achievementCatalog, leaderboardData } from "@/lib/mock-data";
 import { ArrowRight, BarChart3, Medal, Rocket, Shield, Star, Swords, Trophy, Users, Gem, Crown, Award } from "lucide-react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 
 const achievementIcons = {
@@ -23,11 +24,18 @@ const getRarityColor = (rarity: string) => {
     }
 }
 
+const getRankIcon = (rank: number) => {
+    if (rank === 1) return <Medal className="h-6 w-6 text-amber-400" />;
+    if (rank === 2) return <Medal className="h-6 w-6 text-slate-400" />;
+    if (rank === 3) return <Medal className="h-6 w-6 text-orange-400" />;
+    return null;
+}
+
 export default function LeaderboardsPage() {
     return (
         <div className="space-y-6">
             <div className="space-y-2">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Рейтинги и Достижения</h1>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Доска Почёта</h1>
                 <p className="text-muted-foreground">
                     Отслеживайте свой прогресс, соревнуйтесь с другими и открывайте новые награды.
                 </p>
@@ -90,9 +98,16 @@ export default function LeaderboardsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {leaderboardData.map((player, index) => (
-                                        <TableRow key={player.id}>
-                                            <TableCell className="font-headline text-lg font-bold">#{player.rank}</TableCell>
+                                    {leaderboardData.map((player) => (
+                                        <TableRow key={player.id} className={cn(
+                                            player.rank === 1 && "bg-amber-400/10 hover:bg-amber-400/20",
+                                            player.rank === 2 && "bg-slate-400/10 hover:bg-slate-400/20",
+                                            player.rank === 3 && "bg-orange-400/10 hover:bg-orange-400/20"
+                                        )}>
+                                            <TableCell className="font-headline text-lg font-bold flex items-center gap-2">
+                                                {getRankIcon(player.rank)}
+                                                <span>#{player.rank}</span>
+                                            </TableCell>
                                             <TableCell>
                                                 <div className="flex items-center gap-3">
                                                     <Avatar>
