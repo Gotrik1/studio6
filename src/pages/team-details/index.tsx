@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings } from 'lucide-react';
+import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot } from 'lucide-react';
 import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
@@ -68,7 +68,7 @@ export function TeamDetailsPage() {
                     <TabsTrigger value="overview">Обзор</TabsTrigger>
                     <TabsTrigger value="roster">Состав</TabsTrigger>
                     <TabsTrigger value="challenges">Вызовы</TabsTrigger>
-                    <TabsTrigger value="chatbot">Чат-бот</TabsTrigger>
+                    <TabsTrigger value="chatbot"><Bot className="mr-2 h-4 w-4" />Чат-бот</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="mt-4">

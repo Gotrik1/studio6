@@ -69,6 +69,7 @@ export default function ChatsPage() {
             text: newMessage.trim(),
             time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
         };
+        const currentMessageText = newMessage;
         setNewMessage('');
         setSuggestions([]);
 
@@ -76,29 +77,31 @@ export default function ChatsPage() {
         const newChatListWithUserMessage = chatList.map(c => 
             c.id === activeChat.id ? { ...c, messages: [...(c.messages || []), userMessage], lastMessage: { text: `Вы: ${userMessage.text}`, time: userMessage.time } } : c
         );
-        const updatedActiveChat = newChatListWithUserMessage.find(c => c.id === activeChat.id)!;
+        let updatedActiveChat = newChatListWithUserMessage.find(c => c.id === activeChat.id)!;
         setChatList([updatedActiveChat, ...newChatListWithUserMessage.filter(c => c.id !== activeChat.id)]);
         setActiveChat(updatedActiveChat);
         
         const isTeamChat = activeChat.id === 'chat-1';
         const aiTrigger = '@AI-помощник';
 
-        if (isTeamChat && userMessage.text.toLowerCase().startsWith(aiTrigger.toLowerCase())) {
-            const query = userMessage.text.substring(aiTrigger.length).trim();
+        if (isTeamChat && currentMessageText.toLowerCase().startsWith(aiTrigger.toLowerCase())) {
+            const query = currentMessageText.substring(aiTrigger.length).trim();
             const thinkingMessage: Message = { sender: 'ai', text: 'Думаю...', time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }), isThinking: true };
             
             // Show thinking indicator
-            setChatList(prev => prev.map(c => c.id === activeChat.id ? { ...c, messages: [...(c.messages || []), thinkingMessage] } : c));
-            setActiveChat(prev => prev ? { ...prev, messages: [...(prev.messages || []), thinkingMessage] } : null);
+            updatedActiveChat = {...updatedActiveChat, messages: [...updatedActiveChat.messages, thinkingMessage]};
+            const updatedListWithThinking = chatList.map(c => c.id === activeChat.id ? updatedActiveChat : c);
+            setChatList(updatedListWithThinking);
+            setActiveChat(updatedActiveChat);
 
             try {
                 const aiResponseText = await askTeamChatbot({ teamId: 'cyber-eagles', query });
                 const aiResponseMessage: Message = { sender: 'ai', text: aiResponseText, time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) };
                 
                 // Replace thinking message with actual response
-                 setChatList(prev => prev.map(c => {
+                setChatList(prev => prev.map(c => {
                     if (c.id === activeChat.id) {
-                        const newMessages = c.messages?.slice(0, -1) || [];
+                        const newMessages = c.messages?.filter(m => !m.isThinking) || [];
                         newMessages.push(aiResponseMessage);
                         return { ...c, messages: newMessages, lastMessage: { text: `AI: ${aiResponseMessage.text.substring(0, 30)}...`, time: aiResponseMessage.time } };
                     }
@@ -106,7 +109,7 @@ export default function ChatsPage() {
                 }));
                 setActiveChat(prev => {
                     if (!prev) return null;
-                    const newMessages = prev.messages?.slice(0, -1) || [];
+                    const newMessages = prev.messages?.filter(m => !m.isThinking) || [];
                     newMessages.push(aiResponseMessage);
                     return { ...prev, messages: newMessages };
                 });
@@ -115,7 +118,7 @@ export default function ChatsPage() {
                 const errorMessage: Message = { sender: 'ai', text: 'Извините, произошла ошибка. Попробуйте снова.', time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) };
                  setChatList(prev => prev.map(c => {
                     if (c.id === activeChat.id) {
-                        const newMessages = c.messages?.slice(0, -1) || [];
+                         const newMessages = c.messages?.filter(m => !m.isThinking) || [];
                         newMessages.push(errorMessage);
                         return { ...c, messages: newMessages };
                     }
@@ -123,7 +126,7 @@ export default function ChatsPage() {
                 }));
                  setActiveChat(prev => {
                     if (!prev) return null;
-                    const newMessages = prev.messages?.slice(0, -1) || [];
+                    const newMessages = prev.messages?.filter(m => !m.isThinking) || [];
                     newMessages.push(errorMessage);
                     return { ...prev, messages: newMessages };
                 });
@@ -300,7 +303,7 @@ export default function ChatsPage() {
                                         <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" disabled={isSending}><Smile /></Button></TooltipTrigger><TooltipContent><p>Эмодзи</p></TooltipContent></Tooltip>
                                         <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon" disabled={isSending}><Paperclip /></Button></TooltipTrigger><TooltipContent><p>Вложить файл</p></TooltipContent></Tooltip>
                                     </TooltipProvider>
-                                    <Button onClick={handleSendMessage} disabled={isSending}><Send /></Button>
+                                    <Button onClick={handleSendMessage} disabled={isSending || !newMessage.trim()}><Send /></Button>
                                 </div>
                             </div>
                         </div>
