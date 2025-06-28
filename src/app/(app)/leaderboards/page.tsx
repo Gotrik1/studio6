@@ -16,6 +16,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
+import { ranks, type Rank } from '@/config/ranks';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
 const achievementIcons = {
@@ -98,18 +100,19 @@ export default function LeaderboardsPage() {
     return (
         <div className="space-y-6">
             <div className="space-y-2">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Доска Почёта</h1>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Центр Прогресса</h1>
                 <p className="text-muted-foreground">
-                    Отслеживайте свой прогресс, соревнуйтесь с другими и открывайте новые награды.
+                    Отслеживайте свой путь, соревнуйтесь с другими и открывайте новые награды.
                 </p>
             </div>
 
-            <Tabs defaultValue="leaderboard">
+            <Tabs defaultValue="players">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <TabsList className="grid w-full grid-cols-3 sm:w-auto sm:grid-cols-3">
-                        <TabsTrigger value="leaderboard"><BarChart3 className="mr-2 h-4 w-4" />Игроки</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-4 sm:w-auto sm:grid-cols-4">
+                        <TabsTrigger value="players"><BarChart3 className="mr-2 h-4 w-4" />Игроки</TabsTrigger>
+                        <TabsTrigger value="ranks"><Award className="mr-2 h-4 w-4"/>Ранги</TabsTrigger>
                         <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4" />Команды</TabsTrigger>
-                        <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4" />Каталог достижений</TabsTrigger>
+                        <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4" />Достижения</TabsTrigger>
                     </TabsList>
                     <div className="flex items-center gap-2">
                          <Button variant="outline">Сравнить со мной</Button>
@@ -117,84 +120,120 @@ export default function LeaderboardsPage() {
                     </div>
                 </div>
 
-                <TabsContent value="leaderboard" className="mt-4">
+                <TabsContent value="players" className="mt-4">
+                     <Card>
+                        <CardHeader>
+                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <CardTitle>Топ игроков</CardTitle>
+                                    <CardDescription>Лучшие игроки платформы за текущий период.</CardDescription>
+                                </div>
+                                <div className="flex gap-2">
+                                    <Select defaultValue="all" onValueChange={setRoleFilter}>
+                                        <SelectTrigger className="w-full sm:w-[160px]">
+                                            <SelectValue placeholder="Все роли" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="all">Все роли</SelectItem>
+                                            <SelectItem value="player">Игроки</SelectItem>
+                                            <SelectItem value="captain">Капитаны</SelectItem>
+                                            <SelectItem value="judge">Судьи</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <Select defaultValue="season" onValueChange={setPeriodFilter}>
+                                        <SelectTrigger className="w-full sm:w-[160px]">
+                                            <SelectValue placeholder="Период" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="season">Текущий сезон</SelectItem>
+                                            <SelectItem value="month">Месяц</SelectItem>
+                                            <SelectItem value="week">Неделя</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-16">Ранг</TableHead>
+                                        <TableHead>Игрок</TableHead>
+                                        <TableHead className="text-center">ELO</TableHead>
+                                        <TableHead className="hidden text-center sm:table-cell">Побед/Пор.</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredPlayers.slice(0, 15).map((player) => (
+                                        <TableRow key={player.id} className={cn(
+                                            player.rank === 1 && "bg-amber-400/10 hover:bg-amber-400/20",
+                                            player.rank === 2 && "bg-slate-400/10 hover:bg-slate-400/20",
+                                            player.rank === 3 && "bg-orange-400/10 hover:bg-orange-400/20"
+                                        )}>
+                                            <TableCell className="font-headline text-lg font-bold flex items-center gap-2">
+                                                {getRankIcon(player.rank)}
+                                                <span>#{player.rank}</span>
+                                            </TableCell>
+                                            <TableCell>
+                                                 <Button asChild variant="link" className="p-0 h-auto font-semibold">
+                                                    <Link href={player.profileUrl} className="flex items-center gap-3">
+                                                        <Avatar>
+                                                            <AvatarImage src={player.avatar} alt={player.name} data-ai-hint={player.avatarHint} />
+                                                            <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
+                                                        </Avatar>
+                                                        <div>
+                                                            <p className="font-semibold text-left">{player.name}</p>
+                                                            <p className="text-xs text-muted-foreground text-left">{player.team}</p>
+                                                        </div>
+                                                    </Link>
+                                                </Button>
+                                            </TableCell>
+                                            <TableCell className="text-center font-semibold text-primary">{player.elo}</TableCell>
+                                            <TableCell className="hidden text-center sm:table-cell">
+                                                <span className="text-green-600">{player.wins}</span> / <span className="text-red-600">{player.losses}</span>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="ranks" className="mt-4">
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                         <div className="lg:col-span-3">
                              <Card>
                                 <CardHeader>
-                                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                                        <div>
-                                            <CardTitle>Топ игроков</CardTitle>
-                                            <CardDescription>Лучшие игроки платформы за текущий период.</CardDescription>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <Select defaultValue="all" onValueChange={setRoleFilter}>
-                                                <SelectTrigger className="w-full sm:w-[160px]">
-                                                    <SelectValue placeholder="Все роли" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="all">Все роли</SelectItem>
-                                                    <SelectItem value="player">Игроки</SelectItem>
-                                                    <SelectItem value="captain">Капитаны</SelectItem>
-                                                    <SelectItem value="judge">Судьи</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <Select defaultValue="season" onValueChange={setPeriodFilter}>
-                                                <SelectTrigger className="w-full sm:w-[160px]">
-                                                    <SelectValue placeholder="Период" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="season">Текущий сезон</SelectItem>
-                                                    <SelectItem value="month">Месяц</SelectItem>
-                                                    <SelectItem value="week">Неделя</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        </div>
-                                    </div>
+                                    <CardTitle>Система рангов</CardTitle>
+                                    <CardDescription>Всего {ranks.length} уровней мастерства, отражающих прогресс игрока.</CardDescription>
                                 </CardHeader>
-                                <CardContent>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="w-16">Ранг</TableHead>
-                                                <TableHead>Игрок</TableHead>
-                                                <TableHead className="text-center">ELO</TableHead>
-                                                <TableHead className="hidden text-center sm:table-cell">Побед/Пор.</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {filteredPlayers.slice(0, 15).map((player) => (
-                                                <TableRow key={player.id} className={cn(
-                                                    player.rank === 1 && "bg-amber-400/10 hover:bg-amber-400/20",
-                                                    player.rank === 2 && "bg-slate-400/10 hover:bg-slate-400/20",
-                                                    player.rank === 3 && "bg-orange-400/10 hover:bg-orange-400/20"
-                                                )}>
-                                                    <TableCell className="font-headline text-lg font-bold flex items-center gap-2">
-                                                        {getRankIcon(player.rank)}
-                                                        <span>#{player.rank}</span>
-                                                    </TableCell>
-                                                    <TableCell>
-                                                         <Button asChild variant="link" className="p-0 h-auto font-semibold">
-                                                            <Link href={player.profileUrl} className="flex items-center gap-3">
-                                                                <Avatar>
-                                                                    <AvatarImage src={player.avatar} alt={player.name} data-ai-hint={player.avatarHint} />
-                                                                    <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
-                                                                </Avatar>
-                                                                <div>
-                                                                    <p className="font-semibold text-left">{player.name}</p>
-                                                                    <p className="text-xs text-muted-foreground text-left">{player.team}</p>
-                                                                </div>
-                                                            </Link>
-                                                        </Button>
-                                                    </TableCell>
-                                                    <TableCell className="text-center font-semibold text-primary">{player.elo}</TableCell>
-                                                    <TableCell className="hidden text-center sm:table-cell">
-                                                        <span className="text-green-600">{player.wins}</span> / <span className="text-red-600">{player.losses}</span>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                                <CardContent className="space-y-4">
+                                     <TooltipProvider>
+                                        {ranks.map((rank) => (
+                                            <Card key={rank.name} className="p-4 transition-shadow hover:shadow-md">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-4">
+                                                        <Award className={cn("h-8 w-8 shrink-0", rank.color)} />
+                                                        <div>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <p className={cn("font-headline text-lg font-bold cursor-help", rank.color)}>{rank.name}</p>
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <p>{rank.description}</p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                            <p className="text-sm text-muted-foreground">{rank.description}</p>
+                                                        </div>
+                                                    </div>
+                                                    <Badge variant="secondary" className="font-mono whitespace-nowrap">
+                                                        {rank.minPoints.toLocaleString()} - {rank.maxPoints === Infinity ? '∞' : rank.maxPoints.toLocaleString()} PD
+                                                    </Badge>
+                                                </div>
+                                            </Card>
+                                        ))}
+                                    </TooltipProvider>
                                 </CardContent>
                             </Card>
                         </div>
