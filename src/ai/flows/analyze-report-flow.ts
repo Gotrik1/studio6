@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -20,7 +21,7 @@ export type AnalyzeReportInput = z.infer<typeof AnalyzeReportInputSchema>;
 
 export const AnalyzeReportOutputSchema = z.object({
   recommendation: z.enum(['warning', 'temp_ban', 'perm_ban', 'no_action']).describe("The AI's recommended action: 'warning' (предупреждение), 'temp_ban' (временный бан), 'perm_ban' (постоянный бан), or 'no_action' (нет нарушений)."),
-  reasoning: z.string().describe("A brief explanation for the recommendation, highlighting the key factors from the evidence and user history."),
+  reasoning: z.string().describe("A brief explanation for the recommendation, highlighting the key factors from the evidence and user's history."),
   confidence: z.enum(['high', 'medium', 'low']).describe("The AI's confidence in its recommendation."),
 });
 export type AnalyzeReportOutput = z.infer<typeof AnalyzeReportOutputSchema>;
