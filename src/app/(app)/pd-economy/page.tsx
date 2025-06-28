@@ -5,10 +5,13 @@ import { useState, useEffect, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Activity, ArrowRight, BadgeCheck, Coins, Crown, Gem, Gift, Handshake, Newspaper, Palette, PlayCircle, Shirt, Swords, Target, Users, Trophy } from 'lucide-react';
+import { Activity, ArrowRight, BadgeCheck, Coins, Crown, Gem, Gift, Handshake, Newspaper, Palette, PlayCircle, Shirt, Swords, Target, Users, Trophy, TrendingUp, ArrowDown, ArrowUp } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 
 const AnimatedCounter = ({ endValue, duration = 2000 }: { endValue: number, duration?: number }) => {
     const [count, setCount] = useState(0);
@@ -45,6 +48,33 @@ const ValueCard = ({ icon, title, children }: { icon: ReactNode, title: string, 
         </PopoverContent>
     </Popover>
 );
+
+const economyBreakdownData = [
+  { name: 'Награды за матчи', value: 450, color: 'hsl(var(--primary))' },
+  { name: 'Покупки в магазине', value: 250, color: 'hsl(var(--accent))' },
+  { name: 'Донаты и поддержка', value: 150, color: 'hsl(var(--secondary))' },
+  { name: 'Создание контента', value: 100, color: 'hsl(var(--muted-foreground))' },
+];
+
+const topEarners = {
+  players: [
+    { name: "Alex 'CyberSlasher' Doe", change: 1250, avatar: 'https://placehold.co/40x40.png', avatarHint: 'esports player' },
+    { name: "Верный Ларри", change: 800, avatar: 'https://placehold.co/40x40.png', avatarHint: 'sports fan' },
+    { name: "Судья Джуди", change: 650, avatar: 'https://placehold.co/40x40.png', avatarHint: 'judge portrait' },
+  ],
+  teams: [
+    { name: 'Кибер Орлы', change: 5300, avatar: 'https://placehold.co/40x40.png', avatarHint: 'eagle logo' },
+    { name: 'Ледяные Драконы', change: 2100, avatar: 'https://placehold.co/40x40.png', avatarHint: 'dragon logo' },
+    { name: 'Вихревые Гадюки', change: 1800, avatar: 'https://placehold.co/40x40.png', avatarHint: 'snake logo' },
+  ]
+};
+
+const liveTransactions = [
+  { description: "Alex 'CyberSlasher' Doe получил +15 PD за победу в матче", time: "10 сек назад" },
+  { description: 'Команда "Кибер Орлы" купила "Командная рамка"', time: "45 сек назад" },
+  { description: "Верный Ларри получил +5 PD за комментарий", time: "1 мин назад" },
+  { description: 'Команда "Ледяные Драконы" получила +5000 PD за победу в турнире', time: "3 мин назад" },
+];
 
 export default function PDEconomyPage() {
     return (
@@ -124,6 +154,98 @@ export default function PDEconomyPage() {
                         PD позволяет вам выделиться. Тратьте их на редкие предметы и кастомизацию, чтобы показать свою индивидуальность всему сообществу.
                     </ValueCard>
                 </div>
+            </section>
+            
+            <section>
+                <h2 className="text-center font-headline text-3xl font-bold mb-8">Экономика в цифрах</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <Card className="lg:col-span-2">
+                        <CardHeader>
+                            <CardTitle>Распределение PD</CardTitle>
+                            <CardDescription>Источники получения и траты PD в экосистеме.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <ResponsiveContainer width="100%" height={300}>
+                                <PieChart>
+                                    <Pie data={economyBreakdownData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={120} labelLine={false} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                                        {economyBreakdownData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.color} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+                    <Card>
+                         <CardHeader>
+                            <CardTitle>Живая лента</CardTitle>
+                            <CardDescription>Последние транзакции.</CardDescription>
+                        </CardHeader>
+                         <CardContent className="space-y-4">
+                            {liveTransactions.map((tx, index) => (
+                                <div key={index} className="flex items-start gap-3">
+                                    <div className="mt-1 flex h-2 w-2 translate-y-1 rounded-full bg-primary" />
+                                    <div>
+                                        <p className="text-sm">{tx.description}</p>
+                                        <p className="text-xs text-muted-foreground">{tx.time}</p>
+                                    </div>
+                                </div>
+                            ))}
+                         </CardContent>
+                    </Card>
+                </div>
+            </section>
+            
+            <section>
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Лидеры по заработку (неделя)</CardTitle>
+                            <CardDescription>Самые активные участники платформы.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {topEarners.players.map(player => (
+                                <div key={player.name} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarImage src={player.avatar} alt={player.name} data-ai-hint={player.avatarHint} />
+                                            <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <span className="font-medium">{player.name}</span>
+                                    </div>
+                                    <Badge variant="secondary" className="text-green-600">
+                                        <TrendingUp className="mr-1.5 h-4 w-4"/>
+                                        +{player.change.toLocaleString()} PD
+                                    </Badge>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader>
+                            <CardTitle>Топ команд по заработку (неделя)</CardTitle>
+                            <CardDescription>Самые успешные коллективы.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            {topEarners.teams.map(team => (
+                                <div key={team.name} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <Avatar className="h-10 w-10">
+                                            <AvatarImage src={team.avatar} alt={team.name} data-ai-hint={team.avatarHint} />
+                                            <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
+                                        </Avatar>
+                                        <span className="font-medium">{team.name}</span>
+                                    </div>
+                                    <Badge variant="default">
+                                        <TrendingUp className="mr-1.5 h-4 w-4"/>
+                                        +{team.change.toLocaleString()} PD
+                                    </Badge>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                 </div>
             </section>
 
             <section>
