@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2 } from "lucide-react";
+import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -43,6 +43,12 @@ const recentMatches = [
   { id: 3, opponent: "Багровые Крестоносцы", score: "13-5", result: "Победа", map: "Haven" },
 ];
 
+const sponsors = [
+    { name: "TechSponsor", logo: "https://placehold.co/150x50.png", logoHint: "corporate logo" },
+    { name: "GamerGear", logo: "https://placehold.co/150x50.png", logoHint: "gaming brand logo" },
+    { name: "Energy Drink Co.", logo: "https://placehold.co/150x50.png", logoHint: "beverage logo" },
+]
+
 export default function TeamProfilePage() {
     return (
         <div className="space-y-6">
@@ -57,7 +63,9 @@ export default function TeamProfilePage() {
                     />
                     <div className="absolute bottom-4 right-4 flex gap-2">
                         <Button variant="outline" size="icon"><Share2 className="h-5 w-5"/></Button>
-                        <Button>Вступить в команду</Button>
+                        <Button variant="outline" size="icon"><Gem className="h-5 w-5"/></Button>
+                        <Button><Users className="mr-2 h-5 w-5"/>Вступить в команду</Button>
+                        <Button variant="secondary"><Settings className="mr-2 h-5 w-5"/>Управлять</Button>
                     </div>
                 </CardHeader>
                 <CardContent className="relative flex flex-col items-center gap-4 p-6 pt-0 text-center sm:flex-row sm:text-left">
@@ -79,27 +87,31 @@ export default function TeamProfilePage() {
             </Card>
 
             <Tabs defaultValue="roster">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5">
                     <TabsTrigger value="roster"><Users className="mr-2 h-4 w-4"/>Состав</TabsTrigger>
                     <TabsTrigger value="matches"><Swords className="mr-2 h-4 w-4"/>Матчи</TabsTrigger>
+                    <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
                     <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
                     <TabsTrigger value="about"><Newspaper className="mr-2 h-4 w-4"/>О команде</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="roster">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Текущий состав</CardTitle>
-                            <CardDescription>Игроки, которые защищают цвета команды {team.name}.</CardDescription>
+                        <CardHeader className="flex-row items-center justify-between">
+                            <div>
+                                <CardTitle>Текущий состав</CardTitle>
+                                <CardDescription>Игроки, которые защищают цвета команды {team.name}.</CardDescription>
+                            </div>
+                            <Button><PlusCircle className="mr-2 h-4 w-4"/>Пригласить игрока</Button>
                         </CardHeader>
-                        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+                        <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                             {roster.map(player => (
-                                <Card key={player.name} className="flex items-center gap-4 p-4 transition-shadow hover:shadow-md">
-                                    <Avatar className="h-16 w-16">
+                                <Card key={player.name} className="flex flex-col items-center p-4 text-center transition-shadow hover:shadow-md">
+                                    <Avatar className="h-20 w-20">
                                         <AvatarImage src={player.avatar} alt={player.name} data-ai-hint={player.avatarHint} />
                                         <AvatarFallback>{player.name.split(' ').map(n=>n[0]).join('')}</AvatarFallback>
                                     </Avatar>
-                                    <div>
+                                    <div className="mt-2">
                                         <p className="font-semibold">{player.name}</p>
                                         <p className="text-sm text-muted-foreground">{player.role}</p>
                                     </div>
@@ -137,6 +149,41 @@ export default function TeamProfilePage() {
                     </Card>
                 </TabsContent>
 
+                <TabsContent value="stats">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Статистика команды</CardTitle>
+                            <CardDescription>Ключевые показатели эффективности за текущий сезон.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                            <Card>
+                                <CardHeader>
+                                    <CardDescription>Процент побед</CardDescription>
+                                    <CardTitle className="font-headline text-4xl">72%</CardTitle>
+                                </CardHeader>
+                            </Card>
+                            <Card>
+                                <CardHeader>
+                                    <CardDescription>Текущий ранг</CardDescription>
+                                    <CardTitle className="font-headline text-4xl">#1</CardTitle>
+                                </CardHeader>
+                            </Card>
+                            <Card>
+                                <CardHeader>
+                                    <CardDescription>Средний KDA</CardDescription>
+                                    <CardTitle className="font-headline text-4xl">1.35</CardTitle>
+                                </CardHeader>
+                            </Card>
+                            <Card>
+                                <CardHeader>
+                                    <CardDescription>Любимая карта</CardDescription>
+                                    <CardTitle className="font-headline text-4xl">Ascent</CardTitle>
+                                </CardHeader>
+                            </Card>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
                 <TabsContent value="achievements">
                     <Card>
                         <CardHeader>
@@ -164,7 +211,7 @@ export default function TeamProfilePage() {
                         <CardHeader>
                             <CardTitle>О команде</CardTitle>
                         </CardHeader>
-                        <CardContent className="prose prose-sm sm:prose-base dark:prose-invert max-w-none space-y-4">
+                        <CardContent className="prose prose-sm sm:prose-base dark:prose-invert max-w-none space-y-6">
                             <p><strong>{team.name}</strong> — это не просто команда, это семья, объединённая общей страстью к Valorant и стремлением к победе. Основанная в {team.founded} году в городе {team.city}, наша команда быстро прошла путь от амбициозных новичков до одних из самых узнаваемых участников на платформе ProDvor.</p>
                             <p>Мы верим в упорные тренировки, нестандартные тактики и, самое главное, в силу командного духа. Наша цель — не только выигрывать турниры, но и вдохновлять других игроков, развивать сообщество и показывать, что настоящий успех приходит только через совместные усилия.</p>
                             <h3>Наши ценности:</h3>
@@ -173,6 +220,12 @@ export default function TeamProfilePage() {
                                 <li><strong>Развитие:</strong> Мы никогда не останавливаемся на достигнутом и постоянно совершенствуем свои навыки.</li>
                                 <li><strong>Ответственность:</strong> Каждый из нас несет ответственность за результат и атмосферу в команде.</li>
                             </ul>
+                            <h3 className="pt-4 border-t">Наши спонсоры</h3>
+                            <div className="not-prose flex flex-wrap items-center gap-8">
+                                {sponsors.map(sponsor => (
+                                    <Image key={sponsor.name} src={sponsor.logo} alt={sponsor.name} width={150} height={50} className="brightness-0 dark:brightness-100" data-ai-hint={sponsor.logoHint} />
+                                ))}
+                            </div>
                         </CardContent>
                     </Card>
                 </TabsContent>
