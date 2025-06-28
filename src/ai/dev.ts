@@ -9,3 +9,5 @@ import '@/ai/flows/analyze-security-flow.ts';
 import '@/ai/flows/create-team-flow.ts';
 import '@/ai/flows/analyze-player-performance-flow.ts';
 import '@/ai/flows/tts-flow.ts';
+import '@/ai/flows/dialogue-generation-flow.ts';
+import '@/ai/flows/multi-speaker-tts-flow.ts';

@@ -45,6 +45,7 @@ import {
   Gem,
   Palette,
   AudioLines,
+  Radio,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -208,6 +209,14 @@ export default async function AppLayout({
                 <Link href="/tts">
                   <AudioLines />
                   Генерация речи
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Генерация диалогов">
+                <Link href="/dialogue-generation">
+                  <Radio />
+                  Генерация диалогов
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
