@@ -33,3 +33,4 @@ import '@/ai/flows/team-chatbot-flow.ts';
 import '@/ai/flows/generate-training-plan-flow.ts';
 import '@/ai/flows/generate-match-interview-flow.ts';
 import '@/ai/flows/analyze-report-flow.ts';
+import '@/ai/flows/find-venues-flow.ts';

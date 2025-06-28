@@ -4,9 +4,8 @@
 import { useState, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Map, PlusCircle, Star, Sun, Trash2, RefreshCcw, MapPin, ShowerHead, Shirt, Calendar, ChevronDown } from "lucide-react";
+import { Search, Map, PlusCircle, Star, Sun, Trash2, RefreshCcw, MapPin, ShowerHead, Shirt, Calendar, ChevronDown, Loader2 } from "lucide-react";
 import Image from 'next/image';
 import { Separator } from "@/components/ui/separator";
 import { venuesList as initialVenuesList, myBookings as initialMyBookings } from "@/lib/mock-data/booking";
@@ -24,11 +23,17 @@ import {
 import { cn } from '@/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuCheckboxItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import { Skeleton } from '@/components/ui/skeleton';
+import { findVenues, type FindVenuesOutput } from '@/ai/flows/find-venues-flow';
+import { Textarea } from '@/components/ui/textarea';
 
-// Helper data for filters
-const allSurfaceTypes = [...new Set(initialVenuesList.map(v => v.surfaceType))];
-const allFeatures = [...new Set(initialVenuesList.flatMap(v => v.features))];
-
+type Venue = FindVenuesOutput['suggestedVenues'][0];
+type Booking = (typeof initialMyBookings)[0];
+type Filters = {
+    surfaceTypes: string[];
+    features: string[];
+    price: 'any' | 'free' | 'paid';
+}
 
 const getStatusVariant = (status: string) => {
     switch (status) {
@@ -49,33 +54,57 @@ const getFeatureIcon = (feature: string) => {
     }
 }
 
-type Venue = (typeof initialVenuesList)[0];
-type Booking = (typeof initialMyBookings)[0];
-type Filters = {
-    surfaceTypes: string[];
-    features: string[];
-    price: 'any' | 'free' | 'paid';
-}
 const initialFilters: Filters = {
     surfaceTypes: [],
     features: [],
     price: 'any',
 };
 
+const allSurfaceTypes = [...new Set(initialVenuesList.map(v => v.surfaceType))];
+const allFeatures = [...new Set(initialVenuesList.flatMap(v => v.features))];
+
 
 export default function BookingPage() {
     const { toast } = useToast();
     const [myBookings, setMyBookings] = useState<Booking[]>(initialMyBookings);
+    
+    // AI Search state
     const [searchQuery, setSearchQuery] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [aiVenues, setAiVenues] = useState<Venue[]>([]);
+    const [hasSearched, setHasSearched] = useState(false);
+
+    // Filter state
     const [filters, setFilters] = useState<Filters>(initialFilters);
 
+    const handleSearch = async () => {
+        if (!searchQuery.trim()) {
+            setAiVenues([]);
+            setHasSearched(false);
+            return;
+        }
+        setIsLoading(true);
+        setHasSearched(true);
+        try {
+            const result = await findVenues(searchQuery);
+            setAiVenues(result.suggestedVenues);
+        } catch (e) {
+            console.error(e);
+            toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: 'Не удалось выполнить поиск.',
+            });
+            setAiVenues([]);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
     const filteredVenues = useMemo(() => {
-        return initialVenuesList.filter(venue => {
-            const matchesSearch = searchQuery
-                ? venue.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                  venue.address.toLowerCase().includes(searchQuery.toLowerCase())
-                : true;
+        const sourceList = hasSearched ? aiVenues : initialVenuesList;
 
+        return sourceList.filter(venue => {
             const matchesSurface = filters.surfaceTypes.length > 0
                 ? filters.surfaceTypes.includes(venue.surfaceType)
                 : true;
@@ -90,9 +119,9 @@ export default function BookingPage() {
                 ? filters.features.every(feature => venue.features.includes(feature))
                 : true;
             
-            return matchesSearch && matchesSurface && matchesPrice && matchesFeatures;
+            return matchesSurface && matchesPrice && matchesFeatures;
         });
-    }, [searchQuery, filters]);
+    }, [aiVenues, filters, hasSearched]);
     
     const handleBookVenue = (venue: Venue) => {
         const newBooking = {
@@ -169,19 +198,21 @@ export default function BookingPage() {
 
             <Card>
                 <CardHeader className="space-y-4">
-                    <div className="flex flex-col gap-4 md:flex-row">
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                            <Input 
-                                placeholder="Поиск по названию, адресу..." 
-                                className="w-full pl-10" 
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                        <Button variant="outline" className="w-full md:w-auto">
-                            <Map className="mr-2 h-4 w-4" />
-                            Показать на карте
+                     <div className="text-center">
+                        <CardTitle className="font-headline text-2xl">Интеллектуальный поиск площадок</CardTitle>
+                        <CardDescription>Опишите, что вы ищете, и наш AI подберет лучшие варианты.</CardDescription>
+                    </div>
+                     <div className="flex flex-col gap-2">
+                        <Textarea 
+                            placeholder="Например: 'футбольное поле с хорошим освещением на юге Москвы на вечер субботы'"
+                            className="min-h-[80px] text-base"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            disabled={isLoading}
+                        />
+                        <Button onClick={handleSearch} disabled={isLoading} size="lg">
+                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Search className="mr-2 h-4 w-4" />}
+                            Найти
                         </Button>
                     </div>
                      <Separator />
@@ -270,7 +301,13 @@ export default function BookingPage() {
             
             <div className="space-y-4">
                 <h2 className="font-headline text-2xl font-bold">Доступные площадки ({filteredVenues.length})</h2>
-                {filteredVenues.length > 0 ? (
+                {isLoading ? (
+                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                         {Array.from({ length: 3 }).map((_, i) => (
+                             <Card key={i}><CardContent className="p-4"><Skeleton className="h-64 w-full" /></CardContent></Card>
+                         ))}
+                    </div>
+                ) : filteredVenues.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                         {filteredVenues.map((venue) => (
                             <Card key={venue.id} className="flex flex-col overflow-hidden transition-all hover:shadow-md">
