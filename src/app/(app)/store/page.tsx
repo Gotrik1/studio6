@@ -20,6 +20,15 @@ import { Badge } from '@/components/ui/badge';
 type StoreItem = (typeof storeItems)[0];
 type Prize = (typeof lootboxPrizes)[0];
 
+type InventoryItem = {
+    id: string;
+    name: string;
+    description: string;
+    image: string;
+    imageHint: string;
+    type: string;
+};
+
 const generateRoulettePrizes = (): Prize[] => {
     const reel: Prize[] = [];
     // Create a long list for a good visual spin
@@ -32,7 +41,8 @@ const generateRoulettePrizes = (): Prize[] => {
 export default function StorePage() {
     const { toast } = useToast();
     const [pdBalance, setPdBalance] = useState(() => pdHistory.reduce((sum, item) => sum + item.value, 0));
-    const [purchasedItems, setPurchasedItems] = useState<string[]>([]);
+    const [purchasedItemIds, setPurchasedItemIds] = useState<string[]>([]);
+    const [inventory, setInventory] = useState<InventoryItem[]>([]);
     
     // Lootbox state
     const [isLootboxOpen, setIsLootboxOpen] = useState(false);
@@ -53,11 +63,12 @@ export default function StorePage() {
         }
 
         setPdBalance(prev => prev - item.price);
-        setPurchasedItems(prev => [...prev, item.id]);
+        setPurchasedItemIds(prev => [...prev, item.id]);
+        setInventory(prev => [...prev, item]);
 
         toast({
             title: "Поздравляем с покупкой!",
-            description: `"${item.name}" теперь в вашей коллекции.`,
+            description: `"${item.name}" добавлен в ваш инвентарь.`,
         });
     };
 
@@ -107,9 +118,20 @@ export default function StorePage() {
         if (winningIndex !== null) {
             const finalPrize = roulettePrizes[winningIndex];
             setWonPrize(finalPrize);
+            
+            const prizeAsInventoryItem: InventoryItem = {
+                 id: `prize-${finalPrize.name}-${Date.now()}`, 
+                 name: finalPrize.name,
+                 image: finalPrize.image,
+                 imageHint: finalPrize.imageHint,
+                 type: 'lootbox-prize',
+                 description: `Редкость: ${finalPrize.rarity}`
+            };
+            setInventory(prev => [...prev, prizeAsInventoryItem]);
+
             toast({
                 title: "Вот это удача!",
-                description: `Из кейса выпал предмет: "${finalPrize.name}"! Поздравляем!`,
+                description: `Предмет "${finalPrize.name}" добавлен в ваш инвентарь!`,
             });
         }
     };
@@ -144,9 +166,10 @@ export default function StorePage() {
             </Card>
 
             <Tabs defaultValue="customization">
-                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
-                    <TabsTrigger value="customization"><ShoppingBag className="mr-2 h-4 w-4"/>Кастомизация</TabsTrigger>
-                    <TabsTrigger value="partners"><Handshake className="mr-2 h-4 w-4"/>Магазин партнеров</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-3 md:grid-cols-5">
+                    <TabsTrigger value="customization"><Palette className="mr-2 h-4 w-4"/>Кастомизация</TabsTrigger>
+                    <TabsTrigger value="inventory"><ShoppingBag className="mr-2 h-4 w-4"/>Инвентарь</TabsTrigger>
+                    <TabsTrigger value="partners"><Handshake className="mr-2 h-4 w-4"/>Партнеры</TabsTrigger>
                     <TabsTrigger value="donations"><Heart className="mr-2 h-4 w-4"/>Донаты</TabsTrigger>
                     <TabsTrigger value="tickets"><Ticket className="mr-2 h-4 w-4"/>Билеты</TabsTrigger>
                 </TabsList>
@@ -174,7 +197,7 @@ export default function StorePage() {
                          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                             {storeItems.map((item) => {
                                 const canAfford = pdBalance >= item.price;
-                                const isPurchased = purchasedItems.includes(item.id);
+                                const isPurchased = purchasedItemIds.includes(item.id);
 
                                 return (
                                     <Card key={item.id} className="flex flex-col overflow-hidden transition-all hover:shadow-lg">
@@ -217,6 +240,34 @@ export default function StorePage() {
                             })}
                         </div>
                     </div>
+                </TabsContent>
+
+                <TabsContent value="inventory" className="mt-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Ваш инвентарь</CardTitle>
+                            <CardDescription>Предметы, полученные из кейсов или купленные в магазине.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            {inventory.length > 0 ? (
+                                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                    {inventory.map((item) => (
+                                        <Card key={item.id} className="p-4 flex flex-col items-center text-center">
+                                            <Image src={item.image} alt={item.name} width={80} height={80} data-ai-hint={item.imageHint} />
+                                            <p className="mt-2 text-sm font-semibold">{item.name}</p>
+                                            <Badge variant="secondary" className="mt-1 capitalize">{item.type.replace('-', ' ')}</Badge>
+                                        </Card>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center text-muted-foreground py-10">
+                                    <ShoppingBag className="mx-auto h-12 w-12 mb-4" />
+                                    <h3 className="text-lg font-semibold">Инвентарь пуст</h3>
+                                    <p>Открывайте кейсы или покупайте предметы, чтобы пополнить свою коллекцию.</p>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
                 </TabsContent>
                 
                 <TabsContent value="partners" className="mt-4">
