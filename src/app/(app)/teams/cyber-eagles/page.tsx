@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2, Pencil, Trash2, UserPlus, Check, X, BellRing, Calendar } from "lucide-react";
+import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2, Pencil, Trash2, UserPlus, Check, X, BellRing, Calendar, Bot } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { teamPdHistory } from "@/lib/mock-data/gamification";
@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { JoinRequestAnalysisDialog } from "@/components/join-request-analysis-dialog";
 import { initialIncomingChallenges, initialOutgoingChallenges } from "@/lib/mock-data/challenges";
+import { TeamChatbot } from "@/components/team-chatbot";
 
 const team = {
   name: "Кибер Орлы",
@@ -311,7 +312,7 @@ export default function TeamProfilePage() {
             </Card>
 
             <Tabs defaultValue="roster">
-                <TabsList className="grid w-full grid-cols-5 sm:grid-cols-9">
+                <TabsList className="grid w-full grid-cols-5 sm:grid-cols-10">
                     <TabsTrigger value="roster"><Users className="mr-2 h-4 w-4"/>Состав</TabsTrigger>
                     <TabsTrigger value="challenges">
                         <BellRing className="mr-2 h-4 w-4"/>Вызовы
@@ -322,7 +323,8 @@ export default function TeamProfilePage() {
                     <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
                     <TabsTrigger value="about"><Newspaper className="mr-2 h-4 w-4"/>О команде</TabsTrigger>
                     <TabsTrigger value="bank"><Banknote className="mr-2 h-4 w-4"/>Банк</TabsTrigger>
-                    <TabsTrigger value="ai-assistant"><BrainCircuit className="mr-2 h-4 w-4"/>AI</TabsTrigger>
+                    <TabsTrigger value="ai-assistant"><BrainCircuit className="mr-2 h-4 w-4"/>Сводка AI</TabsTrigger>
+                    <TabsTrigger value="chatbot"><Bot className="mr-2 h-4 w-4"/>Чат-бот</TabsTrigger>
                     <TabsTrigger value="requests">
                         <UserPlus className="mr-2 h-4 w-4"/>Заявки
                         {joinRequests.length > 0 && <Badge className="ml-2">{joinRequests.length}</Badge>}
@@ -707,6 +709,10 @@ export default function TeamProfilePage() {
                     </Card>
                 </TabsContent>
                 
+                 <TabsContent value="chatbot">
+                    <TeamChatbot teamId="cyber-eagles" />
+                </TabsContent>
+
                 <TabsContent value="requests">
                     <Card>
                         <CardHeader>
