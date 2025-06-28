@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,6 +23,20 @@ const roles = [
 ];
 
 export default function UserManagementPage() {
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState('all');
+
+    const filteredUsers = useMemo(() => {
+        return userList.filter(user => {
+            const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                                  user.email.toLowerCase().includes(searchQuery.toLowerCase());
+            
+            const matchesRole = activeTab === 'all' || user.role === activeTab;
+            
+            return matchesSearch && matchesRole;
+        });
+    }, [searchQuery, activeTab]);
+
     return (
         <div className="space-y-6">
             <div className="space-y-2">
@@ -32,11 +49,16 @@ export default function UserManagementPage() {
                 <CardHeader>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input placeholder="Поиск по имени или email..." className="w-full pl-10" />
+                        <Input 
+                            placeholder="Поиск по имени или email..." 
+                            className="w-full pl-10" 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <Tabs defaultValue="all">
+                    <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
                         <ScrollArea className="w-full">
                             <TabsList>
                                 {roles.map(role => (
@@ -46,15 +68,9 @@ export default function UserManagementPage() {
                             <ScrollBar orientation="horizontal" />
                         </ScrollArea>
 
-                        <TabsContent value="all" className="mt-4">
-                            <UserTable users={userList} />
+                        <TabsContent value={activeTab} className="mt-4">
+                            <UserTable users={filteredUsers} />
                         </TabsContent>
-
-                        {roles.filter(r => r.value !== 'all').map(role => (
-                            <TabsContent key={role.value} value={role.value} className="mt-4">
-                                <UserTable users={userList.filter(u => u.role === role.value)} />
-                            </TabsContent>
-                        ))}
                     </Tabs>
                 </CardContent>
             </Card>
