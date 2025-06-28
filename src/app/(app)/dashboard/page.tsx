@@ -28,6 +28,7 @@ import {
   Loader2,
   FileQuestion,
   Trash2,
+  Volume2,
 } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
@@ -40,6 +41,7 @@ import { useSession } from "@/lib/session-client";
 import { cn } from "@/lib/utils";
 import { generatePostImage } from "@/ai/flows/generate-post-image-flow";
 import { Skeleton } from "@/components/ui/skeleton";
+import { textToSpeech } from "@/ai/flows/tts-flow";
 
 const initialFeedItems = [
   {
@@ -160,6 +162,9 @@ export default function DashboardPage() {
 
   const [postImage, setPostImage] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  
+  const [loadingAudioId, setLoadingAudioId] = useState<number | null>(null);
+  const [activeAudio, setActiveAudio] = useState<{ id: number; url: string; } | null>(null);
 
   const filteredFeedItems = useMemo(() => {
     if (activeFilter === "all") {
@@ -312,6 +317,24 @@ export default function DashboardPage() {
     );
   };
 
+  const handlePlayAudio = async (itemId: number, text: string) => {
+    if (loadingAudioId === itemId || activeAudio?.id === itemId) return;
+    setLoadingAudioId(itemId);
+    setActiveAudio(null);
+    try {
+        const result = await textToSpeech(text);
+        setActiveAudio({ id: itemId, url: result.audioDataUri });
+    } catch (error) {
+        toast({
+            variant: "destructive",
+            title: "Ошибка озвучивания",
+            description: "Не удалось сгенерировать аудио для этого поста."
+        });
+    } finally {
+        setLoadingAudioId(null);
+    }
+  }
+
 
   return (
     <div className="grid grid-cols-12 gap-6">
@@ -418,6 +441,9 @@ export default function DashboardPage() {
                             />
                             </div>
                         )}
+                         {activeAudio?.id === item.id && (
+                            <audio src={activeAudio.url} autoPlay controls className="w-full h-10 mt-2" />
+                         )}
                         </CardContent>
                         <CardFooter className="flex justify-between border-t px-6 pt-4">
                             <div className="flex gap-4">
@@ -433,6 +459,20 @@ export default function DashboardPage() {
                                 <Button variant="ghost" size="sm" className="flex items-center gap-2">
                                     <MessageCircle className="h-4 w-4" />
                                     <span>{item.stats.comments}</span>
+                                </Button>
+                                 <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="flex items-center gap-2"
+                                    onClick={() => handlePlayAudio(item.id, item.content.text)}
+                                    disabled={loadingAudioId === item.id}
+                                    title="Озвучить пост"
+                                >
+                                  {loadingAudioId === item.id ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                  ) : (
+                                    <Volume2 className="h-4 w-4" />
+                                  )}
                                 </Button>
                             </div>
                             <Button variant="ghost" size="sm" className="flex items-center gap-2">
