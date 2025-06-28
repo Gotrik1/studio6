@@ -170,9 +170,11 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Чаты">
-                <MessageSquare />
-                Чаты
+              <SidebarMenuButton asChild tooltip="Чаты">
+                <Link href="/chats">
+                  <MessageSquare />
+                  Чаты
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
