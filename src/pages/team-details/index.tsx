@@ -1,23 +1,26 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot } from 'lucide-react';
+import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, Heart } from 'lucide-react';
 import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
 import { teams } from "@/lib/mock-data/teams";
 import { teamRoster, teamActivity, challenges } from "@/lib/mock-data/team-details";
 import { TeamChatbot } from '@/components/team-chatbot';
+import { DonationDialog } from '@/components/donation-dialog';
 
 export function TeamDetailsPage() {
     const { user: currentUser } = useSession();
     // For this demo, we are hardcoding the team. In a real app, this would come from params.
     const team = teams.find(t => t.slug === 'cyber-eagles');
+    const [isDonationOpen, setIsDonationOpen] = useState(false);
 
     if (!team) {
         return <div>Команда не найдена.</div>;
@@ -49,6 +52,9 @@ export function TeamDetailsPage() {
                         <div className="flex items-center gap-2"><Gamepad2 className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">{team.game}</span></div>
                     </div>
                     <div className="flex gap-2">
+                        <Button variant="outline" onClick={() => setIsDonationOpen(true)}>
+                            <Heart className="mr-2 h-4 w-4 text-red-500" />Поддержать
+                        </Button>
                         <Button variant="outline"><UserPlus className="mr-2 h-4 w-4" />Подать заявку</Button>
                         <Button><MessageCircle className="mr-2 h-4 w-4" />Написать</Button>
                         {isCaptain && (
@@ -62,6 +68,13 @@ export function TeamDetailsPage() {
                     </div>
                 </CardHeader>
             </Card>
+
+            <DonationDialog
+                isOpen={isDonationOpen}
+                onOpenChange={setIsDonationOpen}
+                recipientName={team.name}
+                recipientType="команде"
+            />
 
             <Tabs defaultValue="overview">
                 <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
