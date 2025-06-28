@@ -91,16 +91,18 @@ export default async function AppLayout({
             </SidebarMenuItem>
              <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Матчи">
-                <Link href="/match-details">
+                <Link href="/matches">
                   <Swords />
                   Матчи
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Площадки">
-                <MapPin />
-                Площадки
+              <SidebarMenuButton asChild tooltip="Площадки">
+                <Link href="/booking">
+                  <MapPin />
+                  Площадки
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
