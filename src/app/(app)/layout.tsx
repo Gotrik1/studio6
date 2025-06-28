@@ -233,6 +233,9 @@ export default async function AppLayout({
             <SidebarMenuItem>
               <CollapsibleSidebarMenuItem icon={<FolderKanban />} title="Документы">
                   <SidebarMenuSubItem>
+                      <SidebarMenuSubButton href="/documents/vision-and-principles">Видение и Принципы</SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                   <SidebarMenuSubItem>
                       <SidebarMenuSubButton href="/documents/architecture">Архитектура (FSD)</SidebarMenuSubButton>
                   </SidebarMenuSubItem>
                   <SidebarMenuSubItem>
@@ -240,9 +243,6 @@ export default async function AppLayout({
                   </SidebarMenuSubItem>
                   <SidebarMenuSubItem>
                       <SidebarMenuSubButton href="/documents/backend-production">Готовность к продакшену</SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                  <SidebarMenuSubItem>
-                      <SidebarMenuSubButton href="/documents/vision-and-principles">Видение и Принципы</SidebarMenuSubButton>
                   </SidebarMenuSubItem>
               </CollapsibleSidebarMenuItem>
             </SidebarMenuItem>
