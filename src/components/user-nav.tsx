@@ -44,17 +44,17 @@ export function UserNav({ user }: { user: User }) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            Profile
+            Профиль
           </DropdownMenuItem>
           <DropdownMenuItem>
-            Settings
+            Настройки
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <form action={logout}>
           <button type="submit" className="w-full">
             <DropdownMenuItem>
-              Log out
+              Выйти
             </DropdownMenuItem>
           </button>
         </form>

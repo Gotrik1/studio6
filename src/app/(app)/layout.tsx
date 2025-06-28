@@ -35,6 +35,7 @@ import {
   Settings,
   FolderKanban,
   Shield,
+  BrainCircuit,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 
@@ -156,6 +157,12 @@ export default async function AppLayout({
               <SidebarMenuButton href="/monetization" tooltip="PRO-Доступ">
                 <Crown />
                 PRO-Доступ
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton href="/ai-analysis" tooltip="ИИ-Анализ">
+                <BrainCircuit />
+                ИИ-Анализ
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>

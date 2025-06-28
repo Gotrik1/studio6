@@ -6,19 +6,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Gavel, ClipboardCheck, Trophy, CalendarDays, Shield, Scale } from "lucide-react";
 
 const achievements = [
-  { name: "First Judgement", icon: Gavel, description: "Officiate your first official match.", unlocked: true },
-  { name: "Tournament Official", icon: Trophy, description: "Serve as a judge in a major tournament.", unlocked: true },
-  { name: "Iron Judge", icon: CalendarDays, description: "Officiate 50 matches in a single season.", unlocked: true },
-  { name: "Fair Play Award", icon: Shield, description: "Receive a 99%+ fairness rating from players.", unlocked: false },
-  { name: "Dispute Resolver", icon: Scale, description: "Successfully resolve 20 score disputes.", unlocked: false },
-  { name: "Certified Pro", icon: ClipboardCheck, description: "Complete the professional judge certification.", unlocked: true },
+  { name: "Первое судейство", icon: Gavel, description: "Отсудить свой первый официальный матч.", unlocked: true },
+  { name: "Турнирный судья", icon: Trophy, description: "Работать судьей на крупном турнире.", unlocked: true },
+  { name: "Железный судья", icon: CalendarDays, description: "Отсудить 50 матчей за один сезон.", unlocked: true },
+  { name: "Награда за честную игру", icon: Shield, description: "Получить рейтинг справедливости 99%+ от игроков.", unlocked: false },
+  { name: "Разрешитель споров", icon: Scale, description: "Успешно разрешить 20 споров по счету.", unlocked: false },
+  { name: "Сертифицированный профи", icon: ClipboardCheck, description: "Пройти профессиональную сертификацию судей.", unlocked: true },
 ];
 
 export default function JudgeProfilePage() {
   const user = {
-    name: 'Judge Judy',
+    name: 'Судья Джуди',
     email: 'judy.j@prodvor.com',
-    role: 'Judge',
+    role: 'Судья',
     avatar: 'https://placehold.co/100x100.png',
   };
 
@@ -37,44 +37,44 @@ export default function JudgeProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge variant="secondary">{user.role}</Badge>
-              <Badge variant="outline">Certified Official</Badge>
+              <Badge variant="outline">Сертифицированный судья</Badge>
             </div>
           </div>
-          <Button>View Schedule</Button>
+          <Button>Просмотр расписания</Button>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Certified judge for CS:GO 2 and Valorant tournaments.</p>
+          <p className="text-center text-sm text-muted-foreground sm:text-left">Сертифицированный судья для турниров по CS:GO 2 и Valorant.</p>
         </CardContent>
       </Card>
       
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stats">Officiating Statistics</TabsTrigger>
-          <TabsTrigger value="achievements">Judge Achievements</TabsTrigger>
+          <TabsTrigger value="stats">Статистика судейства</TabsTrigger>
+          <TabsTrigger value="achievements">Достижения судьи</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
-                <CardDescription>Matches Officiated</CardDescription>
+                <CardDescription>Судейство матчей</CardDescription>
                 <CardTitle className="font-headline text-4xl">217</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Tournaments Served</CardDescription>
+                <CardDescription>Обслужено турниров</CardDescription>
                 <CardTitle className="font-headline text-4xl">15</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Disputes Resolved</CardDescription>
+                <CardDescription>Решено споров</CardDescription>
                 <CardTitle className="font-headline text-4xl">8</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Player Rating</CardDescription>
+                <CardDescription>Рейтинг от игроков</CardDescription>
                 <CardTitle className="font-headline text-4xl">4.9/5.0</CardTitle>
               </CardHeader>
             </Card>

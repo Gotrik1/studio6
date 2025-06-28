@@ -17,7 +17,7 @@ export default function LoginPage() {
     const { pending } = useFormStatus();
     return (
       <Button type="submit" className="w-full" aria-disabled={pending}>
-        {pending ? 'Logging in...' : 'Login'}
+        {pending ? 'Вход...' : 'Войти'}
       </Button>
     );
   }
@@ -30,7 +30,7 @@ export default function LoginPage() {
             <Logo />
           </div>
           <CardTitle className="font-headline text-2xl">ProDvor MVP</CardTitle>
-          <CardDescription>Enter admin credentials to access the dashboard.</CardDescription>
+          <CardDescription>Введите данные администратора для входа.</CardDescription>
         </CardHeader>
         <CardContent>
           <form action={dispatch} className="space-y-4">
@@ -46,7 +46,7 @@ export default function LoginPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Пароль</Label>
               <Input 
                 id="password" 
                 name="password" 
@@ -58,7 +58,7 @@ export default function LoginPage() {
             {errorMessage && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Login Failed</AlertTitle>
+                <AlertTitle>Ошибка входа</AlertTitle>
                 <AlertDescription>{errorMessage}</AlertDescription>
               </Alert>
             )}

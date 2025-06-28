@@ -4,32 +4,36 @@ import { Badge } from "@/components/ui/badge";
 
 const activities = [
   {
-    user: "Team 'Rockets'",
-    action: "won the 'Summer Kickoff 2024' tournament!",
-    timestamp: "2 hours ago",
+    user: "Команда 'Кибер Орлы'",
+    action: "выиграла турнир 'Summer Kickoff 2024'!",
+    timestamp: "2 часа назад",
     avatar: "https://placehold.co/40x40.png",
     type: "tournament",
+    typeDisplay: "Турнир"
   },
   {
     user: "Alex 'CyberSlasher' Doe",
-    action: "unlocked the 'Triple Threat' achievement.",
-    timestamp: "5 hours ago",
+    action: "открыл достижение 'Тройная угроза'.",
+    timestamp: "5 часов назад",
     avatar: "https://placehold.co/40x40.png",
     type: "achievement",
+    typeDisplay: "Достижение"
   },
   {
     user: "Maria 'Shadow' Petrova",
-    action: "created a new team 'NightCrawlers'.",
-    timestamp: "1 day ago",
+    action: "создала новую команду 'Ночные Охотники'.",
+    timestamp: "1 день назад",
     avatar: "https://placehold.co/40x40.png",
     type: "team",
+    typeDisplay: "Команда"
   },
   {
-    user: "System",
-    action: "New PRO features are now available. Check out the monetization tab!",
-    timestamp: "2 days ago",
+    user: "Система",
+    action: "Доступны новые PRO-функции. Загляните во вкладку PRO-Доступ!",
+    timestamp: "2 дня назад",
     avatar: "https://placehold.co/40x40.png",
     type: "system",
+    typeDisplay: "Система"
   },
 ];
 
@@ -37,14 +41,14 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="font-headline text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground">Welcome back! Here's what's been happening.</p>
+        <h1 className="font-headline text-3xl font-bold tracking-tight">Лента</h1>
+        <p className="text-muted-foreground">С возвращением! Вот что произошло за последнее время.</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Activity Feed</CardTitle>
-          <CardDescription>Recent events from across the platform.</CardDescription>
+          <CardTitle>Лента активности</CardTitle>
+          <CardDescription>Последние события на платформе.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -61,7 +65,7 @@ export default function DashboardPage() {
                   <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
                 </div>
                 <Badge variant={activity.type === 'tournament' ? 'default' : 'secondary'} className="capitalize">
-                  {activity.type}
+                  {activity.typeDisplay}
                 </Badge>
               </div>
             ))}

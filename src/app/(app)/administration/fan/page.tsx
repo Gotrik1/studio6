@@ -6,19 +6,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, Ticket, MessageSquare, Heart, UserPlus, Award } from "lucide-react";
 
 const achievements = [
-  { name: "First Follow", icon: UserPlus, description: "Follow your first team or player.", unlocked: true },
-  { name: "Super Fan", icon: Star, description: "Follow 10 teams.", unlocked: true },
-  { name: "Live Spectator", icon: Ticket, description: "Attend a live tournament match.", unlocked: true },
-  { name: "Vocal Supporter", icon: MessageSquare, description: "Leave 100 comments on match pages.", unlocked: false },
-  { name: "Loyalty", icon: Heart, description: "Be a fan of a team for over a year.", unlocked: false },
-  { name: "Fan of the Year", icon: Award, description: "Get voted as Fan of the Year by a team.", unlocked: false },
+  { name: "Первая подписка", icon: UserPlus, description: "Подписаться на первую команду или игрока.", unlocked: true },
+  { name: "Суперфанат", icon: Star, description: "Подписаться на 10 команд.", unlocked: true },
+  { name: "Живой зритель", icon: Ticket, description: "Посетить матч турнира вживую.", unlocked: true },
+  { name: "Активный болельщик", icon: MessageSquare, description: "Оставить 100 комментариев на страницах матчей.", unlocked: false },
+  { name: "Верность", icon: Heart, description: "Быть фанатом команды более года.", unlocked: false },
+  { name: "Фанат года", icon: Award, description: "Быть избранным Фанатом года по мнению команды.", unlocked: false },
 ];
 
 export default function FanProfilePage() {
   const user = {
-    name: 'Loyal Larry',
+    name: 'Верный Ларри',
     email: 'larry.fan@prodvor.com',
-    role: 'Fan',
+    role: 'Болельщик',
     avatar: 'https://placehold.co/100x100.png',
   };
 
@@ -37,44 +37,44 @@ export default function FanProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge>{user.role}</Badge>
-              <Badge variant="secondary">Cyber Eagles #1 Fan</Badge>
+              <Badge variant="secondary">Фанат #1 Cyber Eagles</Badge>
             </div>
           </div>
-          <Button variant="outline">Follow</Button>
+          <Button variant="outline">Подписаться</Button>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Dedicated fan supporting the grassroots esports scene.</p>
+          <p className="text-center text-sm text-muted-foreground sm:text-left">Преданный болельщик, поддерживающий массовую киберспортивную сцену.</p>
         </CardContent>
       </Card>
       
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stats">Fan Statistics</TabsTrigger>
-          <TabsTrigger value="achievements">Fan Achievements</TabsTrigger>
+          <TabsTrigger value="stats">Статистика болельщика</TabsTrigger>
+          <TabsTrigger value="achievements">Достижения болельщика</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
-                <CardDescription>Teams Followed</CardDescription>
+                <CardDescription>Отслеживаемые команды</CardDescription>
                 <CardTitle className="font-headline text-4xl">12</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Matches Watched</CardDescription>
+                <CardDescription>Просмотрено матчей</CardDescription>
                 <CardTitle className="font-headline text-4xl">340</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Comments Posted</CardDescription>
+                <CardDescription>Оставлено комментариев</CardDescription>
                 <CardTitle className="font-headline text-4xl">512</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Player of the Match Votes</CardDescription>
+                <CardDescription>Голосов за игрока матча</CardDescription>
                 <CardTitle className="font-headline text-4xl">89</CardTitle>
               </CardHeader>
             </Card>

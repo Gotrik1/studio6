@@ -6,19 +6,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Gavel, Shield, MessageSquareX, UserX, UserCheck, Eye } from "lucide-react";
 
 const achievements = [
-  { name: "First Ruling", icon: Gavel, description: "Resolve your first content report.", unlocked: true },
-  { name: "Peacekeeper", icon: Shield, description: "Successfully resolve 50 disputes.", unlocked: true },
-  { name: "Active Watcher", icon: Eye, description: "Review 1000 pieces of content.", unlocked: true },
-  { name: "Clean Sweep", icon: MessageSquareX, description: "Handle 100 reports in a single day.", unlocked: false },
-  { name: "User Promoted", icon: UserCheck, description: "Promote a user to a trusted role.", unlocked: true },
-  { name: "Permanent Ban", icon: UserX, description: "Issue a permanent ban for a severe violation.", unlocked: false },
+  { name: "Первое решение", icon: Gavel, description: "Рассмотреть свою первую жалобу на контент.", unlocked: true },
+  { name: "Миротворец", icon: Shield, description: "Успешно разрешить 50 споров.", unlocked: true },
+  { name: "Активный наблюдатель", icon: Eye, description: "Просмотреть 1000 единиц контента.", unlocked: true },
+  { name: "Чистая работа", icon: MessageSquareX, description: "Обработать 100 жалоб за один день.", unlocked: false },
+  { name: "Повышение пользователя", icon: UserCheck, description: "Повысить пользователя до доверенной роли.", unlocked: true },
+  { name: "Вечный бан", icon: UserX, description: "Выдать постоянный бан за серьезное нарушение.", unlocked: false },
 ];
 
 export default function ModeratorProfilePage() {
   const user = {
-    name: 'Moderator Max',
+    name: 'Модератор Макс',
     email: 'max.mod@prodvor.com',
-    role: 'Moderator',
+    role: 'Модератор',
     avatar: 'https://placehold.co/100x100.png',
   };
 
@@ -37,44 +37,44 @@ export default function ModeratorProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge variant="secondary" className="bg-accent/80 text-accent-foreground">{user.role}</Badge>
-              <Badge variant="secondary">Content Guardian</Badge>
+              <Badge variant="secondary">Хранитель контента</Badge>
             </div>
           </div>
-          <Button>Moderation Queue</Button>
+          <Button>Очередь модерации</Button>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Moderator responsible for maintaining community guidelines.</p>
+          <p className="text-center text-sm text-muted-foreground sm:text-left">Модератор, ответственный за соблюдение правил сообщества.</p>
         </CardContent>
       </Card>
       
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stats">Moderation Statistics</TabsTrigger>
-          <TabsTrigger value="achievements">Moderator Achievements</TabsTrigger>
+          <TabsTrigger value="stats">Статистика модерации</TabsTrigger>
+          <TabsTrigger value="achievements">Достижения модератора</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
-                <CardDescription>Reports Solved (24h)</CardDescription>
+                <CardDescription>Решено жалоб (24ч)</CardDescription>
                 <CardTitle className="font-headline text-4xl">38</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Users Warned</CardDescription>
+                <CardDescription>Предупреждено</CardDescription>
                 <CardTitle className="font-headline text-4xl">12</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Users Banned (7d)</CardDescription>
+                <CardDescription>Забанено (7д)</CardDescription>
                 <CardTitle className="font-headline text-4xl">4</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Accuracy Rate</CardDescription>
+                <CardDescription>Точность</CardDescription>
                 <CardTitle className="font-headline text-4xl">98.5%</CardTitle>
               </CardHeader>
             </Card>

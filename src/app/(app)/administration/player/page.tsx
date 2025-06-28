@@ -7,19 +7,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Award, Users, Trophy, Target, Swords, Medal } from "lucide-react";
 
 const achievements = [
-  { name: "First Win", icon: Award, description: "Win your first match.", unlocked: true },
-  { name: "Team Player", icon: Users, description: "Play 10 matches with a team.", unlocked: true },
-  { name: "Tournament Champion", icon: Trophy, description: "Win a tournament.", unlocked: false },
-  { name: "Sharpshooter", icon: Target, description: "Achieve 50 headshots.", unlocked: true },
-  { name: "Gladiator", icon: Swords, description: "Win 50 1v1 duels.", unlocked: false },
-  { name: "Veteran", icon: Medal, description: "Play 100 matches.", unlocked: false },
+  { name: "Первая победа", icon: Award, description: "Выиграйте свой первый матч.", unlocked: true },
+  { name: "Командный игрок", icon: Users, description: "Сыграйте 10 матчей в команде.", unlocked: true },
+  { name: "Чемпион турнира", icon: Trophy, description: "Выиграйте турнир.", unlocked: false },
+  { name: "Меткий стрелок", icon: Target, description: "Сделайте 50 выстрелов в голову.", unlocked: true },
+  { name: "Гладиатор", icon: Swords, description: "Выиграйте 50 дуэлей 1 на 1.", unlocked: false },
+  { name: "Ветеран", icon: Medal, description: "Сыграйте 100 матчей.", unlocked: false },
 ];
 
 export default function PlayerProfilePage() {
     const user = {
         name: 'Alex "CyberSlasher" Doe',
         email: 'alex.doe@prodvor.com',
-        role: 'Player',
+        role: 'Игрок',
         avatar: 'https://placehold.co/100x100.png',
     };
     
@@ -38,16 +38,16 @@ export default function PlayerProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge>{user.role}</Badge>
-              <Badge variant="secondary">Team Captain</Badge>
-              <Badge variant="outline">PRO Member</Badge>
+              <Badge variant="secondary">Капитан команды</Badge>
+              <Badge variant="outline">PRO Пользователь</Badge>
             </div>
           </div>
-          <Button>Challenge Player</Button>
+          <Button>Бросить вызов</Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Progress to Level 28</span>
+              <span>Прогресс до Уровня 28</span>
               <span>2,300 / 5,000 XP</span>
             </div>
             <Progress value={46} className="h-2" />
@@ -57,32 +57,32 @@ export default function PlayerProfilePage() {
       
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stats">Statistics</TabsTrigger>
-          <TabsTrigger value="achievements">Achievements</TabsTrigger>
+          <TabsTrigger value="stats">Статистика</TabsTrigger>
+          <TabsTrigger value="achievements">Достижения</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
-                <CardDescription>Wins</CardDescription>
+                <CardDescription>Победы</CardDescription>
                 <CardTitle className="font-headline text-4xl">152</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>K/D Ratio</CardDescription>
+                <CardDescription>K/D</CardDescription>
                 <CardTitle className="font-headline text-4xl">1.78</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Tournaments Played</CardDescription>
+                <CardDescription>Сыграно турниров</CardDescription>
                 <CardTitle className="font-headline text-4xl">12</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Top Rank</CardDescription>
+                <CardDescription>Лучший ранг</CardDescription>
                 <CardTitle className="font-headline text-4xl">#23</CardTitle>
               </CardHeader>
             </Card>

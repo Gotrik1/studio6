@@ -6,19 +6,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ClipboardList, TrendingUp, Trophy, Users, Star, Award } from "lucide-react";
 
 const achievements = [
-  { name: "First Victory", icon: Trophy, description: "Coach a team to their first tournament win.", unlocked: true },
-  { name: "Prodigy Scout", icon: Star, description: "Discover and mentor a top-ranked player.", unlocked: true },
-  { name: "Full Roster", icon: Users, description: "Manage a team with a full and active roster for a season.", unlocked: true },
-  { name: "Master Strategist", icon: ClipboardList, description: "Develop 10 unique winning strategies.", unlocked: false },
-  { name: "Uprising", icon: TrendingUp, description: "Improve team's rank by 50 positions.", unlocked: false },
-  { name: "Coach of the Year", icon: Award, description: "Get voted as Coach of the Year by the community.", unlocked: false },
+  { name: "Первая победа", icon: Trophy, description: "Привести команду к первой победе на турнире.", unlocked: true },
+  { name: "Поиск талантов", icon: Star, description: "Найти и обучить игрока высшего ранга.", unlocked: true },
+  { name: "Полный состав", icon: Users, description: "Управлять командой с полным и активным составом в течение сезона.", unlocked: true },
+  { name: "Мастер-стратег", icon: ClipboardList, description: "Разработать 10 уникальных выигрышных стратегий.", unlocked: false },
+  { name: "Восхождение", icon: TrendingUp, description: "Улучшить ранг команды на 50 позиций.", unlocked: false },
+  { name: "Тренер года", icon: Award, description: "Быть избранным Тренером года по мнению сообщества.", unlocked: false },
 ];
 
 export default function CoachProfilePage() {
   const user = {
-    name: 'Coach Carter',
+    name: 'Тренер Картер',
     email: 'coach.carter@prodvor.com',
-    role: 'Coach',
+    role: 'Тренер',
     avatar: 'https://placehold.co/100x100.png',
   };
 
@@ -37,44 +37,44 @@ export default function CoachProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge>{user.role}</Badge>
-              <Badge variant="secondary">Certified Mentor</Badge>
+              <Badge variant="secondary">Сертифицированный ментор</Badge>
             </div>
           </div>
-          <Button>View Team</Button>
+          <Button>Просмотр команды</Button>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Experienced coach specializing in Valorant team strategies.</p>
+          <p className="text-center text-sm text-muted-foreground sm:text-left">Опытный тренер, специализирующийся на командных стратегиях в Valorant.</p>
         </CardContent>
       </Card>
       
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stats">Coaching Statistics</TabsTrigger>
-          <TabsTrigger value="achievements">Coaching Achievements</TabsTrigger>
+          <TabsTrigger value="stats">Статистика тренера</TabsTrigger>
+          <TabsTrigger value="achievements">Достижения тренера</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
-                <CardDescription>Team Win Rate</CardDescription>
+                <CardDescription>Процент побед команды</CardDescription>
                 <CardTitle className="font-headline text-4xl">68%</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Players Coached</CardDescription>
+                <CardDescription>Игроков обучено</CardDescription>
                 <CardTitle className="font-headline text-4xl">25</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Tournaments Won</CardDescription>
+                <CardDescription>Выиграно турниров</CardDescription>
                 <CardTitle className="font-headline text-4xl">3</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Avg. Player Growth</CardDescription>
+                <CardDescription>Средний рост игрока</CardDescription>
                 <CardTitle className="font-headline text-4xl">+250 ELO</CardTitle>
               </CardHeader>
             </Card>

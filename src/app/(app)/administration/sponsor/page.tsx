@@ -6,19 +6,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Handshake, Megaphone, DollarSign, Target, Users, Award } from "lucide-react";
 
 const achievements = [
-  { name: "First Partnership", icon: Handshake, description: "Sponsor your first team or tournament.", unlocked: true },
-  { name: "Campaign Master", icon: Megaphone, description: "Run a successful ad campaign with over 1M impressions.", unlocked: false },
-  { name: "Community Investor", icon: Users, description: "Sponsor 5 different community teams.", unlocked: true },
-  { name: "High Roller", icon: DollarSign, description: "Contribute over $20,000 in prize pools.", unlocked: false },
-  { name: "Brand Builder", icon: Target, description: "Achieve a 20% increase in brand recognition.", unlocked: false },
-  { name: "Sponsor of the Year", icon: Award, description: "Get voted as Sponsor of the Year by the community.", unlocked: false },
+  { name: "Первое партнерство", icon: Handshake, description: "Спонсировать свою первую команду или турнир.", unlocked: true },
+  { name: "Мастер кампаний", icon: Megaphone, description: "Провести успешную рекламную кампанию с более чем 1 млн показов.", unlocked: false },
+  { name: "Инвестор сообщества", icon: Users, description: "Спонсировать 5 различных команд сообщества.", unlocked: true },
+  { name: "Крупный игрок", icon: DollarSign, description: "Внести более $20,000 в призовые фонды.", unlocked: false },
+  { name: "Строитель бренда", icon: Target, description: "Достичь 20% увеличения узнаваемости бренда.", unlocked: false },
+  { name: "Спонсор года", icon: Award, description: "Быть избранным Спонсором года по мнению сообщества.", unlocked: false },
 ];
 
 export default function SponsorProfilePage() {
   const user = {
     name: 'Sponsor Corp',
     email: 'contact@sponsorcorp.com',
-    role: 'Sponsor',
+    role: 'Спонсор',
     avatar: 'https://placehold.co/100x100.png',
   };
 
@@ -37,44 +37,44 @@ export default function SponsorProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge variant="secondary">{user.role}</Badge>
-              <Badge variant="outline">Official Partner</Badge>
+              <Badge variant="outline">Официальный партнер</Badge>
             </div>
           </div>
-          <Button>View Campaigns</Button>
+          <Button>Просмотр кампаний</Button>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Leading sponsor of esports and gaming initiatives.</p>
+          <p className="text-center text-sm text-muted-foreground sm:text-left">Ведущий спонсор киберспортивных и игровых инициатив.</p>
         </CardContent>
       </Card>
       
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stats">Sponsorship ROI</TabsTrigger>
-          <TabsTrigger value="achievements">Sponsor Milestones</TabsTrigger>
+          <TabsTrigger value="stats">ROI спонсорства</TabsTrigger>
+          <TabsTrigger value="achievements">Вехи спонсора</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
-                <CardDescription>Campaigns Run</CardDescription>
+                <CardDescription>Проведено кампаний</CardDescription>
                 <CardTitle className="font-headline text-4xl">18</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Audience Reached</CardDescription>
+                <CardDescription>Охваченная аудитория</CardDescription>
                 <CardTitle className="font-headline text-4xl">2.5M</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Teams Sponsored</CardDescription>
+                <CardDescription>Спонсировано команд</CardDescription>
                 <CardTitle className="font-headline text-4xl">7</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Total Investment</CardDescription>
+                <CardDescription>Общие инвестиции</CardDescription>
                 <CardTitle className="font-headline text-4xl">$75k</CardTitle>
               </CardHeader>
             </Card>

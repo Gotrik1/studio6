@@ -6,19 +6,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Briefcase, Handshake, Users, DollarSign, FileText, Award } from "lucide-react";
 
 const achievements = [
-  { name: "First Contract", icon: FileText, description: "Sign your first player to a team.", unlocked: true },
-  { name: "Sponsorship Deal", icon: Handshake, description: "Secure a major sponsorship for your team.", unlocked: true },
-  { name: "Dream Team", icon: Users, description: "Assemble a full 5-player roster.", unlocked: true },
-  { name: "Money Maker", icon: DollarSign, description: "Manage a team with a budget over $50,000.", unlocked: false },
-  { name: "Professional Manager", icon: Briefcase, description: "Manage a team for 3 consecutive seasons.", unlocked: false },
-  { name: "Manager of the Year", icon: Award, description: "Get voted as Manager of the Year.", unlocked: false },
+  { name: "Первый контракт", icon: FileText, description: "Подписать своего первого игрока в команду.", unlocked: true },
+  { name: "Спонсорская сделка", icon: Handshake, description: "Заключить крупную спонсорскую сделку для своей команды.", unlocked: true },
+  { name: "Команда мечты", icon: Users, description: "Собрать полный состав из 5 игроков.", unlocked: true },
+  { name: "Золотая жила", icon: DollarSign, description: "Управлять командой с бюджетом более $50,000.", unlocked: false },
+  { name: "Профессиональный менеджер", icon: Briefcase, description: "Управлять командой 3 сезона подряд.", unlocked: false },
+  { name: "Менеджер года", icon: Award, description: "Быть избранным Менеджером года.", unlocked: false },
 ];
 
 export default function ManagerProfilePage() {
   const user = {
-    name: 'Jerry Maguire',
+    name: 'Джерри Магуайр',
     email: 'jerry.m@prodvor.com',
-    role: 'Manager',
+    role: 'Менеджер',
     avatar: 'https://placehold.co/100x100.png',
   };
 
@@ -37,44 +37,44 @@ export default function ManagerProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge variant="secondary" className="bg-accent/80 text-accent-foreground">{user.role}</Badge>
-              <Badge variant="secondary">Team Agent</Badge>
+              <Badge variant="secondary">Агент команды</Badge>
             </div>
           </div>
-          <Button>Contact</Button>
+          <Button>Связаться</Button>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Professional team manager and agent.</p>
+          <p className="text-center text-sm text-muted-foreground sm:text-left">Профессиональный менеджер и агент команд.</p>
         </CardContent>
       </Card>
       
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stats">Management Statistics</TabsTrigger>
-          <TabsTrigger value="achievements">Manager Achievements</TabsTrigger>
+          <TabsTrigger value="stats">Статистика управления</TabsTrigger>
+          <TabsTrigger value="achievements">Достижения менеджера</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
-                <CardDescription>Players Managed</CardDescription>
+                <CardDescription>Управляемых игроков</CardDescription>
                 <CardTitle className="font-headline text-4xl">12</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Sponsors Secured</CardDescription>
+                <CardDescription>Привлечено спонсоров</CardDescription>
                 <CardTitle className="font-headline text-4xl">5</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Team Value</CardDescription>
+                <CardDescription>Стоимость команды</CardDescription>
                 <CardTitle className="font-headline text-4xl">$250k</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Contracts Negotiated</CardDescription>
+                <CardDescription>Заключено контрактов</CardDescription>
                 <CardTitle className="font-headline text-4xl">21</CardTitle>
               </CardHeader>
             </Card>

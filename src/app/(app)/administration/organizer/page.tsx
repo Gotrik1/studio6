@@ -6,19 +6,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Trophy, CalendarPlus, Users, ClipboardList, Star, Award } from "lucide-react";
 
 const achievements = [
-  { name: "First Event", icon: CalendarPlus, description: "Successfully organize your first tournament.", unlocked: true },
-  { name: "Full Bracket", icon: Users, description: "Host a tournament with a full 64-team bracket.", unlocked: false },
-  { name: "Community Favorite", icon: Star, description: "Organize an event rated 5 stars by participants.", unlocked: true },
-  { name: "Major Host", icon: Trophy, description: "Host a tournament with a prize pool over $10,000.", unlocked: false },
-  { name: "Smooth Operator", icon: ClipboardList, description: "Run a tournament with zero disputes or issues.", unlocked: false },
-  { name: "Organizer of the Year", icon: Award, description: "Get voted as Organizer of the Year.", unlocked: false },
+  { name: "Первое событие", icon: CalendarPlus, description: "Успешно организовать свой первый турнир.", unlocked: true },
+  { name: "Полная сетка", icon: Users, description: "Провести турнир с полной сеткой на 64 команды.", unlocked: false },
+  { name: "Любимец сообщества", icon: Star, description: "Организовать событие, оцененное участниками на 5 звезд.", unlocked: true },
+  { name: "Крупный организатор", icon: Trophy, description: "Провести турнир с призовым фондом более $10,000.", unlocked: false },
+  { name: "Безупречная работа", icon: ClipboardList, description: "Провести турнир без единого спора или проблемы.", unlocked: false },
+  { name: "Организатор года", icon: Award, description: "Быть избранным Организатором года.", unlocked: false },
 ];
 
 export default function OrganizerProfilePage() {
   const user = {
     name: 'Event Horizon Inc.',
     email: 'events@horizon.com',
-    role: 'Organizer',
+    role: 'Организатор',
     avatar: 'https://placehold.co/100x100.png',
   };
 
@@ -37,44 +37,44 @@ export default function OrganizerProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge variant="destructive">{user.role}</Badge>
-              <Badge variant="secondary">Event Host</Badge>
+              <Badge variant="secondary">Организатор событий</Badge>
             </div>
           </div>
-          <Button>Create Tournament</Button>
+          <Button>Создать турнир</Button>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Premier tournament and event organizers for online gaming.</p>
+          <p className="text-center text-sm text-muted-foreground sm:text-left">Ведущие организаторы турниров и событий в онлайн-гейминге.</p>
         </CardContent>
       </Card>
       
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stats">Event Statistics</TabsTrigger>
-          <TabsTrigger value="achievements">Organizer Achievements</TabsTrigger>
+          <TabsTrigger value="stats">Статистика событий</TabsTrigger>
+          <TabsTrigger value="achievements">Достижения организатора</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
-                <CardDescription>Tournaments Hosted</CardDescription>
+                <CardDescription>Проведено турниров</CardDescription>
                 <CardTitle className="font-headline text-4xl">28</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Total Participants</CardDescription>
+                <CardDescription>Всего участников</CardDescription>
                 <CardTitle className="font-headline text-4xl">1,500+</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Total Prize Pools</CardDescription>
+                <CardDescription>Общий призовой фонд</CardDescription>
                 <CardTitle className="font-headline text-4xl">$125k</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Avg. Event Rating</CardDescription>
+                <CardDescription>Средний рейтинг событий</CardDescription>
                 <CardTitle className="font-headline text-4xl">4.8/5</CardTitle>
               </CardHeader>
             </Card>

@@ -29,7 +29,7 @@ export async function authenticate(
 
       redirect('/dashboard');
     } else {
-      return 'Invalid credentials. Please try again.';
+      return 'Неверные данные. Пожалуйста, попробуйте еще раз.';
     }
   } catch (error) {
     if (error instanceof Error) {
@@ -37,7 +37,7 @@ export async function authenticate(
         if (error.message === 'NEXT_REDIRECT') {
           throw error;
         }
-        return 'An error occurred. Please try again.';
+        return 'Произошла ошибка. Пожалуйста, попробуйте еще раз.';
     }
     throw error;
   }

@@ -5,16 +5,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getSession } from "@/lib/session";
-import { Award, Shield, Swords, Medal, Star } from "lucide-react";
+import { Award, Users, Trophy, Target, Swords, Medal } from "lucide-react";
 import { redirect } from "next/navigation";
 
 const achievements = [
-  { name: "First Win", icon: Award, description: "Win your first match.", unlocked: true },
-  { name: "Team Player", icon: Users, description: "Play 10 matches with a team.", unlocked: true },
-  { name: "Tournament Champion", icon: Trophy, description: "Win a tournament.", unlocked: false },
-  { name: "Sharpshooter", icon: Target, description: "Achieve 50 headshots.", unlocked: true },
-  { name: "Gladiator", icon: Swords, description: "Win 50 1v1 duels.", unlocked: false },
-  { name: "Veteran", icon: Medal, description: "Play 100 matches.", unlocked: false },
+  { name: "Первая победа", icon: Award, description: "Выиграйте свой первый матч.", unlocked: true },
+  { name: "Командный игрок", icon: Users, description: "Сыграйте 10 матчей в команде.", unlocked: true },
+  { name: "Чемпион турнира", icon: Trophy, description: "Выиграйте турнир.", unlocked: false },
+  { name: "Меткий стрелок", icon: Target, description: "Сделайте 50 выстрелов в голову.", unlocked: true },
+  { name: "Гладиатор", icon: Swords, description: "Выиграйте 50 дуэлей 1 на 1.", unlocked: false },
+  { name: "Ветеран", icon: Medal, description: "Сыграйте 100 матчей.", unlocked: false },
 ];
 
 export default async function ProfilePage() {
@@ -36,16 +36,16 @@ export default async function ProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge>{user.role}</Badge>
-              <Badge variant="secondary">Level 27</Badge>
-              <Badge variant="outline">PRO Member</Badge>
+              <Badge variant="secondary">Уровень 27</Badge>
+              <Badge variant="outline">PRO Пользователь</Badge>
             </div>
           </div>
-          <Button>Edit Profile</Button>
+          <Button>Редактировать профиль</Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-2">
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Progress to Level 28</span>
+              <span>Прогресс до Уровня 28</span>
               <span>2,300 / 5,000 XP</span>
             </div>
             <Progress value={46} className="h-2" />
@@ -55,32 +55,32 @@ export default async function ProfilePage() {
       
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stats">Statistics</TabsTrigger>
-          <TabsTrigger value="achievements">Achievements</TabsTrigger>
+          <TabsTrigger value="stats">Статистика</TabsTrigger>
+          <TabsTrigger value="achievements">Достижения</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
-                <CardDescription>Wins</CardDescription>
+                <CardDescription>Победы</CardDescription>
                 <CardTitle className="font-headline text-4xl">152</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>K/D Ratio</CardDescription>
+                <CardDescription>K/D</CardDescription>
                 <CardTitle className="font-headline text-4xl">1.78</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Tournaments Played</CardDescription>
+                <CardDescription>Сыграно турниров</CardDescription>
                 <CardTitle className="font-headline text-4xl">12</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Top Rank</CardDescription>
+                <CardDescription>Лучший ранг</CardDescription>
                 <CardTitle className="font-headline text-4xl">#23</CardTitle>
               </CardHeader>
             </Card>
@@ -107,8 +107,3 @@ export default async function ProfilePage() {
     </div>
   );
 }
-
-// Dummy icons for compilation
-const Trophy = (props: React.SVGProps<SVGSVGElement>) => <svg {...props}><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.87 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.13 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /></svg>
-const Target = (props: React.SVGProps<SVGSVGElement>) => <svg {...props}><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></svg>
-const Users = (props: React.SVGProps<SVGSVGElement>) => <svg {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>

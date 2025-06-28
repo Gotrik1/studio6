@@ -6,19 +6,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, Server, BarChart3, Users, Gavel, ArrowUpCircle } from "lucide-react";
 
 const achievements = [
-  { name: "First System Update", icon: ArrowUpCircle, description: "Successfully deploy a system update.", unlocked: true },
-  { name: "Community Guardian", icon: Shield, description: "Resolve 100 user reports.", unlocked: true },
-  { name: "Platform Growth", icon: Users, description: "Reach 1,000 active users.", unlocked: true },
-  { name: "First Ban Hammer", icon: Gavel, description: "Take first moderation action.", unlocked: true },
-  { name: "Server Stability", icon: Server, description: "Maintain 99.9% uptime for a month.", unlocked: false },
-  { name: "Feature Shipper", icon: BarChart3, description: "Oversee the launch of 5 major features.", unlocked: false },
+  { name: "Первое обновление системы", icon: ArrowUpCircle, description: "Успешно развернуть обновление системы.", unlocked: true },
+  { name: "Хранитель сообщества", icon: Shield, description: "Рассмотреть 100 жалоб пользователей.", unlocked: true },
+  { name: "Рост платформы", icon: Users, description: "Достичь 1000 активных пользователей.", unlocked: true },
+  { name: "Первый банхаммер", icon: Gavel, description: "Принять первое модераторское решение.", unlocked: true },
+  { name: "Стабильность сервера", icon: Server, description: "Поддерживать 99.9% времени безотказной работы в течение месяца.", unlocked: false },
+  { name: "Поставщик фич", icon: BarChart3, description: "Проконтролировать запуск 5 крупных функций.", unlocked: false },
 ];
 
 export default function AdministratorProfilePage() {
   const user = {
     name: 'Admin User',
     email: 'admin.user@prodvor.com',
-    role: 'Administrator',
+    role: 'Администратор',
     avatar: 'https://placehold.co/100x100.png',
   };
 
@@ -37,44 +37,44 @@ export default function AdministratorProfilePage() {
             <p className="text-muted-foreground">{user.email}</p>
             <div className="flex justify-center gap-2 pt-2 sm:justify-start">
               <Badge variant="destructive">{user.role}</Badge>
-              <Badge variant="secondary">System Operator</Badge>
+              <Badge variant="secondary">Системный оператор</Badge>
             </div>
           </div>
-          <Button>Admin Panel</Button>
+          <Button>Панель администратора</Button>
         </CardHeader>
         <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Administrator account with full system privileges.</p>
+          <p className="text-center text-sm text-muted-foreground sm:text-left">Аккаунт администратора с полными правами доступа к системе.</p>
         </CardContent>
       </Card>
       
       <Tabs defaultValue="stats">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="stats">Platform Metrics</TabsTrigger>
-          <TabsTrigger value="achievements">Admin Achievements</TabsTrigger>
+          <TabsTrigger value="stats">Метрики платформы</TabsTrigger>
+          <TabsTrigger value="achievements">Достижения администратора</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
-                <CardDescription>Active Users</CardDescription>
+                <CardDescription>Активные пользователи</CardDescription>
                 <CardTitle className="font-headline text-4xl">1,257</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Open Reports</CardDescription>
+                <CardDescription>Открытые жалобы</CardDescription>
                 <CardTitle className="font-headline text-4xl">14</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Server Uptime</CardDescription>
+                <CardDescription>Время работы сервера</CardDescription>
                 <CardTitle className="font-headline text-4xl">99.98%</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Revenue (Month)</CardDescription>
+                <CardDescription>Доход (месяц)</CardDescription>
                 <CardTitle className="font-headline text-4xl">$5,230</CardTitle>
               </CardHeader>
             </Card>
