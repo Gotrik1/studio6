@@ -1,7 +1,7 @@
+
 'use client'
 
 import { useState } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Logo } from '@/components/icons';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AlertCircle, CalendarIcon, Users, Star, Award, Shield } from 'lucide-react';
+import { AlertCircle, CalendarIcon, Users, Star, Loader2 } from 'lucide-react';
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -25,66 +25,109 @@ import { ru } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Image from 'next/image';
 
-// --- Login Form ---
+const loginSchema = z.object({
+  email: z.string().email({ message: "Введите корректный email." }),
+  password: z.string().min(1, { message: "Пароль не может быть пустым." }),
+  remember: z.boolean().default(false).optional(),
+});
+
 function LoginForm() {
-  const [errorMessage, dispatch] = useFormState(authenticate, undefined);
-  const { pending } = useFormStatus();
+  const [errorMessage, setErrorMessage] = useState<string | undefined>('');
+  const [isPending, startTransition] = React.useTransition();
+
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "admin@example.com",
+      password: "superuser",
+      remember: false,
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof loginSchema>) => {
+    setErrorMessage('');
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.append('email', values.email);
+      formData.append('password', values.password);
+      const result = await authenticate(undefined, formData);
+      if (result) {
+        setErrorMessage(result);
+      }
+    });
+  };
 
   return (
-    <form action={dispatch} className="space-y-4">
-      <div className="space-y-2">
-        <Label htmlFor="email-login">Email</Label>
-        <Input
-          id="email-login"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
           name="email"
-          type="email"
-          placeholder="admin@example.com"
-          required
-          defaultValue="admin@example.com"
-          disabled={pending}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input placeholder="admin@example.com" {...field} disabled={isPending} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="password-login">Пароль</Label>
-        <Input
-          id="password-login"
+        <FormField
+          control={form.control}
           name="password"
-          type="password"
-          required
-          defaultValue="superuser"
-          disabled={pending}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Пароль</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} disabled={isPending} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Checkbox id="remember-me" disabled={pending} />
-          <label
-            htmlFor="remember-me"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Запомнить меня
-          </label>
+        <div className="flex items-center justify-between">
+          <FormField
+            control={form.control}
+            name="remember"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-2 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={isPending}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="cursor-pointer">Запомнить меня</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+          <Link href="#" className="text-sm text-primary hover:underline">
+            Забыли пароль?
+          </Link>
         </div>
-        <Link href="#" className="text-sm text-primary hover:underline">
-          Забыли пароль?
-        </Link>
-      </div>
-      {errorMessage && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Ошибка входа</AlertTitle>
-          <AlertDescription>{errorMessage}</AlertDescription>
-        </Alert>
-      )}
-      <Button type="submit" className="w-full" aria-disabled={pending} disabled={pending}>
-        {pending ? 'Вход...' : 'Войти'}
-      </Button>
-    </form>
+
+        {errorMessage && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Ошибка входа</AlertTitle>
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+        <Button type="submit" className="w-full" disabled={isPending}>
+          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          Войти
+        </Button>
+      </form>
+    </Form>
   )
 }
 
-// --- Registration Form ---
 const registrationSchema = z.object({
   name: z.string().min(2, { message: "Имя должно содержать не менее 2 символов." }),
   email: z.string().email({ message: "Введите корректный email." }),
@@ -93,7 +136,6 @@ const registrationSchema = z.object({
   role: z.string({ required_error: "Выберите вашу роль." }),
   terms: z.boolean().refine(val => val === true, { message: "Вы должны принять условия использования." }),
 });
-
 
 function RegistrationForm() {
     const form = useForm<z.infer<typeof registrationSchema>>({
@@ -107,19 +149,14 @@ function RegistrationForm() {
     });
 
     const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
-    const [successMessage, setSuccessMessage] = useState<string | undefined>(undefined);
     const [pending, startTransition] = React.useTransition();
 
     const onSubmit = (values: z.infer<typeof registrationSchema>) => {
         setErrorMessage(undefined);
-        setSuccessMessage(undefined);
         startTransition(async () => {
             const result = await register(values);
-            if (result.error) {
+            if (result?.error) {
                 setErrorMessage(result.error);
-            } else if (result.success) {
-                setSuccessMessage(result.success);
-                form.reset();
             }
         });
     };
@@ -246,7 +283,7 @@ function RegistrationForm() {
                                 />
                             </FormControl>
                             <div className="space-y-1 leading-none">
-                                <FormLabel>
+                                <FormLabel className="cursor-pointer">
                                     Я согласен с <Link href="#" className="text-primary hover:underline">условиями использования</Link> и <Link href="#" className="text-primary hover:underline">политикой конфиденциальности</Link>.
                                 </FormLabel>
                                 <FormMessage />
@@ -261,15 +298,9 @@ function RegistrationForm() {
                     <AlertDescription>{errorMessage}</AlertDescription>
                     </Alert>
                 )}
-                {successMessage && (
-                    <Alert>
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Успешно!</AlertTitle>
-                        <AlertDescription>{successMessage}</AlertDescription>
-                    </Alert>
-                )}
                 <Button type="submit" className="w-full" disabled={pending}>
-                    {pending ? 'Регистрация...' : 'Зарегистрироваться'}
+                    {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Зарегистрироваться
                 </Button>
             </form>
         </Form>
@@ -279,54 +310,76 @@ function RegistrationForm() {
 // --- Main Page Component ---
 export default function AuthPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 bg-muted/40">
-      <div className="mx-auto mb-6 h-12 w-12 text-primary">
-          <Logo />
+    <main className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
+      <div className="relative hidden flex-col items-center justify-center bg-muted p-10 text-white lg:flex dark:border-r">
+          <div className="absolute inset-0 bg-zinc-900" />
+          <Image
+            src="https://placehold.co/1920x1080.png"
+            alt="Фон"
+            layout="fill"
+            objectFit="cover"
+            className="opacity-20"
+            data-ai-hint="esports stadium lights"
+          />
+          <div className="relative z-20 flex items-center text-lg font-medium">
+             <Logo className="mr-2 h-6 w-6 text-primary" />
+             ProDvor
+          </div>
+           <div className="relative z-20 mt-auto">
+            <blockquote className="space-y-2">
+              <p className="text-lg">
+                &ldquo;Эта платформа изменила все для нашей команды. Организация, поиск игроков, участие в турнирах — все стало в разы проще.&rdquo;
+              </p>
+              <footer className="text-sm">Алексей 'CyberCat' Иванов</footer>
+            </blockquote>
+          </div>
       </div>
-      <Tabs defaultValue="login" className="w-full max-w-md">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">Вход</TabsTrigger>
-          <TabsTrigger value="register">Регистрация</TabsTrigger>
-        </TabsList>
-        <TabsContent value="login">
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-headline text-2xl">С возвращением!</CardTitle>
-              <CardDescription>Введите свои данные для входа в аккаунт.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <LoginForm />
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Или войдите через
-                  </span>
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <Button variant="outline"><Users className="mr-2" /> Google</Button>
-                <Button variant="outline"><Star className="mr-2" /> ВКонтакте</Button>
-                <Button variant="outline"><Award className="mr-2" /> Яндекс</Button>
-                <Button variant="outline"><Shield className="mr-2" /> Госуслуги</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="register">
-           <Card>
-            <CardHeader>
-              <CardTitle className="font-headline text-2xl">Создать аккаунт</CardTitle>
-              <CardDescription>Начните свой путь в ProDvor заполнив форму ниже.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <RegistrationForm />
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      <div className="flex items-center justify-center p-4">
+          <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px]">
+            <Tabs defaultValue="login" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Вход</TabsTrigger>
+                <TabsTrigger value="register">Регистрация</TabsTrigger>
+                </TabsList>
+                <TabsContent value="login">
+                <Card className="border-0 shadow-none">
+                    <CardHeader>
+                    <CardTitle className="font-headline text-2xl">С возвращением!</CardTitle>
+                    <CardDescription>Введите свои данные для входа в аккаунт.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                    <LoginForm />
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                            Или войдите через
+                        </span>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                        <Button variant="outline"><Users className="mr-2" /> Google</Button>
+                        <Button variant="outline"><Star className="mr-2" /> ВКонтакте</Button>
+                    </div>
+                    </CardContent>
+                </Card>
+                </TabsContent>
+                <TabsContent value="register">
+                <Card className="border-0 shadow-none">
+                    <CardHeader>
+                    <CardTitle className="font-headline text-2xl">Создать аккаунт</CardTitle>
+                    <CardDescription>Начните свой путь в ProDvor заполнив форму ниже.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <RegistrationForm />
+                    </CardContent>
+                </Card>
+                </TabsContent>
+            </Tabs>
+          </div>
+      </div>
     </main>
   );
 }
