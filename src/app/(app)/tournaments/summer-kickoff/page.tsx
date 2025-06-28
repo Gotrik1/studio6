@@ -14,39 +14,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 
-const bracketData = {
-  rounds: [
-    {
-      name: 'Четвертьфиналы',
-      matches: [
-        { id: 1, team1: { name: 'Кибер Орлы' }, team2: { name: 'Стальные Титаны' }, score: '13-8' },
-        { id: 2, team1: { name: 'Вихревые Гадюки' }, team2: { name: 'Квантовые Квазары' }, score: '9-13' },
-        { id: 3, team1: { name: 'Багровые Крестоносцы' }, team2: { name: 'Призрачные Волки' }, score: '13-5' },
-        { id: 4, team1: { name: 'Ледяные Драконы' }, team2: { name: 'Теневые Коты' }, score: '13-11' },
-      ],
-    },
-    {
-      name: 'Полуфиналы',
-      matches: [
-        { id: 5, team1: { name: 'Кибер Орлы' }, team2: { name: 'Квантовые Квазары' }, score: '13-10' },
-        { id: 6, team1: { name: 'Багровые Крестоносцы' }, team2: { name: 'Ледяные Драконы' }, score: '7-13' },
-      ],
-    },
-    {
-      name: 'Финал',
-      matches: [
-        { id: 7, team1: { name: 'Кибер Орлы' }, team2: { name: 'Ледяные Драконы' }, score: '2-1', href: '/match-details' },
-      ],
-    },
-     {
-      name: 'Чемпион',
-      matches: [
-        { id: 8, team1: { name: 'Кибер Орлы' }, winner: true },
-      ],
-    },
-  ],
-};
-
 const initialParticipants = [
   { id: 1, name: 'Кибер Орлы', logo: 'https://placehold.co/40x40.png', dataAiHint: "eagle logo", status: 'Оплачено', captain: "Alex 'CyberSlasher' Doe", profileUrl: '/teams/cyber-eagles' },
   { id: 2, name: 'Ледяные Драконы', logo: 'https://placehold.co/40x40.png', dataAiHint: "dragon logo", status: 'Оплачено', captain: "Frosty", profileUrl: '#' },
@@ -57,6 +24,39 @@ const initialParticipants = [
   { id: 7, name: 'Призрачные Волки', logo: 'https://placehold.co/40x40.png', dataAiHint: "wolf logo", status: 'Оплачено', captain: "Yuri 'Ghost' Volkov", profileUrl: '#' },
   { id: 8, name: 'Теневые Коты', logo: 'https://placehold.co/40x40.png', dataAiHint: "cat logo", status: 'Оплачено', captain: "Luna 'Shadow' Meow", profileUrl: '#' },
 ];
+
+const bracketData = {
+  rounds: [
+    {
+      name: 'Четвертьфиналы',
+      matches: [
+        { id: 1, team1: { name: 'Кибер Орлы', logo: 'https://placehold.co/40x40.png', dataAiHint: 'eagle logo' }, team2: { name: 'Стальные Титаны', logo: 'https://placehold.co/40x40.png', dataAiHint: 'robot titan' }, score: '13-8' },
+        { id: 2, team1: { name: 'Вихревые Гадюки', logo: 'https://placehold.co/40x40.png', dataAiHint: 'snake logo' }, team2: { name: 'Квантовые Квазары', logo: 'https://placehold.co/40x40.png', dataAiHint: 'galaxy logo' }, score: '9-13' },
+        { id: 3, team1: { name: 'Багровые Крестоносцы', logo: 'https://placehold.co/40x40.png', dataAiHint: 'knight logo' }, team2: { name: 'Призрачные Волки', logo: 'https://placehold.co/40x40.png', dataAiHint: 'wolf logo' }, score: '13-5' },
+        { id: 4, team1: { name: 'Ледяные Драконы', logo: 'https://placehold.co/40x40.png', dataAiHint: 'dragon logo' }, team2: { name: 'Теневые Коты', logo: 'https://placehold.co/40x40.png', dataAiHint: 'cat logo' }, score: '13-11' },
+      ],
+    },
+    {
+      name: 'Полуфиналы',
+      matches: [
+        { id: 5, team1: { name: 'Кибер Орлы', logo: 'https://placehold.co/40x40.png', dataAiHint: 'eagle logo' }, team2: { name: 'Квантовые Квазары', logo: 'https://placehold.co/40x40.png', dataAiHint: 'galaxy logo' }, score: '13-10' },
+        { id: 6, team1: { name: 'Багровые Крестоносцы', logo: 'https://placehold.co/40x40.png', dataAiHint: 'knight logo' }, team2: { name: 'Ледяные Драконы', logo: 'https://placehold.co/40x40.png', dataAiHint: 'dragon logo' }, score: '7-13' },
+      ],
+    },
+    {
+      name: 'Финал',
+      matches: [
+        { id: 7, team1: { name: 'Кибер Орлы', logo: 'https://placehold.co/40x40.png', dataAiHint: 'eagle logo' }, team2: { name: 'Ледяные Драконы', logo: 'https://placehold.co/40x40.png', dataAiHint: 'dragon logo' }, score: '2-1', href: '/match-details' },
+      ],
+    },
+     {
+      name: 'Чемпион',
+      matches: [
+        { id: 8, team1: { name: 'Кибер Орлы', logo: 'https://placehold.co/40x40.png', dataAiHint: 'eagle logo' }, winner: true },
+      ],
+    },
+  ],
+};
 
 const getStatusVariant = (status: string) => {
     switch(status) {
