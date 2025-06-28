@@ -1,4 +1,7 @@
 
+'use client';
+
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +11,19 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar, Clock, MapPin, Shield, Star, Trophy, Users, Video, Image as ImageIcon, BarChart, FileText, Coins } from "lucide-react";
 import Image from "next/image";
+import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const matchData = {
   team1: { name: "Кибер Орлы", logo: "https://placehold.co/128x128.png", logoHint: "eagle logo" },
@@ -53,6 +69,41 @@ const matchData = {
 };
 
 export default function MatchDetailsPage() {
+  const { toast } = useToast();
+  const [team1Bet, setTeam1Bet] = useState(1000);
+  const [team2Bet, setTeam2Bet] = useState(1000);
+  const totalBet = team1Bet + team2Bet;
+  const [hasBet, setHasBet] = useState(false);
+  
+  const [isBetDialogOpen, setIsBetDialogOpen] = useState(false);
+  const [betAmount, setBetAmount] = useState('50');
+  const [selectedTeamForBet, setSelectedTeamForBet] = useState<'team1' | 'team2' | null>(null);
+
+  const handlePlaceBet = () => {
+    const amount = parseInt(betAmount);
+    if (!selectedTeamForBet || !amount || amount <= 0) {
+        toast({
+            variant: "destructive",
+            title: "Ошибка",
+            description: "Пожалуйста, выберите команду и введите корректную сумму ставки.",
+        });
+        return;
+    }
+
+    if (selectedTeamForBet === 'team1') {
+        setTeam1Bet(prev => prev + amount);
+    } else {
+        setTeam2Bet(prev => prev + amount);
+    }
+
+    setHasBet(true);
+    setIsBetDialogOpen(false);
+    toast({
+        title: "Ставка принята!",
+        description: `Вы поставили ${amount} PD на команду "${selectedTeamForBet === 'team1' ? matchData.team1.name : matchData.team2.name}".`,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <Card>
@@ -94,16 +145,59 @@ export default function MatchDetailsPage() {
         <CardContent className="flex flex-col items-center gap-4 sm:flex-row sm:justify-around">
             <div className="text-center">
                 <p className="font-semibold">{matchData.team1.name}</p>
-                <p className="font-headline text-2xl font-bold">1,000 PD</p>
+                <p className="font-headline text-2xl font-bold">{team1Bet.toLocaleString()} PD</p>
             </div>
-            <div className="text-center">
+            <div className="text-center space-y-2">
                 <p className="text-sm text-muted-foreground">Общий банк</p>
-                <p className="font-headline text-4xl font-bold text-primary">2,000 PD</p>
-                <Button>Сделать ставку</Button>
+                <p className="font-headline text-4xl font-bold text-primary">{totalBet.toLocaleString()} PD</p>
+                 <Dialog open={isBetDialogOpen} onOpenChange={setIsBetDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button disabled={hasBet}>
+                            {hasBet ? "Ставка сделана" : "Сделать ставку"}
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Сделать ставку на матч</DialogTitle>
+                            <DialogDescription>
+                                Выберите команду и сумму ставки. Удачи!
+                            </DialogDescription>
+                        </DialogHeader>
+                        <div className="space-y-4 py-4">
+                            <RadioGroup onValueChange={(value: 'team1' | 'team2') => setSelectedTeamForBet(value)}>
+                                <Label className="font-semibold">Выберите команду</Label>
+                                <div className="flex gap-4">
+                                    <Label htmlFor="team1" className="flex flex-1 items-center gap-2 rounded-md border p-3 hover:bg-accent cursor-pointer has-[:checked]:border-primary">
+                                        <RadioGroupItem value="team1" id="team1" />
+                                        {matchData.team1.name}
+                                    </Label>
+                                    <Label htmlFor="team2" className="flex flex-1 items-center gap-2 rounded-md border p-3 hover:bg-accent cursor-pointer has-[:checked]:border-primary">
+                                        <RadioGroupItem value="team2" id="team2" />
+                                        {matchData.team2.name}
+                                    </Label>
+                                </div>
+                            </RadioGroup>
+                            <div className="space-y-2">
+                                <Label htmlFor="bet-amount">Сумма ставки (PD)</Label>
+                                <Input
+                                    id="bet-amount"
+                                    type="number"
+                                    value={betAmount}
+                                    onChange={(e) => setBetAmount(e.target.value)}
+                                    placeholder="50"
+                                />
+                            </div>
+                        </div>
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setIsBetDialogOpen(false)}>Отмена</Button>
+                            <Button onClick={handlePlaceBet}>Поставить</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </div>
             <div className="text-center">
                 <p className="font-semibold">{matchData.team2.name}</p>
-                <p className="font-headline text-2xl font-bold">1,000 PD</p>
+                <p className="font-headline text-2xl font-bold">{team2Bet.toLocaleString()} PD</p>
             </div>
         </CardContent>
       </Card>
