@@ -34,6 +34,7 @@ import {
   Crown,
   Settings,
   FolderKanban,
+  Shield,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 
@@ -173,6 +174,37 @@ export default async function AppLayout({
                     </SidebarMenuSubItem>
                     <SidebarMenuSubItem>
                         <SidebarMenuSubButton href="/documents/backend-production">Готовность к продакшену</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                </CollapsibleSidebarMenuItem>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+                <CollapsibleSidebarMenuItem icon={<Shield />} title="Администрирование">
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/administration/administrator">Администратор</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/administration/moderator">Модератор</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/administration/player">Игрок (Капитан)</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/administration/coach">Тренер</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/administration/judge">Судья</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/administration/manager">Менеджер</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/administration/fan">Болельщик</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/administration/sponsor">Спонсор</SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    <SidebarMenuSubItem>
+                        <SidebarMenuSubButton href="/administration/organizer">Организатор</SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                 </CollapsibleSidebarMenuItem>
             </SidebarMenuItem>
