@@ -172,9 +172,11 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Спонсоры">
-                <Handshake />
-                Спонсоры
+              <SidebarMenuButton asChild tooltip="Спонсоры">
+                <Link href="/sponsors">
+                  <Handshake />
+                  Спонсоры
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
