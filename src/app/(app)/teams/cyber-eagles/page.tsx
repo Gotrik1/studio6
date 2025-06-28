@@ -4,9 +4,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle } from "lucide-react";
+import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { teamPdHistory, teamStoreItems } from "@/lib/mock-data";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 
 const team = {
   name: "Кибер Орлы",
@@ -87,12 +91,13 @@ export default function TeamProfilePage() {
             </Card>
 
             <Tabs defaultValue="roster">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5">
+                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
                     <TabsTrigger value="roster"><Users className="mr-2 h-4 w-4"/>Состав</TabsTrigger>
                     <TabsTrigger value="matches"><Swords className="mr-2 h-4 w-4"/>Матчи</TabsTrigger>
                     <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
                     <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
                     <TabsTrigger value="about"><Newspaper className="mr-2 h-4 w-4"/>О команде</TabsTrigger>
+                    <TabsTrigger value="bank"><Banknote className="mr-2 h-4 w-4"/>Банк команды</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="roster">
@@ -228,6 +233,73 @@ export default function TeamProfilePage() {
                             </div>
                         </CardContent>
                     </Card>
+                </TabsContent>
+                
+                <TabsContent value="bank">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2 space-y-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>История транзакций</CardTitle>
+                                    <CardDescription>Все операции с командным банком PD.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Дата</TableHead>
+                                                <TableHead>Описание</TableHead>
+                                                <TableHead>Инициатор</TableHead>
+                                                <TableHead className="text-right">Сумма</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {teamPdHistory.map((tx) => (
+                                                <TableRow key={tx.id}>
+                                                    <TableCell>{format(new Date(tx.timestamp), "d MMM yyyy", { locale: ru })}</TableCell>
+                                                    <TableCell>{tx.source}</TableCell>
+                                                    <TableCell>{tx.user}</TableCell>
+                                                    <TableCell className={`text-right font-medium ${tx.value > 0 ? 'text-green-500' : 'text-destructive'}`}>
+                                                        {tx.value > 0 ? '+' : ''}{tx.value.toLocaleString()} PD
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="space-y-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Баланс</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <p className="text-4xl font-bold font-headline">
+                                        {teamPdHistory.reduce((acc, tx) => acc + tx.value, 0).toLocaleString()} PD
+                                    </p>
+                                </CardContent>
+                            </Card>
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>Магазин для команды</CardTitle>
+                                    <CardDescription>Только капитан может тратить PD из банка.</CardDescription>
+                                </CardHeader>
+                                <CardContent className="space-y-4">
+                                    {teamStoreItems.map(item => (
+                                        <div key={item.id} className="flex items-center gap-4 rounded-md border p-2">
+                                             <Image src={item.image} alt={item.name} width={64} height={64} className="rounded-md" data-ai-hint={item.imageHint} />
+                                             <div className="flex-1">
+                                                 <p className="text-sm font-semibold">{item.name}</p>
+                                                 <p className="text-xs text-muted-foreground">{item.price.toLocaleString()} PD</p>
+                                             </div>
+                                             <Button size="sm"><ShoppingBag className="h-4 w-4"/></Button>
+                                        </div>
+                                    ))}
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                 </TabsContent>
             </Tabs>
         </div>

@@ -1,3 +1,4 @@
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Clock, MapPin, Shield, Star, Trophy, Users, Video, Image as ImageIcon, BarChart, FileText } from "lucide-react";
+import { Calendar, Clock, MapPin, Shield, Star, Trophy, Users, Video, Image as ImageIcon, BarChart, FileText, Coins } from "lucide-react";
 import Image from "next/image";
 
 const matchData = {
@@ -82,6 +83,28 @@ export default function MatchDetailsPage() {
           <Button variant="secondary"><Video className="mr-2 h-4 w-4" />Смотреть трансляцию</Button>
           <Button variant="outline"><BarChart className="mr-2 h-4 w-4" />Полная статистика</Button>
           <Button variant="outline"><FileText className="mr-2 h-4 w-4" />Протокол матча</Button>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-muted/50">
+        <CardHeader>
+            <CardTitle className="flex items-center gap-2"><Coins className="h-6 w-6 text-amber-400" /> Ставки на матч</CardTitle>
+            <CardDescription>Победитель забирает банк. Ставки принимаются до начала матча.</CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col items-center gap-4 sm:flex-row sm:justify-around">
+            <div className="text-center">
+                <p className="font-semibold">{matchData.team1.name}</p>
+                <p className="font-headline text-2xl font-bold">1,000 PD</p>
+            </div>
+            <div className="text-center">
+                <p className="text-sm text-muted-foreground">Общий банк</p>
+                <p className="font-headline text-4xl font-bold text-primary">2,000 PD</p>
+                <Button>Сделать ставку</Button>
+            </div>
+            <div className="text-center">
+                <p className="font-semibold">{matchData.team2.name}</p>
+                <p className="font-headline text-2xl font-bold">1,000 PD</p>
+            </div>
         </CardContent>
       </Card>
 

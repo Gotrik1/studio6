@@ -4,6 +4,7 @@
 
 
 
+
 export const achievements = [
   { name: "Лучший новичок", icon: "Award", description: "Выиграть награду лучшего новичка сезона.", unlocked: true },
   { name: "Золотая нога", icon: "Star", description: "Забить 50 голов за сезон.", unlocked: true },
@@ -437,4 +438,23 @@ export const recentDonors = [
     { id: 'donor-1', name: "Alex 'CyberSlasher' Doe", amount: 1000, avatar: 'https://placehold.co/40x40.png', avatarHint: 'esports player' },
     { id: 'donor-2', name: 'Команда "Вихревые Гадюки"', amount: 5000, avatar: 'https://placehold.co/40x40.png', avatarHint: 'snake logo' },
     { id: 'donor-3', name: 'Верный Ларри', amount: 50, avatar: 'https://placehold.co/40x40.png', avatarHint: 'sports fan' },
+];
+
+export const teamPdHistory = [
+    { id: 'tpd-1', timestamp: '2024-09-26T12:00:00Z', source: 'Взнос капитана', value: 1000, user: "Alex 'CyberSlasher' Doe" },
+    { id: 'tpd-2', timestamp: '2024-09-25T19:00:00Z', source: 'Победа в турнире', value: 5000, user: "Система" },
+    { id: 'tpd-3', timestamp: '2024-09-24T10:00:00Z', source: 'Покупка командной рамки', value: -1500, user: "Alex 'CyberSlasher' Doe" },
+    { id: 'tpd-4', timestamp: '2024-09-23T15:00:00Z', source: 'Спонсорский бонус', value: 2000, user: "Sponsor Corp" },
+];
+
+export const teamStoreItems = [
+    { id: 'team-frame-fire', name: 'Командная рамка "Пламя"', price: 1500, image: 'https://placehold.co/600x400.png', imageHint: 'fire frame' },
+    { id: 'team-anthem', name: 'Гимн команды "Рок-волна"', price: 3000, image: 'https://placehold.co/600x400.png', imageHint: 'sound wave' },
+];
+
+export const teamLeaderboardData = [
+    { id: 1, rank: 1, name: 'Кибер Орлы', avatar: 'https://placehold.co/40x40.png', avatarHint: 'eagle logo', totalPd: 6500, profileUrl: '/teams/cyber-eagles' },
+    { id: 2, rank: 2, name: 'Ледяные Драконы', avatar: 'https://placehold.co/40x40.png', avatarHint: 'dragon logo', totalPd: 5200, profileUrl: '#' },
+    { id: 3, rank: 3, name: 'Вихревые Гадюки', avatar: 'https://placehold.co/40x40.png', avatarHint: 'snake logo', totalPd: 4800, profileUrl: '#' },
+    { id: 4, rank: 4, name: 'Квантовые Квазары', avatar: 'https://placehold.co/40x40.png', avatarHint: 'galaxy logo', totalPd: 3500, profileUrl: '#' },
 ];

@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { achievementCatalog, leaderboardData } from "@/lib/mock-data";
+import { achievementCatalog, leaderboardData, teamLeaderboardData } from "@/lib/mock-data";
 import { ArrowRight, BarChart3, Medal, Rocket, Shield, Star, Swords, Trophy, Users, Gem, Crown, Award } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -43,8 +43,9 @@ export default function LeaderboardsPage() {
 
             <Tabs defaultValue="leaderboard">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <TabsList>
-                        <TabsTrigger value="leaderboard"><BarChart3 className="mr-2 h-4 w-4" />Таблица лидеров</TabsTrigger>
+                    <TabsList className="grid w-full grid-cols-3 sm:w-auto sm:grid-cols-3">
+                        <TabsTrigger value="leaderboard"><BarChart3 className="mr-2 h-4 w-4" />Игроки</TabsTrigger>
+                        <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4" />Команды</TabsTrigger>
                         <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4" />Каталог достижений</TabsTrigger>
                     </TabsList>
                     <div className="flex items-center gap-2">
@@ -127,6 +128,60 @@ export default function LeaderboardsPage() {
                                             <TableCell className="text-right">
                                                 <Button asChild variant="outline" size="sm">
                                                     <Link href={player.profileUrl}>
+                                                        Перейти <ArrowRight className="ml-2 h-4 w-4" />
+                                                    </Link>
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="teams" className="mt-4">
+                    <Card>
+                        <CardHeader>
+                             <CardTitle>Топ-100 команд</CardTitle>
+                             <CardDescription>Самые богатые и успешные команды платформы.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                             <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead className="w-16">Ранг</TableHead>
+                                        <TableHead>Команда</TableHead>
+                                        <TableHead className="text-right">Банк PD</TableHead>
+                                        <TableHead className="text-right">Профиль</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {teamLeaderboardData.map((team) => (
+                                        <TableRow key={team.id} className={cn(
+                                            team.rank === 1 && "bg-amber-400/10 hover:bg-amber-400/20",
+                                            team.rank === 2 && "bg-slate-400/10 hover:bg-slate-400/20",
+                                            team.rank === 3 && "bg-orange-400/10 hover:bg-orange-400/20"
+                                        )}>
+                                            <TableCell className="font-headline text-lg font-bold flex items-center gap-2">
+                                                {getRankIcon(team.rank)}
+                                                <span>#{team.rank}</span>
+                                            </TableCell>
+                                            <TableCell>
+                                                <div className="flex items-center gap-3">
+                                                    <Avatar>
+                                                        <AvatarImage src={team.avatar} alt={team.name} data-ai-hint={team.avatarHint} />
+                                                        <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
+                                                    </Avatar>
+                                                    <div>
+                                                        <p className="font-semibold">{team.name}</p>
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="text-right font-semibold text-primary">{team.totalPd.toLocaleString()} PD</TableCell>
+                                            <TableCell className="text-right">
+                                                <Button asChild variant="outline" size="sm">
+                                                    <Link href={team.profileUrl}>
                                                         Перейти <ArrowRight className="ml-2 h-4 w-4" />
                                                     </Link>
                                                 </Button>
