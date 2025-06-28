@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar, Award } from "lucide-react";
+import { Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar, Award, Loader2, TrendingUp, TrendingDown, Sparkles, AlertCircleIcon } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/lib/session";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/lib/mock-data/profiles";
@@ -21,6 +21,10 @@ import { ru } from 'date-fns/locale';
 import { getRankByPoints, type Rank } from "@/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@/ai/flows/analyze-player-performance-flow';
+import { Alert, AlertDescription, AlertTitle } from './ui/alert';
 
 const OverviewTab = dynamic(() => import('@/components/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -61,6 +65,47 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const totalPd = pdHistory.reduce((sum, item) => sum + item.value, 0);
   const rank = getRankByPoints(totalPd);
+
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<AnalyzePlayerPerformanceOutput | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+
+  const handleAnalyze = async () => {
+    setIsAnalyzing(true);
+    setAnalysisError(null);
+    setAnalysisResult(null);
+
+    try {
+      const playerStats = `
+        Role: ${user.role},
+        Status: ${user.status},
+        Main Sport: ${user.mainSport},
+        Total Matches: 218,
+        Wins: 152
+      `;
+      const matchHistory = recentMatches.map(m => `vs ${m.teamB}: ${m.scoreA}-${m.scoreB} on ${m.map}`).join('\n');
+
+      const result = await analyzePlayerPerformance({ playerStats, matchHistory });
+      setAnalysisResult(result);
+    } catch (e) {
+      console.error(e);
+      setAnalysisError("Не удалось получить анализ. Пожалуйста, попробуйте еще раз.");
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const onOpenChange = (open: boolean) => {
+    setIsAnalysisOpen(open);
+    if (open) {
+      handleAnalyze();
+    } else {
+      setAnalysisResult(null);
+      setAnalysisError(null);
+    }
+  };
+
 
   return (
     <div className="space-y-6">
@@ -108,7 +153,55 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="ghost" size="icon"><BrainCircuit className="h-5 w-5"/></Button>
+            <Dialog open={isAnalysisOpen} onOpenChange={onOpenChange}>
+                <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon"><BrainCircuit className="h-5 w-5"/></Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-lg">
+                    <DialogHeader>
+                        <DialogTitle>AI-анализ производительности</DialogTitle>
+                        <DialogDescription>
+                            Искусственный интеллект анализирует ваши последние игры и статистику, чтобы дать персональные советы.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                        {isAnalyzing && (
+                            <div className="flex items-center justify-center h-40">
+                                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>
+                            </div>
+                        )}
+                        {analysisError && (
+                             <Alert variant="destructive">
+                                <AlertCircleIcon className="h-4 w-4" />
+                                <AlertTitle>Ошибка анализа</AlertTitle>
+                                <AlertDescription>{analysisError}</AlertDescription>
+                            </Alert>
+                        )}
+                        {analysisResult && (
+                            <div className="space-y-6">
+                                <div className="space-y-2">
+                                    <h3 className="font-semibold flex items-center gap-2"><TrendingUp className="h-5 w-5 text-green-500"/> Сильные стороны</h3>
+                                    <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                                        {analysisResult.strengths.map((item, i) => <li key={`str-${i}`}>{item}</li>)}
+                                    </ul>
+                                </div>
+                                <div className="space-y-2">
+                                    <h3 className="font-semibold flex items-center gap-2"><TrendingDown className="h-5 w-5 text-yellow-500"/> Точки роста</h3>
+                                    <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                                         {analysisResult.weaknesses.map((item, i) => <li key={`weak-${i}`}>{item}</li>)}
+                                    </ul>
+                                </div>
+                                <div className="space-y-2">
+                                     <h3 className="font-semibold flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary"/> Рекомендации</h3>
+                                     <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                                        {analysisResult.recommendations.map((item, i) => <li key={`rec-${i}`}>{item}</li>)}
+                                    </ul>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
             <Button variant="outline" size="icon"><Share2 className="h-5 w-5"/></Button>
             {isCurrentUser ? (
               <Button>Редактировать профиль</Button>
