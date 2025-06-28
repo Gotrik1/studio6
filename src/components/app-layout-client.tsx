@@ -34,6 +34,7 @@ import {
   Gamepad2,
   ListChecks,
   Scale,
+  Handshake,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -84,6 +85,7 @@ export default function AppLayoutClient({ user, children }: AppLayoutClientProps
                         <SidebarMenuSubButton href="/chats">Чаты</SidebarMenuSubButton>
                         <SidebarMenuSubButton href="/friends">Друзья</SidebarMenuSubButton>
                         <SidebarMenuSubButton href="/fan-zone">Фан-зона</SidebarMenuSubButton>
+                        <SidebarMenuSubButton href="/partners">Партнеры</SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     </CollapsibleSidebarMenuItem>
 
