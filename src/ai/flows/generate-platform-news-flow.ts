@@ -52,6 +52,7 @@ const prompt = ai.definePrompt({
     Your task is to generate short, engaging news items based on recent platform activity.
     Use the getRecentActivity tool to fetch the latest data.
     Write 3-4 news items. Vary the tone and style. Respond in Russian.`,
+    prompt: "Generate the news digest based on the latest platform activity.",
 });
 
 export const generatePlatformNews = ai.defineFlow(
@@ -61,7 +62,7 @@ export const generatePlatformNews = ai.defineFlow(
         outputSchema: GeneratePlatformNewsOutputSchema,
     },
     async () => {
-        const { output } = await prompt({});
+        const { output } = await prompt();
         if (!output) {
             throw new Error("Failed to generate platform news.");
         }
