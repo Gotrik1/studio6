@@ -21,7 +21,24 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
+
+// Helper data for filters
+const allSurfaceTypes = [...new Set(initialVenuesList.map(v => v.surfaceType))];
+const allFeatures = [...new Set(initialVenuesList.flatMap(v => v.features))];
+
 
 const getStatusVariant = (status: string) => {
     switch (status) {
@@ -44,19 +61,48 @@ const getFeatureIcon = (feature: string) => {
 
 type Venue = (typeof initialVenuesList)[0];
 type Booking = (typeof initialMyBookings)[0];
+type Filters = {
+    surfaceTypes: string[];
+    features: string[];
+    price: 'any' | 'free' | 'paid';
+}
+const initialFilters: Filters = {
+    surfaceTypes: [],
+    features: [],
+    price: 'any',
+};
+
 
 export default function BookingPage() {
     const { toast } = useToast();
     const [myBookings, setMyBookings] = useState<Booking[]>(initialMyBookings);
     const [searchQuery, setSearchQuery] = useState('');
+    const [filters, setFilters] = useState<Filters>(initialFilters);
 
     const filteredVenues = useMemo(() => {
-        return initialVenuesList.filter(venue =>
-            venue.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            venue.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            venue.surfaceType.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [searchQuery]);
+        return initialVenuesList.filter(venue => {
+            const matchesSearch = searchQuery
+                ? venue.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                  venue.address.toLowerCase().includes(searchQuery.toLowerCase())
+                : true;
+
+            const matchesSurface = filters.surfaceTypes.length > 0
+                ? filters.surfaceTypes.includes(venue.surfaceType)
+                : true;
+
+            const matchesPrice = filters.price === 'any'
+                ? true
+                : filters.price === 'free'
+                ? venue.price.toLowerCase() === 'бесплатно'
+                : venue.price.toLowerCase() !== 'бесплатно';
+
+            const matchesFeatures = filters.features.length > 0
+                ? filters.features.every(feature => venue.features.includes(feature))
+                : true;
+            
+            return matchesSearch && matchesSurface && matchesPrice && matchesFeatures;
+        });
+    }, [searchQuery, filters]);
     
     const handleBookVenue = (venue: Venue) => {
         const newBooking = {
@@ -88,6 +134,29 @@ export default function BookingPage() {
         });
     }
 
+    const handleFilterChange = (type: 'surfaceTypes' | 'features', value: string) => {
+        setFilters(prev => {
+            const newValues = [...(prev[type] as string[])];
+            if (newValues.includes(value)) {
+                return { ...prev, [type]: newValues.filter(v => v !== value) };
+            } else {
+                return { ...prev, [type]: [...newValues, value] };
+            }
+        });
+    };
+    
+    const handlePriceFilterChange = (priceType: 'free' | 'paid') => {
+        setFilters(prev => ({
+            ...prev,
+            price: prev.price === priceType ? 'any' : priceType
+        }));
+    };
+
+    const activeFilterCount =
+        filters.surfaceTypes.length +
+        filters.features.length +
+        (filters.price !== 'any' ? 1 : 0);
+
     return (
         <div className="space-y-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -107,17 +176,77 @@ export default function BookingPage() {
                         <div className="relative flex-1">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                             <Input 
-                                placeholder="Поиск по названию, адресу или типу..." 
+                                placeholder="Поиск по названию, адресу..." 
                                 className="w-full pl-10" 
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
                         <div className="flex gap-2">
-                            <Button variant="outline" className="w-full md:w-auto">
-                                <SlidersHorizontal className="mr-2 h-4 w-4" />
-                                Фильтры
-                            </Button>
+                            <Sheet>
+                                <SheetTrigger asChild>
+                                    <Button variant="outline" className="w-full md:w-auto relative">
+                                        <SlidersHorizontal className="mr-2 h-4 w-4" />
+                                        Фильтры
+                                        {activeFilterCount > 0 && (
+                                            <Badge className="absolute -right-2 -top-2 h-5 w-5 justify-center p-1">{activeFilterCount}</Badge>
+                                        )}
+                                    </Button>
+                                </SheetTrigger>
+                                <SheetContent>
+                                    <SheetHeader>
+                                        <SheetTitle>Фильтры площадок</SheetTitle>
+                                        <SheetDescription>
+                                            Настройте параметры для более точного поиска.
+                                        </SheetDescription>
+                                    </SheetHeader>
+                                    <div className="space-y-6 py-4">
+                                        <div className="space-y-3">
+                                            <Label>Тип покрытия</Label>
+                                            {allSurfaceTypes.map(type => (
+                                                <div key={type} className="flex items-center space-x-2">
+                                                    <Checkbox 
+                                                        id={`type-${type}`} 
+                                                        checked={filters.surfaceTypes.includes(type)}
+                                                        onCheckedChange={() => handleFilterChange('surfaceTypes', type)}
+                                                    />
+                                                    <label htmlFor={`type-${type}`} className="text-sm font-medium leading-none">{type}</label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                         <div className="space-y-3">
+                                            <Label>Цена</Label>
+                                            <div className="flex items-center space-x-2">
+                                                <Checkbox id="price-free" checked={filters.price === 'free'} onCheckedChange={() => handlePriceFilterChange('free')} />
+                                                <label htmlFor="price-free" className="text-sm font-medium leading-none">Только бесплатные</label>
+                                            </div>
+                                             <div className="flex items-center space-x-2">
+                                                <Checkbox id="price-paid" checked={filters.price === 'paid'} onCheckedChange={() => handlePriceFilterChange('paid')} />
+                                                <label htmlFor="price-paid" className="text-sm font-medium leading-none">Только платные</label>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <Label>Удобства</Label>
+                                            {allFeatures.map(feature => (
+                                                <div key={feature} className="flex items-center space-x-2">
+                                                    <Checkbox 
+                                                        id={`feature-${feature}`} 
+                                                        checked={filters.features.includes(feature)}
+                                                        onCheckedChange={() => handleFilterChange('features', feature)}
+                                                    />
+                                                    <label htmlFor={`feature-${feature}`} className="text-sm font-medium leading-none">{feature}</label>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <SheetFooter>
+                                         <Button variant="ghost" onClick={() => setFilters(initialFilters)}>Сбросить</Button>
+                                        <SheetClose asChild>
+                                            <Button>Применить</Button>
+                                        </SheetClose>
+                                    </SheetFooter>
+                                </SheetContent>
+                            </Sheet>
                             <Button variant="outline" className="w-full md:w-auto">
                                 <Map className="mr-2 h-4 w-4" />
                                 Показать на карте
@@ -164,7 +293,7 @@ export default function BookingPage() {
             <Separator />
             
             <div className="space-y-4">
-                <h2 className="font-headline text-2xl font-bold">Доступные площадки</h2>
+                <h2 className="font-headline text-2xl font-bold">Доступные площадки ({filteredVenues.length})</h2>
                 {filteredVenues.length > 0 ? (
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                         {filteredVenues.map((venue) => (
@@ -227,7 +356,7 @@ export default function BookingPage() {
                     <div className="flex h-40 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
                         <Search className="h-10 w-10 mb-4 text-muted-foreground" />
                         <p className="text-lg font-semibold">Площадки не найдены</p>
-                        <p className="mt-1 text-muted-foreground">Попробуйте изменить поисковый запрос.</p>
+                        <p className="mt-1 text-muted-foreground">Попробуйте изменить поисковый запрос или сбросить фильтры.</p>
                     </div>
                 )}
             </div>
