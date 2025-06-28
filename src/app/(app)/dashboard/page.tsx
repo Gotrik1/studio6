@@ -24,10 +24,16 @@ import {
   Newspaper,
   Star,
   Coins,
+  BrainCircuit,
+  Loader2,
 } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
 import { PD_RATES, PD_SOURCE_DETAILS } from "@/config/gamification";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { generateContent } from "@/ai/flows/generate-content-flow";
 
 
 const feedItems = [
@@ -125,8 +131,21 @@ const getTypeIcon = (type: string) => {
 export default function DashboardPage() {
   const { toast } = useToast();
   const [postCount, setPostCount] = useState(0);
+  const [postContent, setPostContent] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiTopic, setAiTopic] = useState("");
+  const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
 
   const handlePublish = () => {
+    if (!postContent.trim()) {
+      toast({
+          variant: "destructive",
+          title: "Пустой пост",
+          description: "Вы не можете опубликовать пустой пост.",
+      });
+      return;
+    }
+
     const newCount = postCount + 1;
     let rate;
     let description;
@@ -160,7 +179,37 @@ export default function DashboardPage() {
         ),
         description: description,
     });
-  }
+    setPostContent("");
+  };
+
+  const handleGeneratePost = async () => {
+    if (!aiTopic.trim()) return;
+    setIsGenerating(true);
+    try {
+        const result = await generateContent({
+            topic: aiTopic,
+            tone: 'enthusiastic',
+            contentType: 'news post'
+        });
+        setPostContent(result.generatedText);
+        setIsAiDialogOpen(false);
+        setAiTopic("");
+        toast({
+            title: "Контент сгенерирован!",
+            description: "Ваш пост готов к публикации.",
+        });
+    } catch (e) {
+        console.error(e);
+        toast({
+            variant: "destructive",
+            title: "Ошибка генерации",
+            description: "Не удалось сгенерировать контент.",
+        });
+    } finally {
+        setIsGenerating(false);
+    }
+  };
+
 
   return (
     <div className="grid grid-cols-12 gap-6">
@@ -172,10 +221,49 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="grid w-full gap-2">
-                <Textarea placeholder="Что у вас нового?" rows={3} />
+                <Textarea
+                  placeholder="Что у вас нового?"
+                  rows={3}
+                  value={postContent}
+                  onChange={(e) => setPostContent(e.target.value)}
+                />
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2 text-muted-foreground">
                     <Button variant="ghost" size="icon"><ImageIcon className="h-5 w-5"/></Button>
+                     <Dialog open={isAiDialogOpen} onOpenChange={setIsAiDialogOpen}>
+                        <DialogTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <BrainCircuit className="h-5 w-5 text-primary" />
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Сгенерировать пост с помощью ИИ</DialogTitle>
+                                <DialogDescription>
+                                    Введите тему, и ИИ напишет пост для вас. Вы сможете отредактировать его перед публикацией.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-4 py-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="ai-topic">Тема поста</Label>
+                                    <Input 
+                                        id="ai-topic"
+                                        placeholder="Например, 'победа Кибер Орлов в финале'"
+                                        value={aiTopic}
+                                        onChange={(e) => setAiTopic(e.target.value)}
+                                    />
+                                </div>
+                                <Button onClick={handleGeneratePost} disabled={isGenerating} className="w-full">
+                                    {isGenerating ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Генерация...
+                                        </>
+                                    ) : 'Сгенерировать'}
+                                </Button>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                   </div>
                   <Button onClick={handlePublish}>Опубликовать</Button>
                 </div>
