@@ -295,7 +295,7 @@ export default function TeamProfilePage() {
                     />
                     <div className="absolute bottom-4 right-4 flex gap-2">
                         <Button variant="outline" size="icon"><Share2 className="h-5 w-5"/></Button>
-                        <Button variant="outline" size="icon"><Gem className="h-5 w-5"/></Button>
+                        <Button variant="outline" size="icon" title="Поддержать команду"><Coins className="h-5 w-5"/></Button>
                         <Button onClick={handleJoinRequest} disabled={isRequestSent}>
                             <Users className="mr-2 h-5 w-5"/>
                             {isRequestSent ? "Заявка отправлена" : "Вступить в команду"}
