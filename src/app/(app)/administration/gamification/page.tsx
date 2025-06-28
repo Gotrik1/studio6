@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem, BarChart3, AlertTriangle, Pencil, PlusCircle, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ranks } from "@/config/ranks";
+import { ranks as initialRanks, type Rank } from "@/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
@@ -33,6 +33,20 @@ const achievementIcons = {
     Trophy, Star, Shield, Gem, Crown, Rocket, Swords, Medal, Award
 };
 const iconKeys = Object.keys(achievementIcons) as (keyof typeof achievementIcons)[];
+
+const rankColorOptions = [
+    { value: "text-slate-400", label: "Серый" },
+    { value: "text-gray-500", label: "Темно-серый" },
+    { value: "text-green-500", label: "Зеленый" },
+    { value: "text-sky-500", label: "Голубой" },
+    { value: "text-blue-500", label: "Синий" },
+    { value: "text-indigo-500", label: "Индиго" },
+    { value: "text-purple-500", label: "Фиолетовый" },
+    { value: "text-pink-500", label: "Розовый" },
+    { value: "text-red-500", label: "Красный" },
+    { value: "text-orange-500", label: "Оранжевый" },
+    { value: "text-amber-400", label: "Янтарный" },
+];
 
 const getRarityColor = (rarity: string) => {
     switch (rarity) {
@@ -84,6 +98,7 @@ export default function GamificationAdminPage() {
     const [rates, setRates] = useState(initialPdRates);
     const [limits, setLimits] = useState(initialPdLimits);
     const [achievements, setAchievements] = useState(achievementCatalog);
+    const [ranks, setRanks] = useState<Rank[]>(initialRanks);
     
     // State for rates/limits editing
     const [isRateLimitDialogOpen, setIsRateLimitDialogOpen] = useState(false);
@@ -95,6 +110,11 @@ export default function GamificationAdminPage() {
     const [editingAchievement, setEditingAchievement] = useState<Achievement | null>(null);
     const [currentAchievementData, setCurrentAchievementData] = useState<Partial<Achievement>>({});
 
+    // State for rank editing
+    const [isRankDialogOpen, setIsRankDialogOpen] = useState(false);
+    const [editingRank, setEditingRank] = useState<Rank | null>(null);
+    const [currentRankData, setCurrentRankData] = useState<Partial<Rank>>({});
+
     const handleEditRateLimitClick = (key: string, label: string, value: number | string, type: 'rate' | 'limit') => {
         setEditingItem({ key, label, value, type });
         setCurrentValue(String(value));
@@ -103,20 +123,16 @@ export default function GamificationAdminPage() {
 
     const handleRateLimitSave = () => {
         if (!editingItem) return;
-
         const updatedValue = editingItem.type === 'rate' ? parseInt(currentValue, 10) : currentValue;
-        
         if (isNaN(updatedValue as number) && editingItem.type === 'rate') {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Значение должно быть числом.' });
             return;
         }
-
         if (editingItem.type === 'rate') {
             setRates(prev => ({ ...prev, [editingItem.key as keyof typeof prev]: updatedValue as number }));
         } else {
             setLimits(prev => ({ ...prev, [editingItem.key as keyof typeof prev]: updatedValue as string }));
         }
-
         toast({ title: 'Успех!', description: `Значение для "${editingItem.label}" было обновлено.` });
         setIsRateLimitDialogOpen(false);
         setEditingItem(null);
@@ -134,7 +150,6 @@ export default function GamificationAdminPage() {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Все поля должны быть заполнены.' });
             return;
         }
-
         if (editingAchievement) {
             setAchievements(achievements.map(ach => ach.name === editingAchievement.name ? { ...currentAchievementData } as Achievement : ach));
             toast({ title: 'Успех!', description: `Достижение "${name}" обновлено.` });
@@ -146,7 +161,6 @@ export default function GamificationAdminPage() {
             setAchievements(prev => [...prev, { ...currentAchievementData } as Achievement]);
             toast({ title: 'Успех!', description: `Достижение "${name}" добавлено.` });
         }
-
         setIsAchievementDialogOpen(false);
         setEditingAchievement(null);
     };
@@ -154,6 +168,40 @@ export default function GamificationAdminPage() {
     const handleAchievementDelete = (achievementName: string) => {
         setAchievements(prev => prev.filter(ach => ach.name !== achievementName));
         toast({ title: 'Достижение удалено', description: `"${achievementName}" было успешно удалено.`, variant: 'destructive' });
+    };
+
+    const handleRankEditClick = (rank: Rank | null) => {
+        setEditingRank(rank);
+        setCurrentRankData(rank ? { ...rank } : { name: '', description: '', minPoints: 0, maxPoints: 0, color: 'text-slate-400' });
+        setIsRankDialogOpen(true);
+    };
+
+    const handleRankSave = () => {
+        const { name, description, minPoints, maxPoints, color } = currentRankData;
+        if (!name || !description || !color || minPoints === undefined || maxPoints === undefined) {
+             toast({ variant: 'destructive', title: 'Ошибка', description: 'Все поля должны быть заполнены.' });
+             return;
+        }
+
+        if (editingRank) {
+            setRanks(ranks.map(r => r.name === editingRank.name ? { ...currentRankData } as Rank : r));
+            toast({ title: 'Успех!', description: `Ранг "${name}" обновлен.` });
+        } else {
+             if (ranks.some(r => r.name === name)) {
+                 toast({ variant: 'destructive', title: 'Ошибка', description: 'Ранг с таким названием уже существует.' });
+                 return;
+            }
+            setRanks(prev => [...prev, { ...currentRankData } as Rank].sort((a,b) => a.minPoints - b.minPoints));
+            toast({ title: 'Успех!', description: `Ранг "${name}" добавлен.` });
+        }
+        
+        setIsRankDialogOpen(false);
+        setEditingRank(null);
+    };
+    
+    const handleRankDelete = (rankName: string) => {
+        setRanks(prev => prev.filter(r => r.name !== rankName));
+        toast({ title: 'Ранг удален', description: `"${rankName}" был успешно удален.`, variant: 'destructive' });
     };
 
 
@@ -271,15 +319,47 @@ export default function GamificationAdminPage() {
                 <TabsContent value="ranks" className="mt-4">
                     <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                         <div className="lg:col-span-3">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Система рангов</CardTitle>
-                                    <CardDescription>Всего 11 уровней мастерства, отражающих прогресс игрока.</CardDescription>
+                             <Card>
+                                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+                                    <div>
+                                        <CardTitle>Система рангов</CardTitle>
+                                        <CardDescription>Всего {ranks.length} уровней мастерства, отражающих прогресс игрока.</CardDescription>
+                                    </div>
+                                    <Button onClick={() => handleRankEditClick(null)} className="w-full sm:w-auto mt-2 sm:mt-0">
+                                        <PlusCircle className="mr-2 h-4 w-4" />
+                                        Добавить ранг
+                                    </Button>
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <TooltipProvider>
                                         {ranks.map((rank) => (
-                                            <Card key={rank.name} className="p-4 transition-shadow hover:shadow-md">
+                                            <Card key={rank.name} className="p-4 transition-shadow hover:shadow-md group relative">
+                                                <div className="absolute top-2 right-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+                                                    <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => handleRankEditClick(rank)}>
+                                                        <Pencil className="h-4 w-4" />
+                                                    </Button>
+                                                    <AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <Button variant="destructive" size="icon" className="h-7 w-7">
+                                                                <Trash2 className="h-4 w-4" />
+                                                            </Button>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Это действие необратимо. Вы действительно хотите удалить ранг "{rank.name}"?
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Отмена</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleRankDelete(rank.name)} className="bg-destructive hover:bg-destructive/90">
+                                                                    Удалить
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>
+                                                </div>
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-4">
                                                         <Award className={cn("h-8 w-8 shrink-0", rank.color)} />
@@ -611,6 +691,67 @@ export default function GamificationAdminPage() {
                     </DialogFooter>
                 </DialogContent>
             </Dialog>
+
+            <Dialog open={isRankDialogOpen} onOpenChange={setIsRankDialogOpen}>
+                <DialogContent className="sm:max-w-[480px]">
+                    <DialogHeader>
+                        <DialogTitle>{editingRank ? "Редактировать ранг" : "Новый ранг"}</DialogTitle>
+                        <DialogDescription>
+                            Заполните информацию о ранге. Изменение очков может потребовать корректировки соседних рангов.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="rank-name">Название</Label>
+                            <Input id="rank-name" value={currentRankData.name || ''} onChange={(e) => setCurrentRankData(prev => ({...prev, name: e.target.value}))} disabled={!!editingRank} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="rank-desc">Описание</Label>
+                            <Textarea id="rank-desc" value={currentRankData.description || ''} onChange={(e) => setCurrentRankData(prev => ({...prev, description: e.target.value}))} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                             <div className="space-y-2">
+                                <Label htmlFor="rank-min-points">Мин. очки (PD)</Label>
+                                <Input id="rank-min-points" type="number" value={currentRankData.minPoints ?? 0} onChange={(e) => setCurrentRankData(prev => ({...prev, minPoints: parseInt(e.target.value, 10) || 0}))} />
+                            </div>
+                              <div className="space-y-2">
+                                <Label htmlFor="rank-max-points">Макс. очки (PD)</Label>
+                                <Input id="rank-max-points" type="number" value={currentRankData.maxPoints ?? 0} onChange={(e) => setCurrentRankData(prev => ({...prev, maxPoints: parseInt(e.target.value, 10) || 0}))} />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="rank-color">Цвет</Label>
+                             <Select value={currentRankData.color} onValueChange={(value: Rank['color']) => setCurrentRankData(prev => ({...prev, color: value}))}>
+                                <SelectTrigger id="rank-color">
+                                    <SelectValue>
+                                        {currentRankData.color && (
+                                            <div className="flex items-center gap-2">
+                                                <div className={cn("h-4 w-4 rounded-full", currentRankData.color?.replace('text-', 'bg-'))} />
+                                                <span>{rankColorOptions.find(c => c.value === currentRankData.color)?.label}</span>
+                                            </div>
+                                        )}
+                                    </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {rankColorOptions.map(opt => (
+                                        <SelectItem key={opt.value} value={opt.value}>
+                                            <div className="flex items-center gap-2">
+                                                <div className={cn("h-4 w-4 rounded-full", opt.value.replace('text-', 'bg-'))} />
+                                                <span>{opt.label}</span>
+                                            </div>
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsRankDialogOpen(false)}>Отмена</Button>
+                        <Button onClick={handleRankSave}>Сохранить</Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
         </div>
     );
 }
