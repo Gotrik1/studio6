@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -39,17 +40,36 @@ export default function LeaderboardsPage() {
     const [periodFilter, setPeriodFilter] = useState('season');
 
     const filteredPlayers = useMemo(() => {
-        if (roleFilter === 'all') {
-            return leaderboardData;
+        let players = [...leaderboardData].map(p => ({ ...p })); // Create a copy to avoid mutation
+
+        // Simulate data changes based on the period filter
+        if (periodFilter === 'month') {
+            // Simple deterministic shuffle and ELO adjustment for "month"
+            players.sort((a, b) => a.name.localeCompare(b.name));
+            players.forEach(p => p.elo = Math.round(p.elo * 0.95));
+        } else if (periodFilter === 'week') {
+            // Different shuffle and ELO adjustment for "week"
+            players.sort((a, b) => b.name.localeCompare(a.name));
+            players.forEach(p => p.elo = Math.round(p.elo * 0.98));
         }
-        const roleMap = {
-            'player': 'Игрок',
-            'captain': 'Капитан',
-            'judge': 'Судья'
-        };
-        const targetRole = roleMap[roleFilter as keyof typeof roleMap];
-        return leaderboardData.filter(player => player.role === targetRole);
-    }, [roleFilter]);
+        // 'season' uses the original order and ELO
+
+        // Filter by role
+        let roleFilteredPlayers = players;
+        if (roleFilter !== 'all') {
+            const roleMap = {
+                'player': 'Игрок',
+                'captain': 'Капитан',
+                'judge': 'Судья'
+            };
+            const targetRole = roleMap[roleFilter as keyof typeof roleMap];
+            roleFilteredPlayers = players.filter(player => player.role === targetRole);
+        }
+
+        // Re-calculate ranks based on the new order and ELO
+        return roleFilteredPlayers.sort((a, b) => b.elo - a.elo).map((p, index) => ({ ...p, rank: index + 1 }));
+
+    }, [roleFilter, periodFilter]);
 
 
     return (
@@ -80,7 +100,7 @@ export default function LeaderboardsPage() {
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div>
                                     <CardTitle>Топ-100 игроков</CardTitle>
-                                    <CardDescription>Лучшие игроки платформы за текущий сезон.</CardDescription>
+                                    <CardDescription>Лучшие игроки платформы за текущий период.</CardDescription>
                                 </div>
                                 <div className="flex gap-2">
                                     <Select defaultValue="all" onValueChange={setRoleFilter}>
