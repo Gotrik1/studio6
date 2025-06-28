@@ -17,6 +17,10 @@ export function middleware(request: NextRequest) {
   } else {
     // If the user does not have a session and is trying to access a protected path...
     if (!isPublicPath) {
+      // unless it's the welcome page, which we allow for the redirection from register
+      if (isWelcomePath && !session) {
+        return NextResponse.redirect(new URL('/auth', request.url));
+      }
       // redirect them to the login page.
       return NextResponse.redirect(new URL('/auth', request.url));
     }
