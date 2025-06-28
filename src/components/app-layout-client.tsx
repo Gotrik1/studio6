@@ -113,7 +113,7 @@ export default function AppLayoutClient({ user, children }: AppLayoutClientProps
 
                     <CollapsibleSidebarMenuItem icon={<TrendingUp />} title="Развитие">
                       <SidebarMenuSubItem>
-                          <SidebarMenuSubButton href="/training">Тренировки</SidebarMenuSubButton>
+                          <SidebarMenuSubButton href="/training">AI-Коуч</SidebarMenuSubButton>
                           <SidebarMenuSubButton href="/quests">Квесты</SidebarMenuSubButton>
                           <SidebarMenuSubButton href="/store">Магазин</SidebarMenuSubButton>
                           <SidebarMenuSubButton href="/promotions">Промо-акции</SidebarMenuSubButton>
