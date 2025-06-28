@@ -1,5 +1,6 @@
+'use client';
 
-
+import { useState, useMemo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,23 @@ const getRankIcon = (rank: number) => {
 }
 
 export default function LeaderboardsPage() {
+    const [roleFilter, setRoleFilter] = useState('all');
+    const [periodFilter, setPeriodFilter] = useState('season');
+
+    const filteredPlayers = useMemo(() => {
+        if (roleFilter === 'all') {
+            return leaderboardData;
+        }
+        const roleMap = {
+            'player': 'Игрок',
+            'captain': 'Капитан',
+            'judge': 'Судья'
+        };
+        const targetRole = roleMap[roleFilter as keyof typeof roleMap];
+        return leaderboardData.filter(player => player.role === targetRole);
+    }, [roleFilter]);
+
+
     return (
         <div className="space-y-6">
             <div className="space-y-2">
@@ -65,18 +83,18 @@ export default function LeaderboardsPage() {
                                     <CardDescription>Лучшие игроки платформы за текущий сезон.</CardDescription>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Select defaultValue="all">
+                                    <Select defaultValue="all" onValueChange={setRoleFilter}>
                                         <SelectTrigger className="w-[180px]">
                                             <SelectValue placeholder="Все роли" />
                                         </SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="all">Все роли</SelectItem>
                                             <SelectItem value="player">Игроки</SelectItem>
-                                            <SelectItem value="team">Команды</SelectItem>
+                                            <SelectItem value="captain">Капитаны</SelectItem>
                                             <SelectItem value="judge">Судьи</SelectItem>
                                         </SelectContent>
                                     </Select>
-                                     <Select defaultValue="season">
+                                     <Select defaultValue="season" onValueChange={setPeriodFilter}>
                                         <SelectTrigger className="w-[180px]">
                                             <SelectValue placeholder="Период" />
                                         </SelectTrigger>
@@ -101,7 +119,7 @@ export default function LeaderboardsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {leaderboardData.map((player) => (
+                                    {filteredPlayers.map((player) => (
                                         <TableRow key={player.id} className={cn(
                                             player.rank === 1 && "bg-amber-400/10 hover:bg-amber-400/20",
                                             player.rank === 2 && "bg-slate-400/10 hover:bg-slate-400/20",
