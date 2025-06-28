@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Search, Phone, Video, Smile, Paperclip, Send, MoreVertical, PlusCircle, MessageSquare } from "lucide-react";
+import { Search, Phone, Video, Smile, Paperclip, Send, MoreVertical, PlusCircle, MessageSquare, MessagesSquare } from "lucide-react";
 import { chatList as mockChatList } from '@/lib/mock-data/chats';
 import { cn } from '@/lib/utils';
 import type { User } from '@/lib/session';
@@ -20,9 +21,17 @@ export default function ChatsPage() {
     const [chatList, setChatList] = useState(mockChatList);
     const [activeChat, setActiveChat] = useState<Chat | null>(chatList[0] || null);
     const [newMessage, setNewMessage] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
     
     // In a real app, this would come from the session
     const currentUser: User = { name: 'You', email: '', role: '', avatar: 'https://placehold.co/40x40.png' };
+
+    const filteredChats = useMemo(() => {
+        if (!searchQuery) return chatList;
+        return chatList.filter(chat => 
+            chat.name.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [chatList, searchQuery]);
 
     const handleSendMessage = () => {
         if (!newMessage.trim() || !activeChat) return;
@@ -89,38 +98,51 @@ export default function ChatsPage() {
                     </div>
                     <div className="relative mt-2">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input placeholder="Поиск или новый чат..." className="w-full pl-10" />
+                        <Input 
+                            placeholder="Поиск или новый чат..." 
+                            className="w-full pl-10" 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
                 </CardHeader>
                 <ScrollArea className="flex-1">
                     <CardContent className="p-0">
-                        {chatList.map((chat) => (
-                            <div
-                                key={chat.id}
-                                className={cn(
-                                    "flex items-start gap-4 p-4 cursor-pointer border-b last:border-b-0 hover:bg-muted/50",
-                                    activeChat?.id === chat.id && "bg-muted"
-                                )}
-                                onClick={() => selectChat(chat)}
-                            >
-                                <Avatar className="h-12 w-12 border">
-                                    <AvatarImage src={chat.avatar} alt={chat.name} data-ai-hint={chat.dataAiHint}/>
-                                    <AvatarFallback>{chat.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1 truncate">
-                                    <div className="flex justify-between items-center">
-                                        <p className="font-semibold truncate">{chat.name}</p>
-                                        <p className="text-xs text-muted-foreground whitespace-nowrap">{chat.lastMessage.time}</p>
-                                    </div>
-                                    <div className="flex justify-between items-start mt-1">
-                                        <p className="text-sm text-muted-foreground truncate">{chat.lastMessage.text}</p>
-                                        {chat.unreadCount > 0 && (
-                                            <Badge className="h-5 min-w-5 flex items-center justify-center p-1">{chat.unreadCount}</Badge>
-                                        )}
+                        {filteredChats.length > 0 ? (
+                            filteredChats.map((chat) => (
+                                <div
+                                    key={chat.id}
+                                    className={cn(
+                                        "flex items-start gap-4 p-4 cursor-pointer border-b last:border-b-0 hover:bg-muted/50",
+                                        activeChat?.id === chat.id && "bg-muted"
+                                    )}
+                                    onClick={() => selectChat(chat)}
+                                >
+                                    <Avatar className="h-12 w-12 border">
+                                        <AvatarImage src={chat.avatar} alt={chat.name} data-ai-hint={chat.dataAiHint}/>
+                                        <AvatarFallback>{chat.name.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 truncate">
+                                        <div className="flex justify-between items-center">
+                                            <p className="font-semibold truncate">{chat.name}</p>
+                                            <p className="text-xs text-muted-foreground whitespace-nowrap">{chat.lastMessage.time}</p>
+                                        </div>
+                                        <div className="flex justify-between items-start mt-1">
+                                            <p className="text-sm text-muted-foreground truncate">{chat.lastMessage.text}</p>
+                                            {chat.unreadCount > 0 && (
+                                                <Badge className="h-5 min-w-5 flex items-center justify-center p-1">{chat.unreadCount}</Badge>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
+                            ))
+                        ) : (
+                             <div className="flex flex-col items-center justify-center h-full p-8 text-center text-muted-foreground">
+                                <MessagesSquare className="h-10 w-10 mb-2" />
+                                <p className="font-semibold">Чаты не найдены</p>
+                                <p className="text-sm">Попробуйте изменить поисковый запрос.</p>
                             </div>
-                        ))}
+                        )}
                     </CardContent>
                 </ScrollArea>
             </Card>
