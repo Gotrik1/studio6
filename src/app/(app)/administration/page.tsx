@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import Link from "next/link";
-import { Shield, Gavel, User, Award, Briefcase, Star, Handshake, Trophy, Scale, Users2 } from "lucide-react";
+import { Shield, Gavel, User, Award, Briefcase, Star, Handshake, Trophy, Scale, Users2, Gamepad2 } from "lucide-react";
 
 const roles = [
   { name: "Управление пользователями", href: "/administration/users", icon: Users2, description: "Просмотр и поиск всех пользователей." },
@@ -13,6 +13,7 @@ const roles = [
   { name: "Болельщик", href: "/administration/fan", icon: Star, description: "Профиль активного болельщика." },
   { name: "Спонсор", href: "/administration/sponsor", icon: Handshake, description: "Профиль спонсора." },
   { name: "Организатор", href: "/administration/organizer", icon: Trophy, description: "Профиль организатора турниров." },
+  { name: "Геймификация", href: "/administration/gamification", icon: Gamepad2, description: "Управление очками, ачивками и экономикой." },
 ];
 
 export default function AdministrationHubPage() {
