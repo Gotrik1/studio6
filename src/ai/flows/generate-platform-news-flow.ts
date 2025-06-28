@@ -21,7 +21,7 @@ const RecentActivitySchema = z.object({
     newHotTeam: z.string().describe("A newly formed or rapidly rising team."),
 });
 
-export const GeneratePlatformNewsOutputSchema = z.object({
+const GeneratePlatformNewsOutputSchema = z.object({
     news: z.array(NewsItemSchema).describe("An array of 3-4 news items about recent platform activity."),
 });
 export type GeneratePlatformNewsOutput = z.infer<typeof GeneratePlatformNewsOutputSchema>;
