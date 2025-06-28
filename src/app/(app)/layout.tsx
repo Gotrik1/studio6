@@ -230,7 +230,7 @@ export default async function AppLayout({
           </div>
           <UserNav user={user} />
         </header>
-        <main className="flex-1 overflow-auto p-4 pb-20 sm:p-6 md:pb-6">{children}</main>
+        <div className="flex-1 overflow-auto p-4 pb-20 sm:p-6 md:pb-6">{children}</div>
         <BottomNav />
       </SidebarInset>
     </SidebarProvider>
