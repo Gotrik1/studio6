@@ -1,5 +1,6 @@
 
 export const PD_RATES = {
+  WELCOME_BONUS: 25,
   MATCH_COMPLETION: 10,
   GOAL_ASSIST_SAVE: 5,
   HELP_NEWBIE: 7,
@@ -18,6 +19,7 @@ export const PD_LIMITS = {
 export type PD_SOURCE_TYPE = keyof typeof PD_RATES;
 
 export const PD_SOURCE_DETAILS: { [key in PD_SOURCE_TYPE]?: { description: string } } = {
+    WELCOME_BONUS: { description: "Приветственный бонус за регистрацию" },
     MATCH_COMPLETION: { description: "Завершение матча" },
     GOAL_ASSIST_SAVE: { description: "Гол/Ассист/Сейв" },
     MEDIA_POST_TIER_1: { description: "Публикация контента (1-й раз)" },

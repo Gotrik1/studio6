@@ -5,6 +5,7 @@
 
 
 
+
 export const achievements = [
   { name: "Лучший новичок", icon: "Award", description: "Выиграть награду лучшего новичка сезона.", unlocked: true },
   { name: "Золотая нога", icon: "Star", description: "Забить 50 голов за сезон.", unlocked: true },
@@ -201,8 +202,7 @@ export const leaderboardData = [
 ];
 
 export const achievementCatalog: { name: string; description: string; icon: "Trophy" | "Star" | "Shield" | "Gem" | "Crown" | "Rocket" | "Swords" | "Medal" | "Award"; rarity: "Обычная" | "Редкая" | "Эпическая"; points: number }[] = [
-    // Новички (U-6 – U-12)
-    { name: "Я пришёл!", description: "Первый визит на тренировку. Просто появись — это победа!", icon: "Star", rarity: "Обычная", points: 10 },
+    { name: "Новичок в деле", description: "Завершить регистрацию и войти в мир ProDvor.", icon: "Award", rarity: "Обычная", points: 25 },
     { name: "Юный акробат", description: "Сделал кувырок (можно с видео или фото).", icon: "Star", rarity: "Обычная", points: 20 },
     { name: "Не сдался", description: "3 тренировки подряд. Фиксируется расписанием.", icon: "Medal", rarity: "Редкая", points: 70 },
     { name: "Маленький знаток", description: "Назвал 5 правил игры в футбол. Вопросы-ответы с болельщиками.", icon: "Award", rarity: "Редкая", points: 100 },
@@ -344,6 +344,7 @@ export const sponsorsList = [
 ];
 
 export const pdHistory = [
+    { id: 'pd-0', timestamp: '2024-09-23T20:14:00Z', source: 'WELCOME_BONUS', value: 25, refId: 'registration' },
     { id: 'pd-1', timestamp: '2024-09-26T10:00:00Z', source: 'MATCH_COMPLETION', value: 10, refId: 'match-123' },
     { id: 'pd-2', timestamp: '2024-09-26T10:05:00Z', source: 'GOAL_ASSIST_SAVE', value: 5, refId: 'match-123' },
     { id: 'pd-3', timestamp: '2024-09-25T18:30:00Z', source: 'MEDIA_POST_TIER_1', value: 3, refId: 'post-456' },
