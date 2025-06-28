@@ -1,12 +1,11 @@
-import { Award, Users, Trophy, Target, Medal, Star, Gavel, ClipboardCheck, CalendarDays, Shield, Scale } from "lucide-react";
 
 export const achievements = [
-  { name: "Лучший новичок", icon: Award, description: "Выиграть награду лучшего новичка сезона.", unlocked: true },
-  { name: "Золотая нога", icon: Star, description: "Забить 50 голов за сезон.", unlocked: true },
-  { name: "Чемпион турнира", icon: Trophy, description: "Выиграть крупный турнир.", unlocked: false },
-  { name: "Топ-10 города", icon: Target, description: "Войти в топ-10 игроков своего города.", unlocked: true },
-  { name: "Железный человек", icon: Medal, description: "Сыграть 100 матчей без замен.", unlocked: false },
-  { name: "Командный игрок", icon: Users, description: "Отдать 50 голевых передач.", unlocked: true },
+  { name: "Лучший новичок", icon: "Award", description: "Выиграть награду лучшего новичка сезона.", unlocked: true },
+  { name: "Золотая нога", icon: "Star", description: "Забить 50 голов за сезон.", unlocked: true },
+  { name: "Чемпион турнира", icon: "Trophy", description: "Выиграть крупный турнир.", unlocked: false },
+  { name: "Топ-10 города", icon: "Target", description: "Войти в топ-10 игроков своего города.", unlocked: true },
+  { name: "Железный человек", icon: "Medal", description: "Сыграть 100 матчей без замен.", unlocked: false },
+  { name: "Командный игрок", icon: "Users", description: "Отдать 50 голевых передач.", unlocked: true },
 ];
 
 export const teams = [
@@ -41,10 +40,10 @@ export const judgeUser = {
 };
 
 export const judgeAchievements = [
-  { name: "Первое судейство", icon: Gavel, description: "Отсудить свой первый официальный матч.", unlocked: true },
-  { name: "Турнирный судья", icon: Trophy, description: "Работать судьей на крупном турнире.", unlocked: true },
-  { name: "Железный судья", icon: CalendarDays, description: "Отсудить 50 матчей за один сезон.", unlocked: true },
-  { name: "Награда за честную игру", icon: Shield, description: "Получить рейтинг справедливости 99%+ от игроков.", unlocked: false },
-  { name: "Разрешитель споров", icon: Scale, description: "Успешно разрешить 20 споров по счету.", unlocked: false },
-  { name: "Сертифицированный профи", icon: ClipboardCheck, description: "Пройти профессиональную сертификацию судей.", unlocked: true },
+  { name: "Первое судейство", icon: "Gavel", description: "Отсудить свой первый официальный матч.", unlocked: true },
+  { name: "Турнирный судья", icon: "Trophy", description: "Работать судьей на крупном турнире.", unlocked: true },
+  { name: "Железный судья", icon: "CalendarDays", description: "Отсудить 50 матчей за один сезон.", unlocked: true },
+  { name: "Награда за честную игру", icon: "Shield", description: "Получить рейтинг справедливости 99%+ от игроков.", unlocked: false },
+  { name: "Разрешитель споров", icon: "Scale", description: "Успешно разрешить 20 споров по счету.", unlocked: false },
+  { name: "Сертифицированный профи", icon: "ClipboardCheck", description: "Пройти профессиональную сертификацию судей.", unlocked: true },
 ];
