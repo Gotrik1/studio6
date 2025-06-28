@@ -1,4 +1,6 @@
 
+'use client';
+
 import { getSession, type User } from "@/lib/session";
 import { redirect } from "next/navigation";
 import Link from 'next/link';
