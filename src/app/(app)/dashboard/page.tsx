@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 
 const activities = [
   {
-    user: "Team "Rockets"",
+    user: "Team 'Rockets'",
     action: "won the 'Summer Kickoff 2024' tournament!",
     timestamp: "2 hours ago",
     avatar: "https://placehold.co/40x40.png",
