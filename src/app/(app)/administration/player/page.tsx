@@ -1,20 +1,20 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Award, Users, Trophy, Target, Swords, Medal, Share2, MapPin, GalleryHorizontal, Activity } from "lucide-react";
+import { Award, Users, Trophy, Target, Medal, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Star, BrainCircuit, Link as LinkIcon, CheckCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 const achievements = [
-  { name: "Первая победа", icon: Award, description: "Выиграйте свой первый матч.", unlocked: true },
-  { name: "Командный игрок", icon: Users, description: "Сыграйте 10 матчей в команде.", unlocked: true },
-  { name: "Чемпион турнира", icon: Trophy, description: "Выиграйте турнир.", unlocked: false },
-  { name: "Меткий стрелок", icon: Target, description: "Сделайте 50 выстрелов в голову.", unlocked: true },
-  { name: "Гладиатор", icon: Swords, description: "Выиграйте 50 дуэлей 1 на 1.", unlocked: false },
-  { name: "Ветеран", icon: Medal, description: "Сыграйте 100 матчей.", unlocked: false },
+  { name: "Лучший новичок", icon: Award, description: "Выиграть награду лучшего новичка сезона.", unlocked: true },
+  { name: "Золотая нога", icon: Star, description: "Забить 50 голов за сезон.", unlocked: true },
+  { name: "Чемпион турнира", icon: Trophy, description: "Выиграть крупный турнир.", unlocked: false },
+  { name: "Топ-10 города", icon: Target, description: "Войти в топ-10 игроков своего города.", unlocked: true },
+  { name: "Железный человек", icon: Medal, description: "Сыграть 100 матчей без замен.", unlocked: false },
+  { name: "Командный игрок", icon: Users, description: "Отдать 50 голевых передач.", unlocked: true },
 ];
 
 const teams = [
@@ -35,6 +35,12 @@ const gallery = [
     { src: "https://placehold.co/600x400.png", alt: "Клатч-момент", dataAiHint: "intense gaming" },
 ];
 
+const careerHistory = [
+    { teamName: "Юниоры 'Пламя'", period: "2018 - 2020", role: "Нападающий", review: "Отличный старт карьеры, показал себя как перспективный игрок." },
+    { teamName: "Городская лига 'Вымпел'", period: "2020 - 2022", role: "Полузащитник", review: "Стал ключевым игроком центра поля, много работал над выносливостью." },
+    { teamName: "Кибер Орлы", period: "2022 - н.в.", role: "Капитан", review: "Взял на себя лидерские функции, привел команду к нескольким победам в региональных турнирах." },
+]
+
 export default function PlayerProfilePage() {
     const user = {
         name: "Alex 'CyberSlasher' Doe",
@@ -42,7 +48,9 @@ export default function PlayerProfilePage() {
         role: 'Игрок',
         avatar: 'https://placehold.co/100x100.png',
         location: "Москва, Россия",
-        mainSport: "Valorant"
+        mainSport: "Valorant",
+        status: "Капитан команды 'Кибер Орлы'",
+        isVerified: true,
     };
     
     const initials = user.name.split(' ').map((n) => n[0]).join('');
@@ -56,20 +64,29 @@ export default function PlayerProfilePage() {
             <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
           </Avatar>
           <div className="flex-1 space-y-1">
-            <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
+            <div className="flex items-center justify-center gap-2 sm:justify-start">
+                <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
+                {user.isVerified && <CheckCircle className="h-6 w-6 text-primary" />}
+            </div>
             <p className="text-muted-foreground">{user.email}</p>
-            <div className="flex justify-center gap-2 pt-2 sm:justify-start">
+            <div className="flex flex-wrap justify-center gap-2 pt-2 sm:justify-start">
               <Badge>{user.role}</Badge>
-              <Badge variant="secondary">Уровень 27</Badge>
+              <Badge variant="secondary">{user.status}</Badge>
               <Badge variant="outline">PRO Пользователь</Badge>
             </div>
-             <div className="flex items-center justify-center gap-4 pt-1 text-sm text-muted-foreground sm:justify-start">
+             <div className="flex items-center justify-center gap-4 pt-2 text-sm text-muted-foreground sm:justify-start">
                 <div className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {user.location}</div>
                 <div className="flex items-center gap-1"><Activity className="h-4 w-4" /> {user.mainSport}</div>
+                <div className="flex items-center gap-2">
+                    <Link href="#" className="text-muted-foreground hover:text-primary"><LinkIcon className="h-4 w-4" /></Link>
+                    <Link href="#" className="text-muted-foreground hover:text-primary"><LinkIcon className="h-4 w-4" /></Link>
+                    <Link href="#" className="text-muted-foreground hover:text-primary"><LinkIcon className="h-4 w-4" /></Link>
+                </div>
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon"><Share2 className="h-4 w-4"/></Button>
+            <Button variant="ghost" size="icon"><BrainCircuit className="h-5 w-5"/></Button>
+            <Button variant="outline" size="icon"><Share2 className="h-5 w-5"/></Button>
             <Button>Бросить вызов</Button>
           </div>
         </CardHeader>
@@ -85,12 +102,13 @@ export default function PlayerProfilePage() {
       </Card>
       
       <Tabs defaultValue="overview">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5">
-          <TabsTrigger value="overview">Обзор</TabsTrigger>
-          <TabsTrigger value="stats">Статистика</TabsTrigger>
-          <TabsTrigger value="achievements">Достижения</TabsTrigger>
-          <TabsTrigger value="teams">Команды</TabsTrigger>
-          <TabsTrigger value="gallery">Галерея</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
+          <TabsTrigger value="overview"><Activity className="mr-2 h-4 w-4"/>Обзор</TabsTrigger>
+          <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
+          <TabsTrigger value="career"><Briefcase className="mr-2 h-4 w-4"/>Карьера</TabsTrigger>
+          <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
+          <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4"/>Команды</TabsTrigger>
+          <TabsTrigger value="gallery"><GalleryHorizontal className="mr-2 h-4 w-4"/>Галерея</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
@@ -127,31 +145,54 @@ export default function PlayerProfilePage() {
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <Card>
               <CardHeader>
+                <CardDescription>Матчи</CardDescription>
+                <CardTitle className="font-headline text-4xl">218</CardTitle>
+              </CardHeader>
+            </Card>
+            <Card>
+              <CardHeader>
                 <CardDescription>Победы</CardDescription>
                 <CardTitle className="font-headline text-4xl">152</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>K/D</CardDescription>
-                <CardTitle className="font-headline text-4xl">1.78</CardTitle>
+                <CardDescription>Поражения</CardDescription>
+                <CardTitle className="font-headline text-4xl">61</CardTitle>
               </CardHeader>
             </Card>
             <Card>
               <CardHeader>
-                <CardDescription>Сыграно турниров</CardDescription>
-                <CardTitle className="font-headline text-4xl">12</CardTitle>
-              </CardHeader>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardDescription>Лучший ранг</CardDescription>
-                <CardTitle className="font-headline text-4xl">#23</CardTitle>
+                <CardDescription>Голы</CardDescription>
+                <CardTitle className="font-headline text-4xl">88</CardTitle>
               </CardHeader>
             </Card>
           </div>
         </TabsContent>
         
+        <TabsContent value="career">
+            <Card>
+                <CardHeader>
+                    <CardTitle>История карьеры</CardTitle>
+                    <CardDescription>Путь игрока от новичка до капитана.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                   {careerHistory.map((item, index) => (
+                       <div key={index} className="flex items-start gap-4">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
+                                <Briefcase className="h-5 w-5 text-muted-foreground"/>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold">{item.teamName} <span className="text-sm font-normal text-muted-foreground">({item.period})</span></h4>
+                                <p className="text-sm font-medium">Роль: {item.role}</p>
+                                <p className="text-sm text-muted-foreground mt-1">{item.review}</p>
+                            </div>
+                       </div>
+                   ))}
+                </CardContent>
+            </Card>
+        </TabsContent>
+
         <TabsContent value="achievements">
           <Card>
             <CardContent className="p-6">
