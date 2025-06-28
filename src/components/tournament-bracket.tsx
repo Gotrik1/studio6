@@ -17,6 +17,7 @@ type Match = {
   team2?: Team;
   score?: string;
   winner?: boolean;
+  href?: string;
 };
 
 type Round = {
@@ -28,9 +29,9 @@ interface TournamentBracketProps {
   rounds: Round[];
 }
 
-const MatchCard = ({ match, isFinalRound }: { match: Match; isFinalRound: boolean }) => (
-    <div className="flex flex-col justify-center">
-        <div className={cn("relative flex w-48 flex-col justify-between rounded-lg border bg-card p-2 text-xs shadow-sm", match.winner && "border-2 border-amber-400 bg-amber-400/10")}>
+const MatchCard = ({ match, isFinalRound }: { match: Match; isFinalRound: boolean }) => {
+    const cardContent = (
+        <div className={cn("relative flex w-48 flex-col justify-between rounded-lg border bg-card p-2 text-xs shadow-sm transition-all hover:shadow-lg", match.winner && "border-2 border-amber-400 bg-amber-400/10", match.href && "cursor-pointer hover:border-primary")}>
             {match.winner && (
                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-amber-400 p-1 text-white">
                     <Trophy className="h-4 w-4" />
@@ -55,8 +56,18 @@ const MatchCard = ({ match, isFinalRound }: { match: Match; isFinalRound: boolea
                  <div className="text-center font-bold text-lg text-amber-500 py-2">Чемпион</div>
             )}
         </div>
-    </div>
-);
+    );
+
+    if (match.href) {
+        return (
+            <Link href={match.href} className="focus:outline-none focus:ring-2 focus:ring-ring rounded-lg">
+                {cardContent}
+            </Link>
+        )
+    }
+
+    return cardContent;
+};
 
 
 export function TournamentBracket({ rounds }: TournamentBracketProps) {

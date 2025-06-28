@@ -30,7 +30,7 @@ const bracketData = {
     {
       name: 'Финал',
       matches: [
-        { id: 7, team1: { name: 'Кибер Орлы' }, team2: { name: 'Ледяные Драконы' }, score: '2-1' },
+        { id: 7, team1: { name: 'Кибер Орлы' }, team2: { name: 'Ледяные Драконы' }, score: '2-1', href: '/match-details' },
       ],
     },
      {
