@@ -1,3 +1,4 @@
+
 import { getSession, type User } from "@/lib/session";
 import { redirect } from "next/navigation";
 import Link from 'next/link';
@@ -40,6 +41,7 @@ import {
   Swords,
   LifeBuoy,
   Megaphone,
+  Coins,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -165,10 +167,10 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="PRO-Доступ">
-                <Link href="/monetization">
-                  <Crown />
-                  PRO-Доступ
+              <SidebarMenuButton asChild tooltip="Экономика PD">
+                <Link href="/pd-economy">
+                  <Coins />
+                  Экономика PD
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
