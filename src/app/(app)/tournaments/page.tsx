@@ -1,7 +1,7 @@
 
 'use client';
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const TournamentsPage = dynamic(
   () => import('@/pages/tournaments-list').then((mod) => mod.TournamentsListPage),

@@ -1,7 +1,7 @@
 
 'use client';
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const NewMatchPage = dynamic(
   () => import('@/pages/match-create').then((mod) => mod.NewMatchPage),

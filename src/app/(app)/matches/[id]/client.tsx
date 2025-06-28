@@ -2,7 +2,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 import type { MatchDetails } from "@/entities/match/model/types";
 
 const MatchDetailsPageComponent = dynamic(() => import('@/pages/match-details').then(mod => mod.MatchDetailsPage), {
