@@ -207,18 +207,10 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Генерация речи">
-                <Link href="/tts">
+              <SidebarMenuButton asChild tooltip="Генерация аудио">
+                <Link href="/audio-generation">
                   <AudioLines />
-                  Генерация речи
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton asChild tooltip="Генерация диалогов">
-                <Link href="/dialogue-generation">
-                  <Radio />
-                  Генерация диалогов
+                  Генерация аудио
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
