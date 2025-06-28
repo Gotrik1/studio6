@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { teams } from "@/lib/mock-data";
+import type { teams } from "@/lib/mock-data/profiles";
 
 type Team = (typeof teams)[0];
 

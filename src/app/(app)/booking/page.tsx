@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Map, SlidersHorizontal, PlusCircle, Star, Sun, Trash2, RefreshCcw, MapPin, ShowerHead, Shirt, Calendar } from "lucide-react";
 import Image from 'next/image';
 import { Separator } from "@/components/ui/separator";
-import { venuesList, myBookings } from "@/lib/mock-data";
+import { venuesList, myBookings } from "@/lib/mock-data/booking";
 
 const getStatusVariant = (status: string) => {
     switch (status) {

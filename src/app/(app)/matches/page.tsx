@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { matchesList } from "@/lib/mock-data";
+import { matchesList } from "@/lib/mock-data/matches";
 import { Calendar, PlusCircle, Search, SlidersHorizontal, Swords, Video } from "lucide-react";
 import Link from "next/link";
 

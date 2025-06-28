@@ -4,7 +4,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PD_RATES, PD_LIMITS } from "@/config/gamification";
-import { achievementCatalog, lootboxPrizes, leaderboardData, teamLeaderboardData } from "@/lib/mock-data";
+import { achievementCatalog } from "@/lib/mock-data/achievements";
+import { lootboxPrizes } from "@/lib/mock-data/store";
+import { leaderboardData, teamLeaderboardData } from "@/lib/mock-data/leaderboards";
 import { Badge } from "@/components/ui/badge";
 import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem, BarChart3, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";

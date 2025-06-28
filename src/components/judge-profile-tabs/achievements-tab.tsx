@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent } from "@/components/ui/card";
-import type { judgeAchievements as JudgeAchievementsArray } from "@/lib/mock-data";
+import type { judgeAchievements as JudgeAchievementsArray } from "@/lib/mock-data/profiles";
 import { Gavel, Trophy, CalendarDays, Shield, Scale, ClipboardCheck } from "lucide-react";
 
 const iconComponents = {

@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Search, Phone, Video, Smile, Paperclip, Send, MoreVertical, PlusCircle, MessageSquare } from "lucide-react";
-import { chatList as mockChatList } from '@/lib/mock-data';
+import { chatList as mockChatList } from '@/lib/mock-data/chats';
 import { cn } from '@/lib/utils';
 import type { User } from '@/lib/session';
 

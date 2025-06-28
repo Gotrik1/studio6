@@ -2,7 +2,7 @@
 
 import { Briefcase } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { careerHistory } from "@/lib/mock-data";
+import type { careerHistory } from "@/lib/mock-data/profiles";
 
 type CareerHistoryItem = (typeof careerHistory)[0];
 

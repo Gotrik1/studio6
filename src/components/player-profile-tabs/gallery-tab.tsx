@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { gallery } from "@/lib/mock-data";
+import type { gallery } from "@/lib/mock-data/profiles";
 
 type GalleryItem = (typeof gallery)[0];
 

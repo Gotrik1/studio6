@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent } from "@/components/ui/card";
-import type { achievements as AchievementsArray } from "@/lib/mock-data";
+import type { achievements as AchievementsArray } from "@/lib/mock-data/profiles";
 import { Award, Users, Trophy, Target, Medal, Star } from "lucide-react";
 
 const iconComponents = {

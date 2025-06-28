@@ -2,7 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import type { recentMatches } from "@/lib/mock-data";
+import type { recentMatches } from "@/lib/mock-data/profiles";
 
 type Match = (typeof recentMatches)[0];
 
