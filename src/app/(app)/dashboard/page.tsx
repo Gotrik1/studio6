@@ -34,9 +34,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { generateContent } from "@/ai/flows/generate-content-flow";
+import { useSession } from "@/lib/session-client";
 
-
-const feedItems = [
+const initialFeedItems = [
   {
     id: 1,
     author: {
@@ -128,16 +128,20 @@ const getTypeIcon = (type: string) => {
   }
 };
 
+type FeedItem = typeof initialFeedItems[0];
+
 export default function DashboardPage() {
+  const { user } = useSession();
   const { toast } = useToast();
   const [postCount, setPostCount] = useState(0);
   const [postContent, setPostContent] = useState("");
+  const [feedItems, setFeedItems] = useState<FeedItem[]>(initialFeedItems);
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiTopic, setAiTopic] = useState("");
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
 
   const handlePublish = () => {
-    if (!postContent.trim()) {
+    if (!postContent.trim() || !user) {
       toast({
           variant: "destructive",
           title: "Пустой пост",
@@ -146,6 +150,27 @@ export default function DashboardPage() {
       return;
     }
 
+    const newPost: FeedItem = {
+      id: Date.now(),
+      author: {
+        name: user.name,
+        avatar: user.avatar,
+        avatarHint: "user avatar",
+        href: "/profile",
+      },
+      timestamp: "только что",
+      type: "player_post",
+      content: {
+        text: postContent,
+      },
+      stats: {
+        likes: 0,
+        comments: 0,
+      },
+    };
+    
+    setFeedItems([newPost, ...feedItems]);
+    
     const newCount = postCount + 1;
     let rate;
     let description;
@@ -161,10 +186,10 @@ export default function DashboardPage() {
       description = PD_SOURCE_DETAILS.MEDIA_POST_TIER_3.description;
     } else {
       toast({
-          variant: "destructive",
-          title: "Лимит на сегодня исчерпан",
+          title: "Пост опубликован!",
           description: "Вы уже получили максимальную награду за посты на сегодня.",
       });
+      setPostContent("");
       return;
     }
 
