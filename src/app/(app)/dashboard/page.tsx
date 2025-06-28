@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useState } from "react";
 import {
   Card,
   CardHeader,
@@ -26,7 +27,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
-import { PD_RATES } from "@/config/gamification";
+import { PD_RATES, PD_SOURCE_DETAILS } from "@/config/gamification";
 
 
 const feedItems = [
@@ -123,18 +124,41 @@ const getTypeIcon = (type: string) => {
 
 export default function DashboardPage() {
   const { toast } = useToast();
+  const [postCount, setPostCount] = useState(0);
 
   const handlePublish = () => {
-    // Here you would normally submit the post to the backend.
-    // We simulate the PD award notification.
+    const newCount = postCount + 1;
+    let rate;
+    let description;
+
+    if (newCount === 1) {
+      rate = PD_RATES.MEDIA_POST_TIER_1;
+      description = PD_SOURCE_DETAILS.MEDIA_POST_TIER_1.description;
+    } else if (newCount === 2) {
+      rate = PD_RATES.MEDIA_POST_TIER_2;
+      description = PD_SOURCE_DETAILS.MEDIA_POST_TIER_2.description;
+    } else if (newCount === 3) {
+      rate = PD_RATES.MEDIA_POST_TIER_3;
+      description = PD_SOURCE_DETAILS.MEDIA_POST_TIER_3.description;
+    } else {
+      toast({
+          variant: "destructive",
+          title: "Лимит на сегодня исчерпан",
+          description: "Вы уже получили максимальную награду за посты на сегодня.",
+      });
+      return;
+    }
+
+    setPostCount(newCount);
+    
     toast({
         title: (
             <div className="flex items-center">
                 <Coins className="mr-2 h-5 w-5 text-amber-400" />
-                <span>+{PD_RATES.MEDIA_POST} PD</span>
+                <span>+{rate} PD</span>
             </div>
         ),
-        description: "За публикацию нового поста.",
+        description: description,
     });
   }
 

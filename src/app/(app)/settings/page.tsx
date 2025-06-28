@@ -116,7 +116,7 @@ export default async function SettingsPage() {
                                         <ShieldAlert className="h-8 w-8 text-primary"/>
                                         <div>
                                             <CardTitle className="text-lg">Рекомендации по безопасности от ИИ</CardTitle>
-                                            <CardDescription>Последний вход: 2 часа назад с IP 192.168.1.1 (Москва). Необычная активность не замечена.</CardDescription>
+                                            <CardDescription>Последний вход: 2 часа назад (IP 192.168.1.1). Обнаружена подозрительная активность: 5 матчей подряд с одной и той же командой. Рекомендуем проверить историю матчей.</CardDescription>
                                         </div>
                                     </CardHeader>
                                 </Card>
