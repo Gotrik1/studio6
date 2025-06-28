@@ -2,7 +2,7 @@
 
 import type { FC } from 'react';
 import Link from "next/link";
-import { MoreHorizontal, Gavel } from "lucide-react";
+import { MoreHorizontal, Gavel, Pencil } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -18,9 +18,10 @@ type User = (typeof userList)[0];
 interface UserTableProps {
     users: User[];
     onBanUser: (userId: string) => void;
+    onEditUser: (user: User) => void;
 }
 
-export const UserTable: FC<UserTableProps> = ({ users, onBanUser }) => {
+export const UserTable: FC<UserTableProps> = ({ users, onBanUser, onEditUser }) => {
     const { toast } = useToast();
 
     const handleAction = (message: string) => {
@@ -82,6 +83,10 @@ export const UserTable: FC<UserTableProps> = ({ users, onBanUser }) => {
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuItem asChild>
                                                 <Link href={user.profileUrl}>Просмотр профиля</Link>
+                                            </DropdownMenuItem>
+                                             <DropdownMenuItem onClick={() => onEditUser(user)}>
+                                                <Pencil className="mr-2 h-4 w-4"/>
+                                                Редактировать
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem onClick={() => handleAction(`PD начислены пользователю ${user.name}.`)}>

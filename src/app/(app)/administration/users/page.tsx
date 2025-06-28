@@ -10,6 +10,7 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { UserTable } from "@/components/user-table";
 import { useToast } from '@/hooks/use-toast';
 import type { userList as UserListType } from '@/lib/mock-data/users';
+import { UserEditDialog } from '@/components/user-edit-dialog';
 
 type User = (typeof UserListType)[0];
 
@@ -31,6 +32,10 @@ export default function UserManagementPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('all');
     const [users, setUsers] = useState<User[]>(initialUserList);
+
+    // State for the edit dialog
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
     const filteredUsers = useMemo(() => {
         return users.filter(user => {
@@ -57,6 +62,23 @@ export default function UserManagementPage() {
                 variant: 'destructive'
             });
         }
+    };
+
+    const handleEditUserClick = (user: User) => {
+        setSelectedUser(user);
+        setIsEditDialogOpen(true);
+    };
+
+    const handleUpdateUser = (userId: string, newRole: string) => {
+        setUsers(prevUsers =>
+            prevUsers.map(user =>
+                user.id === userId ? { ...user, role: newRole } : user
+            )
+        );
+        toast({
+            title: "Пользователь обновлен",
+            description: `Роль для ${selectedUser?.name} была изменена на "${newRole}".`,
+        });
     };
 
     return (
@@ -91,11 +113,17 @@ export default function UserManagementPage() {
                         </ScrollArea>
 
                         <TabsContent value={activeTab} className="mt-4">
-                            <UserTable users={filteredUsers} onBanUser={handleBanUser} />
+                            <UserTable users={filteredUsers} onBanUser={handleBanUser} onEditUser={handleEditUserClick} />
                         </TabsContent>
                     </Tabs>
                 </CardContent>
             </Card>
+            <UserEditDialog
+                user={selectedUser}
+                isOpen={isEditDialogOpen}
+                onOpenChange={setIsEditDialogOpen}
+                onUserUpdate={handleUpdateUser}
+            />
         </div>
     );
 }
