@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -586,7 +586,7 @@ export default function GamificationAdminPage() {
                                     <SelectValue>
                                         {currentAchievementData.icon && (
                                             <div className="flex items-center gap-2">
-                                                {React.createElement(achievementIcons[currentAchievementData.icon], { className: "h-4 w-4" })}
+                                                {React.createElement(achievementIcons[currentAchievementData.icon as keyof typeof achievementIcons], { className: "h-4 w-4" })}
                                                 <span>{currentAchievementData.icon}</span>
                                             </div>
                                         )}
