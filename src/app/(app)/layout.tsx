@@ -39,6 +39,7 @@ import {
   BrainCircuit,
   Swords,
   LifeBuoy,
+  Megaphone,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 
@@ -112,13 +113,7 @@ export default async function AppLayout({
                 Поиск
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Тренировки">
-                <Dumbbell />
-                Тренировки
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
+             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Турниры">
                 <Link href="/tournaments">
                   <Trophy />
@@ -134,10 +129,12 @@ export default async function AppLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Каталог Достижений">
-                <Award />
-                Каталог Достижений
+             <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Промо-акции">
+                <Link href="/promotions">
+                  <Megaphone />
+                  Промо-акции
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
@@ -153,21 +150,9 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Мед. Обеспечение">
-                <HeartPulse />
-                Мед. Обеспечение
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
               <SidebarMenuButton tooltip="Спонсоры">
                 <Handshake />
                 Спонсоры
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="События">
-                <Calendar />
-                События
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
