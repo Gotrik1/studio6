@@ -116,9 +116,11 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Поиск">
-                <Search />
-                Поиск
+              <SidebarMenuButton asChild tooltip="Поиск">
+                <Link href="/search">
+                  <Search />
+                  Поиск
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
