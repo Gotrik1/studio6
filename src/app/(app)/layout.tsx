@@ -10,6 +10,8 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { UserNav } from "@/components/user-nav";
 import { Logo } from "@/components/icons";
