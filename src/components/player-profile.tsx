@@ -205,7 +205,9 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
             </Dialog>
             <Button variant="outline" size="icon" title="Поделиться"><Share2 className="h-5 w-5"/></Button>
             {isCurrentUser ? (
-              <Button>Редактировать профиль</Button>
+              <Link href="/settings">
+                <Button>Редактировать профиль</Button>
+              </Link>
             ) : (
               <Button>Бросить вызов</Button>
             )}
