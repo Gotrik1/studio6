@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useCallback, useEffect } from "react";
@@ -26,7 +27,7 @@ import { useToast } from "@/hooks/use-toast";
 import { JoinRequestAnalysisDialog } from "@/components/join-request-analysis-dialog";
 import { initialIncomingChallenges, initialOutgoingChallenges } from "@/lib/mock-data/challenges";
 import { TeamChatbot } from "@/components/team-chatbot";
-import { smartSearch, type SmartSearchOutput } from "@/ai/flows/smart-search-flow";
+import { smartSearch, type SmartSearchOutput } from '@/ai/flows/smart-search-flow';
 import { pendingInvitations as initialPendingInvitations } from "@/lib/mock-data/invitations";
 import debounce from 'lodash.debounce';
 import { ScrollArea } from "@/components/ui/scroll-area";
