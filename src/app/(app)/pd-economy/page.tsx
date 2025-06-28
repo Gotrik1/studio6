@@ -5,11 +5,10 @@ import { useState, useEffect, type ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Activity, ArrowRight, BadgeCheck, Coins, Crown, Gem, Gift, Handshake, Newspaper, Palette, PlayCircle, Shirt, Swords, Target, Users, Trophy, TrendingUp, ArrowDown, ArrowUp } from 'lucide-react';
+import { Activity, ArrowRight, BadgeCheck, Coins, Crown, Gem, Handshake, Newspaper, Palette, PlayCircle, Shirt, Swords, Trophy, TrendingUp } from 'lucide-react';
 import Image from 'next/image';
-import { cn } from '@/lib/utils';
 import Link from 'next/link';
-import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip } from 'recharts';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 
@@ -260,9 +259,9 @@ export default function PDEconomyPage() {
                         <h2 className="font-headline text-3xl font-bold">Что такое PD?</h2>
                         <p className="mt-2 text-muted-foreground">Это не просто цифры на счету. Это ваша репутация, ваш статус и ваша возможность влиять на мир ProDvor.</p>
                         <ul className="mt-4 space-y-2 list-disc list-inside">
-                           <li><strong>Алексей 'CyberCat'</strong> купил эксклюзивный скин "Золотой Орел" и попал на доску почета главной страницы.</li>
-                           <li><strong>Команда 'Вихрь'</strong> собрала донатами 50,000 PD на поездку на LAN-турнир.</li>
-                           <li><strong>Елена 'Valkyrie'</strong> потратила PD, чтобы забрендировать свой турнир в уникальном стиле.</li>
+                           <li><strong>Алексей &apos;CyberCat&apos;</strong> купил эксклюзивный скин &quot;Золотой Орел&quot; и попал на доску почета главной страницы.</li>
+                           <li><strong>Команда &apos;Вихрь&apos;</strong> собрала донатами 50,000 PD на поездку на LAN-турнир.</li>
+                           <li><strong>Елена &apos;Valkyrie&apos;</strong> потратила PD, чтобы забрендировать свой турнир в уникальном стиле.</li>
                         </ul>
                     </div>
                 </Card>
