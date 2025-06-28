@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Card,
   CardHeader,
@@ -29,6 +29,7 @@ import {
   FileQuestion,
   Trash2,
   Volume2,
+  AlertCircle,
 } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
@@ -42,6 +43,9 @@ import { cn } from "@/lib/utils";
 import { generatePostImage } from "@/ai/flows/generate-post-image-flow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { textToSpeech } from "@/ai/flows/tts-flow";
+import { aiTeamAssistant, type AiTeamAssistantOutput } from '@/ai/flows/ai-team-assistant';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Link from "next/link";
 
 const initialFeedItems = [
   {
@@ -141,14 +145,6 @@ const getTypeIcon = (type: string) => {
 
 type FeedItem = (typeof initialFeedItems)[0];
 
-const filterButtons = [
-    { label: "Все", type: "all" },
-    { label: "Мои команды", type: "team_news" },
-    { label: "Турниры", type: "tournament_announcement" },
-    { label: "Друзья", type: "player_post" },
-    { label: "Рядом", type: "nearby" }, // Placeholder, no logic for this yet
-];
-
 export default function DashboardPage() {
   const { user } = useSession();
   const { toast } = useToast();
@@ -158,7 +154,6 @@ export default function DashboardPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [aiTopic, setAiTopic] = useState("");
   const [isAiDialogOpen, setIsAiDialogOpen] = useState(false);
-  const [activeFilter, setActiveFilter] = useState("all");
 
   const [postImage, setPostImage] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
@@ -166,15 +161,31 @@ export default function DashboardPage() {
   const [loadingAudioId, setLoadingAudioId] = useState<number | null>(null);
   const [activeAudio, setActiveAudio] = useState<{ id: number; url: string; } | null>(null);
 
-  const filteredFeedItems = useMemo(() => {
-    if (activeFilter === "all") {
-      return feedItems;
+  // New state for AI Team Assistant
+  const [assistantResult, setAssistantResult] = useState<AiTeamAssistantOutput | null>(null);
+  const [isAssistantLoading, setIsAssistantLoading] = useState(true);
+  const [assistantError, setAssistantError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    async function getAssistantSummary() {
+      setIsAssistantLoading(true);
+      setAssistantError(null);
+      try {
+        const result = await aiTeamAssistant({
+            teamActivity: "Последние матчи: победа 13-9 против 'Вихревых Гадюк', поражение 7-13 от 'Квантовых Квазаров'. Активность в чате высокая, обсуждается новая тактика на карте Ascent.",
+            teamGoals: "Главная цель - войти в топ-3 на турнире 'Autumn Cyber Clash'. Второстепенная цель - улучшить винрейт на карте Bind.",
+            relevantContent: "Анализ последней игры от тренера: https://example.com/analysis-bind-game"
+        });
+        setAssistantResult(result);
+      } catch (e) {
+        console.error("AI Assistant failed:", e);
+        setAssistantError("Не удалось загрузить сводку от AI-ассистента.");
+      } finally {
+        setIsAssistantLoading(false);
+      }
     }
-    if (activeFilter === "nearby") { // No data for this filter yet
-      return [];
-    }
-    return feedItems.filter(item => item.type === activeFilter);
-  }, [feedItems, activeFilter]);
+    getAssistantSummary();
+  }, []);
 
   const handlePublish = () => {
     if (!postContent.trim() || !user) {
@@ -408,8 +419,8 @@ export default function DashboardPage() {
           </Card>
 
           <div className="space-y-6">
-            {filteredFeedItems.length > 0 ? (
-                filteredFeedItems.map((item) => (
+            {feedItems.length > 0 ? (
+                feedItems.map((item) => (
                     <Card key={item.id}>
                         <CardHeader>
                         <div className="flex items-center justify-between">
@@ -498,20 +509,39 @@ export default function DashboardPage() {
           <div className="sticky top-4 space-y-6">
             <Card>
                 <CardHeader>
-                    <CardTitle>Фильтры</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><BrainCircuit className="text-primary"/>AI-ассистент команды</CardTitle>
+                    <CardDescription>Краткая сводка и рекомендации для вашей команды.</CardDescription>
                 </CardHeader>
-                <CardContent className="flex flex-wrap gap-2">
-                    {filterButtons.map(filter => (
-                        <Button 
-                            key={filter.label} 
-                            variant={activeFilter === filter.type ? "secondary" : "outline"} 
-                            size="sm"
-                            onClick={() => setActiveFilter(filter.type)}
-                            disabled={filter.type === 'nearby'}
-                        >
-                            {filter.label}
-                        </Button>
-                    ))}
+                <CardContent>
+                    {isAssistantLoading && (
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-1/3" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-4/5" />
+                            <Skeleton className="h-4 w-1/2 mt-4" />
+                            <Skeleton className="h-4 w-full" />
+                            <Skeleton className="h-4 w-3/4" />
+                        </div>
+                    )}
+                    {assistantError && (
+                        <Alert variant="destructive">
+                            <AlertCircle className="h-4 w-4" />
+                            <AlertTitle>Ошибка</AlertTitle>
+                            <AlertDescription>{assistantError}</AlertDescription>
+                        </Alert>
+                    )}
+                    {assistantResult && (
+                        <div className="space-y-4 text-sm">
+                            <div>
+                                <h4 className="font-semibold">Сводка</h4>
+                                <p className="text-muted-foreground">{assistantResult.summary}</p>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold">Рекомендации</h4>
+                                <p className="text-muted-foreground">{assistantResult.suggestions}</p>
+                            </div>
+                        </div>
+                    )}
                 </CardContent>
             </Card>
 
@@ -551,3 +581,4 @@ export default function DashboardPage() {
     </div>
   );
 }
+
