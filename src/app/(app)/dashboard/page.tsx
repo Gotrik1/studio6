@@ -56,6 +56,7 @@ const initialFeedItems = [
       likes: 125,
       comments: 18,
     },
+    likedByUser: false,
   },
   {
     id: 2,
@@ -76,6 +77,7 @@ const initialFeedItems = [
       likes: 340,
       comments: 56,
     },
+    likedByUser: false,
   },
   {
     id: 3,
@@ -96,6 +98,7 @@ const initialFeedItems = [
       likes: 512,
       comments: 89,
     },
+    likedByUser: true,
   },
   {
     id: 4,
@@ -114,6 +117,7 @@ const initialFeedItems = [
       likes: 78,
       comments: 4,
     },
+    likedByUser: false,
   },
 ];
 
@@ -188,6 +192,7 @@ export default function DashboardPage() {
         likes: 0,
         comments: 0,
       },
+      likedByUser: false,
     };
     
     setFeedItems([newPost, ...feedItems]);
@@ -254,6 +259,23 @@ export default function DashboardPage() {
     } finally {
         setIsGenerating(false);
     }
+  };
+
+  const handleLike = (itemId: number) => {
+    setFeedItems(prevItems =>
+        prevItems.map(item => {
+            if (item.id === itemId) {
+                const liked = !item.likedByUser;
+                const newLikes = liked ? item.stats.likes + 1 : item.stats.likes - 1;
+                return {
+                    ...item,
+                    likedByUser: liked,
+                    stats: { ...item.stats, likes: newLikes },
+                };
+            }
+            return item;
+        })
+    );
   };
 
 
@@ -354,8 +376,13 @@ export default function DashboardPage() {
                         </CardContent>
                         <CardFooter className="flex justify-between border-t px-6 pt-4">
                             <div className="flex gap-4">
-                                <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                                    <ThumbsUp className="h-4 w-4" />
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="flex items-center gap-2"
+                                  onClick={() => handleLike(item.id)}
+                                >
+                                    <ThumbsUp className={cn("h-4 w-4", item.likedByUser && "fill-current text-primary")} />
                                     <span>{item.stats.likes}</span>
                                 </Button>
                                 <Button variant="ghost" size="sm" className="flex items-center gap-2">
