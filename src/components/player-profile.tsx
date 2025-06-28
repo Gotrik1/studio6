@@ -101,6 +101,7 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
     if (open) {
       handleAnalyze();
     } else {
+      // Reset state when closing
       setAnalysisResult(null);
       setAnalysisError(null);
     }
@@ -155,7 +156,7 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
           <div className="flex gap-2">
             <Dialog open={isAnalysisOpen} onOpenChange={onOpenChange}>
                 <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon"><BrainCircuit className="h-5 w-5"/></Button>
+                    <Button variant="ghost" size="icon" title="AI Анализ"><BrainCircuit className="h-5 w-5"/></Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-lg">
                     <DialogHeader>
@@ -202,7 +203,7 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
                     </div>
                 </DialogContent>
             </Dialog>
-            <Button variant="outline" size="icon"><Share2 className="h-5 w-5"/></Button>
+            <Button variant="outline" size="icon" title="Поделиться"><Share2 className="h-5 w-5"/></Button>
             {isCurrentUser ? (
               <Button>Редактировать профиль</Button>
             ) : (
