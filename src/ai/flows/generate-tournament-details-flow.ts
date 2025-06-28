@@ -12,12 +12,12 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 export const GenerateTournamentDetailsInputSchema = z.object({
-  name: z.string().describe('The name of the tournament.'),
-  game: z.string().describe('The game or discipline of the tournament.'),
+  prompt: z.string().describe('A text prompt describing the tournament idea. e.g., "Weekly valorant tournament"'),
 });
 export type GenerateTournamentDetailsInput = z.infer<typeof GenerateTournamentDetailsInputSchema>;
 
 export const GenerateTournamentDetailsOutputSchema = z.object({
+  name: z.string().describe('A creative and exciting name for the tournament.'),
   description: z.string().describe('A short, exciting description for the tournament announcement.'),
 });
 export type GenerateTournamentDetailsOutput = z.infer<typeof GenerateTournamentDetailsOutputSchema>;
@@ -30,11 +30,10 @@ const prompt = ai.definePrompt({
   name: 'generateTournamentDetailsPrompt',
   input: {schema: GenerateTournamentDetailsInputSchema},
   output: {schema: GenerateTournamentDetailsOutputSchema},
-  prompt: `You are an exciting esports announcer. Generate a short, punchy, and exciting description for a tournament.
-  Be creative and hype up the event. Mention the game and the tournament name.
+  prompt: `You are an exciting esports announcer. Based on the following idea, generate a creative tournament name and a short, punchy description to announce it.
+  The name and description should be in Russian.
 
-  Tournament Name: {{{name}}}
-  Game: {{{game}}}
+  Tournament Idea: {{{prompt}}}
   `,
 });
 

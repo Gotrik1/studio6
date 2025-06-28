@@ -20,3 +20,4 @@ import '@/ai/flows/generate-tournament-image-flow.ts';
 import '@/ai/flows/smart-search-flow.ts';
 import '@/ai/flows/suggest-reply-flow.ts';
 import '@/ai/flows/analyze-join-request-flow.ts';
+import '@/ai/flows/generate-tournament-wizard-flow.ts';
