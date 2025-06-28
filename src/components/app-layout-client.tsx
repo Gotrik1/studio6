@@ -31,6 +31,9 @@ import {
   Shield,
   BrainCircuit,
   Palette,
+  Gamepad2,
+  ListChecks,
+  Scale,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -122,6 +125,30 @@ export default function AppLayoutClient({ user, children }: AppLayoutClientProps
                     </CollapsibleSidebarMenuItem>
 
                     <SidebarSeparator className="my-1" />
+                    
+                    {(user.role === 'Администратор' || user.role === 'Admin') && (
+                      <>
+                        <CollapsibleSidebarMenuItem icon={<Shield />} title="Администрирование">
+                           <SidebarMenuSubItem>
+                            <SidebarMenuSubButton href="/administration">Дашборд</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/users">Пользователи</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/sports">Виды спорта</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/moderation-queue">Модерация</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/gamification">Геймификация</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/administrator">Профиль Админа</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/moderator">Профиль Модератора</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/judge">Профиль Судьи</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/coach">Профиль Тренера</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/manager">Профиль Менеджера</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/organizer">Профиль Организатора</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/sponsor">Профиль Спонсора</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/fan">Профиль Болельщика</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/administration/player">Профиль Игрока</SidebarMenuSubButton>
+                          </SidebarMenuSubItem>
+                        </CollapsibleSidebarMenuItem>
+                        <SidebarSeparator className="my-1" />
+                      </>
+                    )}
 
                     <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip="Поддержка">
@@ -150,14 +177,6 @@ export default function AppLayoutClient({ user, children }: AppLayoutClientProps
                         <Link href="/theme-demo"><Palette />Демо темы</Link>
                     </SidebarMenuButton>
                     </SidebarMenuItem>
-
-                    {(user.role === 'Администратор' || user.role === 'Admin') && (
-                    <SidebarMenuItem>
-                        <SidebarMenuButton asChild tooltip="Администрирование">
-                            <Link href="/administration"><Shield />Администрирование</Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    )}
                 </SidebarMenu>
                 </SidebarContent>
             </Sidebar>
