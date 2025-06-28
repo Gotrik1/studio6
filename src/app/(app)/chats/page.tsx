@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, KeyboardEvent } from 'react';
+import { useState, useMemo, KeyboardEvent, useRef, useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,16 @@ export default function ChatsPage() {
     const [activeChat, setActiveChat] = useState<Chat | null>(chatList[0] || null);
     const [newMessage, setNewMessage] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+
+    useEffect(() => {
+        // Scroll to bottom when active chat changes or new messages are added
+        scrollToBottom();
+    }, [activeChat?.id, activeChat?.messages?.length]);
 
     const filteredChats = useMemo(() => {
         if (!searchQuery) return chatList;
@@ -35,31 +45,72 @@ export default function ChatsPage() {
     const handleSendMessage = () => {
         if (!newMessage.trim() || !activeChat || !currentUser) return;
 
-        const message = {
+        const userMessage = {
             sender: 'me' as const,
             text: newMessage.trim(),
             time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
         };
+        
+        const currentChatId = activeChat.id;
 
-        const updatedChat = {
-            ...activeChat,
-            messages: [...(activeChat.messages || []), message],
-            lastMessage: {
-                text: `Вы: ${newMessage.trim()}`,
-                time: message.time,
+        const updateChatWithNewMessage = (chatToUpdate: Chat, message: typeof userMessage, isReply: boolean): Chat => {
+            const lastMessageText = isReply ? message.text : `Вы: ${message.text}`;
+            return {
+                ...chatToUpdate,
+                messages: [...(chatToUpdate.messages || []), message],
+                lastMessage: {
+                    text: lastMessageText,
+                    time: message.time,
+                },
+                unreadCount: isReply ? (chatToUpdate.id === activeChat?.id ? 0 : (chatToUpdate.unreadCount || 0) + 1) : chatToUpdate.unreadCount,
             }
         };
-
-        const updatedChatList = chatList.map(chat => 
-            chat.id === updatedChat.id ? updatedChat : chat
-        );
         
-        // Move updated chat to the top
-        const finalChatList = [updatedChat, ...updatedChatList.filter(chat => chat.id !== updatedChat.id)];
+        // --- Update with user's message ---
+        let userUpdatedChat: Chat | undefined;
+        const userUpdatedList = chatList.map(c => {
+            if (c.id === currentChatId) {
+                userUpdatedChat = updateChatWithNewMessage(c, userMessage, false);
+                return userUpdatedChat;
+            }
+            return c;
+        });
 
-        setActiveChat(updatedChat);
-        setChatList(finalChatList);
+        if (userUpdatedChat) {
+            setActiveChat(userUpdatedChat);
+            setChatList([userUpdatedChat, ...userUpdatedList.filter(c => c.id !== currentChatId)]);
+        }
         setNewMessage('');
+
+        // --- Simulate and update with reply ---
+        setTimeout(() => {
+            const replies = [
+                "Понял, спасибо!",
+                "Хорошо, буду на месте.",
+                "Отлично, договорились.",
+                "Звучит как план. Увидимся!",
+                "Принято. Спасибо за информацию.",
+            ];
+            const replyText = replies[Math.floor(Math.random() * replies.length)];
+            const replyMessage = { sender: 'other' as const, text: replyText, time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) };
+            
+            setChatList(prevList => {
+                let replyUpdatedChat: Chat | undefined;
+                const replyUpdatedList = prevList.map(c => {
+                    if (c.id === currentChatId) {
+                        replyUpdatedChat = updateChatWithNewMessage(c, replyMessage, true);
+                        return replyUpdatedChat;
+                    }
+                    return c;
+                });
+
+                if (replyUpdatedChat) {
+                    setActiveChat(prevActive => prevActive?.id === currentChatId ? replyUpdatedChat : prevActive);
+                    return [replyUpdatedChat, ...replyUpdatedList.filter(c => c.id !== currentChatId)];
+                }
+                return prevList;
+            });
+        }, 1500);
     };
     
     const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -70,10 +121,8 @@ export default function ChatsPage() {
     };
     
     const selectChat = (chat: Chat) => {
-        // Find the full chat object from the list to ensure we have the latest message history
         const fullChat = chatList.find(c => c.id === chat.id);
         if (fullChat) {
-            // Mark messages as read by resetting unreadCount
             const updatedChat = { ...fullChat, unreadCount: 0 };
             const updatedChatList = chatList.map(c => c.id === chat.id ? updatedChat : c);
             
@@ -81,7 +130,6 @@ export default function ChatsPage() {
             setChatList(updatedChatList);
         }
     }
-
 
     if (userLoading) {
         return <div>Загрузка...</div>
@@ -201,6 +249,7 @@ export default function ChatsPage() {
                                         {message.sender === 'me' && <Avatar className="h-8 w-8 border"><AvatarImage src={currentUser.avatar} data-ai-hint="current user" /></Avatar>}
                                     </div>
                                 ))}
+                                <div ref={messagesEndRef} />
                             </div>
                         </ScrollArea>
                         <div className="p-4 border-t bg-background">
