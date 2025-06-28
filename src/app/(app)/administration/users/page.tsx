@@ -4,10 +4,14 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { userList } from "@/lib/mock-data/users";
+import { userList as initialUserList } from "@/lib/mock-data/users";
 import { Search } from "lucide-react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { UserTable } from "@/components/user-table";
+import { useToast } from '@/hooks/use-toast';
+import type { userList as UserListType } from '@/lib/mock-data/users';
+
+type User = (typeof UserListType)[0];
 
 const roles = [
     { value: "all", label: "Все" },
@@ -23,11 +27,13 @@ const roles = [
 ];
 
 export default function UserManagementPage() {
+    const { toast } = useToast();
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState('all');
+    const [users, setUsers] = useState<User[]>(initialUserList);
 
     const filteredUsers = useMemo(() => {
-        return userList.filter(user => {
+        return users.filter(user => {
             const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                                   user.email.toLowerCase().includes(searchQuery.toLowerCase());
             
@@ -35,7 +41,23 @@ export default function UserManagementPage() {
             
             return matchesSearch && matchesRole;
         });
-    }, [searchQuery, activeTab]);
+    }, [searchQuery, activeTab, users]);
+
+    const handleBanUser = (userId: string) => {
+        const userToBan = users.find(user => user.id === userId);
+        if (userToBan) {
+            setUsers(prevUsers =>
+                prevUsers.map(user =>
+                    user.id === userId ? { ...user, status: 'Забанен' } : user
+                )
+            );
+            toast({
+                title: "Действие выполнено",
+                description: `Пользователь ${userToBan.name} был забанен.`,
+                variant: 'destructive'
+            });
+        }
+    };
 
     return (
         <div className="space-y-6">
@@ -69,7 +91,7 @@ export default function UserManagementPage() {
                         </ScrollArea>
 
                         <TabsContent value={activeTab} className="mt-4">
-                            <UserTable users={filteredUsers} />
+                            <UserTable users={filteredUsers} onBanUser={handleBanUser} />
                         </TabsContent>
                     </Tabs>
                 </CardContent>

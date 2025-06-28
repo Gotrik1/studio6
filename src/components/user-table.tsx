@@ -15,7 +15,12 @@ import { Users2 } from 'lucide-react';
 
 type User = (typeof userList)[0];
 
-export const UserTable: FC<{ users: User[] }> = ({ users }) => {
+interface UserTableProps {
+    users: User[];
+    onBanUser: (userId: string) => void;
+}
+
+export const UserTable: FC<UserTableProps> = ({ users, onBanUser }) => {
     const { toast } = useToast();
 
     const handleAction = (message: string) => {
@@ -88,7 +93,8 @@ export const UserTable: FC<{ users: User[] }> = ({ users }) => {
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem 
                                                 className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-                                                onClick={() => handleAction(`Пользователь ${user.name} забанен.`)}
+                                                onClick={() => onBanUser(user.id)}
+                                                disabled={user.status === 'Забанен'}
                                             >
                                                 <Gavel className="mr-2 h-4 w-4"/>
                                                 Забанить
