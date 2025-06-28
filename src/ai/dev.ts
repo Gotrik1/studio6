@@ -31,3 +31,4 @@ import '@/ai/flows/generate-promotion-image-flow.ts';
 import '@/ai/flows/generate-promotion-wizard-flow.ts';
 import '@/ai/flows/analyze-match-report-flow.ts';
 import '@/ai/flows/team-chatbot-flow.ts';
+import '@/ai/flows/generate-training-plan-flow.ts';
