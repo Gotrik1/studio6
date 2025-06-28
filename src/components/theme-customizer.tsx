@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, Palette } from 'lucide-react';
-import { useAccentTheme } from '@/components/accent-theme-provider';
+import { useAccentTheme } from '@/app/providers/accent-theme-provider';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { cn } from '@/lib/utils';
