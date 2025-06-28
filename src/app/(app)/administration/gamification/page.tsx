@@ -1,11 +1,12 @@
 
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PD_RATES, PD_LIMITS } from "@/config/gamification";
 import { achievementCatalog, lootboxPrizes, leaderboardData, teamLeaderboardData } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
-import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem, BarChart3 } from "lucide-react";
+import { Gamepad2, Trophy, Gift, Coins, Shield, Crown, Rocket, Swords, Medal, Award, Star, Gem, BarChart3, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ranks } from "@/config/ranks";
@@ -59,7 +60,7 @@ export default function GamificationAdminPage() {
                 </TabsList>
 
                 <TabsContent value="rules" className="mt-4">
-                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 xl:grid-cols-3">
                         <Card>
                             <CardHeader>
                                 <CardTitle>Ставки начисления PD</CardTitle>
@@ -103,6 +104,36 @@ export default function GamificationAdminPage() {
                                  <div className="flex items-center justify-between rounded-lg border p-4">
                                    <p className="font-medium">Сезонные сбросы</p>
                                    <Badge variant="outline">Раз в квартал</Badge>
+                                </div>
+                            </CardContent>
+                        </Card>
+                         <Card>
+                            <CardHeader>
+                                <CardTitle>Вызовы и Анти-чит</CardTitle>
+                                <CardDescription>Правила для соревновательных матчей.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                 <div className="flex items-center justify-between rounded-lg border p-4">
+                                    <p className="font-medium">Ставки на матч</p>
+                                    <Badge variant="secondary">10-50 PD</Badge>
+                                </div>
+                                <div className="flex items-center justify-between rounded-lg border p-4">
+                                    <p className="font-medium">Подтверждение вызова</p>
+                                    <Badge variant="outline">Видео + Голосование</Badge>
+                                </div>
+                                <div className="flex items-center justify-between rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+                                    <div className="flex items-center gap-2">
+                                        <AlertTriangle className="h-4 w-4 text-destructive" />
+                                        <p className="font-medium text-destructive">Штраф за фейк-вызов</p>
+                                    </div>
+                                    <Badge variant="destructive">-100 PD</Badge>
+                                </div>
+                                <div className="flex items-center justify-between rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+                                     <div className="flex items-center gap-2">
+                                        <AlertTriangle className="h-4 w-4 text-destructive" />
+                                        <p className="font-medium text-destructive">Штраф за дисквалификацию</p>
+                                    </div>
+                                    <Badge variant="destructive">Обнуление PD за месяц</Badge>
                                 </div>
                             </CardContent>
                         </Card>
@@ -165,7 +196,7 @@ export default function GamificationAdminPage() {
                                                 <p className="text-xs text-muted-foreground">{ach.description}</p>
                                                 <div className="mt-2 flex items-center gap-2">
                                                     <Badge variant="outline" className={`${getRarityColor(ach.rarity)}`}>{ach.rarity}</Badge>
-                                                    <Badge variant="secondary" className="flex items-center gap-1"><Coins className="h-3 w-3"/> +{ach.points} XP</Badge>
+                                                    <Badge variant={ach.points > 0 ? 'secondary' : 'destructive'} className="flex items-center gap-1"><Coins className="h-3 w-3"/> {ach.points > 0 ? '+' : ''}{ach.points} XP</Badge>
                                                 </div>
                                             </div>
                                         </div>
