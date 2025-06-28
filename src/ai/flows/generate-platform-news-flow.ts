@@ -12,6 +12,11 @@ const NewsItemSchema = z.object({
     href: z.string().describe("A relevant link for the news item, e.g., a team or player profile URL."),
 });
 
+const GeneratePlatformNewsOutputSchema = z.object({
+    news: z.array(NewsItemSchema).describe("An array of 3-4 news items about recent platform activity."),
+});
+export type GeneratePlatformNewsOutput = z.infer<typeof GeneratePlatformNewsOutputSchema>;
+
 const RecentActivitySchema = z.object({
     topPlayer: z.string().describe("The name of the top player."),
     winningTeam: z.object({
@@ -20,11 +25,6 @@ const RecentActivitySchema = z.object({
     }).describe("The team that recently won a tournament."),
     newHotTeam: z.string().describe("A newly formed or rapidly rising team."),
 });
-
-const GeneratePlatformNewsOutputSchema = z.object({
-    news: z.array(NewsItemSchema).describe("An array of 3-4 news items about recent platform activity."),
-});
-export type GeneratePlatformNewsOutput = z.infer<typeof GeneratePlatformNewsOutputSchema>;
 
 const getRecentActivity = ai.defineTool(
     {
@@ -50,21 +50,20 @@ const prompt = ai.definePrompt({
     system: `You are an esports journalist for the ProDvor platform. 
     Your task is to generate short, engaging news items based on recent platform activity.
     Use the getRecentActivity tool to fetch the latest data.
-    Write 3-4 news items. Vary the tone and style. Be exciting! Respond in Russian.`,
+    Write 3-4 news items. Vary the tone and style. Respond in Russian.`,
 });
 
-export async function generatePlatformNews(): Promise<GeneratePlatformNewsOutput> {
-    const { output } = await prompt(null);
-    return output!;
-}
-
-const generatePlatformNewsFlow = ai.defineFlow(
+export const generatePlatformNews = ai.defineFlow(
     {
         name: 'generatePlatformNewsFlow',
         inputSchema: z.null(),
         outputSchema: GeneratePlatformNewsOutputSchema,
     },
     async () => {
-        return await generatePlatformNews();
+        const { output } = await prompt({});
+        if (!output) {
+            throw new Error("Failed to generate platform news.");
+        }
+        return output;
     }
 );
