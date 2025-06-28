@@ -194,9 +194,11 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
              <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Настройки">
-                <Settings />
-                Настройки
+              <SidebarMenuButton asChild tooltip="Настройки">
+                <Link href="/settings">
+                  <Settings />
+                  Настройки
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
