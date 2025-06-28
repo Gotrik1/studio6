@@ -14,6 +14,8 @@ import { leaderboardData, teamLeaderboardData } from "@/lib/mock-data/leaderboar
 import { ArrowRight, BarChart3, Medal, Rocket, Shield, Star, Swords, Trophy, Users, Gem, Crown, Award } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart";
 
 
 const achievementIcons = {
@@ -34,6 +36,27 @@ const getRankIcon = (rank: number) => {
     if (rank === 3) return <Medal className="h-6 w-6 text-orange-400" />;
     return null;
 }
+
+const rankDistributionData = [
+  { rank: "Возьмите меня", players: 157 },
+  { rank: "Уже бегу", players: 432 },
+  { rank: "Упорный", players: 689 },
+  { rank: "Уличный боец", players: 521 },
+  { rank: "Кто ты, воин?", players: 312 },
+  { rank: "Гроза района", players: 189 },
+  { rank: "Первый среди равных", players: 98 },
+  { rank: "Познавший дзен", players: 45 },
+  { rank: "Неоспоримый", players: 21 },
+  { rank: "Первый после бога", players: 7 },
+  { rank: "Анигилятор", players: 3 },
+];
+
+const chartConfig = {
+  players: {
+    label: "Игроки",
+    color: "hsl(var(--primary))",
+  },
+} satisfies ChartConfig;
 
 export default function LeaderboardsPage() {
     const [roleFilter, setRoleFilter] = useState('all');
@@ -95,89 +118,127 @@ export default function LeaderboardsPage() {
                 </div>
 
                 <TabsContent value="leaderboard" className="mt-4">
-                    <Card>
-                        <CardHeader>
-                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                                <div>
-                                    <CardTitle>Топ-100 игроков</CardTitle>
-                                    <CardDescription>Лучшие игроки платформы за текущий период.</CardDescription>
-                                </div>
-                                <div className="flex gap-2">
-                                    <Select defaultValue="all" onValueChange={setRoleFilter}>
-                                        <SelectTrigger className="w-[180px]">
-                                            <SelectValue placeholder="Все роли" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="all">Все роли</SelectItem>
-                                            <SelectItem value="player">Игроки</SelectItem>
-                                            <SelectItem value="captain">Капитаны</SelectItem>
-                                            <SelectItem value="judge">Судьи</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                     <Select defaultValue="season" onValueChange={setPeriodFilter}>
-                                        <SelectTrigger className="w-[180px]">
-                                            <SelectValue placeholder="Период" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="season">Текущий сезон</SelectItem>
-                                            <SelectItem value="month">Месяц</SelectItem>
-                                            <SelectItem value="week">Неделя</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                </div>
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                             <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead className="w-16">Ранг</TableHead>
-                                        <TableHead>Игрок</TableHead>
-                                        <TableHead className="text-center">ELO</TableHead>
-                                        <TableHead className="hidden text-center sm:table-cell">Побед/Поражений</TableHead>
-                                        <TableHead className="text-right">Профиль</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredPlayers.map((player) => (
-                                        <TableRow key={player.id} className={cn(
-                                            player.rank === 1 && "bg-amber-400/10 hover:bg-amber-400/20",
-                                            player.rank === 2 && "bg-slate-400/10 hover:bg-slate-400/20",
-                                            player.rank === 3 && "bg-orange-400/10 hover:bg-orange-400/20"
-                                        )}>
-                                            <TableCell className="font-headline text-lg font-bold flex items-center gap-2">
-                                                {getRankIcon(player.rank)}
-                                                <span>#{player.rank}</span>
-                                            </TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-3">
-                                                    <Avatar>
-                                                        <AvatarImage src={player.avatar} alt={player.name} data-ai-hint={player.avatarHint} />
-                                                        <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
-                                                    </Avatar>
-                                                    <div>
-                                                        <p className="font-semibold">{player.name}</p>
-                                                        <p className="text-sm text-muted-foreground">{player.team}</p>
-                                                    </div>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-center font-semibold text-primary">{player.elo}</TableCell>
-                                            <TableCell className="hidden text-center sm:table-cell">
-                                                <span className="text-green-600">{player.wins}</span> / <span className="text-red-600">{player.losses}</span>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button asChild variant="outline" size="sm">
-                                                    <Link href={player.profileUrl}>
-                                                        Перейти <ArrowRight className="ml-2 h-4 w-4" />
-                                                    </Link>
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </CardContent>
-                    </Card>
+                    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                        <div className="lg:col-span-3">
+                             <Card>
+                                <CardHeader>
+                                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                        <div>
+                                            <CardTitle>Топ игроков</CardTitle>
+                                            <CardDescription>Лучшие игроки платформы за текущий период.</CardDescription>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Select defaultValue="all" onValueChange={setRoleFilter}>
+                                                <SelectTrigger className="w-full sm:w-[160px]">
+                                                    <SelectValue placeholder="Все роли" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="all">Все роли</SelectItem>
+                                                    <SelectItem value="player">Игроки</SelectItem>
+                                                    <SelectItem value="captain">Капитаны</SelectItem>
+                                                    <SelectItem value="judge">Судьи</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            <Select defaultValue="season" onValueChange={setPeriodFilter}>
+                                                <SelectTrigger className="w-full sm:w-[160px]">
+                                                    <SelectValue placeholder="Период" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="season">Текущий сезон</SelectItem>
+                                                    <SelectItem value="month">Месяц</SelectItem>
+                                                    <SelectItem value="week">Неделя</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent>
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead className="w-16">Ранг</TableHead>
+                                                <TableHead>Игрок</TableHead>
+                                                <TableHead className="text-center">ELO</TableHead>
+                                                <TableHead className="hidden text-center sm:table-cell">Побед/Пор.</TableHead>
+                                            </TableRow>
+                                        </TableHeader>
+                                        <TableBody>
+                                            {filteredPlayers.slice(0, 15).map((player) => (
+                                                <TableRow key={player.id} className={cn(
+                                                    player.rank === 1 && "bg-amber-400/10 hover:bg-amber-400/20",
+                                                    player.rank === 2 && "bg-slate-400/10 hover:bg-slate-400/20",
+                                                    player.rank === 3 && "bg-orange-400/10 hover:bg-orange-400/20"
+                                                )}>
+                                                    <TableCell className="font-headline text-lg font-bold flex items-center gap-2">
+                                                        {getRankIcon(player.rank)}
+                                                        <span>#{player.rank}</span>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                         <Button asChild variant="link" className="p-0 h-auto font-semibold">
+                                                            <Link href={player.profileUrl} className="flex items-center gap-3">
+                                                                <Avatar>
+                                                                    <AvatarImage src={player.avatar} alt={player.name} data-ai-hint={player.avatarHint} />
+                                                                    <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
+                                                                </Avatar>
+                                                                <div>
+                                                                    <p className="font-semibold text-left">{player.name}</p>
+                                                                    <p className="text-xs text-muted-foreground text-left">{player.team}</p>
+                                                                </div>
+                                                            </Link>
+                                                        </Button>
+                                                    </TableCell>
+                                                    <TableCell className="text-center font-semibold text-primary">{player.elo}</TableCell>
+                                                    <TableCell className="hidden text-center sm:table-cell">
+                                                        <span className="text-green-600">{player.wins}</span> / <span className="text-red-600">{player.losses}</span>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="lg:col-span-2">
+                             <Card>
+                                <CardHeader>
+                                    <CardTitle>Распределение по рангам</CardTitle>
+                                    <CardDescription>Количество игроков на каждом уровне.</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    <ChartContainer config={chartConfig} className="min-h-[450px] w-full">
+                                        <BarChart
+                                            accessibilityLayer
+                                            data={rankDistributionData}
+                                            layout="vertical"
+                                            margin={{ left: 10, top: 10, right: 10 }}
+                                        >
+                                            <CartesianGrid horizontal={false} />
+                                            <YAxis
+                                                dataKey="rank"
+                                                type="category"
+                                                tickLine={false}
+                                                tickMargin={10}
+                                                axisLine={false}
+                                                className="text-xs"
+                                                width={120}
+                                            />
+                                            <XAxis dataKey="players" type="number" hide />
+                                            <ChartTooltip
+                                                cursor={false}
+                                                content={<ChartTooltipContent indicator="dot" />}
+                                            />
+                                            <Bar
+                                                dataKey="players"
+                                                layout="vertical"
+                                                fill="var(--color-players)"
+                                                radius={4}
+                                            />
+                                        </BarChart>
+                                    </ChartContainer>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
                 </TabsContent>
 
                 <TabsContent value="teams" className="mt-4">
