@@ -17,11 +17,58 @@ import type { User } from '@/lib/session';
 type Chat = (typeof mockChatList)[0];
 
 export default function ChatsPage() {
-    const [chatList] = useState(mockChatList);
+    const [chatList, setChatList] = useState(mockChatList);
     const [activeChat, setActiveChat] = useState<Chat | null>(chatList[0] || null);
+    const [newMessage, setNewMessage] = useState('');
     
     // In a real app, this would come from the session
     const currentUser: User = { name: 'You', email: '', role: '', avatar: 'https://placehold.co/40x40.png' };
+
+    const handleSendMessage = () => {
+        if (!newMessage.trim() || !activeChat) return;
+
+        const message = {
+            sender: 'me' as const,
+            text: newMessage.trim(),
+            time: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+        };
+
+        const updatedChat = {
+            ...activeChat,
+            messages: [...(activeChat.messages || []), message],
+            lastMessage: {
+                text: `Вы: ${newMessage.trim()}`,
+                time: message.time,
+            }
+        };
+
+        const updatedChatList = chatList.map(chat => 
+            chat.id === updatedChat.id ? updatedChat : chat
+        );
+        
+        // Move updated chat to the top
+        const finalChatList = [updatedChat, ...updatedChatList.filter(chat => chat.id !== updatedChat.id)];
+
+        setActiveChat(updatedChat);
+        setChatList(finalChatList);
+        setNewMessage('');
+    };
+    
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            handleSendMessage();
+        }
+    };
+    
+    const selectChat = (chat: Chat) => {
+        // Find the full chat object from the list to ensure we have the latest message history
+        const fullChat = chatList.find(c => c.id === chat.id);
+        if (fullChat) {
+            setActiveChat(fullChat);
+        }
+    }
+
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6 h-[calc(100vh-theme(spacing.16)-2*theme(spacing.4))]">
@@ -54,7 +101,7 @@ export default function ChatsPage() {
                                     "flex items-start gap-4 p-4 cursor-pointer border-b last:border-b-0 hover:bg-muted/50",
                                     activeChat?.id === chat.id && "bg-muted"
                                 )}
-                                onClick={() => setActiveChat(chat)}
+                                onClick={() => selectChat(chat)}
                             >
                                 <Avatar className="h-12 w-12 border">
                                     <AvatarImage src={chat.avatar} alt={chat.name} data-ai-hint={chat.dataAiHint}/>
@@ -128,13 +175,16 @@ export default function ChatsPage() {
                                     placeholder="Напишите сообщение..."
                                     className="pr-28 min-h-[40px] resize-none"
                                     rows={1}
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    onKeyDown={handleKeyDown}
                                 />
                                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
                                     <TooltipProvider>
                                         <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon"><Smile /></Button></TooltipTrigger><TooltipContent><p>Эмодзи</p></TooltipContent></Tooltip>
                                         <Tooltip><TooltipTrigger asChild><Button variant="ghost" size="icon"><Paperclip /></Button></TooltipTrigger><TooltipContent><p>Вложить файл</p></TooltipContent></Tooltip>
                                     </TooltipProvider>
-                                    <Button><Send /></Button>
+                                    <Button onClick={handleSendMessage}><Send /></Button>
                                 </div>
                             </div>
                         </div>
