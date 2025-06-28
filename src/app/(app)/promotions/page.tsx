@@ -1,15 +1,33 @@
+'use client';
 
+import { useState } from 'react';
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { promotionsList, sponsorsList } from "@/lib/mock-data/promotions";
-import { Clock, Gift, Megaphone, PlusCircle, Users } from "lucide-react";
+import { promotionsList as initialPromotionsList, sponsorsList } from "@/lib/mock-data/promotions";
+import { Clock, Gift, Megaphone, PlusCircle, Users, CheckCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useToast } from '@/hooks/use-toast';
 
+type Promotion = (typeof initialPromotionsList)[0];
 
 export default function PromotionsPage() {
+    const { toast } = useToast();
+    const [promotions, setPromotions] = useState<Promotion[]>(initialPromotionsList);
+    const [participatedPromoIds, setParticipatedPromoIds] = useState<string[]>([]);
+
+    const handleParticipate = (promoId: string) => {
+        setPromotions(promotions.map(p => 
+            p.id === promoId ? { ...p, participants: p.participants + 1 } : p
+        ));
+        setParticipatedPromoIds([...participatedPromoIds, promoId]);
+        toast({
+            title: "Вы успешно зарегистрировались!",
+            description: `Вы теперь участник акции "${promotions.find(p => p.id === promoId)?.name}".`,
+        });
+    };
 
     const getStatusVariant = (status: string) => {
         switch (status) {
@@ -20,8 +38,8 @@ export default function PromotionsPage() {
         }
     };
 
-    const activePromotions = promotionsList.filter(p => p.status !== 'Завершена');
-    const pastPromotions = promotionsList.filter(p => p.status === 'Завершена');
+    const activePromotions = promotions.filter(p => p.status !== 'Завершена');
+    const pastPromotions = promotions.filter(p => p.status === 'Завершена');
 
     return (
         <div className="space-y-6">
@@ -46,8 +64,10 @@ export default function PromotionsPage() {
                 <TabsContent value="current" className="mt-4">
                      {activePromotions.length > 0 ? (
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                            {activePromotions.map((promo) => (
-                                <Card key={promo.name} className="flex flex-col overflow-hidden transition-all hover:shadow-md">
+                            {activePromotions.map((promo) => {
+                                const isParticipating = participatedPromoIds.includes(promo.id);
+                                return (
+                                <Card key={promo.id} className="flex flex-col overflow-hidden transition-all hover:shadow-md">
                                     <CardHeader className="relative h-40 w-full p-0">
                                         <Image 
                                             src={promo.image} 
@@ -68,10 +88,23 @@ export default function PromotionsPage() {
                                         </div>
                                     </CardContent>
                                     <CardFooter className="bg-muted/50 p-4">
-                                        <Button className="w-full">Участвовать</Button>
+                                        <Button 
+                                            className="w-full"
+                                            onClick={() => handleParticipate(promo.id)}
+                                            disabled={isParticipating || promo.status !== 'Активна'}
+                                        >
+                                            {isParticipating ? (
+                                                <>
+                                                    <CheckCircle className="mr-2 h-4 w-4" />
+                                                    Вы участвуете
+                                                </>
+                                            ) : (
+                                                'Участвовать'
+                                            )}
+                                        </Button>
                                     </CardFooter>
                                 </Card>
-                            ))}
+                            )})}
                         </div>
                      ) : (
                         <div className="flex h-40 flex-col items-center justify-center rounded-lg border-2 border-dashed text-center">
@@ -85,7 +118,7 @@ export default function PromotionsPage() {
                      {pastPromotions.length > 0 ? (
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                             {pastPromotions.map((promo) => (
-                                <Card key={promo.name} className="flex flex-col overflow-hidden transition-all hover:shadow-md opacity-70">
+                                <Card key={promo.id} className="flex flex-col overflow-hidden transition-all hover:shadow-md opacity-70">
                                     <CardHeader className="relative h-40 w-full p-0">
                                         <Image 
                                             src={promo.image} 
