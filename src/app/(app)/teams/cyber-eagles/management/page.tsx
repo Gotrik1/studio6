@@ -1,25 +1,35 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { UserPlus, Trash2, Coins, Upload, Shield, Users, Settings } from 'lucide-react';
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { UserPlus, Trash2, Coins, Upload, Shield, Users, Settings, BrainCircuit } from 'lucide-react';
 import { teams } from '@/lib/mock-data/teams';
 import { teamPdHistory } from '@/lib/mock-data/team-details';
-import { teamRoster, joinRequests } from '@/lib/mock-data/team-details';
+import { teamRoster, joinRequests as initialJoinRequests } from '@/lib/mock-data/team-details';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { JoinRequestAnalysisDialog } from '@/components/join-request-analysis-dialog';
 
 const team = teams.find(t => t.slug === 'cyber-eagles');
 
+type JoinRequest = (typeof initialJoinRequests)[0];
+
 export default function TeamManagementPage() {
     const { toast } = useToast();
+    const [joinRequests, setJoinRequests] = useState(initialJoinRequests);
+
+    // State for AI Analysis Dialog
+    const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+    const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
+
 
     if (!team) {
         return <div>Команда не найдена</div>;
@@ -32,20 +42,35 @@ export default function TeamManagementPage() {
         })
     }
     
-    const handleAcceptRequest = (name: string) => {
+    const handleAcceptRequest = (id: string) => {
+        const req = joinRequests.find(r => r.id === id);
+        if (!req) return;
+
+        setJoinRequests(prev => prev.filter(r => r.id !== id));
+        // In a real app, you would add this user to the team roster
         toast({
             title: "Игрок принят",
-            description: `${name} был добавлен в состав команды.`,
+            description: `${req.name} был добавлен в состав команды.`,
         })
     }
     
-     const handleDeclineRequest = (name: string) => {
+     const handleDeclineRequest = (id: string) => {
+        const req = joinRequests.find(r => r.id === id);
+        if (!req) return;
+
+        setJoinRequests(prev => prev.filter(r => r.id !== id));
         toast({
             variant: 'destructive',
             title: "Заявка отклонена",
-            description: `Заявка от ${name} была отклонена.`,
+            description: `Заявка от ${req.name} была отклонена.`,
         })
     }
+
+    const handleOpenAnalysisDialog = (request: JoinRequest) => {
+        setSelectedRequest(request);
+        setIsAnalysisOpen(true);
+    };
+
 
     return (
         <div className="space-y-6">
@@ -142,21 +167,27 @@ export default function TeamManagementPage() {
                             <CardDescription>Игроки, которые хотят присоединиться к вашей команде.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-3">
-                            {joinRequests.map(req => (
-                                <Card key={req.id} className="p-3 flex items-center justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <Avatar><AvatarImage src={req.avatar}/><AvatarFallback>{req.name.charAt(0)}</AvatarFallback></Avatar>
+                            {joinRequests.length > 0 ? joinRequests.map(req => (
+                                <Card key={req.id} className="p-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+                                    <div className="flex items-center gap-3 self-start sm:self-center">
+                                        <Avatar><AvatarImage src={req.avatar} data-ai-hint={req.avatarHint}/><AvatarFallback>{req.name.charAt(0)}</AvatarFallback></Avatar>
                                         <div>
                                             <p className="font-semibold">{req.name}</p>
                                             <p className="text-xs text-muted-foreground">{req.role}, Рейтинг: {req.rating}</p>
                                         </div>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <Button variant="outline" size="sm" onClick={() => handleDeclineRequest(req.name)}>Отклонить</Button>
-                                        <Button size="sm" onClick={() => handleAcceptRequest(req.name)}>Принять</Button>
+                                    <div className="flex gap-2 w-full sm:w-auto">
+                                        <Button variant="secondary" size="sm" className="flex-1" onClick={() => handleOpenAnalysisDialog(req)}>
+                                            <BrainCircuit className="mr-2 h-4 w-4"/>
+                                            AI Анализ
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={() => handleDeclineRequest(req.id)}>Отклонить</Button>
+                                        <Button size="sm" onClick={() => handleAcceptRequest(req.id)}>Принять</Button>
                                     </div>
                                 </Card>
-                            ))}
+                            )) : (
+                                <p className="text-center text-muted-foreground py-10">Новых заявок нет.</p>
+                            )}
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -192,6 +223,12 @@ export default function TeamManagementPage() {
                     </Card>
                 </TabsContent>
             </Tabs>
+            <JoinRequestAnalysisDialog
+                isOpen={isAnalysisOpen}
+                onOpenChange={setIsAnalysisOpen}
+                request={selectedRequest}
+                teamNeeds="Нам нужен опытный смоукер (контроллер), который умеет хорошо коммуницировать и не боится занимать ключевые позиции на карте."
+            />
         </div>
     );
 }
