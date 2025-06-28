@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,8 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type { coachUser, coachAchievements } from "@/lib/mock-data/coach-profile";
 import { Skeleton } from './ui/skeleton';
+import { coachedPlayers, type CoachedPlayer } from '@/lib/mock-data/coach-players';
+import { PlayerAnalysisDialog } from './player-analysis-dialog';
 
 const CoachStatsTab = dynamic(() => import('@/components/coach-profile-tabs/stats-tab').then(mod => mod.CoachStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -17,6 +20,11 @@ const CoachAchievementsTab = dynamic(() => import('@/components/coach-profile-ta
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
   ssr: false,
 });
+const MyPlayersTab = dynamic(() => import('@/components/coach-profile-tabs/my-players-tab').then(mod => mod.MyPlayersTab), {
+    loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+    ssr: false,
+});
+
 
 type CoachProfileProps = {
   user: typeof coachUser;
@@ -25,6 +33,14 @@ type CoachProfileProps = {
 
 export function CoachProfile({ user, achievements }: CoachProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
+  
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+  const [selectedPlayer, setSelectedPlayer] = useState<CoachedPlayer | null>(null);
+
+  const handleAnalyzePlayer = (player: CoachedPlayer) => {
+      setSelectedPlayer(player);
+      setIsAnalysisOpen(true);
+  };
 
   return (
     <div className="space-y-6">
@@ -50,9 +66,10 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
       </Card>
       
       <Tabs defaultValue="stats">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="stats">Статистика тренера</TabsTrigger>
           <TabsTrigger value="achievements">Достижения тренера</TabsTrigger>
+          <TabsTrigger value="my-players">Мои игроки</TabsTrigger>
         </TabsList>
         <TabsContent value="stats">
           <CoachStatsTab />
@@ -60,7 +77,15 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
         <TabsContent value="achievements">
           <CoachAchievementsTab achievements={achievements} />
         </TabsContent>
+        <TabsContent value="my-players">
+          <MyPlayersTab players={coachedPlayers} onAnalyzePlayer={handleAnalyzePlayer} />
+        </TabsContent>
       </Tabs>
+      <PlayerAnalysisDialog 
+        isOpen={isAnalysisOpen}
+        onOpenChange={setIsAnalysisOpen}
+        player={selectedPlayer}
+      />
     </div>
   );
 }
