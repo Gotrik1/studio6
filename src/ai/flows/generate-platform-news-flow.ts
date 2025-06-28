@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/ai/genkit';
@@ -30,7 +31,7 @@ const getRecentActivity = ai.defineTool(
     {
         name: 'getRecentActivity',
         description: 'Gets the most recent significant activities on the platform.',
-        inputSchema: z.null(),
+        inputSchema: z.void(),
         outputSchema: RecentActivitySchema,
     },
     async () => {
@@ -60,7 +61,7 @@ export const generatePlatformNews = ai.defineFlow(
         outputSchema: GeneratePlatformNewsOutputSchema,
     },
     async () => {
-        const { output } = await prompt({});
+        const { output } = await prompt();
         if (!output) {
             throw new Error("Failed to generate platform news.");
         }
