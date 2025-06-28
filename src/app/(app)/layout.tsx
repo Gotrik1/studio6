@@ -44,6 +44,7 @@ import {
   Coins,
   Gem,
   Palette,
+  AudioLines,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -195,6 +196,14 @@ export default async function AppLayout({
                 <Link href="/ai-analysis">
                   <BrainCircuit />
                   ИИ-Анализ
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Генерация речи">
+                <Link href="/tts">
+                  <AudioLines />
+                  Генерация речи
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
