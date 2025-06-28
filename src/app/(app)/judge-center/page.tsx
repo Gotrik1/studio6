@@ -26,6 +26,11 @@ export default function JudgeCenterPage() {
     };
 
     const handleDisputeAction = (matchId: string) => {
+        setDisputedMatches(prev => 
+            prev.map(match => 
+                match.id === matchId ? { ...match, status: 'Изучается' } : match
+            )
+        );
         toast({
             title: `Спор по матчу ${matchId} взят в работу.`,
             description: "Вы будете уведомлены о результате.",
@@ -135,9 +140,9 @@ export default function JudgeCenterPage() {
                                         </div>
                                          <div className="flex flex-col items-center gap-2">
                                             <Badge variant={getStatusBadgeVariant(match.status)}>{match.status}</Badge>
-                                            <Button size="sm" onClick={() => handleDisputeAction(match.id)}>
+                                            <Button size="sm" onClick={() => handleDisputeAction(match.id)} disabled={match.status === 'Изучается'}>
                                                 <Gavel className="mr-2 h-4 w-4"/>
-                                                Рассмотреть дело
+                                                {match.status === 'Изучается' ? 'В работе' : 'Рассмотреть дело'}
                                             </Button>
                                         </div>
                                     </CardContent>
