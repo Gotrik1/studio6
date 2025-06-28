@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 const tournaments = [
   {
     name: "Summer Kickoff 2024",
+    slug: "/tournaments/summer-kickoff",
     game: "Valorant",
     prize: "$5,000",
     participants: 32,
@@ -18,6 +19,7 @@ const tournaments = [
   },
   {
     name: "Cybernetic Clash",
+    slug: "#",
     game: "CS:GO 2",
     prize: "$10,000",
     participants: 64,
@@ -28,6 +30,7 @@ const tournaments = [
   },
   {
     name: "Apex Predator Series",
+    slug: "#",
     game: "Apex Legends",
     prize: "$2,500",
     participants: 20,
@@ -38,6 +41,7 @@ const tournaments = [
   },
   {
     name: "The King's Gauntlet",
+    slug: "#",
     game: "League of Legends",
     prize: "$7,500",
     participants: 16,
@@ -64,7 +68,7 @@ export default function TournamentsPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
         {tournaments.map((tournament) => (
-          <Link href="#" key={tournament.name} className="flex h-full">
+          <Link href={tournament.slug} key={tournament.name} className="flex h-full">
             <Card className="flex w-full flex-col overflow-hidden transition-all hover:shadow-md">
               <CardHeader className="p-0">
                 <Image 
