@@ -38,6 +38,7 @@ import {
   Shield,
   BrainCircuit,
   Swords,
+  LifeBuoy,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 
@@ -190,6 +191,14 @@ export default async function AppLayout({
                 <Link href="/ai-analysis">
                   <BrainCircuit />
                   ИИ-Анализ
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+             <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Поддержка">
+                <Link href="/support">
+                  <LifeBuoy />
+                  Поддержка
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
