@@ -14,7 +14,6 @@ import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
 import { teams } from "@/lib/mock-data/teams";
 import { teamRoster, teamActivity, challenges } from "@/lib/mock-data/team-details";
-import { TeamChatbot } from '@/components/team-chatbot';
 import { DonationDialog } from '@/components/donation-dialog';
 
 export function TeamDetailsPage() {
@@ -78,11 +77,10 @@ export function TeamDetailsPage() {
             />
 
             <Tabs defaultValue="overview">
-                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-3">
                     <TabsTrigger value="overview">Обзор</TabsTrigger>
                     <TabsTrigger value="roster">Состав</TabsTrigger>
                     <TabsTrigger value="challenges">Вызовы</TabsTrigger>
-                    <TabsTrigger value="chatbot"><Bot className="mr-2 h-4 w-4" />Чат-бот</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="overview" className="mt-4">
@@ -180,9 +178,6 @@ export function TeamDetailsPage() {
                            </CardContent>
                          </Card>
                      </div>
-                </TabsContent>
-                <TabsContent value="chatbot" className="mt-4">
-                    <TeamChatbot teamId={team.slug} />
                 </TabsContent>
             </Tabs>
         </div>
