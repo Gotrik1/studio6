@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/table";
 import { teamSports as initialTeamSports, individualSports as initialIndividualSports } from "@/lib/mock-data/sports";
 import { Button } from "@/components/ui/button";
-import { PlusCircle, Search } from "lucide-react";
+import { PlusCircle, Search, Trash2 } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from '@/components/ui/input';
 import {
@@ -30,6 +31,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast";
@@ -88,6 +100,19 @@ export default function SportsAdminPage() {
         setNewSportId('');
         setNewSportType('team');
         setIsDialogOpen(false);
+    };
+
+    const handleDeleteSport = (sportId: string, sportType: 'team' | 'individual') => {
+        const sportName = (sportType === 'team' ? teamSports : individualSports).find(s => s.id === sportId)?.name;
+        if (sportType === 'team') {
+            setTeamSports(prev => prev.filter(s => s.id !== sportId));
+        } else {
+            setIndividualSports(prev => prev.filter(s => s.id !== sportId));
+        }
+        toast({
+            title: 'Вид спорта удален',
+            description: `Дисциплина "${sportName}" была успешно удалена.`,
+        });
     };
 
     return (
@@ -168,6 +193,7 @@ export default function SportsAdminPage() {
                                     <TableRow>
                                         <TableHead>Название</TableHead>
                                         <TableHead>ID</TableHead>
+                                        <TableHead className="w-[100px] text-right">Действия</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -175,9 +201,35 @@ export default function SportsAdminPage() {
                                         <TableRow key={sport.id}>
                                             <TableCell className="font-medium">{sport.name}</TableCell>
                                             <TableCell className="font-mono text-xs">{sport.id}</TableCell>
+                                            <TableCell className="text-right">
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Это действие необратимо. Вы действительно хотите удалить вид спорта "{sport.name}"?
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Отмена</AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={() => handleDeleteSport(sport.id, 'team')}
+                                                                className="bg-destructive hover:bg-destructive/90"
+                                                            >
+                                                                Удалить
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </TableCell>
                                         </TableRow>
                                     ))}
-                                    {filteredTeamSports.length === 0 && <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Виды спорта не найдены.</TableCell></TableRow>}
+                                    {filteredTeamSports.length === 0 && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">Виды спорта не найдены.</TableCell></TableRow>}
                                 </TableBody>
                             </Table>
                         </ScrollArea>
@@ -197,6 +249,7 @@ export default function SportsAdminPage() {
                                     <TableRow>
                                         <TableHead>Название</TableHead>
                                         <TableHead>ID</TableHead>
+                                        <TableHead className="w-[100px] text-right">Действия</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -204,9 +257,35 @@ export default function SportsAdminPage() {
                                         <TableRow key={sport.id}>
                                             <TableCell className="font-medium">{sport.name}</TableCell>
                                             <TableCell className="font-mono text-xs">{sport.id}</TableCell>
+                                            <TableCell className="text-right">
+                                                <AlertDialog>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive">
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent>
+                                                        <AlertDialogHeader>
+                                                            <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+                                                            <AlertDialogDescription>
+                                                                Это действие необратимо. Вы действительно хотите удалить вид спорта "{sport.name}"?
+                                                            </AlertDialogDescription>
+                                                        </AlertDialogHeader>
+                                                        <AlertDialogFooter>
+                                                            <AlertDialogCancel>Отмена</AlertDialogCancel>
+                                                             <AlertDialogAction
+                                                                onClick={() => handleDeleteSport(sport.id, 'individual')}
+                                                                className="bg-destructive hover:bg-destructive/90"
+                                                            >
+                                                                Удалить
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </TableCell>
                                         </TableRow>
                                     ))}
-                                    {filteredIndividualSports.length === 0 && <TableRow><TableCell colSpan={2} className="text-center text-muted-foreground">Виды спорта не найдены.</TableCell></TableRow>}
+                                    {filteredIndividualSports.length === 0 && <TableRow><TableCell colSpan={3} className="text-center text-muted-foreground">Виды спорта не найдены.</TableCell></TableRow>}
                                 </TableBody>
                             </Table>
                         </ScrollArea>
