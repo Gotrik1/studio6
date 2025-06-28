@@ -191,6 +191,14 @@ export default async function AppLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild tooltip="Фан-зона">
+                <Link href="/fan-zone">
+                  <HeartPulse />
+                  Фан-зона
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
              {(user.role === 'Спонсор') && (
               <SidebarMenuItem>
                   <SidebarMenuButton asChild tooltip="Мои Кампании">
