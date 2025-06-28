@@ -1,35 +1,45 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { pdHistory } from '@/lib/mock-data/gamification';
 import { storeItems, lootboxPrizes, partnerOffers, ticketEvents, recentDonors } from '@/lib/mock-data/store';
-import { Coins, Gem, Palette, Shield, ShoppingCart, Gift, Sparkles, X, Handshake, Heart, Ticket, ShoppingBag } from 'lucide-react';
+import { Coins, Gem, Palette, Shield, ShoppingCart, Gift, Sparkles, Handshake, Heart, Ticket, ShoppingBag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 
 type StoreItem = (typeof storeItems)[0];
 type Prize = (typeof lootboxPrizes)[0];
+
+const generateRoulettePrizes = (): Prize[] => {
+    const reel: Prize[] = [];
+    // Create a long list for a good visual spin
+    for (let i = 0; i < 5; i++) {
+        reel.push(...[...lootboxPrizes].sort(() => Math.random() - 0.5));
+    }
+    return reel;
+};
 
 export default function StorePage() {
     const { toast } = useToast();
     const [pdBalance, setPdBalance] = useState(() => pdHistory.reduce((sum, item) => sum + item.value, 0));
     const [purchasedItems, setPurchasedItems] = useState<string[]>([]);
-
-    // State for lootbox opening
+    
+    // Lootbox state
     const [isLootboxOpen, setIsLootboxOpen] = useState(false);
     const [isSpinning, setIsSpinning] = useState(false);
     const [wonPrize, setWonPrize] = useState<Prize | null>(null);
-    const [spinningPrize, setSpinningPrize] = useState<Prize>(lootboxPrizes[0]);
+    const [roulettePrizes, setRoulettePrizes] = useState<Prize[]>([]);
+    const [winningIndex, setWinningIndex] = useState<number | null>(null);
+    const rouletteRef = useRef<HTMLDivElement>(null);
 
     const handlePurchase = (item: StoreItem) => {
         if (pdBalance < item.price) {
@@ -52,38 +62,57 @@ export default function StorePage() {
 
     const handleLootboxOpen = () => {
         if (pdBalance < 100) {
-            toast({
-                variant: 'destructive',
-                title: "Недостаточно средств",
-                description: "Вам нужно 100 PD, чтобы открыть кейс.",
-            });
+            toast({ variant: 'destructive', title: "Недостаточно средств", description: "Вам нужно 100 PD, чтобы открыть кейс." });
             return;
         }
 
         setPdBalance(prev => prev - 100);
-        setIsLootboxOpen(true);
-        setIsSpinning(true);
+        
+        // Reset state for a new spin
         setWonPrize(null);
+        setIsSpinning(true);
+        if (rouletteRef.current) {
+            rouletteRef.current.style.transition = 'none';
+            rouletteRef.current.style.transform = 'translateX(0px)';
+        }
 
-        const spinDuration = 3000; // 3 seconds
-        const intervalTime = 100; // update every 100ms
-        let spinInterval = setInterval(() => {
-            const randomIndex = Math.floor(Math.random() * lootboxPrizes.length);
-            setSpinningPrize(lootboxPrizes[randomIndex]);
-        }, intervalTime);
+        // Generate a new reel
+        const newReel = generateRoulettePrizes();
+        const finalPrize = lootboxPrizes[Math.floor(Math.random() * lootboxPrizes.length)];
+        // Ensure the winning prize is somewhere towards the end for a good spin
+        const targetIndex = newReel.length - 5;
+        newReel[targetIndex] = finalPrize;
+        
+        setRoulettePrizes(newReel);
+        setWinningIndex(targetIndex);
+        setIsLootboxOpen(true);
 
+        // Start animation after a short delay to allow DOM to update
         setTimeout(() => {
-            clearInterval(spinInterval);
-            const finalPrizeIndex = Math.floor(Math.random() * lootboxPrizes.length);
-            const finalPrize = lootboxPrizes[finalPrizeIndex];
+            if (rouletteRef.current) {
+                // Each item is 144px wide (w-32 + p-2*2), centered on the 3rd visible item
+                const prizeWidth = 144;
+                const offset = rouletteRef.current.clientWidth / 2 - prizeWidth / 2;
+                const targetPosition = targetIndex * prizeWidth;
+                
+                rouletteRef.current.style.transition = 'transform 4s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                rouletteRef.current.style.transform = `translateX(-${targetPosition - offset}px)`;
+            }
+        }, 100);
+    };
+
+    const handleTransitionEnd = () => {
+        setIsSpinning(false);
+        if (winningIndex !== null) {
+            const finalPrize = roulettePrizes[winningIndex];
             setWonPrize(finalPrize);
-            setIsSpinning(false);
             toast({
                 title: "Вот это удача!",
                 description: `Из кейса выпал предмет: "${finalPrize.name}"! Поздравляем!`,
             });
-        }, spinDuration);
+        }
     };
+
 
     const getItemTypeIcon = (type: string) => {
         switch (type) {
@@ -297,32 +326,35 @@ export default function StorePage() {
                 <DialogContent className="sm:max-w-[425px] text-center p-0 overflow-hidden">
                     <DialogHeader className="p-6 pb-0">
                         <DialogTitle className="font-headline text-2xl text-center">Открытие кейса</DialogTitle>
-                        <DialogDescription className="text-center">
+                         <DialogDescription className="text-center">
                             Удачи! Ваш приз вот-вот появится...
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="h-56 flex flex-col items-center justify-center bg-muted/50">
-                        {isSpinning && (
-                            <div className="flex flex-col items-center justify-center">
-                                <Image src={spinningPrize.image} alt="Spinning prize" width={100} height={100} className="animate-pulse" data-ai-hint="generic prize" />
-                                <p className="mt-4 font-semibold text-lg">{spinningPrize.name}</p>
-                            </div>
-                        )}
-                        {wonPrize && (
-                             <div className="flex flex-col items-center justify-center">
-                                <Sparkles className="h-6 w-6 text-amber-400 absolute top-10 left-10" />
-                                <Sparkles className="h-8 w-8 text-amber-400 absolute top-20 right-5" />
-                                <Sparkles className="h-6 w-6 text-amber-400 absolute bottom-10 right-10" />
-                                <Image src={wonPrize.image} alt={wonPrize.name} width={128} height={128} className="drop-shadow-lg" data-ai-hint={wonPrize.imageHint} />
-                                <p className={cn("mt-2 font-bold text-2xl", 
-                                    wonPrize.rarity === 'Редкий' ? 'text-blue-500' : 
-                                    wonPrize.rarity === 'Эпический' ? 'text-purple-500' : 'text-foreground'
-                                )}>{wonPrize.name}</p>
-                                <Badge variant={wonPrize.rarity === 'Эпический' ? 'destructive' : wonPrize.rarity === 'Редкий' ? 'default' : 'secondary'} className="mt-1">{wonPrize.rarity}</Badge>
-                             </div>
-                        )}
+                    <div className="h-56 flex flex-col items-center justify-center bg-muted/50 relative overflow-hidden">
+                        <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-0.5 h-full bg-primary/50 z-10"></div>
+                         <div
+                            ref={rouletteRef}
+                            className="flex h-full items-center"
+                            onTransitionEnd={handleTransitionEnd}
+                        >
+                            {roulettePrizes.map((prize, index) => (
+                                <div key={index} className={cn(
+                                    "flex flex-col items-center justify-center p-2 w-36 flex-shrink-0 transition-all duration-300",
+                                    !isSpinning && winningIndex === index ? 'scale-110' : 'scale-90 opacity-50'
+                                )}>
+                                    <div className={cn('rounded-lg p-2 transition-all', !isSpinning && winningIndex === index && 'bg-primary/20')}>
+                                        <Image src={prize.image} alt={prize.name} width={80} height={80} data-ai-hint={prize.imageHint} />
+                                    </div>
+                                    <p className="mt-2 text-xs font-semibold truncate">{prize.name}</p>
+                                     <Badge variant="secondary" className={cn("transition-all", 
+                                        prize.rarity === 'Редкий' ? 'border-blue-500' : 
+                                        prize.rarity === 'Эпический' ? 'border-purple-500' : ''
+                                    )}>{prize.rarity}</Badge>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                    <div className="p-6 pt-0">
+                    <div className="p-6 pt-2">
                         <Button className="w-full" onClick={() => setIsLootboxOpen(false)} disabled={isSpinning}>
                             {isSpinning ? 'Крутится...' : 'Отлично!'}
                         </Button>
