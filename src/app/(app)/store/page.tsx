@@ -31,8 +31,8 @@ export default function StorePage() {
 
     const handlePurchase = (itemName: string, itemPrice: number) => {
         toast({
-            title: "Покупка совершена!",
-            description: `Вы успешно приобрели: ${itemName} за ${itemPrice} PD.`,
+            title: "Поздравляем с покупкой!",
+            description: `"${itemName}" теперь в вашей коллекции. Вы стали еще уникальнее!`,
         });
     };
 
@@ -64,8 +64,8 @@ export default function StorePage() {
             setWonPrize(finalPrize);
             setIsSpinning(false);
             toast({
-                title: "Вы выиграли приз!",
-                description: `Вам выпал предмет: ${finalPrize.name}`,
+                title: "Вот это удача!",
+                description: `Из кейса выпал предмет: "${finalPrize.name}"! Поздравляем!`,
             });
             // In a real app, deduct PD and add item to inventory here
         }, spinDuration);

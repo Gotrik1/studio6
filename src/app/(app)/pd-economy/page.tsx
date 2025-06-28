@@ -54,11 +54,11 @@ export default function PDEconomyPage() {
                 <h1 className="animated-slogan font-headline text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
                     <span>Играешь&nbsp;</span>
                     <span>—&nbsp;</span>
-                    <span className="text-amber-400">зарабатываешь&nbsp;</span>
+                    <span className="text-amber-400">влияешь&nbsp;</span>
                     <span>—&nbsp;</span>
-                    <span>влияешь!</span>
+                    <span>побеждаешь!</span>
                 </h1>
-                <p className="mt-4 text-lg text-muted-foreground">ProDvor Coin (PD) — это не просто валюта. Это ваше влияние.</p>
+                <p className="mt-4 text-lg text-muted-foreground">ProDvor — твоя энергия в цифре!</p>
             </header>
             
             <section>

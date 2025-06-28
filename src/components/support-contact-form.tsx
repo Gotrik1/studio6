@@ -1,3 +1,4 @@
+
 'use client'
 
 import { useForm } from 'react-hook-form';
@@ -37,8 +38,8 @@ export function SupportContactForm() {
         console.log(data); // In a real app, you'd send this to your backend
         
         toast({
-            title: "Сообщение отправлено!",
-            description: "Наша команда поддержки свяжется с вами в ближайшее время.",
+            title: "Ваш запрос получен!",
+            description: "Спасибо за обращение! Наша команда уже спешит на помощь.",
         });
         form.reset();
     };
