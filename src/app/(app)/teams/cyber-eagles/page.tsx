@@ -38,7 +38,7 @@ const team = {
   captain: { name: "Alex 'CyberSlasher' Doe", href: "/profile" },
 };
 
-const roster = [
+const initialRoster = [
   { name: "Alex 'CyberSlasher' Doe", role: "Капитан / Дуэлянт", avatar: "https://placehold.co/100x100.png", avatarHint: "esports player" },
   { name: "Maria 'Shadow' Petrova", role: "Смоукер", avatar: "https://placehold.co/100x100.png", avatarHint: "female gamer" },
   { name: "Ivan 'Beast' Orlov", role: "Страж", avatar: "https://placehold.co/100x100.png", avatarHint: "focused gamer" },
@@ -76,13 +76,11 @@ export default function TeamProfilePage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     
-    // State for AI Assistant Dialog
     const [isAssistantDialogOpen, setIsAssistantDialogOpen] = useState(false);
     const [teamActivity, setTeamActivity] = useState("Последние 3 матча: 2 победы, 1 поражение. Игрок 'Shadow' показал отличный результат в клатчах. Были проблемы со связью у 'Gadget' во время матча с 'Квантовыми Квазарами'.");
     const [teamGoals, setTeamGoals] = useState("Главная цель - победа в 'Summer Kickoff 2024'. Улучшить коммуникацию и отработать стратегии на карте Ascent.");
     const [relevantContent, setRelevantContent] = useState("Анализ последних игр от тренера: https://example.com/analysis");
 
-    // State for avatar generation
     const [teamLogo, setTeamLogo] = useState(team.logo);
     const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
     const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
@@ -90,9 +88,8 @@ export default function TeamProfilePage() {
     const [generatedAvatar, setGeneratedAvatar] = useState<string | null>(null);
     const [avatarError, setAvatarError] = useState<string | null>(null);
 
-    // New state for roster management
     const [isRequestSent, setIsRequestSent] = useState(false);
-    const [currentRoster, setCurrentRoster] = useState(roster);
+    const [currentRoster, setCurrentRoster] = useState(initialRoster);
     const [joinRequests, setJoinRequests] = useState(initialJoinRequests);
 
     const handleGenerateSummary = async () => {
@@ -109,7 +106,7 @@ export default function TeamProfilePage() {
             const input = { teamActivity, teamGoals, relevantContent };
             const result = await aiTeamAssistant(input);
             setAiResult(result);
-            setIsAssistantDialogOpen(false); // Close dialog on success
+            setIsAssistantDialogOpen(false);
         } catch (e) {
             console.error(e);
             setError("Не удалось получить сводку от ИИ. Пожалуйста, попробуйте снова.");
