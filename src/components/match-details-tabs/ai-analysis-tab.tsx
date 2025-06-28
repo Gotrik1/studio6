@@ -4,10 +4,13 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, User, MessageCircle, BarChart3, Medal, Trophy } from "lucide-react";
+import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, User, MessageCircle, BarChart3, Medal, Trophy, Mic } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { MatchDetails } from "@/lib/mock-data/match-details";
 import { analyzeMatchReport, type AnalyzeMatchReportOutput } from "@/ai/flows/analyze-match-report-flow";
+import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/ai/flows/generate-match-interview-flow';
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 
 interface AiAnalysisTabProps {
     match: MatchDetails;
@@ -18,10 +21,16 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<AnalyzeMatchReportOutput | null>(null);
 
+    const [isGeneratingInterview, setIsGeneratingInterview] = useState(false);
+    const [interviewError, setInterviewError] = useState<string | null>(null);
+    const [interviewResult, setInterviewResult] = useState<GenerateMatchInterviewOutput | null>(null);
+
     const handleAnalyze = async () => {
         setIsLoading(true);
         setError(null);
         setResult(null);
+        setInterviewResult(null);
+        setInterviewError(null);
         
         try {
             const analysisResult = await analyzeMatchReport({
@@ -39,6 +48,27 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
             setError("Не удалось сгенерировать анализ. Пожалуйста, попробуйте еще раз.");
         } finally {
             setIsLoading(false);
+        }
+    };
+    
+    const handleGenerateInterview = async () => {
+        if (!result) return;
+        
+        setIsGeneratingInterview(true);
+        setInterviewError(null);
+        setInterviewResult(null);
+
+        try {
+            const interviewData = await generateMatchInterview({
+                matchSummary: result.summary,
+                mvpName: result.mvp.name,
+            });
+            setInterviewResult(interviewData);
+        } catch (e) {
+            console.error("AI Interview generation failed:", e);
+            setInterviewError("Не удалось сгенерировать аудио-интервью.");
+        } finally {
+            setIsGeneratingInterview(false);
         }
     };
 
@@ -133,6 +163,32 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                                 Сгенерировать заново
                             </Button>
                         </div>
+                        
+                        <Card className="bg-background">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><Mic className="h-5 w-5 text-purple-500" /> Аудио-интервью с MVP</CardTitle>
+                                <CardDescription>Создайте короткое аудио-интервью с лучшим игроком матча.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {!interviewResult && (
+                                    <Button onClick={handleGenerateInterview} disabled={isGeneratingInterview}>
+                                        {isGeneratingInterview ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                                        Сгенерировать интервью
+                                    </Button>
+                                )}
+                                {isGeneratingInterview && <Skeleton className="h-20 w-full" />}
+                                {interviewError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{interviewError}</AlertDescription></Alert>}
+                                {interviewResult && (
+                                    <div className="space-y-4">
+                                        <audio controls src={interviewResult.audioDataUri} className="w-full" />
+                                        <div>
+                                            <Label htmlFor="interview-script">Скрипт:</Label>
+                                            <Textarea id="interview-script" readOnly value={interviewResult.script} className="mt-2 h-40 bg-muted"/>
+                                        </div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
                     </div>
                 )}
             </CardContent>
