@@ -1,10 +1,12 @@
+'use client';
 
+import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, ShoppingBag } from "lucide-react";
+import { Crown, Shield, MapPin, CalendarDays, Users, Swords, Trophy, Newspaper, BarChart3, Star, Share2, Settings, Gem, PlusCircle, Banknote, BrainCircuit, Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { teamPdHistory } from "@/lib/mock-data/gamification";
@@ -12,6 +14,8 @@ import { teamStoreItems } from "@/lib/mock-data/store";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
+import { aiTeamAssistant, type AiTeamAssistantOutput } from '@/ai/flows/ai-team-assistant';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const team = {
   name: "Кибер Орлы",
@@ -55,6 +59,31 @@ const sponsors = [
 ]
 
 export default function TeamProfilePage() {
+    const [aiResult, setAiResult] = useState<AiTeamAssistantOutput | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleGenerateSummary = async () => {
+        setIsLoading(true);
+        setError(null);
+        setAiResult(null);
+
+        try {
+            const input = {
+                teamActivity: "Последние 3 матча: 2 победы, 1 поражение. Игрок 'Shadow' показал отличный результат в клатчах. Были проблемы со связью у 'Gadget' во время матча с 'Квантовыми Квазарами'.",
+                teamGoals: "Главная цель - победа в 'Summer Kickoff 2024'. Улучшить коммуникацию и отработать стратегии на карте Ascent.",
+                relevantContent: "Анализ последних игр от тренера: https://example.com/analysis"
+            };
+            const result = await aiTeamAssistant(input);
+            setAiResult(result);
+        } catch (e) {
+            console.error(e);
+            setError("Не удалось получить сводку от ИИ. Пожалуйста, попробуйте снова.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     return (
         <div className="space-y-6">
             <Card className="overflow-hidden">
@@ -92,13 +121,14 @@ export default function TeamProfilePage() {
             </Card>
 
             <Tabs defaultValue="roster">
-                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6">
+                <TabsList className="grid w-full grid-cols-4 sm:grid-cols-7">
                     <TabsTrigger value="roster"><Users className="mr-2 h-4 w-4"/>Состав</TabsTrigger>
                     <TabsTrigger value="matches"><Swords className="mr-2 h-4 w-4"/>Матчи</TabsTrigger>
                     <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
                     <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
                     <TabsTrigger value="about"><Newspaper className="mr-2 h-4 w-4"/>О команде</TabsTrigger>
                     <TabsTrigger value="bank"><Banknote className="mr-2 h-4 w-4"/>Банк команды</TabsTrigger>
+                    <TabsTrigger value="ai-assistant"><BrainCircuit className="mr-2 h-4 w-4"/>AI Помощник</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="roster">
@@ -301,6 +331,49 @@ export default function TeamProfilePage() {
                             </Card>
                         </div>
                     </div>
+                </TabsContent>
+
+                <TabsContent value="ai-assistant">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Командный AI-помощник</CardTitle>
+                            <CardDescription>Получите краткую сводку по последней активности команды и рекомендации от нашего ИИ.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <Button onClick={handleGenerateSummary} disabled={isLoading}>
+                                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                {isLoading ? 'Анализ...' : 'Сгенерировать сводку'}
+                            </Button>
+                            
+                            {error && (
+                                <Alert variant="destructive">
+                                    <AlertTitle>Ошибка</AlertTitle>
+                                    <AlertDescription>{error}</AlertDescription>
+                                </Alert>
+                            )}
+                            
+                            {aiResult && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>Сводка</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-sm text-muted-foreground">{aiResult.summary}</p>
+                                        </CardContent>
+                                    </Card>
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>Рекомендации</CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <p className="text-sm text-muted-foreground">{aiResult.suggestions}</p>
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            )}
+                        </CardContent>
+                    </Card>
                 </TabsContent>
             </Tabs>
         </div>
