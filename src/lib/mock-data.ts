@@ -180,3 +180,23 @@ export const myBookings = [
         status: 'Отменено',
     }
 ];
+
+export const leaderboardData = [
+    { id: 1, rank: 1, name: "Alex 'CyberSlasher' Doe", avatar: 'https://placehold.co/40x40.png', avatarHint: 'esports player', team: 'Кибер Орлы', elo: 2450, wins: 152, losses: 61, profileUrl: '/profile' },
+    { id: 2, rank: 2, name: "Jane 'Venom' Doe", avatar: 'https://placehold.co/40x40.png', avatarHint: 'female gamer', team: 'Вихревые Гадюки', elo: 2410, wins: 140, losses: 65, profileUrl: '#' },
+    { id: 3, rank: 3, name: "Alex 'Nova' Ray", avatar: 'https://placehold.co/40x40.png', avatarHint: 'focused gamer', team: 'Квантовые Квазары', elo: 2380, wins: 135, losses: 70, profileUrl: '#' },
+    { id: 4, rank: 4, name: "Sam 'The-Rock' Stone", avatar: 'https://placehold.co/40x40.png', avatarHint: 'serious gamer', team: 'Багровые Крестоносцы', elo: 2350, wins: 130, losses: 72, profileUrl: '#' },
+    { id: 5, rank: 5, name: "Max 'Titan' Iron", avatar: 'https://placehold.co/40x40.png', avatarHint: 'strong gamer', team: 'Стальные Титаны', elo: 2300, wins: 125, losses: 75, profileUrl: '#' },
+];
+
+export const achievementCatalog = [
+    { name: "Первая победа", description: "Выиграть свой первый матч в рейтинговой игре.", icon: "Trophy", rarity: "Обычная" },
+    { name: "Ветеран", description: "Сыграть 100 матчей.", icon: "Medal", rarity: "Обычная" },
+    { name: "Серия побед", description: "Выиграть 5 матчей подряд.", icon: "Star", rarity: "Редкая" },
+    { name: "Несокрушимый", description: "Выиграть матч, не проиграв ни одного раунда.", icon: "Shield", rarity: "Редкая" },
+    { name: "Мастер на все руки", description: "Победить, играя за 5 разных персонажей/ролей.", icon: "Swords", rarity: "Редкая" },
+    { name: "Командный игрок", description: "Вступить в команду и сыграть 10 матчей в её составе.", icon: "Users", rarity: "Обычная" },
+    { name: "Легенда сезона", description: "Занять 1-е место в рейтинге по итогам сезона.", icon: "Crown", rarity: "Эпическая" },
+    { name: "Ракетный старт", description: "Достигнуть высшего ранга за первый месяц игры.", icon: "Rocket", rarity: "Эпическая" },
+    { name: "Коллекционер", description: "Открыть 20 уникальных достижений.", icon: "Gem", rarity: "Эпическая" },
+];

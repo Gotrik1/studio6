@@ -126,9 +126,11 @@ export default async function AppLayout({
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
-              <SidebarMenuButton tooltip="Лидерборды">
-                <BarChart3 />
-                Лидерборды
+              <SidebarMenuButton asChild tooltip="Лидерборды">
+                <Link href="/leaderboards">
+                  <BarChart3 />
+                  Лидерборды
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
