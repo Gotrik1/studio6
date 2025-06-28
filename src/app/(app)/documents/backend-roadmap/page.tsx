@@ -1,3 +1,5 @@
+'use client';
+
 export default function BackendRoadmapPage() {
     return (
       <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 bg-card text-card-foreground rounded-lg shadow-sm">
