@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { BookOpen, Youtube, Goal, Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar, Award, Loader2, TrendingUp, TrendingDown, Sparkles, AlertCircle } from "lucide-react";
+import { BookOpen, Youtube, Goal, Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar, Award, Loader2, TrendingUp, TrendingDown, Sparkles, AlertCircle, Wand2 } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/lib/types";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/lib/mock-data/profiles";
@@ -25,6 +25,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@/ai/flows/analyze-player-performance-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { generateTrainingPlan, type GenerateTrainingPlanOutput } from '@/ai/flows/generate-training-plan-flow';
+import { UserAvatarGeneratorDialog } from './user-avatar-generator';
 
 const OverviewTab = dynamic(() => import('@/components/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -62,6 +63,7 @@ type PlayerProfileProps = {
 };
 
 export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
+  const [avatar, setAvatar] = useState(user.avatar);
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const totalPd = pdHistory.reduce((sum, item) => sum + item.value, 0);
   const rank = getRankByPoints(totalPd);
@@ -74,6 +76,8 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
   const [trainingPlan, setTrainingPlan] = useState<GenerateTrainingPlanOutput | null>(null);
   const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
   const [planError, setPlanError] = useState<string | null>(null);
+  
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
 
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
@@ -139,10 +143,24 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
     <div className="space-y-6">
       <Card>
         <CardHeader className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
-          <Avatar className="h-24 w-24 border-4 border-primary">
-            <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="esports player" />
-            <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
-          </Avatar>
+          <div className="relative">
+            <Avatar className="h-24 w-24 border-4 border-primary">
+              <AvatarImage src={avatar} alt={user.name} data-ai-hint="esports player" />
+              <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
+            </Avatar>
+             {isCurrentUser && (
+                <Button
+                    variant="outline"
+                    size="icon"
+                    className="absolute bottom-0 right-0 rounded-full h-8 w-8"
+                    onClick={() => setIsAvatarDialogOpen(true)}
+                    title="Generate AI Avatar"
+                >
+                    <Wand2 className="h-4 w-4" />
+                    <span className="sr-only">Generate AI Avatar</span>
+                </Button>
+            )}
+          </div>
           <div className="flex-1 space-y-1">
             <div className="flex items-center justify-center gap-2 sm:justify-start">
                 <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
@@ -385,6 +403,12 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
             </div>
         </TabsContent>
       </Tabs>
+       <UserAvatarGeneratorDialog
+        isOpen={isAvatarDialogOpen}
+        onOpenChange={setIsAvatarDialogOpen}
+        currentAvatar={avatar}
+        onAvatarSave={setAvatar}
+      />
     </div>
   );
 }
