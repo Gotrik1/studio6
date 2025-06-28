@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type { sponsorUser, sponsorAchievements } from "@/lib/mock-data/sponsor-profile";
 import { Skeleton } from './ui/skeleton';
+import Link from 'next/link';
 
 const SponsorStatsTab = dynamic(() => import('@/components/sponsor-profile-tabs/stats-tab').then(mod => mod.SponsorStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -42,7 +43,9 @@ export function SponsorProfile({ user, achievements }: SponsorProfileProps) {
               <Badge variant="outline">Официальный партнер</Badge>
             </div>
           </div>
-          <Button>Просмотр кампаний</Button>
+          <Button asChild>
+            <Link href="/sponsorship/management">Управление кампаниями</Link>
+          </Button>
         </CardHeader>
         <CardContent>
           <p className="text-center text-sm text-muted-foreground sm:text-left">Ведущий спонсор киберспортивных и игровых инициатив.</p>

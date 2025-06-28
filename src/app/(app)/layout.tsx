@@ -47,6 +47,7 @@ import {
   AudioLines,
   Radio,
   Bot,
+  Briefcase,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "@/components/collapsible-sidebar-menu-item";
 import { BottomNav } from "@/components/bottom-nav";
@@ -182,6 +183,16 @@ export default async function AppLayout({
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
+             {(user.role === 'Спонсор') && (
+              <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Мои Кампании">
+                    <Link href="/sponsorship/management">
+                      <Briefcase />
+                      Мои Кампании
+                    </Link>
+                  </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
              <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip="Чаты">
                 <Link href="/chats">
