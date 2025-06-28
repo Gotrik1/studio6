@@ -20,7 +20,7 @@ export async function authenticate(
       const user: User = {
         name: 'Superuser',
         email: 'admin@example.com',
-        role: 'Admin',
+        role: 'Администратор',
         avatar: 'https://placehold.co/100x100.png',
       };
       
