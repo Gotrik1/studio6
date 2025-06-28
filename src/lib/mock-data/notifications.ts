@@ -1,4 +1,4 @@
-import { MessageCircle, Shield, UserPlus, Trophy, Star } from 'lucide-react';
+import { MessageCircle, Shield, UserPlus, Trophy, Star, Users } from 'lucide-react';
 
 export const notifications = [
   {
@@ -10,6 +10,16 @@ export const notifications = [
     timestamp: "5 минут назад",
     isRead: false,
     href: '/chats'
+  },
+  {
+    id: 'notif-6',
+    type: 'team_invite',
+    icon: Users,
+    title: "Приглашение в команду",
+    description: "Команда 'Кибер Орлы' приглашает вас присоединиться к составу.",
+    timestamp: "10 минут назад",
+    isRead: false,
+    href: '/teams/cyber-eagles'
   },
   {
     id: 'notif-2',

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,11 @@ import { useToast } from "@/hooks/use-toast";
 import { JoinRequestAnalysisDialog } from "@/components/join-request-analysis-dialog";
 import { initialIncomingChallenges, initialOutgoingChallenges } from "@/lib/mock-data/challenges";
 import { TeamChatbot } from "@/components/team-chatbot";
+import { smartSearch, type SmartSearchOutput } from "@/ai/flows/smart-search-flow";
+import { pendingInvitations as initialPendingInvitations } from "@/lib/mock-data/invitations";
+import debounce from 'lodash.debounce';
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSession } from "@/lib/session-client";
 
 const team = {
   name: "Кибер Орлы",
@@ -75,15 +80,18 @@ const sponsors = [
 
 export default function TeamProfilePage() {
     const { toast } = useToast();
+    const { user } = useSession();
+    
+    // AI Assistant State
     const [aiResult, setAiResult] = useState<AiTeamAssistantOutput | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    
     const [isAssistantDialogOpen, setIsAssistantDialogOpen] = useState(false);
     const [teamActivity, setTeamActivity] = useState("");
     const [teamGoals, setTeamGoals] = useState("");
     const [relevantContent, setRelevantContent] = useState("");
 
+    // Avatar Generation State
     const [teamLogo, setTeamLogo] = useState(team.logo);
     const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
     const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
@@ -91,16 +99,25 @@ export default function TeamProfilePage() {
     const [generatedAvatar, setGeneratedAvatar] = useState<string | null>(null);
     const [avatarError, setAvatarError] = useState<string | null>(null);
 
+    // Roster & Requests State
     const [isRequestSent, setIsRequestSent] = useState(false);
     const [currentRoster, setCurrentRoster] = useState(initialRoster);
     const [joinRequests, setJoinRequests] = useState(initialJoinRequests);
-
     const [isAnalysisDialogOpen, setIsAnalysisDialogOpen] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState<(typeof initialJoinRequests)[0] | null>(null);
 
+    // Challenges State
     const [incomingChallenges, setIncomingChallenges] = useState(initialIncomingChallenges);
     const [outgoingChallenges, setOutgoingChallenges] = useState(initialOutgoingChallenges);
     const [confirmedTeamMatches, setConfirmedTeamMatches] = useState<(typeof initialIncomingChallenges[0])[]>([]);
+    
+    // Invite Player State
+    const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchResults, setSearchResults] = useState<SmartSearchOutput['users']>([]);
+    const [pendingInvites, setPendingInvites] = useState(initialPendingInvitations);
+
 
     const handleAcceptChallenge = (challenge: (typeof initialIncomingChallenges[0])) => {
         setIncomingChallenges(prev => prev.filter(c => c.id !== challenge.id));
@@ -227,6 +244,43 @@ export default function TeamProfilePage() {
             variant: "destructive",
         });
     };
+    
+    const debouncedSearch = useCallback(
+        debounce(async (query: string) => {
+            if (!query.trim()) {
+                setSearchResults([]);
+                setIsSearching(false);
+                return;
+            }
+            try {
+                const results = await smartSearch(query);
+                const currentUserFiltered = results.users.filter(u => u.name !== user?.name);
+                setSearchResults(currentUserFiltered);
+            } catch (error) {
+                console.error("Search failed:", error);
+                toast({ variant: 'destructive', title: 'Ошибка поиска' });
+            } finally {
+                setIsSearching(false);
+            }
+        }, 300),
+        [user?.name, toast]
+    );
+
+    useEffect(() => {
+        setIsSearching(true);
+        debouncedSearch(searchQuery);
+        return () => debouncedSearch.cancel();
+    }, [searchQuery, debouncedSearch]);
+    
+     const handleSendInvite = (player: SmartSearchOutput['users'][0]) => {
+        if (currentRoster.some(p => p.name === player.name) || pendingInvites.some(i => i.playerName === player.name)) {
+            toast({ variant: 'default', description: 'Этот игрок уже в команде или приглашен.' });
+            return;
+        }
+
+        setPendingInvites(prev => [...prev, { id: `inv-${Date.now()}`, playerName: player.name, status: 'Отправлено' }]);
+        toast({ title: 'Приглашение отправлено!', description: `Игрок ${player.name} получил ваше приглашение.` });
+    };
 
     return (
         <div className="space-y-6">
@@ -338,7 +392,52 @@ export default function TeamProfilePage() {
                                 <CardTitle>Текущий состав</CardTitle>
                                 <CardDescription>Игроки, которые защищают цвета команды {team.name}.</CardDescription>
                             </div>
-                            <Button><PlusCircle className="mr-2 h-4 w-4"/>Пригласить игрока</Button>
+                            <Dialog open={isInviteDialogOpen} onOpenChange={setIsInviteDialogOpen}>
+                                <DialogTrigger asChild>
+                                    <Button><PlusCircle className="mr-2 h-4 w-4"/>Пригласить игрока</Button>
+                                </DialogTrigger>
+                                <DialogContent className="sm:max-w-md">
+                                    <DialogHeader>
+                                        <DialogTitle>Пригласить игрока в команду</DialogTitle>
+                                        <DialogDescription>Найдите игрока по имени и отправьте ему приглашение.</DialogDescription>
+                                    </DialogHeader>
+                                    <div className="space-y-4 py-2">
+                                        <Input 
+                                            placeholder="Введите имя игрока..."
+                                            value={searchQuery}
+                                            onChange={(e) => setSearchQuery(e.target.value)}
+                                        />
+                                        <ScrollArea className="h-64">
+                                            <div className="space-y-2 pr-4">
+                                                {isSearching ? (
+                                                    <div className="flex justify-center p-4"><Loader2 className="h-6 w-6 animate-spin"/></div>
+                                                ) : searchResults.length > 0 ? (
+                                                    searchResults.map(player => (
+                                                        <div key={player.id} className="flex items-center justify-between rounded-md border p-2">
+                                                            <div className="flex items-center gap-2">
+                                                                <Avatar className="h-8 w-8">
+                                                                    <AvatarImage src={player.avatar} />
+                                                                    <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
+                                                                </Avatar>
+                                                                <div>
+                                                                    <p className="text-sm font-semibold">{player.name}</p>
+                                                                    <p className="text-xs text-muted-foreground">{player.role}</p>
+                                                                </div>
+                                                            </div>
+                                                            <Button size="sm" onClick={() => handleSendInvite(player)}>Пригласить</Button>
+                                                        </div>
+                                                    ))
+                                                ) : searchQuery && (
+                                                    <p className="text-center text-sm text-muted-foreground p-4">Игроки не найдены.</p>
+                                                )}
+                                            </div>
+                                        </ScrollArea>
+                                    </div>
+                                    <DialogFooter>
+                                        <Button variant="outline" onClick={() => setIsInviteDialogOpen(false)}>Закрыть</Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
                             {currentRoster.map(player => (
@@ -362,6 +461,22 @@ export default function TeamProfilePage() {
                                     </Button>
                                 </Card>
                             ))}
+                        </CardContent>
+                    </Card>
+                    <Card className="mt-6">
+                        <CardHeader>
+                            <CardTitle>Отправленные приглашения</CardTitle>
+                            <CardDescription>Статус приглашений, отправленных игрокам.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-2">
+                            {pendingInvites.length > 0 ? (
+                                pendingInvites.map(invite => (
+                                    <div key={invite.id} className="flex items-center justify-between rounded-md border p-3">
+                                        <p className="font-semibold">{invite.playerName}</p>
+                                        <Badge variant="secondary">{invite.status}</Badge>
+                                    </div>
+                                ))
+                            ) : <p className="text-center text-sm text-muted-foreground py-4">Нет активных приглашений.</p>}
                         </CardContent>
                     </Card>
                 </TabsContent>
