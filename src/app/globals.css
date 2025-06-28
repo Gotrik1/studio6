@@ -42,23 +42,26 @@ html {
   }
 
   .dark {
-    --background: 220 6% 10%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 145 63% 59%;
-    --accent-foreground: 145 63% 10%;
-    --destructive: 0 62.8% 30.6%;
+    /* Crimson & Slate Theme */
+    --background: 220 10% 12%;
+    --foreground: 210 20% 94%;
+    --card: 220 10% 16%;
+    --card-foreground: 210 20% 94%;
+    --popover: 220 10% 12%;
+    --popover-foreground: 210 20% 94%;
+    --primary: 0 72% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 10% 24%;
+    --secondary-foreground: 210 20% 98%;
+    --muted: 220 10% 24%;
+    --muted-foreground: 210 20% 65%;
+    --accent: 0 72% 56%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 217 91% 60%;
+    --border: 220 10% 24%;
+    --input: 220 10% 24%;
+    --ring: 0 84% 60%;
   }
 
   /* Accent Color Themes */
@@ -66,7 +69,7 @@ html {
   .theme-green { --primary: 142 71% 45%; --primary-foreground: 142 71% 95%; --ring: 142 71% 45%; }
   .theme-yellow { --primary: 48 96% 51%; --primary-foreground: 48 96% 10%; --ring: 48 96% 51%; }
   .theme-orange { --primary: 25 95% 53%; --primary-foreground: 25 95% 95%; --ring: 25 95% 53%; }
-  .theme-red { --primary: 0 84% 60%; --primary-foreground: 0 84% 98%; --ring: 0 84% 60%; }
+  .theme-red { --primary: 0 72% 56%; --primary-foreground: 0 0% 100%; --ring: 0 84% 60%; }
   .theme-purple { --primary: 262 83% 58%; --primary-foreground: 262 83% 98%; --ring: 262 83% 58%; }
   .theme-pink { --primary: 340 95% 68%; --primary-foreground: 340 95% 10%; --ring: 340 95% 68%; }
   .theme-cyan { --primary: 199 98% 48%; --primary-foreground: 199 98% 98%; --ring: 199 98% 48%; }
