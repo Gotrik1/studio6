@@ -30,6 +30,7 @@ import {
   Trash2,
   Volume2,
   AlertCircle,
+  ClipboardList,
 } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/hooks/use-toast";
@@ -46,6 +47,9 @@ import { textToSpeech } from "@/ai/flows/tts-flow";
 import { aiTeamAssistant, type AiTeamAssistantOutput } from '@/ai/flows/ai-team-assistant';
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import Link from "next/link";
+import { Progress } from "@/components/ui/progress";
+import { dailyQuests as initialDailyQuests, weeklyQuests as initialWeeklyQuests, type Quest } from "@/lib/mock-data/quests";
+import { Badge } from "@/components/ui/badge";
 
 const initialFeedItems = [
   {
@@ -161,11 +165,13 @@ export default function DashboardPage() {
   const [loadingAudioId, setLoadingAudioId] = useState<number | null>(null);
   const [activeAudio, setActiveAudio] = useState<{ id: number; url: string; } | null>(null);
 
-  // New state for AI Team Assistant
   const [assistantResult, setAssistantResult] = useState<AiTeamAssistantOutput | null>(null);
   const [isAssistantLoading, setIsAssistantLoading] = useState(true);
   const [assistantError, setAssistantError] = useState<string | null>(null);
   
+  const [dailyQuests, setDailyQuests] = useState(initialDailyQuests);
+  const [weeklyQuests, setWeeklyQuests] = useState(initialWeeklyQuests);
+
   useEffect(() => {
     async function getAssistantSummary() {
       setIsAssistantLoading(true);
@@ -346,6 +352,25 @@ export default function DashboardPage() {
     }
   }
 
+  const handleClaimQuest = (questId: string, type: 'daily' | 'weekly') => {
+    const questList = type === 'daily' ? dailyQuests : weeklyQuests;
+    const setQuestList = type === 'daily' ? setDailyQuests : setWeeklyQuests;
+    const quest = questList.find(q => q.id === questId);
+
+    if (quest && quest.currentProgress >= quest.goal && !quest.isClaimed) {
+        setQuestList(prev => prev.map(q => q.id === questId ? { ...q, isClaimed: true } : q));
+        toast({
+            title: (
+              <div className="flex items-center">
+                  <Coins className="mr-2 h-5 w-5 text-amber-400" />
+                  <span>Награда получена!</span>
+              </div>
+            ),
+            description: `Вы получили +${quest.reward} PD за выполнение задания "${quest.title}".`,
+        });
+        // Here you would also update the global PD balance
+    }
+  };
 
   return (
     <div className="grid grid-cols-12 gap-6">
@@ -509,6 +534,69 @@ export default function DashboardPage() {
           <div className="sticky top-4 space-y-6">
             <Card>
                 <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><ClipboardList className="text-primary"/> Задания</CardTitle>
+                    <CardDescription>Выполняйте задания, чтобы получить PD.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div>
+                        <h4 className="font-semibold text-sm mb-2">Ежедневные</h4>
+                        <div className="space-y-3">
+                        {dailyQuests.map((quest) => (
+                            <div key={quest.id}>
+                                <div className="flex items-center gap-2 text-sm">
+                                    <quest.icon className="h-4 w-4 text-muted-foreground" />
+                                    <span className="flex-1 font-medium">{quest.title}</span>
+                                    <Badge variant="secondary" className="flex items-center gap-1"><Coins className="h-3 w-3" />+{quest.reward} PD</Badge>
+                                </div>
+                                <Progress value={(quest.currentProgress / quest.goal) * 100} className="mt-1 h-2" />
+                                <div className="flex justify-between items-center mt-1">
+                                    <p className="text-xs text-muted-foreground">{quest.description}</p>
+                                     <Button 
+                                        size="xs" 
+                                        variant="link"
+                                        disabled={quest.isClaimed || quest.currentProgress < quest.goal}
+                                        onClick={() => handleClaimQuest(quest.id, 'daily')}
+                                        className="text-xs h-auto p-0"
+                                    >
+                                        {quest.isClaimed ? 'Получено' : 'Забрать'}
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                        </div>
+                    </div>
+                     <div>
+                        <h4 className="font-semibold text-sm mb-2">Еженедельные</h4>
+                         <div className="space-y-3">
+                         {weeklyQuests.map((quest) => (
+                            <div key={quest.id}>
+                                <div className="flex items-center gap-2 text-sm">
+                                    <quest.icon className="h-4 w-4 text-muted-foreground" />
+                                    <span className="flex-1 font-medium">{quest.title}</span>
+                                    <Badge variant="secondary" className="flex items-center gap-1"><Coins className="h-3 w-3" />+{quest.reward} PD</Badge>
+                                </div>
+                                <Progress value={(quest.currentProgress / quest.goal) * 100} className="mt-1 h-2" />
+                                <div className="flex justify-between items-center mt-1">
+                                    <p className="text-xs text-muted-foreground">{quest.description}</p>
+                                     <Button 
+                                        size="xs" 
+                                        variant="link"
+                                        disabled={quest.isClaimed || quest.currentProgress < quest.goal}
+                                        onClick={() => handleClaimQuest(quest.id, 'weekly')}
+                                        className="text-xs h-auto p-0"
+                                    >
+                                        {quest.isClaimed ? 'Получено' : 'Забрать'}
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
                     <CardTitle className="flex items-center gap-2"><BrainCircuit className="text-primary"/>AI-ассистент команды</CardTitle>
                     <CardDescription>Краткая сводка и рекомендации для вашей команды.</CardDescription>
                 </CardHeader>
@@ -581,4 +669,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
