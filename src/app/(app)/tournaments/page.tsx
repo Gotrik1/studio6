@@ -33,9 +33,11 @@ export default function TournamentsPage() {
           <h1 className="font-headline text-3xl font-bold tracking-tight">Турниры</h1>
           <p className="text-muted-foreground">Соревнуйтесь за славу и призы.</p>
         </div>
-        <Button>
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Создать турнир
+        <Button asChild>
+          <Link href="/tournaments/new">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Создать турнир
+          </Link>
         </Button>
       </div>
 
