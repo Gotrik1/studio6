@@ -1,10 +1,9 @@
-
 'use client';
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/shared/ui/skeleton';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const AdminDashboardPage = dynamic(
-  () => import('@/pages/admin-dashboard').then((mod) => mod.AdminDashboardPage),
+  () => import('@/pages/admin-dashboard/index').then((mod) => mod.AdminDashboardPage),
   {
     loading: () => (
       <div className="space-y-8">
