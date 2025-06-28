@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import Image from "next/image";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -69,9 +70,11 @@ export default function PromotionsPage() {
                         <Coins className="h-5 w-5"/>
                         <span className="text-lg">{pdBalance.toLocaleString()} PD</span>
                     </div>
-                    <Button>
+                    <Button asChild>
+                      <Link href="/promotions/new">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Создать акцию
+                      </Link>
                     </Button>
                 </div>
             </div>
