@@ -34,6 +34,7 @@ import {
   ShieldCheck,
   BrainCircuit,
   Palette,
+  Dumbbell,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
 import { BottomNav } from "@/widgets/bottom-nav";
@@ -113,9 +114,9 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                     </SidebarMenuItem>
 
                     <SidebarMenuItem>
-                        <CollapsibleSidebarMenuItem icon={<BrainCircuit />} title="Развитие">
+                        <CollapsibleSidebarMenuItem icon={<Dumbbell />} title="Развитие">
                         <SidebarMenuSubItem>
-                            <SidebarMenuSubButton href="/training">AI-Коуч</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/training">Тренировочный центр</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/quests">Квесты</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/store">Магазин</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/promotions">Промо-акции</SidebarMenuSubButton>
