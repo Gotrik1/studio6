@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -59,7 +60,7 @@ export function LeaderboardsPage() {
                                             <span className="font-medium">{player.name}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell className="text-right font-semibold">{player.points.toLocaleString()} PD</TableCell>
+                                    <TableCell className="text-right font-semibold">{player.points.toLocaleString('ru-RU')} PD</TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
