@@ -18,7 +18,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { PD_SOURCE_DETAILS, type PD_SOURCE_TYPE } from '@/shared/config/gamification';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { getRankByPoints } from "@/shared/config/ranks";
+import { RANKS, getRankByPoints } from "@/shared/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/ui/tooltip";
 import { cn } from '@/shared/lib/utils';
 import { useState } from 'react';
@@ -60,6 +60,7 @@ type PlayerProfileProps = {
     mainSport: string;
     status: string;
     isVerified: boolean;
+    xp: number;
   };
   isCurrentUser: boolean;
 };
@@ -68,7 +69,10 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
   const [avatar, setAvatar] = useState(user.avatar);
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const totalPd = pdHistory.reduce((sum, item) => sum + item.value, 0);
-  const rank = getRankByPoints(totalPd);
+  const rank = getRankByPoints(user.xp);
+  const nextRank = RANKS[RANKS.indexOf(rank) + 1];
+  const progressValue = rank.maxPoints === Infinity ? 100 : ((user.xp - rank.minPoints) / (rank.maxPoints - rank.minPoints)) * 100;
+
 
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -185,7 +189,7 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
                     </TooltipTrigger>
                     <TooltipContent>
                       <p className="font-semibold">{rank.name}</p>
-                      <p className="text-sm text-muted-foreground">{rank.description}</p>
+                      <p className="text-sm text-muted-foreground italic">&quot;{rank.title}&quot;</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
@@ -317,10 +321,10 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
         <CardContent>
           <div className="space-y-2">
             <div className="flex justify-between text-sm text-muted-foreground">
-              <span>Прогресс до Уровня 28</span>
-              <span>2,300 / 5,000 XP</span>
+              <span>Прогресс до {nextRank ? `ранга "${nextRank.name}"` : 'максимального ранга'}</span>
+              <span>{user.xp.toLocaleString('ru-RU')} / {rank.maxPoints === Infinity ? '∞' : rank.maxPoints.toLocaleString('ru-RU')} XP</span>
             </div>
-            <Progress value={46} className="h-2" />
+            <Progress value={progressValue} className="h-2" />
           </div>
         </CardContent>
       </Card>

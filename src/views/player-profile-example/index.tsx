@@ -1,3 +1,4 @@
+
 import PlayerClient from "@/app/(app)/administration/player/client";
 
 const examplePlayerUser = {
@@ -10,6 +11,7 @@ const examplePlayerUser = {
   mainSport: "Valorant",
   status: "Активен",
   isVerified: true,
+  xp: 1250,
 };
 
 export function PlayerProfilePage() {

@@ -48,6 +48,7 @@ export default function ProfileClient({ sessionUser }: ProfileClientProps) {
         mainSport: "Valorant",
         status: sessionUser.role === 'Капитан' ? "Капитан команды 'Кибер Орлы'" : "Активен",
         isVerified: true,
+        xp: 4500, // mock experience points
     };
 
     switch (role) {

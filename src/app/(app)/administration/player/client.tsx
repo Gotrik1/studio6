@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -19,6 +20,7 @@ type PlayerProfileProps = {
     mainSport: string;
     status: string;
     isVerified: boolean;
+    xp: number;
   };
   isCurrentUser: boolean;
 };

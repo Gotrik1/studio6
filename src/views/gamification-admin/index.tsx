@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -145,14 +146,14 @@ export function GamificationAdminPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle>Ранги пользователей</CardTitle>
-                        <CardDescription>Ранги, которые пользователи получают за накопление PD.</CardDescription>
+                        <CardDescription>Ранги, которые пользователи получают за накопление XP.</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Ранг</TableHead>
-                                    <TableHead className="text-right">Очки (PD)</TableHead>
+                                    <TableHead className="text-right">Диапазон XP</TableHead>
                                 </TableRow>
                             </TableHeader>
                              <TableBody>
@@ -164,7 +165,7 @@ export function GamificationAdminPage() {
                                                 <span className="font-medium">{rank.name}</span>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="text-right">{rank.minPoints.toLocaleString('ru-RU')}</TableCell>
+                                        <TableCell className="text-right font-mono text-xs">{rank.minPoints} - {rank.maxPoints === Infinity ? '∞' : rank.maxPoints}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
