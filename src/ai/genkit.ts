@@ -1,7 +1,4 @@
-import {genkit} from 'genkit';
-import {googleAI} from '@genkit-ai/googleai';
-
-export const ai = genkit({
-  plugins: [googleAI()],
-  model: 'googleai/gemini-2.0-flash',
-});
+// This file is obsolete. The genkit instance is now initialized in /src/shared/api/genkit/index.ts
+// This file is kept to avoid breaking changes in the project structure during migration.
+import { ai } from '@/shared/api/genkit';
+export { ai };

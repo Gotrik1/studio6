@@ -1,57 +1,8 @@
-
 'use server';
 
+// This file is the entrypoint for the Genkit development server.
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/ai-team-assistant.ts';
-import '@/ai/flows/analyze-content-generation.ts';
-import '@/ai/flows/generate-content-flow.ts';
-import '@/ai/flows/generate-team-avatar-flow.ts';
-import '@/ai/flows/analyze-security-flow.ts';
-import '@/ai/flows/create-team-flow.ts';
-import '@/ai/flows/analyze-player-performance-flow.ts';
-import '@/ai/flows/tts-flow.ts';
-import '@/ai/flows/dialogue-generation-flow.ts';
-import '@/ai/flows/multi-speaker-tts-flow.ts';
-import '@/ai/flows/generate-post-image-flow.ts';
-import '@/ai/flows/analyze-dispute-flow.ts';
-import '@/ai/flows/generate-tournament-details-flow.ts';
-import '@/ai/flows/generate-tournament-image-flow.ts';
-import '@/ai/flows/smart-search-flow.ts';
-import '@/ai/flows/suggest-reply-flow.ts';
-import '@/ai/flows/analyze-join-request-flow.ts';
-import '@/ai/flows/generate-tournament-wizard-flow.ts';
-import '@/ai/flows/analyze-match-challenge-flow.ts';
-import '@/ai/flows/analyze-match-report-flow.ts';
-import '@/ai/flows/support-chatbot-flow.ts';
-import '@/ai/flows/analyze-role-change-flow.ts';
-import '@/ai/flows/generate-user-avatar-flow.ts';
-import '@/ai/flows/generate-promotion-details-flow.ts';
-import '@/ai/flows/generate-promotion-image-flow.ts';
-import '@/ai/flows/generate-promotion-wizard-flow.ts';
-import '@/ai/flows/team-chatbot-flow.ts';
-import '@/ai/flows/generate-training-plan-flow.ts';
-import '@/ai/flows/generate-match-interview-flow.ts';
-import '@/ai/flows/analyze-report-flow.ts';
-import '@/ai/flows/generate-sponsorship-pitch.ts';
-import '@/ai/flows/sponsorship-scout-flow.ts';
-import '@/ai/flows/generate-match-post-flow.ts';
-import '@/ai/flows/generate-platform-news-flow.ts';
-import '@/ai/flows/generate-team-concept-flow.ts';
-import '@/ai/flows/find-venues-flow.ts';
-import '@/ai/flows/onboarding-assistant-flow.ts';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Import all flows to register them with Genkit.
+import '@/shared/api/genkit/register-flows';

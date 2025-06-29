@@ -4,10 +4,9 @@
 import Image from "next/image";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
-import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import { MessageSquare, UserPlus, BrainCircuit, Tv, FileText, BarChart3, Users, Camera, Shield } from "lucide-react";
+import { BrainCircuit, FileText, BarChart3, Users, Camera } from "lucide-react";
 import type { MatchDetails } from "@/entities/match/model/types";
 import { OverviewTab } from "@/widgets/match-details-tabs/ui/overview-tab";
 import { StatsTab } from "@/widgets/match-details-tabs/ui/stats-tab";

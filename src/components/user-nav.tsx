@@ -1,9 +1,10 @@
+// OBSOLETE FILE: This component has been moved to /src/widgets/user-nav/index.tsx as part of the FSD refactoring.
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
+} from "@/shared/ui/avatar"
+import { Button } from "@/shared/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,9 +13,9 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { logout } from "@/lib/actions"
-import type { User } from "@/lib/types"
+} from "@/shared/ui/dropdown-menu"
+import { logout } from "@/features/auth/actions"
+import type { User } from "@/shared/lib/types"
 import Link from 'next/link'
 
 export function UserNav({ user }: { user: User }) {
