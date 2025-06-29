@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -36,8 +37,7 @@ import {
   Dumbbell,
   BookOpen,
   BarChart2,
-  Salad,
-  Apple,
+  UtensilsCrossed,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
 import { BottomNav } from "@/shared/ui/bottom-nav";

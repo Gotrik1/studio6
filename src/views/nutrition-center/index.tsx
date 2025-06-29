@@ -6,7 +6,7 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { nutritionItems, type FoodItem } from '@/shared/lib/mock-data/nutrition';
 import Image from 'next/image';
-import { Search, PlusCircle, Salad, Bot } from 'lucide-react';
+import { Search, PlusCircle, UtensilsCrossed, Bot } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 
@@ -111,7 +111,7 @@ export function NutritionCenterPage() {
                     </div>
                      {foodProducts.length === 0 && (
                         <div className="col-span-full text-center py-16 text-muted-foreground">
-                            <Salad className="h-12 w-12 mx-auto mb-4" />
+                            <UtensilsCrossed className="h-12 w-12 mx-auto mb-4" />
                             <p>Ничего не найдено. Попробуйте другой запрос.</p>
                         </div>
                     )}
@@ -125,7 +125,7 @@ export function NutritionCenterPage() {
                     </div>
                      {supplements.length === 0 && (
                         <div className="col-span-full text-center py-16 text-muted-foreground">
-                             <Salad className="h-12 w-12 mx-auto mb-4" />
+                             <UtensilsCrossed className="h-12 w-12 mx-auto mb-4" />
                             <p>Ничего не найдено. Попробуйте другой запрос.</p>
                         </div>
                     )}
