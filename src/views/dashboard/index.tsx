@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
@@ -8,13 +7,13 @@ import { ArrowRight } from "lucide-react";
 import { PollCard } from "@/widgets/poll-card";
 import { mainPoll, teamOfTheWeek } from "@/shared/lib/mock-data/dashboard";
 import Image from "next/image";
-import { ActivityFeed } from '@/widgets/activity-feed';
+import { AiNewsDigest } from '@/widgets/ai-news-digest';
 
 export function DashboardPage() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-                <ActivityFeed />
+                <AiNewsDigest />
             </div>
             <div className="space-y-6">
                 <Card>
