@@ -7,17 +7,19 @@ import { Badge } from '@/shared/ui/badge';
 import { Input } from '@/shared/ui/input';
 import { exercisesList, type Exercise } from '@/shared/lib/mock-data/exercises';
 import Image from 'next/image';
-import { Search, Plus } from 'lucide-react';
-import { useToast } from '@/shared/hooks/use-toast';
+import { Search } from 'lucide-react';
+import { ExerciseDetailsDialog } from '@/widgets/exercise-details-dialog';
 
 const muscleGroups = ['Все', 'Грудь', 'Спина', 'Ноги', 'Плечи', 'Руки', 'Пресс'];
 const equipmentTypes = ['Все', 'Штанга', 'Гантели', 'Тренажер', 'Собственный вес'];
 
 export function ExercisesCatalogPage() {
-    const { toast } = useToast();
     const [searchQuery, setSearchQuery] = useState('');
     const [muscleFilter, setMuscleFilter] = useState('Все');
     const [equipmentFilter, setEquipmentFilter] = useState('Все');
+
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+    const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
 
     const filteredExercises = useMemo(() => {
         return exercisesList.filter(exercise => {
@@ -28,11 +30,9 @@ export function ExercisesCatalogPage() {
         });
     }, [searchQuery, muscleFilter, equipmentFilter]);
 
-    const handleAddToWorkout = (exerciseName: string) => {
-        toast({
-            title: "Упражнение добавлено",
-            description: `${exerciseName} добавлено в вашу текущую тренировку.`,
-        });
+    const handleCardClick = (exercise: Exercise) => {
+        setSelectedExercise(exercise);
+        setIsDetailsOpen(true);
     };
 
     return (
@@ -84,7 +84,11 @@ export function ExercisesCatalogPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredExercises.map((exercise: Exercise) => (
-                    <Card key={exercise.id} className="flex flex-col overflow-hidden">
+                    <Card 
+                        key={exercise.id} 
+                        className="flex flex-col overflow-hidden cursor-pointer transition-all hover:shadow-lg hover:border-primary"
+                        onClick={() => handleCardClick(exercise)}
+                    >
                         <CardHeader className="p-0 relative h-40">
                             <Image
                                 src={exercise.image}
@@ -101,11 +105,10 @@ export function ExercisesCatalogPage() {
                                 <Badge variant="outline">{exercise.equipment}</Badge>
                             </div>
                         </CardContent>
-                        <CardFooter>
-                            <Button className="w-full" onClick={() => handleAddToWorkout(exercise.name)}>
-                                <Plus className="mr-2 h-4 w-4" />
-                                Добавить в тренировку
-                            </Button>
+                        <CardFooter className="p-0">
+                            <div className="w-full text-center p-2 text-sm font-medium text-primary bg-primary/10">
+                                Подробнее
+                            </div>
                         </CardFooter>
                     </Card>
                 ))}
@@ -115,6 +118,11 @@ export function ExercisesCatalogPage() {
                     </div>
                 )}
             </div>
+            <ExerciseDetailsDialog 
+                isOpen={isDetailsOpen}
+                onOpenChange={setIsDetailsOpen}
+                exercise={selectedExercise}
+            />
         </div>
     );
 }

@@ -6,6 +6,9 @@ export type Exercise = {
     equipment: 'Штанга' | 'Гантели' | 'Тренажер' | 'Собственный вес';
     image: string;
     imageHint: string;
+    techniqueTips: string[];
+    commonMistakes: string[];
+    alternatives: string[];
 };
 
 export const exercisesList: Exercise[] = [
@@ -16,7 +19,18 @@ export const exercisesList: Exercise[] = [
         muscleGroup: 'Грудь',
         equipment: 'Штанга',
         image: 'https://placehold.co/600x400.png',
-        imageHint: 'bench press'
+        imageHint: 'bench press',
+        techniqueTips: [
+            'Сводите лопатки и создавайте прогиб в спине (арку).',
+            'Опускайте штангу на нижнюю часть груди.',
+            'Ноги должны стоять на полу всей стопой.'
+        ],
+        commonMistakes: [
+            'Отрыв таза от скамьи.',
+            'Неполная амплитуда движения.',
+            'Чрезмерно широкий или узкий хват.'
+        ],
+        alternatives: ['Жим гантелей лежа', 'Отжимания на брусьях']
     },
     {
         id: 'ex-2',
@@ -25,7 +39,18 @@ export const exercisesList: Exercise[] = [
         muscleGroup: 'Ноги',
         equipment: 'Штанга',
         image: 'https://placehold.co/600x400.png',
-        imageHint: 'barbell squat'
+        imageHint: 'barbell squat',
+        techniqueTips: [
+            'Держите спину прямой на протяжении всего движения.',
+            'Взгляд направлен вперед.',
+            'Колени не выходят за носки.'
+        ],
+        commonMistakes: [
+            'Округление спины.',
+            'Сведение коленей внутрь.',
+            'Слишком малая глубина приседа.'
+        ],
+        alternatives: ['Жим ногами в тренажере', 'Приседания с гантелями']
     },
     {
         id: 'ex-3',
@@ -34,7 +59,18 @@ export const exercisesList: Exercise[] = [
         muscleGroup: 'Спина',
         equipment: 'Штанга',
         image: 'https://placehold.co/600x400.png',
-        imageHint: 'deadlift'
+        imageHint: 'deadlift',
+        techniqueTips: [
+            'Подходите к штанге вплотную, голени почти касаются грифа.',
+            'Сохраняйте спину идеально прямой.',
+            'Подъем начинается с разгибания ног.'
+        ],
+        commonMistakes: [
+            'Округление поясницы.',
+            'Рывок в начале движения.',
+            'Слишком раннее разгибание коленей.'
+        ],
+        alternatives: ['Румынская тяга', 'Тяга блока к поясу']
     },
     {
         id: 'ex-4',
@@ -43,7 +79,18 @@ export const exercisesList: Exercise[] = [
         muscleGroup: 'Спина',
         equipment: 'Собственный вес',
         image: 'https://placehold.co/600x400.png',
-        imageHint: 'pull ups'
+        imageHint: 'pull ups',
+        techniqueTips: [
+            'Используйте полный диапазон движения.',
+            'Тянитесь грудью к перекладине.',
+            'Включайте в работу широчайшие мышцы, а не только руки.'
+        ],
+        commonMistakes: [
+            'Раскачивание (киппинг).',
+            'Неполное опускание.',
+            'Слишком большая нагрузка на бицепсы.'
+        ],
+        alternatives: ['Тяга верхнего блока', 'Австралийские подтягивания']
     },
     {
         id: 'ex-5',
@@ -52,7 +99,18 @@ export const exercisesList: Exercise[] = [
         muscleGroup: 'Плечи',
         equipment: 'Гантели',
         image: 'https://placehold.co/600x400.png',
-        imageHint: 'dumbbell press'
+        imageHint: 'dumbbell press',
+        techniqueTips: [
+            'Держите спину прямо, прижав к спинке скамьи.',
+            'Не используйте инерцию.',
+            'Опускайте гантели до уровня ушей.'
+        ],
+        commonMistakes: [
+            'Чрезмерный прогиб в пояснице.',
+            'Неполная амплитуда.',
+            'Использование слишком большого веса.'
+        ],
+        alternatives: ['Армейский жим стоя', 'Жим в тренажере Смита']
     },
     {
         id: 'ex-6',
@@ -61,7 +119,18 @@ export const exercisesList: Exercise[] = [
         muscleGroup: 'Пресс',
         equipment: 'Собственный вес',
         image: 'https://placehold.co/600x400.png',
-        imageHint: 'crunches'
+        imageHint: 'crunches',
+        techniqueTips: [
+            'Округляйте спину, отрывая лопатки от пола.',
+            'Сосредоточьтесь на сокращении мышц пресса.',
+            'Не тяните шею руками.'
+        ],
+        commonMistakes: [
+            'Использование инерции.',
+            'Напряжение шеи вместо пресса.',
+            'Отрыв поясницы от пола.'
+        ],
+        alternatives: ['Подъемы ног в висе', 'Планка']
     },
     {
         id: 'ex-7',
@@ -70,7 +139,18 @@ export const exercisesList: Exercise[] = [
         muscleGroup: 'Грудь',
         equipment: 'Гантели',
         image: 'https://placehold.co/600x400.png',
-        imageHint: 'dumbbell flys'
+        imageHint: 'dumbbell flys',
+        techniqueTips: [
+            'Сохраняйте небольшой сгиб в локтях на протяжении всего движения.',
+            'Концентрируйтесь на растяжении и сокращении грудных мышц.',
+            'Опускайте гантели до уровня плеч.'
+        ],
+        commonMistakes: [
+            'Превращение движения в жим.',
+            'Использование слишком большого веса.',
+            'Слишком глубокое опускание гантелей.'
+        ],
+        alternatives: ['Разведение в тренажере "бабочка"', 'Сведение кроссовера']
     },
     {
         id: 'ex-8',
@@ -79,6 +159,17 @@ export const exercisesList: Exercise[] = [
         muscleGroup: 'Ноги',
         equipment: 'Тренажер',
         image: 'https://placehold.co/600x400.png',
-        imageHint: 'leg curls'
+        imageHint: 'leg curls',
+        techniqueTips: [
+            'Плотно прижимайте таз к скамье.',
+            'Выполняйте движение плавно, без рывков.',
+            'Сосредоточьтесь на работе бицепса бедра.'
+        ],
+        commonMistakes: [
+            'Отрыв таза от скамьи.',
+            'Использование инерции.',
+            'Слишком быстрый темп.'
+        ],
+        alternatives: ['Румынская тяга с гантелями', 'Гиперэкстензия с акцентом на ягодицы']
     },
 ];
