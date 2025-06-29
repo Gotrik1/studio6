@@ -7,6 +7,8 @@ import { crmTournaments } from '@/shared/lib/mock-data/crm-tournaments';
 import { notFound } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
 import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants';
+import { TournamentBracket } from '@/widgets/tournament-bracket';
+import { summerKickoffTournament } from '@/shared/lib/mock-data/tournament-details';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -48,12 +50,10 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                     <Card>
                         <CardHeader>
                             <CardTitle>Сетка турнира</CardTitle>
-                            <CardDescription>В разработке...</CardDescription>
+                            <CardDescription>Визуальное представление турнирной сетки. Функции редактирования будут добавлены в будущем.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <div className="flex h-96 items-center justify-center rounded-lg border-2 border-dashed">
-                                <p className="text-muted-foreground">Здесь будет визуальный редактор сетки.</p>
-                            </div>
+                            <TournamentBracket rounds={summerKickoffTournament.bracket.rounds} />
                         </CardContent>
                     </Card>
                 </TabsContent>
