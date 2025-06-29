@@ -39,7 +39,6 @@ import { NotificationsPopover } from "@/widgets/notifications-popover";
 import { Button } from '@/shared/ui/button';
 import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/shared/lib/utils';
 
 interface AppLayoutProps {
     user: User;
@@ -78,7 +77,10 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     }, []);
 
     const isActive = (href: string) => {
-        return href === '/dashboard' ? pathname === href : pathname.startsWith(href);
+        if (href === '/dashboard' || href === '/') {
+            return pathname === '/dashboard' || pathname === '/';
+        }
+        return pathname.startsWith(href);
     }
 
     return (

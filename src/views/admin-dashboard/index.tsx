@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/ui/card";
 import { 
     Users, 
     ShieldCheck, 
@@ -39,27 +39,26 @@ const AdminSectionCard = ({ title, description, href, icon: Icon }: AdminSection
                 <CardDescription>{description}</CardDescription>
             </div>
         </CardHeader>
-        <CardContent className="flex-grow" />
-        <CardContent>
+        <CardFooter className="mt-auto">
              <Button asChild variant="outline" className="w-full">
                 <Link href={href}>
                     Перейти <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
             </Button>
-        </CardContent>
+        </CardFooter>
     </Card>
 );
 
 const managementCards: AdminSectionCardProps[] = [
-    { title: "Пользователи", description: "Управление всеми пользователями.", href: "/administration/users", icon: Users },
+    { title: "Пользователи и роли", description: "Управление всеми пользователями.", href: "/administration/users", icon: Users },
     { title: "Турниры (CRM)", description: "Полный цикл управления турнирами.", href: "/administration/tournament-crm/dashboard", icon: Trophy },
-    { title: "Модерация", description: "Очередь жалоб и инцидентов.", href: "/administration/moderation-queue", icon: Gavel },
+    { title: "Очередь модерации", description: "Жалобы, споры и инциденты.", href: "/administration/moderation-queue", icon: Gavel },
     { title: "Геймификация", description: "Настройка рангов и квестов.", href: "/administration/gamification", icon: ShieldCheck },
     { title: "Виды спорта", description: "Управление дисциплинами.", href: "/administration/sports", icon: Handshake },
 ];
 
 const contentCards: AdminSectionCardProps[] = [
-    { title: "Партнеры", description: "Управление спонсорами и партнерами.", href: "/partners", icon: Handshake },
+    { title: "Партнеры", description: "Управление спонсорами и партнерами.", href: "/sponsors", icon: Handshake },
     { title: "Экономика PD", description: "Настройка правил начисления PD.", href: "/pd-economy", icon: Coins },
     { title: "Монетизация", description: "Управление подписками.", href: "/monetization", icon: DollarSign },
     { title: "Магазин", description: "Редактирование товаров в магазине.", href: "/store", icon: ShoppingCart },
