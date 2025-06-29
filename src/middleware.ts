@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
     const response = NextResponse.redirect(new URL('/dashboard', request.url));
     const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: process.env.NODE_ENV !== 'development', // Fixed to avoid TS error
         maxAge: 60 * 60 * 24 * 7, // One week
         path: '/',
     };

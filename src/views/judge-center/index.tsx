@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { disputedMatches as initialDisputed, resolvedMatches as initialResolved, type DisputedMatch, type ResolvedMatch } from '@/shared/lib/mock-data/judge-center';
-import { DisputeResolutionDialog } from '@/components/dispute-resolution-dialog';
+import { DisputeResolutionDialog } from '@/widgets/dispute-resolution-dialog';
 import { useToast } from '@/shared/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';

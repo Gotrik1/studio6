@@ -20,7 +20,7 @@ type Message = {
 export function ChatsPage() {
     const { user } = useSession();
     const [selectedContact, setSelectedContact] = useState<Contact | null>(contacts[0]);
-    const [messages, setMessages] = useState<Message[]>(selectedContact ? [...allMessages[selectedContact.id as keyof typeof allMessages]] : []);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [replySuggestions, setReplySuggestions] = useState<string[]>([]);
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
@@ -29,6 +29,15 @@ export function ChatsPage() {
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
+    
+    useEffect(() => {
+        if (selectedContact) {
+            const newMessages = allMessages[selectedContact.id as keyof typeof allMessages] || [];
+            setMessages([...newMessages]);
+        } else {
+            setMessages([]);
+        }
+    }, [selectedContact]);
 
     useEffect(() => {
         scrollToBottom();
@@ -36,7 +45,6 @@ export function ChatsPage() {
 
     const handleSelectContact = (contact: Contact) => {
         setSelectedContact(contact);
-        setMessages([...allMessages[contact.id as keyof typeof allMessages]] || []);
         setReplySuggestions([]);
     };
     
