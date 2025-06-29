@@ -15,8 +15,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['Inter', 'sans-serif', ...fontFamily.sans],
-        headline: ['Space Grotesk', 'sans-serif', ...fontFamily.sans],
+        body: ['var(--font-inter)', ...fontFamily.sans],
+        headline: ['var(--font-space-grotesk)', ...fontFamily.sans],
         code: ['monospace', ...fontFamily.mono],
       },
       colors: {
