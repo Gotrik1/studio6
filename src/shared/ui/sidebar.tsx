@@ -73,7 +73,7 @@ type SidebarProps = {
 export function Sidebar({ className, children }: SidebarProps) {
   const { state } = useSidebar();
   return (
-    <div
+    <aside
       className={cn(
         'hidden md:fixed md:inset-y-0 md:left-0 md:z-30 md:flex md:flex-col',
         sidebarVariants({ state }),
@@ -81,7 +81,7 @@ export function Sidebar({ className, children }: SidebarProps) {
       )}
     >
       <div className='flex h-full w-full flex-col'>{children}</div>
-    </div>
+    </aside>
   );
 }
 type SidebarInsetProps = {
@@ -227,7 +227,7 @@ export function SidebarMenuSubItem({
   );
 }
 const buttonVariants = cva(
-  'inline-flex items-center justify-start text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 w-full',
+  'inline-flex items-center justify-start gap-3 text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 w-full',
   {
     variants: {
       variant: {
@@ -280,14 +280,13 @@ const SidebarMenuButton = React.forwardRef<
             <Comp
               className={cn(
                 'rounded-lg',
+                state === 'collapsed' && 'justify-center',
                 buttonVariants({ variant, size, className })
               )}
               ref={ref}
               {...props}
             >
-               <div className={cn('flex items-center w-full gap-3', state === 'collapsed' && 'justify-center')}>
-                 {children}
-               </div>
+              {children}
             </Comp>
           </TooltipTrigger>
           {state === 'collapsed' && tooltip && (
