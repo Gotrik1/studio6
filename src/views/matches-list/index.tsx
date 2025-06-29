@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { ReportScoreDialog } from '@/features/report-score/ui/report-score-dialog';
 import { useToast } from '@/shared/hooks/use-toast';
-import { matchesList } from "@/shared/lib/mock-data/matches";
+import { matchesList, type Match } from "@/shared/lib/mock-data/matches";
 import { PlusCircle } from 'lucide-react';
 
 export function MatchesListPage() {
@@ -72,7 +72,7 @@ export function MatchesListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {matchesList.map((match) => (
+              {matchesList.map((match: Match) => (
                 <TableRow key={match.id}>
                   <TableCell>
                     <Link href={match.href || '#'} className="flex items-center gap-4 group">

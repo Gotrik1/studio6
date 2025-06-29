@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { ElementType, useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useSession } from '@/shared/lib/session/client';
@@ -10,7 +10,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
 import * as LucideIcons from 'lucide-react';
 
-const iconMap: { [key: string]: React.ElementType } = LucideIcons;
+const iconMap: { [key: string]: ElementType } = LucideIcons;
 
 const OnboardingSkeleton = () => (
     <div className="space-y-6">

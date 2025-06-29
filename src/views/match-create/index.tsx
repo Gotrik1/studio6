@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import Image from 'next/image';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -149,7 +149,7 @@ export function NewMatchPage() {
                         id="challenge-prompt"
                         placeholder="Например: 'Ищем команду по баскетболу для игры на выходных в центре. Уровень средний.'"
                         value={prompt}
-                        onChange={e => setPrompt(e.target.value)}
+                        onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
                         disabled={isLoading}
                         className="min-h-[100px] text-base"
                     />

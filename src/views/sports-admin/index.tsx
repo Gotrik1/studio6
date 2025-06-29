@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, ElementType } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
@@ -11,12 +11,12 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { sportsList as initialSports, type Sport } from '@/shared/lib/mock-data/sports';
 import * as LucideIcons from 'lucide-react';
 
-const iconComponents: { [key: string]: LucideIcons.LucideIcon } = LucideIcons;
+const iconComponents: { [key: string]: ElementType } = LucideIcons;
 
 export function SportsAdminPage() {
     const { toast } = useToast();
     const [sports, setSports] = useState<Sport[]>(initialSports);
-    const [newSport, setNewSport] = useState({ name: '', type: 'Киберспорт' as const, icon: 'Gamepad2' });
+    const [newSport, setNewSport] = useState<{ name: string, type: 'Киберспорт' | 'Спорт', icon: string }>({ name: '', type: 'Киберспорт', icon: 'Gamepad2' });
 
     const handleAddSport = () => {
         if (!newSport.name || !newSport.icon) {
@@ -58,7 +58,7 @@ export function SportsAdminPage() {
     };
 
     const IconForSport = ({ iconName }: { iconName: string }) => {
-        const Icon = iconComponents[iconName as keyof typeof iconComponents] || LucideIcons.HelpCircle;
+        const Icon = iconComponents[iconName] || LucideIcons.HelpCircle;
         return <Icon className="h-5 w-5 text-muted-foreground" />;
     };
 

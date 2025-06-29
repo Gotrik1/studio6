@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Input } from '@/shared/ui/input';
@@ -20,7 +20,7 @@ type Message = {
 export function ChatsPage() {
     const { user } = useSession();
     const [selectedContact, setSelectedContact] = useState<Contact | null>(contacts[0]);
-    const [messages, setMessages] = useState<Message[]>(selectedContact ? allMessages[selectedContact.id as keyof typeof allMessages] : []);
+    const [messages, setMessages] = useState<Message[]>(selectedContact ? [...allMessages[selectedContact.id as keyof typeof allMessages]] : []);
     const [input, setInput] = useState('');
     const [replySuggestions, setReplySuggestions] = useState<string[]>([]);
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
@@ -36,7 +36,7 @@ export function ChatsPage() {
 
     const handleSelectContact = (contact: Contact) => {
         setSelectedContact(contact);
-        setMessages(allMessages[contact.id as keyof typeof allMessages] || []);
+        setMessages([...allMessages[contact.id as keyof typeof allMessages]] || []);
         setReplySuggestions([]);
     };
     
@@ -65,6 +65,13 @@ export function ChatsPage() {
             setIsLoadingSuggestions(false);
         }
     };
+    
+    const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter' && !isLoadingSuggestions) {
+            handleSend();
+        }
+    };
+
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-10rem)]">
@@ -161,7 +168,7 @@ export function ChatsPage() {
                                     placeholder="Напишите сообщение..."
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
-                                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                                    onKeyDown={handleKeyDown}
                                 />
                                 <Button onClick={handleSend}><Send className="h-4 w-4"/></Button>
                             </div>

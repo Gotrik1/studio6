@@ -1,18 +1,18 @@
 import { Folder, File } from 'lucide-react';
 
-const tree = [
-    { name: 'src', type: 'folder', children: [
-        { name: 'app', type: 'folder', children: [
-            { name: '(app)', type: 'folder', description: 'Группа роутов для защищенных страниц' },
-            { name: 'api', type: 'folder', description: 'API роуты Next.js' },
-            { name: 'globals.css', type: 'file', description: 'Глобальные стили' },
-            { name: 'layout.tsx', type: 'file', description: 'Корневой layout' },
+const treeData = [
+    { name: 'src', type: 'folder' as const, children: [
+        { name: 'app', type: 'folder' as const, children: [
+            { name: '(app)', type: 'folder' as const, description: 'Группа роутов для защищенных страниц' },
+            { name: 'api', type: 'folder' as const, description: 'API роуты Next.js' },
+            { name: 'globals.css', type: 'file' as const, description: 'Глобальные стили' },
+            { name: 'layout.tsx', type: 'file' as const, description: 'Корневой layout' },
         ]},
-        { name: 'pages', type: 'folder', description: 'Компоненты страниц' },
-        { name: 'widgets', type: 'folder', description: 'Составные блоки интерфейса' },
-        { name: 'features', type: 'folder', description: 'Пользовательские сценарии (user stories)' },
-        { name: 'entities', type: 'folder', description: 'Бизнес-сущности (User, Team)' },
-        { name: 'shared', type: 'folder', description: 'Переиспользуемый код (UI-кит, утилиты)' },
+        { name: 'pages', type: 'folder' as const, description: 'Компоненты страниц' },
+        { name: 'widgets', type: 'folder' as const, description: 'Составные блоки интерфейса' },
+        { name: 'features', type: 'folder' as const, description: 'Пользовательские сценарии (user stories)' },
+        { name: 'entities', type: 'folder' as const, description: 'Бизнес-сущности (User, Team)' },
+        { name: 'shared', type: 'folder' as const, description: 'Переиспользуемый код (UI-кит, утилиты)' },
     ]}
 ];
 
@@ -38,7 +38,7 @@ const TreeItem = ({ item, level }: { item: TreeNode, level: number }) => (
 export function FileTree() {
     return (
         <div className="not-prose rounded-lg border bg-card p-4">
-            {tree.map(item => <TreeItem key={item.name} item={item} level={0} />)}
+            {treeData.map(item => <TreeItem key={item.name} item={item} level={0} />)}
         </div>
     );
 }

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
 import { sponsorshipScout, type SponsorshipScoutOutput } from '@/shared/api/genkit/flows/sponsorship-scout-flow';
@@ -17,7 +16,7 @@ import Link from 'next/link';
 import { Separator } from '@/shared/ui/separator';
 
 const mockTeamInfo = {
-    name: "Кибер Орлы",
+    teamName: "Кибер Орлы",
     achievements: "Топ-1 команда платформы, победители Summer Kickoff 2024.",
     goals: "Ищем партнеров для выхода на международную арену, финансирование поездок на LAN-турниры, брендированная форма.",
     audience: "50,000+ подписчиков в социальных сетях, средний возраст аудитории 16-24.",
