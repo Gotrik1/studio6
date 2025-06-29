@@ -1,0 +1,43 @@
+
+export const allTournaments = [
+    {
+        name: 'Летний Старт 2024',
+        game: 'Valorant',
+        prize: '$10,000',
+        status: 'Завершен',
+        date: '1-7 Июля 2024',
+        image: 'https://placehold.co/600x400.png',
+        dataAiHint: 'esports valorant stage',
+        slug: 'summer-kickoff-2024',
+    },
+    {
+        name: 'Moscow Open Championship',
+        game: 'CS:GO 2',
+        prize: '500,000₽',
+        status: 'Регистрация',
+        date: '1-15 Августа 2024',
+        image: 'https://placehold.co/600x400.png',
+        dataAiHint: 'csgo lan tournament',
+        slug: 'moscow-open-2024',
+    },
+    {
+        name: 'ProDvor Apex League',
+        game: 'Apex Legends',
+        prize: '$5,000',
+        status: 'Идет',
+        date: 'Каждую субботу',
+        image: 'https://placehold.co/600x400.png',
+        dataAiHint: 'apex legends characters',
+        slug: 'prodvor-apex-league',
+    },
+    {
+        name: 'Dota 2 Backyard Battle',
+        game: 'Dota 2',
+        prize: 'Игровые девайсы',
+        status: 'Завершен',
+        date: '15-16 Июня 2024',
+        image: 'https://placehold.co/600x400.png',
+        dataAiHint: 'dota 2 heroes',
+        slug: 'dota-backyard-battle',
+    },
+];
