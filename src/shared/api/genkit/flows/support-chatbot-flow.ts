@@ -1,7 +1,7 @@
 'use server';
 /**
  * @fileOverview An AI chatbot for user support, capable of answering questions based on an FAQ knowledge base.
- * - askSupportChatbot - A function that handles user queries.
+ * - askSupportChatbot - a function that handles user queries.
  * - SupportChatbotInput - The input type for the function.
  * - SupportChatbotOutput - The return type for the function.
  */
