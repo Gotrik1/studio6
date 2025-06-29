@@ -9,6 +9,7 @@ export const userList = [
         status: 'Активен',
         profileUrl: '/administration/player',
         activitySummary: 'Частые сообщения в чате, участие в 3 турнирах за последний месяц. Нет жалоб.',
+        statsSummary: 'Играет в Valorant, роль - Страж (Sentinel). Предпочитает Cypher. Спокойный стиль игры, хороший KDA (1.3). Онлайн по вечерам.',
     },
     {
         id: '2',
@@ -19,6 +20,7 @@ export const userList = [
         status: 'Активен',
         profileUrl: '/administration/player',
         activitySummary: 'Высокая активность, лидер команды "Кибер Орлы". Была одна жалоба на токсичность, но она была отклонена.',
+        statsSummary: 'Играет в Valorant, роль - Зачинщик (Initiator). Предпочитает Sova. Агрессивный IGL, много общается. Онлайн почти всегда.',
     },
     {
         id: '3',
@@ -29,6 +31,7 @@ export const userList = [
         status: 'Активен',
         profileUrl: '/administration/moderator',
         activitySummary: 'Обработала 50 жалоб за неделю. Активность в чате низкая. Высокий рейтинг от пользователей.',
+        statsSummary: 'Играет в CS:GO 2 в свободное время, роль - Люркер. Низкая активность в матчах.',
     },
     {
         id: '4',
@@ -39,6 +42,7 @@ export const userList = [
         status: 'Активен',
         profileUrl: '/administration/judge',
         activitySummary: 'Провел судейство 10 матчей. Положительные отзывы от капитанов команд. Нет нарушений.',
+        statsSummary: 'Не играет в соревновательные матчи, занимается судейством.',
     },
     {
         id: '5',
@@ -49,6 +53,7 @@ export const userList = [
         status: 'Забанен',
         profileUrl: '/administration/player',
         activitySummary: 'Пользователь был забанен за многократные нарушения правил сообщества. 3 предупреждения за токсичность.',
+        statsSummary: 'Играет в Dota 2, роль - Support. Статистика недоступна из-за бана.',
     },
     {
         id: '6',
@@ -59,5 +64,6 @@ export const userList = [
         status: 'Активен',
         profileUrl: '/administration/organizer',
         activitySummary: 'Организовал 2 турнира. Высокая активность на платформе.',
+        statsSummary: 'Играет в Футбол 5x5. Организует любительские матчи.',
     },
 ];

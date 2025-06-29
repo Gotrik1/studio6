@@ -34,6 +34,7 @@ import {
   ShoppingCart,
   Handshake,
   DollarSign,
+  SearchUsers,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -52,6 +53,7 @@ const mainNavItems = [
     { href: "/dashboard", icon: Newspaper, label: "Лента" },
     { href: "/chats", icon: MessageSquare, label: "Сообщения" },
     { href: "/teams", icon: Users, label: "Команды" },
+    { href: "/scouting", icon: SearchUsers, label: "Поиск игроков" },
     { href: "/friends", icon: Users2, label: "Друзья" },
     { href: "/tournaments", icon: Trophy, label: "Соревнования" },
     { href: "/training", icon: Dumbbell, label: "Тренировки" },
