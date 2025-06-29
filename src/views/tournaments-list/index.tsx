@@ -101,7 +101,7 @@ export function TournamentsListPage() {
                         </CardContent>
                         <CardFooter className="bg-muted/50 p-4">
                             <Button className="w-full" asChild>
-                                <Link href={tournament.slug}>Подробнее</Link>
+                                <Link href={`/tournaments/${tournament.slug}`}>Подробнее</Link>
                             </Button>
                         </CardFooter>
                     </Card>

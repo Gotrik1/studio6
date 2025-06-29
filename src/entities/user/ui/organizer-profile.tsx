@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { organizerUser, organizerAchievements } from "@/shared/lib/mock-data/organizer-profile";
 import { Skeleton } from '@/shared/ui/skeleton';
+import Link from 'next/link';
 
 const OrganizerStatsTab = dynamic(() => import('@/entities/user/ui/organizer-profile-tabs/stats-tab').then(mod => mod.OrganizerStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -42,7 +43,9 @@ export function OrganizerProfile({ user, achievements }: OrganizerProfileProps) 
               <Badge variant="secondary">Организатор событий</Badge>
             </div>
           </div>
-          <Button>Создать турнир</Button>
+          <Button asChild>
+            <Link href="/tournaments/new">Создать турнир</Link>
+          </Button>
         </CardHeader>
         <CardContent>
           <p className="text-center text-sm text-muted-foreground sm:text-left">Ведущие организаторы турниров и событий в онлайн-гейминге.</p>
