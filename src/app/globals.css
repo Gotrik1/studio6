@@ -29,7 +29,7 @@ html {
     --muted-foreground: 215 20.2% 65.1%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
+    --border: 0 0% 100%;
     --input: 214.3 31.8% 91.4%;
     --radius: 0.5rem;
     
@@ -54,7 +54,7 @@ html {
     --muted-foreground: 210 40% 65%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 240 4% 16%;
+    --border: 240 10% 3.9%;
     --input: 240 4% 16%;
     
     /* NEW Default dark theme: Purple */
