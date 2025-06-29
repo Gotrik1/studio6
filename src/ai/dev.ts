@@ -39,6 +39,9 @@ import '@/ai/flows/sponsorship-scout-flow.ts';
 import '@/ai/flows/generate-match-post-flow.ts';
 import '@/ai/flows/generate-platform-news-flow.ts';
 import '@/ai/flows/generate-team-concept-flow.ts';
+import '@/ai/flows/find-venues-flow.ts';
+import '@/ai/flows/onboarding-assistant-flow.ts';
+
 
 
 
