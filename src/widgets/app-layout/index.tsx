@@ -37,6 +37,7 @@ import {
   BookOpen,
   BarChart2,
   Salad,
+  Apple,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
 import { BottomNav } from "@/shared/ui/bottom-nav";
@@ -124,6 +125,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                             <SidebarMenuSubButton href="/training/programs">Программы тренировок</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/training/exercises">Каталог упражнений</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/training/nutrition">Центр питания</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/training/nutrition-diary">Дневник питания</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/quests">Квесты</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/store">Магазин</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/promotions">Промо-акции</SidebarMenuSubButton>
