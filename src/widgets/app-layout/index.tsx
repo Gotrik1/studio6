@@ -35,7 +35,6 @@ import {
   BrainCircuit,
   Palette,
   Dumbbell,
-  BookOpen,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
 import { BottomNav } from "@/widgets/bottom-nav";
@@ -119,6 +118,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                         <SidebarMenuSubItem>
                             <SidebarMenuSubButton href="/training">Рабочий стол атлета</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/training/log">Дневник тренировок</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/training/programs">Программы тренировок</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/quests">Квесты</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/store">Магазин</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/promotions">Промо-акции</SidebarMenuSubButton>

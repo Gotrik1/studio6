@@ -78,8 +78,8 @@ export function TrainingCenterPage() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <Button variant="outline" size="lg" asChild><Link href="/training/log"><BookOpen className="mr-2 h-4 w-4" />Дневник</Link></Button>
-                        <Button variant="outline" size="lg"><Replace className="mr-2 h-4 w-4" />Сменить программу</Button>
-                        <Button variant="outline" size="lg"><LayoutGrid className="mr-2 h-4 w-4" />Выбрать сплит</Button>
+                        <Button variant="outline" size="lg" asChild><Link href="/training/programs"><Replace className="mr-2 h-4 w-4" />Сменить программу</Link></Button>
+                        <Button variant="outline" size="lg" asChild><Link href="/training/programs"><LayoutGrid className="mr-2 h-4 w-4" />Выбрать сплит</Link></Button>
                     </div>
                 </div>
 
