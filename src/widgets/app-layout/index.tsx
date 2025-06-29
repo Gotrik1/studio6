@@ -35,9 +35,6 @@ import {
   BrainCircuit,
   Palette,
   Dumbbell,
-  BookOpen,
-  BarChart2,
-  UtensilsCrossed,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
 import { BottomNav } from "@/shared/ui/bottom-nav";

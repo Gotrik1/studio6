@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -10,8 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/shared/hooks/use-toast';
 import { sportsList as initialSports, type Sport } from '@/shared/lib/mock-data/sports';
 import * as LucideIcons from 'lucide-react';
+import type { ElementType } from 'react';
 
-const iconComponents: any = LucideIcons;
+const iconComponents: { [key: string]: ElementType } = LucideIcons;
 
 export function SportsAdminPage() {
     const { toast } = useToast();

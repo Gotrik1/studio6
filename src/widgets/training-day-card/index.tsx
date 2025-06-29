@@ -34,6 +34,7 @@ const moodMap = {
 export function TrainingDayCard({ entry, onDelete, onCopy }: TrainingDayCardProps) {
     const StatusIcon = statusMap[entry.status].icon;
     const statusColor = statusMap[entry.status].color;
+    const MoodIcon = entry.mood ? moodMap[entry.mood].icon : null;
 
     return (
         <Card className={cn(
@@ -105,9 +106,9 @@ export function TrainingDayCard({ entry, onDelete, onCopy }: TrainingDayCardProp
                     <StatusIcon className={cn("h-4 w-4", statusColor)} />
                     <span>{statusMap[entry.status].label}</span>
                 </div>
-                {entry.mood && moodMap[entry.mood] && (
+                {entry.mood && moodMap[entry.mood] && MoodIcon && (
                     <div className="flex items-center gap-2">
-                         <moodMap[entry.mood].icon className={cn("h-4 w-4", moodMap[entry.mood].color)} />
+                         <MoodIcon className={cn("h-4 w-4", moodMap[entry.mood].color)} />
                          <span>Самочувствие: {moodMap[entry.mood].label}</span>
                     </div>
                 )}

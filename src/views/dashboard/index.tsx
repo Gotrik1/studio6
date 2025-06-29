@@ -1,6 +1,7 @@
+
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
