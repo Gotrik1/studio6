@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/shared/api/genkit';
@@ -9,14 +8,6 @@ import { GeneratePlatformNewsOutputSchema } from './schemas/generate-platform-ne
 import type { GeneratePlatformNewsOutput } from './schemas/generate-platform-news-schema';
 
 export type { GeneratePlatformNewsOutput };
-
-
-const NewsItemSchema = z.object({
-    title: z.string().describe("A catchy, short headline for the news item."),
-    summary: z.string().describe("A one-sentence summary of the event."),
-    category: z.enum(['match', 'team', 'player', 'platform']).describe("The category of the news."),
-    href: z.string().describe("A relevant link for the news item, e.g., a team or player profile URL."),
-});
 
 const RecentActivitySchema = z.object({
     topPlayer: z.string().describe("The name of the top player."),

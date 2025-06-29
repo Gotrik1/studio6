@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -11,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ReportScoreDialog } from '@/features/report-score/ui/report-score-dialog';
 import { useToast } from '@/shared/hooks/use-toast';
 import { matchesList } from "@/shared/lib/mock-data/matches";
-import { PlusCircle, Swords } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 
 export function MatchesListPage() {
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);

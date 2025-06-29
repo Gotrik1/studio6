@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { AnalyzeContentInputSchema, AnalyzeContentOutputSchema } from './schemas/analyze-content-generation-schema';
 import type { AnalyzeContentInput, AnalyzeContentOutput } from './schemas/analyze-content-generation-schema';
 

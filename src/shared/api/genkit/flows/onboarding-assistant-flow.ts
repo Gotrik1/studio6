@@ -8,7 +8,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { OnboardingInputSchema, OnboardingOutputSchema } from './schemas/onboarding-assistant-schema';
 import type { OnboardingInput, OnboardingOutput } from './schemas/onboarding-assistant-schema';
 

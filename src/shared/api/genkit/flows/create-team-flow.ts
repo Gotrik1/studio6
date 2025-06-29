@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { CreateTeamInputSchema, CreateTeamOutputSchema } from './schemas/create-team-schema';
 import type { CreateTeamInput, CreateTeamOutput } from './schemas/create-team-schema';
 

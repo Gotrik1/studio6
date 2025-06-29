@@ -1,5 +1,30 @@
+type TeamSchedule = {
+    id: number;
+    opponent: string;
+    date: string;
+    tournament: string;
+};
 
-const teamDatabase: { [key: string]: any } = {
+type MatchHistory = {
+    id: number;
+    opponent: string;
+    result: 'Победа' | 'Поражение';
+    score: string;
+};
+
+type TeamStats = {
+    winRate: string;
+    currentRank: string;
+    totalMatches: number;
+};
+
+type TeamData = {
+    schedule: TeamSchedule[];
+    matchHistory: MatchHistory[];
+    stats: TeamStats;
+};
+
+const teamDatabase: { [key: string]: TeamData } = {
     'cyber-eagles': {
         schedule: [
             { id: 1, opponent: 'Ледяные Волки', date: '2024-08-05 19:00', tournament: 'Лига ProDvor' },

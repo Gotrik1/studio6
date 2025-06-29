@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -10,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { GeneratePostImageInputSchema, GeneratePostImageOutputSchema } from './schemas/generate-post-image-schema';
 import type { GeneratePostImageInput, GeneratePostImageOutput } from './schemas/generate-post-image-schema';
 

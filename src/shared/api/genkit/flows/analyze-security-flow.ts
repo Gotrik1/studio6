@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { AnalyzeSecurityInputSchema, AnalyzeSecurityOutputSchema } from './schemas/analyze-security-schema';
 import type { AnalyzeSecurityInput, AnalyzeSecurityOutput } from './schemas/analyze-security-schema';
 

@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { AnalyzeRoleChangeInputSchema, AnalyzeRoleChangeOutputSchema } from './schemas/analyze-role-change-schema';
 import type { AnalyzeRoleChangeInput, AnalyzeRoleChangeOutput } from './schemas/analyze-role-change-schema';
 

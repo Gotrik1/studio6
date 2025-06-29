@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/shared/ui/input";
 import { useTeams } from '@/app/providers/team-provider';
 import type { Team } from "@/entities/team/model/types";
-import { Search, PlusCircle, Gamepad2, Users, Loader2 } from "lucide-react";
+import { Search, PlusCircle, Gamepad2, Users } from "lucide-react";
 import { Skeleton } from '@/shared/ui/skeleton';
 
 export function TeamsListPage() {

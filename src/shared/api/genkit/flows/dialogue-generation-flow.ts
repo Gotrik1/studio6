@@ -8,7 +8,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { GenerateDialogueInputSchema, GenerateDialogueOutputSchema } from './schemas/dialogue-generation-schema';
 import type { GenerateDialogueInput, GenerateDialogueOutput } from './schemas/dialogue-generation-schema';
 

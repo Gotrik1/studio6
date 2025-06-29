@@ -1,5 +1,3 @@
-import type { User } from '@/shared/lib/types';
-
 export const contacts = [
     {
         id: 'contact-1',

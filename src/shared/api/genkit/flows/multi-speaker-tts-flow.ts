@@ -8,7 +8,6 @@
  */
 
 import { ai } from '@/shared/api/genkit';
-import { z } from 'genkit';
 import wav from 'wav';
 import { googleAI } from '@genkit-ai/googleai';
 import { MultiSpeakerTtsInputSchema, MultiSpeakerTtsOutputSchema } from './schemas/multi-speaker-tts-schema';

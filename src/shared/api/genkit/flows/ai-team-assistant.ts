@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { AiTeamAssistantInputSchema, AiTeamAssistantOutputSchema } from './schemas/ai-team-assistant-schema';
 import type { AiTeamAssistantInput, AiTeamAssistantOutput } from './schemas/ai-team-assistant-schema';
 

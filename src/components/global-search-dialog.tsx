@@ -22,6 +22,7 @@ export function GlobalSearchDialog({ open, onOpenChange }: GlobalSearchDialogPro
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const debouncedSearch = useCallback(
     debounce(async (searchQuery: string) => {
       if (searchQuery.length < 2) {

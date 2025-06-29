@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Textarea } from '@/shared/ui/textarea';
@@ -13,8 +12,11 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Badge } from '@/shared/ui/badge';
 
+type SuggestionTeam = AnalyzeMatchChallengeOutput['suggestedTeams'][0];
+type SuggestionVenue = AnalyzeMatchChallengeOutput['suggestedVenues'][0];
+
 type SuggestionCardProps = {
-    item: AnalyzeMatchChallengeOutput['suggestedTeams'][0] | AnalyzeMatchChallengeOutput['suggestedVenues'][0];
+    item: SuggestionTeam | SuggestionVenue;
     type: 'team' | 'venue';
 };
 
@@ -34,7 +36,7 @@ function SuggestionCard({ item, type }: SuggestionCardProps) {
     };
 
     if (type === 'team') {
-        const team = item as AnalyzeMatchChallengeOutput['suggestedTeams'][0];
+        const team = item as SuggestionTeam;
         return (
              <Card className="flex flex-col">
                 <CardHeader className="flex-row items-center gap-4">
@@ -58,7 +60,7 @@ function SuggestionCard({ item, type }: SuggestionCardProps) {
     }
     
     if (type === 'venue') {
-        const venue = item as AnalyzeMatchChallengeOutput['suggestedVenues'][0];
+        const venue = item as SuggestionVenue;
         return (
              <Card className="flex flex-col">
                 <div className="relative h-32">

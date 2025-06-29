@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { AnalyzeReportInputSchema, AnalyzeReportOutputSchema } from './schemas/analyze-report-schema';
 import type { AnalyzeReportInput, AnalyzeReportOutput } from './schemas/analyze-report-schema';
 

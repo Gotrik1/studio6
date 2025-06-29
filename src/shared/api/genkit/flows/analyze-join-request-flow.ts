@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { AnalyzeJoinRequestInputSchema, AnalyzeJoinRequestOutputSchema } from './schemas/analyze-join-request-schema';
 import type { AnalyzeJoinRequestInput, AnalyzeJoinRequestOutput } from './schemas/analyze-join-request-schema';
 

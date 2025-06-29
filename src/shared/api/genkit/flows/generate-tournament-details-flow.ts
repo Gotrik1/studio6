@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { GenerateTournamentDetailsInputSchema, GenerateTournamentDetailsOutputSchema } from './schemas/generate-tournament-details-schema';
 import type { GenerateTournamentDetailsInput, GenerateTournamentDetailsOutput } from './schemas/generate-tournament-details-schema';
 

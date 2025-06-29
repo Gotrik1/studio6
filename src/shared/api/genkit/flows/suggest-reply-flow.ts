@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { SuggestReplyInputSchema, SuggestReplyOutputSchema } from './schemas/suggest-reply-schema';
 import type { SuggestReplyInput, SuggestReplyOutput } from './schemas/suggest-reply-schema';
 

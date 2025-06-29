@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
 import { GeneratePromotionDetailsInputSchema, GeneratePromotionDetailsOutputSchema } from './schemas/generate-promotion-details-schema';
 import type { GeneratePromotionDetailsInput, GeneratePromotionDetailsOutput } from './schemas/generate-promotion-details-schema';
 

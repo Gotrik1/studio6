@@ -1,8 +1,7 @@
-
 'use client';
 
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
@@ -99,10 +98,10 @@ export function ThemeDemoPage() {
                             <TabsTrigger value="password">Пароль</TabsTrigger>
                         </TabsList>
                         <TabsContent value="account">
-                            <p className="p-4 text-muted-foreground">Содержимое вкладки "Аккаунт".</p>
+                            <p className="p-4 text-muted-foreground">Содержимое вкладки &quot;Аккаунт&quot;.</p>
                         </TabsContent>
                         <TabsContent value="password">
-                             <p className="p-4 text-muted-foreground">Содержимое вкладки "Пароль".</p>
+                             <p className="p-4 text-muted-foreground">Содержимое вкладки &quot;Пароль&quot;.</p>
                         </TabsContent>
                     </Tabs>
                 </CardContent>

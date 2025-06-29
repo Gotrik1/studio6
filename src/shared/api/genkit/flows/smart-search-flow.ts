@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -14,7 +13,7 @@ import { z } from 'zod';
 import { userList } from '@/shared/lib/mock-data/users';
 import { teams as allTeams } from '@/shared/lib/mock-data/teams';
 import { allTournaments } from '@/shared/lib/mock-data/tournaments';
-import { SmartSearchInputSchema, SmartSearchOutputSchema, UserSchema, TeamSchema, TournamentSchema } from './schemas/smart-search-schema';
+import { SmartSearchInputSchema, SmartSearchOutputSchema } from './schemas/smart-search-schema';
 import type { SmartSearchInput, SmartSearchOutput } from './schemas/smart-search-schema';
 
 export type { SmartSearchInput, SmartSearchOutput };

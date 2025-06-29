@@ -1,6 +1,3 @@
-
-import { Award, Users, Trophy, Target, Medal, Star } from "lucide-react";
-
 export const achievements = [
     { name: 'Первая победа', description: 'Выиграть первый матч', icon: 'Award', unlocked: true },
     { name: 'Командный игрок', description: 'Сыграть 10 матчей с командой', icon: 'Users', unlocked: true },

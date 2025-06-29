@@ -8,7 +8,6 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'zod';
 import { GenerateTrainingPlanInputSchema, GenerateTrainingPlanOutputSchema } from './schemas/generate-training-plan-schema';
 import type { GenerateTrainingPlanInput, GenerateTrainingPlanOutput } from './schemas/generate-training-plan-schema';
 
