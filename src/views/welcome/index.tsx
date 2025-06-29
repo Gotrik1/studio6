@@ -11,7 +11,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
 import * as LucideIcons from 'lucide-react';
 
-const iconMap: { [key: string]: ElementType } = LucideIcons;
+const iconMap: { [key: string]: any } = LucideIcons;
 
 const OnboardingSkeleton = () => (
     <div className="space-y-6">
