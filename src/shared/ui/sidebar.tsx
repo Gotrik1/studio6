@@ -1,7 +1,7 @@
 // Inspired by https://github.com/dillionverma/llm.report/blob/main/components/sidebar.tsx
 
 'use client';
-import {
+import React, {
   createContext,
   useContext,
   useState,
