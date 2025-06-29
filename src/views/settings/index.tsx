@@ -21,6 +21,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { updateProfileSettings, updatePassword } from "@/app/(app)/settings/actions";
 import { Loader2 } from "lucide-react";
+import { SecuritySettingsTab } from "@/widgets/security-settings-tab";
 
 // --- Profile Form ---
 const profileFormSchema = z.object({
@@ -224,15 +225,19 @@ export function SettingsPage() {
                 </p>
             </div>
             <Tabs defaultValue="profile" className="w-full">
-                <TabsList className="grid w-full grid-cols-2">
+                <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="profile">Профиль</TabsTrigger>
+                    <TabsTrigger value="password">Пароль</TabsTrigger>
                     <TabsTrigger value="security">Безопасность</TabsTrigger>
                 </TabsList>
                 <TabsContent value="profile" className="mt-6">
                    <ProfileSettingsForm />
                 </TabsContent>
-                <TabsContent value="security" className="mt-6">
+                <TabsContent value="password" className="mt-6">
                     <PasswordSettingsForm />
+                </TabsContent>
+                <TabsContent value="security" className="mt-6">
+                    <SecuritySettingsTab />
                 </TabsContent>
             </Tabs>
         </div>
