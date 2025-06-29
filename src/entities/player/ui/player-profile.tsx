@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
-import { BookOpen, Youtube, Goal, Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar, Award, Loader2, TrendingUp, TrendingDown, Sparkles, AlertCircle, Wand2, Heart } from "lucide-react";
+import { BookOpen, Youtube, Goal, Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, Link as LinkIcon, CheckCircle, Coins, Calendar, Award, Loader2, TrendingUp, TrendingDown, Sparkles, AlertCircle, Wand2 } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
@@ -27,7 +27,6 @@ import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateTrainingPlan, type GenerateTrainingPlanOutput } from '@/shared/api/genkit/flows/generate-training-plan-flow';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
-import { DonationDialog } from '@/features/donation-dialog/index';
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -84,7 +83,6 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
   const [planError, setPlanError] = useState<string | null>(null);
   
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
-  const [isDonationOpen, setIsDonationOpen] = useState(false);
 
   const handleAnalyze = async () => {
     setIsAnalyzing(true);
@@ -311,10 +309,7 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
                 <Button>Редактировать профиль</Button>
               </Link>
             ) : (
-                <>
-                    <Button variant="outline" onClick={() => setIsDonationOpen(true)}><Heart className="mr-2 h-4 w-4"/>Поддержать</Button>
-                    <Button>Бросить вызов</Button>
-                </>
+                <Button>Бросить вызов</Button>
             )}
           </div>
         </CardHeader>
@@ -418,12 +413,6 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
         onOpenChange={setIsAvatarDialogOpen}
         currentAvatar={avatar}
         onAvatarSave={setAvatar}
-      />
-      <DonationDialog 
-        isOpen={isDonationOpen}
-        onOpenChange={setIsDonationOpen}
-        recipientName={user.name}
-        recipientType="игроку"
       />
     </div>
   );

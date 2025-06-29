@@ -4,6 +4,7 @@
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
 import type { User } from "@/shared/lib/types";
+import { useSession } from '@/shared/lib/session/client';
 
 // Import all mock data for different roles
 import { adminUser, adminAchievements } from "@/shared/lib/mock-data/admin-profile";
