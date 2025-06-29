@@ -1,13 +1,13 @@
 
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Progress } from '@/shared/ui/progress';
 import { Badge } from '@/shared/ui/badge';
 import { CheckCircle, Circle, Award } from 'lucide-react';
 import { quests } from '@/shared/lib/mock-data/gamification';
 import Link from 'next/link';
+import { cn } from '@/shared/lib/utils';
 
 export function QuestsPage() {
     const completedQuests = quests.filter(q => q.isCompleted).length;
@@ -45,28 +45,23 @@ export function QuestsPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {quests.map(quest => (
-                    <Card key={quest.id} className={`flex flex-col ${quest.isCompleted ? 'opacity-60 bg-muted/50' : ''}`}>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                {quest.isCompleted ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
-                                {quest.title}
-                            </CardTitle>
-                            <CardDescription>{quest.description}</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex-1">
-                            <Badge variant="secondary" className="flex items-center gap-1.5 w-fit">
-                                <Award className="h-4 w-4 text-amber-500" />
-                                Награда: {quest.reward} PD
-                            </Badge>
-                        </CardContent>
-                        <CardFooter>
-                            <Button asChild className="w-full" disabled={quest.isCompleted}>
-                                <Link href={quest.href}>
-                                    {quest.isCompleted ? 'Выполнено' : 'К заданию'}
-                                </Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                    <Link key={quest.id} href={quest.isCompleted ? '#' : quest.href} className={cn("block h-full", quest.isCompleted && "pointer-events-none")}>
+                        <Card className={cn("flex flex-col h-full transition-all hover:border-primary", quest.isCompleted ? 'opacity-60 bg-muted/50' : 'cursor-pointer hover:shadow-2xl')}>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2">
+                                    {quest.isCompleted ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
+                                    {quest.title}
+                                </CardTitle>
+                                <CardDescription>{quest.description}</CardDescription>
+                            </CardHeader>
+                            <CardContent className="flex-1">
+                                <Badge variant="secondary" className="flex items-center gap-1.5 w-fit">
+                                    <Award className="h-4 w-4 text-amber-500" />
+                                    Награда: {quest.reward} PD
+                                </Badge>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 ))}
             </div>
         </div>

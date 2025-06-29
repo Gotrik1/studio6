@@ -82,36 +82,33 @@ export function TeamsListPage() {
             ) : (
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                     {filteredTeams.map((team: Team) => (
-                        <Card key={team.slug} className="flex flex-col overflow-hidden transition-all hover:shadow-lg">
-                            <CardHeader className="flex flex-row items-center gap-4 p-4">
-                                <Image 
-                                  src={team.logo} 
-                                  alt={`Логотип ${team.name}`} 
-                                  width={64} 
-                                  height={64} 
-                                  className="rounded-full border"
-                                  data-ai-hint={team.dataAiHint}
-                                />
-                                <div>
-                                    <CardTitle className="font-headline">{team.name}</CardTitle>
-                                    <CardDescription>&quot;{team.motto}&quot;</CardDescription>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="flex-1 p-4 pt-0">
-                               <div className="flex justify-between text-sm text-muted-foreground">
-                                    <span className="flex items-center gap-1.5"><Gamepad2 className="h-4 w-4"/> {team.game}</span>
-                                    <span className="flex items-center gap-1.5"><Users className="h-4 w-4"/> {team.members}/5</span>
-                               </div>
-                               <div className="mt-2 text-center">
-                                    <Badge variant="secondary">Ранг: #{team.rank}</Badge>
-                               </div>
-                            </CardContent>
-                            <CardFooter className="bg-muted/50 p-4">
-                                <Button className="w-full" asChild>
-                                    <Link href={`/teams/${team.slug}`}>Профиль команды</Link>
-                                </Button>
-                            </CardFooter>
-                        </Card>
+                         <Link key={team.slug} href={`/teams/${team.slug}`} className="block h-full">
+                            <Card className="flex flex-col overflow-hidden transition-all hover:shadow-2xl hover:border-primary h-full cursor-pointer">
+                                <CardHeader className="flex flex-row items-center gap-4 p-4">
+                                    <Image 
+                                      src={team.logo} 
+                                      alt={`Логотип ${team.name}`} 
+                                      width={64} 
+                                      height={64} 
+                                      className="rounded-full border"
+                                      data-ai-hint={team.dataAiHint}
+                                    />
+                                    <div>
+                                        <CardTitle className="font-headline">{team.name}</CardTitle>
+                                        <CardDescription>&quot;{team.motto}&quot;</CardDescription>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="flex-1 p-4 pt-0">
+                                   <div className="flex justify-between text-sm text-muted-foreground">
+                                        <span className="flex items-center gap-1.5"><Gamepad2 className="h-4 w-4"/> {team.game}</span>
+                                        <span className="flex items-center gap-1.5"><Users className="h-4 w-4"/> {team.members}/5</span>
+                                   </div>
+                                   <div className="mt-2 text-center">
+                                        <Badge variant="secondary">Ранг: #{team.rank}</Badge>
+                                   </div>
+                                </CardContent>
+                            </Card>
+                        </Link>
                     ))}
                 </div>
             )}

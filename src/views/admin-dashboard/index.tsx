@@ -18,7 +18,6 @@ import {
     Map as MapIcon
 } from 'lucide-react';
 import Link from "next/link";
-import { Button } from "@/shared/ui/button";
 import { ArrowRight } from "lucide-react";
 
 type AdminSectionCardProps = {
@@ -29,24 +28,19 @@ type AdminSectionCardProps = {
 }
 
 const AdminSectionCard = ({ title, description, href, icon: Icon }: AdminSectionCardProps) => (
-    <Card className="flex flex-col">
-        <CardHeader className="flex-row items-start gap-4 space-y-0">
-            <div className="p-2 bg-muted rounded-md">
-                <Icon className="h-6 w-6 text-primary" />
-            </div>
-            <div>
-                <CardTitle>{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
-            </div>
-        </CardHeader>
-        <CardFooter className="mt-auto">
-             <Button asChild variant="outline" className="w-full">
-                <Link href={href}>
-                    Перейти <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-            </Button>
-        </CardFooter>
-    </Card>
+     <Link href={href} className="block h-full">
+        <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-2xl hover:border-primary cursor-pointer">
+            <CardHeader className="flex-row items-start gap-4 space-y-0 flex-grow pb-4">
+                <div className="p-2 bg-muted rounded-md">
+                    <Icon className="h-6 w-6 text-primary" />
+                </div>
+                <div className="flex-1">
+                    <CardTitle>{title}</CardTitle>
+                    <CardDescription>{description}</CardDescription>
+                </div>
+            </CardHeader>
+        </Card>
+    </Link>
 );
 
 const managementCards: AdminSectionCardProps[] = [

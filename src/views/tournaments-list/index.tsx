@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -77,34 +78,31 @@ export function TournamentsListPage() {
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {filteredTournaments.map((tournament) => (
-                    <Card key={tournament.name} className="flex flex-col overflow-hidden transition-all hover:shadow-md">
-                        <CardHeader className="relative h-40 w-full p-0">
-                            <Image 
-                                src={tournament.image} 
-                                alt={tournament.name} 
-                                fill 
-                                className="object-cover"
-                                data-ai-hint={tournament.dataAiHint}
-                            />
-                            <Badge variant={getStatusVariant(tournament.status)} className="absolute right-2 top-2">{tournament.status}</Badge>
-                        </CardHeader>
-                        <CardContent className="flex-1 p-6">
-                            <CardTitle className="font-headline">{tournament.name}</CardTitle>
-                            <CardDescription className="mt-2 flex items-center space-x-4 text-sm">
-                                <span className="flex items-center"><Gamepad2 className="mr-1.5 h-4 w-4" />{tournament.game}</span>
-                                <span className="flex items-center"><Calendar className="mr-1.5 h-4 w-4" />{tournament.date}</span>
-                            </CardDescription>
-                            <div className="mt-4 flex items-baseline gap-2">
-                                <span className="text-sm text-muted-foreground">Призовой фонд:</span>
-                                <span className="text-lg font-bold text-primary">{tournament.prize}</span>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="bg-muted/50 p-4">
-                            <Button className="w-full" asChild>
-                                <Link href={`/tournaments/${tournament.slug}`}>Подробнее</Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
+                    <Link key={tournament.name} href={`/tournaments/${tournament.slug}`} className="block h-full">
+                        <Card className="flex flex-col overflow-hidden transition-all hover:shadow-2xl hover:border-primary h-full cursor-pointer">
+                            <CardHeader className="relative h-40 w-full p-0">
+                                <Image 
+                                    src={tournament.image} 
+                                    alt={tournament.name} 
+                                    fill 
+                                    className="object-cover"
+                                    data-ai-hint={tournament.dataAiHint}
+                                />
+                                <Badge variant={getStatusVariant(tournament.status)} className="absolute right-2 top-2">{tournament.status}</Badge>
+                            </CardHeader>
+                            <CardContent className="flex-1 p-6">
+                                <CardTitle className="font-headline">{tournament.name}</CardTitle>
+                                <CardDescription className="mt-2 flex items-center space-x-4 text-sm">
+                                    <span className="flex items-center"><Gamepad2 className="mr-1.5 h-4 w-4" />{tournament.game}</span>
+                                    <span className="flex items-center"><Calendar className="mr-1.5 h-4 w-4" />{tournament.date}</span>
+                                </CardDescription>
+                                <div className="mt-4 flex items-baseline gap-2">
+                                    <span className="text-sm text-muted-foreground">Призовой фонд:</span>
+                                    <span className="text-lg font-bold text-primary">{tournament.prize}</span>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </Link>
                 ))}
             </div>
         </div>
