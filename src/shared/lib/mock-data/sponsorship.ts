@@ -28,4 +28,3 @@ export const teamsSeekingSponsorship = [
         needs: 'Оплата буткемпа, зарплатный фонд.'
     }
 ];
-

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -56,7 +57,7 @@ export function SponsorshipPitchGenerator() {
             <CardContent className="space-y-4">
                  <Button onClick={handleGeneratePitch} disabled={isGenerating} className="w-full">
                     {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileText className="mr-2 h-4 w-4"/>}
-                    Сгенерировать питч для команды &quot;{mockTeamInfo.teamName}&quot;
+                    Сгенерировать питч для команды "{mockTeamInfo.teamName}"
                 </Button>
                 
                 {isGenerating && <Skeleton className="h-48 w-full" />}
