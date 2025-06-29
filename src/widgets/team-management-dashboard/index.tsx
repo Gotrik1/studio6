@@ -12,6 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
 import { TeamChatbot } from '@/widgets/team-chatbot';
 import { AITeamAssistantTab } from '@/widgets/ai-team-assistant-tab';
 import { JoinRequestAnalysisDialog } from '@/widgets/join-request-analysis-dialog';
+import { SponsorshipPitchGenerator } from '@/widgets/sponsorship-pitch-generator';
 
 
 const initialJoinRequests = [
@@ -51,8 +52,9 @@ export function TeamManagementDashboard() {
                 </p>
             </div>
              <Tabs defaultValue="requests">
-                 <TabsList className="grid w-full grid-cols-3">
+                 <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="requests">Заявки</TabsTrigger>
+                    <TabsTrigger value="sponsorship">Спонсорство</TabsTrigger>
                     <TabsTrigger value="ai-assistant">AI-Ассистент</TabsTrigger>
                     <TabsTrigger value="chatbot">Чат-бот</TabsTrigger>
                 </TabsList>
@@ -96,6 +98,10 @@ export function TeamManagementDashboard() {
                             </CardFooter>
                         )}
                     </Card>
+                </TabsContent>
+                
+                <TabsContent value="sponsorship" className="mt-4">
+                    <SponsorshipPitchGenerator />
                 </TabsContent>
                 
                 <TabsContent value="ai-assistant" className="mt-4">
