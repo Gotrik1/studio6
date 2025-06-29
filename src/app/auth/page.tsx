@@ -1,10 +1,10 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -26,7 +26,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 
 // Login Form
 function LoginForm() {
-    const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+    const [errorMessage, dispatch] = useActionState(authenticate, undefined);
     const { pending } = useFormStatus();
 
     return (
