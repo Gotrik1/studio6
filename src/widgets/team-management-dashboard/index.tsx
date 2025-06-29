@@ -9,7 +9,6 @@ import { Check, X } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
-import { TeamChatbot } from '@/widgets/team-chatbot';
 import { AITeamAssistantTab } from '@/widgets/ai-team-assistant-tab';
 import { JoinRequestAnalysisDialog } from '@/widgets/join-request-analysis-dialog';
 import { SponsorshipPitchGenerator } from '@/widgets/sponsorship-pitch-generator';
@@ -52,11 +51,10 @@ export function TeamManagementDashboard() {
                 </p>
             </div>
              <Tabs defaultValue="requests">
-                 <TabsList className="grid w-full grid-cols-4">
+                 <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="requests">Заявки</TabsTrigger>
                     <TabsTrigger value="sponsorship">Спонсорство</TabsTrigger>
                     <TabsTrigger value="ai-assistant">AI-Ассистент</TabsTrigger>
-                    <TabsTrigger value="chatbot">Чат-бот</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="requests" className="mt-4">
@@ -106,10 +104,6 @@ export function TeamManagementDashboard() {
                 
                 <TabsContent value="ai-assistant" className="mt-4">
                     <AITeamAssistantTab />
-                </TabsContent>
-                
-                <TabsContent value="chatbot" className="mt-4">
-                    <TeamChatbot teamId="cyber-eagles" />
                 </TabsContent>
             </Tabs>
              <JoinRequestAnalysisDialog 
