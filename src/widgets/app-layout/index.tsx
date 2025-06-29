@@ -35,6 +35,7 @@ import {
   BrainCircuit,
   Palette,
   Dumbbell,
+  ClipboardList,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
 import { BottomNav } from "@/shared/ui/bottom-nav";
@@ -161,6 +162,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                             <CollapsibleSidebarMenuItem icon={<ShieldCheck />} title="Админка">
                             <SidebarMenuSubItem>
                                 <SidebarMenuSubButton href="/administration">Дашборд</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/tournament-crm/dashboard">Управление турнирами</SidebarMenuSubButton>
                                 <SidebarMenuSubButton href="/administration/users">Пользователи</SidebarMenuSubButton>
                                 <SidebarMenuSubButton href="/administration/sports">Виды спорта</SidebarMenuSubButton>
                                 <SidebarMenuSubButton href="/administration/moderation-queue">Модерация</SidebarMenuSubButton>
