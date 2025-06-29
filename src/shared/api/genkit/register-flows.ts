@@ -39,3 +39,5 @@ import './flows/sponsorship-scout-flow';
 import './flows/onboarding-assistant-flow';
 import './flows/generate-match-commentary-flow';
 import './flows/generate-match-post-flow';
+import './flows/generate-training-program-flow';
+import './flows/find-venues-flow';
