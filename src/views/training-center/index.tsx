@@ -1,10 +1,11 @@
 
 'use client';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Progress } from "@/shared/ui/progress";
 import { Dumbbell, Calendar, TrendingUp, BrainCircuit, BookOpen, Replace, LayoutGrid } from "lucide-react";
+import Link from "next/link";
 
 // Mock data based on the technical specification
 const currentProgram = {
@@ -76,7 +77,7 @@ export function TrainingCenterPage() {
                     </Card>
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <Button variant="outline" size="lg"><BookOpen className="mr-2 h-4 w-4" />Дневник</Button>
+                        <Button variant="outline" size="lg" asChild><Link href="/training/log"><BookOpen className="mr-2 h-4 w-4" />Дневник</Link></Button>
                         <Button variant="outline" size="lg"><Replace className="mr-2 h-4 w-4" />Сменить программу</Button>
                         <Button variant="outline" size="lg"><LayoutGrid className="mr-2 h-4 w-4" />Выбрать сплит</Button>
                     </div>
