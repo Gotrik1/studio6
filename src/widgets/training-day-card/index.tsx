@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare } from 'lucide-react';
-import { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
+import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { cn } from '@/shared/lib/utils';

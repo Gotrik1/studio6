@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card } from '@/shared/ui/card';
+import { Card, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
 import { trainingLogData as initialLog, type TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
