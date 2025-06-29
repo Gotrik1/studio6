@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -37,9 +36,10 @@ import {
   Dumbbell,
   BookOpen,
   BarChart2,
+  Salad,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
-import { BottomNav } from "@/widgets/bottom-nav";
+import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
 import { ThemeCustomizer } from "@/shared/ui/theme-customizer";
 import { NotificationsPopover } from "@/widgets/notifications-popover";
@@ -123,6 +123,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                             <SidebarMenuSubButton href="/training/analytics">Аналитика</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/training/programs">Программы тренировок</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/training/exercises">Каталог упражнений</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/training/nutrition">Центр питания</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/quests">Квесты</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/store">Магазин</SidebarMenuSubButton>
                             <SidebarMenuSubButton href="/promotions">Промо-акции</SidebarMenuSubButton>
