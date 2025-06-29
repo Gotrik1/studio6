@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -92,75 +93,87 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                     
                     <SidebarSeparator className="my-1" />
 
-                    <CollapsibleSidebarMenuItem icon={<Users />} title="Сообщество">
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/teams">Команды</SidebarMenuSubButton>
-                        <SidebarMenuSubButton href="/chats">Чаты</SidebarMenuSubButton>
-                        <SidebarMenuSubButton href="/friends">Друзья</SidebarMenuSubButton>
-                        <SidebarMenuSubButton href="/fan-zone">Фан-зона</SidebarMenuSubButton>
-                        <SidebarMenuSubButton href="/partners">Партнеры</SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    </CollapsibleSidebarMenuItem>
+                    <SidebarMenuItem>
+                        <CollapsibleSidebarMenuItem icon={<Users />} title="Сообщество">
+                        <SidebarMenuSubItem>
+                            <SidebarMenuSubButton href="/teams">Команды</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/chats">Чаты</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/friends">Друзья</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/fan-zone">Фан-зона</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/partners">Партнеры</SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        </CollapsibleSidebarMenuItem>
+                    </SidebarMenuItem>
 
-                    <CollapsibleSidebarMenuItem icon={<Trophy />} title="Соревнования">
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/matches">Матчи</SidebarMenuSubButton>
-                        <SidebarMenuSubButton href="/tournaments">Турниры</SidebarMenuSubButton>
-                        <SidebarMenuSubButton href="/leaderboards">Лидерборды</SidebarMenuSubButton>
-                        <SidebarMenuSubButton href="/booking">Площадки</SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    </CollapsibleSidebarMenuItem>
+                    <SidebarMenuItem>
+                        <CollapsibleSidebarMenuItem icon={<Trophy />} title="Соревнования">
+                        <SidebarMenuSubItem>
+                            <SidebarMenuSubButton href="/matches">Матчи</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/tournaments">Турниры</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/leaderboards">Лидерборды</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/booking">Площадки</SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        </CollapsibleSidebarMenuItem>
+                    </SidebarMenuItem>
 
-                    <CollapsibleSidebarMenuItem icon={<BrainCircuit />} title="Развитие">
-                      <SidebarMenuSubItem>
-                          <SidebarMenuSubButton href="/training">AI-Коуч</SidebarMenuSubButton>
-                          <SidebarMenuSubButton href="/quests">Квесты</SidebarMenuSubButton>
-                          <SidebarMenuSubButton href="/store">Магазин</SidebarMenuSubButton>
-                          <SidebarMenuSubButton href="/promotions">Промо-акции</SidebarMenuSubButton>
-                          <SidebarMenuSubButton href="/pd-economy">Экономика PD</SidebarMenuSubButton>
-                          <SidebarMenuSubButton href="/monetization">Монетизация</SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    </CollapsibleSidebarMenuItem>
+                    <SidebarMenuItem>
+                        <CollapsibleSidebarMenuItem icon={<BrainCircuit />} title="Развитие">
+                        <SidebarMenuSubItem>
+                            <SidebarMenuSubButton href="/training">AI-Коуч</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/quests">Квесты</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/store">Магазин</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/promotions">Промо-акции</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/pd-economy">Экономика PD</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/monetization">Монетизация</SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        </CollapsibleSidebarMenuItem>
+                    </SidebarMenuItem>
 
-                    <CollapsibleSidebarMenuItem icon={<Award />} title="Роли">
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/judge-center">Центр Судей</SidebarMenuSubButton>
-                        <SidebarMenuSubButton href="/sponsors">Спонсоры</SidebarMenuSubButton>
-                        {(user.role === 'Спонсор') && (
-                          <SidebarMenuSubButton href="/sponsorship/management">Мои Кампании</SidebarMenuSubButton>
-                        )}
-                      </SidebarMenuSubItem>
-                    </CollapsibleSidebarMenuItem>
+                    <SidebarMenuItem>
+                        <CollapsibleSidebarMenuItem icon={<Award />} title="Роли">
+                        <SidebarMenuSubItem>
+                            <SidebarMenuSubButton href="/judge-center">Центр Судей</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/sponsors">Спонсоры</SidebarMenuSubButton>
+                            {(user.role === 'Спонсор') && (
+                            <SidebarMenuSubButton href="/sponsorship/management">Мои Кампании</SidebarMenuSubButton>
+                            )}
+                        </SidebarMenuSubItem>
+                        </CollapsibleSidebarMenuItem>
+                    </SidebarMenuItem>
 
-                    <CollapsibleSidebarMenuItem icon={<BrainCircuit />} title="Инструменты AI">
-                       <SidebarMenuSubItem>
-                        <SidebarMenuSubButton href="/ai-analysis">Анализ контента</SidebarMenuSubButton>
-                        <SidebarMenuSubButton href="/audio-generation">Генерация аудио</SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    </CollapsibleSidebarMenuItem>
+                    <SidebarMenuItem>
+                        <CollapsibleSidebarMenuItem icon={<BrainCircuit />} title="Инструменты AI">
+                        <SidebarMenuSubItem>
+                            <SidebarMenuSubButton href="/ai-analysis">Анализ контента</SidebarMenuSubButton>
+                            <SidebarMenuSubButton href="/audio-generation">Генерация аудио</SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        </CollapsibleSidebarMenuItem>
+                    </SidebarMenuItem>
 
                     <SidebarSeparator className="my-1" />
                     
                     {(user.role === 'Администратор' || user.role === 'Admin') && (
                       <>
-                        <CollapsibleSidebarMenuItem icon={<Shield />} title="Администрирование">
-                           <SidebarMenuSubItem>
-                            <SidebarMenuSubButton href="/administration">Дашборд</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/users">Пользователи</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/sports">Виды спорта</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/moderation-queue">Модерация</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/gamification">Геймификация</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/administrator">Профиль Админа</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/moderator">Профиль Модератора</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/judge">Профиль Судьи</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/coach">Профиль Тренера</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/manager">Профиль Менеджера</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/organizer">Профиль Организатора</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/sponsor">Профиль Спонсора</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/fan">Профиль Болельщика</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/administration/player">Профиль Игрока</SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        </CollapsibleSidebarMenuItem>
+                        <SidebarMenuItem>
+                            <CollapsibleSidebarMenuItem icon={<Shield />} title="Администрирование">
+                            <SidebarMenuSubItem>
+                                <SidebarMenuSubButton href="/administration">Дашборд</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/users">Пользователи</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/sports">Виды спорта</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/moderation-queue">Модерация</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/gamification">Геймификация</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/administrator">Профиль Админа</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/moderator">Профиль Модератора</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/judge">Профиль Судьи</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/coach">Профиль Тренера</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/manager">Профиль Менеджера</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/organizer">Профиль Организатора</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/sponsor">Профиль Спонсора</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/fan">Профиль Болельщика</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/administration/player">Профиль Игрока</SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                            </CollapsibleSidebarMenuItem>
+                        </SidebarMenuItem>
                         <SidebarSeparator className="my-1" />
                       </>
                     )}
@@ -176,14 +189,16 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                     </SidebarMenuButton>
                     </SidebarMenuItem>
                     
-                    <CollapsibleSidebarMenuItem icon={<FolderKanban />} title="Документы">
-                        <SidebarMenuSubItem>
-                            <SidebarMenuSubButton href="/documents/vision-and-principles">Видение и Принципы</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/documents/architecture">Архитектура (FSD)</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/documents/backend-roadmap">Бэкенд Roadmap</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/documents/backend-production">Готовность к продакшену</SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                    </CollapsibleSidebarMenuItem>
+                    <SidebarMenuItem>
+                        <CollapsibleSidebarMenuItem icon={<FolderKanban />} title="Документы">
+                            <SidebarMenuSubItem>
+                                <SidebarMenuSubButton href="/documents/vision-and-principles">Видение и Принципы</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/documents/architecture">Архитектура (FSD)</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/documents/backend-roadmap">Бэкенд Roadmap</SidebarMenuSubButton>
+                                <SidebarMenuSubButton href="/documents/backend-production">Готовность к продакшену</SidebarMenuSubButton>
+                            </SidebarMenuSubItem>
+                        </CollapsibleSidebarMenuItem>
+                    </SidebarMenuItem>
 
                      <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip="Демо темы">
