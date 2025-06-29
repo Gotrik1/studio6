@@ -138,7 +138,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                         {state === 'expanded' && <div className="font-headline text-lg font-semibold">ProDvor</div>}
                     </Link>
                 </SidebarHeader>
-                <SidebarMenu className="flex-grow">
+                <SidebarMenu>
                     {mainNavItems.map(item => (
                         <SidebarMenuItem key={item.href}>
                              <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
@@ -146,23 +146,23 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}
-                </SidebarMenu>
-                <SidebarMenu>
-                    <SidebarSeparator className="my-1" />
-                     {user.role === 'Администратор' && (
-                        <SidebarMenuItem>
-                             <SidebarMenuButton asChild tooltip="Админка" variant={isActive('/administration') ? 'active' : 'default'}>
-                                <Link href="/administration"><ShieldCheck />{state === 'expanded' && <span>Админка</span>}</Link>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    )}
-                    {secondaryNavItems.map(item => (
-                         <SidebarMenuItem key={item.href}>
-                             <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
-                                <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    ))}
+                    <div className="mt-auto">
+                        <SidebarSeparator className="my-1" />
+                        {user.role === 'Администратор' && (
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild tooltip="Админка" variant={isActive('/administration') ? 'active' : 'default'}>
+                                    <Link href="/administration"><ShieldCheck />{state === 'expanded' && <span>Админка</span>}</Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        )}
+                        {secondaryNavItems.map(item => (
+                            <SidebarMenuItem key={item.href}>
+                                <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
+                                    <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
+                    </div>
                 </SidebarMenu>
                 </SidebarContent>
             </Sidebar>
