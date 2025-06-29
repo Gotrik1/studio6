@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export const GenerateTrainingProgramInputSchema = z.object({
