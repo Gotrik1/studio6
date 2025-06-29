@@ -37,3 +37,5 @@ import './flows/analyze-report-flow';
 import './flows/generate-sponsorship-pitch';
 import './flows/sponsorship-scout-flow';
 import './flows/onboarding-assistant-flow';
+import './flows/generate-match-commentary-flow';
+import './flows/generate-match-post-flow';
