@@ -1,0 +1,65 @@
+
+export const storeItems = [
+    {
+        id: 'pro-sub-1m',
+        name: 'PRO Подписка (1 месяц)',
+        description: 'Разблокируйте эксклюзивные функции: глубокий AI-анализ, кастомные аватары и значок PRO.',
+        price: 500,
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'gold medal icon',
+        category: 'Подписки',
+        isRealMoney: false,
+    },
+    {
+        id: 'rank-boost-1w',
+        name: 'Буст ранга (x2 на 7 дней)',
+        description: 'Удвойте получаемые очки рейтинга за победы в течение одной недели.',
+        price: 350,
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'arrow up chart',
+        category: 'Бустеры',
+        isRealMoney: false,
+    },
+    {
+        id: 'avatar-frame-1',
+        name: 'Рамка аватара "Пламя"',
+        description: 'Покажите всем свой огонь с этой эксклюзивной анимированной рамкой для аватара.',
+        price: 250,
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'fire frame icon',
+        category: 'Кастомизация',
+        isRealMoney: false,
+    },
+    {
+        id: 'pd-pack-small',
+        name: 'Набор PD (500)',
+        description: 'Пополните свой баланс на 500 ProDvor Dollars.',
+        price: 4.99,
+        isRealMoney: true,
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'coin stack',
+        category: 'Валюта'
+    },
+     {
+        id: 'name-change',
+        name: 'Смена никнейма',
+        description: 'Измените ваш никнейм на платформе. Доступно раз в 30 дней.',
+        price: 150,
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'pencil signature',
+        category: 'Услуги',
+        isRealMoney: false,
+    },
+    {
+        id: 'team-logo-pack',
+        name: 'Пакет логотипов для команды',
+        description: 'Получите доступ к эксклюзивным AI-сгенерированным логотипам для вашей команды.',
+        price: 400,
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'logo design collection',
+        category: 'Для команды',
+        isRealMoney: false,
+    },
+];
+
+export type StoreItem = (typeof storeItems)[0];
