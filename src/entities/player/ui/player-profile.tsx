@@ -27,7 +27,7 @@ import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateTrainingPlan, type GenerateTrainingPlanOutput } from '@/shared/api/genkit/flows/generate-training-plan-flow';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
-import { DonationDialog } from '@/features/donation-dialog';
+import { DonationDialog } from '@/features/donation-dialog/index';
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,

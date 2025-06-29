@@ -14,7 +14,7 @@ import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
 import { teams } from "@/shared/lib/mock-data/teams";
 import { teamRoster, teamActivity, challenges, type TeamActivity } from "@/shared/lib/mock-data/team-details";
-import { DonationDialog } from '@/features/donation-dialog';
+import { DonationDialog } from '@/features/donation-dialog/index';
 
 export function TeamDetailsPage() {
     const { user: currentUser } = useSession();
