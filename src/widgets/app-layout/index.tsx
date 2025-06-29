@@ -31,7 +31,7 @@ import {
   LifeBuoy,
   Settings,
   FolderKanban,
-  Shield,
+  ShieldCheck,
   BrainCircuit,
   Palette,
   Gamepad2,
@@ -155,7 +155,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                     {(user.role === 'Администратор' || user.role === 'Admin') && (
                       <>
                         <SidebarMenuItem>
-                            <CollapsibleSidebarMenuItem icon={<Shield />} title="Администрирование">
+                            <CollapsibleSidebarMenuItem icon={<ShieldCheck />} title="Админка">
                             <SidebarMenuSubItem>
                                 <SidebarMenuSubButton href="/administration">Дашборд</SidebarMenuSubButton>
                                 <SidebarMenuSubButton href="/administration/users">Пользователи</SidebarMenuSubButton>
