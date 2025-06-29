@@ -5,16 +5,25 @@ import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { trainingPrograms, type TrainingProgram } from '@/shared/lib/mock-data/training-programs';
 import Image from 'next/image';
-import { Dumbbell, Target, CalendarDays, Bot, ArrowRight } from 'lucide-react';
+import { Dumbbell, Target, CalendarDays, Bot, ArrowRight, BrainCircuit } from 'lucide-react';
+import Link from 'next/link';
 
 export function TrainingProgramsPage() {
     return (
         <div className="space-y-6">
-            <div className="space-y-2">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Программы тренировок</h1>
-                <p className="text-muted-foreground">
-                    Выберите готовую программу от наших экспертов и AI или создайте свою собственную.
-                </p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-2">
+                    <h1 className="font-headline text-3xl font-bold tracking-tight">Программы тренировок</h1>
+                    <p className="text-muted-foreground">
+                        Выберите готовую программу от наших экспертов или создайте свою собственную.
+                    </p>
+                </div>
+                <Button asChild>
+                    <Link href="/training/programs/new">
+                        <BrainCircuit className="mr-2 h-4 w-4" />
+                        Создать с помощью AI
+                    </Link>
+                </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

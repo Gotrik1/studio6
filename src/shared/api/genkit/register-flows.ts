@@ -41,3 +41,4 @@ import './flows/generate-platform-news-flow';
 import './flows/generate-team-concept-flow';
 import './flows/find-venues-flow';
 import './flows/onboarding-assistant-flow';
+import './flows/generate-training-program-flow';
