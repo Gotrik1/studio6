@@ -76,7 +76,7 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
   };
 
   const onOpenChangeHandler = (open: boolean) => {
-    if (open) {
+    if (open && report) {
       handleAnalyze(); // Analyze automatically when dialog opens
     } else {
       setAiResult(null);
