@@ -30,18 +30,18 @@ export const contacts = [
 
 export const messages = {
     'contact-1': [
-        { sender: 'other', text: 'Привет! Готов к завтрашней тренировке в 19:00?' as const },
-        { sender: 'me', text: 'Привет! Да, буду на месте.' as const },
-        { sender: 'other', text: 'Отлично. Будем отрабатывать выходы на A.' as const },
-        { sender: 'me', text: 'Понял, посмотрю пару демок.' as const },
-        { sender: 'other', text: 'Да, я готов к завтрашней тренировке!' as const },
-    ],
+        { sender: 'other', text: 'Привет! Готов к завтрашней тренировке в 19:00?' },
+        { sender: 'me', text: 'Привет! Да, буду на месте.' },
+        { sender: 'other', text: 'Отлично. Будем отрабатывать выходы на A.' },
+        { sender: 'me', text: 'Понял, посмотрю пару демок.' },
+        { sender: 'other', text: 'Да, я готов к завтрашней тренировке!' },
+    ] as const,
     'contact-2': [
-        { sender: 'other', text: 'Отлично сыграли вчера, надо повторить.' as const },
-    ],
+        { sender: 'other', text: 'Отлично сыграли вчера, надо повторить.' },
+    ] as const,
     'contact-3': [
-         { sender: 'other', text: 'Напоминаем, что регистрация на турнир Summer Kickoff закрывается завтра в 18:00. Убедитесь, что ваша команда подтвердила участие.' as const },
-    ]
+         { sender: 'other', text: 'Напоминаем, что регистрация на турнир Summer Kickoff закрывается завтра в 18:00. Убедитесь, что ваша команда подтвердила участие.' },
+    ] as const
 };
 
 export type Contact = typeof contacts[0];

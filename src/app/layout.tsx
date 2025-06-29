@@ -33,7 +33,7 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${inter.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
       <head />
-      <body className="font-body antialiased">
+      <body>
         <ThemeProvider
             attribute="class"
             defaultTheme="system"
