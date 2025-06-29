@@ -2,17 +2,6 @@ import { Bot, Trophy, Award, MessageSquare, LucideIcon } from 'lucide-react';
 
 export const feedData = [
     {
-        id: '1',
-        type: 'ai_summary' as const,
-        user: { name: 'AI Ассистент', avatar: '' },
-        icon: Bot,
-        timestamp: '1 час назад',
-        content: {
-            title: 'Сводка дня',
-            text: 'Команда "Кибер Орлы" одержала уверенную победу в финале Summer Kickoff 2024. Игрок Superuser достиг ранга "Первый среди равных".',
-        }
-    },
-    {
         id: '2',
         type: 'status' as const,
         user: { name: 'Echo', avatar: 'https://placehold.co/100x100.png', avatarHint: 'esports player' },

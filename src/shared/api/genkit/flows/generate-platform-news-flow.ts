@@ -4,11 +4,19 @@ import { ai } from '@/shared/api/genkit';
 import { z } from 'zod';
 import { teams } from '@/shared/lib/mock-data/teams';
 import { leaderboardData } from '@/shared/lib/mock-data/leaderboards';
+import { textToSpeech } from './tts-flow';
 import { GeneratePlatformNewsOutputSchema } from './schemas/generate-platform-news-schema';
 import type { GeneratePlatformNewsOutput } from './schemas/generate-platform-news-schema';
 
 export type { GeneratePlatformNewsOutput };
 
+export const NewsWithAudioSchema = z.object({
+    ...GeneratePlatformNewsOutputSchema.shape,
+    audioDataUri: z.string().describe("The generated audio news digest as a data URI."),
+});
+export type NewsWithAudio = z.infer<typeof NewsWithAudioSchema>;
+
+// Define the tool to get recent activity
 const RecentActivitySchema = z.object({
     topPlayer: z.string().describe("The name of the top player."),
     winningTeam: z.object({
@@ -35,8 +43,9 @@ const getRecentActivity = ai.defineTool(
     }
 );
 
-const prompt = ai.definePrompt({
-    name: 'generatePlatformNewsPrompt',
+// Define the prompt for generating the news text
+const newsTextPrompt = ai.definePrompt({
+    name: 'generatePlatformNewsTextPrompt',
     tools: [getRecentActivity],
     output: { schema: GeneratePlatformNewsOutputSchema },
     system: `You are an esports journalist for the ProDvor platform. 
@@ -46,17 +55,32 @@ const prompt = ai.definePrompt({
     prompt: "Generate the news digest based on the latest platform activity.",
 });
 
-export const generatePlatformNews = ai.defineFlow(
+// Define the main flow
+const generatePlatformNewsFlow = ai.defineFlow(
     {
         name: 'generatePlatformNewsFlow',
         inputSchema: z.void(),
-        outputSchema: GeneratePlatformNewsOutputSchema,
+        outputSchema: NewsWithAudioSchema,
     },
     async () => {
-        const { output } = await prompt();
-        if (!output) {
-            throw new Error("Failed to generate platform news.");
+        const { output: newsData } = await newsTextPrompt();
+        if (!newsData || !newsData.news || newsData.news.length === 0) {
+            throw new Error("Failed to generate platform news text.");
         }
-        return output;
+
+        // Create a single string for TTS
+        const newsString = newsData.news.map(item => `${item.title}. ${item.summary}`).join('\n\n');
+        
+        // Generate audio
+        const { audioDataUri } = await textToSpeech(newsString);
+
+        return {
+            news: newsData.news,
+            audioDataUri,
+        };
     }
 );
+
+export async function generatePlatformNewsWithAudio(): Promise<NewsWithAudio> {
+    return generatePlatformNewsFlow();
+}

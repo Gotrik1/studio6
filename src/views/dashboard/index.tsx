@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
@@ -9,11 +10,13 @@ import { mainPoll, teamOfTheWeek } from "@/shared/lib/mock-data/dashboard";
 import Image from "next/image";
 import { Feed } from '@/widgets/feed';
 import { StatusUpdateForm } from '@/widgets/status-update-form';
+import { AiNewsDigest } from "@/widgets/ai-news-digest";
 
 export function DashboardPage() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
+                <AiNewsDigest />
                 <StatusUpdateForm />
                 <Feed />
             </div>

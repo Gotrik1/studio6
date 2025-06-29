@@ -86,18 +86,6 @@ const AchievementPost = ({ item }: { item: FeedItemData }) => (
     </Card>
 );
 
-const AiSummaryPost = ({ item }: { item: FeedItemData }) => (
-     <Card className="border-primary/20">
-        <FeedItemHeader user={item.user} timestamp={item.timestamp} icon={Bot} />
-        <CardContent className="p-4 pt-0">
-             <CardTitle className="text-lg mb-2">{item.content.title}</CardTitle>
-             <p className="text-sm text-muted-foreground">{item.content.text}</p>
-        </CardContent>
-         <Separator />
-        <FeedItemFooter />
-    </Card>
-);
-
 export function Feed() {
     return (
         <div className="space-y-6">
@@ -109,8 +97,6 @@ export function Feed() {
                         return <MatchResultPost key={item.id} item={item} />;
                     case 'achievement':
                         return <AchievementPost key={item.id} item={item} />;
-                    case 'ai_summary':
-                        return <AiSummaryPost key={item.id} item={item} />;
                     default:
                         return null;
                 }

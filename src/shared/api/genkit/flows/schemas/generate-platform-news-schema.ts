@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-const NewsItemSchema = z.object({
+export const NewsItemSchema = z.object({
     title: z.string().describe("A catchy, short headline for the news item."),
     summary: z.string().describe("A one-sentence summary of the event."),
     category: z.enum(['match', 'team', 'player', 'platform']).describe("The category of the news."),
