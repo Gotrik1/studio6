@@ -23,7 +23,8 @@ export async function authenticate(
         avatar: 'https://placehold.co/100x100.png',
       };
       
-      cookies().set('session', JSON.stringify(user), {
+      const cookieStore = await cookies();
+      cookieStore.set('session', JSON.stringify(user), {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         maxAge: 60 * 60 * 24 * 7, // One week
@@ -80,7 +81,8 @@ export async function register(values: RegistrationValues) {
             avatar: 'https://placehold.co/100x100.png', // Default avatar
         };
 
-        cookies().set('session', JSON.stringify(newUser), {
+        const cookieStore = await cookies();
+        cookieStore.set('session', JSON.stringify(newUser), {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: 60 * 60 * 24 * 7, // One week
@@ -101,6 +103,7 @@ export async function register(values: RegistrationValues) {
 }
 
 export async function logout() {
-  cookies().delete('session');
+  const cookieStore = await cookies();
+  cookieStore.delete('session');
   redirect('/auth');
 }

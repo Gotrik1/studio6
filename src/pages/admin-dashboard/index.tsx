@@ -1,14 +1,15 @@
+
 'use client';
 
 // UI components
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 
 // Icons
 import { Gavel, Users, ShieldCheck, DollarSign } from 'lucide-react';
 
 // Mock data
-import { reportsQueue } from '@/lib/mock-data/moderation';
+import { reportsQueue, type Report } from '@/shared/lib/mock-data/moderation';
 
 // Other imports
 import { Bar, BarChart, CartesianGrid, XAxis, ResponsiveContainer, YAxis, Tooltip } from "recharts";
@@ -99,7 +100,7 @@ export function AdminDashboardPage() {
                         <CardDescription>Последние жалобы, требующие внимания.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {pendingReports.map(report => (
+                        {pendingReports.map((report: Report) => (
                             <div key={report.id} className="flex items-center">
                                 <Avatar className="h-9 w-9">
                                     <AvatarImage src={report.reportedUser.avatar} data-ai-hint={report.reportedUser.avatarHint} />

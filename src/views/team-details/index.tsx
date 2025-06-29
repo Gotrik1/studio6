@@ -2,18 +2,18 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardHeader, CardContent } from "@/shared/ui/card";
+import { Card, CardHeader, CardContent, CardTitle } from "@/shared/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, Heart } from 'lucide-react';
+import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, CheckCircle, XCircle } from 'lucide-react';
 import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
 import { teams } from "@/shared/lib/mock-data/teams";
-import { teamRoster, teamActivity, challenges } from "@/shared/lib/mock-data/team-details";
+import { teamRoster, teamActivity, challenges, type TeamActivity } from "@/shared/lib/mock-data/team-details";
 import { DonationDialog } from '@/features/donation-dialog';
 
 export function TeamDetailsPage() {
@@ -53,7 +53,7 @@ export function TeamDetailsPage() {
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" onClick={() => setIsDonationOpen(true)}>
-                            <Heart className="mr-2 h-4 w-4 text-red-500" />Поддержать
+                            <Users className="mr-2 h-4 w-4 text-red-500" />Поддержать
                         </Button>
                         <Button variant="outline"><UserPlus className="mr-2 h-4 w-4" />Подать заявку</Button>
                         <Button><MessageCircle className="mr-2 h-4 w-4" />Написать</Button>
@@ -89,7 +89,7 @@ export function TeamDetailsPage() {
                             <CardTitle>Лента активности</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {teamActivity.map(activity => (
+                            {teamActivity.map((activity: TeamActivity) => (
                                 <div key={activity.id} className="flex items-start gap-4">
                                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                                         <activity.icon className="h-5 w-5 text-muted-foreground" />
@@ -168,7 +168,7 @@ export function TeamDetailsPage() {
                             <CardContent className="space-y-3">
                                {challenges.outgoing.map(challenge => (
                                    <div key={challenge.id} className="flex items-center justify-between rounded-md border p-3">
-                                       <div className="flex items-center justify-between">
+                                       <div className="flex items-center gap-2">
                                            <Avatar className="h-8 w-8"><AvatarImage src={challenge.opponent.logo} data-ai-hint={challenge.opponent.logoHint} /></Avatar>
                                            <p className="font-semibold">{challenge.opponent.name}</p>
                                        </div>

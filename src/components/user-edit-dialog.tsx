@@ -1,17 +1,18 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { userList as UserListType } from '@/lib/mock-data/users';
-import { analyzeRoleChange, type AnalyzeRoleChangeOutput } from '@/ai/flows/analyze-role-change-flow';
+import { Button } from "@/shared/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import type { userList as UserListType } from '@/shared/lib/mock-data/users';
+import { analyzeRoleChange, type AnalyzeRoleChangeOutput } from '@/shared/api/genkit/flows/analyze-role-change-flow';
 import { BrainCircuit, Loader2, AlertCircle, Sparkles } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from './alert';
-import { Badge } from './ui/badge';
-import { cn } from '@/lib/utils';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { Badge } from '@/shared/ui/badge';
+import { cn } from '@/shared/lib/utils';
 
 type User = (typeof UserListType)[0];
 

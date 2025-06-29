@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -34,7 +35,7 @@ const generatePromotionImageFlow = ai.defineFlow(
       },
     });
 
-    if (!media.url) {
+    if (!media?.url) {
         throw new Error('Image generation failed.');
     }
 

@@ -31,3 +31,5 @@ export const matchesList = [
         href: '/matches/123'
     },
 ];
+
+export type Match = (typeof matchesList)[0];

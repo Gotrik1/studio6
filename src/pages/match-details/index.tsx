@@ -2,13 +2,12 @@
 'use client';
 
 import Image from "next/image";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { MessageSquare, UserPlus, BrainCircuit, Tv, FileText, BarChart3, Users, Camera, Shield } from "lucide-react";
-import type { MatchDetails } from "@/lib/mock-data/match-details";
+import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
+import { Badge } from "@/shared/ui/badge";
+import { Card } from "@/shared/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
+import { BrainCircuit, FileText, BarChart3, Users, Camera } from "lucide-react";
+import type { MatchDetails } from "@/entities/match/model/types";
 import { OverviewTab } from "@/components/match-details-tabs/overview-tab";
 import { StatsTab } from "@/components/match-details-tabs/stats-tab";
 import { LineupsTab } from "@/components/match-details-tabs/lineups-tab";

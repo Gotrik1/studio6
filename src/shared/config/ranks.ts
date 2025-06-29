@@ -9,7 +9,7 @@ export const RANKS = [
 ];
 
 export const getRankByPoints = (points: number) => {
-    let currentRank = RANKS[0];
+    let currentRank: (typeof RANKS)[0] & { description: string } = { ...RANKS[0], description: ''};
     for (const rank of RANKS) {
         if (points >= rank.minPoints) {
             currentRank = { ...rank, description: `Требуется ${rank.minPoints} PD` };

@@ -2,19 +2,19 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, Heart } from 'lucide-react';
+import { Card, CardHeader, CardContent, CardTitle } from "@/shared/ui/card";
+import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
+import { Button } from "@/shared/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
+import { Badge } from "@/shared/ui/badge";
+import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, CheckCircle, XCircle } from 'lucide-react';
 import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
-import { teams } from "@/lib/mock-data/teams";
-import { teamRoster, teamActivity, challenges } from "@/lib/mock-data/team-details";
-import { DonationDialog } from '@/components/donation-dialog';
+import { teams } from "@/shared/lib/mock-data/teams";
+import { teamRoster, teamActivity, challenges, type TeamActivity } from "@/shared/lib/mock-data/team-details";
+import { DonationDialog } from '@/features/donation-dialog';
 
 export function TeamDetailsPage() {
     const { user: currentUser } = useSession();
@@ -53,7 +53,7 @@ export function TeamDetailsPage() {
                     </div>
                     <div className="flex gap-2">
                         <Button variant="outline" onClick={() => setIsDonationOpen(true)}>
-                            <Heart className="mr-2 h-4 w-4 text-red-500" />Поддержать
+                            <Users className="mr-2 h-4 w-4 text-red-500" />Поддержать
                         </Button>
                         <Button variant="outline"><UserPlus className="mr-2 h-4 w-4" />Подать заявку</Button>
                         <Button><MessageCircle className="mr-2 h-4 w-4" />Написать</Button>
@@ -89,7 +89,7 @@ export function TeamDetailsPage() {
                             <CardTitle>Лента активности</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            {teamActivity.map(activity => (
+                            {teamActivity.map((activity: TeamActivity) => (
                                 <div key={activity.id} className="flex items-start gap-4">
                                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
                                         <activity.icon className="h-5 w-5 text-muted-foreground" />

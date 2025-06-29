@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
 
   // Development-only backdoor to log in as a superuser.
   // Access it via /dashboard?as=superuser
-  if (process.env.NODE_ENV !== 'production' && request.nextUrl.searchParams.get('as') === 'superuser') {
+  if (process.env.NODE_ENV === 'development' && request.nextUrl.searchParams.get('as') === 'superuser') {
     const response = NextResponse.redirect(new URL('/dashboard', request.url));
     const cookieOptions = {
         httpOnly: true,

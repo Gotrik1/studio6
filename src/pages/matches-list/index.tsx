@@ -3,15 +3,15 @@
 
 import { useState } from 'react';
 import Link from "next/link";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ReportScoreDialog } from '@/components/report-score-dialog';
-import { useToast } from '@/hooks/use-toast';
-import { matchesList } from "@/lib/mock-data/matches";
-import { PlusCircle, Swords } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
+import { ReportScoreDialog } from '@/features/report-score/ui/report-score-dialog';
+import { useToast } from '@/shared/hooks/use-toast';
+import { matchesList, type Match } from "@/shared/lib/mock-data/matches";
+import { PlusCircle } from 'lucide-react';
 
 export function MatchesListPage() {
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
@@ -73,7 +73,7 @@ export function MatchesListPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {matchesList.map((match) => (
+              {matchesList.map((match: Match) => (
                 <TableRow key={match.id}>
                   <TableCell>
                     <Link href={match.href || '#'} className="flex items-center gap-4 group">

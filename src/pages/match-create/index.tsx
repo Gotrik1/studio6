@@ -1,20 +1,23 @@
+
 'use client';
 
 import { useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { analyzeMatchChallenge, type AnalyzeMatchChallengeOutput } from '@/ai/flows/analyze-match-challenge-flow';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Textarea } from '@/shared/ui/textarea';
+import { analyzeMatchChallenge, type AnalyzeMatchChallengeOutput } from '@/shared/api/genkit/flows/analyze-match-challenge-flow';
 import { Loader2, Sparkles, Send, MapPin } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { useToast } from '@/shared/hooks/use-toast';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Badge } from '@/shared/ui/badge';
+
+type SuggestionTeam = AnalyzeMatchChallengeOutput['suggestedTeams'][0];
+type SuggestionVenue = AnalyzeMatchChallengeOutput['suggestedVenues'][0];
 
 type SuggestionCardProps = {
-    item: AnalyzeMatchChallengeOutput['suggestedTeams'][0] | AnalyzeMatchChallengeOutput['suggestedVenues'][0];
+    item: SuggestionTeam | SuggestionVenue;
     type: 'team' | 'venue';
 };
 
@@ -34,7 +37,7 @@ function SuggestionCard({ item, type }: SuggestionCardProps) {
     };
 
     if (type === 'team') {
-        const team = item as AnalyzeMatchChallengeOutput['suggestedTeams'][0];
+        const team = item as SuggestionTeam;
         return (
              <Card className="flex flex-col">
                 <CardHeader className="flex-row items-center gap-4">
@@ -58,7 +61,7 @@ function SuggestionCard({ item, type }: SuggestionCardProps) {
     }
     
     if (type === 'venue') {
-        const venue = item as AnalyzeMatchChallengeOutput['suggestedVenues'][0];
+        const venue = item as SuggestionVenue;
         return (
              <Card className="flex flex-col">
                 <div className="relative h-32">
@@ -147,7 +150,7 @@ export function NewMatchPage() {
                         id="challenge-prompt"
                         placeholder="Например: 'Ищем команду по баскетболу для игры на выходных в центре. Уровень средний.'"
                         value={prompt}
-                        onChange={e => setPrompt(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setPrompt(e.target.value)}
                         disabled={isLoading}
                         className="min-h-[100px] text-base"
                     />

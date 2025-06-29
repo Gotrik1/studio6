@@ -1,13 +1,14 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { allTournaments } from "@/lib/mock-data/tournaments";
+import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { allTournaments, type Tournament } from "@/shared/lib/mock-data/tournaments";
 import { Search, PlusCircle, Gamepad2, Calendar } from "lucide-react";
 
 export function TournamentsListPage() {
@@ -58,11 +59,11 @@ export function TournamentsListPage() {
                             placeholder="Поиск турниров..." 
                             className="w-full pl-10" 
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                         />
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        {uniqueGames.map(game => (
+                        {uniqueGames.map((game: string) => (
                             <Button 
                                 key={game} 
                                 variant={gameFilter === game ? "default" : "outline"}
@@ -76,7 +77,7 @@ export function TournamentsListPage() {
             </Card>
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {filteredTournaments.map((tournament) => (
+                {filteredTournaments.map((tournament: Tournament) => (
                     <Card key={tournament.name} className="flex flex-col overflow-hidden transition-all hover:shadow-md">
                         <CardHeader className="relative h-40 w-full p-0">
                             <Image 

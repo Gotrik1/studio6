@@ -41,3 +41,5 @@ export const allTournaments = [
         slug: 'dota-backyard-battle',
     },
 ];
+
+export type Tournament = (typeof allTournaments)[0];

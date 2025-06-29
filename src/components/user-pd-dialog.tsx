@@ -1,13 +1,14 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { userList as UserListType } from '@/lib/mock-data/users';
-import { useToast } from '@/hooks/use-toast';
+import { Button } from "@/shared/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
+import type { userList as UserListType } from '@/shared/lib/mock-data/users';
+import { useToast } from '@/shared/hooks/use-toast';
 import { Coins } from 'lucide-react';
 
 type User = (typeof UserListType)[0];
@@ -76,7 +77,7 @@ export function UserPdDialog({ user, action, isOpen, onOpenChange }: UserPdDialo
                 <div className="py-4 space-y-4">
                     <div>
                         <Label htmlFor="pd-amount">Сумма PD</Label>
-                        <Input id="pd-amount" type="number" value={amount} onChange={(e) => setAmount(e.target.value)} />
+                        <Input id="pd-amount" type="number" value={amount} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAmount(e.target.value)} />
                     </div>
                      <div>
                         <Label htmlFor="pd-reason">Причина</Label>

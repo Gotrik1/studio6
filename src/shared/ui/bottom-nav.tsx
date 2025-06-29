@@ -21,7 +21,7 @@ export function BottomNav() {
     <div className="fixed bottom-0 left-0 z-50 w-full h-16 border-t bg-background/95 backdrop-blur-sm md:hidden">
       <nav className="grid h-full grid-cols-5">
         {navItems.map((item) => {
-          const isActive = (item.href === '/dashboard' && pathname === '/dashboard') || (item.href !== '/dashboard' && pathname.startsWith(item.href));
+          const isActive = (item.href === '/dashboard' && pathname === '/dashboard') || (item.href !== '/dashboard' && (pathname || '').startsWith(item.href));
           
           return (
             <Link

@@ -2,7 +2,8 @@ import { cookies } from 'next/headers';
 import type { User } from '@/shared/lib/types';
 
 export async function getSession(): Promise<User | null> {
-  const sessionCookie = cookies().get('session')?.value;
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get('session')?.value;
   if (!sessionCookie) return null;
 
   try {

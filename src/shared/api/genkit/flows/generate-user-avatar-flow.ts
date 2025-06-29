@@ -10,9 +10,7 @@
  */
 
 import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
-import { GenerateUserAvatarInputSchema, GenerateUserAvatarOutputSchema } from './schemas/generate-user-avatar-schema';
-import type { GenerateUserAvatarInput, GenerateUserAvatarOutput } from './schemas/generate-user-avatar-schema';
+import { GenerateUserAvatarInput, GenerateUserAvatarOutput, GenerateUserAvatarInputSchema, GenerateUserAvatarOutputSchema } from './schemas/generate-user-avatar-schema';
 
 export type { GenerateUserAvatarInput, GenerateUserAvatarOutput };
 
@@ -36,7 +34,7 @@ const generateUserAvatarFlow = ai.defineFlow(
       },
     });
 
-    if (!media.url) {
+    if (!media?.url) {
         throw new Error('Image generation failed.');
     }
 

@@ -34,10 +34,6 @@ import {
   ShieldCheck,
   BrainCircuit,
   Palette,
-  Gamepad2,
-  ListChecks,
-  Scale,
-  Handshake,
 } from "lucide-react";
 import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
 import { BottomNav } from "@/widgets/bottom-nav";

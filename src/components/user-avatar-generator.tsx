@@ -2,15 +2,15 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/shared/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import { Loader2, Sparkles, AlertCircle } from 'lucide-react';
-import { generateUserAvatar } from '@/ai/flows/generate-user-avatar-flow';
-import { Alert, AlertDescription, AlertTitle } from './ui/alert';
+import { generateUserAvatar } from '@/shared/api/genkit/flows/generate-user-avatar-flow';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import Image from 'next/image';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/shared/hooks/use-toast';
 
 interface UserAvatarGeneratorDialogProps {
   isOpen: boolean;
@@ -72,7 +72,7 @@ export function UserAvatarGeneratorDialog({ isOpen, onOpenChange, onAvatarSave, 
             <Input
               id="avatar-prompt"
               value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPrompt(e.target.value)}
               placeholder="например, футуристический рыцарь со светящимся визором"
               disabled={isLoading}
             />

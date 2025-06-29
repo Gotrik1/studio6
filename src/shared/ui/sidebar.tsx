@@ -1,3 +1,4 @@
+
 // Inspired by https://github.com/dillionverma/llm.report/blob/main/components/sidebar.tsx
 
 'use client';
@@ -7,6 +8,7 @@ import React, {
   useState,
   useMemo,
   type ReactNode,
+  type ButtonHTMLAttributes,
 } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import {
@@ -18,7 +20,7 @@ import {
 import { cn } from '@/shared/lib/utils';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
-import { Slot } from '@/shared/ui/slot';
+import { Slot } from '@radix-ui/react-slot';
 import Link from 'next/link';
 
 const sidebarVariants = cva(
@@ -249,7 +251,7 @@ const buttonVariants = cva(
   }
 );
 export interface SidebarMenuButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   tooltip?: string;
@@ -322,32 +324,30 @@ const sidebarMenuSubButtonVariants = cva(
   }
 );
 export interface SidebarMenuSubButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>,
     VariantProps<typeof sidebarMenuSubButtonVariants> {
-  asChild?: boolean;
-  href?: string;
+  href: string;
 }
 const SidebarMenuSubButton = React.forwardRef<
-  HTMLButtonElement,
+  HTMLAnchorElement,
   SidebarMenuSubButtonProps
 >(
   (
-    { className, variant, size, asChild = false, href, children, ...props },
+    { className, variant, size, href, children, ...props },
     ref
   ) => {
-    const Comp = href ? Link : 'button';
     return (
-      <Comp
+      <Link
         className={cn(
           'rounded-md',
           sidebarMenuSubButtonVariants({ variant, size, className })
         )}
         ref={ref}
-        href={href || '#'}
+        href={href}
         {...props}
       >
         {children}
-      </Comp>
+      </Link>
     );
   }
 );
