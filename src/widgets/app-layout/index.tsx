@@ -30,6 +30,7 @@ import {
   ShieldCheck,
   Dumbbell,
   MapPin,
+  Search,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
