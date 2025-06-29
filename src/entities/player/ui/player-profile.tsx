@@ -72,24 +72,20 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
   const nextRank = RANKS[RANKS.indexOf(rank) + 1];
   const progressValue = rank.maxPoints === Infinity ? 100 : ((user.xp - rank.minPoints) / (rank.maxPoints - rank.minPoints)) * 100;
 
-
-  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  // AI Coach state
+  const [isCoachDialogOpen, setIsCoachDialogOpen] = useState(false);
+  const [isLoadingCoach, setIsLoadingCoach] = useState(false);
+  const [coachError, setCoachError] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalyzePlayerPerformanceOutput | null>(null);
-  const [analysisError, setAnalysisError] = useState<string | null>(null);
-
   const [trainingPlan, setTrainingPlan] = useState<GenerateTrainingPlanOutput | null>(null);
-  const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
-  const [planError, setPlanError] = useState<string | null>(null);
   
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
 
-  const handleAnalyze = async () => {
-    setIsAnalyzing(true);
-    setAnalysisError(null);
+  const handleGetCoaching = async () => {
+    setIsLoadingCoach(true);
+    setCoachError(null);
     setAnalysisResult(null);
     setTrainingPlan(null);
-    setPlanError(null);
 
     try {
       const playerStats = `
@@ -101,45 +97,30 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
       `;
       const matchHistory = recentMatches.map(m => `vs ${m.teamB}: ${m.scoreA}-${m.scoreB} on ${m.map}`).join('\n');
 
-      const result = await analyzePlayerPerformance({ playerStats, matchHistory });
-      setAnalysisResult(result);
-    } catch (e) {
-      console.error(e);
-      setAnalysisError("Не удалось получить анализ. Пожалуйста, попробуйте еще раз.");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
-  const handleGeneratePlan = async () => {
-    if (!analysisResult) return;
-    setIsGeneratingPlan(true);
-    setPlanError(null);
-    setTrainingPlan(null);
-
-    try {
+      const analysis = await analyzePlayerPerformance({ playerStats, matchHistory });
       const plan = await generateTrainingPlan({
-        analysis: analysisResult,
+        analysis: analysis,
         playerRole: user.role,
       });
+
+      setAnalysisResult(analysis);
       setTrainingPlan(plan);
     } catch (e) {
       console.error(e);
-      setPlanError("Не удалось сгенерировать план тренировок. Пожалуйста, попробуйте еще раз.");
+      setCoachError("Не удалось получить персональную тренировку. Пожалуйста, попробуйте еще раз.");
     } finally {
-      setIsGeneratingPlan(false);
+      setIsLoadingCoach(false);
     }
   };
 
-  const onOpenChange = (open: boolean) => {
-    setIsAnalysisOpen(open);
+  const onCoachDialogOpenChange = (open: boolean) => {
+    setIsCoachDialogOpen(open);
     if (open) {
-      handleAnalyze();
+      handleGetCoaching();
     } else {
       setAnalysisResult(null);
-      setAnalysisError(null);
       setTrainingPlan(null);
-      setPlanError(null);
+      setCoachError(null);
     }
   };
 
@@ -204,31 +185,30 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
             </div>
           </div>
           <div className="flex gap-2">
-            <Dialog open={isAnalysisOpen} onOpenChange={onOpenChange}>
+            <Dialog open={isCoachDialogOpen} onOpenChange={onCoachDialogOpenChange}>
                 <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon" title="AI Анализ"><BrainCircuit className="h-5 w-5"/></Button>
+                    <Button variant="ghost" size="icon" title="AI-Тренер"><BrainCircuit className="h-5 w-5"/></Button>
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-3xl">
                     <DialogHeader>
-                        <DialogTitle>AI-анализ производительности</DialogTitle>
+                        <DialogTitle>AI-Тренер</DialogTitle>
                         <DialogDescription>
-                            Искусственный интеллект анализирует ваши последние игры и статистику, чтобы дать персональные советы.
+                            Искусственный интеллект анализирует ваши данные и составляет персональный план тренировок.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="py-4">
-                        {isAnalyzing && (
-                            <div className="flex items-center justify-center h-40">
+                        {isLoadingCoach ? (
+                            <div className="flex flex-col items-center justify-center h-60 gap-4">
                                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>
+                                <p className="text-muted-foreground">AI-тренер анализирует ваши данные...</p>
                             </div>
-                        )}
-                        {analysisError && (
+                        ) : coachError ? (
                              <Alert variant="destructive">
                                 <AlertCircle className="h-4 w-4" />
-                                <AlertTitle>Ошибка анализа</AlertTitle>
-                                <AlertDescription>{analysisError}</AlertDescription>
+                                <AlertTitle>Ошибка</AlertTitle>
+                                <AlertDescription>{coachError}</AlertDescription>
                             </Alert>
-                        )}
-                        {analysisResult && (
+                        ) : (analysisResult && trainingPlan) && (
                             <div className="space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
@@ -245,59 +225,41 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
                                     </div>
                                 </div>
                                 
-                                {isGeneratingPlan ? (
-                                    <div className="flex items-center justify-center h-40 border rounded-lg border-dashed">
-                                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>
-                                    </div>
-                                ) : planError ? (
-                                    <Alert variant="destructive">
-                                        <AlertCircle className="h-4 w-4" />
-                                        <AlertTitle>Ошибка генерации плана</AlertTitle>
-                                        <AlertDescription>{planError}</AlertDescription>
-                                    </Alert>
-                                ) : trainingPlan ? (
-                                    <Card className="mt-6 bg-muted/50">
-                                        <CardHeader>
-                                            <CardTitle className="flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary"/> Персональный план на неделю</CardTitle>
-                                        </CardHeader>
-                                        <CardContent className="space-y-4">
+                                <Card className="bg-muted/50">
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary"/> Персональный план на неделю</CardTitle>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        <div>
+                                            <h4 className="font-semibold text-sm flex items-center gap-1.5"><Activity className="h-4 w-4"/>Фокус недели:</h4>
+                                            <p className="text-sm text-muted-foreground">{trainingPlan.weeklyFocus}</p>
+                                        </div>
                                             <div>
-                                                <h4 className="font-semibold text-sm flex items-center gap-1.5"><Activity className="h-4 w-4"/>Фокус недели:</h4>
-                                                <p className="text-sm text-muted-foreground">{trainingPlan.weeklyFocus}</p>
-                                            </div>
-                                             <div>
-                                                <h4 className="font-semibold text-sm flex items-center gap-1.5"><BookOpen className="h-4 w-4"/>Упражнения:</h4>
-                                                <ul className="space-y-1 mt-1">
-                                                {trainingPlan.drills.map((drill, i) => (
-                                                    <li key={i} className="text-sm text-muted-foreground ml-4 p-2 border-l-2">
-                                                        <strong>{drill.name} ({drill.duration}):</strong> {drill.description}
+                                            <h4 className="font-semibold text-sm flex items-center gap-1.5"><BookOpen className="h-4 w-4"/>Упражнения:</h4>
+                                            <ul className="space-y-1 mt-1">
+                                            {trainingPlan.drills.map((drill, i) => (
+                                                <li key={i} className="text-sm text-muted-foreground ml-4 p-2 border-l-2">
+                                                    <strong>{drill.name} ({drill.duration}):</strong> {drill.description}
+                                                </li>
+                                            ))}
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-sm flex items-center gap-1.5"><Youtube className="h-4 w-4"/>Рекомендованные видео:</h4>
+                                            <ul className="space-y-1 mt-1">
+                                                {trainingPlan.suggestedVideos.map((video, i) => (
+                                                    <li key={i} className="text-sm text-primary underline">
+                                                        <a href={video.url} target="_blank" rel="noopener noreferrer">{video.title}</a>
                                                     </li>
                                                 ))}
-                                                </ul>
-                                            </div>
-                                            <div>
-                                                <h4 className="font-semibold text-sm flex items-center gap-1.5"><Youtube className="h-4 w-4"/>Рекомендованные видео:</h4>
-                                                <ul className="space-y-1 mt-1">
-                                                    {trainingPlan.suggestedVideos.map((video, i) => (
-                                                        <li key={i} className="text-sm text-primary underline">
-                                                            <a href={video.url} target="_blank" rel="noopener noreferrer">{video.title}</a>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                            <div>
-                                                <h4 className="font-semibold text-sm flex items-center gap-1.5"><Goal className="h-4 w-4"/>Цель на неделю:</h4>
-                                                <p className="text-sm text-muted-foreground">{trainingPlan.weeklyGoal}</p>
-                                            </div>
-                                        </CardContent>
-                                    </Card>
-                                ) : (
-                                     <div className="text-center pt-4 border-t">
-                                        <Button onClick={handleGeneratePlan}>
-                                            <Sparkles className="mr-2 h-4 w-4"/>Сгенерировать план тренировок
-                                        </Button>
-                                    </div>
-                                )}
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h4 className="font-semibold text-sm flex items-center gap-1.5"><Goal className="h-4 w-4"/>Цель на неделю:</h4>
+                                            <p className="text-sm text-muted-foreground">{trainingPlan.weeklyGoal}</p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
                             </div>
                         )}
                     </div>
