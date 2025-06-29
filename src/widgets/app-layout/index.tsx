@@ -195,7 +195,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
             </Sidebar>
             <SidebarInset className="flex flex-col">
                 <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
-                    <SidebarTrigger className="flex" />
+                    <SidebarTrigger className="flex md:hidden" />
                     <div className="flex-1">
                         <Button variant="outline" className="w-full justify-start text-muted-foreground sm:w-auto" onClick={() => setIsSearchOpen(true)}>
                             <Search className="mr-2 h-4 w-4" />

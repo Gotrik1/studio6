@@ -73,12 +73,12 @@ export function Sidebar({ className, children }: SidebarProps) {
   return (
     <div
       className={cn(
-        'hidden md:flex md:flex-shrink-0',
+        'hidden md:fixed md:inset-y-0 md:left-0 md:z-30 md:flex md:flex-col',
         sidebarVariants({ state }),
         className
       )}
     >
-      <div className='flex flex-col w-full'>{children}</div>
+      <div className='flex h-full w-full flex-col'>{children}</div>
     </div>
   );
 }
