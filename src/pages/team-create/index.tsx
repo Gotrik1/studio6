@@ -1,19 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
 import { Loader2, Sparkles, Upload, Wand2, Users } from 'lucide-react';
 import Image from 'next/image';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/shared/hooks/use-toast';
 import { useTeams } from '@/app/providers/team-provider';
 import { useRouter } from 'next/navigation';
-import { Textarea } from '@/components/ui/textarea';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { generateTeamConcept, type GenerateTeamConceptOutput } from '@/ai/flows/generate-team-concept-flow';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/shared/ui/textarea';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { generateTeamConcept, type GenerateTeamConceptOutput } from '@/shared/api/genkit/flows/generate-team-concept-flow';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 export function NewTeamPage() {
     const { toast } = useToast();
