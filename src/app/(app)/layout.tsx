@@ -1,7 +1,9 @@
+
 import { getSession } from "@/features/auth/session";
 import { redirect } from "next/navigation";
 import { AppLayout } from "@/widgets/app-layout";
 import { TeamProvider } from "@/app/providers/team-provider";
+import { TrainingProvider } from "@/app/providers/training-provider";
 
 export default async function ApplicationLayout({
   children,
@@ -16,9 +18,11 @@ export default async function ApplicationLayout({
 
   return (
     <TeamProvider>
-      <AppLayout user={user}>
-          {children}
-      </AppLayout>
+      <TrainingProvider>
+        <AppLayout user={user}>
+            {children}
+        </AppLayout>
+      </TrainingProvider>
     </TeamProvider>
   );
 }

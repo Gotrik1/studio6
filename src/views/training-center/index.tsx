@@ -6,14 +6,7 @@ import { Button } from "@/shared/ui/button";
 import { Progress } from "@/shared/ui/progress";
 import { Dumbbell, Calendar, TrendingUp, BrainCircuit, BookOpen, Replace, LayoutGrid } from "lucide-react";
 import Link from "next/link";
-
-// Mock data based on the technical specification
-const currentProgram = {
-    name: "Набор массы: Классический сплит",
-    status: "Активна",
-    goal: "Набор мышечной массы",
-    daysPerWeek: 3,
-};
+import { useTraining } from '@/app/providers/training-provider';
 
 const nextWorkout = {
     date: "Завтра, 18:00",
@@ -30,6 +23,8 @@ const aiRecommendation = "Сделай акцент на спину — отст
 
 
 export function TrainingCenterPage() {
+    const { currentProgram } = useTraining();
+
     return (
         <div className="space-y-8">
             <header className="space-y-2">
@@ -40,7 +35,6 @@ export function TrainingCenterPage() {
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Main content column */}
                 <div className="lg:col-span-2 space-y-6">
                     <Card>
                         <CardHeader>
@@ -51,12 +45,21 @@ export function TrainingCenterPage() {
                             <CardDescription>Ваш активный тренировочный план.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <h3 className="text-xl font-bold">{currentProgram.name}</h3>
-                            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                                <span>Цель: <span className="font-medium text-foreground">{currentProgram.goal}</span></span>
-                                <span>Статус: <span className="font-medium text-foreground">{currentProgram.status}</span></span>
-                                <span>Интенсивность: <span className="font-medium text-foreground">{currentProgram.daysPerWeek} дн/нед</span></span>
-                            </div>
+                            {currentProgram ? (
+                                <>
+                                    <h3 className="text-xl font-bold">{currentProgram.name}</h3>
+                                    <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                                        <span>Цель: <span className="font-medium text-foreground">{currentProgram.goal}</span></span>
+                                        <span>Статус: <span className="font-medium text-foreground">Активна</span></span>
+                                        <span>Интенсивность: <span className="font-medium text-foreground">{currentProgram.daysPerWeek} дн/нед</span></span>
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="text-center text-muted-foreground p-4">
+                                    <p>У вас нет активной программы.</p>
+                                    <Button asChild variant="link"><Link href="/training/programs">Выбрать программу</Link></Button>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
 
@@ -79,11 +82,10 @@ export function TrainingCenterPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <Button variant="outline" size="lg" asChild><Link href="/training/log"><BookOpen className="mr-2 h-4 w-4" />Дневник</Link></Button>
                         <Button variant="outline" size="lg" asChild><Link href="/training/programs"><Replace className="mr-2 h-4 w-4" />Сменить программу</Link></Button>
-                        <Button variant="outline" size="lg" asChild><Link href="/training/programs"><LayoutGrid className="mr-2 h-4 w-4" />Выбрать сплит</Link></Button>
+                        <Button variant="outline" size="lg" asChild><Link href="/training/programs/new"><LayoutGrid className="mr-2 h-4 w-4" />Конструктор</Link></Button>
                     </div>
                 </div>
 
-                {/* Sidebar column */}
                 <aside className="space-y-6">
                     <Card>
                         <CardHeader>
@@ -96,9 +98,9 @@ export function TrainingCenterPage() {
                              <div>
                                 <div className="flex justify-between text-sm mb-1">
                                     <span className="font-medium">Тренировки</span>
-                                    <span>{weeklyProgress.workouts.current} / {weeklyProgress.workouts.total}</span>
+                                    <span>{weeklyProgress.workouts.current} / {currentProgram?.daysPerWeek || 3}</span>
                                 </div>
-                                <Progress value={(weeklyProgress.workouts.current / weeklyProgress.workouts.total) * 100} />
+                                <Progress value={currentProgram ? (weeklyProgress.workouts.current / currentProgram.daysPerWeek) * 100 : 0} />
                             </div>
                              <div>
                                 <div className="flex justify-between text-sm mb-1">

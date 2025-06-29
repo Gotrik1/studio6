@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -14,11 +15,14 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { generateTrainingProgram, type GenerateTrainingProgramOutput, GenerateTrainingProgramInputSchema } from '@/shared/api/genkit/flows/generate-training-program-flow';
 import type * as z from 'zod';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/ui/accordion';
+import { useTraining } from '@/app/providers/training-provider';
+import type { TrainingProgram } from '@/shared/lib/mock-data/training-programs';
 
 type FormValues = z.infer<typeof GenerateTrainingProgramInputSchema>;
 
 export function TrainingProgramConstructorPage() {
     const { toast } = useToast();
+    const { selectProgram } = useTraining();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<GenerateTrainingProgramOutput | null>(null);
@@ -55,11 +59,29 @@ export function TrainingProgramConstructorPage() {
     };
     
     const handleSelectProgram = () => {
+        if (!result) return;
+        
+        const formValues = form.getValues();
+
+        const newProgram: TrainingProgram = {
+            id: `ai-${Date.now()}`,
+            name: result.programName,
+            description: result.description,
+            goal: formValues.goal,
+            daysPerWeek: formValues.daysPerWeek,
+            splitType: 'Split', // This is a simplification. Could be derived from AI output in the future.
+            author: 'ProDvor AI',
+            coverImage: 'https://placehold.co/600x400.png',
+            coverImageHint: 'ai circuit board',
+            isAiGenerated: true,
+        };
+
+        selectProgram(newProgram);
+
         toast({
             title: "Программа выбрана!",
-            description: `Вы начали новую программу: "${result?.programName}".`,
+            description: `Вы начали новую программу: "${result.programName}".`,
         });
-        // In a real app, this would navigate or update user state
     };
 
     return (
