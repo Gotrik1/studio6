@@ -109,7 +109,7 @@ export function TrainingCenterPage() {
                                 </div>
                                 <Progress value={(weeklyProgress.volume.current / weeklyProgress.volume.total) * 100} />
                             </div>
-                             <div className="flex justify-between text-sm font-medium border-t pt-3 mt-3">
+                             <div className="flex justify-between items-center text-sm font-medium border-t pt-3 mt-3">
                                 <span>Заработано PD</span>
                                 <span className="font-bold text-green-500">+{weeklyProgress.pd} PD</span>
                             </div>
