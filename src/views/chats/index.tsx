@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
@@ -87,7 +88,7 @@ export function ChatsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-10rem)]">
             <Card className="md:col-span-1 flex flex-col">
                 <CardHeader>
-                    <CardTitle>Чаты</CardTitle>
+                    <CardTitle>Сообщения</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0 flex-1 overflow-y-auto">
                     <ScrollArea className="h-full">
@@ -188,7 +189,7 @@ export function ChatsPage() {
                     <div className="flex-1 flex flex-col items-center justify-center text-muted-foreground">
                         <Bot className="h-12 w-12 mb-4" />
                         <p className="font-semibold">Выберите чат</p>
-                        <p className="text-sm">Выберите чат, чтобы начать общение.</p>
+                        <p className="text-sm">Выберите чат для начала общения.</p>
                     </div>
                 )}
             </Card>

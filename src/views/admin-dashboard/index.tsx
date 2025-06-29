@@ -1,119 +1,106 @@
+
 'use client';
 
-// UI components
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
+import { 
+    Users, 
+    ShieldCheck, 
+    FolderKanban, 
+    BrainCircuit,
+    Palette,
+    Handshake,
+    Trophy,
+    Gavel,
+    Coins,
+    DollarSign,
+    ShoppingCart,
+    Megaphone,
+    Map as MapIcon
+} from 'lucide-react';
+import Link from "next/link";
+import { Button } from "@/shared/ui/button";
+import { ArrowRight } from "lucide-react";
 
-// Icons
-import { Gavel, Users, ShieldCheck, DollarSign } from 'lucide-react';
+type AdminSectionCardProps = {
+    title: string;
+    description: string;
+    href: string;
+    icon: React.ElementType;
+}
 
-// Mock data
-import { reportsQueue } from '@/shared/lib/mock-data/moderation';
+const AdminSectionCard = ({ title, description, href, icon: Icon }: AdminSectionCardProps) => (
+    <Card className="flex flex-col">
+        <CardHeader className="flex-row items-start gap-4 space-y-0">
+            <div className="p-2 bg-muted rounded-md">
+                <Icon className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>{description}</CardDescription>
+            </div>
+        </CardHeader>
+        <CardContent className="flex-grow" />
+        <CardContent>
+             <Button asChild variant="outline" className="w-full">
+                <Link href={href}>
+                    Перейти <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+            </Button>
+        </CardContent>
+    </Card>
+);
 
-// Other imports
-import { Bar, BarChart, CartesianGrid, XAxis, ResponsiveContainer, YAxis, Tooltip } from "recharts";
-
-const data = [
-  { name: 'Янв', users: 400, revenue: 2400 },
-  { name: 'Фев', users: 300, revenue: 1398 },
-  { name: 'Мар', users: 500, revenue: 9800 },
-  { name: 'Апр', users: 278, revenue: 3908 },
-  { name: 'Май', users: 189, revenue: 4800 },
-  { name: 'Июн', users: 239, revenue: 3800 },
-  { name: 'Июл', users: 349, revenue: 4300 },
+const managementCards: AdminSectionCardProps[] = [
+    { title: "Пользователи", description: "Управление всеми пользователями.", href: "/administration/users", icon: Users },
+    { title: "Турниры (CRM)", description: "Полный цикл управления турнирами.", href: "/administration/tournament-crm/dashboard", icon: Trophy },
+    { title: "Модерация", description: "Очередь жалоб и инцидентов.", href: "/administration/moderation-queue", icon: Gavel },
+    { title: "Геймификация", description: "Настройка рангов и квестов.", href: "/administration/gamification", icon: ShieldCheck },
+    { title: "Виды спорта", description: "Управление дисциплинами.", href: "/administration/sports", icon: Handshake },
 ];
 
-export function AdminDashboardPage() {
-    const pendingReports = reportsQueue.slice(0, 3);
+const contentCards: AdminSectionCardProps[] = [
+    { title: "Партнеры", description: "Управление спонсорами и партнерами.", href: "/partners", icon: Handshake },
+    { title: "Экономика PD", description: "Настройка правил начисления PD.", href: "/pd-economy", icon: Coins },
+    { title: "Монетизация", description: "Управление подписками.", href: "/monetization", icon: DollarSign },
+    { title: "Магазин", description: "Редактирование товаров в магазине.", href: "/store", icon: ShoppingCart },
+    { title: "Промо-акции", description: "Создание и управление акциями.", href: "/promotions", icon: Megaphone },
+]
 
+const systemCards: AdminSectionCardProps[] = [
+    { title: "Инструменты AI", description: "Демонстрация работы AI-агентов.", href: "/ai-analysis", icon: BrainCircuit },
+    { title: "Документация", description: "Архитектура и видение проекта.", href: "/documents/architecture", icon: FolderKanban },
+    { title: "Демо темы", description: "Просмотр всех UI компонентов.", href: "/theme-demo", icon: Palette },
+    { title: "Карта сайта", description: "Обзор всех страниц приложения.", href: "/administration/sitemap", icon: MapIcon },
+]
+
+export function AdminDashboardPage() {
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
             <div className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Панель администратора</h1>
-                <p className="text-muted-foreground">Обзор ключевых метрик и активностей на платформе.</p>
+                <p className="text-muted-foreground">Обзор и управление всеми разделами платформы ProDvor.</p>
             </div>
 
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Всего пользователей</CardTitle>
-                        <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">10,234</div>
-                        <p className="text-xs text-muted-foreground">+5% за последний месяц</p>
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Активных жалоб</CardTitle>
-                        <Gavel className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{reportsQueue.length}</div>
-                        <p className="text-xs text-muted-foreground">+3 за последние 24 часа</p>
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Безопасность</CardTitle>
-                        <ShieldCheck className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">99.8%</div>
-                        <p className="text-xs text-muted-foreground">Рейтинг безопасности аккаунтов</p>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Доход (мес.)</CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">$12,450</div>
-                        <p className="text-xs text-muted-foreground">-2% по сравнению с прошлым месяцем</p>
-                    </CardContent>
-                </Card>
-            </div>
+            <section>
+                <h2 className="font-headline text-2xl font-semibold mb-4">Управление платформой</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {managementCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
+                </div>
+            </section>
             
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                 <Card className="lg:col-span-2">
-                    <CardHeader>
-                        <CardTitle>Статистика роста</CardTitle>
-                    </CardHeader>
-                    <CardContent className="pl-2">
-                        <ResponsiveContainer width="100%" height={300}>
-                            <BarChart data={data}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                                <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `$${value}`} />
-                                <Tooltip />
-                                <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Недавние жалобы</CardTitle>
-                        <CardDescription>Последние жалобы, требующие внимания.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {pendingReports.map(report => (
-                            <div key={report.id} className="flex items-center">
-                                <Avatar className="h-9 w-9">
-                                    <AvatarImage src={report.reportedUser.avatar} data-ai-hint={report.reportedUser.avatarHint} />
-                                    <AvatarFallback>{report.reportedUser.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="ml-4 space-y-1">
-                                    <p className="text-sm font-medium leading-none">Жалоба на {report.reportedUser.name}</p>
-                                    <p className="text-sm text-muted-foreground truncate">Причина: {report.reason}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </CardContent>
-                </Card>
-            </div>
+            <section>
+                <h2 className="font-headline text-2xl font-semibold mb-4">Контент и коммерция</h2>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {contentCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
+                </div>
+            </section>
+            
+             <section>
+                <h2 className="font-headline text-2xl font-semibold mb-4">Система и разработка</h2>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {systemCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
+                </div>
+            </section>
         </div>
     );
 }

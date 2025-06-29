@@ -14,8 +14,6 @@ import {
   SidebarMenuButton,
   SidebarInset,
   SidebarTrigger,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
   SidebarSeparator,
   useSidebar,
 } from "@/shared/ui/sidebar";
@@ -23,36 +21,49 @@ import { UserNav } from "@/widgets/user-nav";
 import { Logo } from "@/shared/ui/icons";
 import {
   Newspaper,
-  User as UserIcon,
+  MessageSquare,
   Users,
-  Search,
+  Users2,
   Trophy,
-  Award,
   LifeBuoy,
   Settings,
-  FolderKanban,
   ShieldCheck,
-  BrainCircuit,
-  Palette,
   Dumbbell,
-  ClipboardList,
+  MapPin,
 } from "lucide-react";
-import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
 import { ThemeCustomizer } from "@/shared/ui/theme-customizer";
 import { NotificationsPopover } from "@/widgets/notifications-popover";
 import { Button } from '@/shared/ui/button';
 import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/shared/lib/utils';
 
 interface AppLayoutProps {
     user: User;
     children: React.ReactNode;
 }
 
+const mainNavItems = [
+    { href: "/dashboard", icon: Newspaper, label: "Лента" },
+    { href: "/chats", icon: MessageSquare, label: "Сообщения" },
+    { href: "/teams", icon: Users, label: "Команды" },
+    { href: "/friends", icon: Users2, label: "Друзья" },
+    { href: "/tournaments", icon: Trophy, label: "Соревнования" },
+    { href: "/training", icon: Dumbbell, label: "Тренировки" },
+    { href: "/booking", icon: MapPin, label: "Площадки" },
+];
+
+const secondaryNavItems = [
+    { href: "/support", icon: LifeBuoy, label: "Поддержка" },
+    { href: "/settings", icon: Settings, label: "Настройки" },
+];
+
 const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const { state } = useSidebar();
+    const pathname = usePathname();
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -65,151 +76,47 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         return () => document.removeEventListener('keydown', down);
     }, []);
 
+    const isActive = (href: string) => {
+        return href === '/dashboard' ? pathname === href : pathname.startsWith(href);
+    }
+
     return (
         <>
             <Sidebar>
                 <SidebarContent className="p-2">
                 <SidebarHeader>
-                    <div className="flex items-center gap-2">
-                    <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                        <Logo className="h-5 w-5" />
-                    </div>
-                    {state === 'expanded' && <div className="font-headline text-lg font-semibold">ProDvor</div>}
-                    </div>
+                    <Link href="/" className="flex items-center gap-2">
+                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                            <Logo className="h-5 w-5" />
+                        </div>
+                        {state === 'expanded' && <div className="font-headline text-lg font-semibold">ProDvor</div>}
+                    </Link>
                 </SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild tooltip="Лента">
-                          <Link href="/dashboard"><Newspaper />{state === 'expanded' && <span>Лента</span>}</Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild tooltip="Мой профиль">
-                          <Link href="/profile"><UserIcon />{state === 'expanded' && <span>Мой профиль</span>}</Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    
-                    <SidebarSeparator className="my-1" />
-
-                    <SidebarMenuItem>
-                        <CollapsibleSidebarMenuItem icon={<Users />} title="Сообщество">
-                        <SidebarMenuSubItem>
-                            <SidebarMenuSubButton href="/teams">Команды</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/chats">Чаты</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/friends">Друзья</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/fan-zone">Фан-зона</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/partners">Партнеры</SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        </CollapsibleSidebarMenuItem>
-                    </SidebarMenuItem>
-
-                    <SidebarMenuItem>
-                        <CollapsibleSidebarMenuItem icon={<Trophy />} title="Соревнования">
-                        <SidebarMenuSubItem>
-                            <SidebarMenuSubButton href="/matches">Матчи</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/tournaments">Турниры</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/leaderboards">Лидерборды</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/booking">Площадки</SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        </CollapsibleSidebarMenuItem>
-                    </SidebarMenuItem>
-
-                    <SidebarMenuItem>
-                        <CollapsibleSidebarMenuItem icon={<Dumbbell />} title="Развитие">
-                        <SidebarMenuSubItem>
-                            <SidebarMenuSubButton href="/training">Рабочий стол атлета</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/training/log">Дневник тренировок</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/training/analytics">Аналитика</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/training/programs">Программы тренировок</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/training/exercises">Каталог упражнений</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/training/nutrition">Центр питания</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/training/nutrition-diary">Дневник питания</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/quests">Квесты</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/store">Магазин</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/promotions">Промо-акции</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/pd-economy">Экономика PD</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/monetization">Монетизация</SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        </CollapsibleSidebarMenuItem>
-                    </SidebarMenuItem>
-
-                    <SidebarMenuItem>
-                        <CollapsibleSidebarMenuItem icon={<Award />} title="Роли">
-                        <SidebarMenuSubItem>
-                            <SidebarMenuSubButton href="/judge-center">Центр Судей</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/sponsors">Спонсоры</SidebarMenuSubButton>
-                            {(user.role === 'Спонсор') && (
-                            <SidebarMenuSubButton href="/sponsorship/management">Мои Кампании</SidebarMenuSubButton>
-                            )}
-                        </SidebarMenuSubItem>
-                        </CollapsibleSidebarMenuItem>
-                    </SidebarMenuItem>
-
-                    <SidebarMenuItem>
-                        <CollapsibleSidebarMenuItem icon={<BrainCircuit />} title="Инструменты AI">
-                        <SidebarMenuSubItem>
-                            <SidebarMenuSubButton href="/ai-analysis">Анализ контента</SidebarMenuSubButton>
-                            <SidebarMenuSubButton href="/audio-generation">Генерация аудио</SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                        </CollapsibleSidebarMenuItem>
-                    </SidebarMenuItem>
-
-                    <SidebarSeparator className="my-1" />
-                    
-                    {(user.role === 'Администратор' || user.role === 'Admin') && (
-                      <>
-                        <SidebarMenuItem>
-                            <CollapsibleSidebarMenuItem icon={<ShieldCheck />} title="Админка">
-                            <SidebarMenuSubItem>
-                                <SidebarMenuSubButton href="/administration">Дашборд</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/tournament-crm/dashboard">Управление турнирами</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/users">Пользователи</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/sports">Виды спорта</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/moderation-queue">Модерация</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/gamification">Геймификация</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/administrator">Профиль Админа</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/moderator">Профиль Модератора</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/judge">Профиль Судьи</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/coach">Профиль Тренера</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/manager">Профиль Менеджера</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/organizer">Профиль Организатора</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/sponsor">Профиль Спонсора</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/fan">Профиль Болельщика</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/administration/player">Профиль Игрока</SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                            </CollapsibleSidebarMenuItem>
+                <SidebarMenu className="flex-grow">
+                    {mainNavItems.map(item => (
+                        <SidebarMenuItem key={item.href}>
+                             <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
+                                <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                            </SidebarMenuButton>
                         </SidebarMenuItem>
-                        <SidebarSeparator className="my-1" />
-                      </>
+                    ))}
+                </SidebarMenu>
+                <SidebarMenu>
+                    <SidebarSeparator className="my-1" />
+                     {user.role === 'Администратор' && (
+                        <SidebarMenuItem>
+                             <SidebarMenuButton asChild tooltip="Админка" variant={isActive('/administration') ? 'active' : 'default'}>
+                                <Link href="/administration"><ShieldCheck />{state === 'expanded' && <span>Админка</span>}</Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
                     )}
-
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Поддержка">
-                        <Link href="/support"><LifeBuoy />{state === 'expanded' && <span>Поддержка</span>}</Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Настройки">
-                        <Link href="/settings"><Settings />{state === 'expanded' && <span>Настройки</span>}</Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    
-                    <SidebarMenuItem>
-                        <CollapsibleSidebarMenuItem icon={<FolderKanban />} title="Документы">
-                            <SidebarMenuSubItem>
-                                <SidebarMenuSubButton href="/documents/vision-and-principles">Видение и Принципы</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/documents/architecture">Архитектура (FSD)</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/documents/backend-roadmap">Бэкенд Roadmap</SidebarMenuSubButton>
-                                <SidebarMenuSubButton href="/documents/backend-production">Готовность к продакшену</SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
-                        </CollapsibleSidebarMenuItem>
-                    </SidebarMenuItem>
-
-                     <SidebarMenuItem>
-                    <SidebarMenuButton asChild tooltip="Демо темы">
-                        <Link href="/theme-demo"><Palette />{state === 'expanded' && <span>Демо темы</span>}</Link>
-                    </SidebarMenuButton>
-                    </SidebarMenuItem>
+                    {secondaryNavItems.map(item => (
+                         <SidebarMenuItem key={item.href}>
+                             <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
+                                <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
                 </SidebarMenu>
                 </SidebarContent>
             </Sidebar>
