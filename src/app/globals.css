@@ -17,7 +17,7 @@ html {
 
 @layer base {
   :root {
-    --background: 220 6% 90%;
+    --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -33,36 +33,36 @@ html {
     --input: 214.3 31.8% 91.4%;
     --radius: 0.5rem;
     
-    /* Default theme: Blue */
-    --primary: 217 91% 60%;
-    --primary-foreground: 210 40% 98%;
-    --accent: 217 91% 60%;
-    --accent-foreground: 210 40% 98%;
-    --ring: 217 91% 60%;
+    /* NEW Default theme: Purple */
+    --primary: 262 83% 58%;
+    --primary-foreground: 262 83% 98%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 262 83% 98%;
+    --ring: 262 83% 58%;
   }
 
   .dark {
-    --background: 220 10% 12%;
-    --foreground: 210 20% 94%;
-    --card: 220 10% 16%;
-    --card-foreground: 210 20% 94%;
-    --popover: 220 10% 12%;
-    --popover-foreground: 210 20% 94%;
-    --secondary: 220 10% 24%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 220 10% 24%;
-    --muted-foreground: 210 20% 65%;
+    --background: 240 10% 3.9%;
+    --foreground: 210 40% 98%;
+    --card: 240 10% 10%;
+    --card-foreground: 210 40% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 210 40% 98%;
+    --secondary: 240 4% 16%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 210 40% 65%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 220 10% 24%;
-    --input: 220 10% 24%;
+    --border: 240 4% 16%;
+    --input: 240 4% 16%;
     
-    /* Default dark theme: Red */
-    --primary: 0 72% 56%;
-    --primary-foreground: 0 0% 100%;
-    --accent: 0 72% 56%;
-    --accent-foreground: 0 0% 100%;
-    --ring: 0 84% 60%;
+    /* NEW Default dark theme: Purple */
+    --primary: 262 83% 68%;
+    --primary-foreground: 262 83% 98%;
+    --accent: 262 83% 68%;
+    --accent-foreground: 262 83% 98%;
+    --ring: 262 83% 68%;
   }
 
   /* ACCENT THEMES (applied to both light and dark mode) */
