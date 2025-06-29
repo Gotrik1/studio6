@@ -18,6 +18,8 @@ import {
 import { cn } from '@/shared/lib/utils';
 import { ChevronLeft } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
+import { Slot } from '@/shared/ui/slot';
+import Link from 'next/link';
 
 const sidebarVariants = cva(
   'transition-all duration-300 ease-in-out',
@@ -269,19 +271,13 @@ const SidebarMenuButton = React.forwardRef<
     ref
   ) => {
     const { state } = useSidebar();
-    const child =
-      state === 'expanded' ? (
-        <span className='flex gap-3 items-center'>{children}</span>
-      ) : (
-        <span className='flex gap-3 items-center justify-center'>
-          {children}
-        </span>
-      );
+    const Comp = asChild ? Slot : 'button';
+
     return (
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <button
+            <Comp
               className={cn(
                 'rounded-lg',
                 buttonVariants({ variant, size, className })
@@ -289,8 +285,10 @@ const SidebarMenuButton = React.forwardRef<
               ref={ref}
               {...props}
             >
-              {child}
-            </button>
+               <div className={cn('flex items-center w-full gap-3', state === 'collapsed' && 'justify-center')}>
+                 {children}
+               </div>
+            </Comp>
           </TooltipTrigger>
           {state === 'collapsed' && tooltip && (
             <TooltipContent side='right'>{tooltip}</TooltipContent>
@@ -328,16 +326,17 @@ export interface SidebarMenuSubButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof sidebarMenuSubButtonVariants> {
   asChild?: boolean;
+  href?: string;
 }
 const SidebarMenuSubButton = React.forwardRef<
   HTMLButtonElement,
   SidebarMenuSubButtonProps
 >(
   (
-    { className, variant, size, asChild = false, href, ...props },
+    { className, variant, size, asChild = false, href, children, ...props },
     ref
   ) => {
-    const Comp = href ? 'a' : 'button';
+    const Comp = href ? Link : 'button';
     return (
       <Comp
         className={cn(
@@ -345,9 +344,11 @@ const SidebarMenuSubButton = React.forwardRef<
           sidebarMenuSubButtonVariants({ variant, size, className })
         )}
         ref={ref}
-        href={href}
+        href={href || '#'}
         {...props}
-      />
+      >
+        {children}
+      </Comp>
     );
   }
 );

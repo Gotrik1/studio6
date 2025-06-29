@@ -34,10 +34,18 @@ export function CollapsibleSidebarMenuItem({
     }
   }, [state]);
 
+  if (state === 'collapsed') {
+    return (
+      <SidebarMenuButton tooltip={title}>
+        {icon}
+      </SidebarMenuButton>
+    )
+  }
+
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
       <CollapsibleTrigger asChild>
-        <SidebarMenuButton variant="default" className="w-full justify-start">
+        <SidebarMenuButton variant="default" className="w-full">
           {icon}
           <span>{title}</span>
           <ChevronRight

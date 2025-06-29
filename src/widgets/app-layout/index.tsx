@@ -16,6 +16,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
   SidebarSeparator,
+  useSidebar,
 } from "@/shared/ui/sidebar";
 import { UserNav } from "@/widgets/user-nav";
 import { Logo } from "@/shared/ui/icons";
@@ -50,8 +51,9 @@ interface AppLayoutProps {
     children: React.ReactNode;
 }
 
-export function AppLayout({ user, children }: AppLayoutProps) {
+const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const { state } = useSidebar();
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
@@ -65,7 +67,7 @@ export function AppLayout({ user, children }: AppLayoutProps) {
     }, []);
 
     return (
-        <SidebarProvider>
+        <>
             <Sidebar>
                 <SidebarContent className="p-2">
                 <SidebarHeader>
@@ -73,18 +75,18 @@ export function AppLayout({ user, children }: AppLayoutProps) {
                     <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                         <Logo className="h-5 w-5" />
                     </div>
-                    <div className="font-headline text-lg font-semibold">ProDvor</div>
+                    {state === 'expanded' && <div className="font-headline text-lg font-semibold">ProDvor</div>}
                     </div>
                 </SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild tooltip="Лента">
-                          <Link href="/dashboard"><Newspaper />Лента</Link>
+                          <Link href="/dashboard"><Newspaper />{state === 'expanded' && <span>Лента</span>}</Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild tooltip="Мой профиль">
-                          <Link href="/profile"><UserIcon />Мой профиль</Link>
+                          <Link href="/profile"><UserIcon />{state === 'expanded' && <span>Мой профиль</span>}</Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     
@@ -165,16 +167,15 @@ export function AppLayout({ user, children }: AppLayoutProps) {
 
                     <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip="Поддержка">
-                        <Link href="/support"><LifeBuoy />Поддержка</Link>
+                        <Link href="/support"><LifeBuoy />{state === 'expanded' && <span>Поддержка</span>}</Link>
                     </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip="Настройки">
-                        <Link href="/settings"><Settings />Настройки</Link>
+                        <Link href="/settings"><Settings />{state === 'expanded' && <span>Настройки</span>}</Link>
                     </SidebarMenuButton>
                     </SidebarMenuItem>
                     
-                    <SidebarMenuItem>
                     <CollapsibleSidebarMenuItem icon={<FolderKanban />} title="Документы">
                         <SidebarMenuSubItem>
                             <SidebarMenuSubButton href="/documents/vision-and-principles">Видение и Принципы</SidebarMenuSubButton>
@@ -183,11 +184,10 @@ export function AppLayout({ user, children }: AppLayoutProps) {
                             <SidebarMenuSubButton href="/documents/backend-production">Готовность к продакшену</SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                     </CollapsibleSidebarMenuItem>
-                    </SidebarMenuItem>
 
                      <SidebarMenuItem>
                     <SidebarMenuButton asChild tooltip="Демо темы">
-                        <Link href="/theme-demo"><Palette />Демо темы</Link>
+                        <Link href="/theme-demo"><Palette />{state === 'expanded' && <span>Демо темы</span>}</Link>
                     </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -214,6 +214,16 @@ export function AppLayout({ user, children }: AppLayoutProps) {
                 <BottomNav />
             </SidebarInset>
             <GlobalSearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+        </>
+    );
+}
+
+export function AppLayout({ user, children }: AppLayoutProps) {
+    return (
+        <SidebarProvider>
+            <AppLayoutContent user={user}>
+                {children}
+            </AppLayoutContent>
         </SidebarProvider>
     );
 }
