@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 
 const roadmapItems = [
     { title: "Модуль пользователей (Users)", description: "CRUD для профилей, управление ролями, статистика." },
@@ -15,7 +15,7 @@ export function BackendRoadmapPage() {
         <div className="prose dark:prose-invert max-w-none">
             <h1>Дорожная карта разработки бэкенда</h1>
             <p className="lead">
-                Эта дорожная карта представляет собой высокоуровневый план по созданию серверной части для платформы "ProDvor", заменяя текущие моковые данные.
+                Эта дорожная карта представляет собой высокоуровневый план по созданию серверной части для платформы &quot;ProDvor&quot;, заменяя текущие моковые данные.
             </p>
             
             <div className="not-prose grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">

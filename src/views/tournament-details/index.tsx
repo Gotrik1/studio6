@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { Badge } from "@/shared/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { TournamentDetails } from "@/entities/tournament/model/types";
 import { Button } from "@/shared/ui/button";
@@ -47,7 +47,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                            <Card>
                                <CardHeader><CardTitle>Информация о турнире</CardTitle></CardHeader>
                                <CardContent className="space-y-4">
-                                   <div className="flex items-center gap-4"><Calendar className="h-5 w-5 text-muted-foreground" /><p><strong>Даты проведения:</strong> {tournament.schedule.finals}</p></div>
+                                   <div className="flex items-center gap-4"><Calendar className="h-5 w-5 text-muted-foreground" /> <p><strong>Даты проведения:</strong> {tournament.schedule.finals}</p></div>
                                    <div className="flex items-center gap-4"><Trophy className="h-5 w-5 text-muted-foreground" /><p><strong>Призовой фонд:</strong> ${tournament.prizePool}</p></div>
                                    <div className="flex items-center gap-4"><Users className="h-5 w-5 text-muted-foreground" /><p><strong>Количество команд:</strong> {tournament.teamsCount}</p></div>
                                </CardContent>

@@ -1,16 +1,16 @@
 'use client';
 
-import { ElementType, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useSession } from '@/shared/lib/session/client';
 import { getOnboardingSuggestions, type OnboardingOutput } from '@/shared/api/genkit/flows/onboarding-assistant-flow';
-import { Loader2, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
 import * as LucideIcons from 'lucide-react';
 
-const iconMap: { [key: string]: any } = LucideIcons;
+const iconMap: { [key: string]: LucideIcons.LucideIcon } = LucideIcons;
 
 const OnboardingSkeleton = () => (
     <div className="space-y-6">

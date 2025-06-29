@@ -4,9 +4,9 @@ import { Users, Gamepad2, BrainCircuit, Trophy } from 'lucide-react';
 export function VisionAndPrinciplesPage() {
     return (
         <div className="prose dark:prose-invert max-w-none">
-            <h1>Видение и принципы проекта "ProDvor"</h1>
+            <h1>Видение и принципы проекта &quot;ProDvor&quot;</h1>
             <p className="lead">
-                "ProDvor" — это больше, чем просто платформа. Это экосистема, созданная для того, чтобы дать каждому шанс проявить себя в мире спорта и киберспорта.
+                &quot;ProDvor&quot; — это больше, чем просто платформа. Это экосистема, созданная для того, чтобы дать каждому шанс проявить себя в мире спорта и киберспорта.
             </p>
 
             <h2>Наша миссия</h2>
