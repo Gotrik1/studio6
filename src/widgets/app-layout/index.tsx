@@ -60,6 +60,49 @@ const secondaryNavItems = [
     { href: "/settings", icon: Settings, label: "Настройки" },
 ];
 
+function AppFooter() {
+    return (
+        <footer className="hidden md:block border-t bg-background text-sm">
+            <div className="container mx-auto px-4 sm:px-6 py-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {/* Column 1: Logo and Copyright */}
+                    <div className="space-y-4">
+                         <Link href="/" className="flex items-center gap-2">
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                                <Logo className="h-5 w-5" />
+                            </div>
+                            <div className="font-headline text-lg font-semibold">ProDvor</div>
+                        </Link>
+                        <p className="text-muted-foreground">
+                            © {new Date().getFullYear()} ProDvor. Все права защищены.
+                        </p>
+                    </div>
+
+                    {/* Column 2: Links */}
+                    <div className="space-y-2">
+                        <h4 className="font-semibold">Навигация</h4>
+                        <ul className="space-y-1 text-muted-foreground">
+                            <li><Link href="/teams" className="hover:text-primary">Команды</Link></li>
+                            <li><Link href="/tournaments" className="hover:text-primary">Соревнования</Link></li>
+                            <li><Link href="/support" className="hover:text-primary">Поддержка</Link></li>
+                        </ul>
+                    </div>
+                    
+                    {/* Column 3: Links */}
+                    <div className="space-y-2">
+                        <h4 className="font-semibold">Информация</h4>
+                         <ul className="space-y-1 text-muted-foreground">
+                            <li><Link href="/documents/vision-and-principles" className="hover:text-primary">О проекте</Link></li>
+                            <li><Link href="#" className="hover:text-primary">Условия использования</Link></li>
+                            <li><Link href="#" className="hover:text-primary">Политика конфиденциальности</Link></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    );
+}
+
 const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const { state } = useSidebar();
@@ -123,7 +166,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 </SidebarMenu>
                 </SidebarContent>
             </Sidebar>
-            <SidebarInset className="flex flex-col">
+            <SidebarInset className="flex flex-col min-h-screen">
                 <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
                     <SidebarTrigger className="flex md:hidden" />
                     <div className="flex-1">
@@ -140,7 +183,8 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                     <ThemeToggle />
                     <UserNav user={user} />
                 </header>
-                <div className="flex-1 overflow-auto p-4 pb-20 sm:p-6 md:pb-6">{children}</div>
+                <main className="flex-1 overflow-auto p-4 pb-20 sm:p-6 md:pb-6">{children}</main>
+                <AppFooter />
                 <BottomNav />
             </SidebarInset>
             <GlobalSearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
