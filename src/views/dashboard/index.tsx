@@ -7,15 +7,17 @@ import { ArrowRight } from "lucide-react";
 import { PollCard } from "@/widgets/poll-card";
 import { mainPoll, teamOfTheWeek } from "@/shared/lib/mock-data/dashboard";
 import Image from "next/image";
-import { AiNewsDigest } from '@/widgets/ai-news-digest';
+import { Feed } from '@/widgets/feed';
+import { StatusUpdateForm } from '@/widgets/status-update-form';
 
 export function DashboardPage() {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-                <AiNewsDigest />
+                <StatusUpdateForm />
+                <Feed />
             </div>
-            <div className="space-y-6">
+            <aside className="space-y-6 lg:sticky lg:top-20 self-start">
                 <Card>
                     <CardHeader>
                         <CardTitle>Команда недели</CardTitle>
@@ -32,7 +34,7 @@ export function DashboardPage() {
                     </CardFooter>
                 </Card>
                 <PollCard poll={mainPoll} />
-            </div>
+            </aside>
         </div>
     );
 }
