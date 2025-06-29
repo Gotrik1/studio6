@@ -11,7 +11,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { sportsList as initialSports, type Sport } from '@/shared/lib/mock-data/sports';
 import * as LucideIcons from 'lucide-react';
 
-const iconComponents: { [key: string]: LucideIcons.LucideIcon } = LucideIcons;
+const iconComponents: any = LucideIcons;
 
 export function SportsAdminPage() {
     const { toast } = useToast();

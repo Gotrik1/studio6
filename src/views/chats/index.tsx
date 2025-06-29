@@ -45,6 +45,8 @@ export function ChatsPage() {
 
     const handleSelectContact = (contact: Contact) => {
         setSelectedContact(contact);
+        const newMessages = allMessages[contact.id as keyof typeof allMessages] || [];
+        setMessages([...newMessages]);
         setReplySuggestions([]);
     };
     
