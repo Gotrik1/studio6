@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import type { User } from "@/lib/types";
 import Link from 'next/link';
 import {
@@ -41,6 +42,8 @@ import { BottomNav } from "@/components/bottom-nav";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { ThemeCustomizer } from "@/components/theme-customizer";
 import { NotificationsPopover } from "@/components/notifications-popover";
+import { Button } from './ui/button';
+import { GlobalSearchDialog } from './global-search-dialog';
 
 interface AppLayoutClientProps {
     user: User;
@@ -48,6 +51,19 @@ interface AppLayoutClientProps {
 }
 
 export default function AppLayoutClient({ user, children }: AppLayoutClientProps) {
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+    useEffect(() => {
+        const down = (e: KeyboardEvent) => {
+            if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                setIsSearchOpen((open) => !open);
+            }
+        };
+        document.addEventListener('keydown', down);
+        return () => document.removeEventListener('keydown', down);
+    }, []);
+
     return (
         <SidebarProvider>
             <Sidebar>
@@ -64,11 +80,6 @@ export default function AppLayoutClient({ user, children }: AppLayoutClientProps
                     <SidebarMenuItem>
                       <SidebarMenuButton asChild tooltip="Лента">
                           <Link href="/dashboard"><Newspaper />Лента</Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <SidebarMenuButton asChild tooltip="Поиск">
-                          <Link href="/search"><Search />Поиск</Link>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
@@ -184,18 +195,25 @@ export default function AppLayoutClient({ user, children }: AppLayoutClientProps
             </Sidebar>
             <SidebarInset className="flex flex-col">
                 <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
-                <SidebarTrigger className="flex md:hidden" />
-                <div className="flex-1">
-                    {/* Can add breadcrumbs or page title here */}
-                </div>
-                <NotificationsPopover />
-                <ThemeCustomizer />
-                <ThemeToggle />
-                <UserNav user={user} />
+                    <SidebarTrigger className="flex md:hidden" />
+                    <div className="flex-1">
+                        <Button variant="outline" className="w-full justify-start text-muted-foreground sm:w-auto" onClick={() => setIsSearchOpen(true)}>
+                            <Search className="mr-2 h-4 w-4" />
+                            <span>Поиск...</span>
+                            <kbd className="pointer-events-none ml-4 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                                <span className="text-xs">⌘</span>K
+                            </kbd>
+                        </Button>
+                    </div>
+                    <NotificationsPopover />
+                    <ThemeCustomizer />
+                    <ThemeToggle />
+                    <UserNav user={user} />
                 </header>
                 <div className="flex-1 overflow-auto p-4 pb-20 sm:p-6 md:pb-6">{children}</div>
                 <BottomNav />
             </SidebarInset>
+            <GlobalSearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
         </SidebarProvider>
     );
 }
