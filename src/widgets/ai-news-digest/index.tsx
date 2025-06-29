@@ -4,8 +4,9 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { generatePlatformNews, type GeneratePlatformNewsOutput } from '@/shared/api/genkit/flows/generate-platform-news-flow';
+import { textToSpeech, type TextToSpeechOutput } from '@/shared/api/genkit/flows/tts-flow';
 import Link from "next/link";
-import { Sparkles, Loader2, AlertCircle, Newspaper, Users, Trophy, User } from "lucide-react";
+import { Sparkles, Loader2, AlertCircle, Newspaper, Users, Trophy, User, Mic } from "lucide-react";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/shared/ui/alert';
 import type { LucideIcon } from 'lucide-react';
@@ -22,10 +23,16 @@ export function AiNewsDigest() {
     const [error, setError] = useState<string | null>(null);
     const [news, setNews] = useState<GeneratePlatformNewsOutput['news'] | null>(null);
 
+    const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
+    const [audioError, setAudioError] = useState<string | null>(null);
+    const [audioResult, setAudioResult] = useState<TextToSpeechOutput | null>(null);
+
     const handleGenerateNews = async () => {
         setIsLoading(true);
         setError(null);
         setNews(null);
+        setAudioResult(null);
+        setAudioError(null);
         try {
             const result = await generatePlatformNews();
             setNews(result.news);
@@ -37,6 +44,25 @@ export function AiNewsDigest() {
         }
     };
     
+    const handleGenerateAudio = async () => {
+        if (!news) return;
+
+        setIsGeneratingAudio(true);
+        setAudioError(null);
+        setAudioResult(null);
+
+        try {
+            const newsText = news.map(item => `${item.title}. ${item.summary}`).join('\n\n');
+            const result = await textToSpeech(newsText);
+            setAudioResult(result);
+        } catch (e) {
+            console.error("Audio generation failed:", e);
+            setAudioError("Не удалось озвучить новости. Попробуйте еще раз.");
+        } finally {
+            setIsGeneratingAudio(false);
+        }
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -76,6 +102,25 @@ export function AiNewsDigest() {
                                 </Link>
                              )
                         })}
+
+                        <div className="space-y-2">
+                             {isGeneratingAudio && <Skeleton className="h-12 w-full" />}
+                            {audioError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{audioError}</AlertDescription></Alert>}
+                            {audioResult && (
+                                <audio controls src={audioResult.audioDataUri} className="w-full mt-4" />
+                            )}
+                        </div>
+
+                        <div className="flex justify-center gap-2 pt-4 border-t">
+                            <Button onClick={handleGenerateNews} variant="outline" disabled={isLoading}>
+                                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                                Обновить сводку
+                            </Button>
+                             <Button onClick={handleGenerateAudio} variant="outline" disabled={isGeneratingAudio}>
+                                {isGeneratingAudio ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Mic className="mr-2 h-4 w-4"/>}
+                                Озвучить новости
+                            </Button>
+                        </div>
                     </div>
                 )}
 
@@ -90,16 +135,6 @@ export function AiNewsDigest() {
                         </Button>
                     </div>
                 )}
-
-                 {news && (
-                    <div className="text-center pt-4 border-t">
-                        <Button onClick={handleGenerateNews} variant="outline" disabled={isLoading}>
-                            {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                            Обновить сводку
-                        </Button>
-                    </div>
-                )}
-
             </CardContent>
         </Card>
     );
