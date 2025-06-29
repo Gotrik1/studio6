@@ -31,6 +31,9 @@ import {
   Dumbbell,
   MapPin,
   Search,
+  ShoppingCart,
+  Handshake,
+  DollarSign,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -53,9 +56,12 @@ const mainNavItems = [
     { href: "/tournaments", icon: Trophy, label: "Соревнования" },
     { href: "/training", icon: Dumbbell, label: "Тренировки" },
     { href: "/booking", icon: MapPin, label: "Площадки" },
+    { href: "/store", icon: ShoppingCart, label: "Магазин" },
 ];
 
 const secondaryNavItems = [
+    { href: "/sponsors", icon: Handshake, label: "Спонсоры" },
+    { href: "/monetization", icon: DollarSign, label: "Подписки" },
     { href: "/support", icon: LifeBuoy, label: "Поддержка" },
     { href: "/settings", icon: Settings, label: "Настройки" },
 ];
