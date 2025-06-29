@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -368,7 +369,7 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
                             <Coins className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">{totalPd.toLocaleString()} PD</div>
+                            <div className="text-2xl font-bold">{totalPd.toLocaleString('ru-RU')} PD</div>
                             <p className="text-xs text-muted-foreground">Всего заработано за все время</p>
                         </CardContent>
                     </Card>
