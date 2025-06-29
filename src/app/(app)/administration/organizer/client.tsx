@@ -1,10 +1,10 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { organizerUser, organizerAchievements } from "@/lib/mock-data/organizer-profile";
+import { Skeleton } from '@/shared/ui/skeleton';
+import type { organizerUser, organizerAchievements } from "@/shared/lib/mock-data/organizer-profile";
 
-const OrganizerProfile = dynamic(() => import('@/components/organizer-profile').then(mod => mod.OrganizerProfile), {
+const OrganizerProfile = dynamic(() => import('@/entities/user/ui/organizer-profile').then(mod => mod.OrganizerProfile), {
   loading: () => <div className="space-y-6">
       <Skeleton className="h-40 w-full" />
       <Skeleton className="h-10 w-full" />

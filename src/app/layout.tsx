@@ -1,6 +1,6 @@
 import type {Metadata} from 'next';
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/shared/ui/toaster";
 import { ThemeProvider } from '@/app/providers/theme-provider';
 import { AccentThemeProvider } from '@/app/providers/accent-theme-provider';
 

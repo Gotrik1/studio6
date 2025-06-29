@@ -43,7 +43,7 @@ import { ThemeToggle } from "@/shared/ui/theme-toggle";
 import { ThemeCustomizer } from "@/shared/ui/theme-customizer";
 import { NotificationsPopover } from "@/widgets/notifications-popover";
 import { Button } from '@/shared/ui/button';
-import { GlobalSearchDialog } from '@/features/global-search-dialog';
+import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
 
 interface AppLayoutProps {
     user: User;

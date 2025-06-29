@@ -1,10 +1,10 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { User } from '@/lib/types';
+import { Skeleton } from '@/shared/ui/skeleton';
+import type { User } from '@/shared/lib/types';
 
-const PlayerProfile = dynamic(() => import('@/components/player-profile').then(mod => mod.PlayerProfile), {
+const PlayerProfile = dynamic(() => import('@/entities/player/ui/player-profile').then(mod => mod.PlayerProfile), {
     loading: () => <div className="space-y-6">
         <Skeleton className="h-40 w-full" />
         <Skeleton className="h-10 w-full" />

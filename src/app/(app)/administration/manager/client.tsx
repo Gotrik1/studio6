@@ -1,10 +1,10 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { managerUser, managerAchievements } from "@/lib/mock-data/manager-profile";
+import { Skeleton } from '@/shared/ui/skeleton';
+import type { managerUser, managerAchievements } from "@/shared/lib/mock-data/manager-profile";
 
-const ManagerProfile = dynamic(() => import('@/components/manager-profile').then(mod => mod.ManagerProfile), {
+const ManagerProfile = dynamic(() => import('@/entities/user/ui/manager-profile').then(mod => mod.ManagerProfile), {
   loading: () => <div className="space-y-6">
       <Skeleton className="h-40 w-full" />
       <Skeleton className="h-10 w-full" />

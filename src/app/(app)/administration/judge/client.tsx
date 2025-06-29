@@ -1,10 +1,10 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { judgeUser, judgeAchievements } from "@/lib/mock-data/judge-profile";
+import { Skeleton } from '@/shared/ui/skeleton';
+import type { judgeUser, judgeAchievements } from "@/shared/lib/mock-data/judge-profile";
 
-const JudgeProfile = dynamic(() => import('@/components/judge-profile').then(mod => mod.JudgeProfile), {
+const JudgeProfile = dynamic(() => import('@/entities/user/ui/judge-profile').then(mod => mod.JudgeProfile), {
   loading: () => <div className="space-y-6">
       <Skeleton className="h-40 w-full" />
       <Skeleton className="h-10 w-full" />

@@ -1,10 +1,10 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Skeleton } from '@/components/ui/skeleton';
-import type { coachUser, coachAchievements } from "@/lib/mock-data/coach-profile";
+import { Skeleton } from '@/shared/ui/skeleton';
+import type { coachUser, coachAchievements } from "@/shared/lib/mock-data/coach-profile";
 
-const CoachProfile = dynamic(() => import('@/components/coach-profile').then(mod => mod.CoachProfile), {
+const CoachProfile = dynamic(() => import('@/entities/user/ui/coach-profile').then(mod => mod.CoachProfile), {
   loading: () => <div className="space-y-6">
       <Skeleton className="h-40 w-full" />
       <Skeleton className="h-10 w-full" />
