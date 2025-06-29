@@ -1,4 +1,5 @@
 
+
 // Inspired by https://github.com/dillionverma/llm.report/blob/main/components/sidebar.tsx
 
 'use client';
@@ -235,7 +236,7 @@ const buttonVariants = cva(
       variant: {
         default:
           'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent',
-        active: 'text-sidebar-primary bg-sidebar-accent',
+        active: 'bg-sidebar-accent text-sidebar-accent-foreground',
       },
       size: {
         default: 'h-10 px-3',
