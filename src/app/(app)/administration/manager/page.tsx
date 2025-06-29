@@ -1,6 +1,3 @@
-import { managerUser, managerAchievements } from "@/lib/mock-data/manager-profile";
-import ManagerClient from "./client";
+import { ManagerProfilePage } from '@/views/manager-profile';
 
-export default function ManagerProfilePage() {
-  return <ManagerClient user={managerUser} achievements={managerAchievements} />;
-}
+export default ManagerProfilePage;

@@ -1,6 +1,3 @@
-import { organizerUser, organizerAchievements } from "@/lib/mock-data/organizer-profile";
-import OrganizerClient from "./client";
+import { OrganizerProfilePage } from '@/views/organizer-profile';
 
-export default function OrganizerProfilePage() {
-  return <OrganizerClient user={organizerUser} achievements={organizerAchievements} />;
-}
+export default OrganizerProfilePage;

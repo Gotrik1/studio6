@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import type { User } from './lib/types';
+import type { User } from '@/shared/lib/types';
 
 // The predefined superuser for the backdoor.
 const superuser: User = {

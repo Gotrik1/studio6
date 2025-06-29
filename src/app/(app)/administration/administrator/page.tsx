@@ -1,6 +1,3 @@
-import { adminUser, adminAchievements } from "@/lib/mock-data/admin-profile";
-import AdministratorClient from "./client";
+import { AdminProfilePage } from '@/views/admin-profile';
 
-export default function AdministratorProfilePage() {
-  return <AdministratorClient user={adminUser} achievements={adminAchievements} />;
-}
+export default AdminProfilePage;

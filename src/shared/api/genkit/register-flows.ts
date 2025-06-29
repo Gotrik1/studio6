@@ -1,0 +1,43 @@
+
+'use server';
+
+import { config } from 'dotenv';
+config();
+
+import './flows/ai-team-assistant';
+import './flows/analyze-content-generation';
+import './flows/generate-content-flow';
+import './flows/generate-team-avatar-flow';
+import './flows/analyze-security-flow';
+import './flows/create-team-flow';
+import './flows/analyze-player-performance-flow';
+import './flows/tts-flow';
+import './flows/dialogue-generation-flow';
+import './flows/multi-speaker-tts-flow';
+import './flows/generate-post-image-flow';
+import './flows/analyze-dispute-flow';
+import './flows/generate-tournament-details-flow';
+import './flows/generate-tournament-image-flow';
+import './flows/smart-search-flow';
+import './flows/suggest-reply-flow';
+import './flows/analyze-join-request-flow';
+import './flows/generate-tournament-wizard-flow';
+import './flows/analyze-match-challenge-flow';
+import './flows/analyze-match-report-flow';
+import './flows/support-chatbot-flow';
+import './flows/analyze-role-change-flow';
+import './flows/generate-user-avatar-flow';
+import './flows/generate-promotion-details-flow';
+import './flows/generate-promotion-image-flow';
+import './flows/generate-promotion-wizard-flow';
+import './flows/team-chatbot-flow';
+import './flows/generate-training-plan-flow';
+import './flows/generate-match-interview-flow';
+import './flows/analyze-report-flow';
+import './flows/generate-sponsorship-pitch';
+import './flows/sponsorship-scout-flow';
+import './flows/generate-match-post-flow';
+import './flows/generate-platform-news-flow';
+import './flows/generate-team-concept-flow';
+import './flows/find-venues-flow';
+import './flows/onboarding-assistant-flow';

@@ -2,7 +2,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { fetchTeams, type Team } from '@/lib/api/teams';
+import { fetchTeams } from '@/entities/team/api/teams';
+import type { Team } from '@/entities/team/model/types';
 import { useSession } from '@/shared/lib/session/client';
 
 interface TeamContextType {

@@ -1,6 +1,3 @@
-import { judgeUser, judgeAchievements } from "@/lib/mock-data/judge-profile";
-import JudgeClient from "./client";
+import { JudgeProfilePage } from '@/views/judge-profile';
 
-export default function JudgeProfilePage() {
-  return <JudgeClient user={judgeUser} achievements={judgeAchievements} />;
-}
+export default JudgeProfilePage;

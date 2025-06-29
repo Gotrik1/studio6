@@ -1,6 +1,3 @@
-import { fanUser, fanAchievements } from "@/lib/mock-data/fan-profile";
-import FanClient from "./client";
+import { FanProfilePage } from '@/views/fan-profile';
 
-export default function FanProfilePage() {
-  return <FanClient user={fanUser} achievements={fanAchievements} />;
-}
+export default FanProfilePage;

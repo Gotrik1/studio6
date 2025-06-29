@@ -1,6 +1,3 @@
-import { sponsorUser, sponsorAchievements } from "@/lib/mock-data/sponsor-profile";
-import SponsorClient from "./client";
+import { SponsorProfilePage } from '@/views/sponsor-profile';
 
-export default function SponsorProfilePage() {
-  return <SponsorClient user={sponsorUser} achievements={sponsorAchievements} />;
-}
+export default SponsorProfilePage;

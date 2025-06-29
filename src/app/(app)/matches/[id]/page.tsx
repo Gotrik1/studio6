@@ -1,14 +1,14 @@
 
 import { getMatchById } from "@/entities/match/api/get-match";
 import { notFound } from "next/navigation";
-import MatchDetailsClient from "./client";
+import { MatchDetailsPage } from "@/views/match-details";
 
-export default async function MatchDetailsPage({ params }: { params: { id: string } }) {
+export default async function MatchDetailsRoute({ params }: { params: { id: string } }) {
   const match = getMatchById(params.id);
 
   if (!match) {
     notFound();
   }
 
-  return <MatchDetailsClient match={match} />;
+  return <MatchDetailsPage match={match} />;
 }

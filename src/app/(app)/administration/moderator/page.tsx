@@ -1,6 +1,3 @@
-import { moderatorUser, moderatorAchievements } from "@/lib/mock-data/moderator-profile";
-import ModeratorClient from "./client";
+import { ModeratorProfilePage } from '@/views/moderator-profile';
 
-export default function ModeratorProfilePage() {
-  return <ModeratorClient user={moderatorUser} achievements={moderatorAchievements} />;
-}
+export default ModeratorProfilePage;
