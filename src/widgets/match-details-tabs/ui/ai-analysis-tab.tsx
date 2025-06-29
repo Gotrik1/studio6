@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/shared/ui/alert";
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic, Share2, Copy, Download } from "lucide-react";
+import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic, Share2, Copy, Download, Volume2 } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import type { MatchDetails } from "@/entities/match/model/types";
 import { analyzeMatchReport, type AnalyzeMatchReportOutput } from "@/shared/api/genkit/flows/analyze-match-report-flow";
@@ -15,6 +15,7 @@ import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/ge
 import { Textarea } from "@/shared/ui/textarea";
 import { Label } from "@/shared/ui/label";
 import { useToast } from "@/shared/hooks/use-toast";
+import { generateMatchCommentary, type GenerateMatchCommentaryOutput } from "@/shared/api/genkit/flows/generate-match-commentary-flow";
 
 
 interface AiAnalysisTabProps {
@@ -35,6 +36,10 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
     const [postError, setPostError] = useState<string | null>(null);
     const [postResult, setPostResult] = useState<GenerateMatchPostOutput | null>(null);
 
+    const [isGeneratingCommentary, setIsGeneratingCommentary] = useState(false);
+    const [commentaryError, setCommentaryError] = useState<string | null>(null);
+    const [commentaryResult, setCommentaryResult] = useState<(GenerateMatchCommentaryOutput & { audioDataUri: string }) | null>(null);
+
     const handleAnalyze = async () => {
         setIsLoading(true);
         setError(null);
@@ -43,6 +48,8 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
         setInterviewError(null);
         setPostResult(null);
         setPostError(null);
+        setCommentaryResult(null);
+        setCommentaryError(null);
         
         try {
             const analysisResult = await analyzeMatchReport({
@@ -107,6 +114,27 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
             setPostError("Не удалось сгенерировать пост.");
         } finally {
             setIsGeneratingPost(false);
+        }
+    };
+
+     const handleGenerateCommentary = async () => {
+        if (!result) return;
+        setIsGeneratingCommentary(true);
+        setCommentaryError(null);
+        setCommentaryResult(null);
+
+        try {
+            const commentaryData = await generateMatchCommentary({
+                team1Name: match.team1.name,
+                team2Name: match.team2.name,
+                events: match.events,
+            });
+            setCommentaryResult(commentaryData);
+        } catch (e) {
+            console.error("AI Commentary generation failed:", e);
+            setCommentaryError("Не удалось сгенерировать комментарий.");
+        } finally {
+            setIsGeneratingCommentary(false);
         }
     };
 
@@ -237,6 +265,32 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                             </CardContent>
                         </Card>
 
+                         <Card className="bg-background">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><Volume2 className="h-5 w-5 text-red-500" /> AI Комментатор</CardTitle>
+                                <CardDescription>Прослушайте яркий комментарий ключевых моментов матча, созданный AI.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {!commentaryResult && (
+                                    <Button onClick={handleGenerateCommentary} disabled={isGeneratingCommentary || !result}>
+                                        {isGeneratingCommentary ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                                        {result ? 'Сгенерировать комментарий' : 'Сначала сгенерируйте анализ'}
+                                    </Button>
+                                )}
+                                {isGeneratingCommentary && <Skeleton className="h-20 w-full" />}
+                                {commentaryError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{commentaryError}</AlertDescription></Alert>}
+                                {commentaryResult && (
+                                    <div className="space-y-4">
+                                        <audio controls src={commentaryResult.audioDataUri} className="w-full" />
+                                        <div>
+                                            <Label htmlFor="commentary-script">Скрипт:</Label>
+                                            <Textarea id="commentary-script" readOnly value={commentaryResult.commentaryScript} className="mt-2 h-40 bg-muted"/>
+                                        </div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+                        
                         <Card className="bg-background">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2"><Share2 className="h-5 w-5 text-green-500" /> SMM-Ассистент</CardTitle>
