@@ -1,4 +1,1 @@
-// This page is obsolete and its functionality is now part of /audio-generation
-export default function ObsoleteDialoguePage() {
-    return null;
-}
+// This file is obsolete and can be deleted. The functionality has been moved to /app/(app)/audio-generation/page.tsx.

@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useMemo, ChangeEvent } from 'react';
+import { useState, useMemo } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/shared/ui/badge";
@@ -55,7 +56,7 @@ export function TeamsListPage() {
                             placeholder="Поиск команд..." 
                             className="w-full pl-10" 
                             value={searchQuery}
-                            onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
                     <div className="flex flex-wrap gap-2">
