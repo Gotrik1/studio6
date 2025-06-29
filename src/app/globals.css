@@ -40,6 +40,13 @@ html {
     --accent: 262 83% 58%;
     --accent-foreground: 262 83% 98%;
     --ring: 262 83% 58%;
+
+    /* Chart colors */
+    --chart-1: 220 83% 60%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
 
   .dark {
@@ -64,6 +71,13 @@ html {
     --accent: 262 83% 68%;
     --accent-foreground: 262 83% 98%;
     --ring: 262 83% 68%;
+
+     /* Chart colors */
+    --chart-1: 220 70% 65%;
+    --chart-2: 160 60% 55%;
+    --chart-3: 30 70% 60%;
+    --chart-4: 280 60% 65%;
+    --chart-5: 340 70% 60%;
   }
 
   /* ACCENT THEMES (Light Mode) */
