@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
@@ -13,6 +12,7 @@ import { JoinRequestAnalysisDialog } from '@/widgets/join-request-analysis-dialo
 import { SponsorshipPitchGenerator } from '@/widgets/sponsorship-pitch-generator';
 import { AITeamAssistantTab } from '@/widgets/ai-team-assistant-tab';
 import { TeamCoachTab } from '@/widgets/team-coach-tab';
+import { RosterManagementTab } from '@/widgets/roster-management-tab';
 
 
 const initialJoinRequests = [
@@ -51,13 +51,18 @@ export function TeamManagementPage() {
                     Все инструменты для капитана в одном месте.
                 </p>
             </div>
-             <Tabs defaultValue="requests">
-                 <TabsList className="grid w-full grid-cols-4">
+             <Tabs defaultValue="roster">
+                 <TabsList className="grid w-full grid-cols-5">
+                    <TabsTrigger value="roster">Состав</TabsTrigger>
                     <TabsTrigger value="requests">Заявки</TabsTrigger>
                     <TabsTrigger value="sponsorship">Спонсорство</TabsTrigger>
                     <TabsTrigger value="ai-coach">AI-Коуч</TabsTrigger>
                     <TabsTrigger value="ai-assistant">AI-Ассистент</TabsTrigger>
                 </TabsList>
+                
+                <TabsContent value="roster" className="mt-4">
+                    <RosterManagementTab />
+                </TabsContent>
 
                 <TabsContent value="requests" className="mt-4">
                      <Card>
