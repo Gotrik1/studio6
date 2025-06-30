@@ -3,7 +3,6 @@ import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/shared/ui/toaster";
 import { ThemeProvider } from '@/app/providers/theme-provider';
-import { AccentThemeProvider } from '@/app/providers/accent-theme-provider';
 
 const inter = Inter({
   subsets: ['latin', 'cyrillic'],
@@ -40,10 +39,8 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
         >
-          <AccentThemeProvider>
-            {children}
-            <Toaster />
-          </AccentThemeProvider>
+          {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

@@ -38,7 +38,6 @@ import {
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
-import { ThemeCustomizer } from "@/shared/ui/theme-customizer";
 import { NotificationsPopover } from "@/widgets/notifications-popover";
 import { Button } from '@/shared/ui/button';
 import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
@@ -187,7 +186,6 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                         </Button>
                     </div>
                     <NotificationsPopover />
-                    <ThemeCustomizer />
                     <ThemeToggle />
                     <UserNav user={user} />
                 </header>
