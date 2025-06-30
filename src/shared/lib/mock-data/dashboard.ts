@@ -1,11 +1,4 @@
 
-export const teamOfTheWeek = {
-    name: 'Кибер Орлы',
-    logo: 'https://placehold.co/100x100.png',
-    logoHint: 'eagle logo',
-    reason: 'За впечатляющую серию побед в летнем сезоне!',
-    slug: 'cyber-eagles',
-};
 
 export const mainPoll = {
     id: 'poll-1',
