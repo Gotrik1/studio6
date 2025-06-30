@@ -89,11 +89,19 @@ const AchievementPost = ({ item }: { item: AchievementFeedItem }) => (
     </Card>
 );
 
+const FeedSkeleton = () => (
+    <>
+        <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-56 w-full" />
+        <Skeleton className="h-48 w-full" />
+    </>
+);
+
 export function Feed() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Simulate loading data
+        // Simulate loading data to demonstrate the skeleton animation
         const timer = setTimeout(() => {
             setIsLoading(false);
         }, 3000); // 3 second delay to make the animation visible
@@ -101,30 +109,24 @@ export function Feed() {
         return () => clearTimeout(timer);
     }, []);
 
-    if (isLoading) {
-        return (
-            <div className="space-y-6">
-                <Skeleton className="h-40 w-full" />
-                <Skeleton className="h-56 w-full" />
-                <Skeleton className="h-48 w-full" />
-            </div>
-        );
-    }
-
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up animation-delay-600">
-            {feedData.map(item => {
-                switch (item.type) {
-                    case 'status':
-                        return <StatusPost key={item.id} item={item} />;
-                    case 'match_result':
-                        return <MatchResultPost key={item.id} item={item} />;
-                    case 'achievement':
-                        return <AchievementPost key={item.id} item={item} />;
-                    default:
-                        return null;
-                }
-            })}
+            {isLoading ? (
+                <FeedSkeleton />
+            ) : (
+                feedData.map(item => {
+                    switch (item.type) {
+                        case 'status':
+                            return <StatusPost key={item.id} item={item} />;
+                        case 'match_result':
+                            return <MatchResultPost key={item.id} item={item} />;
+                        case 'achievement':
+                            return <AchievementPost key={item.id} item={item} />;
+                        default:
+                            return null;
+                    }
+                })
+            )}
         </div>
     );
 }
