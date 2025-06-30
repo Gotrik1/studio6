@@ -1,3 +1,4 @@
+
 'use client';
 
 import { KdaChart } from '@/widgets/analytics-charts/kda-chart';
