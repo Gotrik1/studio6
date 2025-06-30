@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, CheckCircle, Coins, Award, Wand2, MoreVertical, Flag } from "lucide-react";
@@ -21,6 +21,8 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import { PDWalletTab } from '@/widgets/pd-wallet-tab';
 import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
 import { ReportPlayerDialog } from '@/features/report-player-dialog';
+import Image from "next/image";
+
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -79,33 +81,74 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
 
   return (
     <>
-        <Card>
-        <CardHeader className="relative flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left p-6">
-            <div className="relative">
-            <Avatar className="h-32 w-32 border-4 border-background bg-background shadow-lg">
+       <Card className="overflow-hidden">
+        <div className="relative h-48 bg-muted/40">
+          <Image src="https://placehold.co/1200x400.png" alt="Profile Banner" fill className="object-cover" data-ai-hint="esports gaming background" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+        </div>
+        
+        <div className="relative p-6">
+          <div className="flex flex-col items-center gap-6 -mt-24 text-center sm:flex-row sm:items-end sm:text-left">
+            <div className="relative shrink-0">
+              <Avatar className="h-32 w-32 border-4 border-background bg-background shadow-lg">
                 <AvatarImage src={avatar} alt={user.name} data-ai-hint="esports player" />
                 <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
-            </Avatar>
-            {isCurrentUser && (
+              </Avatar>
+              {isCurrentUser && (
                 <Button
-                    variant="outline"
-                    size="icon"
-                    className="absolute bottom-0 right-0 rounded-full h-8 w-8 bg-background"
-                    onClick={() => setIsAvatarDialogOpen(true)}
-                    title="Generate AI Avatar"
+                  variant="outline"
+                  size="icon"
+                  className="absolute bottom-1 right-1 rounded-full h-8 w-8 bg-background"
+                  onClick={() => setIsAvatarDialogOpen(true)}
+                  title="Generate AI Avatar"
                 >
-                    <Wand2 className="h-4 w-4" />
-                    <span className="sr-only">Generate AI Avatar</span>
+                  <Wand2 className="h-4 w-4" />
+                  <span className="sr-only">Generate AI Avatar</span>
                 </Button>
-            )}
+              )}
             </div>
-            <div className="flex-1 space-y-2">
-            <div className="flex items-center justify-center gap-2 sm:justify-start">
-                <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
-                {user.isVerified && <CheckCircle className="h-6 w-6 text-primary" />}
-            </div>
-            <p className="text-muted-foreground">{user.email}</p>
-            <div className="flex flex-wrap justify-center gap-2 pt-2 sm:justify-start">
+
+            <div className="flex-1 space-y-2 w-full">
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+                <div className="space-y-1">
+                  <div className="flex items-center justify-center sm:justify-start gap-2">
+                      <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
+                      {user.isVerified && <CheckCircle className="h-6 w-6 text-primary" />}
+                  </div>
+                  <p className="text-muted-foreground">{user.email}</p>
+                </div>
+                 <div className="flex gap-2 justify-center sm:justify-end">
+                    {isCurrentUser ? (
+                        <div className="flex gap-2">
+                        <Button variant="outline" size="sm" title="Поделиться"><Share2 className="h-4 w-4"/></Button>
+                        <Link href="/settings">
+                            <Button size="sm">Редактировать</Button>
+                        </Link>
+                        </div>
+                    ) : (
+                        <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-5 w-5" />
+                            <span className="sr-only">Действия</span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem>Бросить вызов</DropdownMenuItem>
+                            <DropdownMenuItem>Поделиться</DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                                className="text-destructive"
+                                onClick={() => setIsReportDialogOpen(true)}
+                            >
+                                <Flag className="mr-2 h-4 w-4"/> Пожаловаться
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
+                </div>
+              </div>
+              <div className="flex flex-wrap justify-center gap-2 pt-2 sm:justify-start">
                 <Badge>{user.role}</Badge>
                 <Badge variant="secondary">{user.status}</Badge>
                 <Badge variant="outline">PRO Пользователь</Badge>
@@ -127,38 +170,10 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
                 )}
             </div>
             </div>
-            <div className="flex gap-2 self-start">
-            {isCurrentUser ? (
-                <div className="flex gap-2">
-                <Button variant="outline" size="icon" title="Поделиться"><Share2 className="h-5 w-5"/></Button>
-                <Link href="/settings">
-                    <Button>Редактировать</Button>
-                </Link>
-                </div>
-            ) : (
-                <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                    <MoreVertical className="h-5 w-5" />
-                    <span className="sr-only">Действия</span>
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Бросить вызов</DropdownMenuItem>
-                    <DropdownMenuItem>Поделиться</DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
-                        className="text-destructive"
-                        onClick={() => setIsReportDialogOpen(true)}
-                    >
-                        <Flag className="mr-2 h-4 w-4"/> Пожаловаться
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
-                </DropdownMenu>
-            )}
-            </div>
-        </CardHeader>
-        <CardContent className="p-6 pt-0 border-b">
+          </div>
+        </div>
+
+        <CardContent className="p-6 pt-2 border-b">
             <div className="space-y-2">
             <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Прогресс до {nextRank ? `ранга "${nextRank.name}"` : 'максимального ранга'}</span>
