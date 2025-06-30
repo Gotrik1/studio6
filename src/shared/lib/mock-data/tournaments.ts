@@ -11,6 +11,16 @@ export const allTournaments = [
         slug: 'summer-kickoff-2024',
     },
     {
+        name: 'Кубок ProDvor по Футболу',
+        game: 'Футбол',
+        prize: '50,000₽',
+        status: 'Идет',
+        date: '16-19 Августа 2024',
+        image: 'https://placehold.co/600x400.png',
+        dataAiHint: 'football stadium action',
+        slug: 'prodvor-football-cup-2024',
+    },
+    {
         name: 'Moscow Open Championship',
         game: 'CS:GO 2',
         prize: '500,000₽',

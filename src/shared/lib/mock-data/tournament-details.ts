@@ -56,3 +56,52 @@ export const summerKickoffTournament = {
         ]
     }
 };
+
+export const footballCupTournament = {
+    name: "Кубок ProDvor по Футболу",
+    slug: "prodvor-football-cup-2024",
+    game: "Футбол",
+    status: "Идет",
+    image: "https://placehold.co/1200x400.png",
+    dataAiHint: "football stadium action",
+    description: "Ежегодный чемпионат по дворовому футболу 5x5. Лучшие команды города сразятся за кубок!",
+    prizePool: "50,000",
+    teamsCount: 4,
+    organizer: { name: "Федерация Дворового Футбола", logo: "https://placehold.co/40x40.png" },
+    schedule: {
+        registration: "1-15 Августа",
+        groupStage: "16-17 Августа",
+        playoffs: "18 Августа",
+        finals: "19 Августа",
+    },
+    teams: [
+        { name: "Дворовые Атлеты", logo: "https://placehold.co/40x40.png", dataAiHint: "football team logo" },
+        { name: "Соколы", logo: "https://placehold.co/40x40.png", dataAiHint: "falcon logo" },
+        { name: "Торпедо", logo: "https://placehold.co/40x40.png", dataAiHint: "torpedo logo" },
+        { name: "Вымпел", logo: "https://placehold.co/40x40.png", dataAiHint: "pennant logo" },
+    ],
+    rules: "Правила дворового футбола 5x5. Два тайма по 15 минут. В случае ничьи - серия пенальти.",
+    bracket: {
+        rounds: [
+            {
+                name: "Полуфиналы",
+                matches: [
+                    { id: 1, team1: { name: "Дворовые Атлеты", logo: "https://placehold.co/40x40.png" }, team2: { name: "Торпедо", logo: "https://placehold.co/40x40.png" }, score: "5-3", href: "/matches/123" },
+                    { id: 2, team1: { name: "Соколы", logo: "https://placehold.co/40x40.png" }, team2: { name: "Вымпел", logo: "https://placehold.co/40x40.png" }, score: "2-4", href: "/matches/123" },
+                ]
+            },
+            {
+                name: "Финал",
+                matches: [
+                     { id: 3, team1: { name: "Дворовые Атлеты", logo: "https://placehold.co/40x40.png" }, team2: { name: "Вымпел", logo: "https://placehold.co/40x40.png" }, score: "3-3 (2-1 пен)", href: "/matches/123" },
+                ]
+            },
+            {
+                name: "Чемпион",
+                matches: [
+                    { id: 4, team1: { name: "Дворовые Атлеты", logo: "https://placehold.co/40x40.png" }, winner: true },
+                ]
+            }
+        ]
+    }
+};
