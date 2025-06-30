@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -23,8 +22,9 @@ type MatchState = Match & {
 export function CrmTournamentMatches() {
     const { toast } = useToast();
 
-    const allMatches = useMemo(() => {
-        return summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
+    const allMatches: Match[] = useMemo(() => {
+        return summerKickoffTournament.bracket.rounds
+        .reduce((acc, round) => {
             const playableMatches = round.matches.filter((match): match is Match => 'team2' in match);
             return acc.concat(playableMatches);
         }, [] as Match[]);
@@ -49,9 +49,12 @@ export function CrmTournamentMatches() {
             if (result.type === 'score') {
                 newScore = `${result.scoreA}-${result.scoreB}`;
                 newStatus = 'played';
-            } else {
-                newScore = result.type === 'tech_defeat_t2' ? 'W-L' : 'L-W';
-                newStatus = result.type;
+            } else if (result.type === 'tech_defeat_t1') {
+                newScore = 'L-W';
+                newStatus = 'tech_defeat_t1';
+            } else { // result.type must be 'tech_defeat_t2'
+                newScore = 'W-L';
+                newStatus = 'tech_defeat_t2';
             }
 
             return { ...match, score: newScore, status: newStatus, comment: result.comment };
@@ -72,8 +75,6 @@ export function CrmTournamentMatches() {
                 return <Badge variant="destructive">Тех. пор. {match.team1?.name}</Badge>;
             case 'technical_defeat_t2':
                 return <Badge variant="destructive">Тех. пор. {match.team2?.name}</Badge>;
-            default:
-                 return <Badge variant="outline">Ожидает</Badge>;
         }
     }
 
@@ -81,7 +82,9 @@ export function CrmTournamentMatches() {
     const matchIdToRoundName = useMemo(() => {
         return summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
             round.matches.forEach(match => {
-                acc[match.id] = round.name;
+                if ('team2' in match) { // Ensure it's a playable match
+                    acc[match.id] = round.name;
+                }
             });
             return acc;
         }, {} as Record<number, string>);
