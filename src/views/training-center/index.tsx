@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -75,12 +74,13 @@ export function TrainingCenterPage() {
                                 <p className="font-semibold">{nextWorkout.date}</p>
                                 <p className="text-lg font-bold text-primary">{nextWorkout.muscles}</p>
                             </div>
-                            <Button size="lg">Начать тренировку</Button>
+                            <Button size="lg" asChild><Link href="/training/log">Начать тренировку</Link></Button>
                         </CardContent>
                     </Card>
 
-                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         <Button variant="outline" size="lg" asChild><Link href="/training/log"><BookOpen className="mr-2 h-4 w-4" />Дневник</Link></Button>
+                        <Button variant="outline" size="lg" asChild><Link href="/training/calendar"><Calendar className="mr-2 h-4 w-4" />Календарь</Link></Button>
                         <Button variant="outline" size="lg" asChild><Link href="/training/analytics"><BarChart3 className="mr-2 h-4 w-4" />Аналитика</Link></Button>
                         <Button variant="outline" size="lg" asChild><Link href="/training/programs"><Replace className="mr-2 h-4 w-4" />Программы</Link></Button>
                         <Button variant="outline" size="lg" asChild><Link href="/training/programs/new"><LayoutGrid className="mr-2 h-4 w-4" />Конструктор</Link></Button>
