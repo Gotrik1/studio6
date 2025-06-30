@@ -16,11 +16,17 @@ export function DashboardPage() {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-                <AiNewsDigest />
-                <StatusUpdateForm />
-                <Feed />
+                <div className="opacity-0 animate-fade-in-up">
+                    <AiNewsDigest />
+                </div>
+                <div className="opacity-0 animate-fade-in-up animation-delay-300">
+                    <StatusUpdateForm />
+                </div>
+                <div className="opacity-0 animate-fade-in-up animation-delay-600">
+                    <Feed />
+                </div>
             </div>
-            <aside className="space-y-6 lg:sticky lg:top-20 self-start">
+            <aside className="space-y-6 lg:sticky lg:top-20 self-start opacity-0 animate-fade-in-up animation-delay-300">
                 <Card>
                     <CardHeader>
                         <CardTitle>Команда недели</CardTitle>
