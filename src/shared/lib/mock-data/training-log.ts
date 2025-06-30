@@ -1,3 +1,4 @@
+
 export type LoggedSet = {
     plannedReps: string;
     plannedWeight: string;
@@ -33,6 +34,7 @@ export const trainingLogData: TrainingLogEntry[] = [
         exercises: [
             { 
                 name: 'Жим лежа', 
+                notes: 'Попробовать свести лопатки сильнее в следующий раз.',
                 sets: [
                     { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 8, loggedWeight: 80, rpe: 7, isCompleted: true },
                     { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 8, loggedWeight: 80, rpe: 8, isCompleted: true },

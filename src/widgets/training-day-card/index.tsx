@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -145,6 +146,28 @@ export function TrainingDayCard({ entry, onDelete, onCopy, onUpdate }: TrainingD
                                             ))}
                                         </TableBody>
                                     </Table>
+                                    <Collapsible className="mt-2">
+                                        <CollapsibleTrigger asChild>
+                                            <Button type="button" variant="ghost" size="sm" className="text-xs text-muted-foreground flex items-center gap-2 group">
+                                                <MessageSquare className="h-4 w-4" />
+                                                <span>Заметки к упражнению</span>
+                                                <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                                            </Button>
+                                        </CollapsibleTrigger>
+                                        <CollapsibleContent className="pt-2 animate-in fade-in-0 zoom-in-95">
+                                            <FormField
+                                                control={form.control}
+                                                name={`exercises.${index}.notes`}
+                                                render={({ field }) => (
+                                                    <FormItem>
+                                                        <FormControl>
+                                                            <Textarea placeholder="Например: 'Было тяжело, но техника хорошая'" {...field} value={field.value ?? ''} />
+                                                        </FormControl>
+                                                    </FormItem>
+                                                )}
+                                            />
+                                        </CollapsibleContent>
+                                    </Collapsible>
                                 </div>
                             )
                         })}
