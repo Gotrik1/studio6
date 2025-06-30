@@ -28,3 +28,25 @@ export const teamsSeekingSponsorship = [
         needs: 'Оплата буткемпа, зарплатный фонд.'
     }
 ];
+
+
+export const sponsoredTeams = [
+    {
+        slug: 'cyber-eagles',
+        name: 'Кибер Орлы',
+        logo: 'https://placehold.co/100x100.png',
+        logoHint: 'eagle logo',
+        game: 'Valorant',
+        since: '2024-05-15',
+        investment: '15,000 PD',
+    },
+    {
+        slug: 'steel-titans',
+        name: 'Стальные Титаны',
+        logo: 'https://placehold.co/100x100.png',
+        logoHint: 'titan logo',
+        game: 'Dota 2',
+        since: '2024-06-01',
+        investment: '10,000 PD',
+    }
+]
