@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { VolumeChart } from '@/widgets/analytics-charts/volume-chart';
-import { WeightChart } from '@/widgets/analytics-charts/weight-chart';
+import { MeasurementChart } from '@/widgets/analytics-charts/measurements-chart';
 import { Dumbbell, Flame, Star, Activity, BarChart3, LineChart } from 'lucide-react';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
@@ -56,7 +56,7 @@ export function TrainingAnalyticsPage() {
                         <CardDescription>Изменение вашего веса на основе данных из замеров (кг)</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <WeightChart data={measurementsHistory} />
+                        <MeasurementChart history={measurementsHistory} metric="weight" />
                     </CardContent>
                 </Card>
             </div>
