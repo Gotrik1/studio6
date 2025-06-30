@@ -59,6 +59,7 @@ const mainNavItems = [
     { href: "/training", icon: Dumbbell, label: "Тренировки" },
     { href: "/booking", icon: MapPin, label: "Площадки" },
     { href: "/store", icon: ShoppingCart, label: "Магазин" },
+    { href: "/quests", icon: ShieldCheck, label: "Квесты" },
 ];
 
 const secondaryNavItems = [
