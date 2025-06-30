@@ -77,7 +77,7 @@ export function LandingPage() {
                 ProDvor — это социальная платформа, объединяющая дворовый спорт и любительский киберспорт. Создавай команду, находи соперников, участвуй в турнирах и строй свою спортивную карьеру.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Button asChild size="lg" className="w-full sm:w-auto pulsing-button">
+                <Button asChild size="lg" className="w-full sm:w-auto shine-button">
                 <Link href="/auth">Начать побеждать</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">

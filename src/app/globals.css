@@ -122,8 +122,19 @@ html {
   .animated-slogan span:nth-child(4) { animation-delay: 0.4s; }
   .animated-slogan span:nth-child(5) { animation-delay: 0.5s; }
 
-  .pulsing-button {
-    animation: pulse 2s infinite;
+  .shine-button {
+    position: relative;
+    overflow: hidden;
+  }
+  .shine-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    transform: translateX(-100%);
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shine 4s infinite;
   }
 }
 
@@ -134,17 +145,14 @@ html {
   }
 }
 
-@keyframes pulse {
+@keyframes shine {
   0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.7);
+    transform: translateX(-100%);
   }
-  70% {
-    transform: scale(1);
-    box-shadow: 0 0 0 10px hsl(var(--primary) / 0);
+  20% {
+    transform: translateX(200%);
   }
   100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+    transform: translateX(200%);
   }
 }
