@@ -19,7 +19,7 @@ const iconComponents: { [key: string]: LucideIcon } = LucideIcons as any;
 export function SportsAdminPage() {
     const { toast } = useToast();
     const [sports, setSports] = useState<Sport[]>(initialSports);
-    const [newSport, setNewSport] = useState<{ name: string, type: 'Киберспорт' | 'Спорт', icon: string }>({ name: '', type: 'Киберспорт', icon: 'Gamepad2' });
+    const [newSport, setNewSport] = useState<{ name: string, category: 'Командный' | 'Некомандный', icon: string }>({ name: '', category: 'Командный', icon: 'Users' });
 
     const handleAddSport = () => {
         if (!newSport.name || !newSport.icon) {
@@ -46,7 +46,7 @@ export function SportsAdminPage() {
         };
 
         setSports(prev => [...prev, newSportToAdd]);
-        setNewSport({ name: '', type: 'Киберспорт', icon: 'Gamepad2' });
+        setNewSport({ name: '', category: 'Командный', icon: 'Users' });
         toast({
             title: 'Дисциплина добавлена!',
             description: `Новая дисциплина "${newSport.name}" была успешно добавлена.`,
@@ -85,7 +85,7 @@ export function SportsAdminPage() {
                                 <TableRow>
                                     <TableHead className="w-[50px]">Иконка</TableHead>
                                     <TableHead>Название</TableHead>
-                                    <TableHead>Тип</TableHead>
+                                    <TableHead>Категория</TableHead>
                                     <TableHead className="text-right">Действия</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -96,7 +96,7 @@ export function SportsAdminPage() {
                                             <IconForSport iconName={sport.icon} />
                                         </TableCell>
                                         <TableCell className="font-medium">{sport.name}</TableCell>
-                                        <TableCell>{sport.type}</TableCell>
+                                        <TableCell>{sport.category}</TableCell>
                                         <TableCell className="text-right">
                                             <Button variant="ghost" size="icon" onClick={() => handleDeleteSport(sport.id)}>
                                                 <LucideIcons.Trash2 className="h-4 w-4 text-destructive" />
@@ -117,23 +117,23 @@ export function SportsAdminPage() {
                             <Label htmlFor="sport-name">Название</Label>
                             <Input 
                                 id="sport-name" 
-                                placeholder="Например, Valorant" 
+                                placeholder="Например, Футбол" 
                                 value={newSport.name}
                                 onChange={(e) => setNewSport(prev => ({ ...prev, name: e.target.value }))}
                             />
                         </div>
                          <div className="space-y-2">
-                            <Label htmlFor="sport-type">Тип</Label>
+                            <Label htmlFor="sport-type">Категория</Label>
                             <Select 
-                                value={newSport.type} 
-                                onValueChange={(value: 'Киберспорт' | 'Спорт') => setNewSport(prev => ({...prev, type: value}))}
+                                value={newSport.category} 
+                                onValueChange={(value: 'Командный' | 'Некомандный') => setNewSport(prev => ({...prev, category: value}))}
                             >
                                 <SelectTrigger id="sport-type">
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Киберспорт">Киберспорт</SelectItem>
-                                    <SelectItem value="Спорт">Спорт</SelectItem>
+                                    <SelectItem value="Командный">Командный</SelectItem>
+                                    <SelectItem value="Некомандный">Некомандный</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -141,7 +141,7 @@ export function SportsAdminPage() {
                             <Label htmlFor="sport-icon">Название иконки (Lucide)</Label>
                             <Input 
                                 id="sport-icon" 
-                                placeholder="Например, Gamepad2" 
+                                placeholder="Например, Futbol" 
                                 value={newSport.icon}
                                 onChange={(e) => setNewSport(prev => ({ ...prev, icon: e.target.value }))}
                             />
