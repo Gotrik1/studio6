@@ -14,6 +14,7 @@ import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
 import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
 import { CrmTournamentAnnouncements } from '@/widgets/crm-tournament-announcements';
 import { CrmTournamentDisputes } from '@/widgets/crm-tournament-disputes';
+import { CrmTournamentSettings } from '@/widgets/crm-tournament-settings';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -94,17 +95,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
                 
                 <TabsContent value="settings" className="mt-4">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Настройки турнира</CardTitle>
-                            <CardDescription>В разработке...</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="flex h-96 items-center justify-center rounded-lg border-2 border-dashed">
-                                <p className="text-muted-foreground">Здесь будет форма для редактирования данных турнира.</p>
-                            </div>
-                        </CardContent>
-                    </Card>
+                    <CrmTournamentSettings tournament={tournament} />
                 </TabsContent>
             </Tabs>
         </div>
