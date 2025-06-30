@@ -68,10 +68,13 @@ export function ManualTournamentForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(tournamentSchema),
     defaultValues: {
+      name: '',
+      description: '',
       participantCount: 16,
       registrationStartDate: new Date(),
       registrationEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
       tournamentStartDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      prizePool: '',
     },
   });
 
