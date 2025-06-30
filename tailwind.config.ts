@@ -83,6 +83,7 @@ export default {
         lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
         xl: "0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.15)",
         '2xl': "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+        'deep-dark': '-8px 8px 20px rgba(0, 0, 0, 0.4), 4px -4px 10px rgba(0, 0, 0, 0.2)',
         inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
         'left-bottom': "-10px 15px 35px -10px rgb(0 0 0 / 0.5)",
       },
