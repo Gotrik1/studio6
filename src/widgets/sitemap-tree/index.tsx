@@ -13,15 +13,43 @@ type TreeNode = {
 
 const sitemapData: TreeNode[] = [
     { name: 'Основное', type: 'folder', children: [
-        { name: 'Лента', type: 'file', href: '/dashboard' },
-        { name: 'Сообщения', type: 'file', href: '/chats' },
-        { name: 'Команды', type: 'file', href: '/teams' },
-        { name: 'Друзья', type: 'file', href: '/friends' },
-        { name: 'Соревнования', type: 'file', href: '/tournaments' },
-        { name: 'Тренировки', type: 'file', href: '/training' },
-        { name: 'Площадки', type: 'file', href: '/booking' },
+        { name: 'Лента (Dashboard)', type: 'file', href: '/dashboard' },
+        { name: 'Команды', type: 'folder', children: [
+            { name: 'Список команд', type: 'file', href: '/teams' },
+            { name: 'Создание команды', type: 'file', href: '/teams/new' },
+            { name: 'Профиль команды', type: 'file', href: '/teams/cyber-eagles' },
+            { name: 'Управление командой', type: 'file', href: '/teams/cyber-eagles/management' },
+        ]},
+        { name: 'Соревнования', type: 'folder', children: [
+            { name: 'Список турниров', type: 'file', href: '/tournaments' },
+            { name: 'Создание турнира', type: 'file', href: '/tournaments/new' },
+            { name: 'Профиль турнира', type: 'file', href: '/tournaments/summer-kickoff-2024' },
+        ]},
+        { name: 'Тренировки', type: 'folder', children: [
+            { name: 'Центр тренировок', type: 'file', href: '/training' },
+            { name: 'Программы', type: 'file', href: '/training/programs' },
+            { name: 'Создание программы', type: 'file', href: '/training/programs/new' },
+            { name: 'Каталог упражнений', type: 'file', href: '/training/exercises' },
+            { name: 'Дневник тренировок', type: 'file', href: '/training/log' },
+            { name: 'Аналитика', type: 'file', href: '/training/analytics' },
+            { name: 'Центр питания', type: 'file', href: '/training/nutrition' },
+            { name: 'Дневник питания', type: 'file', href: '/training/nutrition-diary' },
+        ]},
+        { name: 'Социальные', type: 'folder', children: [
+            { name: 'Сообщения', type: 'file', href: '/chats' },
+            { name: 'Друзья', type: 'file', href: '/friends' },
+            { name: 'Поиск игроков', type: 'file', href: '/scouting' },
+            { name: 'Таблицы лидеров', type: 'file', href: '/leaderboards' },
+        ]},
+        { name: 'Платформа', type: 'folder', children: [
+             { name: 'Магазин', type: 'file', href: '/store' },
+             { name: 'Квесты', type: 'file', href: '/quests' },
+             { name: 'Фан-зона', type: 'file', href: '/fan-zone' },
+             { name: 'Партнеры и спонсоры', type: 'file', href: '/sponsors' },
+             { name: 'Бронирование площадок', type: 'file', href: '/booking' },
+        ]},
     ]},
-    { name: 'Профиль и настройки', type: 'folder', children: [
+    { name: 'Профиль', type: 'folder', children: [
         { name: 'Мой профиль', type: 'file', href: '/profile' },
         { name: 'Настройки', type: 'file', href: '/settings' },
         { name: 'Поддержка', type: 'file', href: '/support' },
@@ -29,16 +57,18 @@ const sitemapData: TreeNode[] = [
     { name: 'Администрирование', type: 'folder', children: [
         { name: 'Панель администратора', type: 'file', href: '/administration' },
         { name: 'Управление пользователями', type: 'file', href: '/administration/users' },
-        { name: 'Управление турнирами', type: 'file', href: '/administration/tournament-crm/dashboard' },
-        { name: 'Модерация', type: 'file', href: '/administration/moderation-queue' },
+        { name: 'Турниры (CRM)', type: 'file', href: '/administration/tournament-crm/dashboard' },
+        { name: 'Очередь модерации', type: 'file', href: '/administration/moderation-queue' },
+        { name: 'Экономика PD', type: 'file', href: '/pd-economy' },
         { name: 'Геймификация', type: 'file', href: '/administration/gamification' },
-        { name: 'Документация', type: 'folder', children: [
-            { name: 'Readme проекта', type: 'file', href: '/documents/project-readme' },
-            { name: 'Архитектура', type: 'file', href: '/documents/architecture' },
-            { name: 'Backend Roadmap', type: 'file', href: '/documents/backend-roadmap' },
-            { name: 'Backend Production', type: 'file', href: '/documents/backend-production' },
-            { name: 'Видение проекта', type: 'file', href: '/documents/vision-and-principles' }
-        ]},
+        { name: 'Виды спорта', type: 'file', href: '/administration/sports' },
+    ]},
+    { name: 'Документация', type: 'folder', children: [
+        { name: 'Readme проекта', type: 'file', href: '/documents/project-readme' },
+        { name: 'Архитектура', type: 'file', href: '/documents/architecture' },
+        { name: 'Видение и принципы', type: 'file', href: '/documents/vision-and-principles' },
+        { name: 'Демо темы', type: 'file', href: '/theme-demo' },
+        { name: 'Карта сайта', type: 'file', href: '/administration/sitemap' }
     ]},
 ];
 
