@@ -12,6 +12,7 @@ import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
 import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
 import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
+import { CrmTournamentAnnouncements } from '@/widgets/crm-tournament-announcements';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -34,7 +35,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             </div>
             
             <Tabs defaultValue="overview">
-                <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-8">
+                <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-9">
                     <TabsTrigger value="overview">Обзор</TabsTrigger>
                     <TabsTrigger value="participants">Участники</TabsTrigger>
                     <TabsTrigger value="matches">Матчи</TabsTrigger>
@@ -42,6 +43,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                     <TabsTrigger value="judges">Судьи</TabsTrigger>
                     <TabsTrigger value="sponsors">Спонсоры</TabsTrigger>
                     <TabsTrigger value="medical">Мед. поддержка</TabsTrigger>
+                    <TabsTrigger value="announcements">Рассылки</TabsTrigger>
                     <TabsTrigger value="settings">Настройки</TabsTrigger>
                 </TabsList>
                 
@@ -79,6 +81,10 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
 
                 <TabsContent value="medical" className="mt-4">
                     <CrmTournamentMedical />
+                </TabsContent>
+                
+                <TabsContent value="announcements" className="mt-4">
+                    <CrmTournamentAnnouncements />
                 </TabsContent>
                 
                 <TabsContent value="settings" className="mt-4">
