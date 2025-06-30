@@ -5,16 +5,23 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/sha
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
 import { summerKickoffTournament } from '@/shared/lib/mock-data/tournament-details';
-import { Edit } from 'lucide-react';
-import { CrmScoreDialog } from '@/widgets/crm-score-dialog';
+import { Edit, MessageSquare } from 'lucide-react';
+import { CrmMatchResultDialog, type MatchResult } from '@/widgets/crm-score-dialog';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Badge } from '@/shared/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 
 type Match = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
 
+type MatchState = Match & {
+    comment?: string;
+    status: 'pending' | 'played' | 'technical_defeat_t1' | 'technical_defeat_t2';
+};
+
 export function CrmTournamentMatches() {
     const allMatches = summerKickoffTournament.bracket.rounds.flatMap(round => round.matches.filter(match => match.team1 && match.team2));
-    const [matches, setMatches] = useState<Match[]>(allMatches);
+    
+    const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, status: m.score && m.score !== 'VS' ? 'played' : 'pending' })));
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [isScoreDialogOpen, setIsScoreDialogOpen] = useState(false);
     const { toast } = useToast();
@@ -24,15 +31,37 @@ export function CrmTournamentMatches() {
         setIsScoreDialogOpen(true);
     };
 
-    const handleScoreSubmit = (matchId: number, scoreA: number, scoreB: number) => {
-        setMatches(prev => prev.map(match => 
-            match.id === matchId ? { ...match, score: `${scoreA}-${scoreB}` } : match
-        ));
+    const handleMatchUpdate = (result: MatchResult) => {
+        setMatches(prev => prev.map(match => {
+            if (match.id !== result.matchId) return match;
+            
+            let newScore = `${result.scoreA}-${result.scoreB}`;
+            if (result.type.startsWith('tech_defeat')) {
+                newScore = result.type === 'tech_defeat_t1' ? 'L-W' : 'W-L';
+            }
+
+            return { ...match, score: newScore, status: result.type, comment: result.comment };
+        }));
         toast({
             title: "Результат обновлен!",
             description: "Счет матча был успешно сохранен."
         });
     };
+    
+    const getResultBadge = (match: MatchState) => {
+        switch(match.status) {
+            case 'played':
+                return <Badge variant="secondary">{match.score}</Badge>;
+            case 'pending':
+                return <Badge variant="outline">Ожидает</Badge>;
+            case 'technical_defeat_t1':
+                return <Badge variant="destructive">Тех. пор. {match.team1?.name}</Badge>;
+            case 'technical_defeat_t2':
+                return <Badge variant="destructive">Тех. пор. {match.team2?.name}</Badge>;
+            default:
+                 return <Badge variant="outline">Ожидает</Badge>;
+        }
+    }
 
     return (
         <>
@@ -55,21 +84,33 @@ export function CrmTournamentMatches() {
                             {summerKickoffTournament.bracket.rounds.map(round => 
                                 round.matches.filter(match => match.team1 && match.team2).map(match => {
                                     const currentMatchState = matches.find(m => m.id === match.id);
+                                    if (!currentMatchState) return null;
+                                    
                                     return (
                                         <TableRow key={match.id}>
                                             <TableCell className="text-muted-foreground">{round.name}</TableCell>
                                             <TableCell className="font-medium">{currentMatchState?.team1?.name} vs {currentMatchState?.team2?.name}</TableCell>
                                             <TableCell>
-                                                {currentMatchState?.score ? (
-                                                    <Badge variant="secondary">{currentMatchState.score}</Badge>
-                                                ) : (
-                                                    <Badge variant="outline">Ожидает</Badge>
-                                                )}
+                                                <div className="flex items-center gap-2">
+                                                    {getResultBadge(currentMatchState)}
+                                                    {currentMatchState.comment && (
+                                                         <TooltipProvider>
+                                                            <Tooltip>
+                                                                <TooltipTrigger>
+                                                                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                                                                </TooltipTrigger>
+                                                                <TooltipContent>
+                                                                    <p className="max-w-xs">{currentMatchState.comment}</p>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    )}
+                                                </div>
                                             </TableCell>
                                             <TableCell className="text-right">
-                                                <Button variant="outline" size="sm" onClick={() => handleOpenScoreDialog(currentMatchState!)}>
+                                                <Button variant="outline" size="sm" onClick={() => handleOpenScoreDialog(currentMatchState)}>
                                                     <Edit className="mr-2 h-3 w-3" />
-                                                    {currentMatchState?.score ? 'Изменить' : 'Ввести'} результат
+                                                    Управлять
                                                 </Button>
                                             </TableCell>
                                         </TableRow>
@@ -80,11 +121,11 @@ export function CrmTournamentMatches() {
                     </Table>
                 </CardContent>
             </Card>
-            <CrmScoreDialog 
+            <CrmMatchResultDialog 
                 isOpen={isScoreDialogOpen}
                 onOpenChange={setIsScoreDialogOpen}
                 match={selectedMatch}
-                onScoreSubmit={handleScoreSubmit}
+                onMatchUpdate={handleMatchUpdate}
             />
         </>
     );
