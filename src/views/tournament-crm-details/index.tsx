@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
@@ -38,9 +39,9 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-9">
                     <TabsTrigger value="overview">Обзор</TabsTrigger>
                     <TabsTrigger value="participants">Участники</TabsTrigger>
+                    <TabsTrigger value="judges">Судьи</TabsTrigger>
                     <TabsTrigger value="matches">Матчи</TabsTrigger>
                     <TabsTrigger value="bracket">Сетка</TabsTrigger>
-                    <TabsTrigger value="judges">Судьи</TabsTrigger>
                     <TabsTrigger value="sponsors">Спонсоры</TabsTrigger>
                     <TabsTrigger value="medical">Мед. поддержка</TabsTrigger>
                     <TabsTrigger value="announcements">Рассылки</TabsTrigger>
@@ -53,6 +54,10 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 
                 <TabsContent value="participants" className="mt-4">
                     <CrmTournamentParticipants />
+                </TabsContent>
+
+                <TabsContent value="judges" className="mt-4">
+                    <CrmTournamentJudges />
                 </TabsContent>
 
                 <TabsContent value="matches" className="mt-4">
@@ -69,10 +74,6 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                             <TournamentBracket rounds={summerKickoffTournament.bracket.rounds} />
                         </CardContent>
                     </Card>
-                </TabsContent>
-
-                <TabsContent value="judges" className="mt-4">
-                    <CrmTournamentJudges />
                 </TabsContent>
 
                 <TabsContent value="sponsors" className="mt-4">
