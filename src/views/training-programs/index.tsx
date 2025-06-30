@@ -5,13 +5,15 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { trainingPrograms } from '@/shared/lib/mock-data/training-programs';
+import { useTraining } from '@/app/providers/training-provider';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import Image from 'next/image';
 import { Dumbbell, Target, CalendarDays, Bot, BrainCircuit } from 'lucide-react';
 import Link from 'next/link';
 
 export function TrainingProgramsPage() {
+    const { programs } = useTraining();
+    
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -24,13 +26,13 @@ export function TrainingProgramsPage() {
                 <Button asChild>
                     <Link href="/training/programs/new">
                         <BrainCircuit className="mr-2 h-4 w-4" />
-                        Создать с помощью AI
+                        Создать свою программу
                     </Link>
                 </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {trainingPrograms.map((program: TrainingProgram) => (
+                {programs.map((program: TrainingProgram) => (
                     <Link key={program.id} href={`/training/programs/${program.id}`} className="block h-full">
                         <Card className="flex flex-col overflow-hidden transition-all hover:shadow-2xl hover:border-primary h-full cursor-pointer">
                             <CardHeader className="p-0 relative h-48">

@@ -1,8 +1,12 @@
 
-import { trainingPrograms } from '@/shared/lib/mock-data/training-programs';
+'use client';
+
+import { useTraining } from "@/app/providers/training-provider";
 import type { TrainingProgram } from '../model/types';
 
-export function getProgramById(id: string): TrainingProgram | null {
-    const program = trainingPrograms.find(p => p.id === id);
+// This is now a hook because it needs to access the context
+export function useProgramById(id: string): TrainingProgram | null {
+    const { programs } = useTraining();
+    const program = programs.find(p => p.id === id);
     return program || null;
 }

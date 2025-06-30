@@ -2,247 +2,194 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Loader2, Sparkles, Wand2, Dumbbell, CheckCircle, BrainCircuit } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { Skeleton } from '@/shared/ui/skeleton';
-import { generateTrainingProgram, type GenerateTrainingProgramOutput } from '@/shared/api/genkit/flows/generate-training-program-flow';
-import { GenerateTrainingProgramInputSchema } from '@/shared/api/genkit/flows/schemas/generate-training-program-schema';
-import type * as z from 'zod';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/ui/accordion';
+import { useRouter } from 'next/navigation';
+import { Loader2, PlusCircle, Trash2, GripVertical, Dumbbell } from 'lucide-react';
+import { Textarea } from '@/shared/ui/textarea';
+import type { Exercise } from '@/shared/lib/mock-data/exercises';
+import { ExercisePickerDialog } from '@/widgets/exercise-picker-dialog';
 import { useTraining } from '@/app/providers/training-provider';
-import type { TrainingProgram } from '@/shared/lib/mock-data/training-programs';
+import type { TrainingProgram } from '@/entities/training-program/model/types';
 
-type FormValues = z.infer<typeof GenerateTrainingProgramInputSchema>;
+
+const exerciseSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  sets: z.string().min(1, "Обязательно"),
+  reps: z.string().min(1, "Обязательно"),
+});
+
+const workoutDaySchema = z.object({
+  title: z.string().min(3, "Название дня обязательно"),
+  exercises: z.array(exerciseSchema).min(1, "Добавьте хотя бы одно упражнение"),
+});
+
+const programSchema = z.object({
+  name: z.string().min(3, "Название программы обязательно"),
+  description: z.string().optional(),
+  goal: z.enum(['Набор массы', 'Снижение веса', 'Рельеф', 'Сила']),
+  splitType: z.enum(['Full-body', 'Split', 'Upper/Lower']),
+  days: z.array(workoutDaySchema).min(1, "Добавьте хотя бы один тренировочный день"),
+});
+
+type ProgramFormValues = z.infer<typeof programSchema>;
 
 export function TrainingProgramConstructorPage() {
     const { toast } = useToast();
-    const { selectProgram } = useTraining();
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [result, setResult] = useState<GenerateTrainingProgramOutput | null>(null);
+    const router = useRouter();
+    const { addProgram } = useTraining();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Dialog state
+    const [isPickerOpen, setIsPickerOpen] = useState(false);
+    const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
 
-    const form = useForm<FormValues>({
-        resolver: zodResolver(GenerateTrainingProgramInputSchema),
+    const form = useForm<ProgramFormValues>({
+        resolver: zodResolver(programSchema),
         defaultValues: {
+            name: '',
+            description: '',
             goal: 'Набор массы',
-            experience: 'Новичок',
-            daysPerWeek: 3,
-            gender: 'Мужской',
-            focus: 'Нет',
+            splitType: 'Split',
+            days: [
+                { title: 'День 1: Грудь и Трицепс', exercises: [] },
+                { title: 'День 2: Спина и Бицепс', exercises: [] },
+                { title: 'День 3: Ноги и Плечи', exercises: [] },
+            ],
         },
     });
-
-    const onSubmit = async (data: FormValues) => {
-        setIsLoading(true);
-        setError(null);
-        setResult(null);
-
-        try {
-            const program = await generateTrainingProgram(data);
-            setResult(program);
-            toast({
-                title: "Программа сгенерирована!",
-                description: "Ваш персональный план тренировок готов.",
-            });
-        } catch (e) {
-            console.error(e);
-            setError('Не удалось сгенерировать программу. Пожалуйста, попробуйте еще раз.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
     
-    const handleSelectProgram = () => {
-        if (!result) return;
-        
-        const formValues = form.getValues();
+    const { fields, append, remove } = useFieldArray({
+        control: form.control,
+        name: 'days',
+    });
+    
+    const dayFieldArrays = fields.map((_field, index) => {
+        return useFieldArray({
+            control: form.control,
+            name: `days.${index}.exercises`
+        });
+    });
 
-        const newProgram: TrainingProgram = {
-            id: `ai-${Date.now()}`,
-            name: result.programName,
-            description: result.description,
-            goal: formValues.goal,
-            daysPerWeek: formValues.daysPerWeek,
-            splitType: 'Split', // This is a simplification. Could be derived from AI output in the future.
-            author: 'ProDvor AI',
-            coverImage: 'https://placehold.co/600x400.png',
-            coverImageHint: 'ai circuit board',
-            isAiGenerated: true,
-        };
+    const openExercisePicker = (dayIndex: number) => {
+        setCurrentDayIndex(dayIndex);
+        setIsPickerOpen(true);
+    };
 
-        selectProgram(newProgram);
-
-        toast({
-            title: "Программа выбрана!",
-            description: `Вы начали новую программу: "${result.programName}".`,
+    const handleSelectExercises = (exercises: Exercise[]) => {
+        if (currentDayIndex === null) return;
+        const exerciseControls = dayFieldArrays[currentDayIndex];
+        exercises.forEach(ex => {
+            exerciseControls.append({ id: ex.id, name: ex.name, sets: '3', reps: '10-12' });
         });
     };
 
+    const onSubmit = (data: ProgramFormValues) => {
+        setIsSubmitting(true);
+        console.log("Creating program:", data);
+
+        const newProgram: TrainingProgram = {
+            id: `manual-${Date.now()}`,
+            name: data.name,
+            description: data.description || '',
+            goal: data.goal,
+            daysPerWeek: data.days.length,
+            splitType: data.splitType,
+            author: 'Вы', // or current user's name
+            coverImage: 'https://placehold.co/600x400.png',
+            coverImageHint: 'gym workout plan',
+            isAiGenerated: false,
+            weeklySplit: data.days.map((day, index) => ({
+                day: index + 1,
+                title: day.title,
+                exercises: day.exercises.map(ex => ({ name: ex.name, sets: ex.sets, reps: ex.reps })),
+            })),
+        };
+        
+        addProgram(newProgram);
+
+        setTimeout(() => {
+            toast({
+                title: "Программа создана!",
+                description: `Ваша новая программа "${data.name}" была успешно сохранена.`,
+            });
+            setIsSubmitting(false);
+            router.push('/training/programs');
+        }, 1000);
+    };
+
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 opacity-0 animate-fade-in-up">
-            <div className="lg:col-span-1">
-                <Card className="sticky top-20">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Wand2 /> Конструктор программы</CardTitle>
-                        <CardDescription>Заполните параметры, и AI создаст для вас индивидуальный план.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <Form {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                                <FormField control={form.control} name="goal" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Цель</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="Набор массы">Набор массы</SelectItem>
-                                                <SelectItem value="Снижение веса">Снижение веса</SelectItem>
-                                                <SelectItem value="Рельеф">Рельеф</SelectItem>
-                                                <SelectItem value="Сила">Сила</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                                <FormField control={form.control} name="experience" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Опыт</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="Новичок">Новичок (до 6 мес)</SelectItem>
-                                                <SelectItem value="Опытный">Опытный (6-24 мес)</SelectItem>
-                                                <SelectItem value="Профи">Профи (2+ года)</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                                <FormField control={form.control} name="daysPerWeek" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Дней в неделю</FormLabel>
-                                        <Select onValueChange={(val) => field.onChange(Number(val))} defaultValue={String(field.value)}>
-                                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="2">2 дня</SelectItem>
-                                                <SelectItem value="3">3 дня</SelectItem>
-                                                <SelectItem value="4">4 дня</SelectItem>
-                                                <SelectItem value="5">5 дней</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                                 <FormField control={form.control} name="gender" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Пол</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="Мужской">Мужской</SelectItem>
-                                                <SelectItem value="Женский">Женский</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                                <FormField control={form.control} name="focus" render={({ field }) => (
-                                    <FormItem>
-                                        <FormLabel>Акцент (опционально)</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                            <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                                            <SelectContent>
-                                                <SelectItem value="Нет">Нет</SelectItem>
-                                                <SelectItem value="Грудь">Грудь</SelectItem>
-                                                <SelectItem value="Спина">Спина</SelectItem>
-                                                <SelectItem value="Ноги">Ноги</SelectItem>
-                                                <SelectItem value="Плечи">Плечи</SelectItem>
-                                                <SelectItem value="Руки">Руки</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <FormMessage />
-                                    </FormItem>
-                                )} />
-                                <Button type="submit" className="w-full" disabled={isLoading}>
-                                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                                    Сгенерировать
-                                </Button>
-                            </form>
-                        </Form>
-                    </CardContent>
-                </Card>
-            </div>
-            <div className="lg:col-span-2 space-y-6">
-                 {isLoading && (
+        <>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                    <div className="space-y-2 text-center">
+                        <Dumbbell className="mx-auto h-12 w-12 text-primary" />
+                        <h1 className="font-headline text-3xl font-bold tracking-tight">Конструктор программ</h1>
+                        <p className="text-muted-foreground">Создайте свой идеальный тренировочный план вручную.</p>
+                    </div>
+
                     <Card>
                         <CardHeader>
-                            <Skeleton className="h-8 w-3/4" />
-                            <Skeleton className="h-4 w-full mt-2" />
+                            <CardTitle>Общая информация</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
-                            <Skeleton className="h-12 w-full" />
-                            <Skeleton className="h-12 w-full" />
-                            <Skeleton className="h-12 w-full" />
+                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Название программы</FormLabel><FormControl><Input placeholder="Например, Моя программа на массу" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Описание (необязательно)</FormLabel><FormControl><Input placeholder="Краткое описание целей и методики" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={form.control} name="goal" render={({ field }) => (<FormItem><FormLabel>Цель</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Набор массы">Набор массы</SelectItem><SelectItem value="Снижение веса">Снижение веса</SelectItem><SelectItem value="Рельеф">Рельеф</SelectItem><SelectItem value="Сила">Сила</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                             <FormField control={form.control} name="splitType" render={({ field }) => (<FormItem><FormLabel>Тип сплита</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Split">Сплит</SelectItem><SelectItem value="Upper/Lower">Верх/Низ</SelectItem><SelectItem value="Full-body">Full-body</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                         </CardContent>
                     </Card>
-                )}
 
-                {error && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
+                    {fields.map((field, index) => {
+                        const exerciseControls = dayFieldArrays[index];
+                        return (
+                            <Card key={field.id}>
+                                <CardHeader className="flex flex-row items-center justify-between">
+                                    <div className="flex-1">
+                                        <FormField control={form.control} name={`days.${index}.title`} render={({ field }) => (<FormItem><FormLabel className="sr-only">Название дня</FormLabel><FormControl><Input placeholder="Название дня, например 'День 1: Грудь'" {...field} className="text-lg font-semibold border-0 p-0 shadow-none focus-visible:ring-0" /></FormControl><FormMessage /></FormItem>)} />
+                                    </div>
+                                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+                                </CardHeader>
+                                <CardContent>
+                                    {exerciseControls.fields.map((exField, exIndex) => (
+                                        <div key={exField.id} className="flex items-center gap-2 py-2 border-b last:border-b-0">
+                                            <GripVertical className="h-5 w-5 text-muted-foreground cursor-move" />
+                                            <p className="flex-1 font-medium text-sm">{exField.name}</p>
+                                            <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormControl><Input placeholder="3-4" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
+                                            <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormControl><Input placeholder="8-12" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
+                                            <Button type="button" variant="ghost" size="icon" onClick={() => exerciseControls.remove(exIndex)}><Trash2 className="h-4 w-4" /></Button>
+                                        </div>
+                                    ))}
+                                    <Button type="button" variant="outline" className="mt-4 w-full" onClick={() => openExercisePicker(index)}><PlusCircle className="mr-2 h-4 w-4" /> Добавить упражнение</Button>
+                                    <FormMessage>{form.formState.errors.days?.[index]?.exercises?.message}</FormMessage>
+                                </CardContent>
+                            </Card>
+                        );
+                    })}
 
-                {result ? (
-                     <Card className="animate-in fade-in-50">
-                        <CardHeader>
-                            <CardTitle className="font-headline text-2xl">{result.programName}</CardTitle>
-                            <CardDescription className="flex items-start gap-2 pt-2">
-                               <BrainCircuit className="h-4 w-4 mt-1 flex-shrink-0" />
-                               <span>{result.description}</span>
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                             <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
-                                {result.weeklySplit.map((day, index) => (
-                                    <AccordionItem value={`item-${index}`} key={index}>
-                                        <AccordionTrigger className="font-semibold text-lg">
-                                            <div className="flex items-center gap-2">
-                                                <Dumbbell className="h-5 w-5 text-primary"/>
-                                                {day.day}
-                                            </div>
-                                        </AccordionTrigger>
-                                        <AccordionContent>
-                                            <ul className="space-y-2 pl-6">
-                                                {day.exercises.map(ex => (
-                                                    <li key={ex.name} className="flex justify-between items-center text-sm">
-                                                        <span>{ex.name}</span>
-                                                        <span className="font-mono text-xs text-muted-foreground">{ex.sets}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </AccordionContent>
-                                    </AccordionItem>
-                                ))}
-                            </Accordion>
-                        </CardContent>
-                        <CardFooter>
-                            <Button className="w-full" size="lg" onClick={handleSelectProgram}>
-                                <CheckCircle className="mr-2 h-4 w-4"/> Выбрать эту программу
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                ) : !isLoading && (
-                     <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg h-full">
-                        <Dumbbell className="h-16 w-16 text-muted-foreground mb-4" />
-                        <h3 className="text-xl font-semibold">Ваша персональная программа появится здесь</h3>
-                        <p className="text-muted-foreground">Заполните форму слева, чтобы начать.</p>
+                    <div className="flex justify-between gap-4">
+                        <Button type="button" variant="outline" className="w-full" onClick={() => append({ title: `День ${fields.length + 1}`, exercises: [] })}><PlusCircle className="mr-2 h-4 w-4" /> Добавить день</Button>
+                        <Button type="submit" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                            Сохранить программу
+                        </Button>
                     </div>
-                )}
-            </div>
-        </div>
+                </form>
+            </Form>
+            
+            <ExercisePickerDialog
+                isOpen={isPickerOpen}
+                onOpenChange={setIsPickerOpen}
+                onSelectExercises={handleSelectExercises}
+            />
+        </>
     );
 }
