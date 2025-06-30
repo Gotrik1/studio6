@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -100,8 +101,8 @@ function AppFooter() {
                         <h4 className="font-semibold">Информация</h4>
                          <ul className="space-y-1 text-muted-foreground">
                             <li><Link href="/documents/vision-and-principles" className="hover:text-primary">О проекте</Link></li>
-                            <li><Link href="#" className="hover:text-primary">Условия использования</Link></li>
-                            <li><Link href="#" className="hover:text-primary">Политика конфиденциальности</Link></li>
+                            <li><Link href="/documents/terms-of-use" className="hover:text-primary">Условия использования</Link></li>
+                            <li><Link href="/documents/privacy-policy" className="hover:text-primary">Политика конфиденциальности</Link></li>
                         </ul>
                     </div>
                 </div>

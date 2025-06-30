@@ -67,6 +67,8 @@ const sitemapData: TreeNode[] = [
         { name: 'Readme проекта', type: 'file', href: '/documents/project-readme' },
         { name: 'Архитектура', type: 'file', href: '/documents/architecture' },
         { name: 'Видение и принципы', type: 'file', href: '/documents/vision-and-principles' },
+        { name: 'Условия использования', type: 'file', href: '/documents/terms-of-use' },
+        { name: 'Политика конфиденциальности', type: 'file', href: '/documents/privacy-policy' },
         { name: 'Демо темы', type: 'file', href: '/theme-demo' },
         { name: 'Карта сайта', type: 'file', href: '/administration/sitemap' }
     ]},
