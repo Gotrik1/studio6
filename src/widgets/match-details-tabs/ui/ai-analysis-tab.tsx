@@ -241,6 +241,32 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                         
                         <Card className="bg-background">
                             <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><Volume2 className="h-5 w-5 text-red-500" /> AI Комментатор</CardTitle>
+                                <CardDescription>Прослушайте яркий комментарий ключевых моментов матча, созданный AI.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {!commentaryResult && (
+                                    <Button onClick={handleGenerateCommentary} disabled={isGeneratingCommentary || !result}>
+                                        {isGeneratingCommentary ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                                        {result ? 'Сгенерировать комментарий' : 'Сначала сгенерируйте анализ'}
+                                    </Button>
+                                )}
+                                {isGeneratingCommentary && <Skeleton className="h-20 w-full" />}
+                                {commentaryError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{commentaryError}</AlertDescription></Alert>}
+                                {commentaryResult && (
+                                    <div className="space-y-4">
+                                        <audio controls src={commentaryResult.audioDataUri} className="w-full" />
+                                        <div>
+                                            <Label htmlFor="commentary-script">Скрипт:</Label>
+                                            <Textarea id="commentary-script" readOnly value={commentaryResult.commentaryScript} className="mt-2 h-40 bg-muted"/>
+                                        </div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
+
+                        <Card className="bg-background">
+                            <CardHeader>
                                 <CardTitle className="flex items-center gap-2"><Mic className="h-5 w-5 text-purple-500" /> Аудио-интервью с MVP</CardTitle>
                                 <CardDescription>Создайте короткое аудио-интервью с лучшим игроком матча.</CardDescription>
                             </CardHeader>
@@ -265,32 +291,6 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                             </CardContent>
                         </Card>
 
-                         <Card className="bg-background">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2"><Volume2 className="h-5 w-5 text-red-500" /> AI Комментатор</CardTitle>
-                                <CardDescription>Прослушайте яркий комментарий ключевых моментов матча, созданный AI.</CardDescription>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                {!commentaryResult && (
-                                    <Button onClick={handleGenerateCommentary} disabled={isGeneratingCommentary || !result}>
-                                        {isGeneratingCommentary ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                                        {result ? 'Сгенерировать комментарий' : 'Сначала сгенерируйте анализ'}
-                                    </Button>
-                                )}
-                                {isGeneratingCommentary && <Skeleton className="h-20 w-full" />}
-                                {commentaryError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{commentaryError}</AlertDescription></Alert>}
-                                {commentaryResult && (
-                                    <div className="space-y-4">
-                                        <audio controls src={commentaryResult.audioDataUri} className="w-full" />
-                                        <div>
-                                            <Label htmlFor="commentary-script">Скрипт:</Label>
-                                            <Textarea id="commentary-script" readOnly value={commentaryResult.commentaryScript} className="mt-2 h-40 bg-muted"/>
-                                        </div>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                        
                         <Card className="bg-background">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2"><Share2 className="h-5 w-5 text-green-500" /> SMM-Ассистент</CardTitle>
