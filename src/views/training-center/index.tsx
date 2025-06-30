@@ -106,7 +106,7 @@ export function TrainingCenterPage() {
                              <div>
                                 <div className="flex justify-between text-sm mb-1">
                                     <span className="font-medium">Общий объем</span>
-                                    <span>{weeklyProgress.volume.current.toLocaleString()} / {weeklyProgress.volume.total.toLocaleString()} кг</span>
+                                    <span>{weeklyProgress.volume.current.toLocaleString('ru-RU')} / {weeklyProgress.volume.total.toLocaleString('ru-RU')} кг</span>
                                 </div>
                                 <Progress value={(weeklyProgress.volume.current / weeklyProgress.volume.total) * 100} />
                             </div>
