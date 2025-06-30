@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -66,9 +67,15 @@ export function SponsorsPage() {
                         disabled={isLoading}
                         className="min-h-[100px]"
                     />
+                     {error && (
+                        <Alert variant="destructive" className="mt-4">
+                            <AlertTitle>Ошибка</AlertTitle>
+                            <AlertDescription>{error}</AlertDescription>
+                        </Alert>
+                    )}
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={handleScout} disabled={isLoading}>
+                     <Button onClick={handleScout} disabled={isLoading}>
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
                         Найти команды
                     </Button>

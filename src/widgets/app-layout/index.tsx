@@ -80,7 +80,7 @@ const trainingNavItems = [
 ];
 
 const secondaryNavItems = [
-    { href: "/sponsors", icon: Handshake, label: "Спонсоры" },
+    { href: "/sponsors", icon: Handshake, label: "Центр спонсорства" },
     { href: "/monetization", icon: DollarSign, label: "Подписки" },
     { href: "/support", icon: LifeBuoy, label: "Поддержка" },
     { href: "/settings", icon: Settings, label: "Настройки" },
