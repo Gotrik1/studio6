@@ -10,6 +10,8 @@ interface TrainingContextType {
   currentProgram: TrainingProgram | null;
   selectProgram: (program: TrainingProgram) => void;
   addProgram: (program: TrainingProgram) => void;
+  updateProgram: (program: TrainingProgram) => void;
+  deleteProgram: (programId: string) => void;
 }
 
 const TrainingContext = createContext<TrainingContextType | undefined>(undefined);
@@ -27,9 +29,23 @@ export const TrainingProvider = ({ children }: { children: ReactNode }) => {
   const addProgram = (program: TrainingProgram) => {
     setPrograms(prev => [program, ...prev]);
   };
+  
+  const updateProgram = (updatedProgram: TrainingProgram) => {
+    setPrograms(prev => prev.map(p => p.id === updatedProgram.id ? updatedProgram : p));
+    if (currentProgram?.id === updatedProgram.id) {
+        setCurrentProgram(updatedProgram);
+    }
+  };
+  
+  const deleteProgram = (programId: string) => {
+    setPrograms(prev => prev.filter(p => p.id !== programId));
+    if (currentProgram?.id === programId) {
+        setCurrentProgram(null);
+    }
+  };
 
   return (
-    <TrainingContext.Provider value={{ programs, currentProgram, selectProgram, addProgram }}>
+    <TrainingContext.Provider value={{ programs, currentProgram, selectProgram, addProgram, updateProgram, deleteProgram }}>
       {children}
     </TrainingContext.Provider>
   );

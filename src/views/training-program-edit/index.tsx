@@ -1,0 +1,70 @@
+
+'use client';
+
+import { useTraining } from "@/app/providers/training-provider";
+import { useRouter } from 'next/navigation';
+import { TrainingProgramForm } from "@/widgets/training-program-form";
+import type { ProgramFormValues } from "@/widgets/training-program-form";
+import { useToast } from "@/shared/hooks/use-toast";
+import { useState } from 'react';
+import type { TrainingProgram } from "@/entities/training-program/model/types";
+import { Skeleton } from "@/shared/ui/skeleton";
+
+interface TrainingProgramEditPageProps {
+    programId: string;
+}
+
+export function TrainingProgramEditPage({ programId }: TrainingProgramEditPageProps) {
+    const { programs, updateProgram } = useTraining();
+    const router = useRouter();
+    const { toast } = useToast();
+    const [isSaving, setIsSaving] = useState(false);
+
+    const programToEdit = programs.find(p => p.id === programId);
+
+    if (!programToEdit) {
+        return (
+             <div className="space-y-6">
+                 <Skeleton className="h-20 w-full" />
+                 <Skeleton className="h-64 w-full" />
+                 <Skeleton className="h-64 w-full" />
+            </div>
+        )
+    }
+
+    const handleSubmit = (data: ProgramFormValues) => {
+        setIsSaving(true);
+        const updatedProgram: TrainingProgram = {
+            ...programToEdit,
+            name: data.name,
+            description: data.description || '',
+            goal: data.goal,
+            daysPerWeek: data.days.length,
+            splitType: data.splitType,
+            weeklySplit: data.days.map((day, index) => ({
+                day: index + 1,
+                title: day.title,
+                exercises: day.exercises.map(ex => ({ name: ex.name, sets: ex.sets, reps: ex.reps })),
+            })),
+        };
+        
+        updateProgram(updatedProgram);
+
+        setTimeout(() => {
+            toast({
+                title: "Программа обновлена!",
+                description: `Программа "${data.name}" была успешно сохранена.`,
+            });
+            setIsSaving(false);
+            router.push('/training/programs');
+        }, 1000);
+    };
+
+    return (
+        <TrainingProgramForm 
+            onSubmit={handleSubmit}
+            isSaving={isSaving}
+            initialData={programToEdit}
+        />
+    );
+}
