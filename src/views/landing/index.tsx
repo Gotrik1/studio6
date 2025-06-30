@@ -80,7 +80,7 @@ export function LandingPage() {
                 <Link href="/auth">Начать побеждать</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-                <Link href="/dashboard">Подробнее</Link>
+                <Link href="#features">Подробнее</Link>
                 </Button>
             </div>
             </div>
