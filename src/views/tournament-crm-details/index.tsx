@@ -9,6 +9,9 @@ import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants
 import { TournamentBracket } from '@/widgets/tournament-bracket';
 import { summerKickoffTournament } from '@/shared/lib/mock-data/tournament-details';
 import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
+import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
+import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
+import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -31,11 +34,14 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             </div>
             
             <Tabs defaultValue="overview">
-                <TabsList className="grid w-full grid-cols-5">
+                <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-8">
                     <TabsTrigger value="overview">Обзор</TabsTrigger>
                     <TabsTrigger value="participants">Участники</TabsTrigger>
                     <TabsTrigger value="matches">Матчи</TabsTrigger>
                     <TabsTrigger value="bracket">Сетка</TabsTrigger>
+                    <TabsTrigger value="judges">Судьи</TabsTrigger>
+                    <TabsTrigger value="sponsors">Спонсоры</TabsTrigger>
+                    <TabsTrigger value="medical">Мед. поддержка</TabsTrigger>
                     <TabsTrigger value="settings">Настройки</TabsTrigger>
                 </TabsList>
                 
@@ -61,6 +67,18 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                             <TournamentBracket rounds={summerKickoffTournament.bracket.rounds} />
                         </CardContent>
                     </Card>
+                </TabsContent>
+
+                <TabsContent value="judges" className="mt-4">
+                    <CrmTournamentJudges />
+                </TabsContent>
+
+                <TabsContent value="sponsors" className="mt-4">
+                    <CrmTournamentSponsors />
+                </TabsContent>
+
+                <TabsContent value="medical" className="mt-4">
+                    <CrmTournamentMedical />
                 </TabsContent>
                 
                 <TabsContent value="settings" className="mt-4">

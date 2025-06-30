@@ -21,7 +21,8 @@ import {
     Heart,
     Shield,
     ShieldAlert,
-    FileText
+    FileText,
+    HeartPulse
 } from 'lucide-react';
 import Link from "next/link";
 
@@ -54,6 +55,7 @@ const managementCards: AdminSectionCardProps[] = [
     { title: "Очередь модерации", description: "Жалобы, споры и инциденты.", href: "/administration/moderation-queue", icon: Gavel },
     { title: "Геймификация", description: "Настройка рангов и квестов.", href: "/administration/gamification", icon: ShieldCheck },
     { title: "Виды спорта", description: "Управление дисциплинами.", href: "/administration/sports", icon: Handshake },
+    { title: "Мед. аккредитация", description: "Аккредитация мед. партнеров.", href: "/documents/med-accreditation", icon: HeartPulse },
 ];
 
 const profileCards: AdminSectionCardProps[] = [

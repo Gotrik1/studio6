@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Folder, File } from 'lucide-react';
@@ -69,6 +68,7 @@ const sitemapData: TreeNode[] = [
         { name: 'Видение и принципы', type: 'file', href: '/documents/vision-and-principles' },
         { name: 'Условия использования', type: 'file', href: '/documents/terms-of-use' },
         { name: 'Политика конфиденциальности', type: 'file', href: '/documents/privacy-policy' },
+        { name: 'Аккредитация мед. организаций', type: 'file', href: '/documents/med-accreditation'},
         { name: 'Демо темы', type: 'file', href: '/theme-demo' },
         { name: 'Карта сайта', type: 'file', href: '/administration/sitemap' }
     ]},
