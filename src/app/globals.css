@@ -28,14 +28,14 @@ html {
     --primary-foreground: var(--accent-foreground);
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 0 0% 100%;
+    --muted: 0 0% 96.1%;
     --muted-foreground: 215 20.2% 65.1%;
     --accent: 217 91% 60%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 0 0% 100%;
-    --input: 0 0% 100%;
+    --border: 0 0% 89.8%;
+    --input: 0 0% 89.8%;
     --ring: var(--accent);
     
     /* Chart colors */
@@ -57,14 +57,14 @@ html {
     --primary-foreground: var(--accent-foreground);
     --secondary: 220 60% 15%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 220 60% 18%;
+    --muted: 220 60% 20%;
     --muted-foreground: 215 20% 65%;
     --accent: 217 91% 60%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: transparent;
-    --input: 220 60% 15%;
+    --border: 220 60% 25%;
+    --input: 220 60% 25%;
     --ring: var(--accent);
 
      /* Chart colors */
@@ -138,36 +138,42 @@ html {
   }
 
   .hologram-skeleton {
-    @apply relative overflow-hidden rounded-md;
-    background-color: hsl(var(--primary) / 0.1);
-    border: 1px solid hsl(var(--primary) / 0.2);
+    @apply relative overflow-hidden rounded-lg;
+    background-color: hsl(var(--muted));
   }
 
   .hologram-skeleton::after {
-    @apply absolute block content-[''];
+    position: absolute;
     top: 0;
+    right: 0;
+    bottom: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    transform: translateY(-100%);
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      hsl(var(--primary) / 0.2) 48%,
-      hsl(var(--primary) / 0.5) 50%,
-      hsl(var(--primary) / 0.2) 52%,
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.05) 20%,
+      rgba(255, 255, 255, 0.1) 60%,
+      rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 2s infinite;
+    content: "";
+  }
+  
+  .dark .hologram-skeleton::after {
+     background-image: linear-gradient(
+      90deg,
+      transparent 0,
+      hsl(var(--primary) / 0.1) 20%,
+      hsl(var(--primary) / 0.2) 60%,
       transparent 100%
     );
-    animation: scan-vertical 2.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
-@keyframes scan-vertical {
-  0% {
-    transform: translateY(-100%);
-  }
+@keyframes shimmer {
   100% {
-    transform: translateY(100%);
+    transform: translateX(100%);
   }
 }
 

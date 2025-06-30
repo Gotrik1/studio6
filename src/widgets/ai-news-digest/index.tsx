@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -36,22 +37,7 @@ export function AiNewsDigest() {
     }, []);
 
     if (isLoading) {
-        return (
-            <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                    <div className="space-y-1">
-                        <Skeleton className="h-6 w-48" />
-                        <Skeleton className="h-4 w-64" />
-                    </div>
-                     <Skeleton className="h-10 w-10 rounded-lg" />
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-10 w-full" />
-                </CardContent>
-            </Card>
-        );
+        return <Skeleton className="w-full h-80" />;
     }
 
     if (error) {

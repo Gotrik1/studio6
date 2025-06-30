@@ -93,16 +93,7 @@ export function PlayerScoutPage() {
 
             <div className="mt-8 space-y-6">
                 {isLoading && Array.from({ length: 3 }).map((_, i) => (
-                    <Card key={i}>
-                        <CardHeader className="flex-row gap-4">
-                            <Skeleton className="h-12 w-12 rounded-full" />
-                            <div className="space-y-2 flex-1">
-                                <Skeleton className="h-5 w-1/4" />
-                                <Skeleton className="h-4 w-1/2" />
-                            </div>
-                        </CardHeader>
-                        <CardContent><Skeleton className="h-10 w-full" /></CardContent>
-                    </Card>
+                    <Skeleton key={i} className="h-36 w-full" />
                 ))}
                 
                 {result?.recommendations.map(({player, reasoning}) => (
