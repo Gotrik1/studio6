@@ -14,13 +14,40 @@ import type { FoodLogEntry } from '@/shared/lib/mock-data/nutrition-diary';
 import { useToast } from '@/shared/hooks/use-toast';
 import Link from 'next/link';
 import { useNutrition } from '@/app/providers/nutrition-provider';
+import { Progress } from '@/shared/ui/progress';
 
 const meals: FoodLogEntry['meal'][] = ['Завтрак', 'Обед', 'Ужин', 'Перекус'];
+
+interface StatCardProps {
+    title: string;
+    total: number;
+    target: number;
+    unit: string;
+}
+
+const StatCard = ({ title, total, target, unit }: StatCardProps) => {
+    const progress = target > 0 ? (total / target) * 100 : 0;
+    return (
+         <Card>
+            <CardHeader className="pb-2">
+                <CardDescription>{title}</CardDescription>
+                <CardTitle className="text-2xl sm:text-3xl">{total.toLocaleString('ru-RU')}</CardTitle>
+                <p className="text-xs text-muted-foreground">
+                    Цель: {target.toLocaleString('ru-RU')} {unit}
+                </p>
+            </CardHeader>
+            <CardContent>
+                <Progress value={progress} />
+            </CardContent>
+        </Card>
+    )
+};
+
 
 export function NutritionDiaryPage() {
     const { toast } = useToast();
     const [date, setDate] = useState<Date>(new Date());
-    const { log, totals, deleteFoodLog } = useNutrition();
+    const { log, totals, targets, deleteFoodLog } = useNutrition();
 
     const handleDelete = (id: string, name: string) => {
         deleteFoodLog(id);
@@ -76,30 +103,10 @@ export function NutritionDiaryPage() {
                     </div>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                     <Card>
-                        <CardHeader className="pb-2">
-                            <CardDescription>Калории</CardDescription>
-                            <CardTitle className="text-3xl">{totals.calories.toLocaleString()}</CardTitle>
-                        </CardHeader>
-                    </Card>
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardDescription>Белки</CardDescription>
-                            <CardTitle className="text-3xl">{totals.protein} г</CardTitle>
-                        </CardHeader>
-                    </Card>
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardDescription>Жиры</CardDescription>
-                            <CardTitle className="text-3xl">{totals.fat} г</CardTitle>
-                        </CardHeader>
-                    </Card>
-                    <Card>
-                        <CardHeader className="pb-2">
-                            <CardDescription>Углеводы</CardDescription>
-                            <CardTitle className="text-3xl">{totals.carbs} г</CardTitle>
-                        </CardHeader>
-                    </Card>
+                     <StatCard title="Калории" total={totals.calories} target={targets.calories} unit="ккал" />
+                     <StatCard title="Белки" total={totals.protein} target={targets.protein} unit="г" />
+                     <StatCard title="Жиры" total={totals.fat} target={targets.fat} unit="г" />
+                     <StatCard title="Углеводы" total={totals.carbs} target={targets.carbs} unit="г" />
                 </CardContent>
             </Card>
 

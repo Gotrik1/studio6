@@ -6,22 +6,36 @@ import type { FoodLogEntry } from '@/shared/lib/mock-data/nutrition-diary';
 import { nutritionDiaryData } from '@/shared/lib/mock-data/nutrition-diary';
 import type { FoodItem } from '@/shared/lib/mock-data/nutrition';
 
-interface NutritionContextType {
-  log: FoodLogEntry[];
-  addFoodLog: (item: FoodItem, grams: number, meal: FoodLogEntry['meal']) => void;
-  deleteFoodLog: (id: string) => void;
-  totals: {
+interface NutritionTargets {
     calories: number;
     protein: number;
     fat: number;
     carbs: number;
-  };
+}
+
+interface NutritionContextType {
+  log: FoodLogEntry[];
+  addFoodLog: (item: FoodItem, grams: number, meal: FoodLogEntry['meal']) => void;
+  deleteFoodLog: (id: string) => void;
+  totals: NutritionTargets;
+  targets: NutritionTargets;
+  setTargets: (targets: NutritionTargets) => void;
 }
 
 const NutritionContext = createContext<NutritionContextType | undefined>(undefined);
 
+// Default targets for a user before they generate a plan
+const defaultTargets: NutritionTargets = {
+    calories: 2500,
+    protein: 180,
+    fat: 70,
+    carbs: 300,
+};
+
+
 export const NutritionProvider = ({ children }: { children: ReactNode }) => {
   const [log, setLog] = useState<FoodLogEntry[]>(nutritionDiaryData);
+  const [targets, setTargets] = useState<NutritionTargets>(defaultTargets);
 
   const addFoodLog = (item: FoodItem, grams: number, meal: FoodLogEntry['meal']) => {
     const ratio = grams / 100; // Assuming base stats are per 100g
@@ -51,7 +65,7 @@ export const NutritionProvider = ({ children }: { children: ReactNode }) => {
     }), { calories: 0, protein: 0, fat: 0, carbs: 0 });
   }, [log]);
 
-  const value = { log, addFoodLog, deleteFoodLog, totals };
+  const value = { log, addFoodLog, deleteFoodLog, totals, targets, setTargets };
 
   return (
     <NutritionContext.Provider value={value}>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -13,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateNutritionPlan, type GenerateNutritionPlanOutput } from '@/shared/api/genkit/flows/generate-nutrition-plan-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { useNutrition } from '@/app/providers/nutrition-provider';
 
 // Schema for the form
 const nutritionistFormSchema = z.object({
@@ -23,6 +25,7 @@ const nutritionistFormSchema = z.object({
 type NutritionistFormValues = z.infer<typeof nutritionistFormSchema>;
 
 export function AiNutritionist() {
+    const { setTargets } = useNutrition();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<GenerateNutritionPlanOutput | null>(null);
@@ -43,6 +46,12 @@ export function AiNutritionist() {
         try {
             const plan = await generateNutritionPlan(data);
             setResult(plan);
+            setTargets({
+                calories: plan.dailyCalories,
+                protein: plan.macronutrients.protein,
+                fat: plan.macronutrients.fat,
+                carbs: plan.macronutrients.carbs,
+            });
         } catch (e) {
             console.error(e);
             setError("Не удалось сгенерировать план питания. Попробуйте еще раз.");
@@ -66,7 +75,7 @@ export function AiNutritionist() {
                             <FormField control={form.control} name="dietaryPreferences" render={({ field }) => (<FormItem><FormLabel>Предпочтения (необязательно)</FormLabel><FormControl><Input placeholder="Например, вегетарианство, без лактозы" {...field} /></FormControl></FormItem>)} />
                         </div>
                         {error && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
-                        <Button type="submit" disabled={isLoading} className="w-full">
+                         <Button type="submit" disabled={isLoading} className="w-full">
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                             Сгенерировать план
                         </Button>
