@@ -5,12 +5,13 @@ import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/sha
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
-import { Trophy, Dumbbell, Flame, Star, Activity, Award } from 'lucide-react';
+import { Trophy, Dumbbell, Flame, Star, Activity, BarChart3 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { VolumeChart } from '@/widgets/analytics-charts/volume-chart';
 
 export function PhysicalPrepTab() {
-    const { personalRecords, trainingMetrics } = getTrainingAnalytics(trainingLogData);
+    const { personalRecords, trainingMetrics, volumeByMuscleGroupData } = getTrainingAnalytics(trainingLogData);
     const top5Records = personalRecords.slice(0, 5);
 
     return (
@@ -42,34 +43,46 @@ export function PhysicalPrepTab() {
                 </Card>
             </div>
             
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-amber-500" /> Топ-5 личных рекордов (1ПМ)</CardTitle>
-                    <CardDescription>Лучшие силовые показатели, рассчитанные на основе данных из журнала тренировок.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Упражнение</TableHead>
-                                <TableHead>Результат (1ПМ)</TableHead>
-                                <TableHead className="text-right">Дата</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {top5Records.map((record) => (
-                                <TableRow key={record.exercise}>
-                                    <TableCell className="font-medium">{record.exercise}</TableCell>
-                                    <TableCell className="font-bold text-lg">{record.e1RM} кг</TableCell>
-                                    <TableCell className="text-right text-muted-foreground text-xs">
-                                        {format(new Date(record.date), 'd MMM yyyy', { locale: ru })}
-                                    </TableCell>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-amber-500" /> Топ-5 личных рекордов (1ПМ)</CardTitle>
+                        <CardDescription>Лучшие силовые показатели, рассчитанные на основе данных из журнала тренировок.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Упражнение</TableHead>
+                                    <TableHead>Результат (1ПМ)</TableHead>
+                                    <TableHead className="text-right">Дата</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                            </TableHeader>
+                            <TableBody>
+                                {top5Records.map((record) => (
+                                    <TableRow key={record.exercise}>
+                                        <TableCell className="font-medium">{record.exercise}</TableCell>
+                                        <TableCell className="font-bold text-lg">{record.e1RM} кг</TableCell>
+                                        <TableCell className="text-right text-muted-foreground text-xs">
+                                            {format(new Date(record.date), 'd MMM yyyy', { locale: ru })}
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5 text-primary" /> Фокус по группам мышц</CardTitle>
+                        <CardDescription>Распределение тренировочного объема (тоннажа) за все время.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <VolumeChart data={volumeByMuscleGroupData} />
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
