@@ -1,5 +1,5 @@
-import { PromotionWizard } from '@/widgets/promotion-wizard';
+import { ManualPromotionForm } from '@/widgets/manual-promotion-form';
 
 export function NewPromotionWizardPage() {
-    return <PromotionWizard />;
+    return <ManualPromotionForm />;
 }
