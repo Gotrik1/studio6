@@ -1,18 +1,19 @@
 
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 import Link from 'next/link';
 import Image from 'next/image';
-import type { TrainingProgram } from '@/shared/lib/mock-data/training-programs';
+import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Button } from "@/shared/ui/button";
-import { PlusCircle } from "lucide-react";
+import { PlusCircle, Share } from "lucide-react";
 
 interface MyProgramsTabProps {
     programs: TrainingProgram[];
+    onAssignProgram: (program: TrainingProgram) => void;
 }
 
-export function MyProgramsTab({ programs }: MyProgramsTabProps) {
+export function MyProgramsTab({ programs, onAssignProgram }: MyProgramsTabProps) {
     // In a real app, this would be filtered by the coach's ID
     const coachPrograms = programs.filter(p => p.author === 'Coach Anna' || p.isAiGenerated);
 
@@ -32,20 +33,28 @@ export function MyProgramsTab({ programs }: MyProgramsTabProps) {
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {coachPrograms.map((program) => (
-                        <Card key={program.id} className="overflow-hidden">
-                           <div className="relative h-40 w-full">
-                                <Image 
-                                    src={program.coverImage} 
-                                    alt={program.name}
-                                    fill
-                                    className="object-cover"
-                                    data-ai-hint={program.coverImageHint} 
-                                />
-                           </div>
-                           <div className="p-4">
-                                <h3 className="font-semibold">{program.name}</h3>
-                                <p className="text-xs text-muted-foreground">{program.description}</p>
-                           </div>
+                        <Card key={program.id} className="overflow-hidden flex flex-col">
+                            <Link href={`/training/programs/${program.id}`}>
+                               <div className="relative h-40 w-full">
+                                    <Image 
+                                        src={program.coverImage} 
+                                        alt={program.name}
+                                        fill
+                                        className="object-cover"
+                                        data-ai-hint={program.coverImageHint} 
+                                    />
+                               </div>
+                                <CardHeader>
+                                    <CardTitle className="hover:text-primary transition-colors">{program.name}</CardTitle>
+                                    <CardDescription className="text-xs">{program.description}</CardDescription>
+                                </CardHeader>
+                            </Link>
+                           <CardFooter className="p-4 pt-0 mt-auto">
+                                <Button variant="outline" className="w-full" onClick={() => onAssignProgram(program)}>
+                                    <Share className="mr-2 h-4 w-4" />
+                                    Назначить игрокам
+                                </Button>
+                           </CardFooter>
                         </Card>
                     ))}
                     {coachPrograms.length === 0 && (
