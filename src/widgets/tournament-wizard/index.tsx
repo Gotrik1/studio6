@@ -1,156 +1,163 @@
+
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/shared/ui/button';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
-import { Loader2, Sparkles, Wand2, Trophy, Calendar, DollarSign } from 'lucide-react';
-import Image from 'next/image';
-import { useToast } from '@/shared/hooks/use-toast';
 import { Textarea } from '@/shared/ui/textarea';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { generateTournamentWizard, type GenerateTournamentWizardOutput } from '@/shared/api/genkit/flows/generate-tournament-wizard-flow';
-import { Skeleton } from '@/shared/ui/skeleton';
-import { Separator } from '@/shared/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
+import { Calendar } from '@/shared/ui/calendar';
+import { cn } from '@/shared/lib/utils';
+import { CalendarIcon, Loader2 } from 'lucide-react';
+import { sportsList } from '@/shared/lib/mock-data/sports';
+import { useToast } from '@/shared/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
-export function TournamentWizard() {
-    const { toast } = useToast();
-    const [prompt, setPrompt] = useState('Еженедельный турнир по Valorant для новичков.');
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [result, setResult] = useState<GenerateTournamentWizardOutput | null>(null);
-    
-    const [isCreating, setIsCreating] = useState(false);
+const tournamentSchema = z.object({
+  name: z.string().min(3, 'Название должно содержать не менее 3 символов.'),
+  sport: z.string({ required_error: 'Выберите вид спорта.' }),
+  description: z.string().optional(),
+  type: z.enum(['team', 'individual'], { required_error: 'Выберите тип турнира.' }),
+  format: z.enum(['single_elimination', 'round_robin', 'groups'], { required_error: 'Выберите формат.' }),
+  participantCount: z.coerce.number().min(4, 'Минимум 4 участника.').max(128, 'Максимум 128 участников.'),
+  registrationStartDate: z.date({required_error: "Выберите дату."}),
+  registrationEndDate: z.date({required_error: "Выберите дату."}),
+  tournamentStartDate: z.date({required_error: "Выберите дату."}),
+  prizePool: z.string().optional(),
+}).refine(data => {
+    if (data.registrationStartDate && data.registrationEndDate) {
+        return data.registrationEndDate > data.registrationStartDate;
+    }
+    return true;
+}, {
+    message: 'Конец регистрации должен быть после начала.',
+    path: ['registrationEndDate'],
+}).refine(data => {
+    if (data.registrationEndDate && data.tournamentStartDate) {
+        return data.tournamentStartDate > data.registrationEndDate;
+    }
+    return true;
+}, {
+    message: 'Начало турнира должно быть после конца регистрации.',
+    path: ['tournamentStartDate'],
+});
 
-    const handleGenerate = async () => {
-        if (!prompt.trim()) {
-            setError('Пожалуйста, опишите вашу идею для турнира.');
-            return;
-        }
-        setIsLoading(true);
-        setError(null);
-        setResult(null);
+type FormValues = z.infer<typeof tournamentSchema>;
 
-        try {
-            const concept = await generateTournamentWizard({ prompt });
-            setResult(concept);
-        } catch (e) {
-            console.error(e);
-            setError('Не удалось сгенерировать концепцию турнира. Попробуйте еще раз.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
+const STEPS = [
+  { id: 1, title: 'Основная информация', fields: ['name', 'sport', 'description'] },
+  { id: 2, title: 'Формат', fields: ['type', 'format'] },
+  { id: 3, title: 'Участники и даты', fields: ['participantCount', 'registrationStartDate', 'registrationEndDate', 'tournamentStartDate'] },
+  { id: 4, title: 'Призы', fields: ['prizePool'] },
+];
 
-    const handleCreateTournament = () => {
-        if (!result) return;
-        
-        setIsCreating(true);
+export function ManualTournamentForm() {
+  const { toast } = useToast();
+  const router = useRouter();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-        setTimeout(() => {
-            toast({
-                title: 'Турнир создан!',
-                description: `Турнир "${result.name}" успешно создан и опубликован.`,
-            });
-            setIsCreating(false);
-        }, 1000);
-    };
-    
-     const handleFieldChange = (field: keyof GenerateTournamentWizardOutput, value: string) => {
-        if (result) {
-            setResult(prev => prev ? { ...prev, [field]: value } : null);
-        }
-    };
+  const form = useForm<FormValues>({
+    resolver: zodResolver(tournamentSchema),
+    defaultValues: {
+      participantCount: 16,
+      registrationStartDate: new Date(),
+      registrationEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      tournamentStartDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+    },
+  });
 
-    return (
-        <div className="space-y-6">
-            <div className="space-y-2 text-center">
-                <Wand2 className="mx-auto h-12 w-12 text-primary" />
-                <h1 className="font-headline text-3xl font-bold tracking-tight">AI-Мастер Создания Турниров</h1>
-                <p className="text-muted-foreground">Опишите идею, и ИИ создаст название, описание, баннер и структуру для вашего турнира.</p>
-            </div>
+  const next = async () => {
+    const fields = STEPS[currentStep].fields;
+    const output = await form.trigger(fields as (keyof FormValues)[], { shouldFocus: true });
+    if (!output) return;
+    if (currentStep < STEPS.length - 1) {
+      setCurrentStep(step => step + 1);
+    }
+  };
 
-            <Card className="max-w-3xl mx-auto">
-                <CardHeader>
-                    <CardTitle>Шаг 1: Идея</CardTitle>
-                    <CardDescription>Опишите ваш турнир в одном предложении.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <Textarea
-                        placeholder="Например, 'Большой летний турнир по CS:GO 2 для команд из Москвы'"
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        disabled={isLoading}
-                        className="min-h-[100px]"
-                    />
-                    {error && (
-                        <Alert variant="destructive">
-                            <AlertTitle>Ошибка</AlertTitle>
-                            <AlertDescription>{error}</AlertDescription>
-                        </Alert>
-                    )}
-                     <Button onClick={handleGenerate} disabled={isLoading} size="lg" className="w-full">
-                        {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sparkles className="mr-2 h-5 w-5" />}
-                        {isLoading ? 'Продумываем детали...' : 'Сгенерировать турнир'}
-                    </Button>
-                </CardContent>
-            </Card>
+  const prev = () => {
+    if (currentStep > 0) {
+      setCurrentStep(step => step - 1);
+    }
+  };
 
-            {isLoading && (
-                 <Card className="max-w-3xl mx-auto">
-                    <CardHeader><CardTitle>Шаг 2: Результат</CardTitle></CardHeader>
-                    <CardContent className="space-y-4">
-                        <Skeleton className="h-48 w-full" />
-                        <Skeleton className="h-10 w-full" />
-                        <Skeleton className="h-24 w-full" />
-                        <Skeleton className="h-10 w-full" />
-                    </CardContent>
-                </Card>
-            )}
-
-            {result && (
-                <Card className="max-w-3xl mx-auto animate-in fade-in-50">
-                    <CardHeader>
-                        <CardTitle>Шаг 2: Результат</CardTitle>
-                        <CardDescription>Отредактируйте сгенерированные данные и опубликуйте турнир.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="space-y-2">
-                             <Label>Баннер</Label>
-                             <Image src={result.imageDataUri} alt="Сгенерированный баннер" width={1200} height={675} className="rounded-lg border aspect-video object-cover" />
-                        </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="tourney-name">Название</Label>
-                            <Input id="tourney-name" value={result.name} onChange={(e) => handleFieldChange('name', e.target.value)} />
-                        </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="tourney-desc">Описание</Label>
-                            <Textarea id="tourney-desc" value={result.description} onChange={(e) => handleFieldChange('description', e.target.value)} />
-                        </div>
-                        
-                        <Separator />
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                             <div className="space-y-2">
-                                <Label htmlFor="tourney-prize"><DollarSign className="inline h-4 w-4 mr-1"/>Призовой фонд</Label>
-                                <Textarea id="tourney-prize" value={result.prizePool} onChange={(e) => handleFieldChange('prizePool', e.target.value)} />
-                            </div>
-                             <div className="space-y-2">
-                                <Label htmlFor="tourney-schedule"><Calendar className="inline h-4 w-4 mr-1"/>Расписание</Label>
-                                <Textarea id="tourney-schedule" value={result.schedule} onChange={(e) => handleFieldChange('schedule', e.target.value)} />
-                            </div>
-                        </div>
-                    </CardContent>
-                    <CardFooter>
-                        <Button size="lg" onClick={handleCreateTournament} disabled={isCreating}>
-                            {isCreating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Trophy className="mr-2 h-4 w-4" />}
-                            {isCreating ? 'Публикация...' : 'Опубликовать турнир'}
-                        </Button>
-                    </CardFooter>
-                </Card>
-            )}
-
+  const onSubmit = (data: FormValues) => {
+    setIsSubmitting(true);
+    console.log('Tournament data:', data); // In a real app, send to backend
+    setTimeout(() => {
+        toast({
+            title: 'Турнир создан!',
+            description: `Турнир "${data.name}" был успешно создан.`
+        });
+        router.push('/administration/tournament-crm/dashboard');
+    }, 1000);
+  };
+  
+  return (
+    <div className="space-y-6 opacity-0 animate-fade-in-up">
+        <div className="space-y-2 text-center">
+            <h1 className="font-headline text-3xl font-bold tracking-tight">Мастер создания турнира</h1>
+            <p className="text-muted-foreground">Создайте новое соревнование шаг за шагом.</p>
         </div>
-    );
+        <Card className="max-w-3xl mx-auto">
+        <CardHeader>
+            <CardTitle>Шаг {currentStep + 1} из {STEPS.length}: {STEPS[currentStep].title}</CardTitle>
+        </CardHeader>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <CardContent className="space-y-6 min-h-[20rem]">
+                {currentStep === 0 && (
+                    <>
+                        <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Название турнира</FormLabel><FormControl><Input placeholder="Например, Осенний Кубок ProDvor" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="sport" render={({ field }) => (<FormItem><FormLabel>Вид спорта</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Краткое описание (необязательно)</FormLabel><FormControl><Textarea placeholder="Опишите главные особенности турнира" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    </>
+                )}
+                {currentStep === 1 && (
+                    <>
+                        <FormField control={form.control} name="type" render={({ field }) => (<FormItem><FormLabel>Тип турнира</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите тип" /></SelectTrigger></FormControl><SelectContent><SelectItem value="team">Командный</SelectItem><SelectItem value="individual">Индивидуальный</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="format" render={({ field }) => (<FormItem><FormLabel>Формат проведения</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите формат" /></SelectTrigger></FormControl><SelectContent><SelectItem value="single_elimination">Олимпийская система (Single-Elimination)</SelectItem><SelectItem value="groups">Групповой этап + Плей-офф</SelectItem><SelectItem value="round_robin">Круговая система</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                    </>
+                )}
+                {currentStep === 2 && (
+                    <>
+                        <FormField control={form.control} name="participantCount" render={({ field }) => (<FormItem><FormLabel>Макс. количество участников/команд</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <FormField control={form.control} name="registrationStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="registrationEndDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Конец регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="tournamentStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало турнира</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                        </div>
+                    </>
+                )}
+                {currentStep === 3 && (
+                    <>
+                        <FormField control={form.control} name="prizePool" render={({ field }) => (<FormItem><FormLabel>Призовой фонд (необязательно)</FormLabel><FormControl><Textarea placeholder="Опишите призы для победителей, например: 1 место - 5000 PD, 2 место - 2500 PD" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                    </>
+                )}
+            </CardContent>
+            <CardFooter className="flex justify-between">
+                <Button type="button" variant="outline" onClick={prev} disabled={currentStep === 0}>Назад</Button>
+                {currentStep === STEPS.length - 1 ? (
+                <Button type="submit" disabled={isSubmitting}>
+                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Создать турнир
+                </Button>
+                ) : (
+                <Button type="button" onClick={next}>Далее</Button>
+                )}
+            </CardFooter>
+            </form>
+        </Form>
+        </Card>
+    </div>
+  );
 }
