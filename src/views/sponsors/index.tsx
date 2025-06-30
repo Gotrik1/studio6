@@ -1,120 +1,109 @@
-
 'use client';
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Badge } from '@/shared/ui/badge';
-import { Handshake, Loader2, Sparkles, Send, UserSearch } from 'lucide-react';
+import { sponsorshipScout, type SponsorshipScoutOutput } from '@/shared/api/genkit/flows/sponsorship-scout-flow';
+import { Textarea } from '@/shared/ui/textarea';
+import { Loader2, Sparkles, Send, UserSearch } from 'lucide-react';
+import { useToast } from '@/shared/hooks/use-toast';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { teamsSeekingSponsorship } from '@/shared/lib/mock-data/sponsorship';
 import Image from 'next/image';
 import Link from 'next/link';
-import { sponsorsList } from '@/shared/lib/mock-data/sponsors';
-import { Textarea } from '@/shared/ui/textarea';
-import { useToast } from '@/shared/hooks/use-toast';
+import { Badge } from '@/shared/ui/badge';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { Alert, AlertTitle, AlertDescription } from '@/shared/ui/alert';
-import { findSponsorsForTeam, type FindSponsorsForTeamOutput } from '@/shared/api/genkit/flows/find-sponsors-for-team-flow';
 import { Separator } from '@/shared/ui/separator';
-
-const mockTeamData = {
-    teamName: "Дворовые Атлеты",
-    teamGame: "Футбол",
-    teamDescription: "Мы - топ-1 футбольная команда платформы, ищем партнеров для выхода на городскую лигу. Нам нужно финансирование поездок на матчи и брендированная форма.",
-};
 
 export function SponsorsPage() {
     const { toast } = useToast();
-    const [scoutPrompt, setScoutPrompt] = useState(mockTeamData.teamDescription);
-    const [isScouting, setIsScouting] = useState(false);
-    const [scoutError, setScoutError] = useState<string | null>(null);
-    const [scoutResult, setScoutResult] = useState<FindSponsorsForTeamOutput | null>(null);
+    const [prompt, setPrompt] = useState('Мы - бренд энергетических напитков, наша целевая аудитория - молодежь 16-24 лет, интересующаяся динамичными видами спорта.');
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [result, setResult] = useState<SponsorshipScoutOutput | null>(null);
 
     const handleScout = async () => {
-        setIsScouting(true);
-        setScoutError(null);
-        setScoutResult(null);
-
+        setIsLoading(true);
+        setError(null);
+        setResult(null);
         try {
-            const result = await findSponsorsForTeam({
-                teamName: mockTeamData.teamName,
-                teamGame: mockTeamData.teamGame,
-                teamDescription: scoutPrompt,
-            });
-            setScoutResult(result);
+            const scoutResult = await sponsorshipScout(prompt);
+            setResult(scoutResult);
         } catch (e) {
-            console.error("Scouting failed:", e);
-            setScoutError("Не удалось найти спонсоров. Попробуйте изменить запрос.");
+            console.error(e);
+            setError("Не удалось найти команды. Попробуйте изменить ваш запрос.");
         } finally {
-            setIsScouting(false);
+            setIsLoading(false);
         }
+    };
+    
+    const handleContact = (teamName: string) => {
+        toast({
+            title: "Запрос отправлен!",
+            description: `Ваш запрос на сотрудничество был отправлен команде ${teamName}.`
+        })
     };
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="space-y-2">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Поиск спонсоров</h1>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Центр спонсорства</h1>
                 <p className="text-muted-foreground">
-                    Найдите подходящего партнера для вашей команды с помощью AI-скаута или просмотрите полный список.
+                    Найдите идеальную команду для продвижения вашего бренда с помощью нашего AI-скаута.
                 </p>
             </div>
             
-            <Card>
+             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><UserSearch /> AI-Скаут Спонсоров</CardTitle>
-                    <CardDescription>Опишите вашу команду, её цели и потребности, чтобы AI подобрал наиболее релевантных спонсоров.</CardDescription>
+                    <CardTitle className="flex items-center gap-2"><UserSearch /> AI-Скаут Команд</CardTitle>
+                    <CardDescription>Опишите ваши маркетинговые цели, и наш AI подберет команды, которые наилучшим образом соответствуют вашему бренду.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Textarea 
-                        placeholder="Например: 'Мы - молодая хоккейная команда, ищем спонсора для оплаты аренды льда...'"
-                        value={scoutPrompt}
-                        onChange={(e) => setScoutPrompt(e.target.value)}
-                        disabled={isScouting}
+                        placeholder="Например: 'Мы - производитель спортивного питания, ищем футбольные команды с большой аудиторией...'"
+                        value={prompt}
+                        onChange={(e) => setPrompt(e.target.value)}
+                        disabled={isLoading}
                         className="min-h-[100px]"
                     />
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={handleScout} disabled={isScouting}>
-                        {isScouting ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                        Найти спонсора
+                    <Button onClick={handleScout} disabled={isLoading}>
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                        Найти команды
                     </Button>
                 </CardFooter>
             </Card>
 
-            {isScouting && (
+            {isLoading && (
                 <div className="space-y-4">
-                    <Skeleton className="h-24 w-full" />
-                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-32 w-full" />
+                    <Skeleton className="h-32 w-full" />
                 </div>
             )}
-
-            {scoutError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{scoutError}</AlertDescription></Alert>}
             
-            {scoutResult && (
-                <div className="space-y-4 animate-in fade-in-50">
+            {error && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
+
+            {result && (
+                <div className="space-y-6 animate-in fade-in-50">
                     <h2 className="font-headline text-2xl font-semibold">Рекомендации AI</h2>
-                    {scoutResult.recommendations.map(({ sponsor, reasoning }) => (
-                         <Card key={sponsor.id}>
+                    <Alert>
+                        <Sparkles className="h-4 w-4" />
+                        <AlertTitle>Обоснование выбора</AlertTitle>
+                        <AlertDescription>{result.reasoning}</AlertDescription>
+                    </Alert>
+                    {result.recommendations.map((team) => (
+                         <Card key={team.slug}>
                             <CardHeader className="flex flex-row items-center gap-4">
-                                <Image src={sponsor.logo} alt={sponsor.name} width={64} height={64} className="rounded-lg border" data-ai-hint={sponsor.logoHint} />
+                                <Image src={team.logo} alt={team.name} width={64} height={64} className="rounded-lg border" data-ai-hint={team.logoHint} />
                                 <div className="flex-1">
-                                    <CardTitle>{sponsor.name}</CardTitle>
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                        {sponsor.interests.map(interest => (
-                                            <Badge key={interest} variant="secondary">{interest}</Badge>
-                                        ))}
-                                    </div>
+                                    <CardTitle>{team.name}</CardTitle>
+                                    <Badge variant="secondary">{team.game}</Badge>
                                 </div>
-                                <Button onClick={() => toast({title: "Заявка отправлена!", description: `Ваше предложение было отправлено ${sponsor.name}`})}>
-                                    <Send className="mr-2 h-4 w-4"/> Отправить питч
+                                <Button onClick={() => handleContact(team.name)}>
+                                    <Send className="mr-2 h-4 w-4"/>Связаться
                                 </Button>
                             </CardHeader>
-                            <CardContent>
-                                <Alert>
-                                    <Sparkles className="h-4 w-4" />
-                                    <AlertTitle>Почему это хороший кандидат?</AlertTitle>
-                                    <AlertDescription>{reasoning}</AlertDescription>
-                                </Alert>
-                            </CardContent>
                         </Card>
                     ))}
                 </div>
@@ -122,34 +111,24 @@ export function SponsorsPage() {
             
             <Separator />
 
-            <div>
-                <h2 className="font-headline text-2xl font-semibold mb-4">Все спонсоры</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {sponsorsList.map(sponsor => (
-                        <Card key={sponsor.id} className="flex flex-col">
+             <div>
+                <h2 className="font-headline text-2xl font-semibold mb-4">Все команды в поиске спонсоров</h2>
+                <div className="space-y-4">
+                    {teamsSeekingSponsorship.map(team => (
+                         <Card key={team.slug}>
                             <CardHeader className="flex flex-row items-center gap-4">
-                                <Image src={sponsor.logo} alt={sponsor.name} width={64} height={64} className="rounded-lg border" data-ai-hint={sponsor.logoHint} />
-                                <div>
-                                    <CardTitle>{sponsor.name}</CardTitle>
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                        {sponsor.interests.map(interest => (
-                                            <Badge key={interest} variant="secondary">{interest}</Badge>
-                                        ))}
-                                    </div>
+                                <Image src={team.logo} alt={team.name} width={64} height={64} className="rounded-lg border" data-ai-hint={team.logoHint} />
+                                <div className="flex-1">
+                                    <CardTitle>{team.name}</CardTitle>
+                                    <Badge variant="secondary">{team.game}</Badge>
                                 </div>
+                                 <Button asChild variant="outline">
+                                    <Link href={`/teams/${team.slug}`}>Профиль</Link>
+                                </Button>
+                                <Button onClick={() => handleContact(team.name)}>
+                                    <Send className="mr-2 h-4 w-4"/>Связаться
+                                </Button>
                             </CardHeader>
-                            <CardContent className="flex-1">
-                                <p className="text-sm text-muted-foreground">{sponsor.description}</p>
-                            </CardContent>
-                            <CardFooter className="flex justify-end gap-2">
-                                <Button variant="outline" asChild>
-                                    <Link href={sponsor.profileUrl}>Профиль</Link>
-                                </Button>
-                                <Button onClick={() => toast({title: "Заявка отправлена!", description: `Ваше предложение было отправлено ${sponsor.name}`})}>
-                                    <Handshake className="mr-2 h-4 w-4" />
-                                    Связаться
-                                </Button>
-                            </CardFooter>
                         </Card>
                     ))}
                 </div>
