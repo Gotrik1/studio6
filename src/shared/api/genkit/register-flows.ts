@@ -39,3 +39,4 @@ import './flows/analyze-team-performance-flow';
 import './flows/analyze-player-performance-flow';
 import './flows/generate-training-plan-flow';
 import './flows/generate-training-program-flow';
+import './flows/analyze-esports-performance-flow';

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -14,7 +13,7 @@ import { Button } from "@/shared/ui/button";
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Loader2, Sparkles, BrainCircuit, AlertCircle, TrendingUp, TrendingDown, ClipboardList } from "lucide-react";
-import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@/shared/api/genkit/flows/analyze-player-performance-flow';
+import { analyzeEsportsPerformance, type AnalyzeEsportsPerformanceOutput } from '@/shared/api/genkit/flows/analyze-esports-performance-flow';
 import type { CoachedPlayer } from "@/shared/lib/mock-data/coach-players";
 
 interface PlayerAnalysisDialogProps {
@@ -26,7 +25,7 @@ interface PlayerAnalysisDialogProps {
 export function PlayerAnalysisDialog({ isOpen, onOpenChange, player }: PlayerAnalysisDialogProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [analysisResult, setAnalysisResult] = useState<AnalyzePlayerPerformanceOutput | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<AnalyzeEsportsPerformanceOutput | null>(null);
 
   const handleAnalyze = async () => {
     if (!player) return;
@@ -37,7 +36,7 @@ export function PlayerAnalysisDialog({ isOpen, onOpenChange, player }: PlayerAna
 
     try {
         const statsSummary = `Role: ${player.role}, KDA: ${player.stats.kda}, Win Rate: ${player.stats.winRate}, Favorite Map: ${player.stats.favoriteMap}`;
-        const result = await analyzePlayerPerformance({
+        const result = await analyzeEsportsPerformance({
             playerStats: statsSummary,
             matchHistory: player.matchHistory,
         });
@@ -68,12 +67,13 @@ export function PlayerAnalysisDialog({ isOpen, onOpenChange, player }: PlayerAna
         <DialogHeader>
           <DialogTitle>AI-Анализ: {player.name}</DialogTitle>
           <DialogDescription>
-            Глубокий анализ производительности игрока.
+            Глубокий анализ игровой производительности игрока.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2">
             {isLoading && (
                  <div className="space-y-4">
+                    <Skeleton className="h-24 w-full" />
                     <Skeleton className="h-24 w-full" />
                     <Skeleton className="h-24 w-full" />
                 </div>
