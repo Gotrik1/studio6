@@ -41,7 +41,8 @@ import {
   Award,
   Replace,
   BookOpen,
-  Calendar
+  Calendar,
+  Swords
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -61,6 +62,7 @@ const mainNavItems = [
     { href: "/chats", icon: MessageSquare, label: "Сообщения" },
     { href: "/teams", icon: Users, label: "Команды" },
     { href: "/scouting", icon: UserSearch, label: "Поиск игроков" },
+    { href: "/lfg", icon: Swords, label: "Поиск игры" },
     { href: "/friends", icon: Users2, label: "Друзья" },
     { href: "/tournaments", icon: Trophy, label: "Соревнования" },
     { href: "/booking", icon: MapPin, label: "Площадки" },
