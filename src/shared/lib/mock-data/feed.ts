@@ -37,4 +37,8 @@ export const feedData = [
     },
 ];
 
-export type FeedItemData = typeof feedData[0];
+export type FeedItemData = (typeof feedData)[number];
+
+export type StatusFeedItem = Extract<FeedItemData, { type: 'status' }>;
+export type MatchResultFeedItem = Extract<FeedItemData, { type: 'match_result' }>;
+export type AchievementFeedItem = Extract<FeedItemData, { type: 'achievement' }>;

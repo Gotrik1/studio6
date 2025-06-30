@@ -13,7 +13,7 @@ import { sportsList as initialSports, type Sport } from '@/shared/lib/mock-data/
 import * as LucideIcons from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
-const iconComponents: { [key: string]: LucideIcon } = LucideIcons;
+const iconComponents: { [key: string]: LucideIcon } = LucideIcons as any;
 
 export function SportsAdminPage() {
     const { toast } = useToast();

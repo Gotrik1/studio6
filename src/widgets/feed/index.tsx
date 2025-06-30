@@ -1,7 +1,7 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/shared/ui/card';
-import { feedData, type FeedItemData } from '@/shared/lib/mock-data/feed';
+import { type FeedItemData, type StatusFeedItem, type MatchResultFeedItem, type AchievementFeedItem, feedData } from '@/shared/lib/mock-data/feed';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Bot, MessageSquare, Trophy, Award, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
@@ -30,7 +30,7 @@ const FeedItemFooter = () => (
 );
 
 // Specific card types
-const StatusPost = ({ item }: { item: FeedItemData }) => (
+const StatusPost = ({ item }: { item: StatusFeedItem }) => (
     <Card>
         <FeedItemHeader user={item.user} timestamp={item.timestamp} icon={MessageSquare} />
         <CardContent className="p-4 pt-0">
@@ -41,7 +41,7 @@ const StatusPost = ({ item }: { item: FeedItemData }) => (
     </Card>
 );
 
-const MatchResultPost = ({ item }: { item: FeedItemData }) => (
+const MatchResultPost = ({ item }: { item: MatchResultFeedItem }) => (
     <Card>
         <FeedItemHeader user={item.user} timestamp={item.timestamp} icon={Trophy} />
         <CardContent className="p-4 pt-0">
@@ -72,7 +72,7 @@ const MatchResultPost = ({ item }: { item: FeedItemData }) => (
     </Card>
 );
 
-const AchievementPost = ({ item }: { item: FeedItemData }) => (
+const AchievementPost = ({ item }: { item: AchievementFeedItem }) => (
     <Card className="bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-amber-950/20 dark:to-purple-950/20">
         <FeedItemHeader user={item.user} timestamp={item.timestamp} icon={Award} />
         <CardContent className="p-4 pt-0 text-center">
