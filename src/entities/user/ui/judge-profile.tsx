@@ -11,6 +11,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { judgeUser, judgeAchievements } from "@/shared/lib/mock-data/judge-profile";
 import { resolvedMatches } from '@/shared/lib/mock-data/judge-center';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { PDWalletTab } from '@/widgets/pd-wallet-tab';
+import { Coins } from 'lucide-react';
 
 const JudgeStatsTab = dynamic(() => import('@/entities/user/ui/judge-profile-tabs/stats-tab').then(mod => mod.JudgeStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -64,10 +66,11 @@ export function JudgeProfile({ user, achievements }: JudgeProfileProps) {
       </div>
       <div className="border-t p-4 md:p-6">
         <Tabs defaultValue="stats">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="stats">Статистика</TabsTrigger>
             <TabsTrigger value="history">История матчей</TabsTrigger>
             <TabsTrigger value="achievements">Достижения</TabsTrigger>
+            <TabsTrigger value="pd-wallet"><Coins className="mr-2 h-4 w-4"/>PD Кошелек</TabsTrigger>
           </TabsList>
           <TabsContent value="stats" className="mt-4">
             <JudgeStatsTab />
@@ -77,6 +80,9 @@ export function JudgeProfile({ user, achievements }: JudgeProfileProps) {
           </TabsContent>
           <TabsContent value="achievements" className="mt-4">
               <JudgeAchievementsTab achievements={achievements} />
+          </TabsContent>
+          <TabsContent value="pd-wallet" className="mt-4">
+            <PDWalletTab />
           </TabsContent>
         </Tabs>
       </div>
