@@ -10,6 +10,7 @@ import type { TrainingLogEntry, ExerciseLog } from '@/shared/lib/mock-data/train
 import { TrainingDayCard } from '@/widgets/training-day-card';
 import { Dumbbell } from 'lucide-react';
 import Link from 'next/link';
+import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 
 export function TrainingLogPage() {
     const { toast } = useToast();
@@ -47,6 +48,33 @@ export function TrainingLogPage() {
     }, [currentProgram]);
 
     const handleUpdateEntry = (updatedEntry: TrainingLogEntry) => {
+        // --- New Record Detection Logic ---
+        // 1. Get analytics BEFORE the update
+        const oldAnalytics = getTrainingAnalytics(logEntries.filter(e => e.status === 'completed'));
+        const oldPRs = new Map(oldAnalytics.personalRecords.map(pr => [pr.exercise, pr.e1RM]));
+
+        // 2. Prepare the updated list of entries
+        const updatedEntries = logEntries.map(entry => (entry.id === updatedEntry.id ? updatedEntry : entry));
+        
+        // 3. Get analytics AFTER the update
+        const newAnalytics = getTrainingAnalytics(updatedEntries.filter(e => e.status === 'completed'));
+        
+        // 4. Check for new PRs
+        newAnalytics.personalRecords.forEach(newPR => {
+            const oldPRValue = oldPRs.get(newPR.exercise) || 0;
+            if (newPR.e1RM > oldPRValue) {
+                // New PR found!
+                setTimeout(() => {
+                    toast({
+                        title: `Новый рекорд! 🎉`,
+                        description: `Вы установили новый личный рекорд в упражнении "${newPR.exercise}": ${newPR.e1RM} кг!`,
+                        duration: 6000,
+                    });
+                }, 500); // Delay to show after main toast
+            }
+        });
+        // --- End of New Record Detection Logic ---
+
         setLogEntries(prev => prev.map(entry => (entry.id === updatedEntry.id ? updatedEntry : entry)));
         toast({
             title: 'Тренировка завершена!',
