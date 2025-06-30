@@ -5,9 +5,10 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/sha
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarImage, AvatarFallback } from '@/shared/ui/avatar';
 import { Button } from '@/shared/ui/button';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import { assignedJudges, availableJudges } from '@/shared/lib/mock-data/crm-judges';
 import { useToast } from '@/shared/hooks/use-toast';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 
 export function CrmTournamentJudges() {
     const { toast } = useToast();
@@ -18,6 +19,10 @@ export function CrmTournamentJudges() {
     
     const handleRemoveJudge = (name: string) => {
         toast({ title: "Судья снят с турнира", description: `${name} был удален из судейского состава.` });
+    };
+
+    const handleEditJudge = (name: string) => {
+        toast({ title: "Редактирование", description: `Открыт диалог редактирования для судьи ${name}.` });
     };
 
     return (
@@ -32,7 +37,8 @@ export function CrmTournamentJudges() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Судья</TableHead>
-                                <TableHead className="text-right">Действие</TableHead>
+                                <TableHead className="hidden sm:table-cell">Назначение</TableHead>
+                                <TableHead className="text-right">Действия</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -47,10 +53,26 @@ export function CrmTournamentJudges() {
                                             </div>
                                         </div>
                                     </TableCell>
+                                    <TableCell className="hidden sm:table-cell">{judge.assignment}</TableCell>
                                     <TableCell className="text-right">
-                                        <Button variant="ghost" size="icon" onClick={() => handleRemoveJudge(judge.name)}>
-                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                        </Button>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                    <span className="sr-only">Действия</span>
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onClick={() => handleEditJudge(judge.name)}>
+                                                    <Edit className="mr-2 h-4 w-4" />
+                                                    Редактировать
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem className="text-destructive" onClick={() => handleRemoveJudge(judge.name)}>
+                                                    <Trash2 className="mr-2 h-4 w-4" />
+                                                    Удалить
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </TableCell>
                                 </TableRow>
                             ))}
