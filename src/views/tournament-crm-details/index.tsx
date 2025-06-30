@@ -13,6 +13,7 @@ import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
 import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
 import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
 import { CrmTournamentAnnouncements } from '@/widgets/crm-tournament-announcements';
+import { CrmTournamentDisputes } from '@/widgets/crm-tournament-disputes';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -35,11 +36,12 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             </div>
             
             <Tabs defaultValue="overview">
-                <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-9">
+                <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-10">
                     <TabsTrigger value="overview">Обзор</TabsTrigger>
                     <TabsTrigger value="participants">Участники</TabsTrigger>
                     <TabsTrigger value="judges">Судьи</TabsTrigger>
                     <TabsTrigger value="matches">Матчи</TabsTrigger>
+                    <TabsTrigger value="disputes">Споры</TabsTrigger>
                     <TabsTrigger value="bracket">Сетка</TabsTrigger>
                     <TabsTrigger value="sponsors">Спонсоры</TabsTrigger>
                     <TabsTrigger value="medical">Мед. поддержка</TabsTrigger>
@@ -61,6 +63,10 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
 
                 <TabsContent value="matches" className="mt-4">
                     <CrmTournamentMatches />
+                </TabsContent>
+
+                <TabsContent value="disputes" className="mt-4">
+                    <CrmTournamentDisputes />
                 </TabsContent>
 
                 <TabsContent value="bracket" className="mt-4">
