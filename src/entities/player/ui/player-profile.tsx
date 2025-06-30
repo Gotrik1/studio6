@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
-import { BookOpen, Youtube, Goal, Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, CheckCircle, Coins, Calendar, Award, Loader2, TrendingUp, TrendingDown, Sparkles, AlertCircle, Wand2 } from "lucide-react";
+import { Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, CheckCircle, Coins, Calendar, Award, Wand2 } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
@@ -21,10 +21,6 @@ import { RANKS, getRankByPoints } from "@/shared/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/ui/tooltip";
 import { cn } from '@/shared/lib/utils';
 import { useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/shared/ui/dialog';
-import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@/shared/api/genkit/flows/analyze-player-performance-flow';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { generateTrainingPlan, type GenerateTrainingPlanOutput } from '@/shared/api/genkit/flows/generate-training-plan-flow';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
@@ -51,6 +47,11 @@ const GalleryTab = dynamic(() => import('@/entities/player/ui/player-profile-tab
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
   ssr: false,
 });
+const AiCoachTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/ai-coach-tab').then(mod => mod.AiCoachTab), {
+  loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+  ssr: false,
+});
+
 
 type PlayerProfileProps = {
   user: User & {
@@ -71,57 +72,7 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
   const nextRank = RANKS[RANKS.indexOf(rank) + 1];
   const progressValue = rank.maxPoints === Infinity ? 100 : ((user.xp - rank.minPoints) / (rank.maxPoints - rank.minPoints)) * 100;
 
-  // AI Coach state
-  const [isCoachDialogOpen, setIsCoachDialogOpen] = useState(false);
-  const [isLoadingCoach, setIsLoadingCoach] = useState(false);
-  const [coachError, setCoachError] = useState<string | null>(null);
-  const [analysisResult, setAnalysisResult] = useState<AnalyzePlayerPerformanceOutput | null>(null);
-  const [trainingPlan, setTrainingPlan] = useState<GenerateTrainingPlanOutput | null>(null);
-  
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
-
-  const handleGetCoaching = async () => {
-    setIsLoadingCoach(true);
-    setCoachError(null);
-    setAnalysisResult(null);
-    setTrainingPlan(null);
-
-    try {
-      const playerStats = `
-        Role: ${user.role},
-        Status: ${user.status},
-        Main Sport: ${user.mainSport},
-        Total Matches: 218,
-        Wins: 152
-      `;
-      const matchHistory = recentMatches.map(m => `vs ${m.teamB}: ${m.scoreA}-${m.scoreB} on ${m.map}`).join('\n');
-
-      const analysis = await analyzePlayerPerformance({ playerStats, matchHistory });
-      const plan = await generateTrainingPlan({
-        analysis: analysis,
-        playerRole: user.role,
-      });
-
-      setAnalysisResult(analysis);
-      setTrainingPlan(plan);
-    } catch (e) {
-      console.error(e);
-      setCoachError("Не удалось получить персональную тренировку. Пожалуйста, попробуйте еще раз.");
-    } finally {
-      setIsLoadingCoach(false);
-    }
-  };
-
-  const onCoachDialogOpenChange = (open: boolean) => {
-    setIsCoachDialogOpen(open);
-    if (open) {
-      handleGetCoaching();
-    } else {
-      setAnalysisResult(null);
-      setTrainingPlan(null);
-      setCoachError(null);
-    }
-  };
 
 
   return (
@@ -178,86 +129,6 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
           </div>
         </div>
         <div className="flex gap-2">
-          <Dialog open={isCoachDialogOpen} onOpenChange={onCoachDialogOpenChange}>
-              <DialogTrigger asChild>
-                  <Button variant="ghost" size="icon" title="AI-Тренер"><BrainCircuit className="h-5 w-5"/></Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-3xl">
-                  <DialogHeader>
-                      <DialogTitle>AI-Тренер</DialogTitle>
-                      <DialogDescription>
-                          Искусственный интеллект анализирует ваши данные и составляет персональный план тренировок.
-                      </DialogDescription>
-                  </DialogHeader>
-                  <div className="py-4">
-                      {isLoadingCoach ? (
-                          <div className="flex flex-col items-center justify-center h-60 gap-4">
-                              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>
-                              <p className="text-muted-foreground">AI-тренер анализирует ваши данные...</p>
-                          </div>
-                      ) : coachError ? (
-                           <Alert variant="destructive">
-                              <AlertCircle className="h-4 w-4" />
-                              <AlertTitle>Ошибка</AlertTitle>
-                              <AlertDescription>{coachError}</AlertDescription>
-                          </Alert>
-                      ) : (analysisResult && trainingPlan) && (
-                          <div className="space-y-6">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                  <div className="space-y-2">
-                                      <h3 className="font-semibold flex items-center gap-2"><TrendingUp className="h-5 w-5 text-green-500"/> Сильные стороны</h3>
-                                      <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2">
-                                          {analysisResult.strengths.map((item, i) => <li key={`str-${i}`}>{item}</li>)}
-                                      </ul>
-                                  </div>
-                                  <div className="space-y-2">
-                                      <h3 className="font-semibold flex items-center gap-2"><TrendingDown className="h-5 w-5 text-yellow-500"/> Точки роста</h3>
-                                      <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2">
-                                           {analysisResult.weaknesses.map((item, i) => <li key={`weak-${i}`}>{item}</li>)}
-                                      </ul>
-                                  </div>
-                              </div>
-                              
-                              <Card className="bg-muted/50">
-                                  <CardHeader>
-                                      <CardTitle className="flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary"/> Персональный план на неделю</CardTitle>
-                                  </CardHeader>
-                                  <CardContent className="space-y-4">
-                                      <div>
-                                          <h4 className="font-semibold text-sm flex items-center gap-1.5"><Activity className="h-4 w-4"/>Фокус недели:</h4>
-                                          <p className="text-sm text-muted-foreground">{trainingPlan.weeklyFocus}</p>
-                                      </div>
-                                          <div>
-                                          <h4 className="font-semibold text-sm flex items-center gap-1.5"><BookOpen className="h-4 w-4"/>Упражнения:</h4>
-                                          <ul className="space-y-1 mt-1">
-                                          {trainingPlan.drills.map((drill, i) => (
-                                              <li key={i} className="text-sm text-muted-foreground ml-4 p-2 border-l-2">
-                                                  <strong>{drill.name} ({drill.duration}):</strong> {drill.description}
-                                              </li>
-                                          ))}
-                                          </ul>
-                                      </div>
-                                      <div>
-                                          <h4 className="font-semibold text-sm flex items-center gap-1.5"><Youtube className="h-4 w-4"/>Рекомендованные видео:</h4>
-                                          <ul className="space-y-1 mt-1">
-                                              {trainingPlan.suggestedVideos.map((video, i) => (
-                                                  <li key={i} className="text-sm text-primary underline">
-                                                      <a href={video.url} target="_blank" rel="noopener noreferrer">{video.title}</a>
-                                                  </li>
-                                              ))}
-                                          </ul>
-                                      </div>
-                                      <div>
-                                          <h4 className="font-semibold text-sm flex items-center gap-1.5"><Goal className="h-4 w-4"/>Цель на неделю:</h4>
-                                          <p className="text-sm text-muted-foreground">{trainingPlan.weeklyGoal}</p>
-                                      </div>
-                                  </CardContent>
-                              </Card>
-                          </div>
-                      )}
-                  </div>
-              </DialogContent>
-          </Dialog>
           <Button variant="outline" size="icon" title="Поделиться"><Share2 className="h-5 w-5"/></Button>
           {isCurrentUser ? (
             <Link href="/settings">
@@ -279,9 +150,10 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
       </CardContent>
       <div className="border-t p-4 md:p-6">
         <Tabs defaultValue="overview">
-          <TabsList className="grid w-full grid-cols-3 sm:grid-cols-7">
+          <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8">
             <TabsTrigger value="overview"><Activity className="mr-2 h-4 w-4"/>Обзор</TabsTrigger>
             <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
+            <TabsTrigger value="ai-coach"><BrainCircuit className="mr-2 h-4 w-4"/>AI-Тренер</TabsTrigger>
             <TabsTrigger value="career"><Briefcase className="mr-2 h-4 w-4"/>Карьера</TabsTrigger>
             <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
             <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4"/>Команды</TabsTrigger>
@@ -297,6 +169,10 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
             <StatsTab />
           </TabsContent>
           
+          <TabsContent value="ai-coach" className="mt-4">
+            <AiCoachTab user={user} />
+          </TabsContent>
+
           <TabsContent value="career" className="mt-4">
               <CareerTab careerHistory={careerHistory} isCurrentUser={isCurrentUser} />
           </TabsContent>
