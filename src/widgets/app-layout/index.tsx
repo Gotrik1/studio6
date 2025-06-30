@@ -37,6 +37,7 @@ import {
   UserSearch,
   Megaphone,
   Award,
+  BookOpen,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -59,6 +60,8 @@ const mainNavItems = [
     { href: "/friends", icon: Users2, label: "Друзья" },
     { href: "/tournaments", icon: Trophy, label: "Соревнования" },
     { href: "/training", icon: Dumbbell, label: "Тренировки" },
+    { href: "/training/programs", icon: BookOpen, label: "Программы" },
+    { href: "/training/exercises", icon: BookOpen, label: "Упражнения" },
     { href: "/training/records", icon: Award, label: "Рекорды" },
     { href: "/booking", icon: MapPin, label: "Площадки" },
     { href: "/store", icon: ShoppingCart, label: "Магазин" },

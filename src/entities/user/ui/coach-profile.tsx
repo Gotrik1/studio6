@@ -13,8 +13,7 @@ import type { coachUser, coachAchievements } from "@/shared/lib/mock-data/coach-
 import { trainingPrograms } from '@/shared/lib/mock-data/training-programs';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { coachedPlayers, type CoachedPlayer } from "@/shared/lib/mock-data/coach-players";
-import { PlayerAnalysisDialog } from '@/entities/player/ui/player-analysis-dialog';
+import { coachedPlayers } from "@/shared/lib/mock-data/coach-players";
 import { PDWalletTab } from '@/widgets/pd-wallet-tab';
 import { Coins } from 'lucide-react';
 import { AssignProgramDialog } from '@/widgets/assign-program-dialog';
@@ -45,17 +44,9 @@ type CoachProfileProps = {
 export function CoachProfile({ user, achievements }: CoachProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   
-  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
-  const [selectedPlayer, setSelectedPlayer] = useState<CoachedPlayer | null>(null);
-
   const [isAssignProgramOpen, setIsAssignProgramOpen] = useState(false);
   const [selectedProgram, setSelectedProgram] = useState<TrainingProgram | null>(null);
 
-  const handleAnalyzePlayer = (player: CoachedPlayer) => {
-      setSelectedPlayer(player);
-      setIsAnalysisOpen(true);
-  };
-  
   const handleAssignProgram = (program: TrainingProgram) => {
       setSelectedProgram(program);
       setIsAssignProgramOpen(true);
@@ -107,7 +98,7 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
                 <CoachAchievementsTab achievements={achievements} />
             </TabsContent>
             <TabsContent value="my-players" className="mt-4">
-                <MyPlayersTab players={coachedPlayers} onAnalyzePlayer={handleAnalyzePlayer} />
+                <MyPlayersTab players={coachedPlayers} />
             </TabsContent>
             <TabsContent value="my-programs" className="mt-4">
                 <MyProgramsTab programs={trainingPrograms} onAssignProgram={handleAssignProgram} />
@@ -118,11 +109,6 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
             </Tabs>
         </div>
         </Card>
-        <PlayerAnalysisDialog 
-            isOpen={isAnalysisOpen}
-            onOpenChange={setIsAnalysisOpen}
-            player={selectedPlayer}
-        />
         <AssignProgramDialog
             isOpen={isAssignProgramOpen}
             onOpenChange={setIsAssignProgramOpen}

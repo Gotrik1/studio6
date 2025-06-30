@@ -1,10 +1,7 @@
 
 'use client';
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { TrainingProgramForm } from '@/widgets/training-program-form';
-import { AiProgramGenerator } from '@/widgets/ai-program-generator';
-import { BrainCircuit, Hand } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTraining } from '@/app/providers/training-provider';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -55,23 +52,12 @@ export function TrainingProgramConstructorPage() {
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="space-y-2 text-center">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Создание программы</h1>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Конструктор программ</h1>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Воспользуйтесь помощью AI-тренера для быстрого результата или соберите свой план вручную с нуля.
+                    Соберите свой идеальный тренировочный план с нуля, упражнение за упражнением.
                 </p>
             </div>
-            <Tabs defaultValue="ai" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-                    <TabsTrigger value="ai"><BrainCircuit className="mr-2 h-4 w-4" /> AI-Генератор</TabsTrigger>
-                    <TabsTrigger value="manual"><Hand className="mr-2 h-4 w-4" /> Ручной конструктор</TabsTrigger>
-                </TabsList>
-                <TabsContent value="ai" className="mt-6">
-                    <AiProgramGenerator />
-                </TabsContent>
-                <TabsContent value="manual" className="mt-6">
-                    <TrainingProgramForm onSubmit={handleManualSubmit} isSaving={isSaving} />
-                </TabsContent>
-            </Tabs>
+            <TrainingProgramForm onSubmit={handleManualSubmit} isSaving={isSaving} />
         </div>
     );
 }

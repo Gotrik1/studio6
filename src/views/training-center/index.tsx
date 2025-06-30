@@ -81,11 +81,12 @@ export function TrainingCenterPage() {
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <Button variant="outline" size="default" asChild><Link href="/training/log"><BookOpen className="mr-2 h-4 w-4" />Дневник</Link></Button>
+                        <Button variant="outline" size="default" asChild><Link href="/training/programs"><Replace className="mr-2 h-4 w-4" />Программы</Link></Button>
+                        <Button variant="outline" size="default" asChild><Link href="/training/exercises"><BookOpen className="mr-2 h-4 w-4" />Упражнения</Link></Button>
                         <Button variant="outline" size="default" asChild><Link href="/training/calendar"><Calendar className="mr-2 h-4 w-4" />Календарь</Link></Button>
                         <Button variant="outline" size="default" asChild><Link href="/training/analytics"><BarChart3 className="mr-2 h-4 w-4" />Аналитика</Link></Button>
                         <Button variant="outline" size="default" asChild><Link href="/training/records"><Award className="mr-2 h-4 w-4" />Рекорды</Link></Button>
                         <Button variant="outline" size="default" asChild><Link href="/training/measurements"><Ruler className="mr-2 h-4 w-4" />Замеры</Link></Button>
-                        <Button variant="outline" size="default" asChild><Link href="/training/programs"><Replace className="mr-2 h-4 w-4" />Программы</Link></Button>
                         <Button variant="outline" size="default" asChild><Link href="/training/nutrition-diary"><HeartPulse className="mr-2 h-4 w-4" />Питание</Link></Button>
                     </div>
                 </div>

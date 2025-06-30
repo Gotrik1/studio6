@@ -5,15 +5,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import type { CoachedPlayer } from "@/shared/lib/mock-data/coach-players";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
-import { BrainCircuit } from "lucide-react";
+import { Eye } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
+import Link from "next/link";
 
 interface MyPlayersTabProps {
     players: CoachedPlayer[];
-    onAnalyzePlayer: (player: CoachedPlayer) => void;
 }
 
-export function MyPlayersTab({ players, onAnalyzePlayer }: MyPlayersTabProps) {
+export function MyPlayersTab({ players }: MyPlayersTabProps) {
     return (
         <Card>
             <CardHeader>
@@ -36,9 +36,11 @@ export function MyPlayersTab({ players, onAnalyzePlayer }: MyPlayersTabProps) {
                         <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
                             <Badge variant="secondary">KDA: {player.stats.kda}</Badge>
                             <Badge variant="outline">WR: {player.stats.winRate}</Badge>
-                            <Button size="sm" onClick={() => onAnalyzePlayer(player)}>
-                                <BrainCircuit className="mr-2 h-4 w-4" />
-                                AI-Анализ
+                            <Button size="sm" asChild>
+                                <Link href="/administration/player">
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    Профиль
+                                </Link>
                             </Button>
                         </div>
                     </Card>

@@ -8,7 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, CheckCircle, Coins, Award, Wand2, MoreVertical, Flag, HeartPulse } from "lucide-react";
+import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Coins, Award, Wand2, MoreVertical, Flag, HeartPulse } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -46,10 +46,6 @@ const TeamsTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/
   ssr: false,
 });
 const GalleryTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/gallery-tab').then(mod => mod.GalleryTab), {
-  loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
-  ssr: false,
-});
-const AiCoachTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/ai-coach-tab').then(mod => mod.AiCoachTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
   ssr: false,
 });
@@ -194,7 +190,6 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
                 <TabsTrigger value="overview"><Activity className="mr-2 h-4 w-4"/>Обзор</TabsTrigger>
                 <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
                 <TabsTrigger value="physical-prep"><HeartPulse className="mr-2 h-4 w-4" />Физ. подготовка</TabsTrigger>
-                <TabsTrigger value="ai-coach"><BrainCircuit className="mr-2 h-4 w-4"/>AI-Тренер</TabsTrigger>
                 <TabsTrigger value="career"><Briefcase className="mr-2 h-4 w-4"/>Карьера</TabsTrigger>
                 <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
                 <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4"/>Команды</TabsTrigger>
@@ -213,10 +208,6 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
 
             <TabsContent value="physical-prep" className="mt-4">
                 <PhysicalPrepTab />
-            </TabsContent>
-            
-            <TabsContent value="ai-coach" className="mt-4">
-                <AiCoachTab user={user} />
             </TabsContent>
 
             <TabsContent value="career" className="mt-4">
