@@ -22,7 +22,7 @@ export function CrmTournamentDisputes() {
         setIsDialogOpen(true);
     };
 
-    const handleResolve = (matchId: string, _resolution: string) => {
+    const handleResolve = (matchId: string) => {
         const matchToResolve = disputedMatches.find(m => m.id === matchId);
         if (matchToResolve) {
             setDisputedMatches(prev => prev.filter(m => m.id !== matchId));

@@ -10,23 +10,24 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import Link from "next/link";
 import { Clock } from "lucide-react";
 
-type Match = TournamentDetails['bracket']['rounds'][0]['matches'][0];
+type BracketMatch = TournamentDetails['bracket']['rounds'][0]['matches'][0];
+type PlayableMatch = Extract<BracketMatch, { team2: unknown; date: string; time: string; }>;
 
 interface ScheduleTabProps {
     rounds: TournamentDetails['bracket']['rounds'];
 }
 
 type GroupedMatches = {
-    [date: string]: Match[];
+    [date: string]: PlayableMatch[];
 };
 
 export function ScheduleTab({ rounds }: ScheduleTabProps) {
     const allMatches = rounds
-        .flatMap(round => round.matches)
-        .filter(match => match.team1 && match.team2 && match.date && match.time);
+        .flatMap((round): BracketMatch[] => round.matches)
+        .filter((match): match is PlayableMatch => 'team2' in match && !!match.date && !!match.time);
 
     const groupedMatches = allMatches.reduce((acc, match) => {
-        const date = match.date!;
+        const date = match.date;
         if (!acc[date]) {
             acc[date] = [];
         }
@@ -64,7 +65,7 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
                             </AccordionTrigger>
                             <AccordionContent>
                                 <div className="space-y-4 pl-4 border-l">
-                                    {groupedMatches[date].sort((a, b) => a.time!.localeCompare(b.time!)).map(match => (
+                                    {groupedMatches[date].sort((a, b) => a.time.localeCompare(b.time)).map(match => (
                                         <Link href={match.href || '#'} key={match.id} className="block">
                                             <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors">
                                                  <div className="flex flex-col items-center">

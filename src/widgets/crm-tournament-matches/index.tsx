@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -11,7 +12,8 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Badge } from '@/shared/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 
-type Match = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
+type MatchUnion = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
+type Match = Extract<MatchUnion, { team2: unknown }>;
 
 type MatchState = Match & {
     comment?: string;
@@ -19,7 +21,9 @@ type MatchState = Match & {
 };
 
 export function CrmTournamentMatches() {
-    const allMatches = summerKickoffTournament.bracket.rounds.flatMap(round => round.matches.filter(match => match.team1 && match.team2));
+    const allMatches = summerKickoffTournament.bracket.rounds
+        .flatMap(round => round.matches)
+        .filter((match): match is Match => 'team2' in match);
     
     const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, status: m.score && m.score !== 'VS' ? 'played' : 'pending' })));
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
@@ -36,11 +40,14 @@ export function CrmTournamentMatches() {
             if (match.id !== result.matchId) return match;
             
             let newScore = `${result.scoreA}-${result.scoreB}`;
+            let status: MatchState['status'] = 'played';
+
             if (result.type.startsWith('tech_defeat')) {
-                newScore = result.type === 'tech_defeat_t1' ? 'L-W' : 'W-L';
+                newScore = result.type === 'tech_defeat_t2' ? 'W-L' : 'L-W'; // Note: team1 is winner in tech_defeat_t2
+                status = result.type;
             }
 
-            return { ...match, score: newScore, status: result.type, comment: result.comment };
+            return { ...match, score: newScore, status: status, comment: result.comment };
         }));
         toast({
             title: "Результат обновлен!",
@@ -82,7 +89,7 @@ export function CrmTournamentMatches() {
                         </TableHeader>
                         <TableBody>
                             {summerKickoffTournament.bracket.rounds.map(round => 
-                                round.matches.filter(match => match.team1 && match.team2).map(match => {
+                                round.matches.filter((m): m is Match => 'team2' in m).map(match => {
                                     const currentMatchState = matches.find(m => m.id === match.id);
                                     if (!currentMatchState) return null;
                                     

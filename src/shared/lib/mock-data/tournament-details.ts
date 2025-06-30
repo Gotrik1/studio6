@@ -1,5 +1,6 @@
 
 
+
 export const summerKickoffTournament = {
     name: "Летний Кубок по Стритболу",
     slug: "summer-streetball-cup-2024",
@@ -29,10 +30,10 @@ export const summerKickoffTournament = {
             {
                 name: "Четвертьфиналы",
                 matches: [
-                    { id: 1, team1: { name: "Соколы", logo: "https://placehold.co/40x40.png", dataAiHint: 'falcon logo' }, team2: { name: "Команда A", logo: "https://placehold.co/40x40.png" }, score: "21-15", href: "/matches/123", date: "2024-07-05", time: "18:00" },
-                    { id: 2, team1: { name: "Команда B", logo: "https://placehold.co/40x40.png" }, team2: { name: "Медведи", logo: "https://placehold.co/40x40.png", dataAiHint: 'bear logo' }, score: "18-21", href: "/matches/123", date: "2024-07-05", time: "18:00" },
-                    { id: 3, team1: { name: "Атланты", logo: "https://placehold.co/40x40.png", dataAiHint: 'titan logo' }, team2: { name: "Команда C", logo: "https://placehold.co/40x40.png" }, score: "22-20", href: "/matches/123", date: "2024-07-05", time: "19:00" },
-                    { id: 4, team1: { name: "Команда D", logo: "https://placehold.co/40x40.png" }, team2: { name: "Гризли", logo: "https://placehold.co/40x40.png", dataAiHint: 'grizzly logo' }, score: "11-21", href: "/matches/123", date: "2024-07-05", time: "19:00" },
+                    { id: 1, team1: { name: "Соколы", logo: "https://placehold.co/40x40.png", dataAiHint: 'falcon logo' }, team2: { name: "Команда A", logo: "https://placehold.co/40x40.png", dataAiHint: 'team logo' }, score: "21-15", href: "/matches/123", date: "2024-07-05", time: "18:00" },
+                    { id: 2, team1: { name: "Команда B", logo: "https://placehold.co/40x40.png", dataAiHint: 'team logo' }, team2: { name: "Медведи", logo: "https://placehold.co/40x40.png", dataAiHint: 'bear logo' }, score: "18-21", href: "/matches/123", date: "2024-07-05", time: "18:00" },
+                    { id: 3, team1: { name: "Атланты", logo: "https://placehold.co/40x40.png", dataAiHint: 'titan logo' }, team2: { name: "Команда C", logo: "https://placehold.co/40x40.png", dataAiHint: 'team logo' }, score: "22-20", href: "/matches/123", date: "2024-07-05", time: "19:00" },
+                    { id: 4, team1: { name: "Команда D", logo: "https://placehold.co/40x40.png", dataAiHint: 'team logo' }, team2: { name: "Гризли", logo: "https://placehold.co/40x40.png", dataAiHint: 'grizzly logo' }, score: "11-21", href: "/matches/123", date: "2024-07-05", time: "19:00" },
                 ]
             },
             {
@@ -93,20 +94,20 @@ export const footballCupTournament = {
             {
                 name: "Полуфиналы",
                 matches: [
-                    { id: 1, team1: { name: "Дворовые Атлеты", logo: "https://placehold.co/40x40.png" }, team2: { name: "Торпедо", logo: "https://placehold.co/40x40.png" }, score: "5-3", href: "/matches/123", date: "2024-08-18", time: "18:00" },
-                    { id: 2, team1: { name: "Соколы", logo: "https://placehold.co/40x40.png" }, team2: { name: "Вымпел", logo: "https://placehold.co/40x40.png" }, score: "2-4", href: "/matches/123", date: "2024-08-18", time: "19:30" },
+                    { id: 1, team1: { name: "Дворовые Атлеты", logo: "https://placehold.co/40x40.png", dataAiHint: "athletic team logo" }, team2: { name: "Торпедо", logo: "https://placehold.co/40x40.png", dataAiHint: "torpedo logo" }, score: "5-3", href: "/matches/123", date: "2024-08-18", time: "18:00" },
+                    { id: 2, team1: { name: "Соколы", logo: "https://placehold.co/40x40.png", dataAiHint: "falcon logo" }, team2: { name: "Вымпел", logo: "https://placehold.co/40x40.png", dataAiHint: "pennant logo" }, score: "2-4", href: "/matches/123", date: "2024-08-18", time: "19:30" },
                 ]
             },
             {
                 name: "Финал",
                 matches: [
-                     { id: 3, team1: { name: "Дворовые Атлеты", logo: "https://placehold.co/40x40.png" }, team2: { name: "Вымпел", logo: "https://placehold.co/40x40.png" }, score: "3-3 (2-1 пен)", href: "/matches/123", date: "2024-08-19", time: "20:00" },
+                     { id: 3, team1: { name: "Дворовые Атлеты", logo: "https://placehold.co/40x40.png", dataAiHint: "athletic team logo" }, team2: { name: "Вымпел", logo: "https://placehold.co/40x40.png", dataAiHint: "pennant logo" }, score: "3-3 (2-1 пен)", href: "/matches/123", date: "2024-08-19", time: "20:00" },
                 ]
             },
             {
                 name: "Чемпион",
                 matches: [
-                    { id: 4, team1: { name: "Дворовые Атлеты", logo: "https://placehold.co/40x40.png" }, winner: true },
+                    { id: 4, team1: { name: "Дворовые Атлеты", logo: "https://placehold.co/40x40.png", dataAiHint: "athletic team logo" }, winner: true },
                 ]
             }
         ]

@@ -14,8 +14,9 @@ import { managerUser, managerAchievements } from "@/shared/lib/mock-data/manager
 import { moderatorUser, moderatorAchievements } from "@/shared/lib/mock-data/moderator-profile";
 import { organizerUser, organizerAchievements } from "@/shared/lib/mock-data/organizer-profile";
 import { sponsorUser, sponsorAchievements } from "@/shared/lib/mock-data/sponsor-profile";
-import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
+import { achievements, teams as playerTeams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
 import { crmTournaments } from '@/shared/lib/mock-data/crm-tournaments';
+import { teams as allTeamsData } from '@/shared/lib/mock-data/teams';
 
 
 const ProfileSkeleton = () => (
@@ -54,7 +55,7 @@ export default function ProfileClient({ sessionUser }: ProfileClientProps) {
         xp: 4500, // mock experience points
     };
 
-    const favoriteTeams = teams.slice(0, 2);
+    const favoriteTeams = allTeamsData.slice(0, 2);
     const organizerTournaments = crmTournaments.filter(t => t.organizer === organizerUser.name);
 
     switch (role) {
@@ -81,7 +82,7 @@ export default function ProfileClient({ sessionUser }: ProfileClientProps) {
                         user={augmentedPlayerUser} 
                         isCurrentUser={true}
                         achievements={achievements}
-                        teams={teams}
+                        teams={playerTeams}
                         recentMatches={recentMatches}
                         gallery={gallery}
                         careerHistory={careerHistory}

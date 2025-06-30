@@ -99,11 +99,18 @@ const TreeItem = ({ item, level }: { item: TreeNode, level: number }) => {
     );
 };
 
-
-export function SitemapTree() {
+export function SitemapPage() {
     return (
-        <div className="space-y-2">
-            {sitemapData.map(item => <TreeItem key={item.name} item={item} level={0} />)}
+        <div className="space-y-6 opacity-0 animate-fade-in-up">
+            <div className="space-y-2">
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Карта сайта</h1>
+                <p className="text-muted-foreground">
+                    Обзор всех страниц и разделов приложения.
+                </p>
+            </div>
+            <div className="space-y-2">
+                {sitemapData.map(item => <TreeItem key={item.name} item={item} level={0} />)}
+            </div>
         </div>
     );
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,12 +15,14 @@ import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { useToast } from '@/shared/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import { summerKickoffTournament } from '@/shared/lib/mock-data/tournament-details';
+import type { summerKickoffTournament } from '@/shared/lib/mock-data/tournament-details';
 import { RadioGroup, RadioGroupItem } from '@/shared/ui/radio-group';
 import { Textarea } from '@/shared/ui/textarea';
 import { Separator } from '@/shared/ui/separator';
 
-type Match = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
+type MatchUnion = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
+type Match = Extract<MatchUnion, { team2: unknown }>;
+
 export type MatchResult = {
     matchId: number;
     type: 'score' | 'tech_defeat_t1' | 'tech_defeat_t2';
@@ -46,7 +49,7 @@ export function CrmMatchResultDialog({ isOpen, onOpenChange, match, onMatchUpdat
 
   useEffect(() => {
     if (isOpen && match?.score && match.score !== 'VS') {
-        const scores = match.score.split('-').map(s => s.trim());
+        const scores = match.score.split('-').map((s: string) => s.trim());
         setScoreA(scores[0] || '');
         setScoreB(scores[1] || '');
     } else {
