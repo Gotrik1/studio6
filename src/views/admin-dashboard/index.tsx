@@ -15,7 +15,12 @@ import {
     DollarSign,
     ShoppingCart,
     Megaphone,
-    Map as MapIcon
+    Map as MapIcon,
+    User,
+    Briefcase,
+    ClipboardList,
+    Heart,
+    ShieldAlert
 } from 'lucide-react';
 import Link from "next/link";
 
@@ -50,6 +55,18 @@ const managementCards: AdminSectionCardProps[] = [
     { title: "Виды спорта", description: "Управление дисциплинами.", href: "/administration/sports", icon: Handshake },
 ];
 
+const profileCards: AdminSectionCardProps[] = [
+    { title: "Профиль Игрока", description: "Пример страницы обычного игрока.", href: "/administration/player", icon: User },
+    { title: "Профиль Тренера", description: "Пример страницы тренера.", href: "/administration/coach", icon: ClipboardList },
+    { title: "Профиль Судьи", description: "Пример страницы судьи.", href: "/administration/judge", icon: Gavel },
+    { title: "Профиль Менеджера", description: "Пример страницы менеджера.", href: "/administration/manager", icon: Briefcase },
+    { title: "Профиль Модератора", description: "Пример страницы модератора.", href: "/administration/moderator", icon: Shield },
+    { title: "Профиль Организатора", description: "Пример страницы организатора.", href: "/administration/organizer", icon: Megaphone },
+    { title: "Профиль Спонсора", description: "Пример страницы спонсора.", href: "/administration/sponsor", icon: Handshake },
+    { title: "Профиль Болельщика", description: "Пример страницы болельщика.", href: "/administration/fan", icon: Heart },
+    { title: "Профиль Администратора", description: "Пример страницы администратора.", href: "/administration/administrator", icon: ShieldAlert },
+];
+
 const contentCards: AdminSectionCardProps[] = [
     { title: "Партнеры", description: "Управление спонсорами и партнерами.", href: "/sponsors", icon: Handshake },
     { title: "Экономика PD", description: "Настройка правил начисления PD.", href: "/pd-economy", icon: Coins },
@@ -77,6 +94,13 @@ export function AdminDashboardPage() {
                 <h2 className="font-headline text-2xl font-semibold mb-4">Управление платформой</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {managementCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
+                </div>
+            </section>
+            
+            <section>
+                <h2 className="font-headline text-2xl font-semibold mb-4">Демонстрация профилей ролей</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {profileCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
                 </div>
             </section>
             
