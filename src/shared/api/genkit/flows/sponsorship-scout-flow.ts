@@ -22,8 +22,8 @@ export type { SponsorshipScoutInput, SponsorshipScoutOutput };
 const findTeamsTool = ai.defineTool(
   {
     name: 'findTeamsSeekingSponsorship',
-    description: 'Finds esports teams that are currently looking for sponsorship.',
-    inputSchema: z.string().describe("A query to filter teams, e.g., 'Valorant teams', 'teams from Moscow'. Leave empty to get all teams."),
+    description: 'Finds sports teams that are currently looking for sponsorship.',
+    inputSchema: z.string().describe("A query to filter teams, e.g., 'Football teams', 'teams from Moscow'. Leave empty to get all teams."),
     outputSchema: z.array(TeamSchema),
   },
   async (query) => {
@@ -45,10 +45,10 @@ const prompt = ai.definePrompt({
     input: { schema: SponsorshipScoutInputSchema },
     output: { schema: SponsorshipScoutOutputSchema },
     tools: [findTeamsTool],
-    prompt: `You are an expert sponsorship scout in the esports industry.
+    prompt: `You are an expert sponsorship scout in the sports industry.
 A sponsor has described their marketing goals. Your task is to:
 1.  Analyze the sponsor's request.
-2.  Use the \`findTeamsSeekingSponsorship\` tool to get a list of available teams. You can use keywords from the sponsor's request to filter the tool's input if appropriate (e.g., by game).
+2.  Use the \`findTeamsSeekingSponsorship\` tool to get a list of available teams. You can use keywords from the sponsor's request to filter the tool's input if appropriate (e.g., by sport).
 3.  From the tool's results, select up to 3 teams that are the BEST fit for the sponsor's goals.
 4.  Provide a concise reasoning for your recommendations, explaining why each team is a good match.
 5.  Respond in Russian.

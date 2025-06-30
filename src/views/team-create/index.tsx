@@ -21,7 +21,7 @@ export function NewTeamPage() {
     const router = useRouter();
     const { addTeam } = useTeams();
 
-    const [prompt, setPrompt] = useState('Агрессивная команда по CS:GO 2 из Москвы, наш символ - волк.');
+    const [prompt, setPrompt] = useState('Агрессивная футбольная команда из Москвы, наш символ - волк.');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<GenerateTeamConceptOutput | null>(null);
@@ -60,7 +60,7 @@ export function NewTeamPage() {
                 motto: result.motto,
                 logo: result.avatarDataUri,
                 dataAiHint: prompt.split(' ').slice(0, 2).join(' '),
-                game: 'Valorant', // In a real app, this would be selected
+                game: 'Футбол', // In a real app, this would be selected
             });
 
             toast({
@@ -68,7 +68,7 @@ export function NewTeamPage() {
                 description: `Команда "${result.name}" успешно создана.`,
             });
             setIsCreating(false);
-            router.push('/teams/cyber-eagles'); // Redirect to new team's page (mocked)
+            router.push('/teams/dvotovyie-atlety'); // Redirect to new team's page (mocked)
         }, 1000);
     };
     
@@ -94,7 +94,7 @@ export function NewTeamPage() {
                 <CardContent className="space-y-4">
                     <Textarea
                         id="team-prompt"
-                        placeholder="Например, 'Свирепая команда из Сибири, которая играет в CS:GO 2. Наш символ — полярный медведь.'"
+                        placeholder="Например, 'Свирепая хоккейная команда из Сибири. Наш символ — полярный медведь.'"
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         disabled={isLoading}

@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -27,7 +28,7 @@ const generatePostImageFlow = ai.defineFlow(
   async (prompt) => {
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `A vibrant and engaging social media image for an esports platform post about: ${prompt}. Cinematic, digital art style.`,
+      prompt: `A vibrant and engaging social media image for a sports platform post about: ${prompt}. Cinematic, digital art style.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },

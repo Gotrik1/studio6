@@ -15,7 +15,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 
 export function PlayerScoutPage() {
     const { toast } = useToast();
-    const [prompt, setPrompt] = useState('Ищем игрока поддержки (Sentinel) для Valorant, который хорошо играет на Cypher. Важна хорошая коммуникация и доступность по вечерам.');
+    const [prompt, setPrompt] = useState('Ищем защитника для футбольной команды. Важна хорошая коммуникация и доступность по вечерам.');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<PlayerScoutOutput | null>(null);
@@ -70,7 +70,7 @@ export function PlayerScoutPage() {
                 <CardContent className="space-y-4">
                      <Textarea
                         id="scout-prompt"
-                        placeholder="Например: 'Нужен агрессивный дуэлянт для Valorant с высоким KDA, свободный для тренировок 3 раза в неделю...'"
+                        placeholder="Например: 'Нужен агрессивный нападающий для футбольной команды, свободный для тренировок 3 раза в неделю...'"
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         disabled={isLoading}

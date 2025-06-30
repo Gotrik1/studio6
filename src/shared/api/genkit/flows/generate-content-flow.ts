@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -22,10 +23,10 @@ const prompt = ai.definePrompt({
   name: 'generateContentPrompt',
   input: {schema: GenerateContentInputSchema},
   output: {schema: GenerateContentOutputSchema},
-  prompt: `You are a creative content generator for an esports platform called "ProDvor".
+  prompt: `You are a creative content generator for a sports platform called "ProDvor".
 Your task is to generate a {{contentType}} with an {{tone}} tone about the following topic: {{{topic}}}.
 
-Keep the content concise, engaging, and relevant to a gaming and esports audience.`,
+Keep the content concise, engaging, and relevant to a sports audience.`,
 });
 
 const generateContentFlow = ai.defineFlow(

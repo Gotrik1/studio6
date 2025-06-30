@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -22,7 +23,7 @@ const prompt = ai.definePrompt({
   name: 'createTeamPrompt',
   input: {schema: CreateTeamInputSchema},
   output: {schema: CreateTeamOutputSchema},
-  prompt: `You are a creative director for an esports league. Based on the following description, generate a unique, memorable, and cool team name and a catchy motto. The name should be in Russian, but can use English words if it sounds cool. The motto should also be in Russian.
+  prompt: `You are a creative director for a sports league. Based on the following description, generate a unique, memorable, and cool team name and a catchy motto. The name should be in Russian, but can use English words if it sounds cool. The motto should also be in Russian.
 
 Description: {{{description}}}
 

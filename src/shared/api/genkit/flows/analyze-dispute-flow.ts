@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -23,7 +24,7 @@ const prompt = ai.definePrompt({
   name: 'analyzeDisputePrompt',
   input: {schema: AnalyzeDisputeInputSchema},
   output: {schema: AnalyzeDisputeOutputSchema},
-  prompt: `You are an expert, impartial esports arbiter. Your task is to analyze a disputed match and recommend a fair resolution.
+  prompt: `You are an expert, impartial sports arbiter. Your task is to analyze a disputed match and recommend a fair resolution.
 
   Analyze the following information:
   - Disputed Match: {{{team1Name}}} vs {{{team2Name}}}

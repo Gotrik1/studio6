@@ -16,11 +16,11 @@ import { TeamCoachTab } from '@/widgets/team-coach-tab';
 
 
 const initialJoinRequests = [
-    { name: "ShadowStriker", role: "Снайпер", avatar: 'https://placehold.co/100x100.png', avatarHint: 'esports player' },
-    { name: "Foxy", role: "Энтри-фраггер", avatar: 'https://placehold.co/100x100.png', avatarHint: 'esports player' },
+    { name: "ShadowStriker", role: "Нападающий", avatar: 'https://placehold.co/100x100.png', avatarHint: 'sports player' },
+    { name: "Foxy", role: "Полузащитник", avatar: 'https://placehold.co/100x100.png', avatarHint: 'sports player' },
 ];
 
-const teamNeeds = "Мы ищем опытного стража (Sentinel), который умеет хорошо контролировать территорию и собирать информацию. Наш стиль игры - медленный и методичный.";
+const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
 export function TeamManagementPage() {
     const { toast } = useToast();

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for analyzing a completed match and generating a report.
@@ -21,7 +22,7 @@ const prompt = ai.definePrompt({
   name: 'analyzeMatchReportPrompt',
   input: { schema: AnalyzeMatchReportInputSchema },
   output: { schema: AnalyzeMatchReportOutputSchema },
-  prompt: `You are an expert esports analyst and commentator. Your task is to provide a detailed post-match analysis for a game in the "{{{tournament}}}" tournament.
+  prompt: `You are an expert sports analyst and commentator. Your task is to provide a detailed post-match analysis for a game in the "{{{tournament}}}" tournament.
 
   Match Details:
   - Teams: {{{team1Name}}} vs {{{team2Name}}}

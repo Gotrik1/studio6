@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -27,7 +28,7 @@ const generateTeamAvatarFlow = ai.defineFlow(
   async ({prompt}) => {
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `An esports team logo, ${prompt}. Minimalist, vector style, on a plain background.`,
+      prompt: `A sports team logo, ${prompt}. Minimalist, vector style, on a plain background.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },

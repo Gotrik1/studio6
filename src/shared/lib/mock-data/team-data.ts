@@ -1,3 +1,4 @@
+
 type TeamSchedule = {
     id: number;
     opponent: string;
@@ -25,17 +26,17 @@ type TeamData = {
 };
 
 const teamDatabase: { [key: string]: TeamData } = {
-    'cyber-eagles': {
+    'dvotovyie-atlety': {
         schedule: [
-            { id: 1, opponent: 'Ледяные Волки', date: '2024-08-05 19:00', tournament: 'Лига ProDvor' },
-            { id: 2, opponent: 'Теневые Лисы', date: '2024-08-12 21:00', tournament: 'Лига ProDvor' },
+            { id: 1, opponent: 'Соколы', date: '2024-08-05 19:00', tournament: 'Лига ProDvor' },
+            { id: 2, opponent: 'Торпедо', date: '2024-08-12 21:00', tournament: 'Лига ProDvor' },
         ],
         matchHistory: [
-            { id: 1, opponent: 'Стальные Титаны', result: 'Победа', score: '13-8' },
-            { id: 2, opponent: 'Команда X', result: 'Поражение', score: '10-13' },
+            { id: 1, opponent: 'Вымпел', result: 'Победа', score: '5-2' },
+            { id: 2, opponent: 'Команда X', result: 'Поражение', score: '3-4' },
         ],
         stats: {
-            winRate: '68%',
+            winRate: '72%',
             currentRank: '#1',
             totalMatches: 45,
         }

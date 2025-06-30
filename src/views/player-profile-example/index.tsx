@@ -9,7 +9,7 @@ const examplePlayerUser = {
   role: 'Игрок',
   avatar: 'https://placehold.co/100x100.png',
   location: "Москва, Россия",
-  mainSport: "Valorant",
+  mainSport: "Футбол",
   status: "Активен",
   isVerified: true,
   xp: 1250,

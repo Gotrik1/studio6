@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for generating a personalized training plan for a player.
@@ -21,7 +22,7 @@ const prompt = ai.definePrompt({
   name: 'generateTrainingPlanPrompt',
   input: {schema: GenerateTrainingPlanInputSchema},
   output: {schema: GenerateTrainingPlanOutputSchema},
-  prompt: `You are an expert esports coach. Based on the provided player analysis, create a personalized, actionable 1-week training plan. The plan should be concise and focus on improving the player's weaknesses while leveraging their strengths. The player's role is {{{playerRole}}}.
+  prompt: `You are an expert sports coach. Based on the provided player analysis, create a personalized, actionable 1-week training plan. The plan should be concise and focus on improving the player's weaknesses while leveraging their strengths. The player's role is {{{playerRole}}}.
 
   Player Analysis:
   Strengths:

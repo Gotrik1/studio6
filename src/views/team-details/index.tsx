@@ -21,7 +21,7 @@ import { TeamStatsTab } from '@/widgets/team-stats-tab';
 export function TeamDetailsPage() {
     const { user: currentUser } = useSession();
     // For this demo, we are hardcoding the team. In a real app, this would come from params.
-    const team = teams.find(t => t.slug === 'cyber-eagles');
+    const team = teams.find(t => t.slug === 'dvotovyie-atlety');
     const [isDonationOpen, setIsDonationOpen] = useState(false);
 
     if (!team) {
@@ -34,7 +34,7 @@ export function TeamDetailsPage() {
         <div className="space-y-6 opacity-0 animate-fade-in-up">
             <Card className="overflow-hidden">
                 <div className="relative h-48 sm:h-64">
-                    <Image src="https://placehold.co/1200x400.png" alt={`${team.name} banner`} fill className="object-cover" data-ai-hint="esports team banner" />
+                    <Image src="https://placehold.co/1200x400.png" alt={`${team.name} banner`} fill className="object-cover" data-ai-hint="sports team banner" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                     <div className="absolute bottom-6 left-6 flex items-end gap-4">
                         <Avatar className="h-24 w-24 border-4 border-background">
@@ -50,7 +50,7 @@ export function TeamDetailsPage() {
                 <CardHeader className="flex-row items-center justify-between border-t p-4">
                     <div className="flex flex-wrap items-center gap-4">
                         <div className="flex items-center gap-2"><Trophy className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">Ранг: #{team.rank}</span></div>
-                        <div className="flex items-center gap-2"><Users className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">{team.members}/5 игроков</span></div>
+                        <div className="flex items-center gap-2"><Users className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">{team.members}/11 игроков</span></div>
                         <div className="flex items-center gap-2"><Gamepad2 className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">{team.game}</span></div>
                     </div>
                     <div className="flex gap-2">

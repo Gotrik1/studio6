@@ -28,7 +28,7 @@ const generateUserAvatarFlow = ai.defineFlow(
   async ({prompt}) => {
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `A square user profile picture for an esports platform. The user wants an avatar of: ${prompt}. Digital art, cool, vibrant, character portrait style.`,
+      prompt: `A square user profile picture for a sports platform. The user wants an avatar of: ${prompt}. Digital art, cool, vibrant, character portrait style.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },

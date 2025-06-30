@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -59,11 +60,11 @@ const prompt = ai.definePrompt({
   input: { schema: SmartSearchInputSchema },
   output: { schema: SmartSearchOutputSchema },
   tools: [searchPlatformData],
-  prompt: `You are a powerful search engine for the "ProDvor" esports platform.
+  prompt: `You are a powerful search engine for the "ProDvor" sports platform.
 Your task is to analyze the user's query and return the most relevant users, teams, and tournaments.
 To do this, you MUST use the \`searchPlatformData\` tool.
 Analyze the tool's output and present it clearly in the required format.
-If the user's query is specific (e.g., "find valorant teams"), use the tool to get a broad set of results and then use your reasoning to filter them down to match the specific request.
+If the user's query is specific (e.g., "find football teams"), use the tool to get a broad set of results and then use your reasoning to filter them down to match the specific request.
 
 User Query: "{{{input}}}"
 `,

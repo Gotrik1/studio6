@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for generating a play-by-play commentary for a match.
@@ -23,7 +24,7 @@ const prompt = ai.definePrompt({
   name: 'generateMatchCommentaryPrompt',
   input: { schema: GenerateMatchCommentaryInputSchema },
   output: { schema: GenerateMatchCommentaryOutputSchema },
-  prompt: `You are an energetic and professional esports commentator. Your task is to create an exciting play-by-play commentary script based on the provided list of key match events.
+  prompt: `You are an energetic and professional sports commentator. Your task is to create an exciting play-by-play commentary script based on the provided list of key match events.
 Make it sound like a real broadcast. Describe the tension and the highlights.
 
 Match: {{{team1Name}}} vs {{{team2Name}}}

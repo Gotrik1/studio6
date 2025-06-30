@@ -47,8 +47,8 @@ export default function ProfileClient({ sessionUser }: ProfileClientProps) {
     const augmentedPlayerUser = {
         ...sessionUser,
         location: "Москва, Россия",
-        mainSport: "Valorant",
-        status: sessionUser.role === 'Капитан' ? "Капитан команды 'Кибер Орлы'" : "Активен",
+        mainSport: "Футбол",
+        status: sessionUser.role === 'Капитан' ? "Капитан команды 'Дворовые Атлеты'" : "Активен",
         isVerified: true,
         xp: 4500, // mock experience points
     };

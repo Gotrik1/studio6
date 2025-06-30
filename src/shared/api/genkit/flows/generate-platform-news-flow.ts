@@ -1,3 +1,4 @@
+
 'use server';
 
 import { ai } from '@/shared/api/genkit';
@@ -37,7 +38,7 @@ const getRecentActivity = ai.defineTool(
         // This is mocked. In a real app, this would query a database/analytics service.
         return {
             topPlayer: leaderboardData[0].name,
-            winningTeam: { name: 'Кибер Орлы', tournament: 'Летний Старт 2024' },
+            winningTeam: { name: 'Дворовые Атлеты', tournament: 'Летний Кубок по Стритболу' },
             newHotTeam: teams[3].name,
         };
     }
@@ -48,7 +49,7 @@ const newsTextPrompt = ai.definePrompt({
     name: 'generatePlatformNewsTextPrompt',
     tools: [getRecentActivity],
     output: { schema: GeneratePlatformNewsOutputSchema },
-    system: `You are an esports journalist for the ProDvor platform. 
+    system: `You are a sports journalist for the ProDvor platform. 
     Your task is to generate short, engaging news items based on recent platform activity.
     Use the getRecentActivity tool to fetch the latest data.
     Write 3-4 news items. Vary the tone and style.

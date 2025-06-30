@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -39,7 +40,7 @@ const generateMatchPostFlow = ai.defineFlow(
         contentType: 'social media post',
     });
 
-    const imagePrompt = `A victorious esports team (${winningTeam}) celebrating their win with score ${score} visible.`;
+    const imagePrompt = `A victorious sports team (${winningTeam}) celebrating their win with score ${score} visible.`;
     const imagePromise = generatePostImage(imagePrompt);
 
     const [textResult, imageResult] = await Promise.all([

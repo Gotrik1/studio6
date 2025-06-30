@@ -1,14 +1,14 @@
 
 export const summerKickoffTournament = {
-    name: "Летний Старт 2024",
-    slug: "summer-kickoff-2024",
-    game: "Valorant",
+    name: "Летний Кубок по Стритболу",
+    slug: "summer-streetball-cup-2024",
+    game: "Баскетбол",
     status: "Завершен",
     image: "https://placehold.co/1200x400.png",
-    dataAiHint: "esports valorant stage",
-    description: "Первый крупный турнир лета с участием лучших команд платформы. Приготовьтесь к жарким битвам!",
+    dataAiHint: "streetball court action",
+    description: "Первый крупный турнир лета по стритболу 3x3 с участием лучших команд платформы.",
     prizePool: "10,000",
-    teamsCount: 16,
+    teamsCount: 8,
     organizer: { name: "ProDvor Events", logo: "https://placehold.co/40x40.png" },
     schedule: {
         registration: "15-30 Июня",
@@ -17,40 +17,40 @@ export const summerKickoffTournament = {
         finals: "7 Июля",
     },
     teams: [
-        { name: "Кибер Орлы", logo: "https://placehold.co/40x40.png", dataAiHint: "eagle logo" },
-        { name: "Ледяные Волки", logo: "https://placehold.co/40x40.png", dataAiHint: "wolf logo" },
-        { name: "Теневые Лисы", logo: "https://placehold.co/40x40.png", dataAiHint: "fox logo" },
-        { name: "Стальные Титаны", logo: "https://placehold.co/40x40.png", dataAiHint: "titan logo" },
+        { name: "Соколы", logo: "https://placehold.co/40x40.png", dataAiHint: "falcon logo" },
+        { name: "Атланты", logo: "https://placehold.co/40x40.png", dataAiHint: "titan logo" },
+        { name: "Медведи", logo: "https://placehold.co/40x40.png", dataAiHint: "bear logo" },
+        { name: "Гризли", logo: "https://placehold.co/40x40.png", dataAiHint: "grizzly logo" },
     ],
-    rules: "Стандартные соревновательные правила Valorant. Формат: группы + Single Elimination плей-офф.",
+    rules: "Стандартные правила стритбола FIBA 3x3. Формат: группы + Single Elimination плей-офф.",
     bracket: {
         rounds: [
             {
                 name: "Четвертьфиналы",
                 matches: [
-                    { id: 1, team1: { name: "Кибер Орлы", logo: "https://placehold.co/40x40.png", dataAiHint: 'eagle logo' }, team2: { name: "Команда A", logo: "https://placehold.co/40x40.png" }, score: "13-5", href: "/matches/123" },
-                    { id: 2, team1: { name: "Команда B", logo: "https://placehold.co/40x40.png" }, team2: { name: "Теневые Лисы", logo: "https://placehold.co/40x40.png", dataAiHint: 'fox logo' }, score: "9-13", href: "/matches/123" },
-                    { id: 3, team1: { name: "Ледяные Волки", logo: "https://placehold.co/40x40.png", dataAiHint: 'wolf logo' }, team2: { name: "Команда C", logo: "https://placehold.co/40x40.png" }, score: "13-2", href: "/matches/123" },
-                    { id: 4, team1: { name: "Команда D", logo: "https://placehold.co/40x40.png" }, team2: { name: "Стальные Титаны", logo: "https://placehold.co/40x40.png", dataAiHint: 'titan logo' }, score: "11-13", href: "/matches/123" },
+                    { id: 1, team1: { name: "Соколы", logo: "https://placehold.co/40x40.png", dataAiHint: 'falcon logo' }, team2: { name: "Команда A", logo: "https://placehold.co/40x40.png" }, score: "21-15", href: "/matches/123" },
+                    { id: 2, team1: { name: "Команда B", logo: "https://placehold.co/40x40.png" }, team2: { name: "Медведи", logo: "https://placehold.co/40x40.png", dataAiHint: 'bear logo' }, score: "18-21", href: "/matches/123" },
+                    { id: 3, team1: { name: "Атланты", logo: "https://placehold.co/40x40.png", dataAiHint: 'titan logo' }, team2: { name: "Команда C", logo: "https://placehold.co/40x40.png" }, score: "22-20", href: "/matches/123" },
+                    { id: 4, team1: { name: "Команда D", logo: "https://placehold.co/40x40.png" }, team2: { name: "Гризли", logo: "https://placehold.co/40x40.png", dataAiHint: 'grizzly logo' }, score: "11-21", href: "/matches/123" },
                 ]
             },
             {
                 name: "Полуфиналы",
                 matches: [
-                    { id: 5, team1: { name: "Кибер Орлы", logo: "https://placehold.co/40x40.png", dataAiHint: 'eagle logo' }, team2: { name: "Теневые Лисы", logo: "https://placehold.co/40x40.png", dataAiHint: 'fox logo' }, score: "2-1", href: "/matches/123" },
-                    { id: 6, team1: { name: "Ледяные Волки", logo: "https://placehold.co/40x40.png", dataAiHint: 'wolf logo' }, team2: { name: "Стальные Титаны", logo: "https://placehold.co/40x40.png", dataAiHint: 'titan logo' }, score: "0-2", href: "/matches/123" },
+                    { id: 5, team1: { name: "Соколы", logo: "https://placehold.co/40x40.png", dataAiHint: 'falcon logo' }, team2: { name: "Медведи", logo: "https://placehold.co/40x40.png", dataAiHint: 'bear logo' }, score: "21-19", href: "/matches/123" },
+                    { id: 6, team1: { name: "Атланты", logo: "https://placehold.co/40x40.png", dataAiHint: 'titan logo' }, team2: { name: "Гризли", logo: "https://placehold.co/40x40.png", dataAiHint: 'grizzly logo' }, score: "15-21", href: "/matches/123" },
                 ]
             },
             {
                 name: "Финал",
                 matches: [
-                     { id: 7, team1: { name: "Кибер Орлы", logo: "https://placehold.co/40x40.png", dataAiHint: 'eagle logo' }, team2: { name: "Стальные Титаны", logo: "https://placehold.co/40x40.png", dataAiHint: 'titan logo' }, score: "3-1", href: "/matches/123" },
+                     { id: 7, team1: { name: "Соколы", logo: "https://placehold.co/40x40.png", dataAiHint: 'falcon logo' }, team2: { name: "Гризли", logo: "https://placehold.co/40x40.png", dataAiHint: 'grizzly logo' }, score: "22-20", href: "/matches/123" },
                 ]
             },
             {
                 name: "Чемпион",
                 matches: [
-                    { id: 8, team1: { name: "Кибер Орлы", logo: "https://placehold.co/40x40.png", dataAiHint: 'eagle logo' }, winner: true },
+                    { id: 8, team1: { name: "Соколы", logo: "https://placehold.co/40x40.png", dataAiHint: 'falcon logo' }, winner: true },
                 ]
             }
         ]

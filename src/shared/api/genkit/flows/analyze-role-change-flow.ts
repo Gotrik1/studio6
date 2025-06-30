@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -22,7 +23,7 @@ const prompt = ai.definePrompt({
   name: 'analyzeRoleChangePrompt',
   input: {schema: AnalyzeRoleChangeInputSchema},
   output: {schema: AnalyzeRoleChangeOutputSchema},
-  prompt: `You are an experienced administrator of an esports platform. Your task is to evaluate a user for a promotion to a position of responsibility.
+  prompt: `You are an experienced administrator of a sports platform. Your task is to evaluate a user for a promotion to a position of responsibility.
 
   Analyze the user's activity summary to determine if they are a good fit for the requested role.
   - For 'Модератор' or 'Судья', look for signs of fairness, impartiality, good communication, and knowledge of the rules.

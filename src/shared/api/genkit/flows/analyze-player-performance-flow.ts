@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -23,7 +24,7 @@ const prompt = ai.definePrompt({
   name: 'analyzePlayerPerformancePrompt',
   input: {schema: AnalyzePlayerPerformanceInputSchema},
   output: {schema: AnalyzePlayerPerformanceOutputSchema},
-  prompt: `You are an expert esports coach specializing in Valorant. Analyze the provided player statistics and match history.
+  prompt: `You are an expert sports coach. Analyze the provided player statistics and match history.
 
   Your goal is to provide a concise and helpful analysis. Identify 2-3 key strengths, 2-3 key weaknesses, and provide 3 concrete, actionable recommendations for improvement.
 

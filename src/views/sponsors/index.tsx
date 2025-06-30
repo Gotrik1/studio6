@@ -17,9 +17,9 @@ import { findSponsorsForTeam, type FindSponsorsForTeamOutput } from '@/shared/ap
 import { Separator } from '@/shared/ui/separator';
 
 const mockTeamData = {
-    teamName: "Кибер Орлы",
-    teamGame: "Valorant",
-    teamDescription: "Мы - топ-1 команда платформы, ищем партнеров для выхода на международную арену. Нам нужно финансирование поездок на LAN-турниры и брендированная форма.",
+    teamName: "Дворовые Атлеты",
+    teamGame: "Футбол",
+    teamDescription: "Мы - топ-1 футбольная команда платформы, ищем партнеров для выхода на городскую лигу. Нам нужно финансирование поездок на матчи и брендированная форма.",
 };
 
 export function SponsorsPage() {
@@ -65,7 +65,7 @@ export function SponsorsPage() {
                 </CardHeader>
                 <CardContent>
                     <Textarea 
-                        placeholder="Например: 'Мы - молодая команда по CS:GO 2, ищем спонсора для оплаты буткемпа...'"
+                        placeholder="Например: 'Мы - молодая хоккейная команда, ищем спонсора для оплаты аренды льда...'"
                         value={scoutPrompt}
                         onChange={(e) => setScoutPrompt(e.target.value)}
                         disabled={isScouting}

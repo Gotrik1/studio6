@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -27,7 +28,7 @@ const generateTournamentImageFlow = ai.defineFlow(
   async (prompt) => {
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `A professional and exciting esports tournament banner for a tournament about: ${prompt}. Epic, cinematic, digital art style.`,
+      prompt: `A professional and exciting sports tournament banner for a tournament about: ${prompt}. Epic, cinematic, digital art style.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },

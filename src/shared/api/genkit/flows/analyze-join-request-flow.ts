@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -22,7 +23,7 @@ const prompt = ai.definePrompt({
   name: 'analyzeJoinRequestPrompt',
   input: {schema: AnalyzeJoinRequestInputSchema},
   output: {schema: AnalyzeJoinRequestOutputSchema},
-  prompt: `You are an expert esports team scout and analyst. Your task is to evaluate a player's request to join a team.
+  prompt: `You are an expert sports team scout and analyst. Your task is to evaluate a player's request to join a team.
 
   Analyze the player's profile against the team's needs. Provide a clear recommendation (accept, consider, or decline), a confidence level, and your reasoning.
 

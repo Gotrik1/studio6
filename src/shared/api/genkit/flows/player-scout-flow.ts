@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -21,7 +22,7 @@ const findPlayersTool = ai.defineTool(
   {
     name: 'findPlayers',
     description: 'Finds players based on a query. Use this to search for potential team members.',
-    inputSchema: z.string().describe("A query to filter players, e.g., 'Valorant', 'support', 'Cypher player'. Leave empty to get all active players."),
+    inputSchema: z.string().describe("A query to filter players, e.g., 'Футбол', 'защитник', 'опытный игрок'. Leave empty to get all active players."),
     outputSchema: z.array(PlayerProfileSchema),
   },
   async (query) => {
@@ -49,10 +50,10 @@ const prompt = ai.definePrompt({
     input: { schema: PlayerScoutInputSchema },
     output: { schema: PlayerScoutOutputSchema },
     tools: [findPlayersTool],
-    system: `You are an expert esports scout for the ProDvor platform.
+    system: `You are an expert sports scout for the ProDvor platform.
 A team captain is looking for a new player. Your task is to:
 1.  Analyze the captain's request.
-2.  Use the \`findPlayers\` tool to get a list of available players. You can use keywords from the captain's request to filter the tool's input if appropriate (e.g., by game or role).
+2.  Use the \`findPlayers\` tool to get a list of available players. You can use keywords from the captain's request to filter the tool's input if appropriate (e.g., by sport or role).
 3.  From the tool's results, select up to 5 players that are the BEST fit for the request.
 4.  For each recommended player, provide a concise reasoning explaining why they are a good match.
 5.  Respond in Russian.`,
