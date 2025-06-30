@@ -1,11 +1,10 @@
-
 'use client';
 
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Check, X, Mail, Trash2 } from 'lucide-react';
+import { Check, X, Mail, Trash2, Handshake } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
@@ -14,6 +13,7 @@ import { SponsorshipPitchGenerator } from '@/widgets/sponsorship-pitch-generator
 import { AITeamAssistantTab } from '@/widgets/ai-team-assistant-tab';
 import { TeamCoachTab } from '@/widgets/team-coach-tab';
 import { RosterManagementTab } from '@/widgets/roster-management-tab';
+import { SponsorScout } from '@/widgets/sponsor-scout';
 
 
 const initialJoinRequests = [
@@ -56,7 +56,7 @@ export function TeamManagementPage() {
                  <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="roster">Состав</TabsTrigger>
                     <TabsTrigger value="requests">Заявки</TabsTrigger>
-                    <TabsTrigger value="sponsorship">Спонсорство</TabsTrigger>
+                    <TabsTrigger value="sponsorship"><Handshake className="mr-2 h-4 w-4"/>Спонсорство</TabsTrigger>
                     <TabsTrigger value="ai-coach">AI-Коуч</TabsTrigger>
                     <TabsTrigger value="ai-assistant">AI-Ассистент</TabsTrigger>
                 </TabsList>
@@ -106,7 +106,8 @@ export function TeamManagementPage() {
                     </Card>
                 </TabsContent>
                 
-                <TabsContent value="sponsorship" className="mt-4">
+                <TabsContent value="sponsorship" className="mt-4 space-y-6">
+                    <SponsorScout />
                     <SponsorshipPitchGenerator />
                 </TabsContent>
                 
