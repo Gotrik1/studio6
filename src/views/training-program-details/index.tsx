@@ -7,11 +7,12 @@ import { useToast } from "@/shared/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 import { Badge } from '@/shared/ui/badge';
-import { CheckCircle, Dumbbell, Target, CalendarDays, Bot, User } from 'lucide-react';
+import { CheckCircle, Dumbbell, Target, CalendarDays, Bot, User, Link2 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/shared/ui/accordion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { useTraining } from "@/app/providers/training-provider";
 import type { TrainingProgram } from "@/entities/training-program/model/types";
+import { cn } from "@/shared/lib/utils";
 
 interface TrainingProgramDetailsPageProps {
     program: TrainingProgram;
@@ -77,6 +78,7 @@ export function TrainingProgramDetailsPage({ program }: TrainingProgramDetailsPa
                                         <Table>
                                             <TableHeader>
                                                 <TableRow>
+                                                    <TableHead className="w-8 p-0"></TableHead>
                                                     <TableHead>Упражнение</TableHead>
                                                     <TableHead className="text-center">Подходы</TableHead>
                                                     <TableHead className="text-center">Повторения</TableHead>
@@ -84,7 +86,10 @@ export function TrainingProgramDetailsPage({ program }: TrainingProgramDetailsPa
                                             </TableHeader>
                                             <TableBody>
                                                 {day.exercises.map(ex => (
-                                                    <TableRow key={ex.name}>
+                                                    <TableRow key={ex.name} className={cn(ex.isSupersetWithPrevious && "border-t-2 border-dashed border-primary/20")}>
+                                                        <TableCell className="p-0">
+                                                            {ex.isSupersetWithPrevious && <Link2 className="h-4 w-4 text-muted-foreground rotate-90 mx-auto" />}
+                                                        </TableCell>
                                                         <TableCell className="font-medium">{ex.name}</TableCell>
                                                         <TableCell className="text-center">{ex.sets}</TableCell>
                                                         <TableCell className="text-center">{ex.reps}</TableCell>

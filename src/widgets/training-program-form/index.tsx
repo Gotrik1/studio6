@@ -10,18 +10,20 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/shared/u
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { Loader2, PlusCircle, Trash2, GripVertical } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, GripVertical, Link2 } from 'lucide-react';
 import type { Exercise } from '@/shared/lib/mock-data/exercises';
 import { ExercisePickerDialog } from '@/widgets/exercise-picker-dialog';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { exercisesList } from '@/shared/lib/mock-data/exercises';
 import { Textarea } from '@/shared/ui/textarea';
+import { Checkbox } from '@/shared/ui/checkbox';
 
 const exerciseSchema = z.object({
   id: z.string(),
   name: z.string(),
   sets: z.string().min(1, "Обязательно"),
   reps: z.string().min(1, "Обязательно"),
+  isSupersetWithPrevious: z.boolean().optional(),
 });
 
 const workoutDaySchema = z.object({
@@ -65,7 +67,8 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                          id: fullExercise?.id || `temp-${Math.random()}`,
                          name: ex.name,
                          sets: ex.sets,
-                         reps: ex.reps
+                         reps: ex.reps,
+                         isSupersetWithPrevious: ex.isSupersetWithPrevious || false,
                      }
                  })
              }))
@@ -93,7 +96,8 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                             id: fullExercise?.id || `temp-${Math.random()}`,
                             name: ex.name,
                             sets: ex.sets,
-                            reps: ex.reps
+                            reps: ex.reps,
+                            isSupersetWithPrevious: ex.isSupersetWithPrevious || false,
                         }
                     })
                 }))
@@ -122,7 +126,7 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
         if (currentDayIndex === null) return;
         const exerciseControls = dayFieldArrays[currentDayIndex];
         exercises.forEach(ex => {
-            exerciseControls.append({ id: ex.id, name: ex.name, sets: '3-4', reps: '8-12' });
+            exerciseControls.append({ id: ex.id, name: ex.name, sets: '3-4', reps: '8-12', isSupersetWithPrevious: false });
         });
     };
 
@@ -159,6 +163,20 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                                             <p className="flex-1 font-medium text-sm">{exField.name}</p>
                                             <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormControl><Input placeholder="3-4" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
                                             <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormControl><Input placeholder="8-12" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
+                                            {exIndex > 0 && (
+                                                <FormField
+                                                    control={form.control}
+                                                    name={`days.${index}.exercises.${exIndex}.isSupersetWithPrevious`}
+                                                    render={({ field }) => (
+                                                        <FormItem className="flex items-center space-x-2">
+                                                            <FormControl>
+                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                            </FormControl>
+                                                            <FormLabel className="!mt-0 text-xs text-muted-foreground flex items-center gap-1"><Link2 className="h-3 w-3" />Суперсет</FormLabel>
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            )}
                                             <Button type="button" variant="ghost" size="icon" onClick={() => exerciseControls.remove(exIndex)}><Trash2 className="h-4 w-4" /></Button>
                                         </div>
                                     ))}

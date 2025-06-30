@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Checkbox } from '@/shared/ui/checkbox';
-import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown, Link2 } from 'lucide-react';
 import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -136,12 +136,16 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                                 name: `exercises.${index}.sets`,
                             });
                             const exerciseName = entry.exercises[index]?.name;
+                            const isSuperset = entry.exercises[index]?.isSupersetWithPrevious;
                             const lastPerformance = lastPerformances.get(exerciseName);
 
                             return (
-                                <div key={field.id} className="mb-4">
+                                <div key={field.id} className={cn("mb-4", isSuperset && "pl-4 border-l-2 border-primary/20 ml-2 pt-2")}>
                                      <div className="flex items-baseline gap-2 mb-2">
-                                        <h4 className="font-semibold">{exerciseName}</h4>
+                                        <h4 className="font-semibold flex items-center gap-2">
+                                            {isSuperset && <Link2 className="h-4 w-4 text-primary/50" />}
+                                            {exerciseName}
+                                        </h4>
                                         {lastPerformance && <p className="text-xs text-muted-foreground">(Прошлый раз: {lastPerformance})</p>}
                                     </div>
                                     <Table>
