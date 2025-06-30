@@ -11,6 +11,7 @@ import Link from 'next/link';
 import * as LucideIcons from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const iconMap: { [key: string]: LucideIcon } = LucideIcons as any;
 
 const OnboardingSkeleton = () => (

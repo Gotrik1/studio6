@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -13,6 +12,7 @@ import { sportsList as initialSports, type Sport } from '@/shared/lib/mock-data/
 import * as LucideIcons from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const iconComponents: { [key: string]: LucideIcon } = LucideIcons as any;
 
 export function SportsAdminPage() {
