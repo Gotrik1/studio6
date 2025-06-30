@@ -12,8 +12,8 @@ export const achievements = [
 ];
 
 export const teams = [
-    { name: 'Кибер Орлы', role: 'Капитан', logo: 'https://placehold.co/100x100.png', dataAiHint: 'eagle logo'},
-    { name: 'Стальные Титаны', role: 'Игрок', logo: 'https://placehold.co/100x100.png', dataAiHint: 'titan logo'},
+    { name: 'Кибер Орлы', role: 'Капитан', logo: 'https://placehold.co/100x100.png', dataAiHint: 'eagle logo', slug: 'cyber-eagles', rank: 1, game: 'Valorant'},
+    { name: 'Стальные Титаны', role: 'Игрок', logo: 'https://placehold.co/100x100.png', dataAiHint: 'titan logo', slug: 'steel-titans', rank: 4, game: 'Dota 2'},
 ];
 
 export const recentMatches = [

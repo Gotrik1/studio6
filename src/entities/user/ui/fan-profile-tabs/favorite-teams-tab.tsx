@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import type { Team } from "@/entities/team/model/types";
+import { Badge } from "@/shared/ui/badge";
 
 interface FavoriteTeamsTabProps {
     teams: Team[];
@@ -32,6 +33,9 @@ export function FavoriteTeamsTab({ teams, userName }: FavoriteTeamsTabProps) {
                             />
                             <CardTitle className="mt-4 font-headline">{team.name}</CardTitle>
                             <CardDescription>{team.game}</CardDescription>
+                            <div className="mt-4 flex-1 flex items-end">
+                                <Badge variant="secondary">Ранг: #{team.rank}</Badge>
+                            </div>
                           </Card>
                       </Link>
                   ))}
