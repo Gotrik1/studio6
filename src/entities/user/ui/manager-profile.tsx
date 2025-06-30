@@ -15,6 +15,10 @@ const ManagerStatsTab = dynamic(() => import('@/entities/user/ui/manager-profile
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
   ssr: false,
 });
+const ManagedPlayersTab = dynamic(() => import('@/entities/user/ui/manager-profile-tabs/managed-players-tab').then(mod => mod.ManagedPlayersTab), {
+  loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
+  ssr: false,
+});
 const ManagerAchievementsTab = dynamic(() => import('@/entities/user/ui/manager-profile-tabs/achievements-tab').then(mod => mod.ManagerAchievementsTab), {
   loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
   ssr: false,
@@ -59,12 +63,16 @@ export function ManagerProfile({ user, achievements }: ManagerProfileProps) {
       </div>
       <div className="border-t p-4 md:p-6">
         <Tabs defaultValue="stats">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="stats">Статистика управления</TabsTrigger>
-            <TabsTrigger value="achievements">Достижения менеджера</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="stats">Статистика</TabsTrigger>
+            <TabsTrigger value="players">Игроки</TabsTrigger>
+            <TabsTrigger value="achievements">Достижения</TabsTrigger>
           </TabsList>
           <TabsContent value="stats" className="mt-4">
             <ManagerStatsTab />
+          </TabsContent>
+          <TabsContent value="players" className="mt-4">
+            <ManagedPlayersTab />
           </TabsContent>
           <TabsContent value="achievements" className="mt-4">
             <ManagerAchievementsTab achievements={achievements} />
