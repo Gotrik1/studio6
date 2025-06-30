@@ -13,14 +13,16 @@ import { PersonalRecordHistoryChart } from '@/widgets/analytics-charts/personal-
 import type { PersonalRecord } from '@/shared/lib/get-training-analytics';
 import { cn } from '@/shared/lib/utils';
 import { ScrollArea } from '@/shared/ui/scroll-area';
+import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
 
 export function PersonalRecordsPage() {
-    const { personalRecords, recordHistory } = useMemo(() => getTrainingAnalytics(trainingLogData), []);
+    const { personalRecords, recordHistory, fullExerciseHistory } = useMemo(() => getTrainingAnalytics(trainingLogData), []);
     const [selectedRecord, setSelectedRecord] = useState<PersonalRecord | null>(personalRecords[0] || null);
 
-    const selectedHistory = selectedRecord ? recordHistory[selectedRecord.exercise] || [] : [];
+    const selected1RMHistory = selectedRecord ? recordHistory[selectedRecord.exercise] || [] : [];
+    const selectedFullHistory = selectedRecord ? fullExerciseHistory[selectedRecord.exercise] || [] : [];
     
-    const firstRecord = selectedHistory.length > 0 ? selectedHistory[0] : null;
+    const firstRecord = selected1RMHistory.length > 0 ? selected1RMHistory[0] : null;
     const growth = (selectedRecord && firstRecord && firstRecord.e1RM > 0) 
         ? (((selectedRecord.e1RM - firstRecord.e1RM) / firstRecord.e1RM) * 100).toFixed(1)
         : '0.0';
@@ -75,7 +77,7 @@ export function PersonalRecordsPage() {
                                     <CardDescription>Прогресс вашего одноповторного максимума (1ПМ) с течением времени.</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <PersonalRecordHistoryChart data={selectedHistory} exerciseName={selectedRecord?.exercise || ''} />
+                                    <PersonalRecordHistoryChart data={selected1RMHistory} exerciseName={selectedRecord?.exercise || ''} />
                                 </CardContent>
                             </Card>
                             <Card>
@@ -96,7 +98,7 @@ export function PersonalRecordsPage() {
                                         <p className="text-2xl font-bold">
                                             {firstRecord?.e1RM || '-'} кг
                                         </p>
-                                        {firstRecord && <p className="text-xs text-muted-foreground">({format(new Date(firstRecord.date), 'd MMM yyyy', { locale: ru })})</p>}
+                                        {firstRecord && <p className="text-xs text-muted-foreground">({format(new Date(firstRecord.date), 'd MMMM yyyy', { locale: ru })})</p>}
                                     </div>
                                     <div className="p-4 bg-muted rounded-lg">
                                         <p className="text-sm text-muted-foreground">Общий рост</p>
@@ -108,6 +110,7 @@ export function PersonalRecordsPage() {
                                     </div>
                                 </CardContent>
                             </Card>
+                            <ExerciseHistoryTable sessions={selectedFullHistory} exerciseName={selectedRecord.exercise} />
                         </>
                     ) : (
                         <Card className="flex items-center justify-center h-full">
