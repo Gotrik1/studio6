@@ -8,12 +8,12 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardHeader, CardContent } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import type { fanUser, fanAchievements } from "@/shared/lib/mock-data/fan-profile";
 import { Skeleton } from '@/shared/ui/skeleton';
-import { teams as mockTeams } from '@/shared/lib/mock-data/teams';
 import { Wand2 } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { PDWalletTab } from '@/widgets/pd-wallet-tab';
+import type { fanUser, fanAchievements } from "@/shared/lib/mock-data/fan-profile";
+import type { Team } from '@/entities/team/model/types';
 
 
 const FanStatsTab = dynamic(() => import('@/entities/user/ui/fan-profile-tabs/stats-tab').then(mod => mod.FanStatsTab), {
@@ -33,13 +33,13 @@ const FavoriteTeamsTab = dynamic(() => import('@/entities/user/ui/fan-profile-ta
 type FanProfileProps = {
   user: typeof fanUser;
   achievements: typeof fanAchievements;
+  favoriteTeams: Team[];
 };
 
-export function FanProfile({ user, achievements }: FanProfileProps) {
+export function FanProfile({ user, achievements, favoriteTeams }: FanProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const [avatar, setAvatar] = useState(user.avatar);
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
-  const favoriteTeams = mockTeams.slice(0, 2); // Mock some favorite teams
 
   return (
     <>

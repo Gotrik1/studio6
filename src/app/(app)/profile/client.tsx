@@ -53,13 +53,15 @@ export default function ProfileClient({ sessionUser }: ProfileClientProps) {
         xp: 4500, // mock experience points
     };
 
+    const favoriteTeams = teams.slice(0, 2);
+
     switch (role) {
         case 'Администратор':
             return <AdminProfile user={adminUser} achievements={adminAchievements} />;
         case 'Тренер':
             return <CoachProfile user={coachUser} achievements={coachAchievements} />;
         case 'Болельщик':
-            return <FanProfile user={fanUser} achievements={fanAchievements} />;
+            return <FanProfile user={fanUser} achievements={fanAchievements} favoriteTeams={favoriteTeams} />;
         case 'Судья':
             return <JudgeProfile user={judgeUser} achievements={judgeAchievements} />;
         case 'Менеджер':
