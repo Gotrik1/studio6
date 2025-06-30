@@ -1,10 +1,11 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardHeader } from "@/shared/ui/card";
+import { Card, CardContent } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { judgeUser, judgeAchievements } from "@/shared/lib/mock-data/judge-profile";
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -28,25 +29,32 @@ export function JudgeProfile({ user, achievements }: JudgeProfileProps) {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
-          <Avatar className="h-24 w-24 border-4 border-secondary">
-            <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="judge portrait" />
-            <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 space-y-1">
-            <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
-            <p className="text-muted-foreground">{user.email}</p>
-            <div className="flex justify-center gap-2 pt-2 sm:justify-start">
-              <Badge variant="secondary">{user.role}</Badge>
-              <Badge variant="outline">Сертифицированный судья</Badge>
+      <Card className="overflow-hidden">
+        <div className="relative h-40 bg-muted/40">
+          <Image src="https://placehold.co/1200x400.png" alt="Profile Banner" fill className="object-cover" data-ai-hint="gavel scales justice" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+        </div>
+        <div className="relative px-6 pb-6">
+            <div className="flex items-end gap-6 -mt-20">
+                 <Avatar className="h-32 w-32 border-4 border-background bg-background">
+                    <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="judge portrait" />
+                    <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
+                    <div className="space-y-1">
+                        <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
+                        <p className="text-muted-foreground">{user.email}</p>
+                    </div>
+                     <div className="flex gap-2">
+                        <Button>Просмотр расписания</Button>
+                    </div>
+                </div>
             </div>
-          </div>
-          <Button>Просмотр расписания</Button>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Сертифицированный судья для турниров по CS:GO 2 и Valorant.</p>
-        </CardContent>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+                <Badge variant="secondary">{user.role}</Badge>
+                <Badge variant="outline">Сертифицированный судья</Badge>
+            </div>
+        </div>
       </Card>
       
       <Tabs defaultValue="stats">
@@ -54,10 +62,10 @@ export function JudgeProfile({ user, achievements }: JudgeProfileProps) {
           <TabsTrigger value="stats">Статистика судейства</TabsTrigger>
           <TabsTrigger value="achievements">Достижения судьи</TabsTrigger>
         </TabsList>
-        <TabsContent value="stats">
+        <TabsContent value="stats" className="mt-4">
           <JudgeStatsTab />
         </TabsContent>
-        <TabsContent value="achievements">
+        <TabsContent value="achievements" className="mt-4">
             <JudgeAchievementsTab achievements={achievements} />
         </TabsContent>
       </Tabs>

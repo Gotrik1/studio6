@@ -2,10 +2,11 @@
 
 import dynamic from 'next/dynamic';
 import { useState } from 'react';
+import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardHeader } from "@/shared/ui/card";
+import { Card, CardContent } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { coachUser, coachAchievements } from "@/shared/lib/mock-data/coach-profile";
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -44,25 +45,32 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
-          <Avatar className="h-24 w-24 border-4 border-primary">
-            <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="sports coach" />
-            <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 space-y-1">
-            <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
-            <p className="text-muted-foreground">{user.email}</p>
-            <div className="flex justify-center gap-2 pt-2 sm:justify-start">
-              <Badge>{user.role}</Badge>
-              <Badge variant="secondary">Сертифицированный ментор</Badge>
+      <Card className="overflow-hidden">
+        <div className="relative h-40 bg-muted/40">
+          <Image src="https://placehold.co/1200x400.png" alt="Profile Banner" fill className="object-cover" data-ai-hint="sports strategy playbook" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+        </div>
+        <div className="relative px-6 pb-6">
+            <div className="flex items-end gap-6 -mt-20">
+                 <Avatar className="h-32 w-32 border-4 border-background bg-background">
+                    <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="sports coach" />
+                    <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
+                    <div className="space-y-1">
+                        <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
+                        <p className="text-muted-foreground">{user.email}</p>
+                    </div>
+                     <div className="flex gap-2">
+                        <Button>Просмотр команды</Button>
+                    </div>
+                </div>
             </div>
-          </div>
-          <Button>Просмотр команды</Button>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Опытный тренер, специализирующийся на командных стратегиях в Valorant.</p>
-        </CardContent>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+                <Badge>{user.role}</Badge>
+                <Badge variant="secondary">Сертифицированный ментор</Badge>
+            </div>
+        </div>
       </Card>
       
       <Tabs defaultValue="stats">
@@ -71,13 +79,13 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
           <TabsTrigger value="achievements">Достижения тренера</TabsTrigger>
           <TabsTrigger value="my-players">Мои игроки</TabsTrigger>
         </TabsList>
-        <TabsContent value="stats">
+        <TabsContent value="stats" className="mt-4">
           <CoachStatsTab />
         </TabsContent>
-        <TabsContent value="achievements">
+        <TabsContent value="achievements" className="mt-4">
           <CoachAchievementsTab achievements={achievements} />
         </TabsContent>
-        <TabsContent value="my-players">
+        <TabsContent value="my-players" className="mt-4">
           <MyPlayersTab players={coachedPlayers} onAnalyzePlayer={handleAnalyzePlayer} />
         </TabsContent>
       </Tabs>

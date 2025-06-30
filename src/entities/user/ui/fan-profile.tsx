@@ -1,10 +1,11 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardHeader } from "@/shared/ui/card";
+import { Card, CardContent } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { fanUser, fanAchievements } from "@/shared/lib/mock-data/fan-profile";
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -28,25 +29,32 @@ export function FanProfile({ user, achievements }: FanProfileProps) {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
-          <Avatar className="h-24 w-24 border-4 border-primary">
-            <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="sports fan" />
-            <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
-          </Avatar>
-          <div className="flex-1 space-y-1">
-            <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
-            <p className="text-muted-foreground">{user.email}</p>
-            <div className="flex justify-center gap-2 pt-2 sm:justify-start">
-              <Badge>{user.role}</Badge>
-              <Badge variant="secondary">Фанат #1 Cyber Eagles</Badge>
+      <Card className="overflow-hidden">
+        <div className="relative h-40 bg-muted/40">
+          <Image src="https://placehold.co/1200x400.png" alt="Profile Banner" fill className="object-cover" data-ai-hint="stadium crowd cheering" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+        </div>
+        <div className="relative px-6 pb-6">
+            <div className="flex items-end gap-6 -mt-20">
+                 <Avatar className="h-32 w-32 border-4 border-background bg-background">
+                    <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="sports fan" />
+                    <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1 flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
+                    <div className="space-y-1">
+                        <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
+                        <p className="text-muted-foreground">{user.email}</p>
+                    </div>
+                     <div className="flex gap-2">
+                        <Button variant="outline">Подписаться</Button>
+                    </div>
+                </div>
             </div>
-          </div>
-          <Button variant="outline">Подписаться</Button>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center text-sm text-muted-foreground sm:text-left">Преданный болельщик, поддерживающий массовую киберспортивную сцену.</p>
-        </CardContent>
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+                <Badge>{user.role}</Badge>
+                <Badge variant="secondary">Фанат #1 Cyber Eagles</Badge>
+            </div>
+        </div>
       </Card>
       
       <Tabs defaultValue="stats">
@@ -54,10 +62,10 @@ export function FanProfile({ user, achievements }: FanProfileProps) {
           <TabsTrigger value="stats">Статистика болельщика</TabsTrigger>
           <TabsTrigger value="achievements">Достижения болельщика</TabsTrigger>
         </TabsList>
-        <TabsContent value="stats">
+        <TabsContent value="stats" className="mt-4">
           <FanStatsTab />
         </TabsContent>
-        <TabsContent value="achievements">
+        <TabsContent value="achievements" className="mt-4">
           <FanAchievementsTab achievements={achievements} />
         </TabsContent>
       </Tabs>
