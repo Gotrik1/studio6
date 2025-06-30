@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -21,14 +20,16 @@ type MatchState = Match & {
 };
 
 export function CrmTournamentMatches() {
-    const allMatches = summerKickoffTournament.bracket.rounds
-        .flatMap(round => round.matches)
-        .filter((match): match is Match => 'team2' in match);
+    const { toast } = useToast();
+
+    const allMatches: Match[] = summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
+        const playableMatches = round.matches.filter((match): match is Match => 'team2' in match);
+        return acc.concat(playableMatches);
+    }, [] as Match[]);
     
-    const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, status: m.score && m.score !== 'VS' ? 'played' : 'pending' })));
+    const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, score: m.score || '', status: m.score && m.score !== 'VS' ? 'played' : 'pending' })));
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [isScoreDialogOpen, setIsScoreDialogOpen] = useState(false);
-    const { toast } = useToast();
 
     const handleOpenScoreDialog = (match: Match) => {
         setSelectedMatch(match);
@@ -39,15 +40,18 @@ export function CrmTournamentMatches() {
         setMatches(prev => prev.map(match => {
             if (match.id !== result.matchId) return match;
             
-            let newScore = `${result.scoreA}-${result.scoreB}`;
-            let status: MatchState['status'] = 'played';
+            let newScore: string;
+            let status: MatchState['status'];
 
             if (result.type.startsWith('tech_defeat')) {
-                newScore = result.type === 'tech_defeat_t2' ? 'W-L' : 'L-W'; // Note: team1 is winner in tech_defeat_t2
+                newScore = result.type === 'tech_defeat_t2' ? 'W-L' : 'L-W';
                 status = result.type;
+            } else { // It's a 'score' type
+                newScore = `${result.scoreA}-${result.scoreB}`;
+                status = 'played';
             }
 
-            return { ...match, score: newScore, status: status, comment: result.comment };
+            return { ...match, score: newScore, status, comment: result.comment };
         }));
         toast({
             title: "Результат обновлен!",
@@ -70,6 +74,14 @@ export function CrmTournamentMatches() {
         }
     }
 
+    // Create a map for quick lookup of round names
+    const matchIdToRoundName = summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
+        round.matches.forEach(match => {
+            acc[match.id] = round.name;
+        });
+        return acc;
+    }, {} as Record<number, string>);
+
     return (
         <>
             <Card>
@@ -88,42 +100,35 @@ export function CrmTournamentMatches() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {summerKickoffTournament.bracket.rounds.map(round => 
-                                round.matches.filter((m): m is Match => 'team2' in m).map(match => {
-                                    const currentMatchState = matches.find(m => m.id === match.id);
-                                    if (!currentMatchState) return null;
-                                    
-                                    return (
-                                        <TableRow key={match.id}>
-                                            <TableCell className="text-muted-foreground">{round.name}</TableCell>
-                                            <TableCell className="font-medium">{currentMatchState?.team1?.name} vs {currentMatchState?.team2?.name}</TableCell>
-                                            <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    {getResultBadge(currentMatchState)}
-                                                    {currentMatchState.comment && (
-                                                         <TooltipProvider>
-                                                            <Tooltip>
-                                                                <TooltipTrigger>
-                                                                    <MessageSquare className="h-4 w-4 text-muted-foreground" />
-                                                                </TooltipTrigger>
-                                                                <TooltipContent>
-                                                                    <p className="max-w-xs">{currentMatchState.comment}</p>
-                                                                </TooltipContent>
-                                                            </Tooltip>
-                                                        </TooltipProvider>
-                                                    )}
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-right">
-                                                <Button variant="outline" size="sm" onClick={() => handleOpenScoreDialog(currentMatchState)}>
-                                                    <Edit className="mr-2 h-3 w-3" />
-                                                    Управлять
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })
-                            )}
+                            {matches.map(currentMatchState => (
+                                <TableRow key={currentMatchState.id}>
+                                    <TableCell className="text-muted-foreground">{matchIdToRoundName[currentMatchState.id]}</TableCell>
+                                    <TableCell className="font-medium">{currentMatchState.team1.name} vs {currentMatchState.team2.name}</TableCell>
+                                    <TableCell>
+                                        <div className="flex items-center gap-2">
+                                            {getResultBadge(currentMatchState)}
+                                            {currentMatchState.comment && (
+                                                    <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger>
+                                                            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <p className="max-w-xs">{currentMatchState.comment}</p>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            )}
+                                        </div>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <Button variant="outline" size="sm" onClick={() => handleOpenScoreDialog(currentMatchState)}>
+                                            <Edit className="mr-2 h-3 w-3" />
+                                            Управлять
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
                         </TableBody>
                     </Table>
                 </CardContent>
