@@ -36,3 +36,4 @@ import './flows/generate-match-interview-flow';
 import './flows/analyze-report-flow';
 import './flows/generate-sponsorship-pitch';
 import './flows/sponsorship-scout-flow';
+import './flows/analyze-team-performance-flow';

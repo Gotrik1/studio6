@@ -5,13 +5,13 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter }
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Check, X } from 'lucide-react';
+import { Check, X, BrainCircuit } from 'lucide-react';
 import { useState } from 'react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
-import { AITeamAssistantTab } from '@/widgets/ai-team-assistant-tab';
 import { JoinRequestAnalysisDialog } from '@/widgets/join-request-analysis-dialog';
 import { SponsorshipPitchGenerator } from '@/widgets/sponsorship-pitch-generator';
+import Link from 'next/link';
 
 
 const initialJoinRequests = [
@@ -54,7 +54,7 @@ export function TeamManagementDashboard() {
                  <TabsList className="grid w-full grid-cols-3">
                     <TabsTrigger value="requests">Заявки</TabsTrigger>
                     <TabsTrigger value="sponsorship">Спонсорство</TabsTrigger>
-                    <TabsTrigger value="ai-assistant">AI-Ассистент</TabsTrigger>
+                    <TabsTrigger value="ai-coach">AI-Коуч</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="requests" className="mt-4">
@@ -102,8 +102,22 @@ export function TeamManagementDashboard() {
                     <SponsorshipPitchGenerator />
                 </TabsContent>
                 
-                <TabsContent value="ai-assistant" className="mt-4">
-                    <AITeamAssistantTab />
+                <TabsContent value="ai-coach" className="mt-4">
+                    <Card>
+                        <CardHeader>
+                             <CardTitle>Продвинутый AI-Коуч</CardTitle>
+                             <CardDescription>Получите глубокий анализ производительности вашей команды, выявите слабые места и получите конкретные рекомендации для тренировок.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                           <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg">
+                                <BrainCircuit className="h-12 w-12 text-muted-foreground mb-4" />
+                                <p className="font-semibold mb-2">Готовы к глубокому разбору?</p>
+                                <Button asChild>
+                                    <Link href="/teams/cyber-eagles/coach">Перейти к AI-Коучу</Link>
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
                 </TabsContent>
             </Tabs>
              <JoinRequestAnalysisDialog 
