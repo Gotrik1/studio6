@@ -22,7 +22,7 @@ const sitemapData: TreeNode[] = [
         { name: 'Соревнования', type: 'folder', children: [
             { name: 'Список турниров', type: 'file', href: '/tournaments' },
             { name: 'Создание турнира', type: 'file', href: '/tournaments/new' },
-            { name: 'Профиль турнира', type: 'file', href: '/tournaments/summer-kickoff-2024' },
+            { name: 'Профиль турнира', type: 'file', href: '/tournaments/summer-streetball-cup-2024' },
         ]},
         { name: 'Тренировки', type: 'folder', children: [
             { name: 'Центр тренировок', type: 'file', href: '/training' },
