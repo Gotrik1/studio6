@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -12,7 +13,7 @@ import { Badge } from '@/shared/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 
 type MatchUnion = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
-type Match = Extract<MatchUnion, { team2: unknown }>;
+type Match = Extract<MatchUnion, { team2?: unknown }>;
 
 type MatchState = Match & {
     comment?: string;
@@ -22,10 +23,9 @@ type MatchState = Match & {
 export function CrmTournamentMatches() {
     const { toast } = useToast();
 
-    const allMatches: Match[] = summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
-        const playableMatches = round.matches.filter((match): match is Match => 'team2' in match);
-        return acc.concat(playableMatches);
-    }, [] as Match[]);
+    const allMatches = summerKickoffTournament.bracket.rounds
+        .flatMap(round => round.matches)
+        .filter((match): match is Match => 'team2' in match);
     
     const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, score: m.score || '', status: m.score && m.score !== 'VS' ? 'played' : 'pending' })));
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
@@ -43,15 +43,15 @@ export function CrmTournamentMatches() {
             let newScore: string;
             let status: MatchState['status'];
 
-            if (result.type.startsWith('tech_defeat')) {
-                newScore = result.type === 'tech_defeat_t2' ? 'W-L' : 'L-W';
-                status = result.type;
-            } else { // It's a 'score' type
+            if (result.type === 'score') {
                 newScore = `${result.scoreA}-${result.scoreB}`;
                 status = 'played';
+            } else {
+                newScore = result.type === 'tech_defeat_t2' ? 'W-L' : 'L-W';
+                status = result.type;
             }
 
-            return { ...match, score: newScore, status, comment: result.comment };
+            return { ...match, score: newScore, status: status, comment: result.comment };
         }));
         toast({
             title: "Результат обновлен!",
@@ -103,7 +103,7 @@ export function CrmTournamentMatches() {
                             {matches.map(currentMatchState => (
                                 <TableRow key={currentMatchState.id}>
                                     <TableCell className="text-muted-foreground">{matchIdToRoundName[currentMatchState.id]}</TableCell>
-                                    <TableCell className="font-medium">{currentMatchState.team1.name} vs {currentMatchState.team2.name}</TableCell>
+                                    <TableCell className="font-medium">{currentMatchState.team1?.name} vs {currentMatchState.team2?.name}</TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             {getResultBadge(currentMatchState)}
