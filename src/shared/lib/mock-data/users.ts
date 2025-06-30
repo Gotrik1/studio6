@@ -1,4 +1,5 @@
 
+
 export const userList = [
     {
         id: '1',
@@ -27,7 +28,7 @@ export const userList = [
         name: "Maria 'Shadow' Petrova",
         email: 'maria.p@example.com',
         avatar: 'https://placehold.co/100x100.png',
-        role: 'Модератор',
+        role: 'Игрок',
         status: 'Активен',
         profileUrl: '/administration/moderator',
         activitySummary: 'Обработала 50 жалоб за неделю. Активность в чате низкая. Высокий рейтинг от пользователей.',
@@ -38,7 +39,7 @@ export const userList = [
         name: 'Николай Васильев',
         email: 'nikolay.v@example.com',
         avatar: 'https://placehold.co/100x100.png',
-        role: 'Судья',
+        role: 'Игрок',
         status: 'Активен',
         profileUrl: '/administration/judge',
         activitySummary: 'Провел судейство 10 матчей. Положительные отзывы от капитанов команд. Нет нарушений.',
