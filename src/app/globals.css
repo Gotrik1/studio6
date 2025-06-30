@@ -136,6 +136,39 @@ html {
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     animation: shine 4s infinite;
   }
+
+  .hologram-skeleton {
+    @apply relative overflow-hidden rounded-md;
+    background-color: hsl(var(--primary) / 0.1);
+    border: 1px solid hsl(var(--primary) / 0.2);
+  }
+
+  .hologram-skeleton::after {
+    @apply absolute block content-[''];
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: translateY(-100%);
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      hsl(var(--primary) / 0.2) 48%,
+      hsl(var(--primary) / 0.5) 50%,
+      hsl(var(--primary) / 0.2) 52%,
+      transparent 100%
+    );
+    animation: scan-vertical 2.5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@keyframes scan-vertical {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
 }
 
 @keyframes slogan-fade-in {
