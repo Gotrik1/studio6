@@ -51,7 +51,7 @@ const AdminSectionCard = ({ title, description, href, icon: Icon }: AdminSection
 );
 
 const managementCards: AdminSectionCardProps[] = [
-    { title: "Пользователи и роли", description: "Управление всеми пользователями.", href: "/administration/users", icon: Users },
+    { title: "Управление пользователями", description: "Просмотр, роли и статусы всех пользователей.", href: "/administration/users", icon: Users },
     { title: "Турниры (CRM)", description: "Полный цикл управления турнирами.", href: "/administration/tournament-crm/dashboard", icon: Trophy },
     { title: "Очередь модерации", description: "Жалобы, споры и инциденты.", href: "/administration/moderation-queue", icon: Gavel },
     { title: "Геймификация", description: "Настройка рангов и квестов.", href: "/administration/gamification", icon: ShieldCheck },
