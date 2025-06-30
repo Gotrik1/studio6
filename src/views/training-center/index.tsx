@@ -4,7 +4,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Progress } from "@/shared/ui/progress";
-import { Dumbbell, Calendar, TrendingUp, BrainCircuit, BookOpen, Replace, LayoutGrid } from "lucide-react";
+import { Dumbbell, Calendar, TrendingUp, BrainCircuit, BookOpen, Replace, LayoutGrid, BarChart3 } from "lucide-react";
 import Link from "next/link";
 import { useTraining } from '@/app/providers/training-provider';
 
@@ -79,9 +79,10 @@ export function TrainingCenterPage() {
                         </CardContent>
                     </Card>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
                         <Button variant="outline" size="lg" asChild><Link href="/training/log"><BookOpen className="mr-2 h-4 w-4" />Дневник</Link></Button>
-                        <Button variant="outline" size="lg" asChild><Link href="/training/programs"><Replace className="mr-2 h-4 w-4" />Сменить программу</Link></Button>
+                        <Button variant="outline" size="lg" asChild><Link href="/training/analytics"><BarChart3 className="mr-2 h-4 w-4" />Аналитика</Link></Button>
+                        <Button variant="outline" size="lg" asChild><Link href="/training/programs"><Replace className="mr-2 h-4 w-4" />Программы</Link></Button>
                         <Button variant="outline" size="lg" asChild><Link href="/training/programs/new"><LayoutGrid className="mr-2 h-4 w-4" />Конструктор</Link></Button>
                     </div>
                 </div>
