@@ -36,8 +36,7 @@ import {
   DollarSign,
   UserSearch,
   Megaphone,
-  Award,
-  BookOpen,
+  HeartPulse,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -60,9 +59,7 @@ const mainNavItems = [
     { href: "/friends", icon: Users2, label: "Друзья" },
     { href: "/tournaments", icon: Trophy, label: "Соревнования" },
     { href: "/training", icon: Dumbbell, label: "Тренировки" },
-    { href: "/training/programs", icon: BookOpen, label: "Программы" },
-    { href: "/training/exercises", icon: BookOpen, label: "Упражнения" },
-    { href: "/training/records", icon: Award, label: "Рекорды" },
+    { href: "/training/nutrition-diary", icon: HeartPulse, label: "Дневник питания" },
     { href: "/booking", icon: MapPin, label: "Площадки" },
     { href: "/store", icon: ShoppingCart, label: "Магазин" },
     { href: "/quests", icon: ShieldCheck, label: "Квесты" },
@@ -138,6 +135,9 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     const isActive = (href: string) => {
         if (href === '/dashboard' || href === '/') {
             return pathname === '/dashboard' || pathname === '/';
+        }
+        if (href === '/training') {
+            return pathname.startsWith('/training');
         }
         return pathname.startsWith(href);
     }
