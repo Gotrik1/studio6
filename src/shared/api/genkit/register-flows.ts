@@ -42,3 +42,4 @@ import './flows/generate-training-plan-flow';
 import './flows/generate-training-program-flow';
 import './flows/analyze-esports-performance-flow';
 import './flows/generate-match-commentary-flow';
+import './flows/find-sponsors-for-team-flow';
