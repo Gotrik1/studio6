@@ -9,7 +9,7 @@ import { Input } from '@/shared/ui/input';
 import { exercisesList, type Exercise } from '@/shared/lib/mock-data/exercises';
 import Image from 'next/image';
 import { Search } from 'lucide-react';
-import { ExerciseDetailsDialog } from '@/widgets/exercise-details-dialog';
+import Link from 'next/link';
 
 const muscleGroups = ['Все', 'Грудь', 'Спина', 'Ноги', 'Плечи', 'Руки', 'Пресс'];
 const equipmentTypes = ['Все', 'Штанга', 'Гантели', 'Тренажер', 'Собственный вес'];
@@ -19,9 +19,6 @@ export function ExercisesCatalogPage() {
     const [muscleFilter, setMuscleFilter] = useState('Все');
     const [equipmentFilter, setEquipmentFilter] = useState('Все');
 
-    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-    const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(null);
-
     const filteredExercises = useMemo(() => {
         return exercisesList.filter(exercise => {
             const matchesSearch = exercise.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -30,11 +27,6 @@ export function ExercisesCatalogPage() {
             return matchesSearch && matchesMuscle && matchesEquipment;
         });
     }, [searchQuery, muscleFilter, equipmentFilter]);
-
-    const handleCardClick = (exercise: Exercise) => {
-        setSelectedExercise(exercise);
-        setIsDetailsOpen(true);
-    };
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -85,33 +77,33 @@ export function ExercisesCatalogPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredExercises.map((exercise: Exercise) => (
-                    <Card 
-                        key={exercise.id} 
-                        className="flex flex-col overflow-hidden cursor-pointer transition-all hover:shadow-lg hover:border-primary"
-                        onClick={() => handleCardClick(exercise)}
-                    >
-                        <CardHeader className="p-0 relative h-40">
-                            <Image
-                                src={exercise.image}
-                                alt={exercise.name}
-                                fill
-                                className="object-cover"
-                                data-ai-hint={exercise.imageHint}
-                            />
-                        </CardHeader>
-                        <CardContent className="p-4 flex-1">
-                            <CardTitle className="text-lg">{exercise.name}</CardTitle>
-                            <div className="mt-2 flex flex-wrap gap-2">
-                                <Badge variant="secondary">{exercise.muscleGroup}</Badge>
-                                <Badge variant="outline">{exercise.equipment}</Badge>
-                            </div>
-                        </CardContent>
-                        <CardFooter className="p-0">
-                            <div className="w-full text-center p-2 text-sm font-medium text-primary bg-primary/10">
-                                Подробнее
-                            </div>
-                        </CardFooter>
-                    </Card>
+                    <Link key={exercise.id} href={`/training/exercises/${exercise.id}`} className="block h-full">
+                        <Card 
+                            className="flex flex-col overflow-hidden cursor-pointer transition-all hover:shadow-lg hover:border-primary h-full"
+                        >
+                            <CardHeader className="p-0 relative h-40">
+                                <Image
+                                    src={exercise.image}
+                                    alt={exercise.name}
+                                    fill
+                                    className="object-cover"
+                                    data-ai-hint={exercise.imageHint}
+                                />
+                            </CardHeader>
+                            <CardContent className="p-4 flex-1">
+                                <CardTitle className="text-lg">{exercise.name}</CardTitle>
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                    <Badge variant="secondary">{exercise.muscleGroup}</Badge>
+                                    <Badge variant="outline">{exercise.equipment}</Badge>
+                                </div>
+                            </CardContent>
+                            <CardFooter className="p-0">
+                                <div className="w-full text-center p-2 text-sm font-medium text-primary bg-primary/10">
+                                    Подробнее
+                                </div>
+                            </CardFooter>
+                        </Card>
+                    </Link>
                 ))}
                  {filteredExercises.length === 0 && (
                     <div className="col-span-full text-center py-16 text-muted-foreground">
@@ -119,11 +111,6 @@ export function ExercisesCatalogPage() {
                     </div>
                 )}
             </div>
-            <ExerciseDetailsDialog 
-                isOpen={isDetailsOpen}
-                onOpenChange={setIsDetailsOpen}
-                exercise={selectedExercise}
-            />
         </div>
     );
 }
