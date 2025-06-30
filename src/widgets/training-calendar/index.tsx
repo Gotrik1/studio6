@@ -9,6 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { cn } from '@/shared/lib/utils';
 import { Badge } from '@/shared/ui/badge';
 import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 const statusMap = {
     completed: { color: 'bg-green-500', label: 'Выполнено' },
@@ -46,7 +47,7 @@ export function TrainingCalendar() {
                         </div>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-4 space-y-2">
-                         <p className="font-semibold text-sm">{format(props.date, 'd MMMM yyyy')}</p>
+                         <p className="font-semibold text-sm">{format(props.date, 'd MMMM yyyy', { locale: ru })}</p>
                          {dayWorkouts.map(workout => (
                              <div key={workout.id} className="text-xs">
                                  <Badge variant={workout.status === 'completed' ? 'default' : workout.status === 'planned' ? 'secondary' : 'destructive'}>
@@ -78,6 +79,7 @@ export function TrainingCalendar() {
                     components={{
                         DayContent: CustomDay
                     }}
+                    locale={ru}
                 />
             </CardContent>
         </Card>
