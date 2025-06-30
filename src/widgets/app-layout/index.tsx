@@ -88,7 +88,7 @@ const secondaryNavItems = [
 
 function AppFooter() {
     return (
-        <footer className="hidden md:block bg-background text-sm">
+        <footer className="hidden md:block bg-background text-sm border-t">
             <div className="container mx-auto px-4 sm:px-6 py-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     {/* Column 1: Logo and Copyright */}
