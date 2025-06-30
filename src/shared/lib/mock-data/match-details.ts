@@ -29,10 +29,10 @@ export const matchData = {
         { time: "35:01", event: "Финальный свисток", player: "", team: "" },
     ],
     teamStats: {
-        kills: { label: "Голы", team1: 5, team2: 3 },
-        assists: { label: "Удары в створ", team1: 12, team2: 8 },
-        headshots: { label: "Владение мячом (%)", team1: 62, team2: 38 },
-        firstBloods: { label: "Угловые", team1: 8, team2: 4 },
+        goals: { label: "Голы", team1: 5, team2: 3 },
+        shotsOnTarget: { label: "Удары в створ", team1: 12, team2: 8 },
+        possession: { label: "Владение мячом (%)", team1: 62, team2: 38 },
+        corners: { label: "Угловые", team1: 8, team2: 4 },
     },
     media: [
         { type: "image", src: "https://placehold.co/600x400.png", hint: 'football action' },
