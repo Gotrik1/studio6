@@ -1,6 +1,4 @@
 
-import type { summerKickoffTournament as KickoffType } from './tournament-details';
-import type { allTournaments } from './tournaments';
 
 export const summerKickoffTournament = {
     name: "Летний Кубок по Стритболу",

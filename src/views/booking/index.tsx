@@ -8,7 +8,7 @@ import { Input } from '@/shared/ui/input';
 import { Search, MapPin, DollarSign, Star, Calendar as CalendarIcon, Filter } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import Image from 'next/image';
-import { venuesList, type Venue } from '@/shared/lib/mock-data/booking';
+import { venuesList } from '@/shared/lib/mock-data/booking';
 import { Label } from '@/shared/ui/label';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';

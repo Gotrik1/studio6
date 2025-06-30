@@ -2,14 +2,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
-import { Coins, TrendingUp, TrendingDown, Save } from 'lucide-react';
+import { TrendingUp, TrendingDown, Save } from 'lucide-react';
 import { pdRules as initialRules, type PdRule } from '@/shared/config/gamification';
 import { useToast } from '@/shared/hooks/use-toast';
-import { cn } from '@/shared/lib/utils';
 
 export function PDEconomyPage() {
     const { toast } = useToast();

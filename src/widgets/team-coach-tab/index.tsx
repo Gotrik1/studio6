@@ -80,7 +80,7 @@ export function TeamCoachTab() {
                     <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg">
                         <BrainCircuit className="h-12 w-12 text-muted-foreground mb-4" />
                         <p className="font-semibold mb-2">Готовы к глубокому разбору?</p>
-                        <p className="text-sm text-muted-foreground">Нажмите "Начать анализ", чтобы получить инсайты по игре команды.</p>
+                        <p className="text-sm text-muted-foreground">Нажмите «Начать анализ», чтобы получить инсайты по игре команды.</p>
                     </div>
                 )}
                 

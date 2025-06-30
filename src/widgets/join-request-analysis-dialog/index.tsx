@@ -15,7 +15,6 @@ import { BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { analyzeJoinRequest, type AnalyzeJoinRequestOutput } from '@/shared/api/genkit/flows/analyze-join-request-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
-import { cn } from '@/shared/lib/utils';
 
 type JoinRequest = {
     name: string;
