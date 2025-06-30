@@ -82,9 +82,9 @@ export function TeamManagementPage() {
                                                 {request.name}
                                             </TableCell>
                                             <TableCell>{request.role}</TableCell>
-                                            <TableCell className="text-right space-x-2">
+                                            <TableCell className="text-right space-x-1">
                                                  <Button variant="outline" size="sm" onClick={() => handleAnalyze(request)}>AI-Анализ</Button>
-                                                <Button variant="outline" size="icon" onClick={() => handleDecline(request.name)}><X className="h-4 w-4" /></Button>
+                                                <Button variant="ghost" size="icon" onClick={() => handleDecline(request.name)}><X className="h-4 w-4 text-red-500" /></Button>
                                                 <Button size="icon" onClick={() => handleAccept(request.name)}><Check className="h-4 w-4" /></Button>
                                             </TableCell>
                                         </TableRow>

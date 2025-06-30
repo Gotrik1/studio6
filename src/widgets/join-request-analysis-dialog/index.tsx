@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -14,6 +15,7 @@ import { BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { analyzeJoinRequest, type AnalyzeJoinRequestOutput } from '@/shared/api/genkit/flows/analyze-join-request-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
+import { cn } from '@/shared/lib/utils';
 
 type JoinRequest = {
     name: string;
@@ -53,8 +55,8 @@ export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamN
       const mockPlayerProfile = `
         Player: ${request.name}
         Role: ${request.role}
-        Stats: Win Rate 58%, KDA 1.2, Top agent: Omen.
-        Match History: Mostly positive results in ranked play, tends to play aggressively.
+        Stats: Avg goals per game: 1.2, Successful tackles: 75%.
+        Match History: Mostly positive results in the city league, tends to play aggressively.
       `;
 
       try {
@@ -72,7 +74,7 @@ export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamN
   };
 
   const onOpenChangeHandler = (open: boolean) => {
-    if (open) {
+    if (open && request) {
       handleAnalyze(); // Analyze automatically when dialog opens
     } else {
       setAiResult(null);
