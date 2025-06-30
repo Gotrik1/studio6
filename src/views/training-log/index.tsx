@@ -1,71 +1,93 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
-import { trainingLogData as initialLog, type TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
+import { useTraining } from '@/app/providers/training-provider';
+import type { TrainingLogEntry, ExerciseLog } from '@/shared/lib/mock-data/training-log';
 import { TrainingDayCard } from '@/widgets/training-day-card';
-import { History } from 'lucide-react';
+import { Dumbbell } from 'lucide-react';
+import Link from 'next/link';
 
 export function TrainingLogPage() {
     const { toast } = useToast();
-    const [logEntries, setLogEntries] = useState<TrainingLogEntry[]>(initialLog);
+    const { currentProgram } = useTraining();
+    const [logEntries, setLogEntries] = useState<TrainingLogEntry[]>([]);
 
-    const handleCopyYesterday = () => {
-        const lastCompleted = logEntries.find(entry => entry.status === 'completed');
-        if (lastCompleted) {
-            toast({
-                title: 'Тренировка скопирована!',
-                description: `Тренировка "${lastCompleted.workoutName}" добавлена на сегодня.`,
+    useEffect(() => {
+        if (currentProgram) {
+            const plannedEntries = currentProgram.weeklySplit.map((day): TrainingLogEntry => {
+                const exercises: ExerciseLog[] = day.exercises.map(ex => {
+                    const numSets = parseInt(ex.sets.split('-')[0], 10) || 3;
+                    return {
+                        name: ex.name,
+                        notes: '',
+                        sets: Array.from({ length: numSets }, () => ({
+                            plannedReps: ex.reps,
+                            plannedWeight: ex.plannedWeight || '',
+                            isCompleted: false,
+                        })),
+                    };
+                });
+
+                return {
+                    id: `${currentProgram.id}-${day.day}`,
+                    date: `День ${day.day}`,
+                    workoutName: day.title,
+                    status: 'planned',
+                    exercises,
+                };
             });
-            // In a real app, this would create a new entry
+            setLogEntries(plannedEntries);
         } else {
-            toast({
-                variant: 'destructive',
-                title: 'Не найдено',
-                description: 'Нет завершенных тренировок для копирования.',
-            });
+            setLogEntries([]);
         }
-    };
+    }, [currentProgram]);
 
-    const handleDelete = (id: string) => {
-        setLogEntries(prev => prev.filter(entry => entry.id !== id));
-        toast({ title: 'Запись удалена' });
-    };
-
-    const handleCopy = (id: string) => {
-        const entryToCopy = logEntries.find(entry => entry.id === id);
-        if (entryToCopy) {
-            toast({
-                title: 'Запись скопирована',
-                description: `Тренировка "${entryToCopy.workoutName}" готова для добавления в ваш план.`,
-            });
-        }
-    };
-    
     const handleUpdateEntry = (updatedEntry: TrainingLogEntry) => {
-        setLogEntries(prev => prev.map(entry => entry.id === updatedEntry.id ? updatedEntry : entry));
+        setLogEntries(prev => prev.map(entry => (entry.id === updatedEntry.id ? updatedEntry : entry)));
         toast({
             title: 'Тренировка завершена!',
             description: `Данные для "${updatedEntry.workoutName}" сохранены.`,
         });
     };
 
+    const handleDelete = (id: string) => {
+        toast({ title: 'Действие недоступно', description: 'Запланированные тренировки нельзя удалить.' });
+    };
+
+    const handleCopy = (id: string) => {
+        toast({ title: 'Действие недоступно', description: 'Запланированные тренировки нельзя скопировать.' });
+    };
+
+    if (!currentProgram) {
+        return (
+            <div className="flex items-center justify-center h-[50vh] opacity-0 animate-fade-in-up">
+                <Card className="w-full max-w-md text-center">
+                    <CardContent className="p-8">
+                        <Dumbbell className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                        <h3 className="text-xl font-semibold">Нет активной программы</h3>
+                        <p className="text-muted-foreground mt-2 mb-4">
+                            Чтобы начать вести дневник, пожалуйста, выберите программу тренировок.
+                        </p>
+                        <Button asChild>
+                            <Link href="/training/programs">Выбрать программу</Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+    
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-2">
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">Дневник тренировок</h1>
-                    <p className="text-muted-foreground">
-                        Заполняйте данные, чтобы отслеживать свой прогресс. Кликните на карточку, чтобы начать.
-                    </p>
-                </div>
-                <Button onClick={handleCopyYesterday}>
-                    <History className="mr-2 h-4 w-4" />
-                    Сделать как вчера
-                </Button>
+            <div className="space-y-2">
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Дневник тренировок</h1>
+                <p className="text-muted-foreground">
+                    Ваш план на неделю. Выполняйте тренировки и записывайте результаты.
+                </p>
             </div>
 
             <Card>
