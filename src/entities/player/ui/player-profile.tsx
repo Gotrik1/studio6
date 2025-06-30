@@ -1,4 +1,3 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -176,11 +175,6 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
            <div className="flex items-center justify-center gap-4 pt-2 text-sm text-muted-foreground sm:justify-start">
               <div className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {user.location}</div>
               <div className="flex items-center gap-1"><Activity className="h-4 w-4" /> {user.mainSport}</div>
-              <div className="flex items-center gap-2">
-                  <Link href="#" className="text-muted-foreground hover:text-primary"><LinkIcon className="h-4 w-4" /></Link>
-                  <Link href="#" className="text-muted-foreground hover:text-primary"><LinkIcon className="h-4 w-4" /></Link>
-                  <Link href="#" className="text-muted-foreground hover:text-primary"><LinkIcon className="h-4 w-4" /></Link>
-              </div>
           </div>
         </div>
         <div className="flex gap-2">
