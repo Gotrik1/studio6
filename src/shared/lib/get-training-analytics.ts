@@ -1,6 +1,7 @@
 
 import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
 import { differenceInDays, isAfter, startOfMonth, parseISO } from 'date-fns';
+import { exercisesList } from '@/shared/lib/mock-data/exercises';
 
 // Epley formula for 1RM estimation
 const calculate1RM = (weight: number, reps: number) => {
@@ -47,6 +48,30 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
 
     const personalRecords = Object.values(allRecords).sort((a, b) => b.e1RM - a.e1RM);
 
+    // Volume by muscle group
+    const volumeByMuscleGroup: { [key: string]: number } = {};
+
+    completedWorkouts.forEach(entry => {
+        entry.exercises.forEach(exercise => {
+            const exerciseDetails = exercisesList.find(ex => ex.name === exercise.name);
+            if (exerciseDetails) {
+                const muscleGroup = exerciseDetails.muscleGroup;
+                const exerciseVolume = exercise.sets.reduce((total, set) => {
+                    return total + ((set.loggedWeight || 0) * (set.loggedReps || 0));
+                }, 0);
+                if (!volumeByMuscleGroup[muscleGroup]) {
+                    volumeByMuscleGroup[muscleGroup] = 0;
+                }
+                volumeByMuscleGroup[muscleGroup] += exerciseVolume;
+            }
+        });
+    });
+    
+    const volumeByMuscleGroupData = Object.entries(volumeByMuscleGroup)
+        .map(([name, volume]) => ({ name, volume }))
+        .filter(item => item.volume > 0);
+
+
     // Other Metrics
     const now = new Date();
     const startOfThisMonth = startOfMonth(now);
@@ -64,14 +89,18 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
     
     let workoutStreak = 0;
     if (sortedWorkouts.length > 0) {
-        workoutStreak = 1;
-        for (let i = 0; i < sortedWorkouts.length - 1; i++) {
-            const date1 = new Date(sortedWorkouts[i].date);
-            const date2 = new Date(sortedWorkouts[i+1].date);
-            if (differenceInDays(date1, date2) <= 2) { // Allow for a rest day
-                workoutStreak++;
-            } else {
-                break;
+        const today = new Date();
+        const mostRecentWorkoutDate = new Date(sortedWorkouts[0].date);
+        if (differenceInDays(today, mostRecentWorkoutDate) <= 1) { // Checks if the last workout was today or yesterday
+            workoutStreak = 1;
+            for (let i = 0; i < sortedWorkouts.length - 1; i++) {
+                const date1 = new Date(sortedWorkouts[i].date);
+                const date2 = new Date(sortedWorkouts[i+1].date);
+                if (differenceInDays(date1, date2) <= 2) { // Allow for a rest day
+                    workoutStreak++;
+                } else {
+                    break;
+                }
             }
         }
     }
@@ -88,7 +117,8 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
         workoutStreak: `${workoutStreak} дней`,
         favoriteExercise: favoriteExercise,
         lastWorkout: lastWorkout,
+        totalWorkouts: completedWorkouts.length,
     };
 
-    return { personalRecords, trainingMetrics };
+    return { personalRecords, trainingMetrics, volumeByMuscleGroupData };
 };
