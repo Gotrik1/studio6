@@ -1,4 +1,7 @@
 
+import type { summerKickoffTournament as KickoffType } from './tournament-details';
+import type { allTournaments } from './tournaments';
+
 export const summerKickoffTournament = {
     name: "Летний Кубок по Стритболу",
     slug: "summer-streetball-cup-2024",
@@ -54,7 +57,13 @@ export const summerKickoffTournament = {
                 ]
             }
         ]
-    }
+    },
+    media: [
+        { type: "image", src: "https://placehold.co/600x400.png", hint: 'basketball court' },
+        { type: "video", src: "https://placehold.co/600x400.png", hint: 'basketball slam dunk' },
+        { type: "image", src: "https://placehold.co/600x400.png", hint: 'sports trophy' },
+        { type: "image", src: "https://placehold.co/600x400.png", hint: 'team huddle' },
+    ]
 };
 
 export const footballCupTournament = {
@@ -103,5 +112,11 @@ export const footballCupTournament = {
                 ]
             }
         ]
-    }
+    },
+    media: [
+        { type: "image", src: "https://placehold.co/600x400.png", hint: 'football goal' },
+        { type: "video", src: "https://placehold.co/600x400.png", hint: 'football tackle' },
+        { type: "image", src: "https://placehold.co/600x400.png", hint: 'fans cheering' },
+        { type: "image", src: "https://placehold.co/600x400.png", hint: 'football player portrait' },
+    ]
 };

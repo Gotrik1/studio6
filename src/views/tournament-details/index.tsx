@@ -7,14 +7,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { TournamentDetails } from "@/entities/tournament/model/types";
 import { Button } from "@/shared/ui/button";
-import { Calendar, Users, Trophy, FileText, BarChart3, Camera } from "lucide-react";
+import { Calendar, Users, Trophy, FileText, Camera } from "lucide-react";
 import { TournamentBracket } from "@/widgets/tournament-bracket";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { ScheduleTab } from "@/widgets/match-details-tabs/ui/schedule-tab";
-import { LineupsTab } from "@/widgets/match-details-tabs/ui/lineups-tab";
-import { StatsTab } from "@/widgets/match-details-tabs/ui/stats-tab";
 import { MediaTab } from "@/widgets/match-details-tabs/ui/media-tab";
-import { AiAnalysisTab } from "@/widgets/match-details-tabs/ui/ai-analysis-tab";
 
 export function TournamentDetailsPage({ tournament }: { tournament: TournamentDetails }) {
 
@@ -40,12 +37,13 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
             </Card>
 
              <Tabs defaultValue="overview">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                <TabsList className="grid w-full grid-cols-3 sm:grid-cols-3 md:grid-cols-6">
                     <TabsTrigger value="overview">Обзор</TabsTrigger>
                     <TabsTrigger value="schedule"><Calendar className="mr-2 h-4 w-4"/>Расписание</TabsTrigger>
                     <TabsTrigger value="bracket">Сетка</TabsTrigger>
                     <TabsTrigger value="teams">Команды</TabsTrigger>
                     <TabsTrigger value="rules">Правила</TabsTrigger>
+                    <TabsTrigger value="media"><Camera className="mr-2 h-4 w-4"/>Медиа</TabsTrigger>
                 </TabsList>
 
                  <TabsContent value="overview" className="mt-4">
@@ -116,6 +114,10 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                         </CardContent>
                      </Card>
                  </TabsContent>
+
+                 <TabsContent value="media" className="mt-4">
+                    <MediaTab media={tournament.media} />
+                </TabsContent>
             </Tabs>
         </div>
     );
