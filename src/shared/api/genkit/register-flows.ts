@@ -4,7 +4,6 @@
 import { config } from 'dotenv';
 config();
 
-import './flows/ai-team-assistant';
 import './flows/analyze-content-generation';
 import './flows/generate-content-flow';
 import './flows/generate-team-avatar-flow';
