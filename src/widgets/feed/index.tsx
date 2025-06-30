@@ -96,7 +96,7 @@ export function Feed() {
         // Simulate loading data
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 2000); // 2 second delay to make the animation visible
+        }, 3000); // 3 second delay to make the animation visible
 
         return () => clearTimeout(timer);
     }, []);
@@ -112,7 +112,7 @@ export function Feed() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 opacity-0 animate-fade-in-up animation-delay-600">
             {feedData.map(item => {
                 switch (item.type) {
                     case 'status':

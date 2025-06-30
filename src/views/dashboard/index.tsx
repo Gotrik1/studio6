@@ -22,9 +22,7 @@ export function DashboardPage() {
                 <div className="opacity-0 animate-fade-in-up animation-delay-300">
                     <StatusUpdateForm />
                 </div>
-                <div className="opacity-0 animate-fade-in-up animation-delay-600">
-                    <Feed />
-                </div>
+                <Feed />
             </div>
             <aside className="space-y-6 lg:sticky lg:top-20 self-start opacity-0 animate-fade-in-up animation-delay-300">
                 <Card>
