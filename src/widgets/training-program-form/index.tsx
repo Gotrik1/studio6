@@ -161,40 +161,51 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                                 </CardHeader>
                                 <CardContent>
                                     <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto] items-center gap-2 py-2 text-xs text-muted-foreground border-b">
-                                        <div className="h-5 w-5"></div>
+                                        <div className="w-5" />
                                         <div className="font-medium">Упражнение</div>
                                         <div className="w-20 text-center">Подходы</div>
                                         <div className="w-20 text-center">Повторения</div>
                                         <div className="w-20 text-center">Вес (план)</div>
-                                        <div className="w-28"></div>
-                                        <div className="w-9"></div>
+                                        <div className="w-28 text-center">Суперсет</div>
+                                        <div className="w-9" />
                                     </div>
                                     {exerciseControls.fields.map((exField, exIndex) => (
-                                        <div key={exField.id} className="grid grid-cols-[auto_1fr_auto_auto] sm:grid-cols-[auto_1fr_auto_auto_auto_auto_auto] items-center gap-2 py-2 border-b last:border-b-0">
-                                            <GripVertical className="h-5 w-5 text-muted-foreground cursor-move" />
-                                            <p className="flex-1 font-medium text-sm">{exField.name}</p>
-                                            <div className="contents sm:flex sm:items-center sm:gap-2">
+                                        <div key={exField.id} className="border-b last:border-b-0 py-2">
+                                            {/* Mobile layout */}
+                                            <div className="sm:hidden flex flex-col gap-3">
+                                                <div className="flex items-start justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <GripVertical className="h-5 w-5 text-muted-foreground cursor-move mt-1" />
+                                                        <span className="font-medium">{exField.name}</span>
+                                                    </div>
+                                                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8 -mt-1" onClick={() => exerciseControls.remove(exIndex)}><Trash2 className="h-4 w-4" /></Button>
+                                                </div>
+                                                <div className="grid grid-cols-3 gap-2 pl-7">
+                                                     <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Подходы</FormLabel><FormControl><Input placeholder="3-4" {...field} className="text-center h-9" /></FormControl></FormItem>)} />
+                                                     <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Повторения</FormLabel><FormControl><Input placeholder="8-12" {...field} className="text-center h-9" /></FormControl></FormItem>)} />
+                                                     <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.plannedWeight`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Вес (план)</FormLabel><FormControl><Input placeholder="100кг" {...field} value={field.value ?? ''} className="text-center h-9" /></FormControl></FormItem>)} />
+                                                </div>
+                                                {exIndex > 0 && (
+                                                     <div className="pl-7 mt-2">
+                                                        <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.isSupersetWithPrevious`} render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs text-muted-foreground">Суперсет с предыдущим</FormLabel></FormItem>)} />
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Desktop layout */}
+                                            <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto] items-center gap-2">
+                                                <GripVertical className="h-5 w-5 text-muted-foreground cursor-move" />
+                                                <span className="font-medium">{exField.name}</span>
                                                 <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormControl><Input placeholder="3-4" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
                                                 <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormControl><Input placeholder="8-12" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
                                                 <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.plannedWeight`} render={({ field }) => (<FormItem><FormControl><Input placeholder="100кг" {...field} value={field.value ?? ''} className="w-20 text-center" /></FormControl></FormItem>)} />
-                                                <div className="w-28">
-                                                    {exIndex > 0 && (
-                                                        <FormField
-                                                            control={form.control}
-                                                            name={`days.${index}.exercises.${exIndex}.isSupersetWithPrevious`}
-                                                            render={({ field }) => (
-                                                                <FormItem className="flex items-center space-x-2">
-                                                                    <FormControl>
-                                                                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                                                                    </FormControl>
-                                                                    <FormLabel className="!mt-0 text-xs text-muted-foreground flex items-center gap-1"><Link2 className="h-3 w-3" />Суперсет</FormLabel>
-                                                                </FormItem>
-                                                            )}
-                                                        />
+                                                <div className="w-28 flex items-center justify-center">
+                                                     {exIndex > 0 && (
+                                                        <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.isSupersetWithPrevious`} render={({ field }) => (<FormItem className="flex items-center space-x-2"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="!mt-0 text-xs text-muted-foreground flex items-center gap-1"><Link2 className="h-3 w-3" />Суперсет</FormLabel></FormItem>)} />
                                                     )}
                                                 </div>
+                                                <Button type="button" variant="ghost" size="icon" onClick={() => exerciseControls.remove(exIndex)}><Trash2 className="h-4 w-4" /></Button>
                                             </div>
-                                            <Button type="button" variant="ghost" size="icon" onClick={() => exerciseControls.remove(exIndex)}><Trash2 className="h-4 w-4" /></Button>
                                         </div>
                                     ))}
                                     <Button type="button" variant="outline" className="mt-4 w-full" onClick={() => openExercisePicker(index)}><PlusCircle className="mr-2 h-4 w-4" /> Добавить упражнение</Button>
