@@ -34,25 +34,27 @@ export function JudgeProfile({ user, achievements }: JudgeProfileProps) {
           <Image src="https://placehold.co/1200x400.png" alt="Profile Banner" fill className="object-cover" data-ai-hint="gavel scales justice" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
         </div>
-        <div className="relative px-6 pb-6">
+        <div className="relative p-6">
             <div className="flex items-end gap-6 -mt-20">
                  <Avatar className="h-32 w-32 border-4 border-background bg-background">
                     <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="judge portrait" />
                     <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
                 </Avatar>
-                <div className="flex-1 flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
-                    <div className="space-y-1">
-                        <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
-                        <p className="text-muted-foreground">{user.email}</p>
+                <div className="flex-1 space-y-2">
+                    <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+                        <div className="space-y-1">
+                            <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
+                            <p className="text-muted-foreground">{user.email}</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <Button>Просмотр расписания</Button>
+                        </div>
                     </div>
-                     <div className="flex gap-2">
-                        <Button>Просмотр расписания</Button>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="secondary">{user.role}</Badge>
+                        <Badge variant="outline">Сертифицированный судья</Badge>
                     </div>
                 </div>
-            </div>
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-                <Badge variant="secondary">{user.role}</Badge>
-                <Badge variant="outline">Сертифицированный судья</Badge>
             </div>
         </div>
       </Card>
