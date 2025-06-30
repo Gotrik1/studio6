@@ -64,8 +64,8 @@ html {
     --accent-foreground: 210 40% 98%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
     --ring: var(--accent);
 
      /* Chart colors */
@@ -103,7 +103,6 @@ html {
 @layer base {
   body {
     @apply bg-secondary text-foreground;
-    font-family: theme('fontFamily.body');
   }
   h1,h2,h3,h4,h5,h6 {
     font-family: theme('fontFamily.headline');
