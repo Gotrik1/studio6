@@ -17,23 +17,49 @@ export type PersonalRecord = {
     date: string;
 };
 
+// New type for history
+export type RecordHistoryPoint = {
+    date: string;
+    e1RM: number;
+};
+export type RecordHistory = {
+    [exerciseName: string]: RecordHistoryPoint[];
+};
+
+
 export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
     const completedWorkouts = log.filter(e => e.status === 'completed');
     
-    // Personal Records
-    const allRecords: { [key: string]: PersonalRecord } = {};
+    // --- REVISED LOGIC FOR RECORDS AND HISTORY ---
+    const bestRecordsMap: { [key: string]: PersonalRecord } = {};
+    const fullRecordHistory: RecordHistory = {};
     const exerciseCounts: { [key: string]: number } = {};
 
-    completedWorkouts.forEach(entry => {
+    // Sort workouts by date ascending to build history correctly
+    const sortedCompletedWorkouts = [...completedWorkouts].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    sortedCompletedWorkouts.forEach(entry => {
         entry.exercises.forEach(exercise => {
             // Count for favorite exercise
             exerciseCounts[exercise.name] = (exerciseCounts[exercise.name] || 0) + 1;
 
+            if (!fullRecordHistory[exercise.name]) {
+                fullRecordHistory[exercise.name] = [];
+            }
+            
             exercise.sets.forEach(set => {
                 if (set.isCompleted && set.loggedWeight && set.loggedReps && set.loggedReps > 0) {
                     const estimated1RM = calculate1RM(set.loggedWeight, set.loggedReps);
-                    if (!allRecords[exercise.name] || estimated1RM > allRecords[exercise.name].e1RM) {
-                        allRecords[exercise.name] = {
+
+                    // Update history
+                    fullRecordHistory[exercise.name].push({
+                        date: entry.date,
+                        e1RM: estimated1RM,
+                    });
+                    
+                    // Update best record map if this is a new PR
+                    if (!bestRecordsMap[exercise.name] || estimated1RM > bestRecordsMap[exercise.name].e1RM) {
+                        bestRecordsMap[exercise.name] = {
                             exercise: exercise.name,
                             e1RM: estimated1RM,
                             weight: set.loggedWeight,
@@ -45,8 +71,9 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
             });
         });
     });
+    
+    const personalRecords = Object.values(bestRecordsMap).sort((a, b) => b.e1RM - a.e1RM);
 
-    const personalRecords = Object.values(allRecords).sort((a, b) => b.e1RM - a.e1RM);
 
     // Volume by muscle group
     const volumeByMuscleGroup: { [key: string]: number } = {};
@@ -120,5 +147,5 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
         totalWorkouts: completedWorkouts.length,
     };
 
-    return { personalRecords, trainingMetrics, volumeByMuscleGroupData };
+    return { personalRecords, trainingMetrics, volumeByMuscleGroupData, recordHistory: fullRecordHistory };
 };
