@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -6,21 +7,29 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { crmParticipants as initialParticipants, type CrmParticipant } from '@/shared/lib/mock-data/crm-participants';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { Check, X, Mail, Trash2 } from 'lucide-react';
+import { Check, X, Mail, Trash2, ChevronDown, Users } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { useToast } from '@/shared/hooks/use-toast';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
+import Link from 'next/link';
 
 export function CrmTournamentParticipants() {
     const { toast } = useToast();
     const [participants, setParticipants] = useState<CrmParticipant[]>(initialParticipants);
+    const [openCollapsibles, setOpenCollapsibles] = useState<string[]>([]);
 
     const applications = useMemo(() => participants.filter(p => p.status === 'Ожидает подтверждения'), [participants]);
     const confirmed = useMemo(() => participants.filter(p => p.status === 'Подтвержден'), [participants]);
 
+    const toggleCollapsible = (id: string) => {
+        setOpenCollapsibles(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    };
+
     const handleAccept = (participantId: string) => {
         setParticipants(prev =>
             prev.map(p =>
-                p.id === participantId ? { ...p, status: 'Подтвержден' } : p
+                p.id === participantId ? { ...p, status: 'Подтвержден' as const } : p
             )
         );
         const participant = participants.find(p => p.id === participantId);
@@ -102,34 +111,58 @@ export function CrmTournamentParticipants() {
                  <Card>
                     <CardHeader>
                         <CardTitle>Участники</CardTitle>
-                        <CardDescription>Список команд, участие которых было подтверждено.</CardDescription>
+                        <CardDescription>Список команд, участие которых было подтверждено. Нажмите на строку, чтобы увидеть состав.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                       <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>Команда/Игрок</TableHead>
-                                    <TableHead>Капитан</TableHead>
-                                    <TableHead className="text-right">Действия</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {confirmed.length > 0 ? confirmed.map(p => (
-                                    <TableRow key={p.id}>
-                                        <TableCell className="font-medium">{p.name}</TableCell>
-                                        <TableCell>{p.captain}</TableCell>
-                                        <TableCell className="text-right space-x-1">
-                                            <Button variant="ghost" size="icon"><Mail className="h-4 w-4" /></Button>
-                                            <Button variant="ghost" size="icon" onClick={() => handleRemove(p.id)}><Trash2 className="h-4 w-4 text-red-500" /></Button>
-                                        </TableCell>
-                                    </TableRow>
-                                )) : (
-                                     <TableRow>
-                                        <TableCell colSpan={3} className="text-center h-24">Подтвержденных участников нет</TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
+                        <div className="rounded-md border">
+                            {confirmed.length > 0 ? confirmed.map(p => (
+                                <Collapsible key={p.id} open={openCollapsibles.includes(p.id)} onOpenChange={() => toggleCollapsible(p.id)} className="border-b last:border-b-0">
+                                    <CollapsibleTrigger asChild>
+                                        <div className="flex items-center justify-between p-4 cursor-pointer hover:bg-muted/50">
+                                            <div className="flex items-center gap-4">
+                                                <ChevronDown className="h-4 w-4 transition-transform data-[state=open]:rotate-180" />
+                                                <p className="font-medium">{p.name}</p>
+                                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                                    <Users className="h-3 w-3" /> {p.roster.length}
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <Button variant="ghost" size="icon" onClick={(e) => {e.stopPropagation(); toast({title: "Сообщение отправлено"})}}><Mail className="h-4 w-4" /></Button>
+                                                <Button variant="ghost" size="icon" onClick={(e) => {e.stopPropagation(); handleRemove(p.id)}}><Trash2 className="h-4 w-4 text-red-500" /></Button>
+                                            </div>
+                                        </div>
+                                    </CollapsibleTrigger>
+                                    <CollapsibleContent>
+                                        <div className="bg-muted/50 p-4">
+                                            <h4 className="font-semibold mb-2 text-sm">Состав команды:</h4>
+                                            <Table>
+                                                <TableHeader>
+                                                    <TableRow>
+                                                        <TableHead>Игрок</TableHead>
+                                                        <TableHead>Роль</TableHead>
+                                                        <TableHead className="hidden sm:table-cell">Рейтинг</TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {p.roster.map(player => (
+                                                        <TableRow key={player.id}>
+                                                            <TableCell className="font-medium flex items-center gap-2">
+                                                                <Avatar className="h-6 w-6"><AvatarImage src={player.avatar} /><AvatarFallback>{player.name.charAt(0)}</AvatarFallback></Avatar>
+                                                                <Link href="/administration/player" className="hover:underline">{player.name}</Link>
+                                                            </TableCell>
+                                                            <TableCell>{player.role}</TableCell>
+                                                            <TableCell className="hidden sm:table-cell">{player.rating}</TableCell>
+                                                        </TableRow>
+                                                    ))}
+                                                </TableBody>
+                                            </Table>
+                                        </div>
+                                    </CollapsibleContent>
+                                </Collapsible>
+                            )) : (
+                                <div className="text-center h-24 flex items-center justify-center text-muted-foreground">Подтвержденных участников нет</div>
+                            )}
+                        </div>
                     </CardContent>
                 </Card>
             </TabsContent>
