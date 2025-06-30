@@ -43,7 +43,7 @@ export const trainingLogData: TrainingLogEntry[] = [
                 ]
             },
             { 
-                name: 'Жим гантелей на наклонной скамье', 
+                name: 'Разведение гантелей лежа', 
                 sets: [
                     { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 10, loggedWeight: 30, rpe: 8, isCompleted: true },
                     { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 10, loggedWeight: 30, rpe: 8, isCompleted: true },
@@ -51,7 +51,7 @@ export const trainingLogData: TrainingLogEntry[] = [
                 ]
             },
             { 
-                name: 'Французский жим', 
+                name: 'Жим гантелей сидя', 
                 sets: [
                     { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 12, loggedWeight: 25, rpe: 7, isCompleted: true },
                     { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 12, loggedWeight: 25, rpe: 7, isCompleted: true },
@@ -109,7 +109,7 @@ export const trainingLogData: TrainingLogEntry[] = [
                 ] 
             },
             { 
-                name: 'Жим ногами', 
+                name: 'Жим гантелей сидя', 
                 sets: [
                     { plannedReps: '12', plannedWeight: '150 кг', isCompleted: false },
                     { plannedReps: '12', plannedWeight: '150 кг', isCompleted: false },
@@ -118,7 +118,7 @@ export const trainingLogData: TrainingLogEntry[] = [
                 ] 
             },
             { 
-                name: 'Армейский жим', 
+                name: 'Разведение гантелей лежа', 
                 sets: [
                     { plannedReps: '8', plannedWeight: '40 кг', isCompleted: false },
                     { plannedReps: '8', plannedWeight: '40 кг', isCompleted: false },
