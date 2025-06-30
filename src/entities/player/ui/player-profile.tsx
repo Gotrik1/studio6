@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
-import { Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, CheckCircle, Coins, Calendar, Award, Wand2 } from "lucide-react";
+import { Users, Share2, MapPin, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, CheckCircle, Coins, Calendar, Award, Wand2, MoreVertical, Flag, DollarSign } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
@@ -22,6 +22,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shar
 import { cn } from '@/shared/lib/utils';
 import { useState } from 'react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
+import { ScrollArea } from '@/shared/ui/scroll-area';
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -67,12 +69,14 @@ type PlayerProfileProps = {
 export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
   const [avatar, setAvatar] = useState(user.avatar);
   const initials = user.name.split(' ').map((n) => n[0]).join('');
-  const totalPd = pdHistory.reduce((sum, item) => sum + item.value, 0);
   const rank = getRankByPoints(user.xp);
   const nextRank = RANKS[RANKS.indexOf(rank) + 1];
   const progressValue = rank.maxPoints === Infinity ? 100 : ((user.xp - rank.minPoints) / (rank.maxPoints - rank.minPoints)) * 100;
-
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+  
+  const totalEarned = pdHistory.filter(item => item.value > 0).reduce((sum, item) => sum + item.value, 0);
+  const totalSpent = pdHistory.filter(item => item.value < 0).reduce((sum, item) => sum + item.value, 0);
+  const totalPd = totalEarned + totalSpent;
 
 
   return (
@@ -123,19 +127,32 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
               </TooltipProvider>
             )}
           </div>
-           <div className="flex items-center justify-center gap-4 pt-2 text-sm text-muted-foreground sm:justify-start">
-              <div className="flex items-center gap-1"><MapPin className="h-4 w-4" /> {user.location}</div>
-              <div className="flex items-center gap-1"><Activity className="h-4 w-4" /> {user.mainSport}</div>
-          </div>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="icon" title="Поделиться"><Share2 className="h-5 w-5"/></Button>
           {isCurrentUser ? (
-            <Link href="/settings">
-              <Button>Редактировать профиль</Button>
-            </Link>
+             <div className="flex gap-2">
+              <Button variant="outline" size="icon" title="Поделиться"><Share2 className="h-5 w-5"/></Button>
+              <Link href="/settings">
+                <Button>Редактировать</Button>
+              </Link>
+            </div>
           ) : (
-              <Button>Бросить вызов</Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreVertical className="h-5 w-5" />
+                  <span className="sr-only">Действия</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem>Бросить вызов</DropdownMenuItem>
+                <DropdownMenuItem>Поделиться</DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className="text-destructive">
+                    <Flag className="mr-2 h-4 w-4"/> Пожаловаться
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           )}
         </div>
       </CardHeader>
@@ -150,16 +167,18 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
       </CardContent>
       <div className="border-t p-4 md:p-6">
         <Tabs defaultValue="overview">
-          <TabsList className="grid w-full grid-cols-4 sm:grid-cols-8">
-            <TabsTrigger value="overview"><Activity className="mr-2 h-4 w-4"/>Обзор</TabsTrigger>
-            <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
-            <TabsTrigger value="ai-coach"><BrainCircuit className="mr-2 h-4 w-4"/>AI-Тренер</TabsTrigger>
-            <TabsTrigger value="career"><Briefcase className="mr-2 h-4 w-4"/>Карьера</TabsTrigger>
-            <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
-            <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4"/>Команды</TabsTrigger>
-            <TabsTrigger value="gallery"><GalleryHorizontal className="mr-2 h-4 w-4"/>Галерея</TabsTrigger>
-            <TabsTrigger value="pd-wallet"><Coins className="mr-2 h-4 w-4"/>PD Кошелек</TabsTrigger>
-          </TabsList>
+          <ScrollArea className="w-full whitespace-nowrap rounded-md">
+            <TabsList className="inline-flex">
+              <TabsTrigger value="overview"><Activity className="mr-2 h-4 w-4"/>Обзор</TabsTrigger>
+              <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
+              <TabsTrigger value="ai-coach"><BrainCircuit className="mr-2 h-4 w-4"/>AI-Тренер</TabsTrigger>
+              <TabsTrigger value="career"><Briefcase className="mr-2 h-4 w-4"/>Карьера</TabsTrigger>
+              <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
+              <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4"/>Команды</TabsTrigger>
+              <TabsTrigger value="gallery"><GalleryHorizontal className="mr-2 h-4 w-4"/>Галерея</TabsTrigger>
+              <TabsTrigger value="pd-wallet"><Coins className="mr-2 h-4 w-4"/>PD Кошелек</TabsTrigger>
+            </TabsList>
+          </ScrollArea>
 
           <TabsContent value="overview" className="mt-4">
             <OverviewTab recentMatches={recentMatches} isCurrentUser={isCurrentUser} />
@@ -199,14 +218,31 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
                           </CardHeader>
                           <CardContent>
                               <div className="text-2xl font-bold">{totalPd.toLocaleString('ru-RU')} PD</div>
-                              <p className="text-xs text-muted-foreground">Всего заработано за все время</p>
+                          </CardContent>
+                      </Card>
+                       <Card>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                              <CardTitle className="text-sm font-medium text-green-500">Всего заработано</CardTitle>
+                              <DollarSign className="h-4 w-4 text-muted-foreground" />
+                          </CardHeader>
+                          <CardContent>
+                              <div className="text-2xl font-bold">{totalEarned.toLocaleString('ru-RU')} PD</div>
+                          </CardContent>
+                      </Card>
+                       <Card>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                              <CardTitle className="text-sm font-medium text-red-500">Всего потрачено</CardTitle>
+                              <DollarSign className="h-4 w-4 text-muted-foreground" />
+                          </CardHeader>
+                          <CardContent>
+                              <div className="text-2xl font-bold">{Math.abs(totalSpent).toLocaleString('ru-RU')} PD</div>
                           </CardContent>
                       </Card>
                   </div>
 
                   <Card>
                       <CardHeader>
-                          <CardTitle>История начислений</CardTitle>
+                          <CardTitle>История транзакций</CardTitle>
                           <CardDescription>Здесь отображаются все ваши операции с PD.</CardDescription>
                       </CardHeader>
                       <CardContent>
@@ -228,7 +264,9 @@ export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
                                               </div>
                                           </TableCell>
                                           <TableCell>{PD_SOURCE_DETAILS[tx.source as PD_SOURCE_TYPE]?.description || tx.source}</TableCell>
-                                          <TableCell className="text-right font-medium text-green-500">+{tx.value} PD</TableCell>
+                                          <TableCell className={cn("text-right font-medium", tx.value > 0 ? 'text-green-500' : 'text-red-500')}>
+                                            {tx.value > 0 ? '+' : ''}{tx.value.toLocaleString('ru-RU')} PD
+                                          </TableCell>
                                       </TableRow>
                                   ))}
                               </TableBody>

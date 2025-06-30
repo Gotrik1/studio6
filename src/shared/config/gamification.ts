@@ -6,7 +6,10 @@ export type PD_SOURCE_TYPE =
     | 'WIN_MATCH'
     | 'CREATE_TEAM'
     | 'JOIN_TOURNAMENT'
-    | 'QUEST_COMPLETION';
+    | 'QUEST_COMPLETION'
+    | 'STORE_PURCHASE_FRAME'
+    | 'STORE_PURCHASE_BOOST'
+    | 'TOURNAMENT_FEE';
 
 export const PD_SOURCE_DETAILS: Record<PD_SOURCE_TYPE, { description: string }> = {
     REGISTRATION: { description: 'Регистрация на платформе' },
@@ -16,4 +19,7 @@ export const PD_SOURCE_DETAILS: Record<PD_SOURCE_TYPE, { description: string }> 
     CREATE_TEAM: { description: 'Создание команды' },
     JOIN_TOURNAMENT: { description: 'Участие в турнире' },
     QUEST_COMPLETION: { description: 'Выполнение квеста "Новичок"' },
+    STORE_PURCHASE_FRAME: { description: 'Покупка: Рамка аватара "Пламя"' },
+    STORE_PURCHASE_BOOST: { description: 'Покупка: Буст ранга (x2 на 7 дней)' },
+    TOURNAMENT_FEE: { description: 'Взнос за участие в турнире "Weekly Cup"' },
 };
