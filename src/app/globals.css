@@ -18,7 +18,7 @@ html {
 
 @layer base {
   :root {
-    --background: 220 13% 91%; /* Light Gray from PRD #E5E7EB */
+    --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%; /* White */
     --card-foreground: 222.2 84% 4.9%;
