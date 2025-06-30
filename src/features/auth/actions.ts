@@ -3,16 +3,22 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { User } from '@/shared/lib/types';
+import { z } from 'zod';
 
-// Login action
-export async function authenticate(
-  prevState: string | undefined,
-  formData: FormData,
-) {
+// Login action schema
+export const loginSchema = z.object({
+  email: z.string().email({ message: "Введите корректный email." }),
+  password: z.string().min(1, { message: "Пароль не может быть пустым." }),
+});
+
+export async function login(values: z.infer<typeof loginSchema>) {
   try {
-    // This is a mock authentication. In a real app, you'd validate against a database.
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
+    const validatedFields = loginSchema.safeParse(values);
+    if (!validatedFields.success) {
+      return { error: 'Предоставлены неверные данные.' };
+    }
+
+    const { email, password } = validatedFields.data;
 
     // Hardcoded user for demonstration purposes
     if (email === 'admin@example.com' && password === 'superuser') {
@@ -33,15 +39,14 @@ export async function authenticate(
 
       redirect('/welcome');
     } else {
-      return 'Неверные данные. Пожалуйста, попробуйте еще раз.';
+      return { error: 'Неверные данные. Пожалуйста, попробуйте еще раз.' };
     }
   } catch (error) {
     if (error instanceof Error) {
-        // next/redirect throws an error, so we catch it and do nothing.
         if (error.message === 'NEXT_REDIRECT') {
           throw error;
         }
-        return 'Произошла ошибка. Пожалуйста, попробуйте еще раз.';
+        return { error: 'Произошла ошибка. Пожалуйста, попробуйте еще раз.' };
     }
     throw error;
   }
