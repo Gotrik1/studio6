@@ -1,6 +1,7 @@
+
 'use server';
 /**
- * @fileOverview An AI agent for analyzing individual player performance.
+ * @fileOverview An AI agent for analyzing individual player physical performance.
  *
  * - analyzePlayerPerformance - A function that handles the analysis.
  * - AnalyzePlayerPerformanceInput - The input type for the function.
@@ -22,14 +23,15 @@ const prompt = ai.definePrompt({
   name: 'analyzePlayerPerformancePrompt',
   input: {schema: AnalyzePlayerPerformanceInputSchema},
   output: {schema: AnalyzePlayerPerformanceOutputSchema},
-  prompt: `You are an expert esports coach. Analyze the provided player statistics and match history to identify key strengths, weaknesses, and provide actionable recommendations.
+  prompt: `You are an expert fitness and strength coach. Analyze the provided training summary and recent workout logs to identify key strengths, weaknesses, and provide actionable recommendations. Respond in Russian.
 
-Player Stats: {{{playerStats}}}
+Training Summary:
+{{{trainingSummary}}}
 
-Match History:
-{{{matchHistory}}}
+Recent Workouts Log:
+{{{recentWorkouts}}}
 
-Please provide a concise analysis, focusing on clear, actionable feedback.
+Please provide a concise analysis, focusing on clear, actionable feedback. Identify which muscle groups are lagging or progressing well.
 `,
 });
 

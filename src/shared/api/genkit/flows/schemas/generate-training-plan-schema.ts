@@ -1,3 +1,4 @@
+
 import { z } from 'zod';
 
 export const DrillSchema = z.object({
@@ -11,7 +12,7 @@ export const GenerateTrainingPlanInputSchema = z.object({
     strengths: z.array(z.string()),
     weaknesses: z.array(z.string()),
   }),
-  playerRole: z.string().describe('Роль игрока, например, "Капитан", "Дуэлянт".'),
+  fitnessGoal: z.string().describe("The user's primary fitness goal, e.g., \"Набор массы\", \"Сила\"."),
 });
 export type GenerateTrainingPlanInput = z.infer<typeof GenerateTrainingPlanInputSchema>;
 

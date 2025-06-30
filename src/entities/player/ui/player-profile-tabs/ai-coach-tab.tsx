@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -9,7 +10,8 @@ import { Loader2, Sparkles, BrainCircuit, AlertCircle, TrendingUp, TrendingDown,
 import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@/shared/api/genkit/flows/analyze-player-performance-flow';
 import { generateTrainingPlan, type GenerateTrainingPlanOutput } from '@/shared/api/genkit/flows/generate-training-plan-flow';
 import type { User } from "@/shared/lib/types";
-import { recentMatches } from "@/shared/lib/mock-data/profiles";
+import { trainingLogData } from '@/shared/lib/mock-data/training-log';
+import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 
 interface AiCoachTabProps {
   user: User & {
@@ -30,21 +32,38 @@ export function AiCoachTab({ user }: AiCoachTabProps) {
         setTrainingPlan(null);
 
         try {
-            const playerStats = `
-                Role: ${user.role},
-                Main Sport: ${user.mainSport},
-                Total Matches: 218,
-                Wins: 152
+            // 1. Get training analytics
+            const { trainingMetrics } = getTrainingAnalytics(trainingLogData);
+            
+            // 2. Format data for AI
+            const trainingSummary = `
+                Total Workouts: ${trainingMetrics.totalWorkouts},
+                Monthly Volume: ${trainingMetrics.monthlyVolume},
+                Workout Streak: ${trainingMetrics.workoutStreak},
+                Favorite Exercise: ${trainingMetrics.favoriteExercise}
             `;
-            const matchHistory = recentMatches.map(m => `vs ${m.teamB}: ${m.scoreA}-${m.scoreB} on ${m.map}`).join('\n');
+            
+            const recentWorkouts = trainingLogData
+                .filter(e => e.status === 'completed')
+                .slice(0, 2) // Take last 2 completed workouts
+                .map(log => `
+                    Date: ${log.date}, Workout: ${log.workoutName}
+                    Exercises: ${log.exercises.map(ex => `
+                        - ${ex.name}: ${ex.sets.map(s => `${s.loggedReps}x${s.loggedWeight}kg`).join(', ')}
+                    `).join('')}
+                `).join('\n\n');
 
-            const analysis = await analyzePlayerPerformance({ playerStats, matchHistory });
+            // 3. Call AI flows
+            const analysis = await analyzePlayerPerformance({ trainingSummary, recentWorkouts });
+            
+            // Mock fitness goal for now
+            const fitnessGoal = "Набор мышечной массы и увеличение силы"; 
             const plan = await generateTrainingPlan({
                 analysis: {
                   strengths: analysis.strengths,
                   weaknesses: analysis.weaknesses
                 },
-                playerRole: user.role,
+                fitnessGoal: fitnessGoal,
             });
 
             setAnalysisResult(analysis);
@@ -70,7 +89,7 @@ export function AiCoachTab({ user }: AiCoachTabProps) {
                      <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg">
                         <BrainCircuit className="h-12 w-12 text-muted-foreground mb-4" />
                         <p className="font-semibold mb-2">Готовы стать лучше?</p>
-                        <p className="text-sm text-muted-foreground mb-4">Нажмите кнопку, чтобы ИИ проанализировал ваши последние игры и составил план.</p>
+                        <p className="text-sm text-muted-foreground mb-4">Нажмите кнопку, чтобы ИИ проанализировал ваши последние тренировки и составил план.</p>
                         <Button onClick={handleGetCoaching} disabled={isLoading}>
                             {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                             Получить тренировку

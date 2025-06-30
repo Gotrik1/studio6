@@ -2,14 +2,14 @@
 import { z } from 'zod';
 
 export const AnalyzePlayerPerformanceInputSchema = z.object({
-  playerStats: z.string().describe("A summary of the player's key statistics (e.g., KDA, win rate, favorite map)."),
-  matchHistory: z.string().describe("A log of the player's recent matches, including results and scores."),
+  trainingSummary: z.string().describe("A summary of the user's key training metrics (e.g., total volume, workout streak, favorite exercise)."),
+  recentWorkouts: z.string().describe("A log of the user's recent workouts, including exercises, sets, reps, and weight."),
 });
 export type AnalyzePlayerPerformanceInput = z.infer<typeof AnalyzePlayerPerformanceInputSchema>;
 
 export const AnalyzePlayerPerformanceOutputSchema = z.object({
   strengths: z.array(z.string()).describe("A list of the player's key strengths identified from the data."),
   weaknesses: z.array(z.string()).describe("A list of the player's key weaknesses identified from the data."),
-  recommendations: z.array(z.string()).describe("A list of actionable recommendations for the player to improve their game."),
+  recommendations: z.array(z.string()).describe("A list of actionable recommendations for the player to improve their physical training."),
 });
 export type AnalyzePlayerPerformanceOutput = z.infer<typeof AnalyzePlayerPerformanceOutputSchema>;
