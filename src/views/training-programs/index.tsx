@@ -11,7 +11,7 @@ import Link from 'next/link';
 
 export function TrainingProgramsPage() {
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-2">
                     <h1 className="font-headline text-3xl font-bold tracking-tight">Программы тренировок</h1>

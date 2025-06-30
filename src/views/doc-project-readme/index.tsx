@@ -43,7 +43,7 @@ const roadmap = [
 
 export function ProjectReadmePage() {
     return (
-        <div className="prose dark:prose-invert max-w-none">
+        <div className="prose dark:prose-invert max-w-none opacity-0 animate-fade-in-up">
             <div className="not-prose relative mb-8 aspect-[2/1] w-full overflow-hidden rounded-lg">
                 <Image src="https://placehold.co/800x400.png" alt="ProDvor Banner" fill className="object-cover" data-ai-hint="esports sports montage" />
             </div>

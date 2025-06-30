@@ -86,7 +86,7 @@ export function TrainingProgramConstructorPage() {
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 opacity-0 animate-fade-in-up">
             <div className="lg:col-span-1">
                 <Card className="sticky top-20">
                     <CardHeader>

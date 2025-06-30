@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -12,7 +13,7 @@ export function FanZonePage() {
     const popularTeams = teams.slice(0, 4); // Take top 4 for display
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Фан-зона</h1>
                 <p className="text-muted-foreground">

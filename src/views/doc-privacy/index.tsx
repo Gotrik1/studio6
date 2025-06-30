@@ -1,6 +1,7 @@
+
 export function PrivacyPolicyPage() {
     return (
-        <div className="prose dark:prose-invert max-w-none">
+        <div className="prose dark:prose-invert max-w-none opacity-0 animate-fade-in-up">
             <h1>Политика конфиденциальности</h1>
             <p className="lead">
                  Дата последнего обновления: 29 июля 2024 г.

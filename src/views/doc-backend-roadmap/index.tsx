@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 
 const roadmapItems = [
@@ -12,7 +13,7 @@ const roadmapItems = [
 
 export function BackendRoadmapPage() {
     return (
-        <div className="prose dark:prose-invert max-w-none">
+        <div className="prose dark:prose-invert max-w-none opacity-0 animate-fade-in-up">
             <h1>Дорожная карта разработки бэкенда</h1>
             <p className="lead">
                 Эта дорожная карта представляет собой высокоуровневый план по созданию серверной части для платформы &quot;ProDvor&quot;, заменяя текущие моковые данные.

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -217,7 +218,7 @@ function PasswordSettingsForm() {
 // --- Main Page Component ---
 export function SettingsPage() {
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div>
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Настройки</h1>
                 <p className="text-muted-foreground">

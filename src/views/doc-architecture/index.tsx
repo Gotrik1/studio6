@@ -1,3 +1,4 @@
+
 import { CodeBlock } from '@/widgets/code-block';
 import { FileTree } from '@/widgets/file-tree';
 
@@ -18,7 +19,7 @@ export default DashboardPage;
 
 export function ArchitecturePage() {
     return (
-        <div className="prose dark:prose-invert max-w-none">
+        <div className="prose dark:prose-invert max-w-none opacity-0 animate-fade-in-up">
             <h1>Архитектура Проекта &quot;ProDvor&quot; (Feature-Sliced Design)</h1>
             <p className="lead">Этот документ является основным техническим руководством для разработчиков фронтенд-части платформы &quot;ProDvor&quot; и описывает внедренную архитектурную методологию **Feature-Sliced Design (FSD)**.</p>
 

@@ -1,10 +1,11 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { CheckCircle, AlertTriangle, Database, Lock } from 'lucide-react';
 
 export function BackendProductionPage() {
     return (
-        <div className="prose dark:prose-invert max-w-none">
+        <div className="prose dark:prose-invert max-w-none opacity-0 animate-fade-in-up">
             <h1>План миграции бэкенда на продакшен</h1>
             <p className="lead">
                 Этот документ описывает шаги и требования для перехода от мокового бэкенда к полноценной, готовой к продакшену серверной части.

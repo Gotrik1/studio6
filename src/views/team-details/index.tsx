@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -30,7 +31,7 @@ export function TeamDetailsPage() {
     const isCaptain = currentUser?.name === team.captain || currentUser?.role === 'Администратор';
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 opacity-0 animate-fade-in-up">
             <Card className="overflow-hidden">
                 <div className="relative h-48 sm:h-64">
                     <Image src="https://placehold.co/1200x400.png" alt={`${team.name} banner`} fill className="object-cover" data-ai-hint="esports team banner" />

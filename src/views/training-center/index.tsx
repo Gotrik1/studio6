@@ -26,7 +26,7 @@ export function TrainingCenterPage() {
     const { currentProgram } = useTraining();
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 opacity-0 animate-fade-in-up">
             <header className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Рабочий стол атлета</h1>
                 <p className="text-muted-foreground">

@@ -1,9 +1,10 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Users, Gamepad2, BrainCircuit, Trophy } from 'lucide-react';
 
 export function VisionAndPrinciplesPage() {
     return (
-        <div className="prose dark:prose-invert max-w-none">
+        <div className="prose dark:prose-invert max-w-none opacity-0 animate-fade-in-up">
             <h1>Видение и принципы проекта &quot;ProDvor&quot;</h1>
             <p className="lead">
                 &quot;ProDvor&quot; — это больше, чем просто платформа. Это экосистема, созданная для того, чтобы дать каждому шанс проявить себя в мире спорта и киберспорта.

@@ -85,7 +85,7 @@ export function ChatsPage() {
 
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-10rem)]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-10rem)] opacity-0 animate-fade-in-up">
             <Card className="md:col-span-1 flex flex-col">
                 <CardHeader>
                     <CardTitle>Сообщения</CardTitle>

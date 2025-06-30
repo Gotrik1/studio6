@@ -57,7 +57,7 @@ export function MonetizationPage() {
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 opacity-0 animate-fade-in-up">
             <div className="text-center space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Монетизация и PRO-подписки</h1>
                 <p className="text-muted-foreground max-w-2xl mx-auto">

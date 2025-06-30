@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from "next/image";
@@ -24,7 +25,7 @@ export function MatchDetailsPage({ match }: MatchDetailsPageProps) {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 opacity-0 animate-fade-in-up">
             <Card className="overflow-hidden">
                  <div className="relative h-48 sm:h-64">
                     <Image src="https://placehold.co/1200x400.png" alt={`${match.tournament} banner`} fill className="object-cover" data-ai-hint="esports stadium lights" />

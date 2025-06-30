@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from "@/shared/ui/button";
@@ -15,7 +16,7 @@ import { Terminal } from "lucide-react";
 
 export function ThemeDemoPage() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 opacity-0 animate-fade-in-up">
       <div className="space-y-2">
         <h1 className="font-headline text-3xl font-bold tracking-tight">Демонстрация темы</h1>
         <p className="text-muted-foreground">

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -8,7 +9,7 @@ import { SupportChatbot } from '@/widgets/support-chatbot';
 
 export function SupportPage() {
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 opacity-0 animate-fade-in-up">
             <div className="text-center space-y-2">
                 <LifeBuoy className="mx-auto h-12 w-12 text-primary" />
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Центр поддержки</h1>
