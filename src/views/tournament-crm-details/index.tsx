@@ -21,6 +21,7 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Button } from '@/shared/ui/button';
 import { Save } from 'lucide-react';
 import { ScrollArea } from '@/shared/ui/scroll-area';
+import { CrmTournamentMediaCenter } from '@/widgets/crm-tournament-media-center';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -63,6 +64,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                         <TabsTrigger value="matches">Матчи</TabsTrigger>
                         <TabsTrigger value="disputes">Споры</TabsTrigger>
                         <TabsTrigger value="bracket">Сетка</TabsTrigger>
+                        <TabsTrigger value="media-center">Медиа-центр</TabsTrigger>
                         <TabsTrigger value="sponsors">Спонсоры</TabsTrigger>
                         <TabsTrigger value="medical">Мед. поддержка</TabsTrigger>
                         <TabsTrigger value="announcements">Рассылки</TabsTrigger>
@@ -123,6 +125,10 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                             <TournamentBracket rounds={summerKickoffTournament.bracket.rounds} />
                         </CardContent>
                     </Card>
+                </TabsContent>
+
+                <TabsContent value="media-center" className="mt-4">
+                    <CrmTournamentMediaCenter tournament={tournament} />
                 </TabsContent>
 
                 <TabsContent value="sponsors" className="mt-4">
