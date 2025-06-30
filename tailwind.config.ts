@@ -114,11 +114,22 @@ export default {
             transform: 'translateY(0)',
           },
         },
+        'pulse-glow': {
+          '0%, 100%': { 
+            transform: 'scale(1)',
+            boxShadow: '0 0 10px 2px hsl(var(--primary) / 0.7), 0 0 20px 5px hsl(var(--primary) / 0.5), 0 0 40px 10px hsl(var(--primary) / 0.2)',
+          },
+          '50%': {
+            transform: 'scale(1.1)',
+            boxShadow: '0 0 15px 5px hsl(var(--primary) / 0.8), 0 0 30px 10px hsl(var(--primary) / 0.6), 0 0 60px 20px hsl(var(--primary) / 0.3)',
+           },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
+        'pulse-glow': 'pulse-glow 2.5s infinite ease-in-out',
       },
       animationDelay: {
         '300': '300ms',

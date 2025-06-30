@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/shared/ui/card';
@@ -6,6 +7,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Bot, MessageSquare, Trophy, Award, Heart, MessageCircle, Share2 } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Separator } from '@/shared/ui/separator';
+import { useState, useEffect } from 'react';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 const FeedItemHeader = ({ user, timestamp, icon: Icon }: { user: FeedItemData['user'], timestamp: string, icon: FeedItemData['icon'] }) => (
     <CardHeader className="flex-row items-center gap-3 space-y-0 p-4">
@@ -87,6 +90,27 @@ const AchievementPost = ({ item }: { item: AchievementFeedItem }) => (
 );
 
 export function Feed() {
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        // Simulate loading data
+        const timer = setTimeout(() => {
+            setIsLoading(false);
+        }, 2000); // 2 second delay to make the animation visible
+
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (isLoading) {
+        return (
+            <div className="space-y-6">
+                <Skeleton className="h-40 w-full" />
+                <Skeleton className="h-56 w-full" />
+                <Skeleton className="h-48 w-full" />
+            </div>
+        );
+    }
+
     return (
         <div className="space-y-6">
             {feedData.map(item => {
