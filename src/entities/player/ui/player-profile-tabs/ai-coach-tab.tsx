@@ -40,7 +40,10 @@ export function AiCoachTab({ user }: AiCoachTabProps) {
 
             const analysis = await analyzePlayerPerformance({ playerStats, matchHistory });
             const plan = await generateTrainingPlan({
-                analysis: analysis,
+                analysis: {
+                  strengths: analysis.strengths,
+                  weaknesses: analysis.weaknesses
+                },
                 playerRole: user.role,
             });
 

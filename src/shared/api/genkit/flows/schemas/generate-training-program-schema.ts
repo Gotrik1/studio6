@@ -1,101 +1,29 @@
-'use client';
+import { z } from 'zod';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/ui/dialog";
-import { Button } from "@/shared/ui/button";
-import { Badge } from '@/shared/ui/badge';
-import Image from 'next/image';
-import type { Exercise } from '@/shared/lib/mock-data/exercises';
-import { useToast } from '@/shared/hooks/use-toast';
-import { PlusCircle, AlertTriangle, CheckCircle, Video } from 'lucide-react';
-import { Separator } from '@/shared/ui/separator';
+export const ExerciseDetailSchema = z.object({
+  name: z.string().describe('Название упражнения.'),
+  sets: z.string().describe('Количество подходов, например "3-4".'),
+  reps: z.string().describe('Количество повторений, например "8-12".'),
+});
 
-interface ExerciseDetailsDialogProps {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-  exercise: Exercise | null;
-}
+export const WorkoutDaySchema = z.object({
+  day: z.number().describe('Порядковый номер дня в неделе (1-7).'),
+  title: z.string().describe('Название тренировочного дня, например "Грудь и Трицепс".'),
+  exercises: z.array(ExerciseDetailSchema).describe('Список упражнений на этот день.'),
+});
 
-export function ExerciseDetailsDialog({ isOpen, onOpenChange, exercise }: ExerciseDetailsDialogProps) {
-  const { toast } = useToast();
+export const GenerateTrainingProgramInputSchema = z.object({
+  goal: z.enum(['Набор массы', 'Снижение веса', 'Рельеф', 'Сила']).describe('Основная цель программы.'),
+  experience: z.enum(['Новичок', 'Средний', 'Продвинутый']).describe('Уровень подготовки атлета.'),
+  daysPerWeek: z.number().min(1).max(7).describe('Сколько дней в неделю атлет готов тренироваться.'),
+  gender: z.enum(['Мужской', 'Женский']).describe('Пол атлета для подбора фокуса.'),
+  focus: z.string().optional().describe('Дополнительный фокус, например "акцент на ноги" или "убрать живот".'),
+});
+export type GenerateTrainingProgramInput = z.infer<typeof GenerateTrainingProgramInputSchema>;
 
-  if (!exercise) return null;
-
-  const handleAddToWorkout = () => {
-    toast({
-        title: "Упражнение добавлено",
-        description: `${exercise.name} добавлено в вашу текущую тренировку.`,
-    });
-    onOpenChange(false);
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">{exercise.name}</DialogTitle>
-          <DialogDescription>
-            <div className="flex flex-wrap gap-2 mt-2">
-                <Badge variant="secondary">{exercise.muscleGroup}</Badge>
-                <Badge variant="outline">{exercise.equipment}</Badge>
-            </div>
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
-          <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-            <Image 
-                src={exercise.image} 
-                alt={exercise.name} 
-                fill 
-                className="object-cover"
-                data-ai-hint={exercise.imageHint}
-            />
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                <Video className="h-12 w-12 text-white/70" />
-            </div>
-          </div>
-          
-          <p className="text-sm text-muted-foreground">{exercise.description}</p>
-          
-          <Separator />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-                <h4 className="font-semibold flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> Техника выполнения</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {exercise.techniqueTips.map((tip, i) => <li key={i}>{tip}</li>)}
-                </ul>
-            </div>
-             <div className="space-y-2">
-                <h4 className="font-semibold flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-yellow-500" /> Частые ошибки</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {exercise.commonMistakes.map((mistake, i) => <li key={i}>{mistake}</li>)}
-                </ul>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">Альтернативы</h4>
-            <div className="flex flex-wrap gap-2">
-                {exercise.alternatives.map((alt, i) => <Badge key={i} variant="outline">{alt}</Badge>)}
-            </div>
-          </div>
-
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Закрыть</Button>
-          <Button onClick={handleAddToWorkout}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Добавить в тренировку
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+export const GenerateTrainingProgramOutputSchema = z.object({
+  name: z.string().describe('Креативное название для сгенерированной программы.'),
+  description: z.string().describe('Краткое описание программы, ее целей и для кого она подходит.'),
+  weeklySplit: z.array(WorkoutDaySchema).describe('Полная программа тренировок, расписанная по дням.'),
+});
+export type GenerateTrainingProgramOutput = z.infer<typeof GenerateTrainingProgramOutputSchema>;

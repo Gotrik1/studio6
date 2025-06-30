@@ -1,101 +1,99 @@
 'use client';
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/ui/dialog";
-import { Button } from "@/shared/ui/button";
-import { Badge } from '@/shared/ui/badge';
-import Image from 'next/image';
-import type { Exercise } from '@/shared/lib/mock-data/exercises';
-import { useToast } from '@/shared/hooks/use-toast';
-import { PlusCircle, AlertTriangle, CheckCircle, Video } from 'lucide-react';
-import { Separator } from '@/shared/ui/separator';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/shared/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { Input } from '@/shared/ui/input';
+import { Loader2, Sparkles, BrainCircuit } from 'lucide-react';
+import { generateTrainingProgram, type GenerateTrainingProgramOutput } from '@/shared/api/genkit/flows/generate-training-program-flow';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import type { TrainingProgram } from '@/entities/training-program/model/types';
 
-interface ExerciseDetailsDialogProps {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-  exercise: Exercise | null;
+const aiFormSchema = z.object({
+  goal: z.enum(['Набор массы', 'Снижение веса', 'Рельеф', 'Сила']),
+  experience: z.enum(['Новичок', 'Средний', 'Продвинутый']),
+  daysPerWeek: z.coerce.number().min(2).max(6),
+  gender: z.enum(['Мужской', 'Женский']),
+  focus: z.string().optional(),
+});
+
+type AiFormValues = z.infer<typeof aiFormSchema>;
+
+interface AiProgramGeneratorProps {
+    onProgramGenerated: (program: TrainingProgram) => void;
 }
 
-export function ExerciseDetailsDialog({ isOpen, onOpenChange, exercise }: ExerciseDetailsDialogProps) {
-  const { toast } = useToast();
+export function AiProgramGenerator({ onProgramGenerated }: AiProgramGeneratorProps) {
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-  if (!exercise) return null;
-
-  const handleAddToWorkout = () => {
-    toast({
-        title: "Упражнение добавлено",
-        description: `${exercise.name} добавлено в вашу текущую тренировку.`,
+    const form = useForm<AiFormValues>({
+        resolver: zodResolver(aiFormSchema),
+        defaultValues: {
+            goal: 'Набор массы',
+            experience: 'Средний',
+            daysPerWeek: 3,
+            gender: 'Мужской',
+            focus: '',
+        },
     });
-    onOpenChange(false);
-  };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">{exercise.name}</DialogTitle>
-          <DialogDescription>
-            <div className="flex flex-wrap gap-2 mt-2">
-                <Badge variant="secondary">{exercise.muscleGroup}</Badge>
-                <Badge variant="outline">{exercise.equipment}</Badge>
-            </div>
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
-          <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-            <Image 
-                src={exercise.image} 
-                alt={exercise.name} 
-                fill 
-                className="object-cover"
-                data-ai-hint={exercise.imageHint}
-            />
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                <Video className="h-12 w-12 text-white/70" />
-            </div>
-          </div>
-          
-          <p className="text-sm text-muted-foreground">{exercise.description}</p>
-          
-          <Separator />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-                <h4 className="font-semibold flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> Техника выполнения</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {exercise.techniqueTips.map((tip, i) => <li key={i}>{tip}</li>)}
-                </ul>
-            </div>
-             <div className="space-y-2">
-                <h4 className="font-semibold flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-yellow-500" /> Частые ошибки</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {exercise.commonMistakes.map((mistake, i) => <li key={i}>{mistake}</li>)}
-                </ul>
-            </div>
-          </div>
+    const onSubmit = async (data: AiFormValues) => {
+        setIsLoading(true);
+        setError(null);
+        try {
+            const result: GenerateTrainingProgramOutput = await generateTrainingProgram(data);
+            const newProgram: TrainingProgram = {
+                id: `ai-${Date.now()}`,
+                name: result.name,
+                description: result.description,
+                goal: data.goal,
+                daysPerWeek: data.daysPerWeek,
+                splitType: 'Split', // Default, could be inferred by AI later
+                author: 'ProDvor AI',
+                coverImage: 'https://placehold.co/600x400.png',
+                coverImageHint: 'ai circuit board',
+                isAiGenerated: true,
+                weeklySplit: result.weeklySplit,
+            };
+            onProgramGenerated(newProgram);
+        } catch (e) {
+            console.error("AI Program Generation failed:", e);
+            setError("Не удалось сгенерировать программу. Попробуйте изменить параметры или повторить попытку позже.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-          <div>
-            <h4 className="font-semibold mb-2">Альтернативы</h4>
-            <div className="flex flex-wrap gap-2">
-                {exercise.alternatives.map((alt, i) => <Badge key={i} variant="outline">{alt}</Badge>)}
-            </div>
-          </div>
-
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Закрыть</Button>
-          <Button onClick={handleAddToWorkout}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Добавить в тренировку
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
+    return (
+        <Card className="max-w-3xl mx-auto">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2"><BrainCircuit />AI-Генератор</CardTitle>
+                <CardDescription>Опишите ваши цели и уровень подготовки, и наш AI-тренер создаст для вас персональную программу тренировок.</CardDescription>
+            </CardHeader>
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <CardContent className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <FormField control={form.control} name="goal" render={({ field }) => (<FormItem><FormLabel>Ваша главная цель</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Набор массы">Набор массы</SelectItem><SelectItem value="Снижение веса">Снижение веса</SelectItem><SelectItem value="Рельеф">Рельеф</SelectItem><SelectItem value="Сила">Сила</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="experience" render={({ field }) => (<FormItem><FormLabel>Ваш опыт</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Новичок">Новичок (до 6 мес)</SelectItem><SelectItem value="Средний">Средний (6-18 мес)</SelectItem><SelectItem value="Продвинутый">Продвинутый (18+ мес)</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="daysPerWeek" render={({ field }) => (<FormItem><FormLabel>Тренировок в неделю</FormLabel><Select onValueChange={(val) => field.onChange(parseInt(val))} defaultValue={String(field.value)}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent>{[2,3,4,5,6].map(d => <SelectItem key={d} value={String(d)}>{d}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                            <FormField control={form.control} name="gender" render={({ field }) => (<FormItem><FormLabel>Пол</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Мужской">Мужской</SelectItem><SelectItem value="Женский">Женский</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                        </div>
+                        <FormField control={form.control} name="focus" render={({ field }) => (<FormItem><FormLabel>Дополнительный фокус (необязательно)</FormLabel><FormControl><Input placeholder="Например: акцент на руки, кардио" {...field} /></FormControl></FormItem>)} />
+                        {error && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
+                         <Button type="submit" disabled={isLoading} className="w-full" size="lg">
+                            {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sparkles className="mr-2 h-5 w-5" />}
+                            {isLoading ? 'Идет подбор упражнений...' : 'Сгенерировать программу'}
+                        </Button>
+                    </CardContent>
+                </form>
+            </Form>
+        </Card>
+    );
 }

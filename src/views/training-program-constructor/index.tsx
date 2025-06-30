@@ -1,24 +1,25 @@
-
 'use client';
 
-import { TrainingProgramForm } from '@/widgets/training-program-form';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTraining } from '@/app/providers/training-provider';
 import { useToast } from '@/shared/hooks/use-toast';
-import { useState } from 'react';
-import type { ProgramFormValues } from '@/widgets/training-program-form';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import { Wand2, Hand } from 'lucide-react';
+import { TrainingProgramForm, type ProgramFormValues } from '@/widgets/training-program-form';
+import { AiProgramGenerator } from '@/widgets/ai-program-generator';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
-
 
 export function TrainingProgramConstructorPage() {
     const { addProgram } = useTraining();
     const router = useRouter();
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
+    const [generatedProgram, setGeneratedProgram] = useState<TrainingProgram | null>(null);
+    const [activeTab, setActiveTab] = useState('ai');
 
     const handleManualSubmit = (data: ProgramFormValues) => {
         setIsSaving(true);
-        
         const newProgram: TrainingProgram = {
             id: `manual-${Date.now()}`,
             name: data.name,
@@ -36,28 +37,46 @@ export function TrainingProgramConstructorPage() {
                 exercises: day.exercises.map(ex => ({ name: ex.name, sets: ex.sets, reps: ex.reps })),
             })),
         };
-        
-        addProgram(newProgram);
+        addAndRedirect(newProgram);
+    };
 
+    const handleProgramGenerated = (program: TrainingProgram) => {
+        setGeneratedProgram(program);
+        setActiveTab('manual');
+    };
+    
+    const addAndRedirect = (program: TrainingProgram) => {
+        addProgram(program);
         setTimeout(() => {
             toast({
                 title: "Программа создана!",
-                description: `Ваша новая программа "${data.name}" была успешно сохранена.`,
+                description: `Ваша новая программа "${program.name}" была успешно сохранена.`,
             });
             setIsSaving(false);
             router.push('/training/programs');
-        }, 1000);
-    };
+        }, 500);
+    }
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="space-y-2 text-center">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Конструктор программ</h1>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Создание программы</h1>
                 <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Соберите свой идеальный тренировочный план с нуля, упражнение за упражнением.
+                    Воспользуйтесь помощью AI-тренера для быстрого старта или соберите свой план с нуля.
                 </p>
             </div>
-            <TrainingProgramForm onSubmit={handleManualSubmit} isSaving={isSaving} />
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
+                    <TabsTrigger value="ai"><Wand2 className="mr-2 h-4 w-4" /> AI-Генератор</TabsTrigger>
+                    <TabsTrigger value="manual"><Hand className="mr-2 h-4 w-4" /> Ручной конструктор</TabsTrigger>
+                </TabsList>
+                <TabsContent value="ai" className="mt-4">
+                    <AiProgramGenerator onProgramGenerated={handleProgramGenerated} />
+                </TabsContent>
+                <TabsContent value="manual" className="mt-4">
+                   <TrainingProgramForm onSubmit={handleManualSubmit} isSaving={isSaving} initialData={generatedProgram || undefined}/>
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

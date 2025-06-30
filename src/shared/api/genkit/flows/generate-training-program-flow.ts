@@ -1,101 +1,62 @@
-'use client';
+'use server';
+/**
+ * @fileOverview An AI agent for generating personalized training programs.
+ *
+ * - generateTrainingProgram - A function that handles program generation.
+ * - GenerateTrainingProgramInput - The input type for the function.
+ * - GenerateTrainingProgramOutput - The return type for the function.
+ */
 
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/shared/ui/dialog";
-import { Button } from "@/shared/ui/button";
-import { Badge } from '@/shared/ui/badge';
-import Image from 'next/image';
-import type { Exercise } from '@/shared/lib/mock-data/exercises';
-import { useToast } from '@/shared/hooks/use-toast';
-import { PlusCircle, AlertTriangle, CheckCircle, Video } from 'lucide-react';
-import { Separator } from '@/shared/ui/separator';
+import { ai } from '@/shared/api/genkit';
+import { exercisesList } from '@/shared/lib/mock-data/exercises';
+import { GenerateTrainingProgramInputSchema, GenerateTrainingProgramOutputSchema } from './schemas/generate-training-program-schema';
+import type { GenerateTrainingProgramInput, GenerateTrainingProgramOutput } from './schemas/generate-training-program-schema';
 
-interface ExerciseDetailsDialogProps {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-  exercise: Exercise | null;
+export type { GenerateTrainingProgramInput, GenerateTrainingProgramOutput };
+
+export async function generateTrainingProgram(input: GenerateTrainingProgramInput): Promise<GenerateTrainingProgramOutput> {
+  return generateTrainingProgramFlow(input);
 }
 
-export function ExerciseDetailsDialog({ isOpen, onOpenChange, exercise }: ExerciseDetailsDialogProps) {
-  const { toast } = useToast();
+const allExercisesString = exercisesList.map(ex => `- ${ex.name} (Группа мышц: ${ex.muscleGroup}, Оборудование: ${ex.equipment})`).join('\n');
 
-  if (!exercise) return null;
+const prompt = ai.definePrompt({
+  name: 'generateTrainingProgramPrompt',
+  input: { schema: GenerateTrainingProgramInputSchema },
+  output: { schema: GenerateTrainingProgramOutputSchema },
+  prompt: `Ты — опытный фитнес-тренер и диетолог. Твоя задача — создать персонализированную программу тренировок на неделю на основе данных пользователя.
 
-  const handleAddToWorkout = () => {
-    toast({
-        title: "Упражнение добавлено",
-        description: `${exercise.name} добавлено в вашу текущую тренировку.`,
-    });
-    onOpenChange(false);
-  };
+ДАННЫЕ ПОЛЬЗОВАТЕЛЯ:
+- Цель: {{{goal}}}
+- Уровень: {{{experience}}}
+- Дней в неделю: {{{daysPerWeek}}}
+- Пол: {{{gender}}}
+{{#if focus}}- Дополнительный фокус: {{{focus}}}{{/if}}
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl">{exercise.name}</DialogTitle>
-          <DialogDescription>
-            <div className="flex flex-wrap gap-2 mt-2">
-                <Badge variant="secondary">{exercise.muscleGroup}</Badge>
-                <Badge variant="outline">{exercise.equipment}</Badge>
-            </div>
-          </DialogDescription>
-        </DialogHeader>
-        <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
-          <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-            <Image 
-                src={exercise.image} 
-                alt={exercise.name} 
-                fill 
-                className="object-cover"
-                data-ai-hint={exercise.imageHint}
-            />
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                <Video className="h-12 w-12 text-white/70" />
-            </div>
-          </div>
-          
-          <p className="text-sm text-muted-foreground">{exercise.description}</p>
-          
-          <Separator />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-                <h4 className="font-semibold flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> Техника выполнения</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {exercise.techniqueTips.map((tip, i) => <li key={i}>{tip}</li>)}
-                </ul>
-            </div>
-             <div className="space-y-2">
-                <h4 className="font-semibold flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-yellow-500" /> Частые ошибки</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {exercise.commonMistakes.map((mistake, i) => <li key={i}>{mistake}</li>)}
-                </ul>
-            </div>
-          </div>
+ТРЕБОВАНИЯ К ПРОГРАММЕ:
+1.  **Название и Описание**: Придумай мотивирующее название и краткое описание для программы.
+2.  **Структура**: Разбей программу на {{daysPerWeek}} тренировочных дней. Для каждого дня придумай название (например, "День 1: Грудь и Трицепс").
+3.  **Упражнения**: Для каждого дня подбери 4-6 упражнений из предоставленного списка. Распределяй упражнения логично, учитывая мышечные группы. Например, не ставь два тяжелых базовых упражнения на одну и ту же группу мышц подряд.
+4.  **Подходы и Повторения**: Укажи количество подходов и повторений для каждого упражнения, соответствующее цели (для силы: 3-5 подходов по 3-6 повторений; для массы: 3-4 по 8-12; для рельефа/похудения: 3-4 по 12-15).
+5.  **Логика**:
+    - Учитывай уровень подготовки: новичкам — больше базовых упражнений с собственным весом или в тренажерах, меньше дней; продвинутым — более сложные сплиты и свободные веса.
+    - Учитывай пол: для женщин можно сделать больше акцента на ноги и ягодицы, если не указан другой фокус.
+    - Учитывай фокус: если пользователь указал фокус, обязательно включи дополнительные упражнения на эту область.
 
-          <div>
-            <h4 className="font-semibold mb-2">Альтернативы</h4>
-            <div className="flex flex-wrap gap-2">
-                {exercise.alternatives.map((alt, i) => <Badge key={i} variant="outline">{alt}</Badge>)}
-            </div>
-          </div>
+ДОСТУПНЫЕ УПРАЖНЕНИЯ:
+${allExercisesString}
 
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Закрыть</Button>
-          <Button onClick={handleAddToWorkout}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Добавить в тренировку
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
+ВАЖНО: Ответ должен быть строго в формате JSON, соответствующем выходной схеме.`,
+});
+
+const generateTrainingProgramFlow = ai.defineFlow(
+  {
+    name: 'generateTrainingProgramFlow',
+    inputSchema: GenerateTrainingProgramInputSchema,
+    outputSchema: GenerateTrainingProgramOutputSchema,
+  },
+  async (input) => {
+    const { output } = await prompt(input);
+    return output!;
+  }
+);

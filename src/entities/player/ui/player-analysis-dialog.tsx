@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -9,91 +10,109 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
-import { Badge } from '@/shared/ui/badge';
-import Image from 'next/image';
-import type { Exercise } from '@/shared/lib/mock-data/exercises';
-import { useToast } from '@/shared/hooks/use-toast';
-import { PlusCircle, AlertTriangle, CheckCircle, Video } from 'lucide-react';
-import { Separator } from '@/shared/ui/separator';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Loader2, Sparkles, BrainCircuit, AlertCircle, TrendingUp, TrendingDown, ClipboardList } from "lucide-react";
+import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@/shared/api/genkit/flows/analyze-player-performance-flow';
+import type { CoachedPlayer } from "@/shared/lib/mock-data/coach-players";
 
-interface ExerciseDetailsDialogProps {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-  exercise: Exercise | null;
+interface PlayerAnalysisDialogProps {
+    isOpen: boolean;
+    onOpenChange: (isOpen: boolean) => void;
+    player: CoachedPlayer | null;
 }
 
-export function ExerciseDetailsDialog({ isOpen, onOpenChange, exercise }: ExerciseDetailsDialogProps) {
-  const { toast } = useToast();
+export function PlayerAnalysisDialog({ isOpen, onOpenChange, player }: PlayerAnalysisDialogProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<AnalyzePlayerPerformanceOutput | null>(null);
 
-  if (!exercise) return null;
+  const handleAnalyze = async () => {
+    if (!player) return;
 
-  const handleAddToWorkout = () => {
-    toast({
-        title: "Упражнение добавлено",
-        description: `${exercise.name} добавлено в вашу текущую тренировку.`,
-    });
-    onOpenChange(false);
+    setIsLoading(true);
+    setError(null);
+    setAnalysisResult(null);
+
+    try {
+        const statsSummary = `Role: ${player.role}, KDA: ${player.stats.kda}, Win Rate: ${player.stats.winRate}, Favorite Map: ${player.stats.favoriteMap}`;
+        const result = await analyzePlayerPerformance({
+            playerStats: statsSummary,
+            matchHistory: player.matchHistory,
+        });
+        setAnalysisResult(result);
+    } catch (e) {
+        console.error(e);
+        setError("Не удалось получить анализ. Пожалуйста, попробуйте еще раз.");
+    } finally {
+        setIsLoading(false);
+    }
   };
+  
+   const onOpenChangeHandler = (open: boolean) => {
+    if (open && player) {
+      handleAnalyze(); // Analyze automatically when dialog opens
+    } else {
+      setAnalysisResult(null);
+      setError(null);
+    }
+    onOpenChange(open);
+  };
+  
+  if (!player) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
+    <Dialog open={isOpen} onOpenChange={onOpenChangeHandler}>
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="text-2xl">{exercise.name}</DialogTitle>
+          <DialogTitle>AI-Анализ: {player.name}</DialogTitle>
           <DialogDescription>
-            <div className="flex flex-wrap gap-2 mt-2">
-                <Badge variant="secondary">{exercise.muscleGroup}</Badge>
-                <Badge variant="outline">{exercise.equipment}</Badge>
-            </div>
+            Глубокий анализ производительности игрока.
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4 space-y-6 max-h-[70vh] overflow-y-auto pr-4">
-          <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-            <Image 
-                src={exercise.image} 
-                alt={exercise.name} 
-                fill 
-                className="object-cover"
-                data-ai-hint={exercise.imageHint}
-            />
-            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                <Video className="h-12 w-12 text-white/70" />
-            </div>
-          </div>
-          
-          <p className="text-sm text-muted-foreground">{exercise.description}</p>
-          
-          <Separator />
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-                <h4 className="font-semibold flex items-center gap-2"><CheckCircle className="h-5 w-5 text-green-500" /> Техника выполнения</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {exercise.techniqueTips.map((tip, i) => <li key={i}>{tip}</li>)}
-                </ul>
-            </div>
-             <div className="space-y-2">
-                <h4 className="font-semibold flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-yellow-500" /> Частые ошибки</h4>
-                <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-                    {exercise.commonMistakes.map((mistake, i) => <li key={i}>{mistake}</li>)}
-                </ul>
-            </div>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">Альтернативы</h4>
-            <div className="flex flex-wrap gap-2">
-                {exercise.alternatives.map((alt, i) => <Badge key={i} variant="outline">{alt}</Badge>)}
-            </div>
-          </div>
-
+        <div className="py-4 space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+            {isLoading && (
+                 <div className="space-y-4">
+                    <Skeleton className="h-24 w-full" />
+                    <Skeleton className="h-24 w-full" />
+                </div>
+            )}
+             {error && (
+                <Alert variant="destructive">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Ошибка</AlertTitle>
+                    <AlertDescription>{error}</AlertDescription>
+                </Alert>
+            )}
+            {analysisResult && (
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <h3 className="font-semibold flex items-center gap-2"><TrendingUp className="h-5 w-5 text-green-500"/> Сильные стороны</h3>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2">
+                            {analysisResult.strengths.map((item, i) => <li key={`str-${i}`}>{item}</li>)}
+                        </ul>
+                    </div>
+                    <div className="space-y-2">
+                        <h3 className="font-semibold flex items-center gap-2"><TrendingDown className="h-5 w-5 text-yellow-500"/> Точки роста</h3>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2">
+                                {analysisResult.weaknesses.map((item, i) => <li key={`weak-${i}`}>{item}</li>)}
+                        </ul>
+                    </div>
+                    <div className="space-y-2">
+                        <h3 className="font-semibold flex items-center gap-2"><ClipboardList className="h-5 w-5 text-blue-500"/> Рекомендации</h3>
+                        <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1 pl-2">
+                            {analysisResult.recommendations.map((item, i) => <li key={`rec-${i}`}>{item}</li>)}
+                        </ul>
+                    </div>
+                </div>
+            )}
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>Закрыть</Button>
-          <Button onClick={handleAddToWorkout}>
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Добавить в тренировку
-          </Button>
+        <DialogFooter className="flex-col sm:flex-row sm:justify-between items-center w-full">
+            <Button variant="outline" onClick={() => onOpenChange(false)}>Закрыть</Button>
+            <Button onClick={handleAnalyze} disabled={isLoading}>
+                {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                Проанализировать снова
+            </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
