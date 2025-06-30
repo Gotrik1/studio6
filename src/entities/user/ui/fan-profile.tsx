@@ -7,13 +7,19 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { fanUser, fanAchievements } from "@/shared/lib/mock-data/fan-profile";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { teams as mockTeams } from '@/shared/lib/mock-data/teams';
-import { Wand2 } from 'lucide-react';
+import { Wand2, Coins, DollarSign, Calendar } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
+import { pdHistory } from "@/shared/lib/mock-data/gamification";
+import { PD_SOURCE_DETAILS, type PD_SOURCE_TYPE } from '@/shared/config/gamification';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
+import { cn } from '@/shared/lib/utils';
 
 
 const FanStatsTab = dynamic(() => import('@/entities/user/ui/fan-profile-tabs/stats-tab').then(mod => mod.FanStatsTab), {
@@ -41,17 +47,17 @@ export function FanProfile({ user, achievements }: FanProfileProps) {
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const favoriteTeams = mockTeams.slice(0, 2); // Mock some favorite teams
 
+  const totalEarned = pdHistory.filter(item => item.value > 0).reduce((sum, item) => sum + item.value, 0);
+  const totalSpent = pdHistory.filter(item => item.value < 0).reduce((sum, item) => sum + item.value, 0);
+  const totalPd = totalEarned + totalSpent;
+
 
   return (
     <>
       <Card className="overflow-hidden">
-        <div className="relative h-40 bg-muted/40">
-          <Image src="https://placehold.co/1200x400.png" alt="Profile Banner" fill className="object-cover" data-ai-hint="stadium crowd cheering" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-        </div>
-        <div className="relative p-6">
-            <div className="flex items-end gap-6 -mt-20">
-               <div className="relative">
+        <div className="relative p-6 -mt-20">
+          <div className="flex items-end gap-6">
+              <div className="relative">
                   <Avatar className="h-32 w-32 border-4 border-background bg-background">
                       <AvatarImage src={avatar} alt={user.name} data-ai-hint="sports fan" />
                       <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
@@ -86,10 +92,11 @@ export function FanProfile({ user, achievements }: FanProfileProps) {
         </div>
         <div className="border-t p-4 md:p-6">
           <Tabs defaultValue="stats">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="stats">Статистика</TabsTrigger>
               <TabsTrigger value="achievements">Достижения</TabsTrigger>
               <TabsTrigger value="favorite-teams">Любимые команды</TabsTrigger>
+              <TabsTrigger value="pd-wallet">PD Кошелек</TabsTrigger>
             </TabsList>
             <TabsContent value="stats" className="mt-4">
               <FanStatsTab />
@@ -100,6 +107,73 @@ export function FanProfile({ user, achievements }: FanProfileProps) {
             <TabsContent value="favorite-teams" className="mt-4">
                 <FavoriteTeamsTab teams={favoriteTeams} userName={user.name} />
             </TabsContent>
+            <TabsContent value="pd-wallet" className="mt-4">
+              <div className="space-y-6">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                      <Card>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                              <CardTitle className="text-sm font-medium">Текущий баланс</CardTitle>
+                              <Coins className="h-4 w-4 text-muted-foreground" />
+                          </CardHeader>
+                          <CardContent>
+                              <div className="text-2xl font-bold">{totalPd.toLocaleString('ru-RU')} PD</div>
+                          </CardContent>
+                      </Card>
+                       <Card>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                              <CardTitle className="text-sm font-medium text-green-500">Всего заработано</CardTitle>
+                              <DollarSign className="h-4 w-4 text-muted-foreground" />
+                          </CardHeader>
+                          <CardContent>
+                              <div className="text-2xl font-bold">{totalEarned.toLocaleString('ru-RU')} PD</div>
+                          </CardContent>
+                      </Card>
+                       <Card>
+                          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                              <CardTitle className="text-sm font-medium text-red-500">Всего потрачено</CardTitle>
+                              <DollarSign className="h-4 w-4 text-muted-foreground" />
+                          </CardHeader>
+                          <CardContent>
+                              <div className="text-2xl font-bold">{Math.abs(totalSpent).toLocaleString('ru-RU')} PD</div>
+                          </CardContent>
+                      </Card>
+                  </div>
+
+                  <Card>
+                      <CardHeader>
+                          <CardTitle>История транзакций</CardTitle>
+                          <CardDescription>Здесь отображаются все ваши операции с PD.</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                          <Table>
+                              <TableHeader>
+                                  <TableRow>
+                                      <TableHead>Дата</TableHead>
+                                      <TableHead>Источник</TableHead>
+                                      <TableHead className="text-right">Сумма</TableHead>
+                                  </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                  {pdHistory.map((tx) => (
+                                      <TableRow key={tx.id}>
+                                          <TableCell>
+                                              <div className="flex items-center gap-2">
+                                                  <Calendar className="h-4 w-4 text-muted-foreground"/>
+                                                  <span>{format(new Date(tx.timestamp), "d MMMM yyyy, HH:mm", { locale: ru })}</span>
+                                              </div>
+                                          </TableCell>
+                                          <TableCell>{PD_SOURCE_DETAILS[tx.source as PD_SOURCE_TYPE]?.description || tx.source}</TableCell>
+                                          <TableCell className={cn("text-right font-medium", tx.value > 0 ? 'text-green-500' : 'text-red-500')}>
+                                            {tx.value > 0 ? '+' : ''}{tx.value.toLocaleString('ru-RU')} PD
+                                          </TableCell>
+                                      </TableRow>
+                                  ))}
+                              </TableBody>
+                          </Table>
+                      </CardContent>
+                  </Card>
+              </div>
+          </TabsContent>
           </Tabs>
         </div>
       </Card>
