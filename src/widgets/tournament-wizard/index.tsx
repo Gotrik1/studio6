@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -26,6 +27,8 @@ const tournamentSchema = z.object({
   description: z.string().optional(),
   type: z.enum(['team', 'individual'], { required_error: 'Выберите тип турнира.' }),
   format: z.enum(['single_elimination', 'round_robin', 'groups'], { required_error: 'Выберите формат.' }),
+  category: z.string({ required_error: 'Выберите категорию.' }),
+  location: z.string({ required_error: 'Выберите географию.' }),
   participantCount: z.coerce.number().min(4, 'Минимум 4 участника.').max(128, 'Максимум 128 участников.'),
   registrationStartDate: z.date({required_error: "Выберите дату."}),
   registrationEndDate: z.date({required_error: "Выберите дату."}),
@@ -64,6 +67,8 @@ export function ManualTournamentForm() {
       description: '',
       type: undefined,
       format: undefined,
+      category: undefined,
+      location: 'online',
       participantCount: 16,
       registrationStartDate: new Date(),
       registrationEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -114,6 +119,8 @@ export function ManualTournamentForm() {
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <FormField control={form.control} name="type" render={({ field }) => (<FormItem><FormLabel>Тип турнира</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите тип" /></SelectTrigger></FormControl><SelectContent><SelectItem value="team">Командный</SelectItem><SelectItem value="individual">Индивидуальный</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                                 <FormField control={form.control} name="format" render={({ field }) => (<FormItem><FormLabel>Формат проведения</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите формат" /></SelectTrigger></FormControl><SelectContent><SelectItem value="single_elimination">Олимпийская система (Single-Elimination)</SelectItem><SelectItem value="groups">Групповой этап + Плей-офф</SelectItem><SelectItem value="round_robin">Круговая система</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="category" render={({ field }) => (<FormItem><FormLabel>Категория</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите категорию" /></SelectTrigger></FormControl><SelectContent><SelectItem value="open">Открытая</SelectItem><SelectItem value="male">Мужская</SelectItem><SelectItem value="female">Женская</SelectItem><SelectItem value="mix">Микс</SelectItem><SelectItem value="juniors">Юниоры</SelectItem><SelectItem value="veterans">Ветераны</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="location" render={({ field }) => (<FormItem><FormLabel>География</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите географию" /></SelectTrigger></FormControl><SelectContent><SelectItem value="online">Онлайн</SelectItem><SelectItem value="city">Город</SelectItem><SelectItem value="international">Международный</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <FormField control={form.control} name="registrationStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
