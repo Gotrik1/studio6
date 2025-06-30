@@ -16,6 +16,7 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
+import { RestTimer } from '@/widgets/rest-timer';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;
@@ -147,6 +148,9 @@ export function TrainingDayCard({ entry, onDelete, onCopy, onUpdate }: TrainingD
                                 </div>
                             )
                         })}
+                        
+                        <RestTimer />
+
                          <div className="mt-6 space-y-4">
                             <FormField control={form.control} name="notes" render={({ field }) => (
                                 <FormItem><FormLabel>Заметки к тренировке</FormLabel><FormControl><Textarea placeholder="Как прошла тренировка?" {...field} value={field.value ?? ''} /></FormControl></FormItem>
