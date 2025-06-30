@@ -1,6 +1,5 @@
-
-import { ManualTournamentForm } from '@/widgets/tournament-wizard';
+import { NewTournamentWizardPage } from '@/views/tournament-create-wizard';
 
 export function TournamentCrmCreatePage() {
-    return <ManualTournamentForm />;
+    return <NewTournamentWizardPage />;
 }

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -9,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/shared/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
-import { Textarea } from '@/shared/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
@@ -20,6 +18,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { Textarea } from '@/shared/ui/textarea';
 
 const tournamentSchema = z.object({
   name: z.string().min(3, 'Название должно содержать не менее 3 символов.'),
@@ -91,10 +90,6 @@ export function ManualTournamentForm() {
   
   return (
     <div className="space-y-6 opacity-0 animate-fade-in-up">
-        <div className="space-y-2 text-center">
-            <h1 className="font-headline text-3xl font-bold tracking-tight">Создание турнира</h1>
-            <p className="text-muted-foreground">Заполните все необходимые поля для создания нового соревнования.</p>
-        </div>
         <Card className="max-w-4xl mx-auto">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
