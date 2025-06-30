@@ -3,10 +3,13 @@
 
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
-import { personalRecords, trainingMetrics } from '@/shared/lib/mock-data/training-stats';
+import { trainingLogData } from '@/shared/lib/mock-data/training-log';
+import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 import { Trophy, Dumbbell, Flame, Star, Activity } from 'lucide-react';
 
 export function PhysicalPrepTab() {
+    const { personalRecords, trainingMetrics } = getTrainingAnalytics(trainingLogData);
+
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
@@ -25,7 +28,7 @@ export function PhysicalPrepTab() {
                  <Card>
                     <CardHeader>
                         <CardDescription className="flex items-center gap-2"><Star className="h-4 w-4"/> Любимое упражнение</CardDescription>
-                        <CardTitle className="font-headline text-3xl">{trainingMetrics.favoriteExercise}</CardTitle>
+                        <CardTitle className="font-headline text-xl">{trainingMetrics.favoriteExercise}</CardTitle>
                     </CardHeader>
                 </Card>
                  <Card>
