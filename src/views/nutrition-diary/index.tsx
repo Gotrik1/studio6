@@ -10,29 +10,23 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { format, addDays, subDays } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { nutritionDiaryData, type FoodLogEntry } from '@/shared/lib/mock-data/nutrition-diary';
+import type { FoodLogEntry } from '@/shared/lib/mock-data/nutrition-diary';
 import { useToast } from '@/shared/hooks/use-toast';
 import Link from 'next/link';
+import { useNutrition } from '@/app/providers/nutrition-provider';
 
 const meals: FoodLogEntry['meal'][] = ['Завтрак', 'Обед', 'Ужин', 'Перекус'];
 
 export function NutritionDiaryPage() {
     const { toast } = useToast();
     const [date, setDate] = useState<Date>(new Date());
-    const [log, setLog] = useState<FoodLogEntry[]>(nutritionDiaryData);
+    const { log, totals, deleteFoodLog } = useNutrition();
 
-    const totals = log.reduce((acc, item) => ({
-        calories: acc.calories + item.calories,
-        protein: acc.protein + item.protein,
-        fat: acc.fat + item.fat,
-        carbs: acc.carbs + item.carbs,
-    }), { calories: 0, protein: 0, fat: 0, carbs: 0 });
-
-    const handleDelete = (id: string) => {
-        setLog(prev => prev.filter(item => item.id !== id));
+    const handleDelete = (id: string, name: string) => {
+        deleteFoodLog(id);
         toast({
             title: 'Запись удалена',
-            description: 'Продукт был удален из вашего дневника.',
+            description: `${name} был(а) удален(а) из вашего дневника.`,
         });
     };
     
@@ -136,7 +130,7 @@ export function NutritionDiaryPage() {
                                                 <TableCell className="text-center">{item.grams}</TableCell>
                                                 <TableCell className="text-center">{item.calories}</TableCell>
                                                 <TableCell className="text-right">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)}>
+                                                    <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id, item.name)}>
                                                         <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive"/>
                                                     </Button>
                                                 </TableCell>

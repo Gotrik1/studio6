@@ -5,6 +5,7 @@ import { AppLayout } from "@/widgets/app-layout";
 import { TeamProvider } from "@/app/providers/team-provider";
 import { TrainingProvider } from "@/app/providers/training-provider";
 import { AccentThemeProvider } from "@/app/providers/accent-theme-provider";
+import { NutritionProvider } from "@/app/providers/nutrition-provider";
 
 export default async function ApplicationLayout({
   children,
@@ -21,9 +22,11 @@ export default async function ApplicationLayout({
     <AccentThemeProvider>
         <TeamProvider>
         <TrainingProvider>
-            <AppLayout user={user}>
-                {children}
-            </AppLayout>
+            <NutritionProvider>
+                <AppLayout user={user}>
+                    {children}
+                </AppLayout>
+            </NutritionProvider>
         </TrainingProvider>
         </TeamProvider>
     </AccentThemeProvider>
