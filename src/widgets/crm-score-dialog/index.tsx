@@ -25,7 +25,7 @@ type Match = Extract<MatchUnion, { team2: unknown }>;
 
 export type MatchResult = {
     matchId: number;
-    type: 'score' | 'tech_defeat_t1' | 'tech_defeat_t2';
+    type: 'score' | 'technical_defeat_t1' | 'technical_defeat_t2';
     scoreA: number;
     scoreB: number;
     comment: string;
@@ -40,7 +40,7 @@ interface CrmMatchResultDialogProps {
 
 export function CrmMatchResultDialog({ isOpen, onOpenChange, match, onMatchUpdate }: CrmMatchResultDialogProps) {
   const { toast } = useToast();
-  const [resultType, setResultType] = useState<'score' | 'tech_defeat'>('score');
+  const [resultType, setResultType] = useState<'score' | 'technical_defeat'>('score');
   const [scoreA, setScoreA] = useState('');
   const [scoreB, setScoreB] = useState('');
   const [techDefeatTeam, setTechDefeatTeam] = useState<string | undefined>(undefined);
@@ -86,7 +86,7 @@ export function CrmMatchResultDialog({ isOpen, onOpenChange, match, onMatchUpdat
         }
         result = {
             matchId: match.id,
-            type: techDefeatTeam === 'team1' ? 'tech_defeat_t2' : 'tech_defeat_t1',
+            type: techDefeatTeam === 'team1' ? 'technical_defeat_t2' : 'technical_defeat_t1',
             scoreA: techDefeatTeam === 'team1' ? 0 : 1, // simplified win/loss
             scoreB: techDefeatTeam === 'team1' ? 1 : 0,
             comment,
@@ -109,7 +109,7 @@ export function CrmMatchResultDialog({ isOpen, onOpenChange, match, onMatchUpdat
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
-            <RadioGroup defaultValue="score" value={resultType} onValueChange={(value) => setResultType(value as 'score' | 'tech_defeat')} className="grid grid-cols-2 gap-4">
+            <RadioGroup defaultValue="score" value={resultType} onValueChange={(value) => setResultType(value as 'score' | 'technical_defeat')} className="grid grid-cols-2 gap-4">
                  <div>
                     <RadioGroupItem value="score" id="r-score" className="peer sr-only" />
                     <Label htmlFor="r-score" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
@@ -139,7 +139,7 @@ export function CrmMatchResultDialog({ isOpen, onOpenChange, match, onMatchUpdat
                 </div>
             )}
 
-            {resultType === 'tech_defeat' && (
+            {resultType === 'technical_defeat' && (
                 <div className="space-y-2 animate-in fade-in-50">
                     <Label>Какая команда получает техническое поражение?</Label>
                     <RadioGroup onValueChange={setTechDefeatTeam}>

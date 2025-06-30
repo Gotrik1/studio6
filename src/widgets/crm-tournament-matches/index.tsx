@@ -14,7 +14,6 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shar
 
 type MatchUnion = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
 type Match = Extract<MatchUnion, { team2: unknown }>;
-
 type MatchStatus = 'pending' | 'played' | 'technical_defeat_t1' | 'technical_defeat_t2';
 
 type MatchState = Match & {
@@ -25,7 +24,7 @@ type MatchState = Match & {
 export function CrmTournamentMatches() {
     const { toast } = useToast();
 
-    const allMatches = useMemo(() => {
+    const allMatches: Match[] = useMemo(() => {
         return summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
             const playableMatches = round.matches.filter((match): match is Match => 'team2' in match);
             return acc.concat(playableMatches);
@@ -51,12 +50,9 @@ export function CrmTournamentMatches() {
             if (result.type === 'score') {
                 newScore = `${result.scoreA}-${result.scoreB}`;
                 newStatus = 'played';
-            } else if (result.type === 'tech_defeat_t1') {
-                newScore = 'L-W';
-                newStatus = 'tech_defeat_t1';
-            } else { // result.type === 'tech_defeat_t2'
-                newScore = 'W-L';
-                newStatus = 'tech_defeat_t2';
+            } else {
+                newScore = result.type === 'technical_defeat_t1' ? 'L-W' : 'W-L';
+                newStatus = result.type;
             }
             
             return { ...match, score: newScore, status: newStatus, comment: result.comment };
@@ -80,11 +76,10 @@ export function CrmTournamentMatches() {
         }
     }
 
-    // Create a map for quick lookup of round names
     const matchIdToRoundName = useMemo(() => {
         return summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
             round.matches.forEach(match => {
-                if ('team2' in match) { // Ensure it's a playable match
+                if ('team2' in match) {
                     acc[match.id] = round.name;
                 }
             });
