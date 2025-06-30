@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -52,24 +51,19 @@ const tournamentSchema = z.object({
 
 type FormValues = z.infer<typeof tournamentSchema>;
 
-const STEPS = [
-  { id: 1, title: 'Основная информация', fields: ['name', 'sport', 'description'] },
-  { id: 2, title: 'Формат', fields: ['type', 'format'] },
-  { id: 3, title: 'Участники и даты', fields: ['participantCount', 'registrationStartDate', 'registrationEndDate', 'tournamentStartDate'] },
-  { id: 4, title: 'Призы', fields: ['prizePool'] },
-];
-
 export function ManualTournamentForm() {
   const { toast } = useToast();
   const router = useRouter();
-  const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(tournamentSchema),
     defaultValues: {
       name: '',
+      sport: undefined,
       description: '',
+      type: undefined,
+      format: undefined,
       participantCount: 16,
       registrationStartDate: new Date(),
       registrationEndDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
@@ -77,21 +71,6 @@ export function ManualTournamentForm() {
       prizePool: '',
     },
   });
-
-  const next = async () => {
-    const fields = STEPS[currentStep].fields;
-    const output = await form.trigger(fields as (keyof FormValues)[], { shouldFocus: true });
-    if (!output) return;
-    if (currentStep < STEPS.length - 1) {
-      setCurrentStep(step => step + 1);
-    }
-  };
-
-  const prev = () => {
-    if (currentStep > 0) {
-      setCurrentStep(step => step - 1);
-    }
-  };
 
   const onSubmit = (data: FormValues) => {
     setIsSubmitting(true);
@@ -108,58 +87,58 @@ export function ManualTournamentForm() {
   return (
     <div className="space-y-6 opacity-0 animate-fade-in-up">
         <div className="space-y-2 text-center">
-            <h1 className="font-headline text-3xl font-bold tracking-tight">Мастер создания турнира</h1>
-            <p className="text-muted-foreground">Создайте новое соревнование шаг за шагом.</p>
+            <h1 className="font-headline text-3xl font-bold tracking-tight">Создание турнира</h1>
+            <p className="text-muted-foreground">Заполните все необходимые поля для создания нового соревнования.</p>
         </div>
-        <Card className="max-w-3xl mx-auto">
-        <CardHeader>
-            <CardTitle>Шаг {currentStep + 1} из {STEPS.length}: {STEPS[currentStep].title}</CardTitle>
-        </CardHeader>
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-            <CardContent className="space-y-6 min-h-[20rem]">
-                {currentStep === 0 && (
-                    <>
-                        <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Название турнира</FormLabel><FormControl><Input placeholder="Например, Осенний Кубок ProDvor" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="sport" render={({ field }) => (<FormItem><FormLabel>Вид спорта</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Краткое описание (необязательно)</FormLabel><FormControl><Textarea placeholder="Опишите главные особенности турнира" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    </>
-                )}
-                {currentStep === 1 && (
-                    <>
-                        <FormField control={form.control} name="type" render={({ field }) => (<FormItem><FormLabel>Тип турнира</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите тип" /></SelectTrigger></FormControl><SelectContent><SelectItem value="team">Командный</SelectItem><SelectItem value="individual">Индивидуальный</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="format" render={({ field }) => (<FormItem><FormLabel>Формат проведения</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите формат" /></SelectTrigger></FormControl><SelectContent><SelectItem value="single_elimination">Олимпийская система (Single-Elimination)</SelectItem><SelectItem value="groups">Групповой этап + Плей-офф</SelectItem><SelectItem value="round_robin">Круговая система</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
-                    </>
-                )}
-                {currentStep === 2 && (
-                    <>
-                        <FormField control={form.control} name="participantCount" render={({ field }) => (<FormItem><FormLabel>Макс. количество участников/команд</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <FormField control={form.control} name="registrationStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                            <FormField control={form.control} name="registrationEndDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Конец регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                            <FormField control={form.control} name="tournamentStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало турнира</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+        <Card className="max-w-4xl mx-auto">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <CardHeader>
+                        <CardTitle>Параметры турнира</CardTitle>
+                        <CardDescription>Полная настройка всех аспектов вашего события на одной странице.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-8">
+                        {/* Section 1: Basic Info */}
+                        <div className="space-y-4 p-4 border rounded-lg">
+                             <h3 className="font-semibold text-lg">Основная информация</h3>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Название турнира</FormLabel><FormControl><Input placeholder="Например, Осенний Кубок ProDvor" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="sport" render={({ field }) => (<FormItem><FormLabel>Вид спорта</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                             </div>
+                             <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Краткое описание (необязательно)</FormLabel><FormControl><Textarea placeholder="Опишите главные особенности турнира" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
-                    </>
-                )}
-                {currentStep === 3 && (
-                    <>
-                        <FormField control={form.control} name="prizePool" render={({ field }) => (<FormItem><FormLabel>Призовой фонд (необязательно)</FormLabel><FormControl><Textarea placeholder="Опишите призы для победителей, например: 1 место - 5000 PD, 2 место - 2500 PD" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                    </>
-                )}
-            </CardContent>
-            <CardFooter className="flex justify-between">
-                <Button type="button" variant="outline" onClick={prev} disabled={currentStep === 0}>Назад</Button>
-                {currentStep === STEPS.length - 1 ? (
-                <Button type="submit" disabled={isSubmitting}>
-                    {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Создать турнир
-                </Button>
-                ) : (
-                <Button type="button" onClick={next}>Далее</Button>
-                )}
-            </CardFooter>
-            </form>
-        </Form>
+                        
+                        {/* Section 2: Format & Dates */}
+                         <div className="space-y-4 p-4 border rounded-lg">
+                            <h3 className="font-semibold text-lg">Формат и даты</h3>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FormField control={form.control} name="type" render={({ field }) => (<FormItem><FormLabel>Тип турнира</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите тип" /></SelectTrigger></FormControl><SelectContent><SelectItem value="team">Командный</SelectItem><SelectItem value="individual">Индивидуальный</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="format" render={({ field }) => (<FormItem><FormLabel>Формат проведения</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите формат" /></SelectTrigger></FormControl><SelectContent><SelectItem value="single_elimination">Олимпийская система (Single-Elimination)</SelectItem><SelectItem value="groups">Групповой этап + Плей-офф</SelectItem><SelectItem value="round_robin">Круговая система</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
+                            </div>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <FormField control={form.control} name="registrationStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="registrationEndDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Конец регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="tournamentStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало турнира</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                            </div>
+                        </div>
+
+                         {/* Section 3: Participants & Prizes */}
+                        <div className="space-y-4 p-4 border rounded-lg">
+                             <h3 className="font-semibold text-lg">Участники и призы</h3>
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FormField control={form.control} name="participantCount" render={({ field }) => (<FormItem><FormLabel>Макс. количество участников/команд</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="prizePool" render={({ field }) => (<FormItem><FormLabel>Призовой фонд (необязательно)</FormLabel><FormControl><Input placeholder="Например, 10,000 PD" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
+                             </div>
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Создать турнир
+                        </Button>
+                    </CardFooter>
+                </form>
+            </Form>
         </Card>
     </div>
   );
