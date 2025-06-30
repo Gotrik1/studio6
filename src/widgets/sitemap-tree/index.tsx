@@ -32,6 +32,7 @@ const sitemapData: TreeNode[] = [
             { name: 'Каталог упражнений', type: 'file', href: '/training/exercises' },
             { name: 'Дневник тренировок', type: 'file', href: '/training/log' },
             { name: 'Аналитика', type: 'file', href: '/training/analytics' },
+            { name: 'Замеры тела', type: 'file', href: '/training/measurements' },
             { name: 'Центр питания', type: 'file', href: '/training/nutrition' },
             { name: 'Дневник питания', type: 'file', href: '/training/nutrition-diary' },
         ]},
@@ -44,6 +45,10 @@ const sitemapData: TreeNode[] = [
         { name: 'Платформа', type: 'folder', children: [
              { name: 'Магазин', type: 'file', href: '/store' },
              { name: 'Квесты', type: 'file', href: '/quests' },
+             { name: 'Промо-акции', type: 'folder', children: [
+                { name: 'Список акций', type: 'file', href: '/promotions' },
+                { name: 'Создание акции', type: 'file', href: '/promotions/new' },
+             ]},
              { name: 'Фан-зона', type: 'file', href: '/fan-zone' },
              { name: 'Партнеры и спонсоры', type: 'file', href: '/sponsors' },
              { name: 'Бронирование площадок', type: 'file', href: '/booking' },
@@ -94,7 +99,6 @@ const TreeItem = ({ item, level }: { item: TreeNode, level: number }) => {
         </div>
     );
 };
-
 
 export function SitemapTree() {
     return (
