@@ -1,10 +1,11 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { Coins, DollarSign, Calendar } from 'lucide-react';
 import { pdHistory } from "@/shared/lib/mock-data/gamification";
-import { PD_SOURCE_DETAILS, type PD_SOURCE_TYPE } from '@/shared/config/gamification';
+import { pdRules } from '@/shared/config/gamification';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { cn } from '@/shared/lib/utils';
@@ -61,20 +62,23 @@ export function PDWalletTab() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {pdHistory.map((tx) => (
-                                <TableRow key={tx.id}>
-                                    <TableCell>
-                                        <div className="flex items-center gap-2">
-                                            <Calendar className="h-4 w-4 text-muted-foreground"/>
-                                            <span>{format(new Date(tx.timestamp), "d MMMM yyyy, HH:mm", { locale: ru })}</span>
-                                        </div>
-                                    </TableCell>
-                                    <TableCell>{PD_SOURCE_DETAILS[tx.source as PD_SOURCE_TYPE]?.description || tx.source}</TableCell>
-                                    <TableCell className={cn("text-right font-medium", tx.value > 0 ? 'text-green-500' : 'text-red-500')}>
-                                      {tx.value > 0 ? '+' : ''}{tx.value.toLocaleString('ru-RU')} PD
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            {pdHistory.map((tx) => {
+                                const rule = pdRules.find(r => r.id === tx.source);
+                                return (
+                                    <TableRow key={tx.id}>
+                                        <TableCell>
+                                            <div className="flex items-center gap-2">
+                                                <Calendar className="h-4 w-4 text-muted-foreground"/>
+                                                <span>{format(new Date(tx.timestamp), "d MMMM yyyy, HH:mm", { locale: ru })}</span>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>{rule?.description || tx.source}</TableCell>
+                                        <TableCell className={cn("text-right font-medium", tx.value > 0 ? 'text-green-500' : 'text-red-500')}>
+                                        {tx.value > 0 ? '+' : ''}{tx.value.toLocaleString('ru-RU')} PD
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
                         </TableBody>
                     </Table>
                 </CardContent>
