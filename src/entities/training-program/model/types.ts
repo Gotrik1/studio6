@@ -5,6 +5,7 @@ export type ExerciseDetail = {
     reps: string;
     plannedWeight?: string;
     isSupersetWithPrevious?: boolean;
+    technique?: string;
 };
 
 export type WorkoutDay = {

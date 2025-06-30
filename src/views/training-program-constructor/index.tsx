@@ -40,7 +40,8 @@ export function TrainingProgramConstructorPage() {
                     sets: ex.sets, 
                     reps: ex.reps, 
                     plannedWeight: ex.plannedWeight,
-                    isSupersetWithPrevious: ex.isSupersetWithPrevious 
+                    isSupersetWithPrevious: ex.isSupersetWithPrevious,
+                    technique: ex.technique,
                 })),
             })),
         };

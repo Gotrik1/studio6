@@ -9,8 +9,6 @@ import { useToast } from "@/shared/hooks/use-toast";
 import { useState, useEffect } from 'react';
 import type { TrainingProgram } from "@/entities/training-program/model/types";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { exercisesList } from '@/shared/lib/mock-data/exercises';
-import { useForm } from 'react-hook-form';
 
 interface TrainingProgramEditPageProps {
     programId: string;
@@ -23,33 +21,6 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
     const [isSaving, setIsSaving] = useState(false);
     
     const programToEdit = programs.find(p => p.id === programId);
-
-    const form = useForm<ProgramFormValues>(); // We initialize the form here
-
-    useEffect(() => {
-        if (programToEdit) {
-            form.reset({
-                name: programToEdit.name,
-                description: programToEdit.description,
-                goal: programToEdit.goal,
-                splitType: programToEdit.splitType,
-                days: programToEdit.weeklySplit.map(day => ({
-                    title: day.title,
-                    exercises: day.exercises.map(ex => {
-                        const fullExercise = exercisesList.find(e => e.name === ex.name);
-                        return {
-                            id: fullExercise?.id || `temp-${Math.random()}`,
-                            name: ex.name,
-                            sets: ex.sets,
-                            reps: ex.reps,
-                            plannedWeight: ex.plannedWeight,
-                            isSupersetWithPrevious: ex.isSupersetWithPrevious || false,
-                        }
-                    })
-                }))
-            });
-        }
-    }, [programToEdit, form]);
 
     if (!programToEdit) {
         return (
@@ -78,7 +49,8 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
                     sets: ex.sets, 
                     reps: ex.reps,
                     plannedWeight: ex.plannedWeight,
-                    isSupersetWithPrevious: ex.isSupersetWithPrevious 
+                    isSupersetWithPrevious: ex.isSupersetWithPrevious,
+                    technique: ex.technique,
                 })),
             })),
         };
