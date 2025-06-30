@@ -44,6 +44,14 @@ export function TrainingLogPage() {
             });
         }
     };
+    
+    const handleUpdateEntry = (updatedEntry: TrainingLogEntry) => {
+        setLogEntries(prev => prev.map(entry => entry.id === updatedEntry.id ? updatedEntry : entry));
+        toast({
+            title: 'Тренировка завершена!',
+            description: `Данные для "${updatedEntry.workoutName}" сохранены.`,
+        });
+    };
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -51,7 +59,7 @@ export function TrainingLogPage() {
                 <div className="space-y-2">
                     <h1 className="font-headline text-3xl font-bold tracking-tight">Дневник тренировок</h1>
                     <p className="text-muted-foreground">
-                        Здесь хранится история всех ваших достижений и запланированных тренировок.
+                        Заполняйте данные, чтобы отслеживать свой прогресс. Кликните на карточку, чтобы начать.
                     </p>
                 </div>
                 <Button onClick={handleCopyYesterday}>
@@ -68,6 +76,7 @@ export function TrainingLogPage() {
                             entry={entry}
                             onDelete={handleDelete}
                             onCopy={handleCopy}
+                            onUpdate={handleUpdateEntry}
                         />
                     ))}
                 </CardContent>

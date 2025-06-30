@@ -1,8 +1,15 @@
+export type LoggedSet = {
+    plannedReps: string;
+    plannedWeight: string;
+    loggedReps?: number;
+    loggedWeight?: number;
+    isCompleted: boolean;
+};
+
 export type ExerciseLog = {
     name: string;
-    sets: string;
-    weight: string;
     notes?: string;
+    sets: LoggedSet[];
 };
 
 export type TrainingLogEntry = {
@@ -23,9 +30,31 @@ export const trainingLogData: TrainingLogEntry[] = [
         workoutName: 'День 1: Грудь и трицепс',
         status: 'completed',
         exercises: [
-            { name: 'Жим лежа', sets: '4x8', weight: '80 кг' },
-            { name: 'Жим гантелей на наклонной скамье', sets: '3x10', weight: '30 кг' },
-            { name: 'Французский жим', sets: '3x12', weight: '25 кг' },
+            { 
+                name: 'Жим лежа', 
+                sets: [
+                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 8, loggedWeight: 80, isCompleted: true },
+                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 8, loggedWeight: 80, isCompleted: true },
+                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 7, loggedWeight: 80, isCompleted: true },
+                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 6, loggedWeight: 80, isCompleted: true },
+                ]
+            },
+            { 
+                name: 'Жим гантелей на наклонной скамье', 
+                sets: [
+                    { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 10, loggedWeight: 30, isCompleted: true },
+                    { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 10, loggedWeight: 30, isCompleted: true },
+                    { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 9, loggedWeight: 30, isCompleted: true },
+                ]
+            },
+            { 
+                name: 'Французский жим', 
+                sets: [
+                    { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 12, loggedWeight: 25, isCompleted: true },
+                    { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 12, loggedWeight: 25, isCompleted: true },
+                    { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 11, loggedWeight: 25, isCompleted: true },
+                ]
+            },
         ],
         mood: 'great',
         notes: 'Отличная тренировка, чувствую прогресс в жиме.',
@@ -37,9 +66,25 @@ export const trainingLogData: TrainingLogEntry[] = [
         workoutName: 'День 2: Спина и бицепс',
         status: 'completed',
         exercises: [
-            { name: 'Становая тяга', sets: '5x5', weight: '120 кг' },
-            { name: 'Подтягивания', sets: '4x max', weight: 'Собственный вес' },
-            { name: 'Тяга штанги в наклоне', sets: '4x8', weight: '60 кг' },
+            { 
+                name: 'Становая тяга',
+                sets: [
+                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 5, loggedWeight: 120, isCompleted: true },
+                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 5, loggedWeight: 120, isCompleted: true },
+                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 5, loggedWeight: 120, isCompleted: true },
+                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 4, loggedWeight: 120, isCompleted: true },
+                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 3, loggedWeight: 120, isCompleted: true },
+                ]
+            },
+            { 
+                name: 'Подтягивания',
+                sets: [
+                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 12, loggedWeight: 0, isCompleted: true },
+                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 10, loggedWeight: 0, isCompleted: true },
+                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 9, loggedWeight: 0, isCompleted: true },
+                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 9, loggedWeight: 0, isCompleted: true },
+                ]
+            },
         ],
         mood: 'good',
         notes: 'Становая идет тяжело, но подтягивания улучшились.'
@@ -50,9 +95,34 @@ export const trainingLogData: TrainingLogEntry[] = [
         workoutName: 'День 3: Ноги и плечи',
         status: 'planned',
         exercises: [
-            { name: 'Приседания со штангой', sets: '5x5', weight: '100 кг' },
-            { name: 'Жим ногами', sets: '4x12', weight: '150 кг' },
-            { name: 'Армейский жим', sets: '4x8', weight: '40 кг' },
+            { 
+                name: 'Приседания со штангой', 
+                sets: [
+                    { plannedReps: '5', plannedWeight: '100 кг', isCompleted: false },
+                    { plannedReps: '5', plannedWeight: '100 кг', isCompleted: false },
+                    { plannedReps: '5', plannedWeight: '100 кг', isCompleted: false },
+                    { plannedReps: '5', plannedWeight: '100 кг', isCompleted: false },
+                    { plannedReps: '5', plannedWeight: '100 кг', isCompleted: false },
+                ] 
+            },
+            { 
+                name: 'Жим ногами', 
+                sets: [
+                    { plannedReps: '12', plannedWeight: '150 кг', isCompleted: false },
+                    { plannedReps: '12', plannedWeight: '150 кг', isCompleted: false },
+                    { plannedReps: '12', plannedWeight: '150 кг', isCompleted: false },
+                    { plannedReps: '12', plannedWeight: '150 кг', isCompleted: false },
+                ] 
+            },
+            { 
+                name: 'Армейский жим', 
+                sets: [
+                    { plannedReps: '8', plannedWeight: '40 кг', isCompleted: false },
+                    { plannedReps: '8', plannedWeight: '40 кг', isCompleted: false },
+                    { plannedReps: '8', plannedWeight: '40 кг', isCompleted: false },
+                    { plannedReps: '8', plannedWeight: '40 кг', isCompleted: false },
+                ] 
+            },
         ],
     },
     {
@@ -61,7 +131,12 @@ export const trainingLogData: TrainingLogEntry[] = [
         workoutName: 'День 3: Ноги и плечи (прошлая неделя)',
         status: 'skipped',
         exercises: [
-             { name: 'Приседания со штангой', sets: '5x5', weight: '95 кг' },
+             { 
+                 name: 'Приседания со штангой',
+                 sets: [
+                     { plannedReps: '5', plannedWeight: '95 кг', isCompleted: false },
+                 ]
+             },
         ],
         notes: 'Пропустил из-за работы.'
     }
