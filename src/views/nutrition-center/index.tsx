@@ -7,9 +7,11 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { nutritionItems, type FoodItem } from '@/shared/lib/mock-data/nutrition';
 import Image from 'next/image';
-import { Search, PlusCircle, UtensilsCrossed, Bot } from 'lucide-react';
+import { Search, PlusCircle, UtensilsCrossed } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { AddFoodDialog } from '@/widgets/add-food-dialog';
+import { AiNutritionist } from '@/widgets/ai-nutritionist';
+
 
 function NutritionCard({ item, onAdd }: { item: FoodItem, onAdd: (item: FoodItem) => void }) {
     return (
@@ -66,12 +68,15 @@ export function NutritionCenterPage() {
                 <div className="space-y-2">
                     <h1 className="font-headline text-3xl font-bold tracking-tight">Центр питания</h1>
                     <p className="text-muted-foreground">
-                        Каталог продуктов и спортивного питания для составления вашего идеального рациона.
+                        Составьте идеальный рацион с помощью AI-диетолога и нашего каталога продуктов.
                     </p>
                 </div>
+                
+                <AiNutritionist />
 
                 <Card>
                     <CardHeader>
+                         <CardTitle>База продуктов</CardTitle>
                         <div className="relative">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                             <Input
@@ -83,55 +88,43 @@ export function NutritionCenterPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <Card className="bg-primary/5 border-primary/20">
-                             <CardHeader className="flex flex-row items-center gap-4">
-                                <Bot className="h-8 w-8 text-primary flex-shrink-0" />
-                                <div>
-                                    <CardTitle>AI-Диетолог (Скоро)</CardTitle>
-                                    <CardDescription>
-                                        Получайте персональные рекомендации по питанию на основе ваших тренировок и целей.
-                                    </CardDescription>
+                        <Tabs defaultValue="products">
+                            <TabsList className="grid w-full grid-cols-2">
+                                <TabsTrigger value="products">Продукты</TabsTrigger>
+                                <TabsTrigger value="supplements">Спортивное питание</TabsTrigger>
+                            </TabsList>
+
+                            <TabsContent value="products" className="mt-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {foodProducts.map(item => (
+                                        <NutritionCard key={item.id} item={item} onAdd={handleAddClick} />
+                                    ))}
                                 </div>
-                            </CardHeader>
-                        </Card>
+                                 {foodProducts.length === 0 && (
+                                    <div className="col-span-full text-center py-16 text-muted-foreground">
+                                        <UtensilsCrossed className="h-12 w-12 mx-auto mb-4" />
+                                        <p>Ничего не найдено. Попробуйте другой запрос.</p>
+                                    </div>
+                                )}
+                            </TabsContent>
+
+                            <TabsContent value="supplements" className="mt-6">
+                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {supplements.map(item => (
+                                        <NutritionCard key={item.id} item={item} onAdd={handleAddClick} />
+                                    ))}
+                                </div>
+                                 {supplements.length === 0 && (
+                                    <div className="col-span-full text-center py-16 text-muted-foreground">
+                                         <UtensilsCrossed className="h-12 w-12 mx-auto mb-4" />
+                                        <p>Ничего не найдено. Попробуйте другой запрос.</p>
+                                    </div>
+                                )}
+                            </TabsContent>
+
+                        </Tabs>
                     </CardContent>
                 </Card>
-
-                <Tabs defaultValue="products">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="products">Продукты</TabsTrigger>
-                        <TabsTrigger value="supplements">Спортивное питание</TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="products" className="mt-6">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {foodProducts.map(item => (
-                                <NutritionCard key={item.id} item={item} onAdd={handleAddClick} />
-                            ))}
-                        </div>
-                         {foodProducts.length === 0 && (
-                            <div className="col-span-full text-center py-16 text-muted-foreground">
-                                <UtensilsCrossed className="h-12 w-12 mx-auto mb-4" />
-                                <p>Ничего не найдено. Попробуйте другой запрос.</p>
-                            </div>
-                        )}
-                    </TabsContent>
-
-                    <TabsContent value="supplements" className="mt-6">
-                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            {supplements.map(item => (
-                                <NutritionCard key={item.id} item={item} onAdd={handleAddClick} />
-                            ))}
-                        </div>
-                         {supplements.length === 0 && (
-                            <div className="col-span-full text-center py-16 text-muted-foreground">
-                                 <UtensilsCrossed className="h-12 w-12 mx-auto mb-4" />
-                                <p>Ничего не найдено. Попробуйте другой запрос.</p>
-                            </div>
-                        )}
-                    </TabsContent>
-
-                </Tabs>
             </div>
              <AddFoodDialog
                 isOpen={isAddDialogOpen}

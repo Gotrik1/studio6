@@ -46,3 +46,4 @@ import './flows/find-sponsors-for-team-flow';
 import './flows/find-venues-flow';
 import './flows/analyze-exercise-form-flow';
 import './flows/generate-tournament-summary-flow';
+import './flows/generate-nutrition-plan-flow';
