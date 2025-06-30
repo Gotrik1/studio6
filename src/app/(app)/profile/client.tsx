@@ -15,6 +15,7 @@ import { moderatorUser, moderatorAchievements } from "@/shared/lib/mock-data/mod
 import { organizerUser, organizerAchievements } from "@/shared/lib/mock-data/organizer-profile";
 import { sponsorUser, sponsorAchievements } from "@/shared/lib/mock-data/sponsor-profile";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
+import { crmTournaments } from '@/shared/lib/mock-data/crm-tournaments';
 
 
 const ProfileSkeleton = () => (
@@ -54,6 +55,7 @@ export default function ProfileClient({ sessionUser }: ProfileClientProps) {
     };
 
     const favoriteTeams = teams.slice(0, 2);
+    const organizerTournaments = crmTournaments.filter(t => t.organizer === organizerUser.name);
 
     switch (role) {
         case 'Администратор':
@@ -69,7 +71,7 @@ export default function ProfileClient({ sessionUser }: ProfileClientProps) {
         case 'Модератор':
             return <ModeratorProfile user={moderatorUser} achievements={moderatorAchievements} />;
         case 'Организатор':
-            return <OrganizerProfile user={organizerUser} achievements={organizerAchievements} />;
+            return <OrganizerProfile user={organizerUser} achievements={organizerAchievements} tournaments={organizerTournaments} />;
         case 'Спонсор':
             return <SponsorProfile user={sponsorUser} achievements={sponsorAchievements} />;
         case 'Игрок':
