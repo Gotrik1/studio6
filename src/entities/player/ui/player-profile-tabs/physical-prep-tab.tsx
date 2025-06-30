@@ -5,10 +5,13 @@ import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/sha
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
-import { Trophy, Dumbbell, Flame, Star, Activity } from 'lucide-react';
+import { Trophy, Dumbbell, Flame, Star, Activity, Award } from 'lucide-react';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 export function PhysicalPrepTab() {
     const { personalRecords, trainingMetrics } = getTrainingAnalytics(trainingLogData);
+    const top5Records = personalRecords.slice(0, 5);
 
     return (
         <div className="space-y-6">
@@ -41,21 +44,26 @@ export function PhysicalPrepTab() {
             
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-amber-500" /> Персональные рекорды (1ПМ)</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-amber-500" /> Топ-5 личных рекордов (1ПМ)</CardTitle>
+                    <CardDescription>Лучшие силовые показатели, рассчитанные на основе данных из журнала тренировок.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Table>
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Упражнение</TableHead>
-                                <TableHead className="text-right">Результат</TableHead>
+                                <TableHead>Результат (1ПМ)</TableHead>
+                                <TableHead className="text-right">Дата</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {personalRecords.map((record) => (
+                            {top5Records.map((record) => (
                                 <TableRow key={record.exercise}>
                                     <TableCell className="font-medium">{record.exercise}</TableCell>
-                                    <TableCell className="text-right font-bold text-lg">{record.value}</TableCell>
+                                    <TableCell className="font-bold text-lg">{record.e1RM} кг</TableCell>
+                                    <TableCell className="text-right text-muted-foreground text-xs">
+                                        {format(new Date(record.date), 'd MMM yyyy', { locale: ru })}
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>

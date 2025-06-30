@@ -32,6 +32,8 @@ const sitemapData: TreeNode[] = [
             { name: 'Каталог упражнений', type: 'file', href: '/training/exercises' },
             { name: 'Дневник тренировок', type: 'file', href: '/training/log' },
             { name: 'Аналитика', type: 'file', href: '/training/analytics' },
+            { name: 'Личные рекорды', type: 'file', href: '/training/records' },
+            { name: 'Замеры тела', type: 'file', href: '/training/measurements' },
             { name: 'Центр питания', type: 'file', href: '/training/nutrition' },
             { name: 'Дневник питания', type: 'file', href: '/training/nutrition-diary' },
         ]},

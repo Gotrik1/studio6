@@ -36,6 +36,7 @@ import {
   DollarSign,
   UserSearch,
   Megaphone,
+  Award,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -58,6 +59,7 @@ const mainNavItems = [
     { href: "/friends", icon: Users2, label: "Друзья" },
     { href: "/tournaments", icon: Trophy, label: "Соревнования" },
     { href: "/training", icon: Dumbbell, label: "Тренировки" },
+    { href: "/training/records", icon: Award, label: "Рекорды" },
     { href: "/booking", icon: MapPin, label: "Площадки" },
     { href: "/store", icon: ShoppingCart, label: "Магазин" },
     { href: "/quests", icon: ShieldCheck, label: "Квесты" },

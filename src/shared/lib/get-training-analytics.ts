@@ -1,7 +1,6 @@
+
 import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
 import { differenceInDays, isAfter, startOfMonth, parseISO } from 'date-fns';
-
-const KEY_EXERCISES = ['Жим лежа', 'Приседания со штангой', 'Становая тяга'];
 
 // Epley formula for 1RM estimation
 const calculate1RM = (weight: number, reps: number) => {
@@ -9,11 +8,19 @@ const calculate1RM = (weight: number, reps: number) => {
     return Math.round(weight * (1 + reps / 30));
 };
 
+export type PersonalRecord = {
+    exercise: string;
+    e1RM: number;
+    weight: number;
+    reps: number;
+    date: string;
+};
+
 export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
     const completedWorkouts = log.filter(e => e.status === 'completed');
     
     // Personal Records
-    const records: { [key: string]: number } = {};
+    const allRecords: { [key: string]: PersonalRecord } = {};
     const exerciseCounts: { [key: string]: number } = {};
 
     completedWorkouts.forEach(entry => {
@@ -21,23 +28,24 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
             // Count for favorite exercise
             exerciseCounts[exercise.name] = (exerciseCounts[exercise.name] || 0) + 1;
 
-            if (KEY_EXERCISES.includes(exercise.name)) {
-                exercise.sets.forEach(set => {
-                    if (set.isCompleted && set.loggedWeight && set.loggedReps && set.loggedReps > 0) {
-                        const estimated1RM = calculate1RM(set.loggedWeight, set.loggedReps);
-                        if (!records[exercise.name] || estimated1RM > records[exercise.name]) {
-                            records[exercise.name] = estimated1RM;
-                        }
+            exercise.sets.forEach(set => {
+                if (set.isCompleted && set.loggedWeight && set.loggedReps && set.loggedReps > 0) {
+                    const estimated1RM = calculate1RM(set.loggedWeight, set.loggedReps);
+                    if (!allRecords[exercise.name] || estimated1RM > allRecords[exercise.name].e1RM) {
+                        allRecords[exercise.name] = {
+                            exercise: exercise.name,
+                            e1RM: estimated1RM,
+                            weight: set.loggedWeight,
+                            reps: set.loggedReps,
+                            date: entry.date,
+                        };
                     }
-                });
-            }
+                }
+            });
         });
     });
 
-    const personalRecords = KEY_EXERCISES.map(name => ({
-        exercise: name,
-        value: `${records[name] || 0} кг`
-    }));
+    const personalRecords = Object.values(allRecords).sort((a, b) => b.e1RM - a.e1RM);
 
     // Other Metrics
     const now = new Date();
@@ -81,18 +89,6 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
         favoriteExercise: favoriteExercise,
         lastWorkout: lastWorkout,
     };
-    
-    const pullUpsRecord = completedWorkouts
-        .flatMap(e => e.exercises)
-        .filter(ex => ex.name === 'Подтягивания')
-        .flatMap(ex => ex.sets)
-        .filter(s => s.isCompleted && s.loggedReps)
-        .reduce((maxReps, s) => Math.max(maxReps, s.loggedReps || 0), 0);
-
-    if (pullUpsRecord > 0) {
-        personalRecords.push({ exercise: 'Подтягивания', value: `${pullUpsRecord} раз` });
-    }
-
 
     return { personalRecords, trainingMetrics };
 };
