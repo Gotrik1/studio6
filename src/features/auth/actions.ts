@@ -4,12 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { User } from '@/shared/lib/types';
 import { z } from 'zod';
-
-// Login action schema
-export const loginSchema = z.object({
-  email: z.string().email({ message: "Введите корректный email." }),
-  password: z.string().min(1, { message: "Пароль не может быть пустым." }),
-});
+import { loginSchema } from './schemas';
 
 export async function login(values: z.infer<typeof loginSchema>) {
   try {
