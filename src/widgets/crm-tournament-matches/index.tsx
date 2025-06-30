@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -14,17 +15,18 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shar
 type MatchUnion = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
 type Match = Extract<MatchUnion, { team2: unknown }>;
 
+type MatchStatus = 'pending' | 'played' | 'technical_defeat_t1' | 'technical_defeat_t2';
+
 type MatchState = Match & {
     comment?: string;
-    status: 'pending' | 'played' | 'technical_defeat_t1' | 'technical_defeat_t2';
+    status: MatchStatus;
 };
 
 export function CrmTournamentMatches() {
     const { toast } = useToast();
 
-    const allMatches: Match[] = useMemo(() => {
-        return summerKickoffTournament.bracket.rounds
-        .reduce((acc, round) => {
+    const allMatches = useMemo(() => {
+        return summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
             const playableMatches = round.matches.filter((match): match is Match => 'team2' in match);
             return acc.concat(playableMatches);
         }, [] as Match[]);
@@ -44,7 +46,7 @@ export function CrmTournamentMatches() {
             if (match.id !== result.matchId) return match;
             
             let newScore: string;
-            let newStatus: MatchState['status'];
+            let newStatus: MatchStatus;
 
             if (result.type === 'score') {
                 newScore = `${result.scoreA}-${result.scoreB}`;
@@ -52,11 +54,11 @@ export function CrmTournamentMatches() {
             } else if (result.type === 'tech_defeat_t1') {
                 newScore = 'L-W';
                 newStatus = 'tech_defeat_t1';
-            } else { // result.type must be 'tech_defeat_t2'
+            } else { // result.type === 'tech_defeat_t2'
                 newScore = 'W-L';
                 newStatus = 'tech_defeat_t2';
             }
-
+            
             return { ...match, score: newScore, status: newStatus, comment: result.comment };
         }));
         toast({
