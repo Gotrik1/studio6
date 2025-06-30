@@ -21,7 +21,8 @@ import {
     ClipboardList,
     Heart,
     Shield,
-    ShieldAlert
+    ShieldAlert,
+    FileText
 } from 'lucide-react';
 import Link from "next/link";
 
@@ -78,7 +79,8 @@ const contentCards: AdminSectionCardProps[] = [
 
 const systemCards: AdminSectionCardProps[] = [
     { title: "Инструменты AI", description: "Демонстрация работы AI-агентов.", href: "/ai-analysis", icon: BrainCircuit },
-    { title: "Документация", description: "Архитектура и видение проекта.", href: "/documents/architecture", icon: FolderKanban },
+    { title: "Readme проекта", description: "Обзор проекта, стек, возможности.", href: "/documents/project-readme", icon: FileText },
+    { title: "Архитектура", description: "Описание архитектуры FSD.", href: "/documents/architecture", icon: FolderKanban },
     { title: "Демо темы", description: "Просмотр всех UI компонентов.", href: "/theme-demo", icon: Palette },
     { title: "Карта сайта", description: "Обзор всех страниц приложения.", href: "/administration/sitemap", icon: MapIcon },
 ]

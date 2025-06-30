@@ -32,7 +32,13 @@ const sitemapData: TreeNode[] = [
         { name: 'Управление турнирами', type: 'file', href: '/administration/tournament-crm/dashboard' },
         { name: 'Модерация', type: 'file', href: '/administration/moderation-queue' },
         { name: 'Геймификация', type: 'file', href: '/administration/gamification' },
-        { name: 'Документация', type: 'file', href: '/documents/architecture' },
+        { name: 'Документация', type: 'folder', children: [
+            { name: 'Readme проекта', type: 'file', href: '/documents/project-readme' },
+            { name: 'Архитектура', type: 'file', href: '/documents/architecture' },
+            { name: 'Backend Roadmap', type: 'file', href: '/documents/backend-roadmap' },
+            { name: 'Backend Production', type: 'file', href: '/documents/backend-production' },
+            { name: 'Видение проекта', type: 'file', href: '/documents/vision-and-principles' }
+        ]},
     ]},
 ];
 
