@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/shared/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
 import { 
     Users, 
     ShieldCheck, 
@@ -18,7 +18,6 @@ import {
     Map as MapIcon
 } from 'lucide-react';
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 
 type AdminSectionCardProps = {
     title: string;

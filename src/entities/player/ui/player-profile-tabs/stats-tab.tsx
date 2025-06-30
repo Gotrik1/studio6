@@ -3,7 +3,7 @@
 import { KdaChart } from '@/widgets/analytics-charts/kda-chart';
 import { WinLossChart } from '@/widgets/analytics-charts/win-loss-chart';
 import { WinrateByMapChart } from '@/widgets/analytics-charts/winrate-by-map-chart';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 
 export function StatsTab() {
     return (

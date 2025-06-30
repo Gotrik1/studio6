@@ -12,7 +12,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Loader2, Sparkles, Wand2, Dumbbell, CheckCircle, BrainCircuit } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { generateTrainingProgram, type GenerateTrainingProgramOutput, type GenerateTrainingProgramInput } from '@/shared/api/genkit/flows/generate-training-program-flow';
+import { generateTrainingProgram, type GenerateTrainingProgramOutput } from '@/shared/api/genkit/flows/generate-training-program-flow';
 import { GenerateTrainingProgramInputSchema } from '@/shared/api/genkit/flows/schemas/generate-training-program-schema';
 import type * as z from 'zod';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/shared/ui/accordion';

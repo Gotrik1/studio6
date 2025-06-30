@@ -1,4 +1,4 @@
-import { Bot, Trophy, Award, MessageSquare, LucideIcon } from 'lucide-react';
+import { Trophy, Award, MessageSquare } from 'lucide-react';
 
 export const feedData = [
     {

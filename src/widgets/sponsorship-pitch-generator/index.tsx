@@ -7,7 +7,7 @@ import { Button } from '@/shared/ui/button';
 import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
 import { generateSponsorshipPitch, type GenerateSponsorshipPitchOutput } from '@/shared/api/genkit/flows/generate-sponsorship-pitch';
-import { Loader2, Sparkles, Send, FileText } from 'lucide-react';
+import { Loader2, Send, FileText } from 'lucide-react';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -57,7 +57,7 @@ export function SponsorshipPitchGenerator() {
             <CardContent className="space-y-4">
                  <Button onClick={handleGeneratePitch} disabled={isGenerating} className="w-full">
                     {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <FileText className="mr-2 h-4 w-4"/>}
-                    Сгенерировать питч для команды "{mockTeamInfo.teamName}"
+                    Сгенерировать питч для команды &quot;{mockTeamInfo.teamName}&quot;
                 </Button>
                 
                 {isGenerating && <Skeleton className="h-48 w-full" />}

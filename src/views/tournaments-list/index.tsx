@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { allTournaments } from "@/shared/lib/mock-data/tournaments";
 import { Search, PlusCircle, Gamepad2, Calendar } from "lucide-react";

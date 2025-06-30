@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { BrainCircuit, Loader2, Sparkles, AlertCircle, TrendingUp, TrendingDown, UserCheck, Activity } from 'lucide-react';
+import { Loader2, Sparkles, AlertCircle, TrendingUp, TrendingDown, UserCheck, Activity } from 'lucide-react';
 import { analyzeTeamPerformance, type AnalyzeTeamPerformanceOutput } from '@/shared/api/genkit/flows/analyze-team-performance-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/shared/ui/alert';

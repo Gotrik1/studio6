@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { Bot, Loader2, AlertCircle, RefreshCw, Volume2 } from 'lucide-react';
+import { Bot, AlertCircle, RefreshCw, Volume2 } from 'lucide-react';
 import { generatePlatformNewsWithAudio, type NewsWithAudio } from '@/shared/api/genkit/flows/generate-platform-news-flow';
 import Link from 'next/link';
 import { Badge } from '@/shared/ui/badge';

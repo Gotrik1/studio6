@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/shared/ui/card';
 import { feedData, type FeedItemData } from '@/shared/lib/mock-data/feed';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Bot, MessageSquare, Trophy, Award, Heart, MessageCircle, Share2 } from 'lucide-react';

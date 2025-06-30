@@ -119,7 +119,7 @@ export function SponsorshipDashboard() {
                                         <Button size="sm"><Send className="mr-2 h-4 w-4"/>Предложить</Button>
                                     </div>
                                     <p className="text-sm text-muted-foreground mt-2 italic pl-2 border-l-2">
-                                        "{team.pitch}"
+                                        &quot;{team.pitch}&quot;
                                     </p>
                                 </Card>
                             ))}

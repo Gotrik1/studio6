@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
+import { Card, CardHeader, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Badge } from '@/shared/ui/badge';
@@ -15,7 +15,7 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 export function TournamentCrmDashboard() {
-    const [tournaments, setTournaments] = useState<TournamentCrm[]>(crmTournaments);
+    const [tournaments] = useState<TournamentCrm[]>(crmTournaments);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('Все');
 
