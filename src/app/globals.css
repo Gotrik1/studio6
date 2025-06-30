@@ -30,8 +30,8 @@ html {
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 142 71% 59%; /* Vibrant Green from PRD #4ADE80 */
-    --accent-foreground: 142 71% 10%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 0 0% 100%;
@@ -60,8 +60,8 @@ html {
     --secondary-foreground: 210 40% 98%;
     --muted: 217 33% 17%;
     --muted-foreground: 215 20% 65%;
-    --accent: 142 71% 59%;
-    --accent-foreground: 142 71% 95%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 210 40% 98%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
     --border: 0 0% 100%;
@@ -75,6 +75,17 @@ html {
     --chart-4: 280 60% 65%;
     --chart-5: 340 70% 60%;
   }
+  
+  /* Accent color themes */
+  .theme-blue { --accent: 217 91% 60%; --accent-foreground: 210 40% 98%; }
+  .theme-green { --accent: 142 71% 45%; --accent-foreground: 142 71% 95%; }
+  .theme-yellow { --accent: 48 96% 51%; --accent-foreground: 48 96% 5%; }
+  .theme-orange { --accent: 25 95% 53%; --accent-foreground: 25 95% 95%; }
+  .theme-red { --accent: 0 84% 60%; --accent-foreground: 0 84% 98%; }
+  .theme-purple { --accent: 262 83% 58%; --accent-foreground: 262 83% 98%; }
+  .theme-pink { --accent: 340 95% 68%; --accent-foreground: 340 95% 5%; }
+  .theme-cyan { --accent: 199 98% 48%; --accent-foreground: 199 98% 98%; }
+
 
   /* Sidebar variables */
   :root, .dark {
@@ -91,7 +102,7 @@ html {
 
 @layer base {
   body {
-    @apply bg-background text-foreground;
+    @apply bg-secondary text-foreground;
     font-family: theme('fontFamily.body');
   }
   h1,h2,h3,h4,h5,h6 {
