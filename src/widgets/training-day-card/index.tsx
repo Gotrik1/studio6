@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -112,6 +111,7 @@ export function TrainingDayCard({ entry, onDelete, onCopy, onUpdate }: TrainingD
                                                 <TableHead>План</TableHead>
                                                 <TableHead>Повторения</TableHead>
                                                 <TableHead>Вес (кг)</TableHead>
+                                                <TableHead>RPE</TableHead>
                                                 <TableHead className="w-16 text-center">Готово</TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -122,12 +122,17 @@ export function TrainingDayCard({ entry, onDelete, onCopy, onUpdate }: TrainingD
                                                     <TableCell className="text-muted-foreground">{entry.exercises[index]?.sets[setIndex]?.plannedReps} x {entry.exercises[index]?.sets[setIndex]?.plannedWeight}</TableCell>
                                                     <TableCell>
                                                          <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.loggedReps`} render={({ field }) => (
-                                                            <FormItem><FormControl><Input type="number" {...field} className="w-20" placeholder={entry.exercises[index]?.sets[setIndex]?.plannedReps} /></FormControl></FormItem>
+                                                            <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={entry.exercises[index]?.sets[setIndex]?.plannedReps} /></FormControl></FormItem>
                                                         )} />
                                                     </TableCell>
                                                     <TableCell>
                                                         <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.loggedWeight`} render={({ field }) => (
-                                                            <FormItem><FormControl><Input type="number" {...field} className="w-20" placeholder={entry.exercises[index]?.sets[setIndex]?.plannedWeight.replace('кг','').trim()} /></FormControl></FormItem>
+                                                            <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={entry.exercises[index]?.sets[setIndex]?.plannedWeight.replace('кг','').trim()} /></FormControl></FormItem>
+                                                        )} />
+                                                    </TableCell>
+                                                     <TableCell>
+                                                        <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.rpe`} render={({ field }) => (
+                                                            <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-16 text-center" placeholder="-" min="1" max="10" /></FormControl></FormItem>
                                                         )} />
                                                     </TableCell>
                                                      <TableCell className="text-center">

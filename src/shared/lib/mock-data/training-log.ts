@@ -3,6 +3,7 @@ export type LoggedSet = {
     plannedWeight: string;
     loggedReps?: number;
     loggedWeight?: number;
+    rpe?: number;
     isCompleted: boolean;
 };
 
@@ -33,26 +34,26 @@ export const trainingLogData: TrainingLogEntry[] = [
             { 
                 name: 'Жим лежа', 
                 sets: [
-                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 8, loggedWeight: 80, isCompleted: true },
-                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 8, loggedWeight: 80, isCompleted: true },
-                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 7, loggedWeight: 80, isCompleted: true },
-                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 6, loggedWeight: 80, isCompleted: true },
+                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 8, loggedWeight: 80, rpe: 7, isCompleted: true },
+                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 8, loggedWeight: 80, rpe: 8, isCompleted: true },
+                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 7, loggedWeight: 80, rpe: 9, isCompleted: true },
+                    { plannedReps: '8', plannedWeight: '80 кг', loggedReps: 6, loggedWeight: 80, rpe: 10, isCompleted: true },
                 ]
             },
             { 
                 name: 'Жим гантелей на наклонной скамье', 
                 sets: [
-                    { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 10, loggedWeight: 30, isCompleted: true },
-                    { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 10, loggedWeight: 30, isCompleted: true },
-                    { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 9, loggedWeight: 30, isCompleted: true },
+                    { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 10, loggedWeight: 30, rpe: 8, isCompleted: true },
+                    { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 10, loggedWeight: 30, rpe: 8, isCompleted: true },
+                    { plannedReps: '10', plannedWeight: '30 кг', loggedReps: 9, loggedWeight: 30, rpe: 9, isCompleted: true },
                 ]
             },
             { 
                 name: 'Французский жим', 
                 sets: [
-                    { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 12, loggedWeight: 25, isCompleted: true },
-                    { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 12, loggedWeight: 25, isCompleted: true },
-                    { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 11, loggedWeight: 25, isCompleted: true },
+                    { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 12, loggedWeight: 25, rpe: 7, isCompleted: true },
+                    { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 12, loggedWeight: 25, rpe: 7, isCompleted: true },
+                    { plannedReps: '12', plannedWeight: '25 кг', loggedReps: 11, loggedWeight: 25, rpe: 8, isCompleted: true },
                 ]
             },
         ],
@@ -69,20 +70,20 @@ export const trainingLogData: TrainingLogEntry[] = [
             { 
                 name: 'Становая тяга',
                 sets: [
-                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 5, loggedWeight: 120, isCompleted: true },
-                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 5, loggedWeight: 120, isCompleted: true },
-                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 5, loggedWeight: 120, isCompleted: true },
-                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 4, loggedWeight: 120, isCompleted: true },
-                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 3, loggedWeight: 120, isCompleted: true },
+                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 5, loggedWeight: 120, rpe: 8, isCompleted: true },
+                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 5, loggedWeight: 120, rpe: 8, isCompleted: true },
+                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 5, loggedWeight: 120, rpe: 9, isCompleted: true },
+                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 4, loggedWeight: 120, rpe: 10, isCompleted: true },
+                     { plannedReps: '5', plannedWeight: '120 кг', loggedReps: 3, loggedWeight: 120, rpe: 10, isCompleted: true },
                 ]
             },
             { 
                 name: 'Подтягивания',
                 sets: [
-                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 12, loggedWeight: 0, isCompleted: true },
-                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 10, loggedWeight: 0, isCompleted: true },
-                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 9, loggedWeight: 0, isCompleted: true },
-                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 9, loggedWeight: 0, isCompleted: true },
+                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 12, loggedWeight: 0, rpe: 8, isCompleted: true },
+                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 10, loggedWeight: 0, rpe: 9, isCompleted: true },
+                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 9, loggedWeight: 0, rpe: 9, isCompleted: true },
+                    { plannedReps: 'max', plannedWeight: 'Собственный вес', loggedReps: 9, loggedWeight: 0, rpe: 10, isCompleted: true },
                 ]
             },
         ],
