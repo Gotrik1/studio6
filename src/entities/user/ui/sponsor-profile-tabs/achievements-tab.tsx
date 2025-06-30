@@ -29,7 +29,7 @@ export function SponsorAchievementsTab({ achievements }: SponsorAchievementsTabP
                         const Icon = iconComponents[ach.icon as keyof typeof iconComponents];
                         return (
                             <div key={ach.name} className={`flex flex-col items-center text-center ${ach.unlocked ? '' : 'opacity-40'}`}>
-                                <div className={`flex h-16 w-16 items-center justify-center rounded-full border-2 ${ach.unlocked ? 'border-secondary-foreground bg-secondary' : 'border-dashed'}`}>
+                                <div className={`flex h-16 w-16 items-center justify-center rounded-full border-2 ${ach.unlocked ? 'border-accent bg-accent/20 text-accent' : 'border-dashed'}`}>
                                     {Icon && <Icon className="h-8 w-8" />}
                                 </div>
                                 <p className="mt-2 font-semibold">{ach.name}</p>

@@ -9,6 +9,7 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { judgeUser, judgeAchievements } from "@/shared/lib/mock-data/judge-profile";
+import { resolvedMatches } from '@/shared/lib/mock-data/judge-center';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 const JudgeStatsTab = dynamic(() => import('@/entities/user/ui/judge-profile-tabs/stats-tab').then(mod => mod.JudgeStatsTab), {
@@ -18,6 +19,10 @@ const JudgeStatsTab = dynamic(() => import('@/entities/user/ui/judge-profile-tab
 const JudgeAchievementsTab = dynamic(() => import('@/entities/user/ui/judge-profile-tabs/achievements-tab').then(mod => mod.JudgeAchievementsTab), {
   loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
   ssr: false,
+});
+const JudgedMatchesTab = dynamic(() => import('@/entities/user/ui/judge-profile-tabs/judged-matches-tab').then(mod => mod.JudgedMatchesTab), {
+    loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
+    ssr: false,
 });
 
 type JudgeProfileProps = {
@@ -59,12 +64,16 @@ export function JudgeProfile({ user, achievements }: JudgeProfileProps) {
       </div>
       <div className="border-t p-4 md:p-6">
         <Tabs defaultValue="stats">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="stats">Статистика судейства</TabsTrigger>
-            <TabsTrigger value="achievements">Достижения судьи</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="stats">Статистика</TabsTrigger>
+            <TabsTrigger value="history">История матчей</TabsTrigger>
+            <TabsTrigger value="achievements">Достижения</TabsTrigger>
           </TabsList>
           <TabsContent value="stats" className="mt-4">
             <JudgeStatsTab />
+          </TabsContent>
+          <TabsContent value="history" className="mt-4">
+            <JudgedMatchesTab matches={resolvedMatches} />
           </TabsContent>
           <TabsContent value="achievements" className="mt-4">
               <JudgeAchievementsTab achievements={achievements} />

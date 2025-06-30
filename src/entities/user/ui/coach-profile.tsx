@@ -10,8 +10,9 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { coachUser, coachAchievements } from "@/shared/lib/mock-data/coach-profile";
+import { trainingPrograms } from '@/shared/lib/mock-data/training-programs';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { coachedPlayers, type CoachedPlayer } from '@/shared/lib/mock-data/coach-players';
+import { coachedPlayers, type CoachedPlayer } from "@/shared/lib/mock-data/coach-players";
 import { PlayerAnalysisDialog } from '@/entities/player/ui/player-analysis-dialog';
 
 const CoachStatsTab = dynamic(() => import('@/entities/user/ui/coach-profile-tabs/stats-tab').then(mod => mod.CoachStatsTab), {
@@ -23,6 +24,10 @@ const CoachAchievementsTab = dynamic(() => import('@/entities/user/ui/coach-prof
   ssr: false,
 });
 const MyPlayersTab = dynamic(() => import('@/entities/user/ui/coach-profile-tabs/my-players-tab').then(mod => mod.MyPlayersTab), {
+    loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
+    ssr: false,
+});
+const MyProgramsTab = dynamic(() => import('@/entities/user/ui/coach-profile-tabs/my-programs-tab').then(mod => mod.MyProgramsTab), {
     loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
     ssr: false,
 });
@@ -75,10 +80,11 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
       </div>
       <div className="border-t p-4 md:p-6">
         <Tabs defaultValue="stats">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="stats">Статистика тренера</TabsTrigger>
-            <TabsTrigger value="achievements">Достижения тренера</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="stats">Статистика</TabsTrigger>
+            <TabsTrigger value="achievements">Достижения</TabsTrigger>
             <TabsTrigger value="my-players">Мои игроки</TabsTrigger>
+            <TabsTrigger value="my-programs">Программы</TabsTrigger>
           </TabsList>
           <TabsContent value="stats" className="mt-4">
             <CoachStatsTab />
@@ -88,6 +94,9 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
           </TabsContent>
           <TabsContent value="my-players" className="mt-4">
             <MyPlayersTab players={coachedPlayers} onAnalyzePlayer={handleAnalyzePlayer} />
+          </TabsContent>
+          <TabsContent value="my-programs" className="mt-4">
+            <MyProgramsTab programs={trainingPrograms} />
           </TabsContent>
         </Tabs>
       </div>
