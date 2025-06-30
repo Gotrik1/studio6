@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
 import { JoinRequestAnalysisDialog } from '@/widgets/join-request-analysis-dialog';
 import { SponsorshipPitchGenerator } from '@/widgets/sponsorship-pitch-generator';
 import Link from 'next/link';
+import { AITeamAssistantTab } from '@/widgets/ai-team-assistant-tab';
 
 
 const initialJoinRequests = [
@@ -50,10 +51,11 @@ export function TeamManagementPage() {
                 </p>
             </div>
              <Tabs defaultValue="requests">
-                 <TabsList className="grid w-full grid-cols-3">
+                 <TabsList className="grid w-full grid-cols-4">
                     <TabsTrigger value="requests">Заявки</TabsTrigger>
                     <TabsTrigger value="sponsorship">Спонсорство</TabsTrigger>
                     <TabsTrigger value="ai-coach">AI-Коуч</TabsTrigger>
+                    <TabsTrigger value="ai-assistant">AI-Ассистент</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="requests" className="mt-4">
@@ -117,6 +119,10 @@ export function TeamManagementPage() {
                             </div>
                         </CardContent>
                     </Card>
+                </TabsContent>
+
+                <TabsContent value="ai-assistant" className="mt-4">
+                    <AITeamAssistantTab />
                 </TabsContent>
             </Tabs>
              <JoinRequestAnalysisDialog 
