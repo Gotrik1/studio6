@@ -74,6 +74,7 @@ export function TrainingLogPage() {
                         <TrainingDayCard
                             key={entry.id}
                             entry={entry}
+                            allEntries={logEntries}
                             onDelete={handleDelete}
                             onCopy={handleCopy}
                             onUpdate={handleUpdateEntry}

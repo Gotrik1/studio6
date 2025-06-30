@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -21,6 +22,7 @@ import { RestTimer } from '@/widgets/rest-timer';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;
+    allEntries: TrainingLogEntry[];
     onDelete: (id: string) => void;
     onCopy: (id: string) => void;
     onUpdate: (data: TrainingLogEntry) => void;
@@ -39,7 +41,7 @@ const moodMap = {
     bad: { icon: Frown, color: 'text-red-500', label: 'Плохо' },
 };
 
-export function TrainingDayCard({ entry, onDelete, onCopy, onUpdate }: TrainingDayCardProps) {
+export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate }: TrainingDayCardProps) {
     const StatusIcon = statusMap[entry.status].icon;
     const statusColor = statusMap[entry.status].color;
     const MoodIcon = entry.mood ? moodMap[entry.mood].icon : null;
@@ -52,6 +54,36 @@ export function TrainingDayCard({ entry, onDelete, onCopy, onUpdate }: TrainingD
         control: form.control,
         name: 'exercises',
     });
+
+    const lastPerformances = useMemo(() => {
+        const performanceMap = new Map<string, string>();
+
+        entry.exercises.forEach(currentExercise => {
+            const relevantPastEntries = allEntries
+                .filter(e => e.id !== entry.id && e.status === 'completed' && new Date(e.date) < new Date(entry.date))
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+            for (const pastEntry of relevantPastEntries) {
+                const pastExercise = pastEntry.exercises.find(ex => ex.name === currentExercise.name);
+                if (pastExercise) {
+                    let bestSet = { weight: 0, reps: 0 };
+                    pastExercise.sets.forEach(set => {
+                        if (set.isCompleted && set.loggedWeight && set.loggedReps) {
+                           if ((set.loggedWeight * set.loggedReps) > (bestSet.weight * bestSet.reps)) {
+                               bestSet = { weight: set.loggedWeight, reps: set.loggedReps };
+                           }
+                        }
+                    });
+
+                    if (bestSet.weight > 0) {
+                        performanceMap.set(currentExercise.name, `${bestSet.reps}x${bestSet.weight} кг`);
+                        return; // Found the most recent performance for this exercise, move to next exercise
+                    }
+                }
+            }
+        });
+        return performanceMap;
+    }, [entry, allEntries]);
 
     const onSubmit = (data: TrainingLogEntry) => {
         const updatedData = { ...data, status: 'completed' as const };
@@ -103,9 +135,15 @@ export function TrainingDayCard({ entry, onDelete, onCopy, onUpdate }: TrainingD
                                 control: form.control,
                                 name: `exercises.${index}.sets`,
                             });
+                            const exerciseName = entry.exercises[index]?.name;
+                            const lastPerformance = lastPerformances.get(exerciseName);
+
                             return (
                                 <div key={field.id} className="mb-4">
-                                    <h4 className="font-semibold">{entry.exercises[index]?.name}</h4>
+                                     <div className="flex items-baseline gap-2 mb-2">
+                                        <h4 className="font-semibold">{exerciseName}</h4>
+                                        {lastPerformance && <p className="text-xs text-muted-foreground">(Прошлый раз: {lastPerformance})</p>}
+                                    </div>
                                     <Table>
                                         <TableHeader>
                                             <TableRow>
