@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
@@ -60,16 +59,13 @@ export function ManualPromotionForm() {
   };
   
   return (
-    <div className="space-y-6 opacity-0 animate-fade-in-up">
-        <div className="space-y-2 text-center">
-            <h1 className="font-headline text-3xl font-bold tracking-tight">Создание промо-акции</h1>
-            <p className="text-muted-foreground">Заполните все необходимые поля для создания новой акции или конкурса.</p>
-        </div>
+    <div className="mt-4">
         <Card className="max-w-2xl mx-auto">
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <CardHeader>
                         <CardTitle>Параметры акции</CardTitle>
+                        <CardDescription>Заполните все необходимые поля для создания новой акции или конкурса.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <FormField control={form.control} name="title" render={({ field }) => (
