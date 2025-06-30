@@ -8,7 +8,7 @@ import { Button } from '@/shared/ui/button';
 import { useTraining } from '@/app/providers/training-provider';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import Image from 'next/image';
-import { Dumbbell, Target, CalendarDays, Bot, BrainCircuit, MoreVertical, Edit, Trash2 } from 'lucide-react';
+import { Dumbbell, Target, CalendarDays, Bot, PlusCircle, MoreVertical, Edit, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import {
   DropdownMenu,
@@ -42,8 +42,8 @@ export function TrainingProgramsPage() {
                 </div>
                 <Button asChild>
                     <Link href="/training/programs/new">
-                        <BrainCircuit className="mr-2 h-4 w-4" />
-                        Создать свою программу
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Создать программу
                     </Link>
                 </Button>
             </div>

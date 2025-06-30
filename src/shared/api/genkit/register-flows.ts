@@ -38,3 +38,4 @@ import './flows/generate-sponsorship-pitch';
 import './flows/sponsorship-scout-flow';
 import './flows/generate-platform-news-flow';
 import './flows/analyze-team-performance-flow';
+import './flows/generate-training-program-flow';

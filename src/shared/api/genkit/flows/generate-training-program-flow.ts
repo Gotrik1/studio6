@@ -27,6 +27,7 @@ The response must be in Russian.
 - Analyze the user's goal, experience level, available days, gender, and focus area.
 - Create a logical weekly split (e.g., Push/Pull/Legs, Upper/Lower, Full Body) that matches the number of days.
 - For each training day, select 4-6 appropriate exercises from the provided list. Choose exercises that match the muscle groups for that day.
+- Provide separate values for sets (e.g., '4') and reps (e.g., '8-12').
 - Provide a creative name for the program and a short description explaining your choices.
 - Structure the output strictly according to the provided schema.
 

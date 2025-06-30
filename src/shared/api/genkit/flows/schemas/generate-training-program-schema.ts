@@ -12,7 +12,8 @@ export type GenerateTrainingProgramInput = z.infer<typeof GenerateTrainingProgra
 
 const ExerciseSchema = z.object({
     name: z.string().describe("Название упражнения."),
-    sets: z.string().describe("Рекомендуемое количество подходов и повторений, например '4x8-12'."),
+    sets: z.string().describe("Рекомендуемое количество подходов, например '4'."),
+    reps: z.string().describe("Рекомендуемое количество повторений, например '8-12'."),
 });
 
 const WorkoutDaySchema = z.object({

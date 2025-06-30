@@ -6,16 +6,16 @@ import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { Loader2, PlusCircle, Trash2, GripVertical, Dumbbell } from 'lucide-react';
+import { Loader2, PlusCircle, Trash2, GripVertical } from 'lucide-react';
 import type { Exercise } from '@/shared/lib/mock-data/exercises';
 import { ExercisePickerDialog } from '@/widgets/exercise-picker-dialog';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { exercisesList } from '@/shared/lib/mock-data/exercises';
-
+import { Textarea } from '@/shared/ui/textarea';
 
 const exerciseSchema = z.object({
   id: z.string(),
@@ -48,21 +48,33 @@ interface TrainingProgramFormProps {
 export function TrainingProgramForm({ initialData, onSubmit, isSaving }: TrainingProgramFormProps) {
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
-    
     const isEditMode = !!initialData;
 
     const form = useForm<ProgramFormValues>({
         resolver: zodResolver(programSchema),
-        defaultValues: {
+        defaultValues: initialData ? {
+             name: initialData.name,
+             description: initialData.description,
+             goal: initialData.goal,
+             splitType: initialData.splitType,
+             days: initialData.weeklySplit.map(day => ({
+                 title: day.title,
+                 exercises: day.exercises.map(ex => {
+                     const fullExercise = exercisesList.find(e => e.name === ex.name);
+                     return {
+                         id: fullExercise?.id || `temp-${Math.random()}`,
+                         name: ex.name,
+                         sets: ex.sets,
+                         reps: ex.reps
+                     }
+                 })
+             }))
+        } : {
             name: '',
             description: '',
             goal: 'Набор массы',
             splitType: 'Split',
-            days: [
-                { title: 'День 1: Грудь и Трицепс', exercises: [] },
-                { title: 'День 2: Спина и Бицепс', exercises: [] },
-                { title: 'День 3: Ноги и Плечи', exercises: [] },
-            ],
+            days: [{ title: 'День 1: Грудь и Трицепс', exercises: [] }],
         },
     });
 
@@ -88,7 +100,7 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
             });
         }
     }, [initialData, form]);
-    
+
     const { fields, append, remove } = useFieldArray({
         control: form.control,
         name: 'days',
@@ -110,31 +122,21 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
         if (currentDayIndex === null) return;
         const exerciseControls = dayFieldArrays[currentDayIndex];
         exercises.forEach(ex => {
-            exerciseControls.append({ id: ex.id, name: ex.name, sets: '3', reps: '10-12' });
+            exerciseControls.append({ id: ex.id, name: ex.name, sets: '3-4', reps: '8-12' });
         });
     };
-    
+
     return (
-         <>
+        <>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                    <div className="space-y-2 text-center">
-                        <Dumbbell className="mx-auto h-12 w-12 text-primary" />
-                        <h1 className="font-headline text-3xl font-bold tracking-tight">
-                            {isEditMode ? 'Редактирование программы' : 'Конструктор программ'}
-                        </h1>
-                        <p className="text-muted-foreground">
-                            {isEditMode ? 'Измените детали вашего тренировочного плана.' : 'Создайте свой идеальный тренировочный план вручную.'}
-                        </p>
-                    </div>
-
                     <Card>
                         <CardHeader>
                             <CardTitle>Общая информация</CardTitle>
                         </CardHeader>
                         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Название программы</FormLabel><FormControl><Input placeholder="Например, Моя программа на массу" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                             <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Описание (необязательно)</FormLabel><FormControl><Input placeholder="Краткое описание целей и методики" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
+                             <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Описание (необязательно)</FormLabel><FormControl><Textarea placeholder="Краткое описание целей и методики" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                              <FormField control={form.control} name="goal" render={({ field }) => (<FormItem><FormLabel>Цель</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Набор массы">Набор массы</SelectItem><SelectItem value="Снижение веса">Снижение веса</SelectItem><SelectItem value="Рельеф">Рельеф</SelectItem><SelectItem value="Сила">Сила</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                              <FormField control={form.control} name="splitType" render={({ field }) => (<FormItem><FormLabel>Тип сплита</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Split">Сплит</SelectItem><SelectItem value="Upper/Lower">Верх/Низ</SelectItem><SelectItem value="Full-body">Full-body</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                         </CardContent>
@@ -167,13 +169,13 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                         );
                     })}
 
-                    <div className="flex justify-between gap-4">
-                        <Button type="button" variant="outline" className="w-full" onClick={() => append({ title: `День ${fields.length + 1}`, exercises: [] })}><PlusCircle className="mr-2 h-4 w-4" /> Добавить день</Button>
-                        <Button type="submit" className="w-full" disabled={isSaving}>
+                    <CardFooter className="flex-col sm:flex-row justify-between gap-4 p-4">
+                        <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => append({ title: `День ${fields.length + 1}`, exercises: [] })}><PlusCircle className="mr-2 h-4 w-4" /> Добавить день</Button>
+                        <Button type="submit" className="w-full sm:w-auto" disabled={isSaving}>
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                             {isEditMode ? 'Сохранить изменения' : 'Создать программу'}
                         </Button>
-                    </div>
+                    </CardFooter>
                 </form>
             </Form>
             
@@ -183,5 +185,5 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                 onSelectExercises={handleSelectExercises}
             />
         </>
-    )
+    );
 }
