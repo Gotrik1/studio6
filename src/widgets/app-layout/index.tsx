@@ -35,6 +35,7 @@ import {
   Handshake,
   DollarSign,
   UserSearch,
+  Megaphone,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -60,6 +61,7 @@ const mainNavItems = [
     { href: "/booking", icon: MapPin, label: "Площадки" },
     { href: "/store", icon: ShoppingCart, label: "Магазин" },
     { href: "/quests", icon: ShieldCheck, label: "Квесты" },
+    { href: "/promotions", icon: Megaphone, label: "Промо-акции" },
 ];
 
 const secondaryNavItems = [
