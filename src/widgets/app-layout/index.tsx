@@ -37,6 +37,11 @@ import {
   UserSearch,
   Megaphone,
   HeartPulse,
+  Ruler,
+  Award,
+  Replace,
+  BookOpen,
+  Calendar
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -58,12 +63,20 @@ const mainNavItems = [
     { href: "/scouting", icon: UserSearch, label: "Поиск игроков" },
     { href: "/friends", icon: Users2, label: "Друзья" },
     { href: "/tournaments", icon: Trophy, label: "Соревнования" },
-    { href: "/training", icon: Dumbbell, label: "Тренировки" },
-    { href: "/training/nutrition-diary", icon: HeartPulse, label: "Дневник питания" },
     { href: "/booking", icon: MapPin, label: "Площадки" },
     { href: "/store", icon: ShoppingCart, label: "Магазин" },
     { href: "/quests", icon: ShieldCheck, label: "Квесты" },
     { href: "/promotions", icon: Megaphone, label: "Промо-акции" },
+];
+
+const trainingNavItems = [
+    { href: "/training", icon: Dumbbell, label: "Центр тренировок" },
+    { href: "/training/log", icon: BookOpen, label: "Дневник тренировок" },
+    { href: "/training/programs", icon: Replace, label: "Программы" },
+    { href: "/training/records", icon: Award, label: "Рекорды" },
+    { href: "/training/measurements", icon: Ruler, label: "Замеры" },
+    { href: "/training/nutrition-diary", icon: HeartPulse, label: "Дневник питания" },
+    { href: "/training/calendar", icon: Calendar, label: "Календарь" },
 ];
 
 const secondaryNavItems = [
@@ -136,9 +149,6 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         if (href === '/dashboard' || href === '/') {
             return pathname === '/dashboard' || pathname === '/';
         }
-        if (href === '/training') {
-            return pathname.startsWith('/training');
-        }
         return pathname.startsWith(href);
     }
 
@@ -162,6 +172,16 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}
+                     <SidebarSeparator className="my-1" />
+                     {state === 'expanded' && <p className="px-3 py-2 text-xs font-semibold text-muted-foreground tracking-wider uppercase">Тренировки</p>}
+                     {trainingNavItems.map(item => (
+                        <SidebarMenuItem key={item.href}>
+                             <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
+                                <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
+
                     <div className="mt-auto">
                         <SidebarSeparator className="my-1" />
                         {user.role === 'Администратор' && (
