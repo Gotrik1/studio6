@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -7,17 +6,20 @@ import { teams } from '@/shared/lib/mock-data/teams';
 import { PollCard } from '@/widgets/poll-card';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Flame } from 'lucide-react';
+import { ArrowRight, Flame, Megaphone } from 'lucide-react';
+import { promotionsList } from '@/shared/lib/mock-data/promotions';
+import { Button } from '@/shared/ui/button';
 
 export function FanZonePage() {
     const popularTeams = teams.slice(0, 4); // Take top 4 for display
+    const fanPromotions = promotionsList.slice(0, 2); // Take a couple of promotions to display
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Фан-зона</h1>
                 <p className="text-muted-foreground">
-                    Место для самых преданных болельщиков. Участвуйте в опросах, следите за командами и будьте в курсе событий.
+                    Место для самых преданных болельщиков. Голосуйте в опросах, участвуйте в конкурсах и следите за любимыми командами.
                 </p>
             </div>
 
@@ -37,6 +39,35 @@ export function FanZonePage() {
                             <PollCard poll={mainPoll} />
                         </CardContent>
                     </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Megaphone className="text-primary" />
+                                Акции для болельщиков
+                            </CardTitle>
+                            <CardDescription>
+                                Участвуйте в конкурсах от наших партнеров и выигрывайте ценные призы!
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {fanPromotions.map((promo) => (
+                                <Card key={promo.id} className="overflow-hidden flex flex-col">
+                                    <div className="relative h-32 w-full">
+                                        <Image src={promo.image} alt={promo.title} fill className="object-cover" data-ai-hint={promo.imageHint} />
+                                    </div>
+                                    <div className="p-4 flex flex-col flex-1">
+                                        <p className="font-semibold text-sm">{promo.title}</p>
+                                        <p className="text-xs text-muted-foreground mt-1 flex-1">Приз: {promo.prize}</p>
+                                        <Button size="sm" className="w-full mt-3" asChild>
+                                            <Link href="/promotions">Подробнее</Link>
+                                        </Button>
+                                    </div>
+                                </Card>
+                            ))}
+                        </CardContent>
+                    </Card>
+
                 </div>
                 <div className="space-y-6">
                     <Card>
