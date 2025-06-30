@@ -118,7 +118,7 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                                 <CardDescription>{format(new Date(entry.date), 'EEEE, d MMMM yyyy', { locale: ru })}</CardDescription>
                                 <CardTitle className="text-xl flex items-center gap-2 group-hover:text-primary transition-colors">
                                     {entry.workoutName} 
-                                    <ChevronDown className="h-5 w-5 transition-transform group-data-[state=open]:rotate-180" />
+                                    <ChevronDown className="h-5 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
                                 </CardTitle>
                             </div>
                         </div>
