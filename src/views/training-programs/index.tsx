@@ -1,10 +1,12 @@
 
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { trainingPrograms, type TrainingProgram } from '@/shared/lib/mock-data/training-programs';
+import { trainingPrograms } from '@/shared/lib/mock-data/training-programs';
+import type { TrainingProgram } from '@/entities/training-program/model/types';
 import Image from 'next/image';
 import { Dumbbell, Target, CalendarDays, Bot, BrainCircuit } from 'lucide-react';
 import Link from 'next/link';

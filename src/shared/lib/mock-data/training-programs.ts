@@ -1,4 +1,17 @@
 
+
+export type ExerciseDetail = {
+    name: string;
+    sets: string;
+    reps: string;
+};
+
+export type WorkoutDay = {
+    day: number;
+    title: string;
+    exercises: ExerciseDetail[];
+};
+
 export type TrainingProgram = {
     id: string;
     name: string;
@@ -10,6 +23,7 @@ export type TrainingProgram = {
     coverImage: string;
     coverImageHint: string;
     isAiGenerated?: boolean;
+    weeklySplit: WorkoutDay[];
 };
 
 export const trainingPrograms: TrainingProgram[] = [
@@ -23,6 +37,23 @@ export const trainingPrograms: TrainingProgram[] = [
         author: 'ProDvor Team',
         coverImage: 'https://placehold.co/600x400.png',
         coverImageHint: 'gym weights',
+        weeklySplit: [
+            { day: 1, title: 'Грудь и Трицепс', exercises: [
+                { name: 'Жим лежа', sets: '4', reps: '8-10' },
+                { name: 'Разведение гантелей лежа', sets: '3', reps: '12-15' },
+                { name: 'Французский жим', sets: '3', reps: '10-12' },
+            ]},
+            { day: 2, title: 'Спина и Бицепс', exercises: [
+                 { name: 'Подтягивания', sets: '4', reps: 'max' },
+                 { name: 'Становая тяга', sets: '3', reps: '6-8' },
+                 { name: 'Тяга штанги в наклоне', sets: '4', reps: '8-10' },
+            ]},
+            { day: 3, title: 'Ноги и Плечи', exercises: [
+                 { name: 'Приседания со штангой', sets: '4', reps: '8-10' },
+                 { name: 'Жим ногами', sets: '3', reps: '10-12' },
+                 { name: 'Жим гантелей сидя', sets: '4', reps: '8-10' },
+            ]},
+        ]
     },
     {
         id: 'female-glute',
@@ -34,6 +65,7 @@ export const trainingPrograms: TrainingProgram[] = [
         author: 'Coach Anna',
         coverImage: 'https://placehold.co/600x400.png',
         coverImageHint: 'woman fitness',
+        weeklySplit: [],
     },
     {
         id: 'power-split',
@@ -45,6 +77,7 @@ export const trainingPrograms: TrainingProgram[] = [
         author: 'Strongman Pete',
         coverImage: 'https://placehold.co/600x400.png',
         coverImageHint: 'barbell deadlift',
+        weeklySplit: [],
     },
     {
         id: 'fullbody-beginner',
@@ -56,6 +89,7 @@ export const trainingPrograms: TrainingProgram[] = [
         author: 'ProDvor Team',
         coverImage: 'https://placehold.co/600x400.png',
         coverImageHint: 'man training gym',
+        weeklySplit: [],
     },
     {
         id: 'ai-split-busy',
@@ -68,5 +102,6 @@ export const trainingPrograms: TrainingProgram[] = [
         coverImage: 'https://placehold.co/600x400.png',
         coverImageHint: 'ai circuit board',
         isAiGenerated: true,
+        weeklySplit: [],
     }
 ];
