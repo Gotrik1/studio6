@@ -115,7 +115,7 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                     <CollapsibleTrigger asChild>
                          <div className="flex-1 flex items-start gap-4 cursor-pointer group">
                             <div>
-                                <CardDescription>{format(new Date(entry.date), 'EEEE, d MMMM yyyy', { locale: ru })}</CardDescription>
+                                <CardDescription>{entry.date}</CardDescription>
                                 <CardTitle className="text-xl flex items-center gap-2 group-hover:text-primary transition-colors">
                                     {entry.workoutName} 
                                     <ChevronDown className="h-5 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />
