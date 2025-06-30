@@ -1,3 +1,4 @@
+
 'use client';
 
 import Image from "next/image";
@@ -46,10 +47,10 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                         <div className="md:col-span-2">
                            <Card>
                                <CardHeader><CardTitle>Информация о турнире</CardTitle></CardHeader>
-                               <CardContent className="space-y-4">
-                                   <div className="flex items-center gap-4"><Calendar className="h-5 w-5 text-muted-foreground" /> <p><strong>Даты проведения:</strong> {tournament.schedule.finals}</p></div>
-                                   <div className="flex items-center gap-4"><Trophy className="h-5 w-5 text-muted-foreground" /><p><strong>Призовой фонд:</strong> ${tournament.prizePool}</p></div>
-                                   <div className="flex items-center gap-4"><Users className="h-5 w-5 text-muted-foreground" /><p><strong>Количество команд:</strong> {tournament.teamsCount}</p></div>
+                               <CardContent className="space-y-4 text-sm">
+                                   <div className="flex items-center gap-4"><Calendar className="mr-2 h-4 w-4 text-muted-foreground" /> <p><strong>Даты проведения:</strong> {tournament.schedule.finals}</p></div>
+                                   <div className="flex items-center gap-4"><Trophy className="mr-2 h-4 w-4 text-muted-foreground" /><p><strong>Призовой фонд:</strong> ${tournament.prizePool}</p></div>
+                                   <div className="flex items-center gap-4"><Users className="mr-2 h-4 w-4 text-muted-foreground" /><p><strong>Количество команд:</strong> {tournament.teamsCount}</p></div>
                                </CardContent>
                            </Card>
                         </div>
