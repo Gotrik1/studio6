@@ -4,15 +4,24 @@ import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Textarea } from '@/shared/ui/textarea';
-import { Loader2, Sparkles, Lightbulb, BarChartHorizontal } from 'lucide-react';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { Loader2, Sparkles, Lightbulb, BarChartHorizontal, Mic, Users } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { Badge } from '@/shared/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+
+// Import Genkit flows
 import { analyzeContent, type AnalyzeContentOutput } from '@/shared/api/genkit/flows/analyze-content-generation';
 import { generateContent, type GenerateContentOutput } from '@/shared/api/genkit/flows/generate-content-flow';
-import { Badge } from '@/shared/ui/badge';
+import { textToSpeech, type TextToSpeechOutput } from '@/shared/api/genkit/flows/tts-flow';
+import { generateDialogue, type GenerateDialogueOutput } from '@/shared/api/genkit/flows/dialogue-generation-flow';
+import { multiSpeakerTts, type MultiSpeakerTtsOutput } from '@/shared/api/genkit/flows/multi-speaker-tts-flow';
 
-export function AiAnalysisPage() {
+// --- Text Analysis & Generation Component ---
+function TextTools() {
     // State for Analysis
     const [analysisPrompt, setAnalysisPrompt] = useState('Наша команда вчера проиграла, но мы не сдаемся и будем тренироваться еще усерднее, чтобы победить в следующий раз!');
     const [analysisContentType, setAnalysisContentType] = useState('Комментарий');
@@ -68,128 +77,286 @@ export function AiAnalysisPage() {
         }
     };
 
-
     return (
-        <div className="space-y-8">
-            <div className="space-y-2">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Анализ и генерация контента</h1>
-                <p className="text-muted-foreground">
-                    Используйте AI для анализа существующего текста или создания нового контента для вашей платформы.
-                </p>
-            </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><BarChartHorizontal /> Анализ контента</CardTitle>
+                    <CardDescription>Вставьте текст, чтобы AI определил его тональность, ключевые темы и дал рекомендации.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Textarea
+                        placeholder="Введите текст для анализа..."
+                        value={analysisPrompt}
+                        onChange={(e) => setAnalysisPrompt(e.target.value)}
+                        className="min-h-[150px]"
+                        disabled={isAnalyzing}
+                    />
+                     <Select onValueChange={setAnalysisContentType} defaultValue={analysisContentType} disabled={isAnalyzing}>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Тип контента" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="Комментарий">Комментарий</SelectItem>
+                            <SelectItem value="Пост">Пост</SelectItem>
+                            <SelectItem value="Новость">Новость</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Button onClick={handleAnalyze} disabled={isAnalyzing} className="w-full">
+                        {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Проанализировать
+                    </Button>
+                    
+                    {analysisError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{analysisError}</AlertDescription></Alert>}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Analysis Card */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><BarChartHorizontal /> Анализ контента</CardTitle>
-                        <CardDescription>Вставьте текст, чтобы AI определил его тональность, ключевые темы и дал рекомендации.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <Textarea
-                            placeholder="Введите текст для анализа..."
-                            value={analysisPrompt}
-                            onChange={(e) => setAnalysisPrompt(e.target.value)}
-                            className="min-h-[150px]"
-                            disabled={isAnalyzing}
-                        />
-                         <Select onValueChange={setAnalysisContentType} defaultValue={analysisContentType} disabled={isAnalyzing}>
+                    {isAnalyzing && <Skeleton className="h-40 w-full" />}
+                    
+                    {analysisResult && (
+                        <div className="space-y-4 pt-4 border-t">
+                            <div className="flex justify-between items-center">
+                                <h3 className="font-semibold">Результат анализа:</h3>
+                                {getSentimentBadge(analysisResult.sentiment)}
+                            </div>
+                            <div className="space-y-2">
+                                <p className="text-sm font-medium">Ключевые темы:</p>
+                                <div className="flex flex-wrap gap-2">
+                                    {analysisResult.keyTopics.map((topic, i) => <Badge key={i} variant="outline">{topic}</Badge>)}
+                                </div>
+                            </div>
+                            <div>
+                                <p className="text-sm font-medium">Рекомендации:</p>
+                                <p className="text-sm text-muted-foreground">{analysisResult.suggestedImprovements}</p>
+                            </div>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Lightbulb /> Генерация контента</CardTitle>
+                    <CardDescription>Опишите тему, выберите тип и тон, и AI создаст для вас текст.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <Textarea
+                        placeholder="Опишите тему..."
+                        value={generationPrompt}
+                        onChange={(e) => setGenerationPrompt(e.target.value)}
+                        className="min-h-[150px]"
+                         disabled={isGenerating}
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                         <Select onValueChange={setGenerationContentType} defaultValue={generationContentType} disabled={isGenerating}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Тип контента" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="Комментарий">Комментарий</SelectItem>
-                                <SelectItem value="Пост">Пост</SelectItem>
-                                <SelectItem value="Новость">Новость</SelectItem>
+                                <SelectItem value="Новостной пост">Новостной пост</SelectItem>
+                                <SelectItem value="Твит">Твит</SelectItem>
+                                <SelectItem value="Описание матча">Описание матча</SelectItem>
                             </SelectContent>
                         </Select>
-                        <Button onClick={handleAnalyze} disabled={isAnalyzing} className="w-full">
-                            {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                            Проанализировать
-                        </Button>
-                        
-                        {analysisError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{analysisError}</AlertDescription></Alert>}
+                        <Select onValueChange={setGenerationTone} defaultValue={generationTone} disabled={isGenerating}>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Тон" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Восторженный">Восторженный</SelectItem>
+                                <SelectItem value="Профессиональный">Профессиональный</SelectItem>
+                                <SelectItem value="Остроумный">Остроумный</SelectItem>
+                                <SelectItem value="Нейтральный">Нейтральный</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <Button onClick={handleGenerate} disabled={isGenerating} className="w-full">
+                        {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Сгенерировать
+                    </Button>
 
-                        {isAnalyzing && <Skeleton className="h-40 w-full" />}
-                        
-                        {analysisResult && (
-                            <div className="space-y-4 pt-4 border-t">
-                                <div className="flex justify-between items-center">
-                                    <h3 className="font-semibold">Результат анализа:</h3>
-                                    {getSentimentBadge(analysisResult.sentiment)}
-                                </div>
-                                <div className="space-y-2">
-                                    <p className="text-sm font-medium">Ключевые темы:</p>
-                                    <div className="flex flex-wrap gap-2">
-                                        {analysisResult.keyTopics.map((topic, i) => <Badge key={i} variant="outline">{topic}</Badge>)}
-                                    </div>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium">Рекомендации:</p>
-                                    <p className="text-sm text-muted-foreground">{analysisResult.suggestedImprovements}</p>
-                                </div>
+                     {generationError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{generationError}</AlertDescription></Alert>}
+
+                    {isGenerating && <Skeleton className="h-40 w-full" />}
+
+                    {generationResult && (
+                         <div className="space-y-2 pt-4 border-t">
+                            <h3 className="font-semibold">Сгенерированный текст:</h3>
+                            <div className="p-3 bg-muted rounded-md text-sm text-muted-foreground whitespace-pre-wrap">
+                                {generationResult.generatedText}
                             </div>
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* Generation Card */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Lightbulb /> Генерация контента</CardTitle>
-                        <CardDescription>Опишите тему, выберите тип и тон, и AI создаст для вас текст.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <Textarea
-                            placeholder="Опишите тему..."
-                            value={generationPrompt}
-                            onChange={(e) => setGenerationPrompt(e.target.value)}
-                            className="min-h-[150px]"
-                             disabled={isGenerating}
-                        />
-                        <div className="grid grid-cols-2 gap-4">
-                             <Select onValueChange={setGenerationContentType} defaultValue={generationContentType} disabled={isGenerating}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Тип контента" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Новостной пост">Новостной пост</SelectItem>
-                                    <SelectItem value="Твит">Твит</SelectItem>
-                                    <SelectItem value="Описание матча">Описание матча</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <Select onValueChange={setGenerationTone} defaultValue={generationTone} disabled={isGenerating}>
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Тон" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="Восторженный">Восторженный</SelectItem>
-                                    <SelectItem value="Профессиональный">Профессиональный</SelectItem>
-                                    <SelectItem value="Остроумный">Остроумный</SelectItem>
-                                    <SelectItem value="Нейтральный">Нейтральный</SelectItem>
-                                </SelectContent>
-                            </Select>
                         </div>
-                        <Button onClick={handleGenerate} disabled={isGenerating} className="w-full">
-                            {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                            Сгенерировать
-                        </Button>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
 
-                         {generationError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{generationError}</AlertDescription></Alert>}
+// --- Audio Generation Component ---
+function AudioTools() {
+    // State for simple TTS
+    const [ttsText, setTtsText] = useState('Привет, мир! Это демонстрация генерации речи.');
+    const [isGeneratingTts, setIsGeneratingTts] = useState(false);
+    const [ttsError, setTtsError] = useState<string | null>(null);
+    const [ttsResult, setTtsResult] = useState<TextToSpeechOutput | null>(null);
 
-                        {isGenerating && <Skeleton className="h-40 w-full" />}
+    // State for dialogue generation
+    const [dialogueTopic, setDialogueTopic] = useState('спор о лучшей команде в Valorant');
+    const [isGeneratingDialogue, setIsGeneratingDialogue] = useState(false);
+    const [dialogueError, setDialogueError] = useState<string | null>(null);
+    const [dialogueResult, setDialogueResult] = useState<GenerateDialogueOutput | null>(null);
 
-                        {generationResult && (
-                             <div className="space-y-2 pt-4 border-t">
-                                <h3 className="font-semibold">Сгенерированный текст:</h3>
-                                <div className="p-3 bg-muted rounded-md text-sm text-muted-foreground whitespace-pre-wrap">
-                                    {generationResult.generatedText}
-                                </div>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
+    // State for multi-speaker TTS
+    const [isGeneratingDialogueAudio, setIsGeneratingDialogueAudio] = useState(false);
+    const [dialogueAudioError, setDialogueAudioError] = useState<string | null>(null);
+    const [dialogueAudioResult, setDialogueAudioResult] = useState<MultiSpeakerTtsOutput | null>(null);
+
+    const handleGenerateTts = async () => {
+        setIsGeneratingTts(true);
+        setTtsError(null);
+        setTtsResult(null);
+        try {
+            const result = await textToSpeech(ttsText);
+            setTtsResult(result);
+        } catch (e) {
+            console.error(e);
+            setTtsError('Не удалось сгенерировать аудио. Попробуйте еще раз.');
+        } finally {
+            setIsGeneratingTts(false);
+        }
+    };
+    
+    const handleGenerateDialogue = async () => {
+        setIsGeneratingDialogue(true);
+        setDialogueError(null);
+        setDialogueResult(null);
+        setDialogueAudioResult(null);
+        setDialogueAudioError(null);
+        try {
+            const result = await generateDialogue(dialogueTopic);
+            setDialogueResult(result);
+        } catch (e) {
+            console.error(e);
+            setDialogueError('Не удалось сгенерировать диалог. Попробуйте еще раз.');
+        } finally {
+            setIsGeneratingDialogue(false);
+        }
+    };
+    
+    const handleGenerateDialogueAudio = async () => {
+        if (!dialogueResult?.dialogue) return;
+        setIsGeneratingDialogueAudio(true);
+        setDialogueAudioError(null);
+        setDialogueAudioResult(null);
+        try {
+            const result = await multiSpeakerTts(dialogueResult.dialogue);
+            setDialogueAudioResult(result);
+        } catch (e) {
+            console.error(e);
+            setDialogueAudioError('Не удалось сгенерировать аудио для диалога. Попробуйте еще раз.');
+        } finally {
+            setIsGeneratingDialogueAudio(false);
+        }
+    };
+
+    return (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Mic /> Один голос (TTS)</CardTitle>
+                    <CardDescription>Введите текст, чтобы преобразовать его в аудиофайл.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                     <Textarea
+                        placeholder="Введите текст..."
+                        value={ttsText}
+                        onChange={(e) => setTtsText(e.target.value)}
+                        className="min-h-[150px]"
+                        disabled={isGeneratingTts}
+                    />
+                     <Button onClick={handleGenerateTts} disabled={isGeneratingTts} className="w-full">
+                        {isGeneratingTts ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        Озвучить
+                    </Button>
+                    {isGeneratingTts && <Skeleton className="h-12 w-full" />}
+                    {ttsError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{ttsError}</AlertDescription></Alert>}
+                    {ttsResult?.audioDataUri && (
+                        <audio controls src={ttsResult.audioDataUri} className="w-full mt-4" />
+                    )}
+                </CardContent>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Users /> Диалог (Multi-speaker)</CardTitle>
+                    <CardDescription>Создайте и озвучьте диалог между двумя спикерами на заданную тему.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="dialogue-topic">Тема диалога</Label>
+                        <div className="flex gap-2">
+                            <Input
+                                id="dialogue-topic"
+                                placeholder="Например, спор о лучшей команде"
+                                value={dialogueTopic}
+                                onChange={(e) => setDialogueTopic(e.target.value)}
+                                disabled={isGeneratingDialogue || isGeneratingDialogueAudio}
+                            />
+                            <Button onClick={handleGenerateDialogue} disabled={isGeneratingDialogue || isGeneratingDialogueAudio}>
+                                {isGeneratingDialogue ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                                Скрипт
+                            </Button>
+                        </div>
+                    </div>
+                    
+                    {isGeneratingDialogue && <Skeleton className="h-24 w-full" />}
+                    {dialogueError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{dialogueError}</AlertDescription></Alert>}
+                    
+                    {dialogueResult?.dialogue && (
+                        <div className="space-y-4 pt-4 border-t">
+                             <Textarea
+                                readOnly
+                                value={dialogueResult.dialogue}
+                                className="min-h-[150px] bg-muted"
+                            />
+                             <Button onClick={handleGenerateDialogueAudio} disabled={isGeneratingDialogueAudio} className="w-full">
+                                {isGeneratingDialogueAudio ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Mic className="mr-2 h-4 w-4" />}
+                                Озвучить диалог
+                            </Button>
+                             {isGeneratingDialogueAudio && <Skeleton className="h-12 w-full" />}
+                             {dialogueAudioError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{dialogueAudioError}</AlertDescription></Alert>}
+                             {dialogueAudioResult?.audioDataUri && (
+                                <audio controls src={dialogueAudioResult.audioDataUri} className="w-full mt-4" />
+                            )}
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    );
+}
+
+// --- Main Page Component ---
+export function AiAnalysisPage() {
+    return (
+        <div className="space-y-6">
+            <div className="space-y-2">
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Песочница AI-инструментов</h1>
+                <p className="text-muted-foreground">
+                    Демонстрация работы различных генеративных AI-функций платформы.
+                </p>
             </div>
+            <Tabs defaultValue="text">
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="text">Генерация текста</TabsTrigger>
+                    <TabsTrigger value="audio">Генерация аудио</TabsTrigger>
+                </TabsList>
+                <TabsContent value="text" className="mt-6">
+                    <TextTools />
+                </TabsContent>
+                <TabsContent value="audio" className="mt-6">
+                    <AudioTools />
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }
