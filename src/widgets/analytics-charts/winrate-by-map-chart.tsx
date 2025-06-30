@@ -1,10 +1,13 @@
 'use client';
 
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { winrateByMapData } from '@/shared/lib/mock-data/player-stats';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 
-export function WinrateByMapChart() {
+interface WinrateByMapChartProps {
+  data: { map: string; winrate: number }[];
+}
+
+export function WinrateByMapChart({ data }: WinrateByMapChartProps) {
   return (
     <Card>
       <CardHeader>
@@ -13,7 +16,7 @@ export function WinrateByMapChart() {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={winrateByMapData}>
+          <BarChart data={data}>
             <XAxis
               dataKey="map"
               stroke="#888888"

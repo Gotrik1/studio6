@@ -1,15 +1,17 @@
 'use client';
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { winLossData } from '@/shared/lib/mock-data/player-stats';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 
-const data = [
-  { name: 'Победы', value: winLossData.wins, fill: 'hsl(var(--chart-1))' },
-  { name: 'Поражения', value: winLossData.losses, fill: 'hsl(var(--chart-5))' },
-];
+interface WinLossChartProps {
+  data: { wins: number, losses: number };
+}
 
-export function WinLossChart() {
+export function WinLossChart({ data: winLossData }: WinLossChartProps) {
+    const data = [
+      { name: 'Победы', value: winLossData.wins, fill: 'hsl(var(--chart-1))' },
+      { name: 'Поражения', value: winLossData.losses, fill: 'hsl(var(--chart-5))' },
+    ];
     const total = winLossData.wins + winLossData.losses;
     const winrate = total > 0 ? (winLossData.wins / total) * 100 : 0;
   return (

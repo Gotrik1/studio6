@@ -1,10 +1,13 @@
 'use client';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { kdaData } from '@/shared/lib/mock-data/player-stats';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 
-export function KdaChart() {
+interface KdaChartProps {
+  data: { month: string; kda: number }[];
+}
+
+export function KdaChart({ data }: KdaChartProps) {
   return (
     <Card>
       <CardHeader>
@@ -13,7 +16,7 @@ export function KdaChart() {
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={kdaData}>
+          <LineChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis domain={[0.8, 2.0]} />
