@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { organizerUser, organizerAchievements } from "@/shared/lib/mock-data/organizer-profile";
 import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
+import type { TournamentCrm } from '@/shared/lib/mock-data/crm-tournaments';
 
 const OrganizerStatsTab = dynamic(() => import('@/entities/user/ui/organizer-profile-tabs/stats-tab').then(mod => mod.OrganizerStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -20,13 +21,18 @@ const OrganizerAchievementsTab = dynamic(() => import('@/entities/user/ui/organi
   loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
   ssr: false,
 });
+const ManagedTournamentsTab = dynamic(() => import('@/entities/user/ui/organizer-profile-tabs/managed-tournaments-tab').then(mod => mod.ManagedTournamentsTab), {
+    loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
+    ssr: false,
+});
 
 type OrganizerProfileProps = {
   user: typeof organizerUser;
   achievements: typeof organizerAchievements;
+  tournaments: TournamentCrm[];
 };
 
-export function OrganizerProfile({ user, achievements }: OrganizerProfileProps) {
+export function OrganizerProfile({ user, achievements, tournaments }: OrganizerProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
 
   return (
@@ -62,12 +68,16 @@ export function OrganizerProfile({ user, achievements }: OrganizerProfileProps) 
       </div>
       <div className="border-t p-4 md:p-6">
         <Tabs defaultValue="stats">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="stats">Статистика событий</TabsTrigger>
-            <TabsTrigger value="achievements">Достижения организатора</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="stats">Статистика</TabsTrigger>
+            <TabsTrigger value="tournaments">Турниры</TabsTrigger>
+            <TabsTrigger value="achievements">Достижения</TabsTrigger>
           </TabsList>
           <TabsContent value="stats" className="mt-4">
             <OrganizerStatsTab />
+          </TabsContent>
+          <TabsContent value="tournaments" className="mt-4">
+            <ManagedTournamentsTab tournaments={tournaments} />
           </TabsContent>
           <TabsContent value="achievements" className="mt-4">
             <OrganizerAchievementsTab achievements={achievements} />
