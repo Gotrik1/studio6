@@ -2,12 +2,7 @@
 import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
 import { differenceInDays, isAfter, startOfMonth, parseISO } from 'date-fns';
 import { exercisesList } from '@/shared/lib/mock-data/exercises';
-
-// Epley formula for 1RM estimation
-const calculate1RM = (weight: number, reps: number) => {
-    if (reps === 1) return weight;
-    return Math.round(weight * (1 + reps / 30));
-};
+import { calculate1RM } from './calculate-1rm';
 
 export type PersonalRecord = {
     exercise: string;

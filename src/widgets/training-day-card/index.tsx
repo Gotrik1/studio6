@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -5,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Checkbox } from '@/shared/ui/checkbox';
-import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown, Link2 } from 'lucide-react';
+import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown, Link2, Award } from 'lucide-react';
 import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -18,6 +19,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/f
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { RestTimer } from '@/widgets/rest-timer';
+import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
+import { calculate1RM } from '@/shared/lib/calculate-1rm';
+import { Badge } from '@/shared/ui/badge';
+import Link from 'next/link';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;
@@ -53,6 +58,13 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
         control: form.control,
         name: 'exercises',
     });
+
+    const { personalRecords } = useMemo(() => {
+        const pastEntries = allEntries.filter(
+            e => e.id !== entry.id && e.status === 'completed' && new Date(e.date) < new Date(entry.date)
+        );
+        return getTrainingAnalytics(pastEntries);
+    }, [allEntries, entry.date, entry.id]);
 
     const lastPerformances = useMemo(() => {
         const performanceMap = new Map<string, string>();
@@ -143,7 +155,9 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                                      <div className="flex items-baseline gap-2 mb-2">
                                         <h4 className="font-semibold flex items-center gap-2">
                                             {isSuperset && <Link2 className="h-4 w-4 text-primary/50" />}
-                                            {exerciseName}
+                                            <Link href={`/training/exercises/${field.id}`} className="hover:underline hover:text-primary transition-colors">
+                                                {exerciseName}
+                                            </Link>
                                         </h4>
                                         {lastPerformance && <p className="text-xs text-muted-foreground">(Прошлый раз: {lastPerformance})</p>}
                                     </div>
@@ -159,32 +173,48 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                                             </TableRow>
                                         </TableHeader>
                                         <TableBody>
-                                            {setFields.map((setField, setIndex) => (
-                                                <TableRow key={setField.id}>
-                                                    <TableCell className="font-medium text-center">{setIndex + 1}</TableCell>
-                                                    <TableCell className="text-muted-foreground">{entry.exercises[index]?.sets[setIndex]?.plannedReps} x {entry.exercises[index]?.sets[setIndex]?.plannedWeight}</TableCell>
-                                                    <TableCell>
-                                                         <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.loggedReps`} render={({ field }) => (
-                                                            <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={entry.exercises[index]?.sets[setIndex]?.plannedReps} /></FormControl></FormItem>
-                                                        )} />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.loggedWeight`} render={({ field }) => (
-                                                            <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={entry.exercises[index]?.sets[setIndex]?.plannedWeight.replace('кг','').trim()} /></FormControl></FormItem>
-                                                        )} />
-                                                    </TableCell>
-                                                     <TableCell>
-                                                        <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.rpe`} render={({ field }) => (
-                                                            <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-16 text-center" placeholder="-" min="1" max="10" /></FormControl></FormItem>
-                                                        )} />
-                                                    </TableCell>
-                                                     <TableCell className="text-center">
-                                                        <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.isCompleted`} render={({ field }) => (
-                                                            <FormItem><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>
-                                                        )} />
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
+                                            {setFields.map((setField, setIndex) => {
+                                                const watchedWeight = form.watch(`exercises.${index}.sets.${setIndex}.loggedWeight`);
+                                                const watchedReps = form.watch(`exercises.${index}.sets.${setIndex}.loggedReps`);
+                                                const currentE1RM = calculate1RM(watchedWeight || 0, watchedReps || 0);
+                                                const exercisePR = personalRecords.find(pr => pr.exercise === exerciseName);
+                                                const isNewPR = currentE1RM > (exercisePR?.e1RM || 0);
+
+                                                return (
+                                                    <TableRow key={setField.id}>
+                                                        <TableCell className="font-medium text-center">{setIndex + 1}</TableCell>
+                                                        <TableCell className="text-muted-foreground">{entry.exercises[index]?.sets[setIndex]?.plannedReps} x {entry.exercises[index]?.sets[setIndex]?.plannedWeight}</TableCell>
+                                                        <TableCell>
+                                                            <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.loggedReps`} render={({ field }) => (
+                                                                <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={entry.exercises[index]?.sets[setIndex]?.plannedReps} /></FormControl></FormItem>
+                                                            )} />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.loggedWeight`} render={({ field }) => (
+                                                                <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={entry.exercises[index]?.sets[setIndex]?.plannedWeight.replace('кг','').trim()} /></FormControl></FormItem>
+                                                            )} />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <div className="flex items-center gap-2">
+                                                                <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.rpe`} render={({ field }) => (
+                                                                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-16 text-center" placeholder="-" min="1" max="10" /></FormControl></FormItem>
+                                                                )} />
+                                                                {isNewPR && (
+                                                                    <Badge variant="secondary" className="bg-amber-400/20 text-amber-500 border-amber-400/50 animate-in fade-in-0 zoom-in-95">
+                                                                        <Award className="h-3 w-3 mr-1" />
+                                                                        PR!
+                                                                    </Badge>
+                                                                )}
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="text-center">
+                                                            <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.isCompleted`} render={({ field }) => (
+                                                                <FormItem><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>
+                                                            )} />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
                                         </TableBody>
                                     </Table>
                                     <Collapsible className="mt-2">
