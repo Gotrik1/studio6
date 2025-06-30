@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { crmTournaments } from '@/shared/lib/mock-data/crm-tournaments';
 import { notFound } from 'next/navigation';
@@ -16,6 +16,12 @@ import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
 import { CrmTournamentAnnouncements } from '@/widgets/crm-tournament-announcements';
 import { CrmTournamentDisputes } from '@/widgets/crm-tournament-disputes';
 import { CrmTournamentSettings } from '@/widgets/crm-tournament-settings';
+import { useState } from 'react';
+import { useToast } from '@/shared/hooks/use-toast';
+import { Textarea } from '@/shared/ui/textarea';
+import { Button } from '@/shared/ui/button';
+import { Save } from 'lucide-react';
+import { ScrollArea } from '@/shared/ui/scroll-area';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -23,11 +29,22 @@ interface TournamentCrmDetailsPageProps {
 
 export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsPageProps) {
     const tournament = crmTournaments.find(t => t.id === tournamentId);
+    const [rules, setRules] = useState(tournament?.rules || '');
+    const { toast } = useToast();
 
     if (!tournament) {
         return notFound();
     }
     
+    const handleSaveRules = () => {
+        // In a real app, this would be an API call to update the tournament rules.
+        console.log("Saving new rules:", rules);
+        toast({
+            title: "Правила сохранены!",
+            description: "Правила турнира были успешно обновлены.",
+        });
+    };
+
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="space-y-2">
@@ -38,18 +55,21 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             </div>
             
             <Tabs defaultValue="overview">
-                <TabsList className="grid w-full grid-cols-3 md:grid-cols-5 lg:grid-cols-10">
-                    <TabsTrigger value="overview">Обзор</TabsTrigger>
-                    <TabsTrigger value="participants">Участники</TabsTrigger>
-                    <TabsTrigger value="judges">Судьи</TabsTrigger>
-                    <TabsTrigger value="matches">Матчи</TabsTrigger>
-                    <TabsTrigger value="disputes">Споры</TabsTrigger>
-                    <TabsTrigger value="bracket">Сетка</TabsTrigger>
-                    <TabsTrigger value="sponsors">Спонсоры</TabsTrigger>
-                    <TabsTrigger value="medical">Мед. поддержка</TabsTrigger>
-                    <TabsTrigger value="announcements">Рассылки</TabsTrigger>
-                    <TabsTrigger value="settings">Настройки</TabsTrigger>
-                </TabsList>
+                <ScrollArea className="w-full whitespace-nowrap rounded-md">
+                    <TabsList className="inline-flex">
+                        <TabsTrigger value="overview">Обзор</TabsTrigger>
+                        <TabsTrigger value="participants">Участники</TabsTrigger>
+                        <TabsTrigger value="rules">Правила</TabsTrigger>
+                        <TabsTrigger value="judges">Судьи</TabsTrigger>
+                        <TabsTrigger value="matches">Матчи</TabsTrigger>
+                        <TabsTrigger value="disputes">Споры</TabsTrigger>
+                        <TabsTrigger value="bracket">Сетка</TabsTrigger>
+                        <TabsTrigger value="sponsors">Спонсоры</TabsTrigger>
+                        <TabsTrigger value="medical">Мед. поддержка</TabsTrigger>
+                        <TabsTrigger value="announcements">Рассылки</TabsTrigger>
+                        <TabsTrigger value="settings">Настройки</TabsTrigger>
+                    </TabsList>
+                </ScrollArea>
                 
                 <TabsContent value="overview" className="mt-4">
                     <CrmTournamentOverview tournament={tournament} />
@@ -57,6 +77,29 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 
                 <TabsContent value="participants" className="mt-4">
                     <CrmTournamentParticipants />
+                </TabsContent>
+
+                <TabsContent value="rules" className="mt-4">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Редактирование правил турнира</CardTitle>
+                            <CardDescription>Здесь вы можете подробно описать все правила и условия проведения турнира. Используйте Markdown для форматирования, если необходимо.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <Textarea
+                                value={rules}
+                                onChange={(e) => setRules(e.target.value)}
+                                className="min-h-[400px] font-mono"
+                                placeholder="Введите правила турнира..."
+                            />
+                        </CardContent>
+                        <CardFooter>
+                            <Button onClick={handleSaveRules}>
+                                <Save className="mr-2 h-4 w-4" />
+                                Сохранить правила
+                            </Button>
+                        </CardFooter>
+                    </Card>
                 </TabsContent>
 
                 <TabsContent value="judges" className="mt-4">

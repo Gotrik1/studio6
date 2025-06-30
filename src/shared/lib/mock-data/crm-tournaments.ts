@@ -7,6 +7,7 @@ export type TournamentCrm = {
     maxParticipants: number;
     startDate: string;
     organizer: string;
+    rules: string;
 };
 
 export const crmTournaments: TournamentCrm[] = [
@@ -18,7 +19,8 @@ export const crmTournaments: TournamentCrm[] = [
         participants: 16,
         maxParticipants: 16,
         startDate: '2024-09-01',
-        organizer: 'ProDvor Events'
+        organizer: 'ProDvor Events',
+        rules: 'Стандартные правила Valorant. Single Elimination. Все матчи до одной победы (Bo1), финал до двух (Bo3).'
     },
     {
         id: 'crm-tourney-2',
@@ -28,7 +30,8 @@ export const crmTournaments: TournamentCrm[] = [
         participants: 8,
         maxParticipants: 32,
         startDate: '2024-09-15',
-        organizer: 'Superuser'
+        organizer: 'Superuser',
+        rules: 'Правила дворового футбола 5x5. Два тайма по 15 минут. В случае ничьи - серия пенальти.'
     },
     {
         id: 'crm-tourney-3',
@@ -38,7 +41,8 @@ export const crmTournaments: TournamentCrm[] = [
         participants: 16,
         maxParticipants: 16,
         startDate: '2024-07-01',
-        organizer: 'ProDvor Events'
+        organizer: 'ProDvor Events',
+        rules: 'Классические соревновательные правила. Карты: de_dust2, de_mirage, de_inferno.'
     },
     {
         id: 'crm-tourney-4',
@@ -48,6 +52,7 @@ export const crmTournaments: TournamentCrm[] = [
         participants: 8,
         maxParticipants: 8,
         startDate: '2024-05-10',
-        organizer: 'Superuser'
+        organizer: 'Superuser',
+        rules: 'Режим Captains Mode. Только для игроков с рангом ниже "Легенды".'
     }
 ];
