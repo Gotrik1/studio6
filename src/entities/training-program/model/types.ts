@@ -3,6 +3,7 @@ export type ExerciseDetail = {
     name: string;
     sets: string;
     reps: string;
+    plannedWeight?: string;
     isSupersetWithPrevious?: boolean;
 };
 

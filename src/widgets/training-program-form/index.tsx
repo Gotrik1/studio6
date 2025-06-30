@@ -23,6 +23,7 @@ const exerciseSchema = z.object({
   name: z.string(),
   sets: z.string().min(1, "Обязательно"),
   reps: z.string().min(1, "Обязательно"),
+  plannedWeight: z.string().optional(),
   isSupersetWithPrevious: z.boolean().optional(),
 });
 
@@ -68,6 +69,7 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                          name: ex.name,
                          sets: ex.sets,
                          reps: ex.reps,
+                         plannedWeight: ex.plannedWeight,
                          isSupersetWithPrevious: ex.isSupersetWithPrevious || false,
                      }
                  })
@@ -97,6 +99,7 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                             name: ex.name,
                             sets: ex.sets,
                             reps: ex.reps,
+                            plannedWeight: ex.plannedWeight,
                             isSupersetWithPrevious: ex.isSupersetWithPrevious || false,
                         }
                     })
@@ -126,7 +129,7 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
         if (currentDayIndex === null) return;
         const exerciseControls = dayFieldArrays[currentDayIndex];
         exercises.forEach(ex => {
-            exerciseControls.append({ id: ex.id, name: ex.name, sets: '3-4', reps: '8-12', isSupersetWithPrevious: false });
+            exerciseControls.append({ id: ex.id, name: ex.name, sets: '3-4', reps: '8-12', plannedWeight: '', isSupersetWithPrevious: false });
         });
     };
 
@@ -157,26 +160,40 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                                     <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
                                 </CardHeader>
                                 <CardContent>
+                                    <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto] items-center gap-2 py-2 text-xs text-muted-foreground border-b">
+                                        <div className="h-5 w-5"></div>
+                                        <div className="font-medium">Упражнение</div>
+                                        <div className="w-20 text-center">Подходы</div>
+                                        <div className="w-20 text-center">Повторения</div>
+                                        <div className="w-20 text-center">Вес (план)</div>
+                                        <div className="w-28"></div>
+                                        <div className="w-9"></div>
+                                    </div>
                                     {exerciseControls.fields.map((exField, exIndex) => (
-                                        <div key={exField.id} className="flex items-center gap-2 py-2 border-b last:border-b-0">
+                                        <div key={exField.id} className="grid grid-cols-[auto_1fr_auto_auto] sm:grid-cols-[auto_1fr_auto_auto_auto_auto_auto] items-center gap-2 py-2 border-b last:border-b-0">
                                             <GripVertical className="h-5 w-5 text-muted-foreground cursor-move" />
                                             <p className="flex-1 font-medium text-sm">{exField.name}</p>
-                                            <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormControl><Input placeholder="3-4" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
-                                            <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormControl><Input placeholder="8-12" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
-                                            {exIndex > 0 && (
-                                                <FormField
-                                                    control={form.control}
-                                                    name={`days.${index}.exercises.${exIndex}.isSupersetWithPrevious`}
-                                                    render={({ field }) => (
-                                                        <FormItem className="flex items-center space-x-2">
-                                                            <FormControl>
-                                                                <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                                                            </FormControl>
-                                                            <FormLabel className="!mt-0 text-xs text-muted-foreground flex items-center gap-1"><Link2 className="h-3 w-3" />Суперсет</FormLabel>
-                                                        </FormItem>
+                                            <div className="contents sm:flex sm:items-center sm:gap-2">
+                                                <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormControl><Input placeholder="3-4" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
+                                                <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormControl><Input placeholder="8-12" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
+                                                <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.plannedWeight`} render={({ field }) => (<FormItem><FormControl><Input placeholder="100кг" {...field} value={field.value ?? ''} className="w-20 text-center" /></FormControl></FormItem>)} />
+                                                <div className="w-28">
+                                                    {exIndex > 0 && (
+                                                        <FormField
+                                                            control={form.control}
+                                                            name={`days.${index}.exercises.${exIndex}.isSupersetWithPrevious`}
+                                                            render={({ field }) => (
+                                                                <FormItem className="flex items-center space-x-2">
+                                                                    <FormControl>
+                                                                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                                                    </FormControl>
+                                                                    <FormLabel className="!mt-0 text-xs text-muted-foreground flex items-center gap-1"><Link2 className="h-3 w-3" />Суперсет</FormLabel>
+                                                                </FormItem>
+                                                            )}
+                                                        />
                                                     )}
-                                                />
-                                            )}
+                                                </div>
+                                            </div>
                                             <Button type="button" variant="ghost" size="icon" onClick={() => exerciseControls.remove(exIndex)}><Trash2 className="h-4 w-4" /></Button>
                                         </div>
                                     ))}

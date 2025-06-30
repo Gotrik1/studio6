@@ -82,6 +82,7 @@ export function TrainingProgramDetailsPage({ program }: TrainingProgramDetailsPa
                                                     <TableHead>Упражнение</TableHead>
                                                     <TableHead className="text-center">Подходы</TableHead>
                                                     <TableHead className="text-center">Повторения</TableHead>
+                                                    <TableHead className="text-center">Вес</TableHead>
                                                 </TableRow>
                                             </TableHeader>
                                             <TableBody>
@@ -93,6 +94,7 @@ export function TrainingProgramDetailsPage({ program }: TrainingProgramDetailsPa
                                                         <TableCell className="font-medium">{ex.name}</TableCell>
                                                         <TableCell className="text-center">{ex.sets}</TableCell>
                                                         <TableCell className="text-center">{ex.reps}</TableCell>
+                                                        <TableCell className="text-center">{ex.plannedWeight || '-'}</TableCell>
                                                     </TableRow>
                                                 ))}
                                             </TableBody>

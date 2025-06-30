@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -34,7 +35,13 @@ export function TrainingProgramConstructorPage() {
             weeklySplit: data.days.map((day, index) => ({
                 day: index + 1,
                 title: day.title,
-                exercises: day.exercises.map(ex => ({ name: ex.name, sets: ex.sets, reps: ex.reps })),
+                exercises: day.exercises.map(ex => ({ 
+                    name: ex.name, 
+                    sets: ex.sets, 
+                    reps: ex.reps, 
+                    plannedWeight: ex.plannedWeight,
+                    isSupersetWithPrevious: ex.isSupersetWithPrevious 
+                })),
             })),
         };
         addAndRedirect(newProgram);
