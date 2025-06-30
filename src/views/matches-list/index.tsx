@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
@@ -9,13 +10,32 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { ReportScoreDialog } from '@/features/report-score/ui/report-score-dialog';
 import { useToast } from '@/shared/hooks/use-toast';
-import { matchesList, type Match } from "@/shared/lib/mock-data/matches";
 import { PlusCircle } from 'lucide-react';
+import { fetchMatches } from '@/entities/match/api/get-matches';
+import type { Match } from "@/entities/match/model/types";
+import { Skeleton } from '@/shared/ui/skeleton';
+
 
 export function MatchesListPage() {
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<{ id: string, name: string } | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+      async function loadMatches() {
+          try {
+              const fetchedMatches = await fetchMatches();
+              setMatches(fetchedMatches);
+          } catch (error) {
+              console.error("Failed to fetch matches:", error);
+          } finally {
+              setLoading(false);
+          }
+      }
+      loadMatches();
+  }, []);
 
   const handleOpenReportDialog = (matchId: string, team1Name: string, team2Name: string) => {
     setSelectedMatch({ id: matchId, name: `${team1Name} vs ${team2Name}` });
@@ -23,7 +43,6 @@ export function MatchesListPage() {
   };
 
   const handleReportSubmit = () => {
-    // Here you would typically update the match status or perform other actions
     toast({
       title: "Отчет отправлен",
       description: "Результат матча отправлен на проверку.",
@@ -62,55 +81,63 @@ export function MatchesListPage() {
           <CardDescription>Все матчи, проводимые на платформе.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Матч</TableHead>
-                <TableHead className="hidden md:table-cell">Турнир</TableHead>
-                <TableHead className="hidden md:table-cell">Дата</TableHead>
-                <TableHead className="text-right">Статус</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {matchesList.map((match: Match) => (
-                <TableRow key={match.id}>
-                  <TableCell>
-                    <Link href={match.href || '#'} className="flex items-center gap-4 group">
-                      <div className="flex items-center gap-2 text-right">
-                        <span className="font-semibold hidden sm:inline">{match.team1.name}</span>
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={match.team1.logo} data-ai-hint={match.team1.logoHint} />
-                          <AvatarFallback>{match.team1.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                      </div>
-                      <span className="font-bold text-lg text-muted-foreground group-hover:text-primary transition-colors">{match.score}</span>
-                      <div className="flex items-center gap-2">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={match.team2.logo} data-ai-hint={match.team2.logoHint} />
-                          <AvatarFallback>{match.team2.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-semibold hidden sm:inline">{match.team2.name}</span>
-                      </div>
-                    </Link>
-                  </TableCell>
-                  <TableCell className="hidden md:table-cell">{match.tournament}</TableCell>
-                  <TableCell className="hidden md:table-cell">{match.date}</TableCell>
-                  <TableCell className="text-right space-x-2">
-                    <Badge variant={getStatusVariant(match.status)}>{match.status}</Badge>
-                    {match.status === "Идет" && (
-                        <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleOpenReportDialog(match.id, match.team1.name, match.team2.name)}
-                        >
-                            Сообщить результат
-                        </Button>
-                    )}
-                  </TableCell>
+          {loading ? (
+            <div className="space-y-2">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Матч</TableHead>
+                  <TableHead className="hidden md:table-cell">Турнир</TableHead>
+                  <TableHead className="hidden md:table-cell">Дата</TableHead>
+                  <TableHead className="text-right">Статус</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {matches.map((match: Match) => (
+                  <TableRow key={match.id}>
+                    <TableCell>
+                      <Link href={match.href || '#'} className="flex items-center gap-4 group">
+                        <div className="flex items-center gap-2 text-right">
+                          <span className="font-semibold hidden sm:inline">{match.team1.name}</span>
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={match.team1.logo} data-ai-hint={match.team1.logoHint} />
+                            <AvatarFallback>{match.team1.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                        </div>
+                        <span className="font-bold text-lg text-muted-foreground group-hover:text-primary transition-colors">{match.score}</span>
+                        <div className="flex items-center gap-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={match.team2.logo} data-ai-hint={match.team2.logoHint} />
+                            <AvatarFallback>{match.team2.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span className="font-semibold hidden sm:inline">{match.team2.name}</span>
+                        </div>
+                      </Link>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">{match.tournament}</TableCell>
+                    <TableCell className="hidden md:table-cell">{match.date}</TableCell>
+                    <TableCell className="text-right space-x-2">
+                      <Badge variant={getStatusVariant(match.status)}>{match.status}</Badge>
+                      {match.status === "Идет" && (
+                          <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleOpenReportDialog(match.id, match.team1.name, match.team2.name)}
+                          >
+                              Сообщить результат
+                          </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
       

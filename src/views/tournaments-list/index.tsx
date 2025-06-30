@@ -1,29 +1,51 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
-import { allTournaments } from "@/shared/lib/mock-data/tournaments";
 import { Search, PlusCircle, Gamepad2, Calendar } from "lucide-react";
+import { Skeleton } from '@/shared/ui/skeleton';
+import { fetchTournaments } from '@/entities/tournament/api/get-tournaments';
+import type { Tournament } from '@/entities/tournament/model/types';
+
 
 export function TournamentsListPage() {
+    const [tournaments, setTournaments] = useState<Tournament[]>([]);
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [gameFilter, setGameFilter] = useState('all');
 
-    const uniqueGames = ['all', ...Array.from(new Set(allTournaments.map(t => t.game)))];
+    useEffect(() => {
+        async function loadTournaments() {
+            try {
+                const fetchedTournaments = await fetchTournaments();
+                setTournaments(fetchedTournaments);
+            } catch (error) {
+                console.error("Failed to fetch tournaments:", error);
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadTournaments();
+    }, []);
+
+    const uniqueGames = useMemo(() => {
+        if (loading) return ['all'];
+        return ['all', ...Array.from(new Set(tournaments.map(t => t.game)))];
+    }, [tournaments, loading]);
 
     const filteredTournaments = useMemo(() => {
-        return allTournaments.filter(tournament => {
+        return tournaments.filter(tournament => {
             const matchesSearch = tournament.name.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesGame = gameFilter === 'all' || tournament.game === gameFilter;
             return matchesSearch && matchesGame;
         });
-    }, [searchQuery, gameFilter]);
+    }, [tournaments, searchQuery, gameFilter]);
 
     const getStatusVariant = (status: string) => {
         switch (status) {
@@ -75,36 +97,56 @@ export function TournamentsListPage() {
                     </div>
                 </CardHeader>
             </Card>
-
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-                {filteredTournaments.map((tournament) => (
-                    <Link key={tournament.name} href={`/tournaments/${tournament.slug}`} className="block h-full">
-                        <Card className="flex flex-col overflow-hidden transition-all hover:shadow-2xl hover:border-primary h-full cursor-pointer">
-                            <CardHeader className="relative h-40 w-full p-0">
-                                <Image 
-                                    src={tournament.image} 
-                                    alt={tournament.name} 
-                                    fill 
-                                    className="object-cover"
-                                    data-ai-hint={tournament.dataAiHint}
-                                />
-                                <Badge variant={getStatusVariant(tournament.status)} className="absolute right-2 top-2">{tournament.status}</Badge>
-                            </CardHeader>
-                            <CardContent className="flex-1 p-6">
-                                <CardTitle className="font-headline">{tournament.name}</CardTitle>
-                                <CardDescription className="mt-2 flex items-center space-x-4 text-sm">
-                                    <span className="flex items-center"><Gamepad2 className="mr-1.5 h-4 w-4" />{tournament.game}</span>
-                                    <span className="flex items-center"><Calendar className="mr-1.5 h-4 w-4" />{tournament.date}</span>
-                                </CardDescription>
-                                <div className="mt-4 flex items-baseline gap-2">
-                                    <span className="text-sm text-muted-foreground">Призовой фонд:</span>
-                                    <span className="text-lg font-bold text-primary">{tournament.prize}</span>
-                                </div>
+            
+            {loading ? (
+                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <Card key={i}>
+                            <Skeleton className="h-40 w-full" />
+                            <CardContent className="p-6 space-y-4">
+                                <Skeleton className="h-6 w-3/4" />
+                                <Skeleton className="h-4 w-full" />
+                                <Skeleton className="h-4 w-1/2" />
                             </CardContent>
                         </Card>
-                    </Link>
-                ))}
-            </div>
+                    ))}
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                    {filteredTournaments.map((tournament) => (
+                        <Link key={tournament.name} href={`/tournaments/${tournament.slug}`} className="block h-full">
+                            <Card className="flex flex-col overflow-hidden transition-all hover:shadow-2xl hover:border-primary h-full cursor-pointer">
+                                <CardHeader className="relative h-40 w-full p-0">
+                                    <Image 
+                                        src={tournament.image} 
+                                        alt={tournament.name} 
+                                        fill 
+                                        className="object-cover"
+                                        data-ai-hint={tournament.dataAiHint}
+                                    />
+                                    <Badge variant={getStatusVariant(tournament.status)} className="absolute right-2 top-2">{tournament.status}</Badge>
+                                </CardHeader>
+                                <CardContent className="flex-1 p-6">
+                                    <CardTitle className="font-headline">{tournament.name}</CardTitle>
+                                    <CardDescription className="mt-2 flex items-center space-x-4 text-sm">
+                                        <span className="flex items-center"><Gamepad2 className="mr-1.5 h-4 w-4" />{tournament.game}</span>
+                                        <span className="flex items-center"><Calendar className="mr-1.5 h-4 w-4" />{tournament.date}</span>
+                                    </CardDescription>
+                                    <div className="mt-4 flex items-baseline gap-2">
+                                        <span className="text-sm text-muted-foreground">Призовой фонд:</span>
+                                        <span className="text-lg font-bold text-primary">{tournament.prize}</span>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    ))}
+                </div>
+            )}
+            {!loading && filteredTournaments.length === 0 && (
+                <div className="text-center py-16 text-muted-foreground">
+                    <p>Турниры не найдены. Попробуйте изменить фильтры.</p>
+                </div>
+            )}
         </div>
     );
 }
