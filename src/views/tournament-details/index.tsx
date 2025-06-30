@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { TournamentDetails } from "@/entities/tournament/model/types";
 import { Button } from "@/shared/ui/button";
-import { Calendar, Users, Trophy } from "lucide-react";
+import { Calendar, Users, Trophy, FileText } from "lucide-react";
 import { TournamentBracket } from "@/widgets/tournament-bracket";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 
@@ -95,7 +95,12 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
 
                   <TabsContent value="rules" className="mt-4">
                      <Card>
-                        <CardHeader><CardTitle>Правила турнира</CardTitle></CardHeader>
+                        <CardHeader>
+                           <CardTitle className="flex items-center gap-2">
+                              <FileText className="h-5 w-5"/>
+                              Правила турнира
+                           </CardTitle>
+                        </CardHeader>
                         <CardContent className="prose dark:prose-invert max-w-none">
                            <p>{tournament.rules}</p>
                         </CardContent>
