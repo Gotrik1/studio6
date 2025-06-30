@@ -83,11 +83,13 @@ export function AiNewsDigest() {
                         </Link>
                     ))}
                  </div>
-                 <div className="flex flex-col items-center gap-2 rounded-lg border bg-background p-3 sm:flex-row">
-                    <Volume2 className="h-5 w-5 text-primary flex-shrink-0" />
-                    <span className="text-sm font-medium">Аудио-версия:</span>
-                    <audio controls src={data.audioDataUri} className="w-full flex-1" />
-                 </div>
+                 {data.audioDataUri && (
+                    <div className="flex flex-col items-center gap-2 rounded-lg border bg-background p-3 sm:flex-row">
+                        <Volume2 className="h-5 w-5 text-primary flex-shrink-0" />
+                        <span className="text-sm font-medium">Аудио-версия:</span>
+                        <audio controls src={data.audioDataUri} className="w-full flex-1" />
+                    </div>
+                 )}
             </CardContent>
         </Card>
     );

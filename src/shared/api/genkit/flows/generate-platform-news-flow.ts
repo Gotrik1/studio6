@@ -72,9 +72,16 @@ const generatePlatformNewsFlow = ai.defineFlow(
         // Create a single string for TTS
         const newsString = newsData.news.map(item => `${item.title}. ${item.summary}`).join('\n\n');
         
-        // Generate audio
-        const { audioDataUri } = await textToSpeech(newsString);
-
+        let audioDataUri: string | undefined;
+        try {
+            // Generate audio
+            const result = await textToSpeech(newsString);
+            audioDataUri = result.audioDataUri;
+        } catch (e) {
+            console.error("TTS generation failed due to rate limits or other issues, continuing without audio.", e);
+            audioDataUri = undefined;
+        }
+        
         return {
             news: newsData.news,
             audioDataUri,

@@ -14,6 +14,6 @@ export type GeneratePlatformNewsOutput = z.infer<typeof GeneratePlatformNewsOutp
 
 export const NewsWithAudioSchema = z.object({
     ...GeneratePlatformNewsOutputSchema.shape,
-    audioDataUri: z.string().describe("The generated audio news digest as a data URI."),
+    audioDataUri: z.string().optional().describe("The generated audio news digest as a data URI."),
 });
 export type NewsWithAudio = z.infer<typeof NewsWithAudioSchema>;
