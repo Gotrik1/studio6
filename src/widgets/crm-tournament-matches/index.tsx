@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
@@ -13,7 +13,7 @@ import { Badge } from '@/shared/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 
 type MatchUnion = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
-type Match = Extract<MatchUnion, { team2?: unknown }>;
+type Match = Extract<MatchUnion, { team2: unknown }>;
 
 type MatchState = Match & {
     comment?: string;
@@ -23,11 +23,14 @@ type MatchState = Match & {
 export function CrmTournamentMatches() {
     const { toast } = useToast();
 
-    const allMatches = summerKickoffTournament.bracket.rounds
-        .flatMap(round => round.matches)
-        .filter((match): match is Match => 'team2' in match);
+    const allMatches = useMemo(() => {
+        return summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
+            const playableMatches = round.matches.filter((match): match is Match => 'team2' in match);
+            return acc.concat(playableMatches);
+        }, [] as Match[]);
+    }, []);
     
-    const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, score: m.score || '', status: m.score && m.score !== 'VS' ? 'played' : 'pending' })));
+    const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, score: m.score || '', status: (m.score && m.score !== 'VS') ? 'played' : 'pending' })));
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [isScoreDialogOpen, setIsScoreDialogOpen] = useState(false);
 
@@ -41,17 +44,17 @@ export function CrmTournamentMatches() {
             if (match.id !== result.matchId) return match;
             
             let newScore: string;
-            let status: MatchState['status'];
+            let newStatus: MatchState['status'];
 
             if (result.type === 'score') {
                 newScore = `${result.scoreA}-${result.scoreB}`;
-                status = 'played';
+                newStatus = 'played';
             } else {
                 newScore = result.type === 'tech_defeat_t2' ? 'W-L' : 'L-W';
-                status = result.type;
+                newStatus = result.type;
             }
 
-            return { ...match, score: newScore, status: status, comment: result.comment };
+            return { ...match, score: newScore, status: newStatus, comment: result.comment };
         }));
         toast({
             title: "Результат обновлен!",
@@ -75,12 +78,14 @@ export function CrmTournamentMatches() {
     }
 
     // Create a map for quick lookup of round names
-    const matchIdToRoundName = summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
-        round.matches.forEach(match => {
-            acc[match.id] = round.name;
-        });
-        return acc;
-    }, {} as Record<number, string>);
+    const matchIdToRoundName = useMemo(() => {
+        return summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
+            round.matches.forEach(match => {
+                acc[match.id] = round.name;
+            });
+            return acc;
+        }, {} as Record<number, string>);
+    }, []);
 
     return (
         <>
