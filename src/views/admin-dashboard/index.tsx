@@ -20,6 +20,7 @@ import {
     Briefcase,
     ClipboardList,
     Heart,
+    Shield,
     ShieldAlert
 } from 'lucide-react';
 import Link from "next/link";
