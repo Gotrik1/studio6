@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
@@ -9,6 +8,7 @@ import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
 import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants';
 import { TournamentBracket } from '@/widgets/tournament-bracket';
 import { summerKickoffTournament } from '@/shared/lib/mock-data/tournament-details';
+import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -31,9 +31,10 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             </div>
             
             <Tabs defaultValue="overview">
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className="grid w-full grid-cols-5">
                     <TabsTrigger value="overview">Обзор</TabsTrigger>
                     <TabsTrigger value="participants">Участники</TabsTrigger>
+                    <TabsTrigger value="matches">Матчи</TabsTrigger>
                     <TabsTrigger value="bracket">Сетка</TabsTrigger>
                     <TabsTrigger value="settings">Настройки</TabsTrigger>
                 </TabsList>
@@ -44,6 +45,10 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 
                 <TabsContent value="participants" className="mt-4">
                     <CrmTournamentParticipants />
+                </TabsContent>
+
+                <TabsContent value="matches" className="mt-4">
+                    <CrmTournamentMatches />
                 </TabsContent>
 
                 <TabsContent value="bracket" className="mt-4">
