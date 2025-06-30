@@ -36,6 +36,7 @@ import './flows/sponsorship-scout-flow';
 import './flows/generate-platform-news-flow';
 import './flows/analyze-team-performance-flow';
 import './flows/onboarding-assistant-flow';
+import './flows/player-scout-flow';
 import './flows/analyze-player-performance-flow';
 import './flows/generate-training-plan-flow';
 import './flows/generate-training-program-flow';
