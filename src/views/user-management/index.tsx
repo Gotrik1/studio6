@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search } from 'lucide-react';
 import { userList as initialUserList, type userList as UserListType } from '@/shared/lib/mock-data/users';
 import { useToast } from '@/shared/hooks/use-toast';
-import { UserTable } from '@/widgets/user-table';
+import { UserTable } from '@/entities/user/ui/user-table';
 import { UserEditDialog } from '@/widgets/user-edit-dialog';
 import { UserPdDialog } from '@/widgets/user-pd-dialog';
 
