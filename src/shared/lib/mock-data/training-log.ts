@@ -12,6 +12,8 @@ export type ExerciseLog = {
     name: string;
     notes?: string;
     sets: LoggedSet[];
+    isSupersetWithPrevious?: boolean;
+    technique?: string;
 };
 
 export type TrainingLogEntry = {

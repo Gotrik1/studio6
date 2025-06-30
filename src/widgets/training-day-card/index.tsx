@@ -8,8 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Checkbox } from '@/shared/ui/checkbox';
 import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown, Link2, Award } from 'lucide-react';
 import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
 import { cn } from '@/shared/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { Separator } from '@/shared/ui/separator';
@@ -23,6 +21,7 @@ import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 import { calculate1RM } from '@/shared/lib/calculate-1rm';
 import { Badge } from '@/shared/ui/badge';
 import Link from 'next/link';
+import { exercisesList } from '@/shared/lib/mock-data/exercises';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;
@@ -58,20 +57,27 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
         control: form.control,
         name: 'exercises',
     });
+    
+    const dayFieldArrays = fields.map((_field, index) => {
+        return useFieldArray({
+            control: form.control,
+            name: `days.${index}.exercises`
+        });
+    });
 
     const { personalRecords } = useMemo(() => {
         const pastEntries = allEntries.filter(
-            e => e.id !== entry.id && e.status === 'completed' && new Date(e.date) < new Date(entry.date)
+            e => e.id !== entry.id && e.status === 'completed' && new Date(e.date) < new Date()
         );
         return getTrainingAnalytics(pastEntries);
-    }, [allEntries, entry.date, entry.id]);
+    }, [allEntries, entry.id]);
 
     const lastPerformances = useMemo(() => {
         const performanceMap = new Map<string, string>();
 
         entry.exercises.forEach(currentExercise => {
             const relevantPastEntries = allEntries
-                .filter(e => e.id !== entry.id && e.status === 'completed' && new Date(e.date) < new Date(entry.date))
+                .filter(e => e.id !== entry.id && e.status === 'completed' && new Date(e.date) < new Date())
                 .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
             for (const pastEntry of relevantPastEntries) {
@@ -100,6 +106,11 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
         const updatedData = { ...data, status: 'completed' as const };
         onUpdate(updatedData);
     };
+    
+    const getExerciseIdByName = (name: string): string => {
+        const exercise = exercisesList.find(ex => ex.name === name);
+        return exercise ? exercise.id : 'ex-not-found';
+    }
 
     return (
         <Card className={cn(
@@ -155,7 +166,7 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                                      <div className="flex items-baseline gap-2 mb-2">
                                         <h4 className="font-semibold flex items-center gap-2">
                                             {isSuperset && <Link2 className="h-4 w-4 text-primary/50" />}
-                                            <Link href={`/training/exercises/${field.id}`} className="hover:underline hover:text-primary transition-colors">
+                                            <Link href={`/training/exercises/${getExerciseIdByName(exerciseName)}`} className="hover:underline hover:text-primary transition-colors">
                                                 {exerciseName}
                                             </Link>
                                         </h4>
