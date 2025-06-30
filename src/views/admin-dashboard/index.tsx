@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
@@ -88,33 +87,33 @@ const systemCards: AdminSectionCardProps[] = [
 export function AdminDashboardPage() {
     return (
         <div className="space-y-8">
-            <div className="space-y-2">
+            <div className="space-y-2 opacity-0 animate-fade-in-up">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Панель администратора</h1>
                 <p className="text-muted-foreground">Обзор и управление всеми разделами платформы ProDvor.</p>
             </div>
 
-            <section>
+            <section className="opacity-0 animate-fade-in-up animation-delay-300">
                 <h2 className="font-headline text-2xl font-semibold mb-4">Управление платформой</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {managementCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
                 </div>
             </section>
             
-            <section>
+            <section className="opacity-0 animate-fade-in-up [animation-delay:400ms]">
                 <h2 className="font-headline text-2xl font-semibold mb-4">Демонстрация профилей ролей</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {profileCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
                 </div>
             </section>
             
-            <section>
+            <section className="opacity-0 animate-fade-in-up [animation-delay:500ms]">
                 <h2 className="font-headline text-2xl font-semibold mb-4">Контент и коммерция</h2>
                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {contentCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
                 </div>
             </section>
             
-             <section>
+             <section className="opacity-0 animate-fade-in-up animation-delay-600">
                 <h2 className="font-headline text-2xl font-semibold mb-4">Система и разработка</h2>
                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     {systemCards.map(card => <AdminSectionCard key={card.href} {...card} />)}

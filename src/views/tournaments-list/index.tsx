@@ -58,7 +58,7 @@ export function TournamentsListPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between opacity-0 animate-fade-in-up">
                 <div className="space-y-2">
                     <h1 className="font-headline text-3xl font-bold tracking-tight">Турниры</h1>
                     <p className="text-muted-foreground">
@@ -73,7 +73,7 @@ export function TournamentsListPage() {
                 </Button>
             </div>
 
-            <Card>
+            <Card className="opacity-0 animate-fade-in-up animation-delay-300">
                 <CardHeader className="flex flex-col gap-4 sm:flex-row">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -112,7 +112,7 @@ export function TournamentsListPage() {
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 opacity-0 animate-fade-in-up animation-delay-600">
                     {filteredTournaments.map((tournament) => (
                         <Link key={tournament.name} href={`/tournaments/${tournament.slug}`} className="block h-full">
                             <Card className="flex flex-col overflow-hidden transition-all hover:shadow-2xl hover:border-primary h-full cursor-pointer">
