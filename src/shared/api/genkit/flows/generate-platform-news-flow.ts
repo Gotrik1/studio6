@@ -5,16 +5,16 @@ import { z } from 'zod';
 import { teams } from '@/shared/lib/mock-data/teams';
 import { leaderboardData } from '@/shared/lib/mock-data/leaderboards';
 import { textToSpeech } from './tts-flow';
-import { GeneratePlatformNewsOutputSchema } from './schemas/generate-platform-news-schema';
-import type { GeneratePlatformNewsOutput } from './schemas/generate-platform-news-schema';
+import {
+  GeneratePlatformNewsOutputSchema,
+  NewsWithAudioSchema,
+} from './schemas/generate-platform-news-schema';
+import type {
+  GeneratePlatformNewsOutput,
+  NewsWithAudio,
+} from './schemas/generate-platform-news-schema';
 
-export type { GeneratePlatformNewsOutput };
-
-export const NewsWithAudioSchema = z.object({
-    ...GeneratePlatformNewsOutputSchema.shape,
-    audioDataUri: z.string().describe("The generated audio news digest as a data URI."),
-});
-export type NewsWithAudio = z.infer<typeof NewsWithAudioSchema>;
+export type { GeneratePlatformNewsOutput, NewsWithAudio };
 
 // Define the tool to get recent activity
 const RecentActivitySchema = z.object({

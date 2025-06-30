@@ -11,3 +11,9 @@ export const GeneratePlatformNewsOutputSchema = z.object({
     news: z.array(NewsItemSchema).describe("An array of 3-4 news items about recent platform activity."),
 });
 export type GeneratePlatformNewsOutput = z.infer<typeof GeneratePlatformNewsOutputSchema>;
+
+export const NewsWithAudioSchema = z.object({
+    ...GeneratePlatformNewsOutputSchema.shape,
+    audioDataUri: z.string().describe("The generated audio news digest as a data URI."),
+});
+export type NewsWithAudio = z.infer<typeof NewsWithAudioSchema>;
