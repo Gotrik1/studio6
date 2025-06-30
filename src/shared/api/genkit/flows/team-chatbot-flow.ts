@@ -16,7 +16,7 @@ const getTeamSchedule = ai.defineTool(
     {
         name: 'getTeamSchedule',
         description: 'Получить расписание предстоящих матчей команды.',
-        inputSchema: z.string().describe("ID команды, например, 'cyber-eagles'."),
+        inputSchema: z.string().describe("ID команды, например, 'dvotovyie-atlety'."),
         outputSchema: z.any(),
     },
     async (teamId) => {
@@ -29,7 +29,7 @@ const getMatchHistory = ai.defineTool(
     {
         name: 'getMatchHistory',
         description: 'Получить историю недавних матчей команды.',
-        inputSchema: z.string().describe("ID команды, например, 'cyber-eagles'."),
+        inputSchema: z.string().describe("ID команды, например, 'dvotovyie-atlety'."),
         outputSchema: z.any(),
     },
     async (teamId) => {
@@ -42,7 +42,7 @@ const getTeamStats = ai.defineTool(
     {
         name: 'getTeamStats',
         description: 'Получить основную статистику команды.',
-        inputSchema: z.string().describe("ID команды, например, 'cyber-eagles'."),
+        inputSchema: z.string().describe("ID команды, например, 'dvotovyie-atlety'."),
         outputSchema: z.any(),
     },
     async (teamId) => {
