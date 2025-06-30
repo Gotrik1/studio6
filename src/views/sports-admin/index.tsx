@@ -10,11 +10,9 @@ import { Label } from '@/shared/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { useToast } from '@/shared/hooks/use-toast';
 import { sportsList as initialSports, type Sport } from '@/shared/lib/mock-data/sports';
-import * as LucideIcons from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const iconComponents: { [key: string]: LucideIcon } = LucideIcons as any;
+import { PlusCircle, Trash2 } from 'lucide-react';
+import { DynamicIcon } from '@/shared/ui/dynamic-icon';
+import { icons } from 'lucide-react';
 
 export function SportsAdminPage() {
     const { toast } = useToast();
@@ -31,7 +29,7 @@ export function SportsAdminPage() {
             return;
         }
 
-        if (!iconComponents[newSport.icon as keyof typeof iconComponents]) {
+        if (!(newSport.icon in icons)) {
              toast({
                 variant: 'destructive',
                 title: 'Ошибка',
@@ -58,11 +56,6 @@ export function SportsAdminPage() {
         toast({
             title: 'Дисциплина удалена',
         });
-    };
-
-    const IconForSport = ({ iconName }: { iconName: string }) => {
-        const Icon = iconComponents[iconName] || LucideIcons.HelpCircle;
-        return <Icon className="h-5 w-5 text-muted-foreground" />;
     };
 
     return (
@@ -93,13 +86,13 @@ export function SportsAdminPage() {
                                 {sports.map(sport => (
                                     <TableRow key={sport.id}>
                                         <TableCell>
-                                            <IconForSport iconName={sport.icon} />
+                                            <DynamicIcon name={sport.icon as keyof typeof icons} className="h-5 w-5 text-muted-foreground" />
                                         </TableCell>
                                         <TableCell className="font-medium">{sport.name}</TableCell>
                                         <TableCell>{sport.category}</TableCell>
                                         <TableCell className="text-right">
                                             <Button variant="ghost" size="icon" onClick={() => handleDeleteSport(sport.id)}>
-                                                <LucideIcons.Trash2 className="h-4 w-4 text-destructive" />
+                                                <Trash2 className="h-4 w-4 text-destructive" />
                                             </Button>
                                         </TableCell>
                                     </TableRow>
@@ -147,7 +140,7 @@ export function SportsAdminPage() {
                             />
                         </div>
                         <Button className="w-full" onClick={handleAddSport}>
-                           <LucideIcons.PlusCircle className="mr-2 h-4 w-4" /> Добавить
+                           <PlusCircle className="mr-2 h-4 w-4" /> Добавить
                         </Button>
                     </CardContent>
                 </Card>
