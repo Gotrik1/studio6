@@ -1,9 +1,9 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
 import type { User } from '@/shared/lib/types';
+import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
 
 const PlayerProfile = dynamic(() => import('@/entities/player/ui/player-profile').then(mod => mod.PlayerProfile), {
     loading: () => <div className="space-y-6">
@@ -14,7 +14,7 @@ const PlayerProfile = dynamic(() => import('@/entities/player/ui/player-profile'
     ssr: false,
 });
 
-type PlayerProfileProps = {
+type PlayerClientProps = {
   user: User & {
     location: string;
     mainSport: string;
@@ -23,8 +23,21 @@ type PlayerProfileProps = {
     xp: number;
   };
   isCurrentUser: boolean;
+  achievements: typeof AchievementsArray;
+  teams: typeof TeamsArray;
+  recentMatches: typeof MatchesArray;
+  gallery: typeof GalleryArray;
+  careerHistory: typeof CareerHistoryArray;
 };
 
-export default function PlayerClient({ user, isCurrentUser }: PlayerProfileProps) {
-    return <PlayerProfile user={user} isCurrentUser={isCurrentUser} />;
+export default function PlayerClient({ user, isCurrentUser, achievements, teams, recentMatches, gallery, careerHistory }: PlayerClientProps) {
+    return <PlayerProfile 
+        user={user} 
+        isCurrentUser={isCurrentUser}
+        achievements={achievements}
+        teams={teams}
+        recentMatches={recentMatches}
+        gallery={gallery}
+        careerHistory={careerHistory}
+    />;
 }

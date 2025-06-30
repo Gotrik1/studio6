@@ -10,7 +10,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, BrainCircuit, CheckCircle, Coins, Award, Wand2, MoreVertical, Flag } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
-import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { RANKS, getRankByPoints } from "@/shared/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/ui/tooltip";
@@ -20,6 +19,7 @@ import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { PDWalletTab } from '@/widgets/pd-wallet-tab';
+import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -60,9 +60,14 @@ type PlayerProfileProps = {
     xp: number;
   };
   isCurrentUser: boolean;
+  achievements: typeof AchievementsArray;
+  teams: typeof TeamsArray;
+  recentMatches: typeof MatchesArray;
+  gallery: typeof GalleryArray;
+  careerHistory: typeof CareerHistoryArray;
 };
 
-export function PlayerProfile({ user, isCurrentUser }: PlayerProfileProps) {
+export function PlayerProfile({ user, isCurrentUser, achievements, teams, recentMatches, gallery, careerHistory }: PlayerProfileProps) {
   const [avatar, setAvatar] = useState(user.avatar);
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const rank = getRankByPoints(user.xp);

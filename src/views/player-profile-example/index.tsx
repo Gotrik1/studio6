@@ -1,5 +1,6 @@
 
 import PlayerClient from "@/app/(app)/administration/player/client";
+import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
 
 const examplePlayerUser = {
   id: 'player-example-001',
@@ -17,5 +18,13 @@ const examplePlayerUser = {
 export function PlayerProfilePage() {
     // This is an example player profile page for demonstration in the admin section.
     // In a real scenario, this data might come from a specific user ID lookup.
-    return <PlayerClient user={examplePlayerUser} isCurrentUser={false} />;
+    return <PlayerClient 
+        user={examplePlayerUser} 
+        isCurrentUser={false}
+        achievements={achievements}
+        teams={teams}
+        recentMatches={recentMatches}
+        gallery={gallery}
+        careerHistory={careerHistory}
+    />;
 }

@@ -14,6 +14,8 @@ import { managerUser, managerAchievements } from "@/shared/lib/mock-data/manager
 import { moderatorUser, moderatorAchievements } from "@/shared/lib/mock-data/moderator-profile";
 import { organizerUser, organizerAchievements } from "@/shared/lib/mock-data/organizer-profile";
 import { sponsorUser, sponsorAchievements } from "@/shared/lib/mock-data/sponsor-profile";
+import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
+
 
 const ProfileSkeleton = () => (
     <div className="space-y-6">
@@ -71,6 +73,14 @@ export default function ProfileClient({ sessionUser }: ProfileClientProps) {
         case 'Игрок':
         case 'Капитан':
         default:
-            return <PlayerProfile user={augmentedPlayerUser} isCurrentUser={true} />;
+            return <PlayerProfile 
+                        user={augmentedPlayerUser} 
+                        isCurrentUser={true}
+                        achievements={achievements}
+                        teams={teams}
+                        recentMatches={recentMatches}
+                        gallery={gallery}
+                        careerHistory={careerHistory}
+                    />;
     }
 }
