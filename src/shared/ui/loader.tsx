@@ -32,7 +32,7 @@ export const Loader: React.FC<LoaderProps> = ({ className, size = 128 }) => {
           <div
             key={i}
             className={cn(
-              'absolute rounded-full border-2 border-primary/50 shadow-[0_0_10px_theme(colors.primary/0.5)] [transform-style:preserve-3d] animate-spin',
+              'absolute rounded-full border-2 border-primary/50 shadow-[0_0_10px_hsl(var(--primary)/0.5)] [transform-style:preserve-3d] animate-spin',
               orbit.rotation
             )}
             style={{
