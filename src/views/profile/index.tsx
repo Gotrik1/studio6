@@ -10,7 +10,7 @@ type DisplayUser = User & {
     status?: string;
     profileUrl: string;
     activitySummary: string;
-    statsSummary: string;
+    statsSummary:string;
 };
 
 export async function ProfilePage() {
@@ -20,6 +20,8 @@ export async function ProfilePage() {
         redirect('/auth');
     }
 
+    // Find the full user object that corresponds to the session user.
+    // This is necessary because the session cookie might not have all profile details.
     const userToDisplay = userList.find(u => u.email === sessionUser.email) as DisplayUser | undefined;
 
     if (!userToDisplay) {
@@ -31,8 +33,6 @@ export async function ProfilePage() {
             </div>
         );
     }
-
-    // We pass the same user object for both props
-    // to ensure `isCurrentUser` is true inside the client component.
-    return <UserProfileClient userToDisplay={userToDisplay} sessionUser={sessionUser} />;
+    
+    return <UserProfileClient user={userToDisplay} isCurrentUser={true} />;
 }

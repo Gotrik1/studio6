@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import UserProfileClient from './client';
 import { getSession } from '@/features/auth/session';
 import type { User } from '@/shared/lib/types';
-import { userList } from '@/shared/lib/mock-data/users';
 
 interface UserProfilePageProps {
   userId: string;
@@ -27,5 +26,7 @@ export async function UserProfilePage({ userId }: UserProfilePageProps) {
     notFound();
   }
 
-  return <UserProfileClient userToDisplay={userToDisplay} sessionUser={sessionUser} />;
+  const isCurrentUser = userToDisplay.email === sessionUser.email;
+
+  return <UserProfileClient user={userToDisplay} isCurrentUser={isCurrentUser} />;
 }

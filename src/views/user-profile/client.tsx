@@ -37,23 +37,31 @@ const ModeratorProfile = dynamic(() => import('@/entities/user/ui/moderator-prof
 const OrganizerProfile = dynamic(() => import('@/entities/user/ui/organizer-profile').then(mod => mod.OrganizerProfile), { loading: () => <ProfileSkeleton />, ssr: false });
 const SponsorProfile = dynamic(() => import('@/entities/user/ui/sponsor-profile').then(mod => mod.SponsorProfile), { loading: () => <ProfileSkeleton />, ssr: false });
 
+type DisplayUser = User & {
+    id: string;
+    status?: string;
+    profileUrl: string;
+    activitySummary: string;
+    statsSummary: string;
+};
+
 type UserProfileClientProps = {
-  userToDisplay: User;
-  sessionUser: User;
+  user: DisplayUser;
+  isCurrentUser: boolean;
 };
   
-export default function UserProfileClient({ userToDisplay, sessionUser }: UserProfileClientProps) {
-    const role = userToDisplay.role;
-    const isCurrentUser = userToDisplay.email === sessionUser.email;
+export default function UserProfileClient({ user, isCurrentUser }: UserProfileClientProps) {
+    const role = user.role;
     
-    // For non-player roles, we use mock data. For a player/captain, we use augmented session data.
+    // Augmented user has more XP and richer data for the player profile view.
+    // We apply this for the current user or a user being demoed as a player.
     const augmentedPlayerUser = {
-        ...userToDisplay,
+        ...user,
         location: "Москва, Россия",
         mainSport: "Футбол",
-        status: userToDisplay.role === 'Капитан' ? "Капитан команды 'Дворовые Атлеты'" : "Активен",
+        status: user.role === 'Капитан' ? "Капитан команды 'Дворовые Атлеты'" : "Активен",
         isVerified: true,
-        xp: 1250, // mock experience points
+        xp: isCurrentUser ? 4500 : 1250, // Richer data for the current user
     };
 
     const favoriteTeams = allTeamsData.slice(0, 2);
