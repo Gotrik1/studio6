@@ -10,7 +10,7 @@ import { AiCoachTip } from "@/widgets/ai-coach-tip";
 
 export function DashboardPage() {
     return (
-        <div className="flex flex-col lg:flex-row lg:items-start gap-8">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-8 opacity-0 animate-fade-in-up">
             <div className="w-full lg:w-2/3 flex-shrink-0 space-y-6">
                 <div>
                     <AiCoachTip />

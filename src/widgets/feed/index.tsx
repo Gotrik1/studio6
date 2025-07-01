@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader } from '@/shared/ui/card';
@@ -91,9 +90,9 @@ const AchievementPost = ({ item }: { item: AchievementFeedItem }) => (
 
 const FeedSkeleton = () => (
     <>
-        <Skeleton className="h-28 w-full" />
-        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-24 w-full" />
         <Skeleton className="h-40 w-full" />
+        <Skeleton className="h-32 w-full" />
     </>
 );
 
