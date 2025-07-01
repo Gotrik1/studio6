@@ -1,4 +1,3 @@
-
 'use client';
 
 import { SponsorScout } from '@/widgets/sponsor-scout';
