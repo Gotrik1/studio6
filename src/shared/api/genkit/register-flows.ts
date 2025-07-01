@@ -50,3 +50,4 @@ import './flows/generate-nutrition-plan-flow';
 import './flows/find-equipment-flow';
 import './flows/generate-team-concept-flow';
 import './flows/ai-team-assistant';
+import './flows/generate-dashboard-tip-flow';
