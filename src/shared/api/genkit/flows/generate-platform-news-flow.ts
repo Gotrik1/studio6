@@ -4,6 +4,7 @@ import { ai } from '@/shared/api/genkit';
 import { z } from 'zod';
 import { teams } from '@/shared/lib/mock-data/teams';
 import { leaderboardData } from '@/shared/lib/mock-data/leaderboards';
+import { matchesList } from '@/shared/lib/mock-data/matches';
 import { textToSpeech } from './tts-flow';
 import {
   GeneratePlatformNewsOutputSchema,
@@ -18,77 +19,109 @@ export type { GeneratePlatformNewsOutput, NewsWithAudio };
 
 // Define the tool to get recent activity
 const RecentActivitySchema = z.object({
-    topPlayer: z.string().describe("The name of the top player."),
-    winningTeam: z.object({
-        name: z.string(),
-        tournament: z.string(),
-    }).describe("The team that recently won a tournament."),
-    newHotTeam: z.string().describe("A newly formed or rapidly rising team."),
+  topPlayer: z.string().describe('The name of the top player on the leaderboards.'),
+  winningTeam: z
+    .object({
+      name: z.string(),
+      tournament: z.string(),
+    })
+    .describe('A team that recently won a tournament.'),
+  newHotTeam: z.string().describe('A newly formed or rapidly rising team.'),
+  matchOfTheWeek: z
+    .object({
+      team1: z.string(),
+      team2: z.string(),
+      score: z.string(),
+      summary: z.string().describe('A one-sentence summary of why the match was exciting.'),
+    })
+    .describe('Details of a particularly exciting recent match.'),
+  promotedPlayer: z
+    .object({
+      name: z.string(),
+      newRank: z.string(),
+    })
+    .describe('A player who recently achieved a new significant rank.'),
 });
 
 const getRecentActivity = ai.defineTool(
-    {
-        name: 'getRecentActivity',
-        description: 'Gets the most recent significant activities on the platform.',
-        inputSchema: z.object({}),
-        outputSchema: RecentActivitySchema,
-    },
-    async () => {
-        // This is mocked. In a real app, this would query a database/analytics service.
-        return {
-            topPlayer: leaderboardData[0].name,
-            winningTeam: { name: 'Дворовые Атлеты', tournament: 'Летний Кубок по Стритболу' },
-            newHotTeam: teams[3].name,
-        };
-    }
+  {
+    name: 'getRecentActivity',
+    description: 'Gets the most recent significant activities on the platform.',
+    inputSchema: z.object({}),
+    outputSchema: RecentActivitySchema,
+  },
+  async () => {
+    // This is mocked. In a real app, this would query a database/analytics service.
+    return {
+      topPlayer: leaderboardData[0].name,
+      winningTeam: { name: 'Дворовые Атлеты', tournament: 'Летний Кубок по Стритболу' },
+      newHotTeam: teams[3].name,
+      matchOfTheWeek: {
+        team1: matchesList[0].team1.name,
+        team2: matchesList[0].team2.name,
+        score: matchesList[0].score,
+        summary: 'Захватывающий финал, завершившийся с минимальным разрывом.',
+      },
+      promotedPlayer: {
+        name: 'ТеневойУдар',
+        newRank: 'Гроза района',
+      },
+    };
+  }
 );
 
 // Define the prompt for generating the news text
 const newsTextPrompt = ai.definePrompt({
-    name: 'generatePlatformNewsTextPrompt',
-    tools: [getRecentActivity],
-    output: { schema: GeneratePlatformNewsOutputSchema },
-    system: `You are a sports journalist for the ProDvor platform. 
+  name: 'generatePlatformNewsTextPrompt',
+  tools: [getRecentActivity],
+  output: { schema: GeneratePlatformNewsOutputSchema },
+  system: `You are a sports journalist for the ProDvor platform. 
     Your task is to generate short, engaging news items based on recent platform activity.
     Use the getRecentActivity tool to fetch the latest data.
-    Write 3-4 news items. Vary the tone and style.
+    Create a diverse news digest with 3-4 items. Use different data points from the tool results. You can write about the top player, a winning team, a new hot team, a specific exciting match, or congratulate a player on a promotion.
+    Vary the tone and style for each news item.
     IMPORTANT: All generated text, including titles and summaries, MUST be in Russian.`,
-    prompt: "Generate the news digest based on the latest platform activity. The response must be in Russian.",
+  prompt: 'Generate the news digest based on the latest platform activity. The response must be in Russian.',
 });
 
 // Define the main flow
 const generatePlatformNewsFlow = ai.defineFlow(
-    {
-        name: 'generatePlatformNewsFlow',
-        inputSchema: z.void(),
-        outputSchema: NewsWithAudioSchema,
-    },
-    async () => {
-        const { output: newsData } = await newsTextPrompt();
-        if (!newsData || !newsData.news || newsData.news.length === 0) {
-            throw new Error("Failed to generate platform news text.");
-        }
-
-        // Create a single string for TTS
-        const newsString = newsData.news.map(item => `${item.title}. ${item.summary}`).join('\n\n');
-        
-        let audioDataUri: string | undefined;
-        try {
-            // Generate audio
-            const result = await textToSpeech(newsString);
-            audioDataUri = result.audioDataUri;
-        } catch (e) {
-            console.error("TTS generation failed due to rate limits or other issues, continuing without audio.", e);
-            audioDataUri = undefined;
-        }
-        
-        return {
-            news: newsData.news,
-            audioDataUri,
-        };
+  {
+    name: 'generatePlatformNewsFlow',
+    inputSchema: z.void(),
+    outputSchema: NewsWithAudioSchema,
+  },
+  async () => {
+    const { output: newsData } = await newsTextPrompt();
+    if (!newsData || !newsData.news || newsData.news.length === 0) {
+      throw new Error('Failed to generate platform news text.');
     }
+
+    // Create a single string for TTS
+    const newsString = newsData.news
+      .map(item => `${item.title}. ${item.summary}`)
+      .join('\n\n');
+
+    let audioDataUri: string | undefined;
+    try {
+      // Generate audio
+      const result = await textToSpeech(newsString);
+      audioDataUri = result.audioDataUri;
+    } catch (e) {
+      console.error(
+        'TTS generation failed due to rate limits or other issues, continuing without audio.',
+        e
+      );
+      audioDataUri = undefined;
+    }
+
+    return {
+      news: newsData.news,
+      audioDataUri,
+    };
+  }
 );
 
 export async function generatePlatformNewsWithAudio(): Promise<NewsWithAudio> {
-    return generatePlatformNewsFlow();
+  return generatePlatformNewsFlow();
 }
