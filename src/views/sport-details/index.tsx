@@ -13,7 +13,7 @@ import { matchesList } from '@/shared/lib/mock-data/matches';
 import Link from 'next/link';
 import { Trophy, Users, Shield } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
-import { Button } from '@/shared/ui/button';
+import { AiSportSummary } from '@/widgets/ai-sport-summary';
 
 interface SportDetailsPageProps {
     sport: Sport;
@@ -108,7 +108,8 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
                     </Card>
                 </div>
 
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-1 space-y-6">
+                    <AiSportSummary sportName={sport.name} />
                     <Card>
                         <CardHeader>
                             <CardTitle>Топ-5 игроков</CardTitle>

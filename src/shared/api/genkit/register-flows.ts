@@ -54,3 +54,4 @@ import './flows/find-equipment-flow';
 import './flows/analyze-holistic-performance-flow';
 import './flows/generate-team-concept-flow';
 import './flows/find-coaches-flow';
+import './flows/generate-sport-summary-flow';
