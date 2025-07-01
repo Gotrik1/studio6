@@ -188,7 +188,7 @@ type SidebarMenuProps = {
 };
 export function SidebarMenu({ className, children }: SidebarMenuProps) {
   return (
-    <nav className={cn('flex-grow flex flex-col', className)}>
+    <nav className={cn('flex flex-col', className)}>
       {children}
     </nav>
   );

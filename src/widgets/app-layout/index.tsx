@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -103,8 +104,6 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         if (href === '/dashboard' || href === '/') {
             return pathname === '/dashboard' || pathname === '/';
         }
-        // Handle cases like /training and /training/programs
-        // The more specific path should not activate the less specific one unless it's the root of the section.
         if (href.length > 1 && pathname.startsWith(href)) {
              if (pathname.length === href.length) return true; // exact match
              if (pathname.charAt(href.length) === '/') return true; // subpath
@@ -132,42 +131,43 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         <>
             <Sidebar>
                 <SidebarContent className="p-2">
-                <SidebarHeader>
-                    <Link href="/" className="flex items-center gap-2">
-                        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                            <Logo className="h-5 w-5" />
-                        </div>
-                        {state === 'expanded' && <div className="font-headline text-lg font-semibold">ProDvor</div>}
-                    </Link>
-                </SidebarHeader>
-                <SidebarMenu className="space-y-1">
-                    {mainNavItems.map(item => (
-                        <SidebarMenuItem key={item.href}>
-                                <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
-                                <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    ))}
-                    
-                    {user.role === 'Тренер' && (
-                        <SidebarMenuItem>
-                            <SidebarMenuButton asChild tooltip="Тренерский центр" variant={isActive('/coach-center') ? 'active' : 'default'}>
-                                <Link href="/coach-center"><ClipboardList />{state === 'expanded' && <span>Тренерский центр</span>}</Link>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    )}
-                    
-                    {user.role === 'Судья' && (
-                        <SidebarMenuItem>
-                            <SidebarMenuButton asChild tooltip="Центр судейства" variant={isActive('/judge-center') ? 'active' : 'default'}>
-                                <Link href="/judge-center"><Gavel />{state === 'expanded' && <span>Центр судейства</span>}</Link>
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    )}
-
-                    <div className="mt-auto pt-2">
+                    <SidebarHeader>
+                        <Link href="/" className="flex items-center gap-2">
+                            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                                <Logo className="h-5 w-5" />
+                            </div>
+                            {state === 'expanded' && <div className="font-headline text-lg font-semibold">ProDvor</div>}
+                        </Link>
+                    </SidebarHeader>
+                    <div className="flex-1 overflow-y-auto">
+                        <SidebarMenu className="space-y-1">
+                            {mainNavItems.map(item => (
+                                <SidebarMenuItem key={item.href}>
+                                        <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
+                                        <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                            
+                            {user.role === 'Тренер' && (
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton asChild tooltip="Тренерский центр" variant={isActive('/coach-center') ? 'active' : 'default'}>
+                                        <Link href="/coach-center"><ClipboardList />{state === 'expanded' && <span>Тренерский центр</span>}</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            )}
+                            
+                            {user.role === 'Судья' && (
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton asChild tooltip="Центр судейства" variant={isActive('/judge-center') ? 'active' : 'default'}>
+                                        <Link href="/judge-center"><Gavel />{state === 'expanded' && <span>Центр судейства</span>}</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            )}
+                        </SidebarMenu>
+                    </div>
+                    <div className="pt-2">
                         <SidebarSeparator className="my-1" />
-
                         {user.role === 'Администратор' && (
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild tooltip="Админка" variant={isActive('/administration') ? 'active' : 'default'}>
@@ -183,7 +183,6 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                             </SidebarMenuItem>
                         ))}
                     </div>
-                </SidebarMenu>
                 </SidebarContent>
             </Sidebar>
             <SidebarInset className="flex flex-col min-h-screen">
@@ -210,7 +209,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
             <GlobalSearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
         </>
     );
-}
+};
 
 export function AppLayout({ user, children }: AppLayoutProps) {
     return (
