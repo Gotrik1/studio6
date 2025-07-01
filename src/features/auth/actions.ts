@@ -32,7 +32,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
         path: '/',
       });
 
-      redirect('/welcome');
+      redirect('/dashboard');
     } else {
       return { error: 'Неверные данные. Пожалуйста, попробуйте еще раз.' };
     }
