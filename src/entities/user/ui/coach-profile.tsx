@@ -14,8 +14,6 @@ import { trainingPrograms } from '@/shared/lib/mock-data/training-programs';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { coachedPlayers } from "@/shared/lib/mock-data/coach-players";
-import { PDWalletTab } from '@/widgets/pd-wallet-tab';
-import { Coins } from 'lucide-react';
 import { AssignProgramDialog } from '@/widgets/assign-program-dialog';
 
 const CoachStatsTab = dynamic(() => import('@/entities/user/ui/coach-profile-tabs/stats-tab').then(mod => mod.CoachStatsTab), {
@@ -84,12 +82,11 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
         </div>
         <div className="border-t p-4 md:p-6">
             <Tabs defaultValue="stats">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-4">
                 <TabsTrigger value="stats">Статистика</TabsTrigger>
                 <TabsTrigger value="achievements">Достижения</TabsTrigger>
                 <TabsTrigger value="my-players">Мои игроки</TabsTrigger>
                 <TabsTrigger value="my-programs">Программы</TabsTrigger>
-                <TabsTrigger value="pd-wallet"><Coins className="mr-2 h-4 w-4"/>PD Кошелек</TabsTrigger>
             </TabsList>
             <TabsContent value="stats" className="mt-4">
                 <CoachStatsTab />
@@ -102,9 +99,6 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
             </TabsContent>
             <TabsContent value="my-programs" className="mt-4">
                 <MyProgramsTab programs={trainingPrograms} onAssignProgram={handleAssignProgram} />
-            </TabsContent>
-            <TabsContent value="pd-wallet" className="mt-4">
-                <PDWalletTab />
             </TabsContent>
             </Tabs>
         </div>

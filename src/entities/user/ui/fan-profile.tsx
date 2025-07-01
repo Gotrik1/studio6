@@ -11,7 +11,6 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Wand2 } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
-import { PDWalletTab } from '@/widgets/pd-wallet-tab';
 import type { fanUser, fanAchievements } from "@/shared/lib/mock-data/fan-profile";
 import type { Team } from '@/entities/team/model/types';
 import Image from "next/image";
@@ -86,11 +85,10 @@ export function FanProfile({ user, achievements, favoriteTeams }: FanProfileProp
         </div>
         <div className="border-t p-4 md:p-6">
           <Tabs defaultValue="stats">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="stats">Статистика</TabsTrigger>
               <TabsTrigger value="achievements">Достижения</TabsTrigger>
               <TabsTrigger value="favorite-teams">Любимые команды</TabsTrigger>
-              <TabsTrigger value="pd-wallet">PD Кошелек</TabsTrigger>
             </TabsList>
             <TabsContent value="stats" className="mt-4">
               <FanStatsTab />
@@ -101,9 +99,6 @@ export function FanProfile({ user, achievements, favoriteTeams }: FanProfileProp
             <TabsContent value="favorite-teams" className="mt-4">
                 <FavoriteTeamsTab teams={favoriteTeams} userName={user.name} />
             </TabsContent>
-            <TabsContent value="pd-wallet" className="mt-4">
-              <PDWalletTab />
-          </TabsContent>
           </Tabs>
         </div>
       </Card>

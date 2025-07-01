@@ -8,7 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Coins, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Gamepad2 } from "lucide-react";
+import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Gamepad2 } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
