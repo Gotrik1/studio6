@@ -91,9 +91,9 @@ const AchievementPost = ({ item }: { item: AchievementFeedItem }) => (
 
 const FeedSkeleton = () => (
     <>
-        <Skeleton className="h-36 w-full" />
-        <Skeleton className="h-52 w-full" />
-        <Skeleton className="h-44 w-full" />
+        <Skeleton className="h-28 w-full" />
+        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-40 w-full" />
     </>
 );
 

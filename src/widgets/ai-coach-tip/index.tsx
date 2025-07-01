@@ -46,7 +46,7 @@ export function AiCoachTip() {
     if (!user) return null; // Don't render if there's no user
 
     if (isLoading) {
-        return <Skeleton className="w-full h-24" />;
+        return <Skeleton className="w-full h-[120px]" />;
     }
 
     if (error) {

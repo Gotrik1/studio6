@@ -59,7 +59,7 @@ export function MatchOfTheWeekWidget() {
 
     if (isLoading) {
         return (
-            <Card>
+            <Card className="h-[320px]">
                 <Skeleton className="h-40 w-full" />
                 <CardHeader><Skeleton className="h-6 w-3/4" /></CardHeader>
                 <CardContent><Skeleton className="h-16 w-full" /></CardContent>
