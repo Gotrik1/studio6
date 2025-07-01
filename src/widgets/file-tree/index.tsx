@@ -8,7 +8,7 @@ const treeData = [
             { name: 'globals.css', type: 'file' as const, description: 'Глобальные стили' },
             { name: 'layout.tsx', type: 'file' as const, description: 'Корневой layout' },
         ]},
-        { name: 'pages', type: 'folder' as const, description: 'Компоненты страниц' },
+        { name: 'views', type: 'folder' as const, description: 'Компоненты страниц, собирающие виджеты' },
         { name: 'widgets', type: 'folder' as const, description: 'Составные блоки интерфейса' },
         { name: 'features', type: 'folder' as const, description: 'Пользовательские сценарии (user stories)' },
         { name: 'entities', type: 'folder' as const, description: 'Бизнес-сущности (User, Team)' },

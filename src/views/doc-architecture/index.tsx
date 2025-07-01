@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 const DashboardPage = dynamic(
-  () => import('@/pages/dashboard').then((mod) => mod.DashboardPage),
+  () => import('@/views/dashboard').then((mod) => mod.DashboardPage),
   {
     loading: () => <Skeleton className="h-screen w-full" />,
     ssr: false, 
