@@ -14,7 +14,7 @@ import { SponsorshipPitchGenerator } from '@/widgets/sponsorship-pitch-generator
 import { AITeamAssistantTab } from '@/widgets/ai-team-assistant-tab';
 import { TeamCoachTab } from '@/widgets/team-coach-tab';
 import { RosterManagementTab } from '@/widgets/roster-management-tab';
-import { SponsorScout } from '@/widgets/sponsor-scout';
+import { TeamSponsorScout } from '@/widgets/team-sponsor-scout';
 
 
 const initialJoinRequests = [
@@ -108,7 +108,7 @@ export function TeamManagementPage() {
                 </TabsContent>
                 
                 <TabsContent value="sponsorship" className="mt-4 space-y-6">
-                    <SponsorScout />
+                    <TeamSponsorScout />
                     <SponsorshipPitchGenerator />
                 </TabsContent>
                 
