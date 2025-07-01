@@ -68,7 +68,10 @@ export function ChatsPage() {
         const history = messages.map(m => `${m.sender === 'me' ? 'me' : 'other'}: ${m.text}`).join('\n');
 
         try {
-            const { suggestions } = await suggestReply({ history });
+            const { suggestions } = await suggestReply({ 
+                history,
+                teamId: selectedContact?.id === 'contact-1' ? 'dvotovyie-atlety' : undefined
+            });
             setReplySuggestions(suggestions);
         } catch (e) {
             console.error("Failed to suggest replies:", e);

@@ -4,6 +4,7 @@ export const SuggestReplyInputSchema = z.object({
   history: z
     .string()
     .describe('The recent history of the chat conversation.'),
+  teamId: z.string().optional().describe("The ID of the team if the chat is a team chat."),
 });
 export type SuggestReplyInput = z.infer<typeof SuggestReplyInputSchema>;
 
