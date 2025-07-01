@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -29,15 +28,13 @@ const StatCard = ({ title, total, target, unit }: StatCardProps) => {
     const progress = target > 0 ? (total / target) * 100 : 0;
     return (
          <Card>
-            <CardHeader className="pb-2">
-                <CardDescription>{title}</CardDescription>
-                <CardTitle className="text-2xl sm:text-3xl">{total.toLocaleString('ru-RU')}</CardTitle>
+            <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">{title}</CardTitle></CardHeader>
+            <CardContent>
+                <p className="text-2xl sm:text-3xl font-bold">{total.toLocaleString('ru-RU')}</p>
                 <p className="text-xs text-muted-foreground">
                     Цель: {target.toLocaleString('ru-RU')} {unit}
                 </p>
-            </CardHeader>
-            <CardContent>
-                <Progress value={progress} />
+                <Progress value={progress} className="mt-2 h-2" />
             </CardContent>
         </Card>
     )

@@ -29,7 +29,7 @@ USER DATA:
 {{#if dietaryPreferences}}- Dietary Preferences: {{{dietaryPreferences}}}{{/if}}
 
 INSTRUCTIONS:
-1.  **Calculate Daily Needs**: Based on the goal and activity level, estimate the daily calorie and macronutrient needs. For 'Набор массы', add a surplus of 300-500 kcal. For 'Снижение веса', create a deficit of 300-500 kcal.
+1.  **Calculate Daily Needs**: Based on the goal and activity level, estimate the daily calorie needs. For 'Набор массы', add a surplus of 300-500 kcal. For 'Снижение веса', create a deficit of 300-500 kcal.
 2.  **Macronutrient Split**: Use a balanced split, e.g., 40% carbs, 30% protein, 30% fat. Adjust as needed for the goal. For mass gain, you can slightly increase carbs.
 3.  **Create Meal Plan**: Create a sample one-day meal plan with 3-4 meals (Breakfast, Lunch, Dinner, optional Snack). For each meal, provide a simple, healthy food example and its approximate calorie count.
 4.  **Dietary Preferences**: If dietary preferences are provided, ensure the meal plan respects them. For example, for 'вегетарианство', use plant-based protein sources.
