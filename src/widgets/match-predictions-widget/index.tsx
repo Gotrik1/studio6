@@ -6,9 +6,13 @@ import { useState } from 'react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
 import Image from 'next/image';
-import { CheckCircle, XCircle, Award } from 'lucide-react';
+import { CheckCircle, XCircle, Award, BrainCircuit, Loader2, Sparkles, AlertCircle } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { Separator } from '@/shared/ui/separator';
+import { predictMatchOutcome, type PredictMatchOutcomeOutput } from '@/shared/api/genkit/flows/predict-match-outcome-flow';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { Badge } from '@/shared/ui/badge';
 
 const getWinner = (score: string): 'team1' | 'team2' | null => {
     const scores = score.split('-').map(s => parseInt(s.trim(), 10));
@@ -29,6 +33,9 @@ export function MatchPredictionWidget() {
     const [predictions, setPredictions] = useState<Record<string, 'team1' | 'team2'>>({
         '1': 'team1'
     });
+    
+    const [aiPrediction, setAiPrediction] = useState<PredictMatchOutcomeOutput | null>(null);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
 
     const handlePredict = (matchId: string, team: 'team1' | 'team2') => {
         setPredictions(prev => ({ ...prev, [matchId]: team }));
@@ -38,11 +45,49 @@ export function MatchPredictionWidget() {
         });
     };
 
+    const getConfidenceColor = (confidence?: 'high' | 'medium' | 'low') => {
+        switch(confidence) {
+            case 'high': return 'text-green-500';
+            case 'medium': return 'text-yellow-500';
+            case 'low': return 'text-orange-500';
+            default: return 'text-muted-foreground';
+        }
+    };
+    
+    const handleAiPrediction = async () => {
+        setIsAnalyzing(true);
+        setAiPrediction(null);
+        try {
+            // Mock data for the flow
+            const mockInput = {
+                team1: { name: 'Кибер Орлы', winRate: '68%', recentForm: 'WWLWW' },
+                team2: { name: 'Ледяные Волки', winRate: '75%', recentForm: 'LWWWL' },
+                matchContext: 'Полуфинал Летнего Кубка',
+                headToHead: 'Кибер Орлы ведут 2-1 в личных встречах.'
+            };
+            const prediction = await predictMatchOutcome(mockInput);
+            setAiPrediction(prediction);
+        } catch(e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось получить прогноз от AI.' });
+        } finally {
+            setIsAnalyzing(false);
+        }
+    };
+
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Центр прогнозов</CardTitle>
-                <CardDescription>Делайте ставки на матчи и проверяйте свои результаты.</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>Центр прогнозов</CardTitle>
+                        <CardDescription>Сделайте прогноз и сравните с мнением AI-аналитика.</CardDescription>
+                    </div>
+                    <Button variant="outline" size="sm" onClick={handleAiPrediction} disabled={isAnalyzing}>
+                        {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
+                        Прогноз AI
+                    </Button>
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 {/* Upcoming Matches */}
@@ -73,6 +118,26 @@ export function MatchPredictionWidget() {
                         </div>
                     </div>
                 ))}
+                
+                {isAnalyzing && (
+                    <div className="p-4 border rounded-lg">
+                        <Skeleton className="h-16 w-full" />
+                    </div>
+                )}
+                 {aiPrediction && (
+                    <Alert>
+                        <Sparkles className="h-4 w-4" />
+                        <AlertTitle className="flex justify-between items-center">
+                            <span>Прогноз AI: Победа {aiPrediction.predictedWinner}</span>
+                             <Badge variant="outline" className={cn(getConfidenceColor(aiPrediction.confidence))}>
+                                Уверенность: {aiPrediction.confidence}
+                            </Badge>
+                        </AlertTitle>
+                        <AlertDescription className="mt-2">
+                           {aiPrediction.reasoning}
+                        </AlertDescription>
+                    </Alert>
+                )}
                 
                 {upcomingMatches.length > 0 && finishedMatches.length > 0 && <Separator />}
 

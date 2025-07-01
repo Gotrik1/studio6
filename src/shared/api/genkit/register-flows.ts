@@ -47,3 +47,4 @@ import './flows/analyze-exercise-form-flow';
 import './flows/generate-tournament-summary-flow';
 import './flows/generate-nutrition-plan-flow';
 import './flows/find-lfg-lobbies-flow';
+import './flows/predict-match-outcome-flow';
