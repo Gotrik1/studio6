@@ -1,4 +1,3 @@
-
 'use client';
 
 import { PollCard } from "@/widgets/poll-card";
@@ -11,8 +10,8 @@ import { AiCoachTip } from "@/widgets/ai-coach-tip";
 
 export function DashboardPage() {
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:items-start">
-            <div className="lg:col-span-2 space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-start gap-8">
+            <div className="w-full lg:w-2/3 flex-shrink-0 space-y-6">
                 <div className="opacity-0 animate-fade-in-up">
                     <AiCoachTip />
                 </div>
@@ -24,7 +23,7 @@ export function DashboardPage() {
                 </div>
                 <Feed />
             </div>
-            <aside className="space-y-6 lg:sticky lg:top-6 self-start opacity-0 animate-fade-in-up animation-delay-300">
+            <aside className="w-full lg:w-1/3 space-y-6 lg:sticky lg:top-6 opacity-0 animate-fade-in-up animation-delay-300">
                 <MatchOfTheWeekWidget />
                 <PollCard poll={mainPoll} />
             </aside>
