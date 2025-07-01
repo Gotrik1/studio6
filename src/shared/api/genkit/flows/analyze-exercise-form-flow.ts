@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for analyzing a user's exercise form from a video.
@@ -44,37 +43,11 @@ const analyzeExerciseFormFlow = ai.defineFlow(
     outputSchema: AnalyzeExerciseFormOutputSchema,
   },
   async (input) => {
-    // In a real implementation with a multimodal model, this would perform actual video analysis.
-    // For this prototype, we will return mock data based on the exercise name.
-    if (input.exerciseName.toLowerCase().includes('приседания')) {
-        await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate analysis delay
-        return {
-            overallAssessment: "Техника в целом неплохая, но есть важные моменты для улучшения глубины и стабильности.",
-            corrections: [
-                { part: "Спина", correction: "Старайтесь держать спину более прямой, избегайте наклона вперед в нижней точке." },
-                { part: "Глубина приседа", correction: "Приседайте глубже, пока таз не окажется на уровне или чуть ниже коленей." },
-            ],
-            positivePoints: [
-                "Хороший контроль на опускании.",
-                "Колени не заваливаются внутрь.",
-            ]
-        };
-    }
-
-    // Default mock response
-    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate analysis delay
-    return {
-        overallAssessment: "Хорошее начало, но есть над чем поработать для идеальной техники.",
-        corrections: [
-            { part: "Амплитуда", correction: "Увеличьте диапазон движения для лучшей проработки мышц." },
-        ],
-        positivePoints: [
-            "Стабильное положение корпуса.",
-        ]
-    };
-
     // --- This is the code that would run in a real scenario ---
-    // const {output} = await prompt(input);
-    // return output!;
+    const {output} = await prompt(input);
+    if (!output) {
+      throw new Error("AI analysis failed to produce an output.");
+    }
+    return output;
   }
 );
