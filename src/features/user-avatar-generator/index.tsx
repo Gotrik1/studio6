@@ -11,6 +11,7 @@ import { generateUserAvatar } from '@/shared/api/genkit/flows/generate-user-avat
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import Image from 'next/image';
 import { useToast } from '@/shared/hooks/use-toast';
+import { Loader } from '@/shared/ui/loader';
 
 interface UserAvatarGeneratorDialogProps {
   isOpen: boolean;
@@ -92,7 +93,7 @@ export function UserAvatarGeneratorDialog({ isOpen, onOpenChange, onAvatarSave, 
 
           <div className="flex justify-center items-center h-48 bg-muted rounded-md overflow-hidden">
             {isLoading ? (
-              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <Loader size={80} />
             ) : (
               <Image
                 src={generatedAvatar || currentAvatar}
