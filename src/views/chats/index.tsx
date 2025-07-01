@@ -2,29 +2,35 @@
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-import { Send, Bot, Sparkles, Loader2 } from 'lucide-react';
+import { Send, Bot, Sparkles, Loader2, Users } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useSession } from '@/shared/lib/session/client';
 import { contacts, messages as allMessages, type Contact } from '@/shared/lib/mock-data/chats';
 import { suggestReply } from '@/shared/api/genkit/flows/suggest-reply-flow';
+import { askTeamChatbot } from '@/shared/api/genkit/flows/team-chatbot-flow';
 
 type Message = {
-    sender: 'me' | 'other';
+    sender: 'user' | 'ai' | 'other';
+    name: string;
+    avatar: string;
     text: string;
+    isThinking?: boolean;
 };
+
+const getAvatarFallback = (name: string) => name.split(' ').map(n => n[0]).join('');
 
 export function ChatsPage() {
     const { user } = useSession();
-    const [selectedContact, setSelectedContact] = useState<Contact | null>(contacts[0]);
+    const [selectedChat, setSelectedChat] = useState<Contact | null>(contacts[0]);
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [replySuggestions, setReplySuggestions] = useState<string[]>([]);
-    const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+    const [isThinking, setIsThinking] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -32,56 +38,75 @@ export function ChatsPage() {
     };
     
     useEffect(() => {
-        if (selectedContact) {
-            const newMessages = allMessages[selectedContact.id as keyof typeof allMessages] || [];
+        if (selectedChat) {
+            const newMessages = (allMessages[selectedChat.id as keyof typeof allMessages] || []) as Message[];
             setMessages([...newMessages]);
         } else {
             setMessages([]);
         }
-    }, [selectedContact]);
+        setReplySuggestions([]);
+    }, [selectedChat]);
 
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
 
-    const handleSelectContact = (contact: Contact) => {
-        setSelectedContact(contact);
-        const newMessages = allMessages[contact.id as keyof typeof allMessages] || [];
-        setMessages([...newMessages]);
-        setReplySuggestions([]);
+    const handleSelectChat = (contact: Contact) => {
+        setSelectedChat(contact);
     };
     
-    const handleSend = () => {
-        if (!input.trim() || !selectedContact) return;
-        const newMessage: Message = { sender: 'me', text: input };
-        setMessages(prev => [...prev, newMessage]);
+    const handleSend = async () => {
+        if (!input.trim() || !selectedChat || !user) return;
+        const text = input;
         setInput('');
-        setReplySuggestions([]);
+        
+        const userMessage: Message = { sender: 'user', name: user.name, avatar: user.avatar, text };
+        setMessages(prev => [...prev, userMessage]);
+
+        const isTeamChat = selectedChat.type === 'team';
+        const isAiCommand = text.toLowerCase().startsWith('/ai') || text.toLowerCase().startsWith('@ai');
+
+        if (isTeamChat && isAiCommand) {
+            const thinkingMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Думаю...', isThinking: true };
+            setMessages(prev => [...prev, thinkingMessage]);
+            setIsThinking(true);
+            const query = text.replace(/^\/ai\s*|^\@ai\s*/, '');
+            
+            try {
+                const aiResponseText = await askTeamChatbot({ teamId: selectedChat.teamId, query });
+                const aiMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: aiResponseText };
+                setMessages(prev => [...prev.filter(m => !m.isThinking), aiMessage]);
+            } catch(e) {
+                console.error(e);
+                const errorMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Произошла ошибка при обработке вашего запроса.' };
+                setMessages(prev => [...prev.filter(m => !m.isThinking), errorMessage]);
+            } finally {
+                setIsThinking(false);
+            }
+        }
     };
 
     const handleSuggestReplies = async () => {
-        if (messages.length === 0) return;
+        if (messages.length === 0 || isThinking) return;
         
-        setIsLoadingSuggestions(true);
+        setIsThinking(true);
         setReplySuggestions([]);
         
-        const history = messages.map(m => `${m.sender === 'me' ? 'me' : 'other'}: ${m.text}`).join('\n');
+        const history = messages.map(m => `${m.name}: ${m.text}`).join('\n');
+        const teamId = selectedChat?.type === 'team' ? selectedChat.teamId : undefined;
 
         try {
-            const { suggestions } = await suggestReply({ 
-                history,
-                teamId: selectedContact?.id === 'contact-1' ? 'dvotovyie-atlety' : undefined
-            });
+            const { suggestions } = await suggestReply({ history, teamId });
             setReplySuggestions(suggestions);
         } catch (e) {
             console.error("Failed to suggest replies:", e);
         } finally {
-            setIsLoadingSuggestions(false);
+            setIsThinking(false);
         }
     };
     
     const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter' && !isLoadingSuggestions) {
+        if (event.key === 'Enter' && !isThinking) {
             handleSend();
         }
     };
@@ -92,6 +117,7 @@ export function ChatsPage() {
             <Card className="md:col-span-1 flex flex-col">
                 <CardHeader>
                     <CardTitle>Сообщения</CardTitle>
+                    <CardDescription>Ваши личные и командные чаты.</CardDescription>
                 </CardHeader>
                 <CardContent className="p-0 flex-1 overflow-y-auto">
                     <ScrollArea className="h-full">
@@ -101,13 +127,15 @@ export function ChatsPage() {
                                     key={contact.id}
                                     className={cn(
                                         "flex items-center gap-3 p-3 w-full text-left transition-colors hover:bg-muted",
-                                        selectedContact?.id === contact.id && "bg-muted"
+                                        selectedChat?.id === contact.id && "bg-muted"
                                     )}
-                                    onClick={() => handleSelectContact(contact)}
+                                    onClick={() => handleSelectChat(contact)}
                                 >
                                     <Avatar className="relative">
-                                        <AvatarImage src={contact.avatar} alt={contact.name} data-ai-hint={contact.avatarHint} />
-                                        <AvatarFallback>{contact.name.charAt(0)}</AvatarFallback>
+                                        <AvatarImage src={contact.avatar} data-ai-hint={contact.avatarHint} />
+                                        <AvatarFallback>
+                                            {contact.type === 'team' ? <Users className="h-5 w-5"/> : getAvatarFallback(contact.name)}
+                                        </AvatarFallback>
                                         {contact.isOnline && <div className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-green-500 ring-2 ring-background" />}
                                     </Avatar>
                                     <div className="flex-1 overflow-hidden">
@@ -123,18 +151,20 @@ export function ChatsPage() {
             </Card>
             
             <Card className="md:col-span-2 flex flex-col">
-                {selectedContact ? (
+                {selectedChat ? (
                     <>
                         <CardHeader className="flex flex-row items-center justify-between border-b">
                             <div className="flex items-center gap-3">
                                 <Avatar>
-                                    <AvatarImage src={selectedContact.avatar} alt={selectedContact.name} data-ai-hint={selectedContact.avatarHint} />
-                                    <AvatarFallback>{selectedContact.name.charAt(0)}</AvatarFallback>
+                                    <AvatarImage src={selectedChat.avatar} data-ai-hint={selectedChat.avatarHint} />
+                                    <AvatarFallback>
+                                        {selectedChat.type === 'team' ? <Users className="h-5 w-5"/> : getAvatarFallback(selectedChat.name)}
+                                    </AvatarFallback>
                                 </Avatar>
-                                <CardTitle className="text-lg">{selectedContact.name}</CardTitle>
+                                <CardTitle className="text-lg">{selectedChat.name}</CardTitle>
                             </div>
-                            <Button variant="ghost" size="icon" onClick={handleSuggestReplies} disabled={isLoadingSuggestions}>
-                                {isLoadingSuggestions ? <Loader2 className="h-5 w-5 animate-spin" /> : <Sparkles className="h-5 w-5" />}
+                            <Button variant="ghost" size="icon" onClick={handleSuggestReplies} disabled={isThinking}>
+                                {isThinking ? <Loader2 className="h-5 w-5 animate-spin" /> : <Sparkles className="h-5 w-5" />}
                                 <span className="sr-only">Suggest replies</span>
                             </Button>
                         </CardHeader>
@@ -142,23 +172,33 @@ export function ChatsPage() {
                             <ScrollArea className="h-[calc(100vh-22rem)] p-6">
                                 <div className="space-y-6">
                                     {messages.map((message, index) => (
-                                       <div key={index} className={cn("flex items-end gap-2", message.sender === 'me' ? 'justify-end' : 'justify-start')}>
-                                           {message.sender === 'other' && (
-                                               <Avatar className="h-8 w-8 border">
-                                                    <AvatarImage src={selectedContact.avatar} alt={selectedContact.name} data-ai-hint={selectedContact.avatarHint} />
-                                                    <AvatarFallback>{selectedContact.name.charAt(0)}</AvatarFallback>
+                                       <div key={index} className={cn("flex items-start gap-2", message.sender === 'user' ? 'justify-end' : 'justify-start')}>
+                                           {message.sender !== 'user' && (
+                                               <Avatar className="h-8 w-8 border flex-shrink-0">
+                                                    {message.sender === 'ai' ? <AvatarFallback><Bot /></AvatarFallback> : <AvatarImage src={message.avatar} />}
+                                                    <AvatarFallback>{getAvatarFallback(message.name)}</AvatarFallback>
                                                </Avatar>
                                            )}
-                                           <div className={cn(
-                                               "max-w-md rounded-lg p-3 text-sm shadow-sm",
-                                               message.sender === 'me' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted rounded-bl-none"
-                                           )}>
-                                               <p className="whitespace-pre-wrap">{message.text}</p>
+                                           <div className="flex flex-col gap-1" style={{alignItems: message.sender === 'user' ? 'flex-end' : 'flex-start'}}>
+                                                {message.sender !== 'user' && (
+                                                    <p className="text-xs text-muted-foreground px-1">{message.name}</p>
+                                                )}
+                                                <div className={cn(
+                                                   "max-w-md rounded-lg p-3 text-sm shadow-sm",
+                                                   message.sender === 'user' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted rounded-bl-none"
+                                                )}>
+                                                    {message.isThinking ? (
+                                                        <div className="flex items-center gap-2">
+                                                            <Loader2 className="h-4 w-4 animate-spin"/>
+                                                            <span>{message.text}</span>
+                                                        </div>
+                                                    ) : <p className="whitespace-pre-wrap">{message.text}</p>}
+                                               </div>
                                            </div>
-                                           {message.sender === 'me' && user && (
-                                               <Avatar className="h-8 w-8 border">
+                                           {message.sender === 'user' && user && (
+                                               <Avatar className="h-8 w-8 border flex-shrink-0">
                                                    <AvatarImage src={user.avatar} data-ai-hint="user avatar"/>
-                                                   <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                                                   <AvatarFallback>{getAvatarFallback(user.name)}</AvatarFallback>
                                                </Avatar>
                                            )}
                                        </div>
@@ -171,7 +211,7 @@ export function ChatsPage() {
                             {replySuggestions.length > 0 && (
                                 <div className="flex flex-wrap gap-2">
                                     {replySuggestions.map((suggestion, i) => (
-                                        <Button key={i} variant="outline" size="sm" onClick={() => setInput(suggestion)}>
+                                        <Button key={i} variant="outline" size="sm" onClick={() => { setInput(suggestion); setReplySuggestions([]); }}>
                                             {suggestion}
                                         </Button>
                                     ))}
@@ -183,8 +223,9 @@ export function ChatsPage() {
                                     value={input}
                                     onChange={(e) => setInput(e.target.value)}
                                     onKeyDown={handleKeyDown}
+                                    disabled={isThinking}
                                 />
-                                <Button onClick={handleSend}><Send className="h-4 w-4"/></Button>
+                                <Button onClick={handleSend} disabled={isThinking}><Send className="h-4 w-4"/></Button>
                             </div>
                         </div>
                     </>
