@@ -43,7 +43,6 @@ import {
   Swords,
   Users2,
   BarChart3,
-  ChevronRight,
   Backpack,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
@@ -53,7 +52,6 @@ import { NotificationsPopover } from "@/widgets/notifications-popover";
 import { Button } from '@/shared/ui/button';
 import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
 import { usePathname } from 'next/navigation';
-import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/shared/ui/collapsible';
 import { cn } from '@/shared/lib/utils';
 
 
@@ -129,7 +127,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/chats", icon: MessageSquare, label: "Сообщения" },
     ];
     
-    const collapsibleSections = [
+    const mainSections = [
         {
             title: "Тренировки",
             icon: Dumbbell,
@@ -193,29 +191,26 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}
-                    <SidebarSeparator className="my-1" />
-
-                    {collapsibleSections.map(section => (
-                        <Collapsible key={section.title} className="w-full">
-                             <CollapsibleTrigger asChild>
-                                <Button variant="ghost" className="w-full justify-start gap-3 px-3 group">
-                                    <section.icon className="h-5 w-5" />
-                                    {state === 'expanded' && <span className="flex-1 text-left">{section.title}</span>}
-                                    {state === 'expanded' && <ChevronRight className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />}
-                                </Button>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent className="data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up overflow-hidden">
-                                <div className={cn("pl-4", state === 'expanded' && "ml-[0.8rem] border-l-2 border-dashed border-border")}>
-                                     {section.items.map(item => (
-                                        <SidebarMenuItem key={item.href}>
-                                                <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
-                                                <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
-                                            </SidebarMenuButton>
-                                        </SidebarMenuItem>
-                                    ))}
+                    
+                    {mainSections.map(section => (
+                        <React.Fragment key={section.title}>
+                            <SidebarSeparator className="my-1" />
+                            <SidebarMenuItem>
+                                <div className={cn(
+                                    "px-3 py-2 text-xs font-semibold uppercase text-muted-foreground tracking-wider",
+                                    state === 'collapsed' && 'hidden'
+                                )}>
+                                    {section.title}
                                 </div>
-                            </CollapsibleContent>
-                        </Collapsible>
+                            </SidebarMenuItem>
+                            {section.items.map(item => (
+                                <SidebarMenuItem key={item.href}>
+                                    <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
+                                        <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
+                        </React.Fragment>
                     ))}
 
 
