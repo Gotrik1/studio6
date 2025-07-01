@@ -143,6 +143,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 { href: "/training/measurements", icon: Ruler, label: "Замеры" },
                 { href: "/training/nutrition-diary", icon: HeartPulse, label: "Дневник питания" },
                 { href: "/training/calendar", icon: Calendar, label: "Календарь" },
+                { href: "/training/analytics", icon: BarChart3, label: "Аналитика" },
             ]
         },
         {
