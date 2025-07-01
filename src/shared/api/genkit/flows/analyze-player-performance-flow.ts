@@ -23,7 +23,7 @@ const prompt = ai.definePrompt({
   name: 'analyzePlayerPerformancePrompt',
   input: {schema: AnalyzePlayerPerformanceInputSchema},
   output: {schema: AnalyzePlayerPerformanceOutputSchema},
-  prompt: `You are an expert fitness and strength coach. Analyze the provided training summary and recent workout logs to identify key strengths, weaknesses, and provide actionable recommendations. Respond in Russian.
+  prompt: `You are an expert fitness and strength coach. Analyze the provided training summary and recent workout logs to identify key strengths and weaknesses. Respond in Russian.
 
 Training Summary:
 {{{trainingSummary}}}
@@ -31,7 +31,7 @@ Training Summary:
 Recent Workouts Log:
 {{{recentWorkouts}}}
 
-Please provide a concise analysis, focusing on clear, actionable feedback. Identify which muscle groups are lagging or progressing well.
+Please provide a concise analysis. Identify which muscle groups are lagging or progressing well. ONLY identify strengths and weaknesses. Do not provide recommendations.
 `,
 });
 

@@ -10,6 +10,5 @@ export type AnalyzePlayerPerformanceInput = z.infer<typeof AnalyzePlayerPerforma
 export const AnalyzePlayerPerformanceOutputSchema = z.object({
   strengths: z.array(z.string()).describe("A list of the player's key strengths identified from the data."),
   weaknesses: z.array(z.string()).describe("A list of the player's key weaknesses identified from the data."),
-  recommendations: z.array(z.string()).describe("A list of actionable recommendations for the player to improve their physical training."),
 });
 export type AnalyzePlayerPerformanceOutput = z.infer<typeof AnalyzePlayerPerformanceOutputSchema>;
