@@ -3,7 +3,7 @@
 import type { Sport } from '@/shared/lib/mock-data/sports';
 import { DynamicIcon } from '@/shared/ui/dynamic-icon';
 import { icons } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Badge } from '@/shared/ui/badge';
@@ -57,7 +57,7 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
                     <Card>
                         <CardHeader>
                             <CardTitle>Активные и недавние турниры</CardTitle>
-                            <CardDescription>Главные соревнования по дисциплине {sport.name}.</CardDescription>
+                            <p className="text-sm text-muted-foreground">Главные соревнования по дисциплине {sport.name}.</p>
                         </CardHeader>
                         <CardContent className="space-y-2">
                              {sportTournaments.length > 0 ? sportTournaments.map(t => (
@@ -112,7 +112,7 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
                     <Card>
                         <CardHeader>
                             <CardTitle>Топ-5 игроков</CardTitle>
-                            <CardDescription>Лучшие игроки в дисциплине {sport.name}.</CardDescription>
+                            <p className="text-sm text-muted-foreground">Лучшие игроки в дисциплине {sport.name}.</p>
                         </CardHeader>
                         <CardContent>
                              <Table>

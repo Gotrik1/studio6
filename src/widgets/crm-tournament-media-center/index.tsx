@@ -3,14 +3,17 @@
 import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Loader2, Sparkles, AlertCircle, Award, Share2 } from 'lucide-react';
+import { Loader2, Sparkles, AlertCircle, Award, Share2, Copy, Download, Volume2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateTournamentSummary, type GenerateTournamentSummaryOutput } from '@/shared/api/genkit/flows/generate-tournament-summary-flow';
 import { generatePostImage, type GeneratePostImageOutput } from '@/shared/api/genkit/flows/generate-post-image-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Textarea } from '@/shared/ui/textarea';
+import { Label } from '@/shared/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import Image from 'next/image';
+import { generateMatchCommentary, type GenerateMatchCommentaryOutput } from "@/shared/api/genkit/flows/generate-match-commentary-flow";
+import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
 
 interface CrmTournamentMediaCenterProps {
     tournament: {
@@ -36,12 +39,24 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
     const [summaryResult, setSummaryResult] = useState<GenerateTournamentSummaryOutput | null>(null);
     const [images, setImages] = useState<GeneratePostImageOutput[]>([]);
 
+    const [isGeneratingInterview, setIsGeneratingInterview] = useState(false);
+    const [interviewError, setInterviewError] = useState<string | null>(null);
+    const [interviewResult, setInterviewResult] = useState<GenerateMatchInterviewOutput | null>(null);
+
+    const [isGeneratingPost, setIsGeneratingPost] = useState(false);
+    const [postError, setPostError] = useState<string | null>(null);
+    const [postResult, setPostResult] = useState<GeneratePostImageOutput | null>(null);
+
+    const [isGeneratingCommentary, setIsGeneratingCommentary] = useState(false);
+    const [commentaryError, setCommentaryError] = useState<string | null>(null);
+    const [commentaryResult, setCommentaryResult] = useState<(GenerateMatchCommentaryOutput & { audioDataUri: string }) | null>(null);
+
     const handleGenerate = async () => {
         setIsLoading(true);
         setError(null);
         setSummaryResult(null);
         setImages([]);
-
+        
         try {
             const summaryData = await generateTournamentSummary({
                 tournamentName: tournament.name,
@@ -63,10 +78,78 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
             setIsLoading(false);
         }
     };
+    
+    const handleGenerateInterview = async () => {
+        if (!summaryResult) return;
+        
+        setIsGeneratingInterview(true);
+        setInterviewError(null);
+        setInterviewResult(null);
 
-    const handleCopy = (text: string) => {
-        navigator.clipboard.writeText(text);
-        toast({ title: 'Скопировано!' });
+        try {
+            const interviewData = await generateMatchInterview({
+                matchSummary: summaryResult.summaryArticle,
+                mvpName: summaryResult.mvp.name,
+            });
+            setInterviewResult(interviewData);
+        } catch (e) {
+            console.error("AI Interview generation failed:", e);
+            setInterviewError("Не удалось сгенерировать аудио-интервью.");
+        } finally {
+            setIsGeneratingInterview(false);
+        }
+    };
+
+    const handleGeneratePost = async () => {
+        if (!summaryResult) return;
+        setIsGeneratingPost(true);
+        setPostError(null);
+        setPostResult(null);
+    
+        try {
+            const postData = await generatePostImage(summaryResult.socialMediaPost);
+            setPostResult(postData);
+        } catch (e) {
+            console.error("AI Post generation failed:", e);
+            setPostError("Не удалось сгенерировать пост.");
+        } finally {
+            setIsGeneratingPost(false);
+        }
+    };
+
+     const handleGenerateCommentary = async () => {
+        if (!summaryResult) return;
+        setIsGeneratingCommentary(true);
+        setCommentaryError(null);
+        setCommentaryResult(null);
+
+        const mockEvents = [
+            {time: '10:00', event: 'Гол', player: 'Иванов', team: 'Дворовые Атлеты'},
+            {time: '25:00', event: 'Гол', player: 'Петров', team: 'Вымпел'},
+        ];
+
+        try {
+            const commentaryData = await generateMatchCommentary({
+                team1Name: mockFinalMatch.team1,
+                team2Name: mockFinalMatch.team2,
+                events: mockEvents,
+            });
+            setCommentaryResult(commentaryData);
+        } catch (e) {
+            console.error("AI Commentary generation failed:", e);
+            setCommentaryError("Не удалось сгенерировать комментарий.");
+        } finally {
+            setIsGeneratingCommentary(false);
+        }
+    };
+
+    const handleCopyText = (text: string) => {
+        if (text) {
+          navigator.clipboard.writeText(text);
+          toast({
+            title: "Текст скопирован!",
+          });
+        }
     };
 
     return (
@@ -108,7 +191,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                             <CardHeader><CardTitle>Итоговая статья</CardTitle></CardHeader>
                             <CardContent>
                                 <Textarea readOnly value={summaryResult.summaryArticle} className="h-48" />
-                                <Button variant="ghost" size="sm" onClick={() => handleCopy(summaryResult.summaryArticle)} className="mt-2">Копировать</Button>
+                                <Button variant="ghost" size="sm" onClick={() => handleCopyText(summaryResult.summaryArticle)} className="mt-2">Копировать</Button>
                             </CardContent>
                         </Card>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -127,7 +210,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                 </CardHeader>
                                 <CardContent>
                                     <Textarea readOnly value={summaryResult.socialMediaPost} className="h-24" />
-                                     <Button variant="ghost" size="sm" onClick={() => handleCopy(summaryResult.socialMediaPost)} className="mt-2">Копировать</Button>
+                                     <Button variant="ghost" size="sm" onClick={() => handleCopyText(summaryResult.socialMediaPost)} className="mt-2">Копировать</Button>
                                 </CardContent>
                             </Card>
                         </div>

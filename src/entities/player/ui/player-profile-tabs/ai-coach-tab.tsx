@@ -12,11 +12,7 @@ import { generateTrainingPlan, type GenerateTrainingPlanOutput } from '@/shared/
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 
-interface AiCoachTabProps {
-  // User prop is not used here but can be added back if needed for personalization
-}
-
-export function AiCoachTab({}: AiCoachTabProps) {
+export function AiCoachTab() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalyzePlayerPerformanceOutput | null>(null);

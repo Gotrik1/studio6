@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/shared/ui/button';
@@ -49,8 +49,15 @@ interface TrainingProgramFormProps {
     isSaving: boolean;
 }
 
-const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: { dayIndex: number, control: any, removeDay: (index: number) => void, openExercisePicker: (dayIndex: number) => void }) => {
-    const { fields, append, remove } = useFieldArray({
+interface DaySectionProps {
+    dayIndex: number;
+    control: Control<ProgramFormValues>;
+    removeDay: (index: number) => void;
+    openExercisePicker: (dayIndex: number) => void;
+}
+
+const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: DaySectionProps) => {
+    const { fields, remove } = useFieldArray({
         control,
         name: `days.${dayIndex}.exercises`,
     });

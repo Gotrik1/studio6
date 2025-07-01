@@ -7,7 +7,6 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Loader2, Sparkles, BrainCircuit, AlertCircle, TrendingUp, TrendingDown, ClipboardList } from "lucide-react";
 import { analyzeEsportsPerformance, type AnalyzeEsportsPerformanceOutput } from '@/shared/api/genkit/flows/analyze-esports-performance-flow';
-import type { User } from "@/shared/lib/types";
 
 // Mock data for a player's esports performance
 const mockEsportsData = {
@@ -15,11 +14,7 @@ const mockEsportsData = {
     matchHistory: "vs Team A: W 13-5\nvs Team B: W 13-10\nvs Team C: L 8-13",
 };
 
-interface EsportsAnalysisTabProps {
-  // User prop is not used here but can be added back if needed for personalization
-}
-
-export function EsportsAnalysisTab({}: EsportsAnalysisTabProps) {
+export function EsportsAnalysisTab() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalyzeEsportsPerformanceOutput | null>(null);

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { Coins, TrendingUp, TrendingDown, ShieldCheck, ShoppingCart } from 'lucide-react';
 import { pdRules } from '@/shared/config/gamification';
@@ -52,7 +52,7 @@ export function PDEconomyPage() {
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><TrendingUp className="text-green-500"/> Как заработать PD?</CardTitle>
-                        <CardDescription>Выполняйте действия на платформе, чтобы пополнять свой баланс.</CardDescription>
+                        <p className="text-sm text-muted-foreground">Выполняйте действия на платформе, чтобы пополнять свой баланс.</p>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-3">
@@ -73,7 +73,7 @@ export function PDEconomyPage() {
                  <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><TrendingDown className="text-red-500"/> На что потратить PD?</CardTitle>
-                        <CardDescription>Используйте заработанные PD для покупки товаров и услуг.</CardDescription>
+                        <p className="text-sm text-muted-foreground">Используйте заработанные PD для покупки товаров и услуг.</p>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-3">
@@ -96,7 +96,7 @@ export function PDEconomyPage() {
             <Card>
                  <CardHeader>
                     <CardTitle>История транзакций</CardTitle>
-                    <CardDescription>Полная история ваших начислений и списаний PD.</CardDescription>
+                    <p className="text-sm text-muted-foreground">Полная история ваших начислений и списаний PD.</p>
                 </CardHeader>
                 <CardContent>
                     <Table>
