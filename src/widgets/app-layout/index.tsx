@@ -29,23 +29,7 @@ import {
   Dumbbell,
   Search,
   ShoppingCart,
-  Handshake,
-  DollarSign,
-  UserSearch,
-  Megaphone,
-  HeartPulse,
-  Ruler,
-  Award,
-  Replace,
-  BookOpen,
-  Calendar,
   Swords,
-  Users2,
-  BarChart3,
-  Backpack,
-  Shapes,
-  Coins,
-  GraduationCap,
   ClipboardList,
   Gavel,
 } from "lucide-react";
@@ -56,8 +40,6 @@ import { NotificationsPopover } from "@/widgets/notifications-popover";
 import { Button } from '@/shared/ui/button';
 import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
 import { usePathname } from 'next/navigation';
-import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
-
 
 interface AppLayoutProps {
     user: User;
@@ -121,58 +103,25 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         if (href === '/dashboard' || href === '/') {
             return pathname === '/dashboard' || pathname === '/';
         }
-        return pathname.startsWith(href);
+        // Handle cases like /training and /training/programs
+        // The more specific path should not activate the less specific one unless it's the root of the section.
+        if (href.length > 1 && pathname.startsWith(href)) {
+             if (pathname.length === href.length) return true; // exact match
+             if (pathname.charAt(href.length) === '/') return true; // subpath
+        }
+        return false;
     };
 
-    const topLevelNavItems = [
+    const mainNavItems = [
         { href: "/dashboard", icon: Newspaper, label: "Лента" },
         { href: "/teams", icon: Users, label: "Команды" },
         { href: "/tournaments", icon: Trophy, label: "Соревнования" },
         { href: "/chats", icon: MessageSquare, label: "Сообщения" },
+        { href: "/training", icon: Dumbbell, label: "Тренировки" },
+        { href: "/lfg", icon: Swords, label: "Сообщество" },
+        { href: "/store", icon: ShoppingCart, label: "Магазин" },
     ];
     
-    const mainSections = [
-        {
-            title: "Тренировки",
-            icon: Dumbbell,
-            items: [
-                { href: "/training", icon: Dumbbell, label: "Центр тренировок" },
-                { href: "/training/log", icon: BookOpen, label: "Дневник тренировок" },
-                { href: "/training/programs", icon: Replace, label: "Программы" },
-                { href: "/training/records", icon: Award, label: "Рекорды" },
-                { href: "/training/measurements", icon: Ruler, label: "Замеры" },
-                { href: "/training/nutrition-diary", icon: HeartPulse, label: "Дневник питания" },
-                { href: "/training/calendar", icon: Calendar, label: "Календарь" },
-                { href: "/training/analytics", icon: BarChart3, label: "Аналитика" },
-            ]
-        },
-        {
-            title: "Сообщество",
-            icon: Users2,
-            items: [
-                { href: "/friends", icon: Users2, label: "Друзья" },
-                { href: "/coaches", icon: GraduationCap, label: "Найти тренера" },
-                { href: "/scouting", icon: UserSearch, label: "Поиск игроков" },
-                { href: "/lfg", icon: Swords, label: "Поиск игры" },
-                { href: "/leaderboards", icon: BarChart3, label: "Таблицы лидеров" },
-                { href: "/sports", icon: Shapes, label: "Виды спорта" },
-            ]
-        },
-        {
-            title: "Платформа",
-            icon: ShoppingCart,
-            items: [
-                { href: "/store", icon: ShoppingCart, label: "Магазин" },
-                { href: "/pd-economy", icon: Coins, label: "Экономика PD" },
-                { href: "/quests", icon: ShieldCheck, label: "Квесты" },
-                { href: "/inventory", icon: Backpack, label: "Инвентарь" },
-                { href: "/promotions", icon: Megaphone, label: "Промо-акции" },
-                { href: "/sponsors", icon: Handshake, label: "Центр спонсорства" },
-                { href: "/monetization", icon: DollarSign, label: "Подписки" },
-            ]
-        },
-    ];
-
     const systemNavItems = [
         { href: "/support", icon: LifeBuoy, label: "Поддержка" },
         { href: "/settings", icon: Settings, label: "Настройки" },
@@ -192,40 +141,13 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                     </Link>
                 </SidebarHeader>
                 <SidebarMenu className="space-y-1">
-                    {topLevelNavItems.map(item => (
+                    {mainNavItems.map(item => (
                         <SidebarMenuItem key={item.href}>
                                 <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
                                 <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}
-                    
-                    <SidebarSeparator className="my-2" />
-
-                    {mainSections.map(section => {
-                        const isSectionActive = section.items.some(item => isActive(item.href));
-                        return (
-                             <SidebarMenuItem key={section.title}>
-                                <CollapsibleSidebarMenuItem
-                                    icon={section.icon}
-                                    title={section.title}
-                                    isActive={isSectionActive}
-                                >
-                                    <div className="space-y-1">
-                                        {section.items.map(item => (
-                                            <SidebarMenuButton key={item.href} asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'} size="sm" className="w-full justify-start gap-3">
-                                                <Link href={item.href}>
-                                                    <item.icon className="h-4 w-4" />
-                                                    {state === 'expanded' && <span>{item.label}</span>}
-                                                </Link>
-                                            </SidebarMenuButton>
-                                        ))}
-                                    </div>
-                                </CollapsibleSidebarMenuItem>
-                            </SidebarMenuItem>
-                        )
-                    })}
-
 
                     <div className="mt-auto pt-2">
                         <SidebarSeparator className="my-1" />

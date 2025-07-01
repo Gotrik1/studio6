@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { initialLfgLobbies, type LfgLobby as InitialLfgLobby } from '@/shared/lib/mock-data/lfg';
-import { PlusCircle, MapPin, Clock, Users, Gamepad2, UserPlus, Swords, Search, Loader2, Sparkles } from 'lucide-react';
+import { PlusCircle, MapPin, Clock, Users, Gamepad2, UserPlus, Swords, Search, Loader2, Sparkles, Users2, GraduationCap, UserSearch, BarChart3, Shapes } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -15,6 +15,7 @@ import { findLfgLobbies } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow'
 import type { LfgLobby as LfgLobbyType } from '@/shared/api/genkit/flows/schemas/find-lfg-lobbies-schema';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import Link from 'next/link';
 
 function LfgCard({ lobby, onJoin }: { lobby: LfgLobbyType, onJoin: (lobbyId: string) => void }) {
     return (
@@ -61,6 +62,27 @@ function LfgCard({ lobby, onJoin }: { lobby: LfgLobbyType, onJoin: (lobbyId: str
     );
 }
 
+const communityLinks = [
+    { href: "/friends", icon: Users2, title: "Друзья", description: "Ваш список друзей и заявки." },
+    { href: "/coaches", icon: GraduationCap, title: "Найти тренера", description: "Подберите наставника для роста." },
+    { href: "/scouting", icon: UserSearch, title: "Поиск игроков", description: "Найдите новых членов команды." },
+    { href: "/leaderboards", icon: BarChart3, title: "Таблицы лидеров", description: "Сравните свои результаты с лучшими." },
+    { href: "/sports", icon: Shapes, title: "Виды спорта", description: "Все доступные дисциплины." },
+];
+
+const CommunityLinkCard = ({ href, icon: Icon, title, description }: (typeof communityLinks)[0]) => (
+    <Card className="hover:bg-muted/50 transition-colors h-full">
+        <Link href={href} className="block p-4 h-full">
+            <div className="flex items-start gap-4">
+                <Icon className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                <div>
+                    <p className="font-semibold">{title}</p>
+                    <p className="text-sm text-muted-foreground">{description}</p>
+                </div>
+            </div>
+        </Link>
+    </Card>
+);
 
 export function LfgPage() {
     const { toast } = useToast();
@@ -181,6 +203,16 @@ export function LfgPage() {
                         <p>Попробуйте изменить запрос или создайте свое лобби.</p>
                     </div>
                 )}
+                
+                <div className="space-y-4 pt-6 mt-6 border-t">
+                    <h2 className="font-headline text-2xl font-bold">Разделы сообщества</h2>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {communityLinks.map(link => (
+                            <CommunityLinkCard key={link.href} {...link} />
+                        ))}
+                    </div>
+                </div>
+
             </div>
             <LfgCreateDialog 
                 isOpen={isCreateOpen}

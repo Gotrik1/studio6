@@ -21,6 +21,17 @@ const weeklyProgress = {
 
 const aiRecommendation = "Сделай акцент на спину — отстаёт в динамике по сравнению с грудными.";
 
+const trainingLinks = [
+    { href: "/training/log", icon: BookOpen, label: "Дневник" },
+    { href: "/training/programs", icon: Replace, label: "Программы" },
+    { href: "/training/exercises", icon: Dumbbell, label: "Упражнения" },
+    { href: "/training/calendar", icon: Calendar, label: "Календарь" },
+    { href: "/training/analytics", icon: BarChart3, label: "Аналитика" },
+    { href: "/training/records", icon: Award, label: "Рекорды" },
+    { href: "/training/measurements", icon: Ruler, label: "Замеры" },
+    { href: "/training/nutrition-diary", icon: HeartPulse, label: "Питание" },
+];
+
 
 export function TrainingCenterPage() {
     const { currentProgram } = useTraining();
@@ -78,17 +89,23 @@ export function TrainingCenterPage() {
                             <Button size="lg" asChild><Link href="/training/log">Начать тренировку</Link></Button>
                         </CardContent>
                     </Card>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <Button variant="outline" size="default" asChild><Link href="/training/log"><BookOpen className="mr-2 h-4 w-4" />Дневник</Link></Button>
-                        <Button variant="outline" size="default" asChild><Link href="/training/programs"><Replace className="mr-2 h-4 w-4" />Программы</Link></Button>
-                        <Button variant="outline" size="default" asChild><Link href="/training/exercises"><BookOpen className="mr-2 h-4 w-4" />Упражнения</Link></Button>
-                        <Button variant="outline" size="default" asChild><Link href="/training/calendar"><Calendar className="mr-2 h-4 w-4" />Календарь</Link></Button>
-                        <Button variant="outline" size="default" asChild><Link href="/training/analytics"><BarChart3 className="mr-2 h-4 w-4" />Аналитика</Link></Button>
-                        <Button variant="outline" size="default" asChild><Link href="/training/records"><Award className="mr-2 h-4 w-4" />Рекорды</Link></Button>
-                        <Button variant="outline" size="default" asChild><Link href="/training/measurements"><Ruler className="mr-2 h-4 w-4" />Замеры</Link></Button>
-                        <Button variant="outline" size="default" asChild><Link href="/training/nutrition-diary"><HeartPulse className="mr-2 h-4 w-4" />Питание</Link></Button>
-                    </div>
+                    
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Инструменты</CardTitle>
+                            <CardDescription>Все разделы тренировочного центра.</CardDescription>
+                        </CardHeader>
+                         <CardContent className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {trainingLinks.map(link => (
+                                <Button key={link.href} variant="outline" size="lg" asChild className="h-auto py-3 flex-col gap-2">
+                                    <Link href={link.href}>
+                                        <link.icon className="h-6 w-6" />
+                                        <span>{link.label}</span>
+                                    </Link>
+                                </Button>
+                            ))}
+                        </CardContent>
+                    </Card>
                 </div>
 
                 <aside className="space-y-6">
