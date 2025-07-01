@@ -53,6 +53,7 @@ import { Button } from '@/shared/ui/button';
 import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/shared/lib/utils';
+import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
 
 
 interface AppLayoutProps {
@@ -192,26 +193,31 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                         </SidebarMenuItem>
                     ))}
                     
-                    {mainSections.map(section => (
-                        <React.Fragment key={section.title}>
-                            <SidebarSeparator className="my-1" />
-                            <SidebarMenuItem>
-                                <div className={cn(
-                                    "px-3 py-2 text-xs font-semibold uppercase text-muted-foreground tracking-wider",
-                                    state === 'collapsed' && 'hidden'
-                                )}>
-                                    {section.title}
-                                </div>
+                    <SidebarSeparator className="my-2" />
+
+                    {mainSections.map(section => {
+                        const isSectionActive = section.items.some(item => isActive(item.href));
+                        return (
+                             <SidebarMenuItem key={section.title}>
+                                <CollapsibleSidebarMenuItem
+                                    icon={section.icon}
+                                    title={section.title}
+                                    isActive={isSectionActive}
+                                >
+                                    <div className="space-y-1">
+                                        {section.items.map(item => (
+                                            <SidebarMenuButton key={item.href} asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'} size="sm" className="w-full justify-start gap-3">
+                                                <Link href={item.href}>
+                                                    <item.icon className="h-4 w-4" />
+                                                    {state === 'expanded' && <span>{item.label}</span>}
+                                                </Link>
+                                            </SidebarMenuButton>
+                                        ))}
+                                    </div>
+                                </CollapsibleSidebarMenuItem>
                             </SidebarMenuItem>
-                            {section.items.map(item => (
-                                <SidebarMenuItem key={item.href}>
-                                    <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
-                                        <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
-                        </React.Fragment>
-                    ))}
+                        )
+                    })}
 
 
                     <div className="mt-auto pt-2">
