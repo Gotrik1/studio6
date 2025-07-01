@@ -99,7 +99,7 @@ const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: DaySec
                     </div>
                 ))}
                 <Button type="button" variant="outline" className="mt-4 w-full" onClick={() => openExercisePicker(dayIndex)}><PlusCircle className="mr-2 h-4 w-4" /> Добавить упражнение</Button>
-                <FormMessage>{(form.formState.errors.days?.[dayIndex]?.exercises as any)?.message}</FormMessage>
+                <FormMessage>{(form.formState.errors.days?.[dayIndex]?.exercises as { message: string })?.message}</FormMessage>
             </CardContent>
         </Card>
     );
@@ -159,6 +159,15 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
         form.setValue(`days.${currentDayIndex}.exercises`, [...dayExercises, ...newExercises]);
     };
 
+    const handleAddDay = () => {
+        const newDay: ProgramFormValues['days'][number] = {
+            title: `День ${fields.length + 1}`,
+            exercises: [],
+        };
+        append(newDay);
+    };
+
+
     return (
         <>
             <Form {...form}>
@@ -186,7 +195,7 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                     ))}
 
                     <CardFooter className="flex-col sm:flex-row justify-between gap-4 p-4">
-                        <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => append({ title: `День ${fields.length + 1}`, exercises: [] })}><PlusCircle className="mr-2 h-4 w-4" /> Добавить день</Button>
+                        <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={handleAddDay}><PlusCircle className="mr-2 h-4 w-4" /> Добавить день</Button>
                         <Button type="submit" className="w-full sm:w-auto" disabled={isSaving}>
                             {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                             {isEditMode ? 'Сохранить изменения' : 'Создать программу'}

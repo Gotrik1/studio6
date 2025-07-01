@@ -42,7 +42,6 @@ interface SetRowProps {
     control: Control<TrainingLogEntry>;
     exerciseIndex: number;
     setIndex: number;
-    setField: FieldArrayWithId<TrainingLogEntry, `exercises.${number}.sets`, "id">;
     personalRecords: PersonalRecord[];
     exercise: ExerciseLog;
 }
@@ -146,7 +145,6 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, lastPerformance, person
                            control={control}
                            exerciseIndex={exerciseIndex}
                            setIndex={setIndex}
-                           setField={setField}
                            personalRecords={personalRecords}
                            exercise={exercise}
                        />
@@ -310,13 +308,13 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                         {entry.notes && (
                             <div>
                                 <p className="font-semibold">Ваши заметки:</p>
-                                <p className="text-muted-foreground italic">&quot;{entry.notes}&quot;</p>
+                                <p className="text-muted-foreground italic">"{entry.notes}"</p>
                             </div>
                         )}
                         {entry.coachNotes && (
                             <div className="p-3 bg-primary/10 rounded-md">
                                 <p className="font-semibold flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /> Комментарий тренера:</p>
-                                <p className="text-muted-foreground italic">&quot;{entry.coachNotes}&quot;</p>
+                                <p className="text-muted-foreground italic">"{entry.coachNotes}"</p>
                             </div>
                         )}
                     </CardContent>

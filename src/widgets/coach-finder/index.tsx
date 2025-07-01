@@ -3,16 +3,16 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Textarea } from '@/shared/ui/textarea';
-import { findCoaches, type FindCoachesOutput } from '@/shared/api/genkit/flows/find-coaches-flow';
-import { Loader2, Sparkles, Send, Star, BrainCircuit } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { useToast } from '@/shared/hooks/use-toast';
-import { Skeleton } from '@/shared/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import Link from 'next/link';
+import { Send, Star, UserSearch } from 'lucide-react';
+import { useToast } from '@/shared/hooks/use-toast';
+import { Textarea } from '@/shared/ui/textarea';
+import { findCoaches, type FindCoachesOutput } from '@/shared/api/genkit/flows/find-coaches-flow';
+import { Loader2, Sparkles, BrainCircuit } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { Skeleton } from '@/shared/ui/skeleton';
 import { Separator } from '@/shared/ui/separator';
-import { Badge } from '@/shared/ui/badge';
 
 type Coach = FindCoachesOutput['recommendations'][0]['coach'];
 
