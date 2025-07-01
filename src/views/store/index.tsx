@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { storeItems as initialStoreItems, type StoreItem } from '@/shared/lib/mock-data/store';
+import { storeItems, type StoreItem } from '@/shared/lib/mock-data/store';
 import { Coins, ShoppingCart, Loader2, Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -12,8 +12,9 @@ import { findEquipment, type FindEquipmentOutput } from '@/shared/api/genkit/flo
 import { Textarea } from '@/shared/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { usePDEconomy } from '@/app/providers/pd-provider';
 
-function StoreItemCard({ item, onPurchase }: { item: StoreItem; onPurchase: (item: StoreItem) => void }) {
+function StoreItemCard({ item, onPurchase, disabled }: { item: StoreItem; onPurchase: (item: StoreItem) => void; disabled: boolean }) {
     return (
         <Card className="flex flex-col">
             <CardHeader className="p-0 relative h-40">
@@ -24,7 +25,7 @@ function StoreItemCard({ item, onPurchase }: { item: StoreItem; onPurchase: (ite
                 <CardDescription className="mt-2">{item.description}</CardDescription>
             </CardContent>
             <CardFooter>
-                <Button className="w-full" onClick={() => onPurchase(item)}>
+                <Button className="w-full" onClick={() => onPurchase(item)} disabled={disabled}>
                     <ShoppingCart className="mr-2 h-4 w-4" />
                     {item.isRealMoney ? `Купить за $${item.price}` : (
                         <>
@@ -41,6 +42,7 @@ function StoreItemCard({ item, onPurchase }: { item: StoreItem; onPurchase: (ite
 
 export function StorePage() {
     const { toast } = useToast();
+    const { balance, addTransaction } = usePDEconomy();
     const [prompt, setPrompt] = useState('Легкая игровая мышь для шутеров');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -73,20 +75,38 @@ export function StorePage() {
     };
     
     const handlePurchase = (item: StoreItem) => {
+        if (item.isRealMoney) {
+            toast({
+                title: 'Перенаправляем на страницу оплаты...',
+                description: 'Эта функция будет реализована в продакшен-версии.',
+            });
+            return;
+        }
+
+        if (balance < item.price) {
+            toast({
+                variant: 'destructive',
+                title: 'Недостаточно средств',
+                description: `У вас ${balance} PD, а для покупки нужно ${item.price} PD.`,
+            });
+            return;
+        }
+        
+        addTransaction(`Покупка: ${item.name}`, -item.price);
         toast({
             title: 'Покупка совершена!',
-            description: `Вы успешно приобрели "${item.name}".`,
+            description: `Вы успешно приобрели "${item.name}". С вашего счета списано ${item.price} PD.`,
         });
     };
     
-    const itemsToDisplay = result ? result.recommendations : initialStoreItems;
+    const itemsToDisplay = result ? result.recommendations : storeItems;
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Магазин</h1>
                 <p className="text-muted-foreground">
-                    Приобретайте подписки, бустеры и предметы кастомизации.
+                    Приобретайте подписки, бустеры и предметы кастомизации. Ваш баланс: <strong className="text-primary">{balance.toLocaleString('ru-RU')} PD</strong>
                 </p>
             </div>
             
@@ -124,7 +144,12 @@ export function StorePage() {
                 ))}
 
                 {!isLoading && itemsToDisplay.map(item => (
-                    <StoreItemCard key={item.id} item={item} onPurchase={handlePurchase} />
+                    <StoreItemCard
+                        key={item.id}
+                        item={item}
+                        onPurchase={handlePurchase}
+                        disabled={!item.isRealMoney && balance < item.price}
+                    />
                 ))}
             </div>
             {!isLoading && itemsToDisplay.length === 0 && (

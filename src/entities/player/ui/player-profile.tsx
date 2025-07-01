@@ -19,7 +19,6 @@ import { useState } from 'react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-import { PDWalletTab } from '@/widgets/pd-wallet-tab';
 import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
 import { ReportPlayerDialog } from '@/features/report-player-dialog';
 import Image from "next/image";
@@ -199,7 +198,6 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
                 <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
                 <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4"/>Команды</TabsTrigger>
                 <TabsTrigger value="gallery"><GalleryHorizontal className="mr-2 h-4 w-4"/>Галерея</TabsTrigger>
-                <TabsTrigger value="pd-wallet"><Coins className="mr-2 h-4 w-4"/>PD Кошелек</TabsTrigger>
                 </TabsList>
             </ScrollArea>
 
@@ -233,10 +231,6 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
             
             <TabsContent value="gallery" className="mt-4">
                 <GalleryTab gallery={gallery} isCurrentUser={isCurrentUser} />
-            </TabsContent>
-
-            <TabsContent value="pd-wallet" className="mt-4">
-                <PDWalletTab />
             </TabsContent>
             </Tabs>
         </div>

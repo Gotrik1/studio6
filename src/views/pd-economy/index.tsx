@@ -1,15 +1,16 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
-import { Coins, DollarSign, TrendingUp, TrendingDown, ArrowRight, ShieldCheck, ShoppingCart } from 'lucide-react';
-import { pdHistory } from "@/shared/lib/mock-data/gamification";
+import { Coins, DollarSign, TrendingUp, TrendingDown, ShieldCheck, ShoppingCart } from 'lucide-react';
 import { pdRules } from '@/shared/config/gamification';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { cn } from '@/shared/lib/utils';
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
+import { usePDEconomy } from '@/app/providers/pd-provider';
 
 const StatCard = ({ title, value, icon: Icon, className }: { title: string, value: string, icon: React.ElementType, className?: string }) => (
     <Card>
@@ -24,10 +25,11 @@ const StatCard = ({ title, value, icon: Icon, className }: { title: string, valu
 );
 
 export function PDEconomyPage() {
-    const totalEarned = pdHistory.filter(item => item.value > 0).reduce((sum, item) => sum + item.value, 0);
-    const totalSpent = pdHistory.filter(item => item.value < 0).reduce((sum, item) => sum + item.value, 0);
-    const balance = totalEarned + totalSpent;
+    const { history, balance } = usePDEconomy();
 
+    const totalEarned = history.filter(item => item.value > 0).reduce((sum, item) => sum + item.value, 0);
+    const totalSpent = history.filter(item => item.value < 0).reduce((sum, item) => sum + item.value, 0);
+    
     const earningRules = pdRules.filter(rule => rule.type === 'credit');
     const spendingRules = pdRules.filter(rule => rule.type === 'debit');
 
@@ -106,7 +108,7 @@ export function PDEconomyPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {pdHistory.map((tx) => {
+                            {history.map((tx) => {
                                 const rule = pdRules.find(r => r.id === tx.source);
                                 return (
                                     <TableRow key={tx.id}>
