@@ -39,7 +39,7 @@ export function TrainingCalendar() {
                 <Popover>
                     <PopoverTrigger asChild>
                          <div className="relative flex h-full w-full items-center justify-center">
-                            {props.children}
+                            {format(props.date, 'd')}
                             <div className="absolute bottom-1 flex gap-1">
                                 {dayWorkouts.map(workout => (
                                      <div key={workout.id} className={cn("h-1.5 w-1.5 rounded-full", statusMap[workout.status].color)} />
@@ -62,7 +62,7 @@ export function TrainingCalendar() {
             );
         }
 
-        return <div className="relative flex h-full w-full items-center justify-center">{props.children}</div>;
+        return <div className="relative flex h-full w-full items-center justify-center">{format(props.date, 'd')}</div>;
     }
 
     return (

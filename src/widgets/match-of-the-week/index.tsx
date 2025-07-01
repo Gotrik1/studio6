@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -93,7 +94,7 @@ export function MatchOfTheWeekWidget() {
                 <CardTitle className="absolute bottom-2 left-4 text-white font-headline text-xl shadow-lg">Матч недели</CardTitle>
             </div>
             <CardHeader>
-                <CardDescription>{result.summary.tournamentName}</CardDescription>
+                <CardDescription>{mockTournament.name}</CardDescription>
                  <p className="font-semibold">{result.summary.socialMediaPost}</p>
             </CardHeader>
             <CardContent>

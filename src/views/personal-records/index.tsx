@@ -77,7 +77,7 @@ export function PersonalRecordsPage() {
                                     <CardDescription>Прогресс вашего одноповторного максимума (1ПМ) с течением времени.</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <PersonalRecordHistoryChart data={selected1RMHistory} exerciseName={selectedRecord?.exercise || ''} />
+                                    <PersonalRecordHistoryChart data={selected1RMHistory} />
                                 </CardContent>
                             </Card>
                             <Card>

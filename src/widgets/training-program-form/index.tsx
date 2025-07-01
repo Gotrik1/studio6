@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useState } from 'react';
-import { useForm, useFieldArray, Control } from 'react-hook-form';
+import { useForm, useFieldArray, Control, useFormContext } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/shared/ui/button';
@@ -56,6 +57,7 @@ interface DaySectionProps {
 }
 
 const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: DaySectionProps) => {
+    const { formState } = useFormContext<ProgramFormValues>();
     const { fields, remove } = useFieldArray({
         control,
         name: `days.${dayIndex}.exercises`,
@@ -99,7 +101,7 @@ const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: DaySec
                     </div>
                 ))}
                 <Button type="button" variant="outline" className="mt-4 w-full" onClick={() => openExercisePicker(dayIndex)}><PlusCircle className="mr-2 h-4 w-4" /> Добавить упражнение</Button>
-                <FormMessage>{(form.formState.errors.days?.[dayIndex]?.exercises as { message: string })?.message}</FormMessage>
+                <FormMessage>{(formState.errors.days?.[dayIndex]?.exercises as { message: string })?.message}</FormMessage>
             </CardContent>
         </Card>
     );

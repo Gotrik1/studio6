@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { Sport } from '@/shared/lib/mock-data/sports';

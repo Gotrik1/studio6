@@ -25,10 +25,10 @@ export function AiAnalystTab({ user }: AiAnalystTabProps) {
                 <HolisticAnalysisTab />
             </TabsContent>
             <TabsContent value="esports" className="mt-4">
-                <EsportsAnalysisTab user={user} />
+                <EsportsAnalysisTab />
             </TabsContent>
             <TabsContent value="physical" className="mt-4">
-                <AiCoachTab user={user} />
+                <AiCoachTab />
             </TabsContent>
         </Tabs>
     );

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -14,7 +15,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import Image from 'next/image';
 import { generateMatchCommentary, type GenerateMatchCommentaryOutput } from "@/shared/api/genkit/flows/generate-match-commentary-flow";
 import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
-import { generateMatchPost } from '@/shared/api/genkit/flows/generate-match-post-flow';
+import { generateMatchPost, type GenerateMatchPostOutput } from '@/shared/api/genkit/flows/generate-match-post-flow';
 
 
 interface CrmTournamentMediaCenterProps {
