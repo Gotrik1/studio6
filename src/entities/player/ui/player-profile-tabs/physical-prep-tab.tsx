@@ -17,11 +17,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 export function PhysicalPrepTab() {
     const { personalRecords, trainingMetrics, volumeByMuscleGroupData } = getTrainingAnalytics(trainingLogData);
     const top5Records = personalRecords.slice(0, 5);
-
-    const [isFormCheckOpen, setIsFormCheckOpen] = useState(false);
-    const [selectedExercise, setSelectedExercise] = useState('Приседания со штангой');
-
     const uniqueExercisesWithRecords = [...new Set(personalRecords.map(pr => pr.exercise))];
+    
+    const [isFormCheckOpen, setIsFormCheckOpen] = useState(false);
+    const [selectedExercise, setSelectedExercise] = useState(uniqueExercisesWithRecords[0] || '');
+
 
     return (
         <>

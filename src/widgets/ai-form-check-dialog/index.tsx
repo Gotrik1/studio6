@@ -13,7 +13,7 @@ import {
 import { Button } from "@/shared/ui/button";
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { Loader2, Sparkles, BrainCircuit, AlertCircle, Upload, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, BrainCircuit, AlertCircle, Upload, CheckCircle, XCircle } from "lucide-react";
 import { analyzeExerciseForm, type AnalyzeExerciseFormOutput } from '@/shared/api/genkit/flows/analyze-exercise-form-flow';
 
 interface AiFormCheckDialogProps {
