@@ -8,6 +8,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { Loader2, Sparkles, BrainCircuit, AlertCircle, TrendingUp, TrendingDown, ClipboardList } from "lucide-react";
 import { analyzeEsportsPerformance, type AnalyzeEsportsPerformanceOutput } from '@/shared/api/genkit/flows/analyze-esports-performance-flow';
 
+
 // Mock data for a player's esports performance
 const mockEsportsData = {
     playerStats: "Role: Duelist, KDA: 1.4, Win Rate: 62%, Favorite Map: Ascent",

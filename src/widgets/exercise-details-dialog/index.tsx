@@ -4,8 +4,7 @@ import { useMemo } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
-import { Separator } from '@/shared/ui/separator';
-import { AlertTriangle, CheckCircle, LineChart, Award, TrendingUp, Dumbbell, Video } from 'lucide-react';
+import { AlertTriangle, CheckCircle, LineChart, Award, TrendingUp, Video } from 'lucide-react';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 import { PersonalRecordHistoryChart } from '@/widgets/analytics-charts/personal-record-chart';
@@ -69,7 +68,7 @@ export function ExerciseDetailsPage({ exercise }: ExerciseDetailsPageProps) {
                                 <CardDescription>Прогресс вашего одноповторного максимума (1ПМ).</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <PersonalRecordHistoryChart data={history1RM} exerciseName={exercise.name} />
+                                <PersonalRecordHistoryChart data={history1RM} />
                             </CardContent>
                         </Card>
                     )}

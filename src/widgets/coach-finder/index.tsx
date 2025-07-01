@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -13,6 +12,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import Link from 'next/link';
 import { Separator } from '@/shared/ui/separator';
+import { Badge } from '@/shared/ui/badge';
 
 type Coach = FindCoachesOutput['recommendations'][0]['coach'];
 

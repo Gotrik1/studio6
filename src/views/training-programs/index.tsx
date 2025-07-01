@@ -1,8 +1,6 @@
-
-
 'use client';
 
-import { Card, CardContent, CardDescription, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { useTraining } from '@/app/providers/training-provider';
@@ -88,12 +86,14 @@ export function TrainingProgramsPage() {
                                 </DropdownMenu>
                             </div>
                         </div>
-                        <CardContent className="p-6 flex-1">
+                        <CardHeader className="p-6">
                             <Link href={`/training/programs/${program.id}`} className="block">
                                 <CardTitle className="font-headline group-hover:text-primary transition-colors">{program.name}</CardTitle>
                                 <CardDescription className="mt-2 text-sm">{program.description}</CardDescription>
                             </Link>
-                            <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
+                        </CardHeader>
+                        <CardContent className="p-6 pt-0 mt-auto">
+                            <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
                                 <span className="flex items-center"><Target className="mr-1.5 h-4 w-4" />{program.goal}</span>
                                 <span className="flex items-center"><CalendarDays className="mr-1.5 h-4 w-4" />{program.daysPerWeek} дн/нед</span>
                                 <span className="flex items-center"><Dumbbell className="mr-1.5 h-4 w-4" />{program.splitType}</span>

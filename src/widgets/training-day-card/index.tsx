@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -7,7 +6,7 @@ import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown, Link2, Award } from 'lucide-react';
-import type { TrainingLogEntry, ExerciseLog, LoggedSet } from '@/shared/lib/mock-data/training-log';
+import type { TrainingLogEntry, ExerciseLog } from '@/shared/lib/mock-data/training-log';
 import { cn } from '@/shared/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { Separator } from '@/shared/ui/separator';

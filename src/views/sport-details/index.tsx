@@ -13,6 +13,7 @@ import { matchesList } from '@/shared/lib/mock-data/matches';
 import Link from 'next/link';
 import { cn } from '@/shared/lib/utils';
 import { AiSportSummary } from '@/widgets/ai-sport-summary';
+import { Star } from 'lucide-react';
 
 interface SportDetailsPageProps {
     sport: Sport;
@@ -127,7 +128,7 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
                                         <TableRow key={player.rank}>
                                             <TableCell>
                                                 <div className={cn("flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold", getRankColor(player.rank))}>
-                                                    {player.rank}
+                                                     {player.rank === 1 ? <Star className="h-4 w-4"/> : player.rank}
                                                 </div>
                                             </TableCell>
                                             <TableCell>

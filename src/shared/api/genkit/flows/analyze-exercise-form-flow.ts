@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for analyzing a user's exercise form from a video.
@@ -19,6 +18,24 @@ export async function analyzeExerciseForm(input: AnalyzeExerciseFormInput): Prom
   return analyzeExerciseFormFlow(input);
 }
 
+const prompt = ai.definePrompt({
+  name: 'analyzeExerciseFormPrompt',
+  input: {schema: AnalyzeExerciseFormInputSchema},
+  output: {schema: AnalyzeExerciseFormOutputSchema},
+  prompt: `You are an expert fitness coach and kinesiologist. Your task is to analyze the user's exercise form from the provided video and give clear, actionable feedback. Respond in Russian.
+
+  Exercise: {{{exerciseName}}}
+  Video: {{media url=videoDataUri}}
+
+  INSTRUCTIONS:
+  1.  **Overall Assessment**: Give a brief, overall assessment of the form (e.g., "Good, but a few things to tweak," or "Needs significant improvement for safety.").
+  2.  **Positive Points**: Identify 2-3 things the user is doing correctly. This is important for encouragement.
+  3.  **Corrections**: Identify up to 3 of the most critical errors in their form. For each error, specify the body part or aspect (e.g., "Back," "Knee Position," "Depth") and provide a simple, clear instruction on how to fix it.
+  
+  Focus on safety and effectiveness. Be encouraging but direct.
+  `,
+});
+
 const analyzeExerciseFormFlow = ai.defineFlow(
   {
     name: 'analyzeExerciseFormFlow',
@@ -30,6 +47,10 @@ const analyzeExerciseFormFlow = ai.defineFlow(
     // For this prototype, we will return a mock result to demonstrate the UI flow.
     // The actual prompt is correctly set up for a real implementation.
     console.log(`Analyzing exercise form for: ${input.exerciseName} with video...`);
+    
+    // To use the real AI, you would uncomment the following line and remove the mock logic.
+    // const { output } = await prompt(input);
+    // return output!;
     
     // Simulate network delay for AI processing
     await new Promise(resolve => setTimeout(resolve, 2500));

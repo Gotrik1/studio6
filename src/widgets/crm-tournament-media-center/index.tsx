@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Loader2, Sparkles, AlertCircle, Award, Share2, Copy, Download, Volume2 } from 'lucide-react';
+import { Loader2, Sparkles, AlertCircle, Award, Share2, Copy, Download, Volume2, Mic } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateTournamentSummary, type GenerateTournamentSummaryOutput } from '@/shared/api/genkit/flows/generate-tournament-summary-flow';
 import { generatePostImage, type GeneratePostImageOutput } from '@/shared/api/genkit/flows/generate-post-image-flow';
@@ -14,6 +14,8 @@ import { useToast } from '@/shared/hooks/use-toast';
 import Image from 'next/image';
 import { generateMatchCommentary, type GenerateMatchCommentaryOutput } from "@/shared/api/genkit/flows/generate-match-commentary-flow";
 import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
+import { generateMatchPost } from '@/shared/api/genkit/flows/generate-match-post-flow';
+
 
 interface CrmTournamentMediaCenterProps {
     tournament: {
@@ -45,7 +47,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
 
     const [isGeneratingPost, setIsGeneratingPost] = useState(false);
     const [postError, setPostError] = useState<string | null>(null);
-    const [postResult, setPostResult] = useState<GeneratePostImageOutput | null>(null);
+    const [postResult, setPostResult] = useState<GenerateMatchPostOutput | null>(null);
 
     const [isGeneratingCommentary, setIsGeneratingCommentary] = useState(false);
     const [commentaryError, setCommentaryError] = useState<string | null>(null);
@@ -107,7 +109,12 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
         setPostResult(null);
     
         try {
-            const postData = await generatePostImage(summaryResult.socialMediaPost);
+            const postData = await generateMatchPost({
+                winningTeam: mockChampion,
+                losingTeam: mockFinalMatch.team2,
+                score: mockFinalMatch.score,
+                matchSummary: summaryResult.summaryArticle,
+            });
             setPostResult(postData);
         } catch (e) {
             console.error("AI Post generation failed:", e);
@@ -142,8 +149,8 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
             setIsGeneratingCommentary(false);
         }
     };
-
-    const handleCopyText = (text: string) => {
+    
+     const handleCopyText = (text: string) => {
         if (text) {
           navigator.clipboard.writeText(text);
           toast({
@@ -191,7 +198,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                             <CardHeader><CardTitle>Итоговая статья</CardTitle></CardHeader>
                             <CardContent>
                                 <Textarea readOnly value={summaryResult.summaryArticle} className="h-48" />
-                                <Button variant="ghost" size="sm" onClick={() => handleCopyText(summaryResult.summaryArticle)} className="mt-2">Копировать</Button>
+                                <Button variant="ghost" size="sm" onClick={() => handleCopyText(summaryResult.summaryArticle)} className="mt-2"><Copy className="mr-2 h-4 w-4"/>Копировать</Button>
                             </CardContent>
                         </Card>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -204,17 +211,46 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                     <p className="text-sm text-muted-foreground">{summaryResult.mvp.reason}</p>
                                 </CardContent>
                             </Card>
-                             <Card>
+                            <Card>
                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><Share2 className="text-blue-500" /> Пост для соцсетей</CardTitle>
+                                    <CardTitle>Интерактивные медиа</CardTitle>
+                                    <CardDescription>Озвучка, интервью и SMM.</CardDescription>
                                 </CardHeader>
-                                <CardContent>
-                                    <Textarea readOnly value={summaryResult.socialMediaPost} className="h-24" />
-                                     <Button variant="ghost" size="sm" onClick={() => handleCopyText(summaryResult.socialMediaPost)} className="mt-2">Копировать</Button>
+                                <CardContent className="space-y-2">
+                                     <Button variant="outline" className="w-full justify-start" onClick={handleGenerateCommentary} disabled={isGeneratingCommentary}><Volume2 className="mr-2 h-4 w-4"/> {isGeneratingCommentary ? 'Генерация...' : 'Комментарий матча'}</Button>
+                                     <Button variant="outline" className="w-full justify-start" onClick={handleGenerateInterview} disabled={isGeneratingInterview}><Mic className="mr-2 h-4 w-4"/> {isGeneratingInterview ? 'Генерация...' : 'Интервью с MVP'}</Button>
+                                     <Button variant="outline" className="w-full justify-start" onClick={handleGeneratePost} disabled={isGeneratingPost}><Share2 className="mr-2 h-4 w-4"/> {isGeneratingPost ? 'Генерация...' : 'Пост для соцсетей'}</Button>
                                 </CardContent>
                             </Card>
                         </div>
-                         <Card>
+                        {commentaryError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{commentaryError}</AlertDescription></Alert>}
+                        {commentaryResult && <audio controls src={commentaryResult.audioDataUri} className="w-full" />}
+
+                        {interviewError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{interviewError}</AlertDescription></Alert>}
+                        {interviewResult && <audio controls src={interviewResult.audioDataUri} className="w-full" />}
+
+                        {postError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{postError}</AlertDescription></Alert>}
+                        {postResult && (
+                             <Card>
+                                <CardHeader><CardTitle>SMM Пост</CardTitle></CardHeader>
+                                <CardContent className="space-y-4">
+                                     <div className="relative aspect-video w-full overflow-hidden rounded-md border">
+                                        <Image src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover"/>
+                                    </div>
+                                    <Label htmlFor="post-text">Текст поста</Label>
+                                    <Textarea id="post-text" value={summaryResult.socialMediaPost} readOnly className="h-24"/>
+                                     <div className="flex gap-2">
+                                        <Button onClick={() => handleCopyText(summaryResult.socialMediaPost)}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
+                                        <Button variant="outline" asChild>
+                                            <a href={postResult.imageDataUri} download="match_post_image.png">
+                                                <Download className="mr-2 h-4 w-4"/> Скачать изображение
+                                            </a>
+                                        </Button>
+                                    </div>
+                                </CardContent>
+                             </Card>
+                        )}
+                        <Card>
                             <CardHeader>
                                 <CardTitle>Сгенерированные изображения</CardTitle>
                             </CardHeader>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -7,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Textarea } from '@/shared/ui/textarea';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
-import { Loader2, Sparkles, Lightbulb, BarChartHorizontal, Mic, Users, TrendingUp, TrendingDown, ClipboardList, User as UserIcon, Gavel } from 'lucide-react';
+import { Loader2, Sparkles, Lightbulb, BarChartHorizontal, Mic, Users, TrendingUp, TrendingDown, ClipboardList, User as UserIcon, Gavel, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Skeleton } from '@/shared/ui/skeleton';
