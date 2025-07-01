@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { AlertTriangle, CheckCircle, LineChart, Award, TrendingUp, Video } from 'lucide-react';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';

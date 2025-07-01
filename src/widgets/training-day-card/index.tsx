@@ -11,7 +11,7 @@ import { cn } from '@/shared/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { Separator } from '@/shared/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
-import { useForm, useFieldArray, useWatch, Control, FieldArrayWithId } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch, Control } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
@@ -288,7 +288,7 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
 
                          <div className="mt-6 space-y-4">
                             <FormField control={form.control} name="notes" render={({ field }) => (
-                                <FormItem><FormLabel>Заметки к тренировке</FormLabel><FormControl><Textarea placeholder="Как прошла тренировка?" {...field} value={field.value ?? ''} /></FormControl></FormItem>
+                                <FormItem><FormLabel>Заметки к тренировке</FormLabel><FormControl><Textarea placeholder={'Как прошла тренировка?'} {...field} value={field.value ?? ''} /></FormControl></FormItem>
                             )} />
                             <FormField control={form.control} name="mood" render={({ field }) => (
                                  <FormItem><FormLabel>Самочувствие</FormLabel><FormControl><div className="flex gap-2">{Object.entries(moodMap).map(([key, value]) => (<Button key={key} type="button" variant={field.value === key ? 'default' : 'outline'} size="icon" onClick={() => field.onChange(key)}><value.icon /></Button>))}</div></FormControl></FormItem>
@@ -308,13 +308,13 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                         {entry.notes && (
                             <div>
                                 <p className="font-semibold">Ваши заметки:</p>
-                                <p className="text-muted-foreground italic">"{entry.notes}"</p>
+                                <p className="text-muted-foreground italic">&quot;{entry.notes}&quot;</p>
                             </div>
                         )}
                         {entry.coachNotes && (
                             <div className="p-3 bg-primary/10 rounded-md">
                                 <p className="font-semibold flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /> Комментарий тренера:</p>
-                                <p className="text-muted-foreground italic">"{entry.coachNotes}"</p>
+                                <p className="text-muted-foreground italic">&quot;{entry.coachNotes}&quot;</p>
                             </div>
                         )}
                     </CardContent>

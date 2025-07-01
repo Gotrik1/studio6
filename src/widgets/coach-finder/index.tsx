@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/shared/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import Link from 'next/link';
-import { Send, Star, UserSearch } from 'lucide-react';
+import { Send, Star } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Textarea } from '@/shared/ui/textarea';
 import { findCoaches, type FindCoachesOutput } from '@/shared/api/genkit/flows/find-coaches-flow';
