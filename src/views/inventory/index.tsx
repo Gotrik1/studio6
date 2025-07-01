@@ -10,6 +10,7 @@ import { inventory, type InventoryItem } from '@/shared/lib/mock-data/inventory'
 import Image from 'next/image';
 import { differenceInMonths } from 'date-fns';
 import { AiEquipmentAdvisor } from '@/widgets/ai-equipment-advisor';
+import { AddItemDialog } from '@/widgets/add-item-dialog';
 
 const getWearPercentage = (purchaseDate: string, lifespanMonths: number) => {
     const monthsUsed = differenceInMonths(new Date(), new Date(purchaseDate));
@@ -45,33 +46,55 @@ function InventoryItemCard({ item }: { item: InventoryItem }) {
 
 export function InventoryPage() {
     const [items, setItems] = useState<InventoryItem[]>(inventory);
+    const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+
+    const handleAddItem = (newItemData: Omit<InventoryItem, 'id' | 'image' | 'imageHint'>) => {
+        const newItem: InventoryItem = {
+            id: `item-${Date.now()}`,
+            image: 'https://placehold.co/600x400.png',
+            imageHint: 'new item',
+            ...newItemData
+        };
+        setItems(prev => [newItem, ...prev]);
+    };
     
     return (
-         <div className="space-y-6 opacity-0 animate-fade-in-up">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                        <Backpack className="h-8 w-8 text-primary"/>
-                        <h1 className="font-headline text-3xl font-bold tracking-tight">Мой инвентарь</h1>
+         <>
+             <div className="space-y-6 opacity-0 animate-fade-in-up">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-3">
+                            <Backpack className="h-8 w-8 text-primary"/>
+                            <h1 className="font-headline text-3xl font-bold tracking-tight">Мой инвентарь</h1>
+                        </div>
+                        <p className="text-muted-foreground">
+                            Отслеживайте свой спортивный и игровой инвентарь, чтобы всегда быть в лучшей форме.
+                        </p>
                     </div>
-                    <p className="text-muted-foreground">
-                        Отслеживайте свой спортивный и игровой инвентарь, чтобы всегда быть в лучшей форме.
-                    </p>
+                    <Button onClick={() => setIsAddDialogOpen(true)}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Добавить предмет
+                    </Button>
                 </div>
-                <Button disabled>
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Добавить предмет (Скоро)
-                </Button>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6 self-start">
+                         {items.length > 0 ? items.map(item => <InventoryItemCard key={item.id} item={item} />) : (
+                            <Card className="sm:col-span-2 flex items-center justify-center h-48">
+                                <p className="text-muted-foreground">Ваш инвентарь пуст. Добавьте первый предмет!</p>
+                            </Card>
+                        )}
+                    </div>
+                    <div className="lg:col-span-1">
+                        <AiEquipmentAdvisor />
+                    </div>
+                </div>
             </div>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6 self-start">
-                     {items.map(item => <InventoryItemCard key={item.id} item={item} />)}
-                </div>
-                <div className="lg:col-span-1">
-                    <AiEquipmentAdvisor />
-                </div>
-            </div>
-        </div>
+            <AddItemDialog 
+                isOpen={isAddDialogOpen}
+                onOpenChange={setIsAddDialogOpen}
+                onAddItem={handleAddItem}
+            />
+        </>
     );
 }
