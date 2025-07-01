@@ -1,9 +1,11 @@
 'use client';
 
-import { Card, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
-import { WinLossChart } from '@/widgets/analytics-charts/win-loss-chart';
-import { winLossData } from '@/shared/lib/mock-data/player-stats';
+import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { Target, Shield, Handshake, Footprints } from 'lucide-react';
+import { KdaChart } from '@/widgets/analytics-charts/kda-chart'; // Reusing for goals/match
+import { WinrateByMapChart } from '@/widgets/analytics-charts/winrate-by-map-chart'; // Reusing for winrate/stadium
+import { goalDynamicsData } from '@/shared/lib/mock-data/goal-dynamics';
+import { winrateByStadiumData } from '@/shared/lib/mock-data/winrate-by-stadium';
 
 const playerStats = {
     matches: 218,
@@ -16,6 +18,10 @@ const playerStats = {
 
 
 export function StatsTab() {
+    // Adapt data for the charts
+    const goalChartData = goalDynamicsData.map(d => ({ month: d.month, kda: d.ratio }));
+    const stadiumWinrateData = winrateByStadiumData.map(d => ({ map: d.stadium, winrate: d.winrate }));
+
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -58,8 +64,25 @@ export function StatsTab() {
                     </CardHeader>
                 </Card>
             </div>
-             <div className="grid grid-cols-1">
-                <WinLossChart data={winLossData} />
+             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Динамика голов за матч</CardTitle>
+                        <CardDescription>Среднее количество голов за матч в последние 5 месяцев.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <KdaChart data={goalChartData} />
+                    </CardContent>
+                </Card>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Процент побед по стадионам</CardTitle>
+                        <CardDescription>Ваша эффективность на разных полях.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <WinrateByMapChart data={stadiumWinrateData} />
+                    </CardContent>
+                </Card>
             </div>
         </div>
     );
