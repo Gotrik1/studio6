@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -11,6 +10,19 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { UserTable } from '@/entities/user/ui/user-table';
 import { UserEditDialog } from '@/widgets/user-edit-dialog';
 import { UserPdDialog } from '@/widgets/user-pd-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/ui/alert-dialog";
+import { Button, buttonVariants } from '@/shared/ui/button';
+import { cn } from '@/shared/lib/utils';
+
 
 type User = (typeof UserListType)[0];
 
@@ -32,6 +44,11 @@ export function UserManagementPage() {
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [pdAction, setPdAction] = useState<'credit' | 'debit' | null>(null);
 
+    // Alert dialog state for ban/unban
+    const [isAlertOpen, setIsAlertOpen] = useState(false);
+    const [userToAction, setUserToAction] = useState<User | null>(null);
+    const [actionType, setActionType] = useState<'ban' | 'unban' | null>(null);
+
     const filteredUsers = useMemo(() => {
         return users.filter(user => {
             const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) || user.email.toLowerCase().includes(searchQuery.toLowerCase());
@@ -41,9 +58,26 @@ export function UserManagementPage() {
         });
     }, [users, searchQuery, roleFilter, statusFilter]);
 
-    const handleBanUser = (userId: string) => {
-        setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: 'Забанен' } : u));
-        toast({ title: 'Пользователь забанен', description: 'Статус пользователя был изменен на "Забанен".' });
+    const handleOpenBanUnbanDialog = (user: User, type: 'ban' | 'unban') => {
+        setUserToAction(user);
+        setActionType(type);
+        setIsAlertOpen(true);
+    };
+
+    const handleConfirmAction = () => {
+        if (!userToAction || !actionType) return;
+
+        if (actionType === 'ban') {
+            setUsers(prev => prev.map(u => u.id === userToAction.id ? { ...u, status: 'Забанен' } : u));
+            toast({ title: 'Пользователь забанен', description: `Статус пользователя ${userToAction.name} был изменен на "Забанен".` });
+        } else if (actionType === 'unban') {
+             setUsers(prev => prev.map(u => u.id === userToAction.id ? { ...u, status: 'Активен' } : u));
+            toast({ title: 'Пользователь разбанен', description: `Статус пользователя ${userToAction.name} был изменен на "Активен".`, className: 'bg-green-100 dark:bg-green-900 border-green-500' });
+        }
+        
+        setIsAlertOpen(false);
+        setUserToAction(null);
+        setActionType(null);
     };
     
     const handleEditUser = (user: User) => {
@@ -63,69 +97,94 @@ export function UserManagementPage() {
     };
 
     return (
-        <div className="space-y-6 opacity-0 animate-fade-in-up">
-            <div className="space-y-2">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Управление пользователями</h1>
-                <p className="text-muted-foreground">Просмотр, редактирование и управление пользователями платформы.</p>
-            </div>
-            
-            <Card>
-                <CardHeader>
-                    <CardTitle>Фильтры</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col sm:flex-row gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input 
-                            placeholder="Поиск по имени или email..." 
-                            className="w-full pl-10"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
-                     <Select value={roleFilter} onValueChange={setRoleFilter}>
-                        <SelectTrigger className="w-full sm:w-[180px]">
-                            <SelectValue placeholder="Роль" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {allRoles.map(role => (
-                                <SelectItem key={role} value={role}>{role}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                     <Select value={statusFilter} onValueChange={setStatusFilter}>
-                        <SelectTrigger className="w-full sm:w-[180px]">
-                            <SelectValue placeholder="Статус" />
-                        </SelectTrigger>
-                        <SelectContent>
-                             {allStatuses.map(status => (
-                                <SelectItem key={status} value={status}>{status}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </CardContent>
-            </Card>
-            
-            <UserTable 
-                users={filteredUsers}
-                onBanUser={handleBanUser}
-                onEditUser={handleEditUser}
-                onPdAction={handlePdAction}
-            />
-            
-            <UserEditDialog 
-                user={selectedUser}
-                isOpen={isEditDialogOpen}
-                onOpenChange={setIsEditDialogOpen}
-                onUserUpdate={handleUserUpdate}
-            />
+        <>
+            <div className="space-y-6 opacity-0 animate-fade-in-up">
+                <div className="space-y-2">
+                    <h1 className="font-headline text-3xl font-bold tracking-tight">Управление пользователями</h1>
+                    <p className="text-muted-foreground">Просмотр, редактирование и управление пользователями платформы.</p>
+                </div>
+                
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Фильтры</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex flex-col sm:flex-row gap-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <Input 
+                                placeholder="Поиск по имени или email..." 
+                                className="w-full pl-10"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                         <Select value={roleFilter} onValueChange={setRoleFilter}>
+                            <SelectTrigger className="w-full sm:w-[180px]">
+                                <SelectValue placeholder="Роль" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {allRoles.map(role => (
+                                    <SelectItem key={role} value={role}>{role}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                         <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <SelectTrigger className="w-full sm:w-[180px]">
+                                <SelectValue placeholder="Статус" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                 {allStatuses.map(status => (
+                                    <SelectItem key={status} value={status}>{status}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </CardContent>
+                </Card>
+                
+                <UserTable 
+                    users={filteredUsers}
+                    onOpenBanUnbanDialog={handleOpenBanUnbanDialog}
+                    onEditUser={handleEditUser}
+                    onPdAction={handlePdAction}
+                />
+                
+                <UserEditDialog 
+                    user={selectedUser}
+                    isOpen={isEditDialogOpen}
+                    onOpenChange={setIsEditDialogOpen}
+                    onUserUpdate={handleUserUpdate}
+                />
 
-            <UserPdDialog
-                user={selectedUser}
-                action={pdAction}
-                isOpen={isPdDialogOpen}
-                onOpenChange={setIsPdDialogOpen}
-            />
-        </div>
+                <UserPdDialog
+                    user={selectedUser}
+                    action={pdAction}
+                    isOpen={isPdDialogOpen}
+                    onOpenChange={setIsPdDialogOpen}
+                />
+            </div>
+
+            <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        Вы собираетесь {actionType === 'ban' ? 'забанить' : 'разбанить'} пользователя 
+                        <span className="font-bold"> {userToAction?.name}</span>. Это действие можно будет отменить.
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                    <AlertDialogCancel>Отмена</AlertDialogCancel>
+                    <Button
+                        onClick={handleConfirmAction}
+                        className={cn(
+                            actionType === 'ban' ? buttonVariants({ variant: 'destructive' }) : 'bg-green-600 hover:bg-green-700 text-primary-foreground'
+                        )}
+                    >
+                        {actionType === 'ban' ? 'Да, забанить' : 'Да, разбанить'}
+                    </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     );
 }
