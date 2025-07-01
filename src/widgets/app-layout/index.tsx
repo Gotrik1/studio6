@@ -45,6 +45,7 @@ import {
   BarChart3,
   Backpack,
   Shapes,
+  BrainCircuit,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";

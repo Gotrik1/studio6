@@ -49,3 +49,4 @@ import './flows/generate-nutrition-plan-flow';
 import './flows/find-lfg-lobbies-flow';
 import './flows/predict-match-outcome-flow';
 import './flows/find-equipment-flow';
+import './flows/analyze-holistic-performance-flow';
