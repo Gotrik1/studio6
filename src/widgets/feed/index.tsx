@@ -91,9 +91,9 @@ const AchievementPost = ({ item }: { item: AchievementFeedItem }) => (
 
 const FeedSkeleton = () => (
     <>
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-56 w-full" />
-        <Skeleton className="h-48 w-full" />
+        <Skeleton className="h-36 w-full" />
+        <Skeleton className="h-52 w-full" />
+        <Skeleton className="h-44 w-full" />
     </>
 );
 
@@ -101,10 +101,10 @@ export function Feed() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Simulate loading data to demonstrate the skeleton animation
+        // Simulate loading data
         const timer = setTimeout(() => {
             setIsLoading(false);
-        }, 3000); // 3 second delay to make the animation visible
+        }, 1500); 
 
         return () => clearTimeout(timer);
     }, []);

@@ -36,7 +36,7 @@ export function AiNewsDigest() {
     }, []);
 
     if (isLoading) {
-        return <Skeleton className="w-full h-80" />;
+        return <Skeleton className="w-full h-64" />;
     }
 
     if (error) {
