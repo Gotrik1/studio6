@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
 import Image from 'next/image';
-import { CheckCircle, XCircle, Award, BrainCircuit, Loader2, Sparkles, AlertCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Award, BrainCircuit, Loader2, Sparkles } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { Separator } from '@/shared/ui/separator';
 import { predictMatchOutcome, type PredictMatchOutcomeOutput } from '@/shared/api/genkit/flows/predict-match-outcome-flow';

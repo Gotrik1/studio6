@@ -49,6 +49,57 @@ interface TrainingProgramFormProps {
     isSaving: boolean;
 }
 
+const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: { dayIndex: number, control: any, removeDay: (index: number) => void, openExercisePicker: (dayIndex: number) => void }) => {
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: `days.${dayIndex}.exercises`,
+    });
+
+    return (
+        <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+                <div className="flex-1">
+                    <FormField control={control} name={`days.${dayIndex}.title`} render={({ field }) => (<FormItem><FormLabel className="sr-only">Название дня</FormLabel><FormControl><Input placeholder="Название дня, например 'День 1: Грудь'" {...field} className="text-lg font-semibold border-0 p-0 shadow-none focus-visible:ring-0" /></FormControl><FormMessage /></FormItem>)} />
+                </div>
+                <Button type="button" variant="ghost" size="icon" onClick={() => removeDay(dayIndex)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
+            </CardHeader>
+            <CardContent>
+                <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] items-center gap-2 py-2 text-xs text-muted-foreground border-b">
+                    <div className="w-5" />
+                    <div className="font-medium">Упражнение</div>
+                    <div className="w-20 text-center">Подходы</div>
+                    <div className="w-20 text-center">Повторения</div>
+                    <div className="w-20 text-center">Вес (план)</div>
+                    <div className="w-24 text-center">Техника</div>
+                    <div className="w-28 text-center">Суперсет</div>
+                    <div className="w-9" />
+                </div>
+                {fields.map((exField, exIndex) => (
+                    <div key={exField.id} className="border-b last:border-b-0 py-2">
+                        <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] items-center gap-2">
+                            <GripVertical className="h-5 w-5 text-muted-foreground cursor-move" />
+                            <span className="font-medium">{exField.name}</span>
+                            <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormControl><Input placeholder="3-4" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
+                            <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormControl><Input placeholder="8-12" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
+                            <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.plannedWeight`} render={({ field }) => (<FormItem><FormControl><Input placeholder="100кг" {...field} value={field.value ?? ''} className="w-20 text-center" /></FormControl></FormItem>)} />
+                            <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.technique`} render={({ field }) => (<FormItem><FormControl><Input placeholder="Дроп-сет" {...field} value={field.value ?? ''} className="w-24 text-center" /></FormControl></FormItem>)} />
+                            <div className="w-28 flex items-center justify-center">
+                                 {exIndex > 0 && (
+                                    <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.isSupersetWithPrevious`} render={({ field }) => (<FormItem className="flex items-center space-x-2"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="!mt-0 text-xs text-muted-foreground flex items-center gap-1"><Link2 className="h-3 w-3" />Суперсет</FormLabel></FormItem>)} />
+                                )}
+                            </div>
+                            <Button type="button" variant="ghost" size="icon" onClick={() => remove(exIndex)}><Trash2 className="h-4 w-4" /></Button>
+                        </div>
+                    </div>
+                ))}
+                <Button type="button" variant="outline" className="mt-4 w-full" onClick={() => openExercisePicker(dayIndex)}><PlusCircle className="mr-2 h-4 w-4" /> Добавить упражнение</Button>
+                <FormMessage>{(form.formState.errors.days?.[dayIndex]?.exercises as any)?.message}</FormMessage>
+            </CardContent>
+        </Card>
+    );
+};
+
+
 export function TrainingProgramForm({ initialData, onSubmit, isSaving }: TrainingProgramFormProps) {
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
@@ -89,13 +140,6 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
         control: form.control,
         name: 'days',
     });
-    
-    const dayFieldArrays = fields.map((_field, index) => {
-        return useFieldArray({
-            control: form.control,
-            name: `days.${index}.exercises`
-        });
-    });
 
     const openExercisePicker = (dayIndex: number) => {
         setCurrentDayIndex(dayIndex);
@@ -104,10 +148,9 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
 
     const handleSelectExercises = (exercises: Exercise[]) => {
         if (currentDayIndex === null) return;
-        const exerciseControls = dayFieldArrays[currentDayIndex];
-        exercises.forEach(ex => {
-            exerciseControls.append({ id: ex.id, name: ex.name, sets: '3-4', reps: '8-12', plannedWeight: '', isSupersetWithPrevious: false, technique: '' });
-        });
+        const dayExercises = form.getValues(`days.${currentDayIndex}.exercises`) || [];
+        const newExercises = exercises.map(ex => ({ id: ex.id, name: ex.name, sets: '3-4', reps: '8-12', plannedWeight: '', isSupersetWithPrevious: false, technique: '' }));
+        form.setValue(`days.${currentDayIndex}.exercises`, [...dayExercises, ...newExercises]);
     };
 
     return (
@@ -126,74 +169,15 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                         </CardContent>
                     </Card>
 
-                    {fields.map((field, index) => {
-                        const exerciseControls = dayFieldArrays[index];
-                        return (
-                            <Card key={field.id}>
-                                <CardHeader className="flex flex-row items-center justify-between">
-                                    <div className="flex-1">
-                                        <FormField control={form.control} name={`days.${index}.title`} render={({ field }) => (<FormItem><FormLabel className="sr-only">Название дня</FormLabel><FormControl><Input placeholder="Название дня, например 'День 1: Грудь'" {...field} className="text-lg font-semibold border-0 p-0 shadow-none focus-visible:ring-0" /></FormControl><FormMessage /></FormItem>)} />
-                                    </div>
-                                    <Button type="button" variant="ghost" size="icon" onClick={() => remove(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] items-center gap-2 py-2 text-xs text-muted-foreground border-b">
-                                        <div className="w-5" />
-                                        <div className="font-medium">Упражнение</div>
-                                        <div className="w-20 text-center">Подходы</div>
-                                        <div className="w-20 text-center">Повторения</div>
-                                        <div className="w-20 text-center">Вес (план)</div>
-                                        <div className="w-24 text-center">Техника</div>
-                                        <div className="w-28 text-center">Суперсет</div>
-                                        <div className="w-9" />
-                                    </div>
-                                    {exerciseControls.fields.map((exField, exIndex) => (
-                                        <div key={exField.id} className="border-b last:border-b-0 py-2">
-                                            {/* Mobile layout */}
-                                            <div className="sm:hidden flex flex-col gap-3">
-                                                <div className="flex items-start justify-between">
-                                                    <div className="flex items-center gap-2">
-                                                        <GripVertical className="h-5 w-5 text-muted-foreground cursor-move mt-1" />
-                                                        <span className="font-medium">{exField.name}</span>
-                                                    </div>
-                                                    <Button type="button" variant="ghost" size="icon" className="h-8 w-8 -mt-1" onClick={() => exerciseControls.remove(exIndex)}><Trash2 className="h-4 w-4" /></Button>
-                                                </div>
-                                                <div className="grid grid-cols-2 gap-3 pl-7">
-                                                     <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Подходы</FormLabel><FormControl><Input placeholder="3-4" {...field} className="text-center h-9" /></FormControl></FormItem>)} />
-                                                     <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Повторения</FormLabel><FormControl><Input placeholder="8-12" {...field} className="text-center h-9" /></FormControl></FormItem>)} />
-                                                     <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.plannedWeight`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Вес (план)</FormLabel><FormControl><Input placeholder="100кг" {...field} value={field.value ?? ''} className="text-center h-9" /></FormControl></FormItem>)} />
-                                                     <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.technique`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Техника</FormLabel><FormControl><Input placeholder="Дроп-сет" {...field} value={field.value ?? ''} className="text-center h-9" /></FormControl></FormItem>)} />
-                                                </div>
-                                                {exIndex > 0 && (
-                                                     <div className="pl-7 mt-2">
-                                                        <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.isSupersetWithPrevious`} render={({ field }) => (<FormItem className="flex flex-row items-center space-x-2 space-y-0"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="text-xs text-muted-foreground">Суперсет с предыдущим</FormLabel></FormItem>)} />
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Desktop layout */}
-                                            <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] items-center gap-2">
-                                                <GripVertical className="h-5 w-5 text-muted-foreground cursor-move" />
-                                                <span className="font-medium">{exField.name}</span>
-                                                <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormControl><Input placeholder="3-4" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
-                                                <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormControl><Input placeholder="8-12" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
-                                                <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.plannedWeight`} render={({ field }) => (<FormItem><FormControl><Input placeholder="100кг" {...field} value={field.value ?? ''} className="w-20 text-center" /></FormControl></FormItem>)} />
-                                                <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.technique`} render={({ field }) => (<FormItem><FormControl><Input placeholder="Дроп-сет" {...field} value={field.value ?? ''} className="w-24 text-center" /></FormControl></FormItem>)} />
-                                                <div className="w-28 flex items-center justify-center">
-                                                     {exIndex > 0 && (
-                                                        <FormField control={form.control} name={`days.${index}.exercises.${exIndex}.isSupersetWithPrevious`} render={({ field }) => (<FormItem className="flex items-center space-x-2"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="!mt-0 text-xs text-muted-foreground flex items-center gap-1"><Link2 className="h-3 w-3" />Суперсет</FormLabel></FormItem>)} />
-                                                    )}
-                                                </div>
-                                                <Button type="button" variant="ghost" size="icon" onClick={() => exerciseControls.remove(exIndex)}><Trash2 className="h-4 w-4" /></Button>
-                                            </div>
-                                        </div>
-                                    ))}
-                                    <Button type="button" variant="outline" className="mt-4 w-full" onClick={() => openExercisePicker(index)}><PlusCircle className="mr-2 h-4 w-4" /> Добавить упражнение</Button>
-                                    <FormMessage>{form.formState.errors.days?.[index]?.exercises?.message}</FormMessage>
-                                </CardContent>
-                            </Card>
-                        );
-                    })}
+                    {fields.map((field, index) => (
+                        <DaySection
+                            key={field.id}
+                            dayIndex={index}
+                            control={form.control}
+                            removeDay={remove}
+                            openExercisePicker={openExercisePicker}
+                        />
+                    ))}
 
                     <CardFooter className="flex-col sm:flex-row justify-between gap-4 p-4">
                         <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => append({ title: `День ${fields.length + 1}`, exercises: [] })}><PlusCircle className="mr-2 h-4 w-4" /> Добавить день</Button>

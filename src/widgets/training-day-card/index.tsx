@@ -12,7 +12,7 @@ import { cn } from '@/shared/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { Separator } from '@/shared/ui/separator';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
@@ -44,6 +44,112 @@ const moodMap = {
     bad: { icon: Frown, color: 'text-red-500', label: 'Плохо' },
 };
 
+const getExerciseIdByName = (name: string): string => {
+    const exercise = exercisesList.find(ex => ex.name === name);
+    return exercise ? exercise.id : 'ex-not-found';
+};
+
+const ExerciseRow = ({ control, index, exercise, lastPerformance, personalRecords }: { control: any, index: number, exercise: any, lastPerformance?: string, personalRecords: any[] }) => {
+    const { fields: setFields } = useFieldArray({
+        control,
+        name: `exercises.${index}.sets`
+    });
+
+    const isSuperset = exercise.isSupersetWithPrevious;
+
+    return (
+        <div className={cn("mb-4", isSuperset && "pl-4 border-l-2 border-primary/20 ml-2 pt-2")}>
+            <div className="flex items-baseline gap-2 mb-2">
+                <h4 className="font-semibold flex items-center gap-2">
+                    {isSuperset && <Link2 className="h-4 w-4 text-primary/50" />}
+                    <Link href={`/training/exercises/${getExerciseIdByName(exercise.name)}`} className="hover:underline hover:text-primary transition-colors">
+                        {exercise.name}
+                    </Link>
+                </h4>
+                {lastPerformance && <p className="text-xs text-muted-foreground">(Прошлый раз: {lastPerformance})</p>}
+            </div>
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead className="w-12 text-center">Сет</TableHead>
+                        <TableHead>План</TableHead>
+                        <TableHead>Повторения</TableHead>
+                        <TableHead>Вес (кг)</TableHead>
+                        <TableHead>RPE</TableHead>
+                        <TableHead className="w-16 text-center">Готово</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {setFields.map((setField, setIndex) => {
+                        const watchedWeight = useWatch({ control, name: `exercises.${index}.sets.${setIndex}.loggedWeight` });
+                        const watchedReps = useWatch({ control, name: `exercises.${index}.sets.${setIndex}.loggedReps` });
+                        const currentE1RM = calculate1RM(watchedWeight || 0, watchedReps || 0);
+                        const exercisePR = personalRecords.find(pr => pr.exercise === exercise.name);
+                        const isNewPR = currentE1RM > (exercisePR?.e1RM || 0);
+
+                        return (
+                            <TableRow key={setField.id}>
+                                <TableCell className="font-medium text-center">{setIndex + 1}</TableCell>
+                                <TableCell className="text-muted-foreground">{exercise.sets[setIndex]?.plannedReps} x {exercise.sets[setIndex]?.plannedWeight}</TableCell>
+                                <TableCell>
+                                    <FormField control={control} name={`exercises.${index}.sets.${setIndex}.loggedReps`} render={({ field }) => (
+                                        <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedReps} /></FormControl></FormItem>
+                                    )} />
+                                </TableCell>
+                                <TableCell>
+                                    <FormField control={control} name={`exercises.${index}.sets.${setIndex}.loggedWeight`} render={({ field }) => (
+                                        <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedWeight.replace('кг','').trim()} /></FormControl></FormItem>
+                                    )} />
+                                </TableCell>
+                                <TableCell>
+                                    <div className="flex items-center gap-2">
+                                        <FormField control={control} name={`exercises.${index}.sets.${setIndex}.rpe`} render={({ field }) => (
+                                            <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-16 text-center" placeholder="-" min="1" max="10" /></FormControl></FormItem>
+                                        )} />
+                                        {isNewPR && (
+                                            <Badge variant="secondary" className="bg-amber-400/20 text-amber-500 border-amber-400/50 animate-in fade-in-0 zoom-in-95">
+                                                <Award className="h-3 w-3 mr-1" />
+                                                PR!
+                                            </Badge>
+                                        )}
+                                    </div>
+                                </TableCell>
+                                <TableCell className="text-center">
+                                    <FormField control={control} name={`exercises.${index}.sets.${setIndex}.isCompleted`} render={({ field }) => (
+                                        <FormItem><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>
+                                    )} />
+                                </TableCell>
+                            </TableRow>
+                        );
+                    })}
+                </TableBody>
+            </Table>
+            <Collapsible className="mt-2">
+                <CollapsibleTrigger asChild>
+                    <Button type="button" variant="ghost" size="sm" className="text-xs text-muted-foreground flex items-center gap-2 group">
+                        <MessageSquare className="h-4 w-4" />
+                        <span>Заметки к упражнению</span>
+                        <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                    </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-2 animate-in fade-in-0 zoom-in-95">
+                    <FormField
+                        control={control}
+                        name={`exercises.${index}.notes`}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Textarea placeholder="Например: 'Было тяжело, но техника хорошая'" {...field} value={field.value ?? ''} />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                </CollapsibleContent>
+            </Collapsible>
+        </div>
+    );
+};
+
 export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate }: TrainingDayCardProps) {
     const StatusIcon = statusMap[entry.status].icon;
     const statusColor = statusMap[entry.status].color;
@@ -56,13 +162,6 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
     const { fields } = useFieldArray({
         control: form.control,
         name: 'exercises',
-    });
-    
-    const dayFieldArrays = fields.map((_field, index) => {
-        return useFieldArray({
-            control: form.control,
-            name: `days.${index}.exercises`
-        });
     });
 
     const { personalRecords } = useMemo(() => {
@@ -106,11 +205,6 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
         const updatedData = { ...data, status: 'completed' as const };
         onUpdate(updatedData);
     };
-    
-    const getExerciseIdByName = (name: string): string => {
-        const exercise = exercisesList.find(ex => ex.name === name);
-        return exercise ? exercise.id : 'ex-not-found';
-    }
 
     return (
         <Card className={cn(
@@ -152,107 +246,16 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                 
                 <CollapsibleContent>
                     <CardContent className="pt-4 space-y-6">
-                        {fields.map((field, index) => {
-                            const { fields: setFields } = useFieldArray({
-                                control: form.control,
-                                name: `exercises.${index}.sets`,
-                            });
-                            const exerciseName = entry.exercises[index]?.name;
-                            const isSuperset = entry.exercises[index]?.isSupersetWithPrevious;
-                            const lastPerformance = lastPerformances.get(exerciseName);
-
-                            return (
-                                <div key={field.id} className={cn("mb-4", isSuperset && "pl-4 border-l-2 border-primary/20 ml-2 pt-2")}>
-                                     <div className="flex items-baseline gap-2 mb-2">
-                                        <h4 className="font-semibold flex items-center gap-2">
-                                            {isSuperset && <Link2 className="h-4 w-4 text-primary/50" />}
-                                            <Link href={`/training/exercises/${getExerciseIdByName(exerciseName)}`} className="hover:underline hover:text-primary transition-colors">
-                                                {exerciseName}
-                                            </Link>
-                                        </h4>
-                                        {lastPerformance && <p className="text-xs text-muted-foreground">(Прошлый раз: {lastPerformance})</p>}
-                                    </div>
-                                    <Table>
-                                        <TableHeader>
-                                            <TableRow>
-                                                <TableHead className="w-12 text-center">Сет</TableHead>
-                                                <TableHead>План</TableHead>
-                                                <TableHead>Повторения</TableHead>
-                                                <TableHead>Вес (кг)</TableHead>
-                                                <TableHead>RPE</TableHead>
-                                                <TableHead className="w-16 text-center">Готово</TableHead>
-                                            </TableRow>
-                                        </TableHeader>
-                                        <TableBody>
-                                            {setFields.map((setField, setIndex) => {
-                                                const watchedWeight = form.watch(`exercises.${index}.sets.${setIndex}.loggedWeight`);
-                                                const watchedReps = form.watch(`exercises.${index}.sets.${setIndex}.loggedReps`);
-                                                const currentE1RM = calculate1RM(watchedWeight || 0, watchedReps || 0);
-                                                const exercisePR = personalRecords.find(pr => pr.exercise === exerciseName);
-                                                const isNewPR = currentE1RM > (exercisePR?.e1RM || 0);
-
-                                                return (
-                                                    <TableRow key={setField.id}>
-                                                        <TableCell className="font-medium text-center">{setIndex + 1}</TableCell>
-                                                        <TableCell className="text-muted-foreground">{entry.exercises[index]?.sets[setIndex]?.plannedReps} x {entry.exercises[index]?.sets[setIndex]?.plannedWeight}</TableCell>
-                                                        <TableCell>
-                                                            <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.loggedReps`} render={({ field }) => (
-                                                                <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={entry.exercises[index]?.sets[setIndex]?.plannedReps} /></FormControl></FormItem>
-                                                            )} />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.loggedWeight`} render={({ field }) => (
-                                                                <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={entry.exercises[index]?.sets[setIndex]?.plannedWeight.replace('кг','').trim()} /></FormControl></FormItem>
-                                                            )} />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <div className="flex items-center gap-2">
-                                                                <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.rpe`} render={({ field }) => (
-                                                                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-16 text-center" placeholder="-" min="1" max="10" /></FormControl></FormItem>
-                                                                )} />
-                                                                {isNewPR && (
-                                                                    <Badge variant="secondary" className="bg-amber-400/20 text-amber-500 border-amber-400/50 animate-in fade-in-0 zoom-in-95">
-                                                                        <Award className="h-3 w-3 mr-1" />
-                                                                        PR!
-                                                                    </Badge>
-                                                                )}
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell className="text-center">
-                                                            <FormField control={form.control} name={`exercises.${index}.sets.${setIndex}.isCompleted`} render={({ field }) => (
-                                                                <FormItem><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl></FormItem>
-                                                            )} />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
-                                        </TableBody>
-                                    </Table>
-                                    <Collapsible className="mt-2">
-                                        <CollapsibleTrigger asChild>
-                                            <Button type="button" variant="ghost" size="sm" className="text-xs text-muted-foreground flex items-center gap-2 group">
-                                                <MessageSquare className="h-4 w-4" />
-                                                <span>Заметки к упражнению</span>
-                                                <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                                            </Button>
-                                        </CollapsibleTrigger>
-                                        <CollapsibleContent className="pt-2 animate-in fade-in-0 zoom-in-95">
-                                            <FormField
-                                                control={form.control}
-                                                name={`exercises.${index}.notes`}
-                                                render={({ field }) => (
-                                                    <FormItem>
-                                                        <FormControl>
-                                                            <Textarea placeholder="Например: 'Было тяжело, но техника хорошая'" {...field} value={field.value ?? ''} />
-                                                        </FormControl>
-                                                    </FormItem>
-                                                )}
-                                            />
-                                        </CollapsibleContent>
-                                    </Collapsible>
-                                </div>
-                            )
-                        })}
+                        {fields.map((field, index) => (
+                           <ExerciseRow 
+                                key={field.id}
+                                control={form.control}
+                                index={index}
+                                exercise={entry.exercises[index]}
+                                lastPerformance={lastPerformances.get(entry.exercises[index]?.name)}
+                                personalRecords={personalRecords}
+                           />
+                        ))}
                         
                         <RestTimer />
 

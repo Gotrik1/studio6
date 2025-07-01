@@ -46,7 +46,6 @@ import {
   BarChart3,
   Backpack,
   Shapes,
-  BrainCircuit,
   Coins,
   GraduationCap,
   ClipboardList,
@@ -59,7 +58,6 @@ import { NotificationsPopover } from "@/widgets/notifications-popover";
 import { Button } from '@/shared/ui/button';
 import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/shared/lib/utils';
 import { CollapsibleSidebarMenuItem } from "./collapsible-sidebar-menu-item";
 
 

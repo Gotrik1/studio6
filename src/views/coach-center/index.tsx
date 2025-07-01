@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { coachedPlayers } from '@/shared/lib/mock-data/coach-players';
 import { trainingPrograms } from '@/shared/lib/mock-data/training-programs';
 import type { TrainingProgram } from '@/entities/training-program/model/types';

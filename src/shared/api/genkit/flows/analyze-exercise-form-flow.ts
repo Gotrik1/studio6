@@ -19,24 +19,6 @@ export async function analyzeExerciseForm(input: AnalyzeExerciseFormInput): Prom
   return analyzeExerciseFormFlow(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'analyzeExerciseFormPrompt',
-  input: {schema: AnalyzeExerciseFormInputSchema},
-  output: {schema: AnalyzeExerciseFormOutputSchema},
-  prompt: `You are an expert personal trainer and biomechanics specialist. Analyze the user's form in the provided video for the exercise: {{{exerciseName}}}.
-
-  Your task is to:
-  1. Provide a brief, overall assessment of the form.
-  2. Identify specific mistakes in their technique. For each mistake, name the body part or aspect of the form and provide a clear, actionable correction.
-  3. Identify 1-2 key things the user is doing correctly to provide positive reinforcement.
-
-  Respond in Russian.
-
-  Here is the video:
-  {{media url=videoDataUri}}
-  `,
-});
-
 const analyzeExerciseFormFlow = ai.defineFlow(
   {
     name: 'analyzeExerciseFormFlow',

@@ -82,10 +82,12 @@ export function TrainingLogPage() {
         });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleDelete = (id: string) => {
         toast({ title: 'Действие недоступно', description: 'Запланированные тренировки нельзя удалить.' });
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleCopy = (id: string) => {
         toast({ title: 'Действие недоступно', description: 'Запланированные тренировки нельзя скопировать.' });
     };

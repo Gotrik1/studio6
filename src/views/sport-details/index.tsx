@@ -11,7 +11,6 @@ import { leaderboardData } from '@/shared/lib/mock-data/leaderboards';
 import { allTournaments } from '@/shared/lib/mock-data/tournaments';
 import { matchesList } from '@/shared/lib/mock-data/matches';
 import Link from 'next/link';
-import { Trophy, Users, Shield } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { AiSportSummary } from '@/widgets/ai-sport-summary';
 

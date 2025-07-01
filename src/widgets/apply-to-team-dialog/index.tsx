@@ -61,7 +61,7 @@ export function ApplyToTeamDialog({ isOpen, onOpenChange, team }: ApplyToTeamDia
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Заявка на вступление в "{team.name}"</DialogTitle>
+                    <DialogTitle>Заявка на вступление в &quot;{team.name}&quot;</DialogTitle>
                     <DialogDescription>
                         Напишите короткое сообщение капитану команды, чтобы рассказать о себе.
                     </DialogDescription>

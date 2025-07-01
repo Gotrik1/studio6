@@ -9,17 +9,14 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { Loader2, Sparkles, BrainCircuit, AlertCircle, TrendingUp, TrendingDown, Activity, BookOpen, Youtube, Goal } from "lucide-react";
 import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@/shared/api/genkit/flows/analyze-player-performance-flow';
 import { generateTrainingPlan, type GenerateTrainingPlanOutput } from '@/shared/api/genkit/flows/generate-training-plan-flow';
-import type { User } from "@/shared/lib/types";
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 
 interface AiCoachTabProps {
-  user: User & {
-    mainSport: string;
-  };
+  // User prop is not used here but can be added back if needed for personalization
 }
 
-export function AiCoachTab({ user }: AiCoachTabProps) {
+export function AiCoachTab({}: AiCoachTabProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalyzePlayerPerformanceOutput | null>(null);

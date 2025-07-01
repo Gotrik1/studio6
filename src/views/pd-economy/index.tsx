@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
-import { Coins, DollarSign, TrendingUp, TrendingDown, ShieldCheck, ShoppingCart } from 'lucide-react';
+import { Coins, TrendingUp, TrendingDown, ShieldCheck, ShoppingCart } from 'lucide-react';
 import { pdRules } from '@/shared/config/gamification';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';

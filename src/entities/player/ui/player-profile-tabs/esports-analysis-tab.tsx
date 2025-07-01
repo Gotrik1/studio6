@@ -16,10 +16,10 @@ const mockEsportsData = {
 };
 
 interface EsportsAnalysisTabProps {
-  user: User;
+  // User prop is not used here but can be added back if needed for personalization
 }
 
-export function EsportsAnalysisTab({ user }: EsportsAnalysisTabProps) {
+export function EsportsAnalysisTab({}: EsportsAnalysisTabProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalyzeEsportsPerformanceOutput | null>(null);

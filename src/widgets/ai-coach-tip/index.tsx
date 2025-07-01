@@ -73,7 +73,7 @@ export function AiCoachTip() {
                 </Button>
             </CardHeader>
             <CardContent>
-                 <p className="text-muted-foreground italic">"{tip.tip}"</p>
+                 <p className="text-muted-foreground italic">&quot;{tip.tip}&quot;</p>
             </CardContent>
         </Card>
     );

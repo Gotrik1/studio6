@@ -12,7 +12,6 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import Link from 'next/link';
-import { Badge } from '@/shared/ui/badge';
 import { Separator } from '@/shared/ui/separator';
 
 type Coach = FindCoachesOutput['recommendations'][0]['coach'];

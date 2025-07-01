@@ -52,7 +52,7 @@ export function AddFoodDialog({ isOpen, onOpenChange, foodItem }: AddFoodDialogP
         <Dialog open={isOpen} onOpenChange={onOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Добавить "{foodItem.name}"</DialogTitle>
+                    <DialogTitle>Добавить &quot;{foodItem.name}&quot;</DialogTitle>
                     <DialogDescription>Укажите вес и прием пищи, чтобы добавить продукт в дневник.</DialogDescription>
                 </DialogHeader>
                 <div className="py-4 space-y-4">

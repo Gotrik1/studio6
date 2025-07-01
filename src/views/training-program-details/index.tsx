@@ -6,7 +6,6 @@ import { Button } from "@/shared/ui/button";
 import { useToast } from "@/shared/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
-import { Badge } from '@/shared/ui/badge';
 import { CheckCircle, Dumbbell, Target, CalendarDays, Bot, User, Link2 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/shared/ui/accordion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";

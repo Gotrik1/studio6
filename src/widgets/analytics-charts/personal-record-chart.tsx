@@ -8,10 +8,9 @@ import type { RecordHistoryPoint } from '@/shared/lib/get-training-analytics';
 
 interface PersonalRecordHistoryChartProps {
   data: RecordHistoryPoint[];
-  exerciseName: string;
 }
 
-export function PersonalRecordHistoryChart({ data, exerciseName }: PersonalRecordHistoryChartProps) {
+export function PersonalRecordHistoryChart({ data }: PersonalRecordHistoryChartProps) {
   if (!data || data.length === 0) {
     return <div className="h-[300px] flex items-center justify-center text-muted-foreground">Нет данных для построения графика.</div>;
   }
