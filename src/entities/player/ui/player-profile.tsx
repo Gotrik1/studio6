@@ -213,7 +213,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
             </TabsContent>
 
             <TabsContent value="ai-analyst" className="mt-4">
-                <AiAnalystTab user={user} />
+                <AiAnalystTab />
             </TabsContent>
 
             <TabsContent value="career" className="mt-4">

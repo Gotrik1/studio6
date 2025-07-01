@@ -2,18 +2,11 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { Gamepad2, HeartPulse, Zap } from 'lucide-react';
-import type { User } from "@/shared/lib/types";
 import { AiCoachTab } from './ai-coach-tab';
 import { EsportsAnalysisTab } from './esports-analysis-tab';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
 
-interface AiAnalystTabProps {
-  user: User & {
-    mainSport: string;
-  };
-}
-
-export function AiAnalystTab({ user }: AiAnalystTabProps) {
+export function AiAnalystTab() {
     return (
         <Tabs defaultValue="holistic" className="w-full">
             <TabsList className="grid w-full grid-cols-3">
