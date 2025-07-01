@@ -46,6 +46,7 @@ import {
   Backpack,
   Shapes,
   BrainCircuit,
+  Coins,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -160,8 +161,9 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
             icon: ShoppingCart,
             items: [
                 { href: "/store", icon: ShoppingCart, label: "Магазин" },
-                { href: "/inventory", icon: Backpack, label: "Инвентарь" },
+                { href: "/pd-economy", icon: Coins, label: "Экономика PD" },
                 { href: "/quests", icon: ShieldCheck, label: "Квесты" },
+                { href: "/inventory", icon: Backpack, label: "Инвентарь" },
                 { href: "/promotions", icon: Megaphone, label: "Промо-акции" },
                 { href: "/sponsors", icon: Handshake, label: "Центр спонсорства" },
                 { href: "/monetization", icon: DollarSign, label: "Подписки" },
