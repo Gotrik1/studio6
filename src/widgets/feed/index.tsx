@@ -110,7 +110,7 @@ export function Feed() {
     }, []);
 
     return (
-        <div className="space-y-6 opacity-0 animate-fade-in-up animation-delay-600">
+        <div className="space-y-6">
             {isLoading ? (
                 <FeedSkeleton />
             ) : (

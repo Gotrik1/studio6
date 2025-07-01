@@ -12,18 +12,18 @@ export function DashboardPage() {
     return (
         <div className="flex flex-col lg:flex-row lg:items-start gap-8">
             <div className="w-full lg:w-2/3 flex-shrink-0 space-y-6">
-                <div className="opacity-0 animate-fade-in-up">
+                <div>
                     <AiCoachTip />
                 </div>
-                <div className="opacity-0 animate-fade-in-up animation-delay-300">
+                <div>
                     <AiNewsDigest />
                 </div>
-                <div className="opacity-0 animate-fade-in-up animation-delay-600">
+                <div>
                     <StatusUpdateForm />
                 </div>
                 <Feed />
             </div>
-            <aside className="w-full lg:w-1/3 space-y-6 lg:sticky lg:top-6 opacity-0 animate-fade-in-up animation-delay-300">
+            <aside className="w-full lg:w-1/3 space-y-6 lg:sticky lg:top-24">
                 <MatchOfTheWeekWidget />
                 <PollCard poll={mainPoll} />
             </aside>
