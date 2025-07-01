@@ -56,9 +56,7 @@ const findAvailableVenues = ai.defineTool(
       .filter(venue =>
         venue.name.toLowerCase().includes(lowercasedQuery) ||
         venue.address.toLowerCase().includes(lowercasedQuery) ||
-        venue.surfaceType.toLowerCase().includes(lowercasedQuery) ||
-        (lowercasedQuery.includes('футбол') && venue.name.toLowerCase().includes('футбол')) ||
-        (lowercasedQuery.includes('баскетбол') && venue.name.toLowerCase().includes('баскетбол'))
+        venue.surfaceType.toLowerCase().includes(lowercasedQuery)
       )
       .slice(0, 5) // Return top 5 matches to the LLM
       .map(v => ({ id: v.id, name: v.name, address: v.address, surfaceType: v.surfaceType, price: v.price, image: v.image, imageHint: v.imageHint }));
