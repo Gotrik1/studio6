@@ -22,16 +22,16 @@ const prompt = ai.definePrompt({
   name: 'aiTeamAssistantPrompt',
   input: {schema: AiTeamAssistantInputSchema},
   output: {schema: AiTeamAssistantOutputSchema},
-  prompt: `You are an AI assistant helping a team coordinate and stay informed.
+  prompt: `Ты — AI-ассистент и стратегический советник для капитана команды. Твоя задача — проанализировать недавнюю активность команды и предоставить краткую, но содержательную сводку, а также предложить конкретные действия для улучшения координации и достижения целей.
 
-  Based on the provided information, provide a summary of recent team activity and suggest relevant content or actions for the team to consider.
+Данные для анализа:
+- Цели команды: {{{teamGoals}}}
+- Активность команды (последние сообщения в чате, результаты матчей): {{{teamActivity}}}
+{{#if relevantContent}}- Дополнительный контент (статьи, тактики): {{{relevantContent}}}{{/if}}
 
-  Team Goals: {{{teamGoals}}}
-  Team Activity: {{{teamActivity}}}
-  Relevant Content: {{{relevantContent}}}
-
-  Please generate a concise summary and actionable suggestions based on the data.
-  `,
+Сгенерируй:
+1. Краткую сводку (Summary): Оцени общее настроение и выдели ключевые темы из обсуждений.
+2. Рекомендации (Suggestions): Предложи 2-3 конкретных действия, которые капитан может предпринять (например, "провести собрание по тактике X" или "похвалить игрока Y за отличную игру").`,
 });
 
 const aiTeamAssistantFlow = ai.defineFlow(

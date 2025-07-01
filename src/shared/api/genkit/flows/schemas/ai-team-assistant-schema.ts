@@ -15,7 +15,7 @@ export type AiTeamAssistantInput = z.infer<typeof AiTeamAssistantInputSchema>;
 export const AiTeamAssistantOutputSchema = z.object({
   summary: z.string().describe('A concise summary of the recent team activity.'),
   suggestions: z
-    .string()
-    .describe('Suggestions for relevant content or actions the team should consider.'),
+    .array(z.string())
+    .describe('An array of 2-3 actionable suggestions for the team captain.'),
 });
 export type AiTeamAssistantOutput = z.infer<typeof AiTeamAssistantOutputSchema>;
