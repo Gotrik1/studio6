@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -13,11 +14,12 @@ import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
 import { teams } from '@/shared/lib/mock-data/teams';
-import { teamRoster, teamActivity, challenges, type TeamActivity } from "@/shared/lib/mock-data/team-details";
+import { teamRoster, challenges } from "@/shared/lib/mock-data/team-details";
 import { DonationDialog } from '@/features/donation-dialog/index';
 import { TeamChatInterface } from '@/widgets/team-chat-interface';
 import { TeamStatsTab } from '@/widgets/team-stats-tab';
 import { ApplyToTeamDialog } from '@/widgets/apply-to-team-dialog';
+import { TeamOverviewDashboard } from '@/widgets/team-overview-dashboard';
 
 export function TeamDetailsPage() {
     const { user: currentUser } = useSession();
@@ -84,24 +86,7 @@ export function TeamDetailsPage() {
                     </TabsList>
 
                     <TabsContent value="overview" className="mt-4">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Лента активности</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                {teamActivity.map((activity: TeamActivity) => (
-                                    <div key={activity.id} className="flex items-start gap-4">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-                                            <activity.icon className="h-5 w-5 text-muted-foreground" />
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">{activity.text}</p>
-                                            <p className="text-sm text-muted-foreground">{activity.timestamp}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </CardContent>
-                        </Card>
+                        <TeamOverviewDashboard />
                     </TabsContent>
 
                     <TabsContent value="roster" className="mt-4">
