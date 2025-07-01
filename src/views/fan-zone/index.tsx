@@ -30,21 +30,6 @@ export function FanZonePage() {
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <Flame className="text-destructive" />
-                                Горячие обсуждения
-                            </CardTitle>
-                            <CardDescription>
-                                Ваше мнение важно для нас! Примите участие в еженедельном опросе.
-                            </CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <PollCard poll={mainPoll} />
-                        </CardContent>
-                    </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
                                 <Megaphone className="text-primary" />
                                 Акции для болельщиков
                             </CardTitle>
@@ -89,6 +74,20 @@ export function FanZonePage() {
                                     </div>
                                 </Link>
                             ))}
+                        </CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Flame className="text-destructive" />
+                                Горячие обсуждения
+                            </CardTitle>
+                            <CardDescription>
+                                Ваше мнение важно для нас! Примите участие в еженедельном опросе.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <PollCard poll={mainPoll} />
                         </CardContent>
                     </Card>
                 </div>
