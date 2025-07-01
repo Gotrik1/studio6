@@ -44,6 +44,7 @@ import {
   Users2,
   BarChart3,
   Backpack,
+  Shapes,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -150,6 +151,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 { href: "/scouting", icon: UserSearch, label: "Поиск игроков" },
                 { href: "/lfg", icon: Swords, label: "Поиск игры" },
                 { href: "/leaderboards", icon: BarChart3, label: "Таблицы лидеров" },
+                { href: "/sports", icon: Shapes, label: "Виды спорта" },
             ]
         },
         {
