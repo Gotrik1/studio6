@@ -148,25 +148,25 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     ))}
+                    
+                    {user.role === 'Тренер' && (
+                        <SidebarMenuItem>
+                            <SidebarMenuButton asChild tooltip="Тренерский центр" variant={isActive('/coach-center') ? 'active' : 'default'}>
+                                <Link href="/coach-center"><ClipboardList />{state === 'expanded' && <span>Тренерский центр</span>}</Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    )}
+                    
+                    {user.role === 'Судья' && (
+                        <SidebarMenuItem>
+                            <SidebarMenuButton asChild tooltip="Центр судейства" variant={isActive('/judge-center') ? 'active' : 'default'}>
+                                <Link href="/judge-center"><Gavel />{state === 'expanded' && <span>Центр судейства</span>}</Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    )}
 
                     <div className="mt-auto pt-2">
                         <SidebarSeparator className="my-1" />
-
-                        {user.role === 'Тренер' && (
-                            <SidebarMenuItem>
-                                <SidebarMenuButton asChild tooltip="Тренерский центр" variant={isActive('/coach-center') ? 'active' : 'default'}>
-                                    <Link href="/coach-center"><ClipboardList />{state === 'expanded' && <span>Тренерский центр</span>}</Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        )}
-                        
-                        {user.role === 'Судья' && (
-                            <SidebarMenuItem>
-                                <SidebarMenuButton asChild tooltip="Центр судейства" variant={isActive('/judge-center') ? 'active' : 'default'}>
-                                    <Link href="/judge-center"><Gavel />{state === 'expanded' && <span>Центр судейства</span>}</Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        )}
 
                         {user.role === 'Администратор' && (
                             <SidebarMenuItem>
