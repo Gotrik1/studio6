@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
-import { Loader2, Sparkles, AlertCircle, Award, Share2 } from 'lucide-react';
+import { Loader2, Sparkles, AlertCircle, Award, Share2, Copy, Download } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateTournamentSummary, type GenerateTournamentSummaryOutput } from '@/shared/api/genkit/flows/generate-tournament-summary-flow';
 import { generatePostImage, type GeneratePostImageOutput } from '@/shared/api/genkit/flows/generate-post-image-flow';
