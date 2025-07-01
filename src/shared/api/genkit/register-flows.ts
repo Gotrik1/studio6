@@ -49,3 +49,4 @@ import './flows/generate-tournament-summary-flow';
 import './flows/generate-nutrition-plan-flow';
 import './flows/find-equipment-flow';
 import './flows/generate-team-concept-flow';
+import './flows/ai-team-assistant';
