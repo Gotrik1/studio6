@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -20,13 +21,9 @@ const teamNeeds = "Мы ищем опытного защитника, котор
 
 export function TeamManagementPage() {
     const { toast } = useToast();
-    const { requests, removeRequest } = useJoinRequests();
+    const { requests: joinRequests, removeRequest } = useJoinRequests();
     const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
-
-    // In a real app, this would come from the current user's session or page context
-    const currentTeamId = 'dvotovyie-atlety'; 
-    const joinRequests = requests.filter(r => r.teamId === currentTeamId);
 
     const handleAccept = (request: JoinRequest) => {
         removeRequest(request.id);
@@ -78,13 +75,13 @@ export function TeamManagementPage() {
                     </TabsContent>
 
                     <TabsContent value="requests" className="mt-4">
-                         <Card>
+                        <Card>
                             <CardHeader>
                                 <CardTitle>Заявки на вступление</CardTitle>
                                 <CardDescription>Игроки, которые хотят присоединиться к вашей команде.</CardDescription>
                             </CardHeader>
                             <CardContent>
-                                 <Table>
+                                <Table>
                                     <TableHeader>
                                         <TableRow>
                                             <TableHead>Игрок</TableHead>
@@ -101,7 +98,7 @@ export function TeamManagementPage() {
                                                 </TableCell>
                                                 <TableCell>{request.applicant.role}</TableCell>
                                                 <TableCell className="text-right space-x-1">
-                                                     <Button variant="outline" size="sm" onClick={() => handleAnalyze(request)}>AI-Анализ</Button>
+                                                    <Button variant="outline" size="sm" onClick={() => handleAnalyze(request)}>AI-Анализ</Button>
                                                     <Button variant="ghost" size="icon" onClick={() => handleDecline(request)}><X className="h-4 w-4 text-red-500" /></Button>
                                                     <Button size="icon" onClick={() => handleAccept(request)}><Check className="h-4 w-4" /></Button>
                                                 </TableCell>
