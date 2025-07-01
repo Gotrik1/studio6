@@ -24,7 +24,7 @@ export function DashboardPage() {
                 </div>
                 <Feed />
             </div>
-            <aside className="space-y-6 lg:sticky lg:top-[5.5rem] self-start opacity-0 animate-fade-in-up animation-delay-300">
+            <aside className="space-y-6 lg:sticky lg:top-6 self-start opacity-0 animate-fade-in-up animation-delay-300">
                 <MatchOfTheWeekWidget />
                 <PollCard poll={mainPoll} />
             </aside>
