@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -47,6 +48,7 @@ import {
   Shapes,
   BrainCircuit,
   Coins,
+  GraduationCap,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -151,6 +153,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
             icon: Users2,
             items: [
                 { href: "/friends", icon: Users2, label: "Друзья" },
+                { href: "/coaches", icon: GraduationCap, label: "Найти тренера" },
                 { href: "/scouting", icon: UserSearch, label: "Поиск игроков" },
                 { href: "/lfg", icon: Swords, label: "Поиск игры" },
                 { href: "/leaderboards", icon: BarChart3, label: "Таблицы лидеров" },
