@@ -21,6 +21,7 @@ type JoinRequest = {
     role: string;
     avatar: string;
     avatarHint: string;
+    statsSummary: string;
 };
 
 interface JoinRequestAnalysisDialogProps {
@@ -50,18 +51,16 @@ export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamN
       setAiResult(null);
       setAiError(null);
 
-      // In a real app, this would be fetched from the player's profile
-      const mockPlayerProfile = `
+      const playerProfile = `
         Player: ${request.name}
         Role: ${request.role}
-        Stats: Avg goals per game: 1.2, Successful tackles: 75%.
-        Match History: Mostly positive results in the city league, tends to play aggressively.
+        Profile Summary: ${request.statsSummary}
       `;
 
       try {
           const result = await analyzeJoinRequest({
               teamNeeds,
-              playerProfile: mockPlayerProfile,
+              playerProfile,
           });
           setAiResult(result);
       } catch (e) {

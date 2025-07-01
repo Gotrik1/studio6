@@ -17,16 +17,18 @@ import { TeamSponsorScout } from '@/widgets/team-sponsor-scout';
 
 
 const initialJoinRequests = [
-    { name: "ShadowStriker", role: "Нападающий", avatar: 'https://placehold.co/100x100.png', avatarHint: 'sports player' },
-    { name: "Foxy", role: "Полузащитник", avatar: 'https://placehold.co/100x100.png', avatarHint: 'sports player' },
+    { name: "ShadowStriker", role: "Нападающий", avatar: 'https://placehold.co/100x100.png', avatarHint: 'sports player', statsSummary: "Опытный нападающий, высокий процент голов, играет в основном в Valorant." },
+    { name: "Foxy", role: "Полузащитник", avatar: 'https://placehold.co/100x100.png', avatarHint: 'sports player', statsSummary: "Универсальный игрок, хорошо видит поле. Основная игра - футбол." },
 ];
+
+type JoinRequest = (typeof initialJoinRequests)[0];
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
 export function TeamManagementPage() {
     const { toast } = useToast();
     const [joinRequests, setJoinRequests] = useState(initialJoinRequests);
-    const [selectedRequest, setSelectedRequest] = useState<(typeof initialJoinRequests)[0] | null>(null);
+    const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
 
     const handleAccept = (name: string) => {
@@ -39,7 +41,7 @@ export function TeamManagementPage() {
         toast({ title: "Заявка отклонена", description: `Заявка от ${name} была отклонена.` });
     };
     
-    const handleAnalyze = (request: (typeof initialJoinRequests)[0]) => {
+    const handleAnalyze = (request: JoinRequest) => {
         setSelectedRequest(request);
         setIsAnalysisOpen(true);
     };
