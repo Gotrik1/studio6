@@ -44,6 +44,7 @@ import {
   Users2,
   BarChart3,
   ChevronRight,
+  Backpack,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -157,6 +158,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
             icon: ShoppingCart,
             items: [
                 { href: "/store", icon: ShoppingCart, label: "Магазин" },
+                { href: "/inventory", icon: Backpack, label: "Инвентарь" },
                 { href: "/quests", icon: ShieldCheck, label: "Квесты" },
                 { href: "/promotions", icon: Megaphone, label: "Промо-акции" },
                 { href: "/sponsors", icon: Handshake, label: "Центр спонсорства" },
