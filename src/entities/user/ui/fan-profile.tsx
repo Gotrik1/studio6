@@ -49,7 +49,7 @@ export function FanProfile({ user, achievements, favoriteTeams, isCurrentUser }:
   return (
     <>
       <Card className="overflow-hidden">
-        <div className="relative h-48 bg-muted/40">
+        <div className="relative aspect-[3/1] bg-muted/40">
             <Image src={banner} alt="Profile Banner" fill className="object-cover" data-ai-hint="stadium crowd cheering" />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
             {isCurrentUser && (
@@ -66,7 +66,7 @@ export function FanProfile({ user, achievements, favoriteTeams, isCurrentUser }:
             )}
         </div>
         <div className="relative p-6">
-          <div className="flex flex-col items-center gap-6 -mt-24 text-center sm:flex-row sm:items-end sm:text-left">
+          <div className="flex flex-col items-center gap-6 -mt-20 text-center sm:flex-row sm:items-end sm:text-left">
             <div className="relative shrink-0">
                 <Avatar className="h-32 w-32 border-4 border-background bg-background shadow-lg">
                     <AvatarImage src={avatar} alt={user.name} data-ai-hint="sports fan" />

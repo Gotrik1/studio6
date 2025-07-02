@@ -45,7 +45,7 @@ export function JudgeProfile({ user, achievements }: JudgeProfileProps) {
   return (
     <>
       <Card className="overflow-hidden">
-        <div className="relative h-48 bg-muted/40">
+        <div className="relative aspect-[3/1] bg-muted/40">
           <Image src={banner} alt="Profile Banner" fill className="object-cover" data-ai-hint="gavel scales justice" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
            <Button

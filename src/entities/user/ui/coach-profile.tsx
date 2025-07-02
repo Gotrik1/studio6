@@ -62,7 +62,7 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
   return (
     <>
         <Card className="overflow-hidden">
-        <div className="relative h-48 bg-muted/40">
+        <div className="relative aspect-[3/1] bg-muted/40">
             <Image src={banner} alt="Profile Banner" fill className="object-cover" data-ai-hint="sports strategy playbook" />
             <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
              <Button
