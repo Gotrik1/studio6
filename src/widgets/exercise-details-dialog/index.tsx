@@ -131,7 +131,7 @@ export function ExerciseDetailsPage({ exercise }: ExerciseDetailsPageProps) {
             </div>
             
             {fullHistory.length > 0 && (
-                <ExerciseHistoryTable sessions={fullHistory} exerciseName={exercise.name} />
+                <ExerciseHistoryTable sessions={fullHistory} />
             )}
 
         </div>

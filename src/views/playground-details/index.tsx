@@ -23,7 +23,7 @@ import { useSession } from '@/shared/lib/session/client';
 import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-import { useLfg, type LfgLobby } from '@/app/providers/lfg-provider';
+import { useLfg } from '@/app/providers/lfg-provider';
 import type { FormValues } from '@/widgets/plan-game-dialog';
 import { PlanGameDialog } from '@/widgets/plan-game-dialog';
 import { format } from 'date-fns';
@@ -85,7 +85,6 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
         };
         setActivities(prev => [newActivity, ...prev]);
         
-        // Add 10 PD for checking in
         addTransaction(`Чекин: ${playground.name}`, 10);
         
         toast({
@@ -100,7 +99,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
         const [hours, minutes] = data.time.split(':').map(Number);
         startTime.setHours(hours, minutes, 0, 0);
 
-        const newLobby: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number } = {
+        addLobby({
             sport: playground.type,
             location: playground.name,
             playgroundId: playground.id,
@@ -108,9 +107,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
             duration: data.duration,
             comment: `Открытая игра на площадке ${playground.name}`,
             playersNeeded: 10,
-        };
-
-        addLobby(newLobby);
+        });
         
         toast({
             title: "Игра запланирована!",
