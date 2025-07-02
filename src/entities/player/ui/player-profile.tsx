@@ -26,14 +26,11 @@ import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
 import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
+import { StatsTab } from '@/entities/player/ui/player-profile-tabs/stats-tab';
 
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
-  ssr: false,
-});
-const StatsTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/stats-tab').then(mod => mod.StatsTab), {
-  loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
   ssr: false,
 });
 const CareerTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/career-tab').then(mod => mod.CareerTab), {
