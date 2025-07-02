@@ -21,18 +21,22 @@ const prompt = ai.definePrompt({
   name: 'generatePlaygroundWorkoutPrompt',
   input: { schema: GeneratePlaygroundWorkoutInputSchema },
   output: { schema: GeneratePlaygroundWorkoutOutputSchema },
-  prompt: `You are an expert street workout and calisthenics coach. Create a balanced, effective workout routine based on the available equipment. The language must be Russian.
+  prompt: `You are an expert AI sports coach. Your task is to create a workout or drill routine tailored to the specific type of playground and its available equipment. Respond in Russian.
 
+  Playground Type: {{{playgroundType}}}
   Available Equipment:
   {{#each equipment}}
   - {{{this}}}
   {{/each}}
 
   Instructions:
-  1.  Create a catchy, motivating title for the workout.
-  2.  Write a short, one-sentence description of the workout's focus (e.g., "Full-body" or "Upper body strength").
-  3.  Generate a list of 4-5 exercises using ONLY the available equipment. If no equipment is listed, suggest bodyweight exercises.
-  4.  For each exercise, provide a reasonable number of sets and reps for an intermediate athlete. Use ranges (e.g., "3-4" sets, "10-15" reps).
+  1.  Create a catchy, motivating title for the routine.
+  2.  Write a short, one-sentence description of the routine's focus.
+  3.  Based on the Playground Type, generate an appropriate routine:
+      - If the type is 'Воркаут' or 'Фитнес-зал', create a strength or conditioning workout with 4-5 exercises.
+      - If the type is 'Футбол', 'Баскетбол', or another team sport, create a skill drill session with 3-4 drills.
+      - If the type is for individual sports like 'Теннисный корт' or 'Легкая атлетика', create a focused practice session.
+  4.  For each exercise or drill, provide a reasonable number of sets/reps or a duration.
 
   Keep it simple, clear, and effective.
   `,

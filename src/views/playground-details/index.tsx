@@ -31,7 +31,6 @@ import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
 import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
 import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
-import { AiPlaygroundDrill } from '@/widgets/ai-playground-drill';
 import { AiPlaygroundTactic } from '@/widgets/ai-playground-tactic';
 
 
@@ -177,11 +176,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                                 <AiPlaygroundLore playground={playground} />
                             </div>
                             <div className="space-y-6">
-                                {playground.type === 'Воркаут' ? (
-                                    <PlaygroundWorkoutGenerator equipment={playground.features} />
-                                ) : (
-                                    <AiPlaygroundDrill playground={playground} />
-                                )}
+                                <PlaygroundWorkoutGenerator playground={playground} />
                                 <AiPlaygroundTactic playground={playground} />
                             </div>
                         </div>

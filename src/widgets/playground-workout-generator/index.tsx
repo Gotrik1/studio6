@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -5,15 +6,16 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { BrainCircuit, AlertCircle, Sparkles, Loader2, Dumbbell, Repeat } from 'lucide-react';
+import { BrainCircuit, AlertCircle, Sparkles, Loader2, Dumbbell } from 'lucide-react';
 import { generatePlaygroundWorkout, type GeneratePlaygroundWorkoutOutput } from '@/shared/api/genkit/flows/generate-playground-workout-flow';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
+import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 
 interface PlaygroundWorkoutGeneratorProps {
-    equipment: string[];
+    playground: Playground;
 }
 
-export function PlaygroundWorkoutGenerator({ equipment }: PlaygroundWorkoutGeneratorProps) {
+export function PlaygroundWorkoutGenerator({ playground }: PlaygroundWorkoutGeneratorProps) {
     const [result, setResult] = useState<GeneratePlaygroundWorkoutOutput | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -23,7 +25,10 @@ export function PlaygroundWorkoutGenerator({ equipment }: PlaygroundWorkoutGener
         setError(null);
         setResult(null);
         try {
-            const workoutData = await generatePlaygroundWorkout({ equipment });
+            const workoutData = await generatePlaygroundWorkout({ 
+                equipment: playground.features,
+                playgroundType: playground.type
+             });
             setResult(workoutData);
         } catch (e) {
             console.error('Failed to generate workout:', e);
@@ -38,9 +43,9 @@ export function PlaygroundWorkoutGenerator({ equipment }: PlaygroundWorkoutGener
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <BrainCircuit className="h-5 w-5 text-primary" />
-                    AI-Тренер по воркауту
+                    AI-Генератор тренировок
                 </CardTitle>
-                 <CardDescription>Сгенерируйте тренировку на основе инвентаря этой площадки.</CardDescription>
+                 <CardDescription>Сгенерируйте тренировку или занятие, подходящее для этого места.</CardDescription>
             </CardHeader>
             <CardContent>
                 {isLoading && (
@@ -62,9 +67,9 @@ export function PlaygroundWorkoutGenerator({ equipment }: PlaygroundWorkoutGener
                         <Table>
                             <TableHeader>
                                 <TableRow>
-                                    <TableHead>Упражнение</TableHead>
+                                    <TableHead>Упражнение/Дрилл</TableHead>
                                     <TableHead className="text-center">Подходы</TableHead>
-                                    <TableHead className="text-center">Повторения</TableHead>
+                                    <TableHead className="text-center">Повторения/Время</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
