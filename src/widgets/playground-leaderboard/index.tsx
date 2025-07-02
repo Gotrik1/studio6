@@ -24,7 +24,7 @@ export function PlaygroundLeaderboard() {
                         <TableRow>
                             <TableHead className="w-[50px]">#</TableHead>
                             <TableHead>Игрок</TableHead>
-                            <TableHead className="text-center">Чекины</TableHead>
+                            <TableHead className="text-center">Отметки</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

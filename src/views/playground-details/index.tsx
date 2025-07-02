@@ -72,12 +72,12 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
             comment,
             timestamp: 'Только что',
             photo: photo ? 'https://placehold.co/600x400.png' : undefined, // Use placeholder for demo
-            photoHint: 'user check-in photo',
+            photoHint: 'user uploaded photo',
         };
         setActivities(prev => [newActivity, ...prev]);
         toast({
             title: "Вы отметились!",
-            description: `Вы получили 10 PD за чекин на площадке "${playground.name}".`
+            description: `Вы получили 10 PD за отметку на площадке "${playground.name}".`
         });
     };
     
@@ -136,7 +136,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                 <div className="flex flex-col sm:flex-row gap-4">
                     <Button className="w-full sm:w-auto" size="lg" onClick={() => setIsCheckInOpen(true)}>
                         <CheckCircle className="mr-2 h-5 w-5" />
-                        Отметиться (чекин)
+                        Отметиться
                     </Button>
                      <Button className="w-full sm:w-auto" size="lg" variant="destructive" onClick={() => setIsReportIssueOpen(true)}>
                         <AlertTriangle className="mr-2 h-5 w-5" />

@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for generating lore or history for a sports playground.
@@ -28,7 +29,7 @@ const prompt = ai.definePrompt({
   - Name: {{{playgroundName}}}
   - Top Player (King of the Court): {{{topPlayer}}}
   - Most Frequent Team: {{{topTeam}}}
-  - Total Check-ins: {{{checkIns}}}
+  - Всего отметок: {{{checkIns}}}
 
   Instructions:
   - Weave a story around the provided data.

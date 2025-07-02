@@ -56,8 +56,8 @@ export function PlaygroundCheckInDialog({ isOpen, onOpenChange, onCheckIn, playg
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Чекин на площадке</DialogTitle>
-                    <DialogDescription>Подтвердите свое присутствие на &quot;{playgroundName}&quot;. За каждый чекин вы получите 10 PD! Вы можете оставить комментарий или прикрепить фото.</DialogDescription>
+                    <DialogTitle>Отметка на площадке</DialogTitle>
+                    <DialogDescription>Подтвердите свое присутствие на &quot;{playgroundName}&quot;. За каждую отметку вы получите 10 PD! Вы можете оставить комментарий или прикрепить фото.</DialogDescription>
                 </DialogHeader>
                 <div className="py-4 space-y-4">
                     <div className="space-y-2">
