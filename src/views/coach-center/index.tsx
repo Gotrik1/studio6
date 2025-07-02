@@ -9,7 +9,8 @@ import { AssignProgramDialog } from '@/widgets/assign-program-dialog';
 import { MyPlayersTab } from '@/entities/user/ui/coach-profile-tabs/my-players-tab';
 import { MyProgramsTab } from '@/entities/user/ui/coach-profile-tabs/my-programs-tab';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import {ClipboardList, Users, TrendingUp, BookOpen} from 'lucide-react';
+import {ClipboardList, Users, TrendingUp, BookOpen, BarChart3} from 'lucide-react';
+import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 
 const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, icon: React.ElementType }) => (
     <Card>
@@ -50,15 +51,19 @@ export function CoachCenterPage() {
                 </div>
                 
                 <Tabs defaultValue="players">
-                    <TabsList className="grid w-full grid-cols-2">
+                    <TabsList className="grid w-full grid-cols-3">
                         <TabsTrigger value="players">Мои игроки</TabsTrigger>
                         <TabsTrigger value="programs">Мои программы</TabsTrigger>
+                        <TabsTrigger value="analytics"><BarChart3 className="mr-2 h-4 w-4"/>Аналитика</TabsTrigger>
                     </TabsList>
                     <TabsContent value="players" className="mt-4">
                         <MyPlayersTab players={coachedPlayers} />
                     </TabsContent>
                     <TabsContent value="programs" className="mt-4">
                          <MyProgramsTab programs={trainingPrograms} onAssignProgram={handleAssignProgram} />
+                    </TabsContent>
+                    <TabsContent value="analytics" className="mt-4">
+                         <TeamTrainingAnalytics />
                     </TabsContent>
                 </Tabs>
             </div>
