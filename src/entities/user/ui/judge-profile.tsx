@@ -38,7 +38,7 @@ type JudgeProfileProps = {
 export function JudgeProfile({ user, achievements }: JudgeProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const [avatar, setAvatar] = useState(user.avatar);
-  const [banner, setBanner] = useState('https://placehold.co/1280x720.png');
+  const [banner, setBanner] = useState('https://placehold.co/1920x1080.png');
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
 

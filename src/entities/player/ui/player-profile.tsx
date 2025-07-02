@@ -82,7 +82,7 @@ type PlayerProfileProps = {
 
 export function PlayerProfile({ user, isCurrentUser, achievements, teams, recentMatches, gallery, careerHistory }: PlayerProfileProps) {
   const [avatar, setAvatar] = useState(user.avatar);
-  const [banner, setBanner] = useState('https://placehold.co/1280x720.png');
+  const [banner, setBanner] = useState('https://placehold.co/1920x1080.png');
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const rank = getRankByPoints(user.xp);
   const nextRank = RANKS[RANKS.indexOf(rank) + 1];

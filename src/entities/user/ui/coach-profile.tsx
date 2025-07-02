@@ -50,7 +50,7 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
   const [selectedProgram, setSelectedProgram] = useState<TrainingProgram | null>(null);
 
   const [avatar, setAvatar] = useState(user.avatar);
-  const [banner, setBanner] = useState('https://placehold.co/1280x720.png');
+  const [banner, setBanner] = useState('https://placehold.co/1920x1080.png');
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
 

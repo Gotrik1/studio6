@@ -31,7 +31,7 @@ export function AdminProfile({ user, achievements }: AdminProfileProps) {
   return (
     <Card className="overflow-hidden">
       <div className="relative h-48 bg-muted/40">
-        <Image src="https://placehold.co/1280x720.png" alt="Profile Banner" fill className="object-cover" data-ai-hint="abstract geometric pattern" />
+        <Image src="https://placehold.co/1920x1080.png" alt="Profile Banner" fill className="object-cover" data-ai-hint="abstract geometric pattern" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
       </div>
       <div className="relative p-6">
