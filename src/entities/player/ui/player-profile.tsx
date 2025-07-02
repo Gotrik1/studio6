@@ -186,7 +186,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
         <CardContent className="p-6 pt-2 border-b">
             <div className="space-y-2">
             <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Прогресс до {nextRank ? `ранга "${nextRank.name}"` : 'максимального ранга'}</span>
+                <span>Прогресс</span>
                 <span>{user.xp.toLocaleString('ru-RU')} / {rank.maxPoints === Infinity ? '∞' : rank.maxPoints.toLocaleString('ru-RU')} XP</span>
             </div>
             <Progress value={progressValue} className="h-2" />
@@ -195,45 +195,37 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
 
         <CardContent className="grid gap-6 border-b p-6 sm:grid-cols-2 lg:grid-cols-4">
             <div className="flex items-center gap-4">
-                <Cake className="h-6 w-6 flex-shrink-0 text-muted-foreground" />
+                <Cake className="h-6 w-6 flex-shrink-0 text-pink-500" />
                 <div>
-                    <p className="text-sm text-muted-foreground">Возраст</p>
                     <p className="font-semibold">{user.age} лет ({format(new Date(user.dateOfBirth), 'd MMMM yyyy', { locale: ru })})</p>
                 </div>
             </div>
             <div className="flex items-center gap-4">
-                <MapPin className="h-6 w-6 flex-shrink-0 text-muted-foreground" />
+                <MapPin className="h-6 w-6 flex-shrink-0 text-blue-500" />
                 <div>
-                    <p className="text-sm text-muted-foreground">Город</p>
                     <p className="font-semibold">{user.location}</p>
                 </div>
             </div>
-            <div className="flex items-start gap-4">
-                <Gamepad2 className="h-6 w-6 flex-shrink-0 text-muted-foreground" />
-                <div>
-                    <p className="text-sm text-muted-foreground">Дисциплины</p>
-                    <div className="mt-1 flex flex-wrap gap-1">
-                        {user.preferredSports.map(sport => <Badge key={sport} variant="secondary">{sport}</Badge>)}
-                    </div>
+            <div className="flex items-center gap-4">
+                <Gamepad2 className="h-6 w-6 flex-shrink-0 text-green-500" />
+                <div className="flex flex-wrap gap-1">
+                    {user.preferredSports.map(sport => <Badge key={sport} variant="secondary">{sport}</Badge>)}
                 </div>
             </div>
-            <div className="flex items-start gap-4">
-                <Send className="h-6 w-6 flex-shrink-0 text-muted-foreground" />
-                <div>
-                    <p className="text-sm text-muted-foreground">Контакты</p>
-                    <div className="mt-1 flex flex-wrap gap-2">
-                        <Button variant="outline" size="sm" asChild>
-                            <Link href={`https://t.me/${user.contacts.telegram.slice(1)}`} target="_blank">Telegram</Link>
-                        </Button>
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <Button variant="outline" size="sm">Discord</Button>
-                                </TooltipTrigger>
-                                <TooltipContent><p>{user.contacts.discord}</p></TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
-                    </div>
+            <div className="flex items-center gap-4">
+                <Send className="h-6 w-6 flex-shrink-0 text-purple-500" />
+                <div className="flex flex-wrap gap-2">
+                    <Button variant="outline" size="sm" asChild>
+                        <Link href={`https://t.me/${user.contacts.telegram.slice(1)}`} target="_blank">Telegram</Link>
+                    </Button>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button variant="outline" size="sm">Discord</Button>
+                            </TooltipTrigger>
+                            <TooltipContent><p>{user.contacts.discord}</p></TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
             </div>
         </CardContent>
