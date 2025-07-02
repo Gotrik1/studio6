@@ -201,7 +201,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Team'
+                '$ref': '#/components/schemas/Team'
         '401':
           description: Неавторизован
 components:
