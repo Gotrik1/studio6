@@ -5,6 +5,8 @@ import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/sha
 import { Swords, Trophy, Shield, Flame } from 'lucide-react';
 import { WinLossChart } from '@/widgets/analytics-charts/win-loss-chart';
 import { winLossData } from '@/shared/lib/mock-data/player-stats';
+import { EsportsAnalysisTab } from './esports-analysis-tab';
+import { Separator } from '@/shared/ui/separator';
 
 const playerStats = {
     matches: winLossData.wins + winLossData.losses,
@@ -61,6 +63,10 @@ export function StatsTab() {
             <div className="grid grid-cols-1">
                 <WinLossChart data={winLossData} />
             </div>
+
+            <Separator className="my-6" />
+            
+            <EsportsAnalysisTab />
         </div>
     );
 }

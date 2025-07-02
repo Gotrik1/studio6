@@ -25,6 +25,7 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
 import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
+import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
 
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
@@ -54,10 +55,6 @@ const GalleryTab = dynamic(() => import('@/entities/player/ui/player-profile-tab
 const PhysicalPrepTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/physical-prep-tab').then(mod => mod.PhysicalPrepTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
   ssr: false,
-});
-const AiAnalystTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/ai-analyst-tab').then(mod => mod.AiAnalystTab), {
-    loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
-    ssr: false,
 });
 
 
@@ -258,7 +255,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
                 <TabsTrigger value="overview"><Activity className="mr-2 h-4 w-4"/>Обзор</TabsTrigger>
                 <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
                 <TabsTrigger value="physical-prep"><HeartPulse className="mr-2 h-4 w-4" />Физ. подготовка</TabsTrigger>
-                <TabsTrigger value="ai-analyst"><BrainCircuit className="mr-2 h-4 w-4" />AI-Аналитик</TabsTrigger>
+                <TabsTrigger value="holistic-analysis"><BrainCircuit className="mr-2 h-4 w-4" />Компл. анализ</TabsTrigger>
                 <TabsTrigger value="career"><Briefcase className="mr-2 h-4 w-4"/>Карьера</TabsTrigger>
                 <TabsTrigger value="achievements"><Trophy className="mr-2 h-4 w-4"/>Достижения</TabsTrigger>
                 <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4"/>Команды</TabsTrigger>
@@ -277,8 +274,8 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
                 <PhysicalPrepTab />
             </TabsContent>
 
-            <TabsContent value="ai-analyst" className="mt-4">
-                <AiAnalystTab />
+            <TabsContent value="holistic-analysis" className="mt-4">
+                <HolisticAnalysisTab />
             </TabsContent>
 
             <TabsContent value="career" className="mt-4">
