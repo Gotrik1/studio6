@@ -56,7 +56,7 @@ const getMetrics = (completedWorkouts: TrainingLogEntry[]) => {
     return { totalWorkouts, monthlyVolume, workoutStreak, favoriteExercise, lastWorkout };
 };
 
-const getVolumeByMuscleGroupData = (log: TrainingLogEntry[]) => {
+const getVolumeByMuscleGroupData = () => {
     // Mock implementation for demo. In a real app this would use exercise data.
     return [
         { name: 'Грудь', volume: 4500 },
@@ -132,7 +132,7 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
     }
 
     const trainingMetrics = getMetrics(completedWorkouts);
-    const volumeByMuscleGroupData = getVolumeByMuscleGroupData(completedWorkouts);
+    const volumeByMuscleGroupData = getVolumeByMuscleGroupData();
 
     return { personalRecords, recordHistory: recordHistoryMap, fullExerciseHistory: fullHistoryMap, trainingMetrics, volumeByMuscleGroupData };
 };

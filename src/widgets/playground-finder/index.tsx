@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Textarea } from '@/shared/ui/textarea';
@@ -11,6 +11,9 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { PlaygroundCard } from '@/widgets/playground-card';
+import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
+import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 
 export function PlaygroundFinder() {
     const { toast } = useToast();
@@ -19,6 +22,9 @@ export function PlaygroundFinder() {
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<FindVenuesOutput | null>(null);
     const [aiSummary, setAiSummary] = useState<string | null>(null);
+    const [suggestedPlaygrounds, setSuggestedPlaygrounds] = useState<Playground[] | null>(null);
+
+    const livePlaygrounds = useMemo(() => new Set(['playground-2']), []);
 
     const handleSearch = async () => {
         if (!prompt) {
@@ -29,12 +35,19 @@ export function PlaygroundFinder() {
         setError(null);
         setResult(null);
         setAiSummary(null);
+        setSuggestedPlaygrounds(null);
 
         try {
             const searchResult = await findVenues({ query: prompt });
             setResult(searchResult);
             setAiSummary(searchResult.summary);
-            if (searchResult.suggestedVenues.length === 0) {
+            if (searchResult.suggestedVenues.length > 0) {
+                 const fullPlaygrounds = searchResult.suggestedVenues.map(p => 
+                    playgroundsList.find(fp => fp.id === p.id)
+                ).filter((p): p is Playground => !!p);
+                setSuggestedPlaygrounds(fullPlaygrounds);
+            } else {
+                 setSuggestedPlaygrounds([]);
                  toast({
                     title: "Ничего не найдено",
                     description: "Попробуйте изменить ваш запрос.",
@@ -93,13 +106,22 @@ export function PlaygroundFinder() {
                             </Alert>
                         )}
                         
-                        {result && result.suggestedVenues.length > 0 && (
+                        {suggestedPlaygrounds && suggestedPlaygrounds.length > 0 && (
                             <>
                                 <h3 className="font-semibold">Рекомендации AI:</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in-50">
-                                    {result.suggestedVenues.map(playground => (
-                                        <PlaygroundCard key={playground.id} playground={playground as any} />
-                                    ))}
+                                    {suggestedPlaygrounds.map(playground => {
+                                        const kingTeam = getKingOfTheCourt(playground.id);
+                                        const isLive = livePlaygrounds.has(playground.id);
+                                        return (
+                                            <PlaygroundCard 
+                                                key={playground.id} 
+                                                playground={playground}
+                                                kingTeam={kingTeam}
+                                                isLive={isLive}
+                                            />
+                                        )
+                                    })}
                                 </div>
                             </>
                         )}

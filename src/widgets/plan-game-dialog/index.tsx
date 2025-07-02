@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useToast } from '@/shared/hooks/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
@@ -36,7 +35,6 @@ interface PlanGameDialogProps {
 }
 
 export function PlanGameDialog({ isOpen, onOpenChange, playgroundName, onPlan, initialDate, initialTime }: PlanGameDialogProps) {
-    const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<FormValues>({
@@ -80,16 +78,14 @@ export function PlanGameDialog({ isOpen, onOpenChange, playgroundName, onPlan, i
                         <div className="grid gap-4 py-4">
                             <Alert variant="destructive" className="border-yellow-500/50 text-yellow-500 [&>svg]:text-yellow-500">
                                 <Info className="h-4 w-4" />
-                                <AlertTitle>Важный принцип: Уважение</AlertTitle>
+                                <AlertTitle>Важный принцип: &quot;Уважение&quot;</AlertTitle>
                                 <AlertDescription>
-                                    Помните, что дворовые площадки — это общественные места. Ваше "бронирование" — это лишь уведомление для других. Относитесь с уважением к тем, кто уже играет на площадке. В случае жалоб на неспортивное поведение могут быть применены санкции.
+                                    Помните, что дворовые площадки — это общественные места. Ваше &quot;бронирование&quot; — это лишь уведомление для других. Относитесь с уважением к тем, кто уже играет на площадке. В случае жалоб на неспортивное поведение могут быть применены санкции.
                                 </AlertDescription>
                             </Alert>
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <FormField control={form.control} name="date" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Дата</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                                <FormField control={form.control} name="time" render={({ field }) => (
-                                    <FormItem><FormLabel>Время</FormLabel><FormControl><Input type="time" {...field} /></FormControl><FormMessage /></FormItem>
-                                )} />
+                                <FormField control={form.control} name="time" render={({ field }) => (<FormItem><FormLabel>Время</FormLabel><FormControl><Input type="time" {...field} /></FormControl><FormMessage /></FormItem>)} />
                             </div>
                             <FormField control={form.control} name="duration" render={({ field }) => (
                                 <FormItem><FormLabel>Продолжительность (в минутах)</FormLabel><FormControl><Input type="number" step="15" {...field} /></FormControl><FormMessage /></FormItem>

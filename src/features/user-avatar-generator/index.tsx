@@ -31,7 +31,6 @@ export function UserAvatarGeneratorDialog({ isOpen, onOpenChange, onAvatarSave, 
   const [generatedAvatar, setGeneratedAvatar] = useState<string | null>(null);
 
   // Upload state
-  const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
   const handleGenerate = async () => {
@@ -43,7 +42,6 @@ export function UserAvatarGeneratorDialog({ isOpen, onOpenChange, onAvatarSave, 
     setGenerationError(null);
     setGeneratedAvatar(null);
     setPreview(null);
-    setFile(null);
 
     try {
       const result = await generateUserAvatar({ prompt });
@@ -59,7 +57,6 @@ export function UserAvatarGeneratorDialog({ isOpen, onOpenChange, onAvatarSave, 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
-      setFile(selectedFile);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -93,7 +90,6 @@ export function UserAvatarGeneratorDialog({ isOpen, onOpenChange, onAvatarSave, 
       // Reset state on close
       setGeneratedAvatar(null);
       setGenerationError(null);
-      setFile(null);
       setPreview(null);
     }
     onOpenChange(open);

@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { BrainCircuit, AlertCircle, Sparkles, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { BrainCircuit, AlertCircle, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { summarizePlaygroundReviews, type SummarizePlaygroundReviewsOutput } from '@/shared/api/genkit/flows/summarize-playground-reviews-flow';
 import type { PlaygroundReview } from '@/shared/lib/mock-data/playground-reviews';
 

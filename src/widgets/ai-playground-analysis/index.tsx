@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { BrainCircuit, AlertCircle, Sparkles, ThumbsUp, ThumbsDown, Target } from 'lucide-react';
+import { BrainCircuit, AlertCircle, ThumbsUp, ThumbsDown, Target } from 'lucide-react';
 import { analyzePlaygroundDetails, type AnalyzePlaygroundDetailsOutput } from '@/shared/api/genkit/flows/analyze-playground-details-flow';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 

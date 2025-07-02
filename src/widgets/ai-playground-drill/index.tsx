@@ -2,11 +2,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { Target, AlertCircle, Sparkles, Award, CheckCircle } from 'lucide-react';
+import { Target, Award, CheckCircle } from 'lucide-react';
 import { generatePlaygroundDrill, type GeneratePlaygroundDrillOutput } from '@/shared/api/genkit/flows/generate-playground-drill-flow';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 import { useToast } from '@/shared/hooks/use-toast';

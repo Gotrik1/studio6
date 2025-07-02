@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useToast } from '@/shared/hooks/use-toast';
-import { useRouter } from 'next/navigation';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
@@ -38,7 +37,6 @@ interface ProposeMatchDialogProps {
 
 export function ProposeMatchDialog({ isOpen, onOpenChange, challengedPlayerName }: ProposeMatchDialogProps) {
     const { toast } = useToast();
-    const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<FormValues>({

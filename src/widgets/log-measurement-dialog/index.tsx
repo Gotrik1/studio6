@@ -11,7 +11,6 @@ import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shared/ui/form';
 import { useToast } from '@/shared/hooks/use-toast';
 import type { Measurement } from '@/shared/lib/mock-data/measurements';
-import { useState } from 'react';
 
 const measurementSchema = z.object({
     weight: z.coerce.number().min(30, "Слишком низкий вес").max(300, "Слишком большой вес"),

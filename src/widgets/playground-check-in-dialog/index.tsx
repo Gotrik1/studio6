@@ -6,7 +6,6 @@ import { Button } from "@/shared/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
-import { useToast } from '@/shared/hooks/use-toast';
 import { Loader2, CheckCircle, Upload } from 'lucide-react';
 import Image from 'next/image';
 
@@ -18,7 +17,6 @@ interface PlaygroundCheckInDialogProps {
 }
 
 export function PlaygroundCheckInDialog({ isOpen, onOpenChange, onCheckIn, playgroundName }: PlaygroundCheckInDialogProps) {
-    const { toast } = useToast();
     const [comment, setComment] = useState('');
     const [photo, setPhoto] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);

@@ -38,11 +38,6 @@ import {
   Gavel,
   Map,
   Backpack,
-  ListChecks,
-  BarChart3,
-  Calendar,
-  Award,
-  Ruler,
   HeartPulse,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
@@ -186,7 +181,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                                                         {item.children.map(child => (
                                                             <SidebarMenuSubItem key={child.href}>
                                                                 <SidebarMenuSubButton href={child.href} variant={isActive(child.href) ? 'active' : 'default'}>
-                                                                    {child.label === 'Питание' && <HeartPulse className="mr-2 h-4 w-4"/>}
+                                                                    {child.icon && <child.icon className="mr-2 h-4 w-4"/>}
                                                                     {child.label}
                                                                 </SidebarMenuSubButton>
                                                             </SidebarMenuSubItem>

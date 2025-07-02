@@ -1,8 +1,9 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for analyzing a user's exercise form from a video.
  *
- * - analyzeExerciseForm - A function that handles the form analysis.
+ * - analyzeExerciseForm - a function that handles the form analysis.
  * - AnalyzeExerciseFormInput - The input type for the function.
  * - AnalyzeExerciseFormOutput - The return type for the function.
  */
@@ -18,7 +19,7 @@ export async function analyzeExerciseForm(input: AnalyzeExerciseFormInput): Prom
   return analyzeExerciseFormFlow(input);
 }
 
-const prompt = ai.definePrompt({
+ai.definePrompt({
   name: 'analyzeExerciseFormPrompt',
   input: {schema: AnalyzeExerciseFormInputSchema},
   output: {schema: AnalyzeExerciseFormOutputSchema},

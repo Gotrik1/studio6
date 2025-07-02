@@ -32,7 +32,6 @@ export function ProfileBannerGeneratorDialog({ isOpen, onOpenChange, onBannerSav
   const [generatedBanner, setGeneratedBanner] = useState<string | null>(null);
   
   // Upload state
-  const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
   const handleGenerate = async () => {
@@ -43,7 +42,6 @@ export function ProfileBannerGeneratorDialog({ isOpen, onOpenChange, onBannerSav
     setIsLoading(true);
     setError(null);
     setGeneratedBanner(null);
-    setFile(null);
     setPreview(null);
 
     try {
@@ -60,7 +58,6 @@ export function ProfileBannerGeneratorDialog({ isOpen, onOpenChange, onBannerSav
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
-      setFile(selectedFile);
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreview(reader.result as string);
@@ -94,7 +91,6 @@ export function ProfileBannerGeneratorDialog({ isOpen, onOpenChange, onBannerSav
         // Reset state on close
         setGeneratedBanner(null);
         setError(null);
-        setFile(null);
         setPreview(null);
     } else {
         setPrompt(defaultPrompt);

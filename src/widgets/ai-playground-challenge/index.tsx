@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/shared/u
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { Target, AlertCircle, Sparkles, Award } from 'lucide-react';
+import { Target, AlertCircle, Award } from 'lucide-react';
 import { generatePlaygroundChallenge, type GeneratePlaygroundChallengeOutput } from '@/shared/api/genkit/flows/generate-playground-challenge-flow';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 import { useToast } from '@/shared/hooks/use-toast';

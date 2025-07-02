@@ -6,12 +6,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { addDays, format, getHours, getMinutes, isSameDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import type { LfgLobby } from '@/app/providers/lfg-provider';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shared/ui/tooltip';
 
 interface PlaygroundScheduleTabProps {
-    playground: Playground;
     schedule: LfgLobby[];
     onPlanClick: (day: Date, hour: number) => void;
 }
@@ -19,7 +17,7 @@ interface PlaygroundScheduleTabProps {
 const hours = Array.from({ length: 15 }, (_, i) => i + 8); // 8 AM to 10 PM
 const days = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i));
 
-export function PlaygroundScheduleTab({ playground, schedule, onPlanClick }: PlaygroundScheduleTabProps) {
+export function PlaygroundScheduleTab({ schedule, onPlanClick }: PlaygroundScheduleTabProps) {
     return (
         <Card>
             <CardHeader>

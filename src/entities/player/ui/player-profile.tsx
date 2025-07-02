@@ -83,7 +83,6 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
   const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const rank = getRankByPoints(user.xp);
-  const nextRank = RANKS[RANKS.indexOf(rank) + 1];
   const progressValue = rank.maxPoints === Infinity ? 100 : ((user.xp - rank.minPoints) / (rank.maxPoints - rank.minPoints)) * 100;
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);

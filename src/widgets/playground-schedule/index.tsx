@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Calendar, Clock, PlusCircle } from 'lucide-react';
+import { Calendar, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { format } from 'date-fns';
 import type { LfgLobby } from '@/app/providers/lfg-provider';

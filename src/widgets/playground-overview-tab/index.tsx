@@ -35,7 +35,7 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
                    <CardContent className="space-y-3 text-sm">
                        <div className="flex justify-between"><span>Покрытие:</span><span className="font-semibold">{playground.surface}</span></div>
                        <div className="flex justify-between"><span>Рейтинг:</span><span className="font-semibold flex items-center gap-1">{playground.rating}/5.0 <Star className="h-4 w-4 text-amber-500"/></span></div>
-                       <div className="flex justify-between"><span>Отметок:</span><span className="font-semibold">{playground.checkIns}</span></div>
+                       <div className="flex justify-between"><span>Чекинов:</span><span className="font-semibold">{playground.checkIns}</span></div>
                        <div>
                            <p>Особенности:</p>
                            <div className="flex flex-wrap gap-2 mt-1">
@@ -62,7 +62,7 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
                             <AlertDialogHeader>
                             <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
                             <AlertDialogDescription>
-                                Вы собираетесь отметить эту площадку как вашу "домашнюю". Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
+                                Вы собираетесь отметить эту площадку как вашу &quot;домашнюю&quot;. Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
                             </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

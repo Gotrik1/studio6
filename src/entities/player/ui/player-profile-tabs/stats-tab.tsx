@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Swords, Trophy, Shield, Flame } from 'lucide-react';
 import { WinLossChart } from '@/widgets/analytics-charts/win-loss-chart';
 import { winLossData } from '@/shared/lib/mock-data/player-stats';
