@@ -58,4 +58,6 @@ import './flows/generate-sport-summary-flow';
 import './flows/generate-profile-banner-flow';
 import './flows/generate-playground-summary-flow';
 import './flows/generate-playground-challenge-flow';
+import './flows/generate-playground-lore';
+
 

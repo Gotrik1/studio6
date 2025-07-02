@@ -29,6 +29,8 @@ import {
 } from "@/shared/ui/alert-dialog";
 import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
 import { AiPlaygroundChallenge } from '@/widgets/ai-playground-challenge';
+import { PlaygroundLeaderboard } from '@/widgets/playground-leaderboard';
+import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
 
 export function PlaygroundDetails({ playground }: { playground: Playground }) {
     const { toast } = useToast();
@@ -126,6 +128,8 @@ export function PlaygroundDetails({ playground }: { playground: Playground }) {
                     </div>
                     <div className="space-y-6">
                         <AiPlaygroundChallenge playground={playground} />
+                        <AiPlaygroundLore playground={playground} />
+                        <PlaygroundLeaderboard />
                         <Card>
                            <CardHeader><CardTitle>Основная информация</CardTitle></CardHeader>
                            <CardContent className="space-y-3 text-sm">
