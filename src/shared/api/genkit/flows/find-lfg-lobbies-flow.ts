@@ -4,7 +4,7 @@
 /**
  * @fileOverview An AI agent for helping users find game lobbies.
  *
- * - findLfgLobbies - A function that handles the lobby search.
+ * - findLfgLobbies - a function that handles the lobby search.
  * - FindLfgLobbiesInput - The input type for the function.
  * - FindLfgLobbiesOutput - The return type for the function.
  */
