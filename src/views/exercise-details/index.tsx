@@ -3,7 +3,7 @@
 
 import { useMemo } from 'react';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { AlertTriangle, CheckCircle, LineChart, Award, TrendingUp, Video } from 'lucide-react';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
@@ -66,7 +66,7 @@ export function ExerciseDetailsPage({ exercise }: ExerciseDetailsPageProps) {
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2"><LineChart className="h-5 w-5 text-primary" />Динамика рекорда</CardTitle>
-                                <p className="text-sm text-muted-foreground">Прогресс вашего одноповторного максимума (1ПМ).</p>
+                                <CardDescription>Прогресс вашего одноповторного максимума (1ПМ).</CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <PersonalRecordHistoryChart data={history1RM} />
