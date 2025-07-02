@@ -8,7 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send } from "lucide-react";
+import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -23,6 +23,7 @@ import { ReportPlayerDialog } from '@/features/report-player-dialog';
 import Image from "next/image";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
+import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
 
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
@@ -81,19 +82,33 @@ type PlayerProfileProps = {
 
 export function PlayerProfile({ user, isCurrentUser, achievements, teams, recentMatches, gallery, careerHistory }: PlayerProfileProps) {
   const [avatar, setAvatar] = useState(user.avatar);
+  const [banner, setBanner] = useState('https://placehold.co/1200x400.png');
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const rank = getRankByPoints(user.xp);
   const nextRank = RANKS[RANKS.indexOf(rank) + 1];
   const progressValue = rank.maxPoints === Infinity ? 100 : ((user.xp - rank.minPoints) / (rank.maxPoints - rank.minPoints)) * 100;
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+  const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
 
   return (
     <>
        <Card className="overflow-hidden">
         <div className="relative h-48 bg-muted/40">
-          <Image src="https://placehold.co/1200x400.png" alt="Profile Banner" fill className="object-cover" data-ai-hint="esports gaming background" />
+          <Image src={banner} alt="Profile Banner" fill className="object-cover" data-ai-hint="esports gaming background" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+          {isCurrentUser && (
+            <Button
+              variant="outline"
+              size="icon"
+              className="absolute top-4 right-4 rounded-full h-8 w-8 bg-background/50 backdrop-blur-sm"
+              onClick={() => setIsBannerDialogOpen(true)}
+              title="Сгенерировать фон"
+            >
+              <ImageIcon className="h-4 w-4" />
+              <span className="sr-only">Сгенерировать фон</span>
+            </Button>
+          )}
         </div>
         
         <div className="relative p-6">
@@ -194,25 +209,25 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
 
         <CardContent className="grid gap-6 border-b p-6 sm:grid-cols-2 lg:grid-cols-4">
             <div className="flex items-center gap-4">
-                <Cake className="h-6 w-6 flex-shrink-0 text-pink-500" />
+                <Cake className="h-6 w-6 text-pink-500" />
                 <div>
                     <p className="font-semibold">{user.age} лет ({format(new Date(user.dateOfBirth), 'd MMMM yyyy', { locale: ru })})</p>
                 </div>
             </div>
             <div className="flex items-center gap-4">
-                <MapPin className="h-6 w-6 flex-shrink-0 text-blue-500" />
+                <MapPin className="h-6 w-6 text-blue-500" />
                 <div>
                     <p className="font-semibold">{user.location}</p>
                 </div>
             </div>
             <div className="flex items-center gap-4">
-                <Gamepad2 className="h-6 w-6 flex-shrink-0 text-green-500" />
+                <Gamepad2 className="h-6 w-6 text-green-500" />
                 <div className="flex flex-wrap gap-1">
                     {user.preferredSports.map(sport => <Badge key={sport} variant="secondary">{sport}</Badge>)}
                 </div>
             </div>
             <div className="flex items-center gap-4">
-                <Send className="h-6 w-6 flex-shrink-0 text-purple-500" />
+                <Send className="h-6 w-6 text-purple-500" />
                 <div className="flex flex-wrap gap-2">
                     <Button variant="outline" size="sm" asChild>
                         <Link href={`https://t.me/${user.contacts.telegram.slice(1)}`} target="_blank">Telegram</Link>
@@ -281,6 +296,13 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
             onOpenChange={setIsAvatarDialogOpen}
             currentAvatar={avatar}
             onAvatarSave={setAvatar}
+        />
+        <ProfileBannerGeneratorDialog
+            isOpen={isBannerDialogOpen}
+            onOpenChange={setIsBannerDialogOpen}
+            currentBanner={banner}
+            onBannerSave={setBanner}
+            defaultPrompt={`abstract background for esports player, main sport is ${user.mainSport}`}
         />
         <ReportPlayerDialog
             isOpen={isReportDialogOpen}
