@@ -80,7 +80,7 @@ export function AITeamAssistantTab() {
                 )}
                 {result && (
                      <div className="space-y-6 animate-in fade-in-50">
-                        <Card className="bg-muted/50 shadow-none">
+                        <Card className="mx-1 bg-muted/50 shadow-none">
                              <CardHeader>
                                 <CardTitle className="text-lg">Краткая сводка</CardTitle>
                             </CardHeader>

@@ -83,7 +83,7 @@ export function EsportsAnalysisTab() {
                             </div>
                         </div>
                         
-                        <Card className="bg-muted/50 shadow-none">
+                        <Card className="mx-1 bg-muted/50 shadow-none">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2"><ClipboardList className="h-5 w-5 text-primary"/> Рекомендации</CardTitle>
                             </CardHeader>

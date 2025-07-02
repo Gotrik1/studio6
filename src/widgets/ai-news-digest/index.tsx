@@ -62,7 +62,7 @@ export function AiNewsDigest() {
     if (!data) return null;
 
     return (
-        <Card className="border-primary/20 bg-primary/5 shadow-none">
+        <Card className="mx-1 border-primary/20 bg-primary/5 shadow-none">
             <CardHeader className="flex-row items-start justify-between">
                 <div>
                     <CardTitle className="flex items-center gap-2">

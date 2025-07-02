@@ -61,7 +61,7 @@ export function RestTimer() {
     };
 
     return (
-        <Card className="bg-muted/50 shadow-none">
+        <Card className="mx-1 bg-muted/50 shadow-none">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-base font-medium flex items-center gap-2"><Timer className="h-5 w-5"/> Таймер отдыха</CardTitle>
                 <div className="flex gap-1">
