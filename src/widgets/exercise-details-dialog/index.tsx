@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -34,7 +35,7 @@ export function ExerciseDetailsPage({ exercise }: ExerciseDetailsPageProps) {
             <div className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">{exercise.name}</h1>
                 <div className="flex flex-wrap gap-2">
-                    <Badge variant="secondary">{exercise.muscleGroup}</Badge>
+                    <Badge variant="secondary">{exercise.category}</Badge>
                     <Badge variant="outline">{exercise.equipment}</Badge>
                 </div>
             </div>

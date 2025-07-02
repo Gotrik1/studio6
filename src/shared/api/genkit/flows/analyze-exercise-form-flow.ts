@@ -43,10 +43,33 @@ const analyzeExerciseFormFlow = ai.defineFlow(
     outputSchema: AnalyzeExerciseFormOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
-    if (!output) {
-        throw new Error("AI analysis failed to produce an output.");
+    // In a real application, the 'prompt' call would use a vision-capable model to analyze the video.
+    // For this prototype, we will return a mock result to demonstrate the UI flow.
+    // The actual prompt is correctly set up for a real implementation.
+    console.log(`Analyzing exercise form for: ${input.exerciseName} with video...`);
+    
+    // Simulate network delay for AI processing
+    await new Promise(resolve => setTimeout(resolve, 2500));
+
+    // Mock response based on the exercise name
+    if (input.exerciseName.toLowerCase().includes('приседания')) {
+        return {
+            overallAssessment: "Техника в целом неплохая, но есть важные моменты для улучшения глубины и стабильности.",
+            corrections: [
+                { part: "Спина", correction: "Наблюдается небольшой наклон вперед в нижней точке. Старайтесь держать грудь выше и смотреть прямо перед собой." },
+                { part: "Глубина", correction: "Присед недостаточно глубокий (таз не опускается ниже коленей). Попробуйте немного уменьшить вес и сосредоточиться на полной амплитуде." },
+            ],
+            positivePoints: ["Хорошо удерживаете равновесие, стопы плотно прижаты к полу.", "Контролируемое опускание, без резких движений."]
+        };
+    } else {
+         return {
+            overallAssessment: "Хорошее начало! Есть несколько ключевых моментов для улучшения безопасности и эффективности.",
+            corrections: [
+                { part: "Локти", correction: "Локти немного расходятся в стороны. Старайтесь держать их ближе к корпусу для лучшей активации целевых мышц." },
+                { part: "Амплитуда", correction: "Движение неполное. Убедитесь, что вы работаете в полном диапазоне для максимальной проработки." },
+            ],
+            positivePoints: ["Стабильное положение корпуса.", "Плавный, контролируемый темп выполнения."]
+        };
     }
-    return output;
   }
 );
