@@ -66,10 +66,10 @@ export function SponsorProfile({ user, achievements }: SponsorProfileProps) {
                         size="icon"
                         className="absolute bottom-1 right-1 rounded-full h-8 w-8 bg-background"
                         onClick={() => setIsAvatarDialogOpen(true)}
-                        title="Сгенерировать AI-аватар"
+                        title="Изменить аватар"
                     >
                         <Wand2 className="h-4 w-4" />
-                        <span className="sr-only">Сгенерировать AI-аватар</span>
+                        <span className="sr-only">Изменить аватар</span>
                     </Button>
                  </div>
                 <div className="flex-1 space-y-2">

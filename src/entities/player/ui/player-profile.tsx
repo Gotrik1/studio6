@@ -124,10 +124,10 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
                   size="icon"
                   className="absolute bottom-1 right-1 rounded-full h-8 w-8 bg-background"
                   onClick={() => setIsAvatarDialogOpen(true)}
-                  title="Generate AI Avatar"
+                  title="Изменить аватар"
                 >
                   <Wand2 className="h-4 w-4" />
-                  <span className="sr-only">Generate AI Avatar</span>
+                  <span className="sr-only">Изменить аватар</span>
                 </Button>
               )}
             </div>
