@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -9,7 +10,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shar
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/shared/ui/alert-dialog";
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
-import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
+import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
 import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
 import { teams } from '@/shared/lib/mock-data/teams';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
@@ -32,7 +33,7 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-                <AiPlaygroundSummary playground={playground} />
+                <AiPlaygroundAnalysis playground={playground} />
                 <AiPlaygroundLore playground={playground} />
             </div>
             <div className="lg:col-span-1 space-y-6">

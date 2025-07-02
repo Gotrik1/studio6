@@ -56,10 +56,9 @@ import './flows/generate-team-concept-flow';
 import './flows/find-coaches-flow';
 import './flows/generate-sport-summary-flow';
 import './flows/generate-profile-banner-flow';
-import './flows/generate-playground-summary-flow';
 import './flows/generate-playground-challenge-flow';
 import './flows/generate-playground-lore';
 import './flows/analyze-playground-report-flow';
 import './flows/generate-playground-workout-flow';
 import './flows/summarize-playground-reviews-flow';
-
+import './flows/analyze-playground-details-flow';

@@ -26,6 +26,7 @@ import { playgroundSchedule as initialSchedule, type PlaygroundBooking } from '@
 import { useSession } from '@/shared/lib/session/client';
 import { useToast } from '@/shared/hooks/use-toast';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
+import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
 
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
