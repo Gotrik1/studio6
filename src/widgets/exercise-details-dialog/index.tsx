@@ -4,10 +4,9 @@
 import { useMemo } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
-import { Badge } from '@/shared/ui/badge';
 import { AlertTriangle, CheckCircle, LineChart, Award, TrendingUp, Video } from 'lucide-react';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
-import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
+import { getTrainingAnalytics, type ExerciseSession } from '@/shared/lib/get-training-analytics';
 import { PersonalRecordHistoryChart } from '@/widgets/analytics-charts/personal-record-chart';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
 import { format } from 'date-fns';
@@ -95,7 +94,7 @@ export function ExerciseDetailsDialog({ exercise, isOpen, onOpenChange }: Exerci
                                                     <Award className="h-6 w-6 text-amber-500" />
                                                     {record.e1RM} кг
                                                 </p>
-                                                <p className="text-xs text-muted-foreground">({record.reps}x{record.weight}кг on {format(new Date(record.date), 'd MMM yyyy', { locale: ru })})</p>
+                                                <p className="text-xs text-muted-foreground">({record.reps}x{record.weight}кг on {format(new Date(record.date), 'd MMMM yyyy', { locale: ru })})</p>
                                             </div>
                                             <div className="flex justify-between items-center text-sm">
                                                 <span className="font-medium">Первый замер</span>
@@ -125,10 +124,10 @@ export function ExerciseDetailsDialog({ exercise, isOpen, onOpenChange }: Exerci
 
                             <Card>
                                 <CardHeader>
-                                    <CardTitle className="text-base font-semibold flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-yellow-500" /> Ошибки</CardTitle>
+                                     <CardTitle className="text-base font-semibold flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-yellow-500" /> Ошибки</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
+                                     <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
                                         {exercise.commonMistakes.map((mistake, i) => <li key={i}>{mistake}</li>)}
                                     </ul>
                                 </CardContent>

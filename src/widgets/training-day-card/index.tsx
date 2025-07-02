@@ -1,7 +1,6 @@
 
 'use client';
 
-import { useMemo } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -26,7 +25,6 @@ import { exercisesList } from '@/shared/lib/mock-data/exercises';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { useToast } from '@/shared/hooks/use-toast';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;
@@ -198,7 +196,6 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, personalRecords, exerci
 };
 
 export function TrainingDayCard({ entry, personalRecords, onDelete, onCopy, onUpdate, fullExerciseHistory }: TrainingDayCardProps) {
-    const { toast } = useToast();
     const StatusIcon = statusMap[entry.status].icon;
     const statusColor = statusMap[entry.status].color;
     const MoodIcon = entry.mood ? moodMap[entry.mood].icon : null;
