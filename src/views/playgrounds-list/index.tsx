@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -8,16 +7,23 @@ import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 import { PlaygroundCard } from '@/widgets/playground-card';
 import Link from 'next/link';
 import { PlaygroundFinder } from '@/widgets/playground-finder';
+import { Input } from '@/shared/ui/input';
+import { Search } from 'lucide-react';
+import { Card, CardHeader } from '@/shared/ui/card';
+
+const sportTypes = ['Все', 'Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная'];
 
 export function PlaygroundsListPage() {
     const [searchQuery, setSearchQuery] = useState('');
+    const [sportFilter, setSportFilter] = useState('Все');
 
     const filteredPlaygrounds = useMemo(() => {
-        return playgroundsList.filter(p =>
-            p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            p.address.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }, [searchQuery]);
+        return playgroundsList.filter(p => {
+            const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.address.toLowerCase().includes(searchQuery.toLowerCase());
+            const matchesSport = sportFilter === 'Все' || p.type === sportFilter;
+            return matchesSearch && matchesSport;
+        });
+    }, [searchQuery, sportFilter]);
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -43,11 +49,42 @@ export function PlaygroundsListPage() {
             
             <div className="space-y-4 pt-6 mt-6 border-t">
                  <h2 className="font-headline text-2xl font-bold">Все площадки</h2>
+                 
+                 <Card>
+                    <CardHeader className="flex flex-col gap-4 sm:flex-row">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                            <Input
+                                placeholder="Поиск по названию или адресу..."
+                                className="w-full pl-10"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                            {sportTypes.map((type) => (
+                                <Button 
+                                    key={type} 
+                                    variant={sportFilter === type ? "default" : "outline"}
+                                    onClick={() => setSportFilter(type)}
+                                >
+                                    {type}
+                                </Button>
+                            ))}
+                        </div>
+                    </CardHeader>
+                </Card>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {playgroundsList.map(playground => (
+                    {filteredPlaygrounds.map(playground => (
                         <PlaygroundCard key={playground.id} playground={playground} />
                     ))}
                 </div>
+                 {filteredPlaygrounds.length === 0 && (
+                    <div className="col-span-full text-center py-16 text-muted-foreground">
+                        <p>Площадки не найдены. Попробуйте изменить фильтры.</p>
+                    </div>
+                )}
             </div>
         </div>
     );

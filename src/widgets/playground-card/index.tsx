@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -10,7 +9,7 @@ import { Badge } from '@/shared/ui/badge';
 
 export function PlaygroundCard({ playground }: { playground: Playground }) {
     return (
-        <Link href={`/playgrounds/${playground.id}`}>
+        <Link href={`/playgrounds/${playground.id}`} className="block h-full">
             <Card className="h-full overflow-hidden transition-all hover:shadow-lg hover:border-primary">
                 <div className="relative h-40 w-full">
                     <Image src={playground.coverImage} alt={playground.name} fill className="object-cover" data-ai-hint={playground.coverImageHint}/>
@@ -29,7 +28,8 @@ export function PlaygroundCard({ playground }: { playground: Playground }) {
                 </CardHeader>
                  <CardContent className="flex-1">
                      <div className="flex flex-wrap gap-1">
-                        {playground.features.map(feature => <Badge key={feature} variant="secondary">{feature}</Badge>)}
+                        <Badge variant="secondary">{playground.type}</Badge>
+                        <Badge variant="outline">{playground.surface}</Badge>
                     </div>
                  </CardContent>
                 <CardFooter className="flex justify-between text-xs text-muted-foreground">
