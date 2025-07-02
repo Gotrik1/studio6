@@ -1,23 +1,20 @@
 
-
-import { CodeBlock } from '@/widgets/code-block';
-import { FileTree } from '@/widgets/file-tree';
 import Link from 'next/link';
-
-const codeExample = `
-import dynamic from 'next/dynamic';
-import { Skeleton } from '@/shared/ui/skeleton';
-
-const DashboardPage = dynamic(
-  () => import('@/views/dashboard').then((mod) => mod.DashboardPage),
-  {
-    loading: () => <Skeleton className="h-screen w-full" />,
-    ssr: false, 
-  }
-);
-
-export default DashboardPage;
-`;
+import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
+import { FileTree } from '@/widgets/file-tree';
+import { CodeBlock } from '@/widgets/code-block';
+import {
+  GitCommit,
+  Layers,
+  Shield,
+  Library,
+  TestTube2,
+  UploadCloud,
+  Cpu,
+  Fingerprint,
+  Users,
+  Trophy,
+} from 'lucide-react';
 
 const middlewareExample = `
 import { NextResponse } from 'next/server';
@@ -44,74 +41,142 @@ export const config = {
 };
 `;
 
+const Section = ({
+  title,
+  icon: Icon,
+  children,
+}: {
+  title: string;
+  icon: React.ElementType;
+  children: React.ReactNode;
+}) => (
+  <section className="space-y-4 pt-8">
+    <h2 className="flex items-center gap-3 font-headline text-3xl font-bold tracking-tight">
+      <Icon className="h-8 w-8 text-primary" />
+      {title}
+    </h2>
+    <div className="space-y-4">{children}</div>
+  </section>
+);
 
 export function ArchitecturePage() {
-    return (
-        <div className="prose dark:prose-invert max-w-none opacity-0 animate-fade-in-up">
-            <h1>Архитектура Проекта "ProDvor" (Feature-Sliced Design)</h1>
-            <p className="lead">Этот документ является основным техническим руководством для разработчиков фронтенд-части платформы "ProDvor" и описывает внедренную архитектурную методологию **Feature-Sliced Design (FSD)**.</p>
+  return (
+    <div className="prose dark:prose-invert max-w-none opacity-0 animate-fade-in-up">
+      <h1>Техническая Документация Проекта "ProDvor"</h1>
+      <p className="lead">
+        Версия: 1.3 | Дата последнего обновления: {new Date().toLocaleDateString('ru-RU')}
+      </p>
+      <p>
+        Этот документ является основным техническим руководством для
+        разработчиков фронтенд-части платформы "ProDvor". Он описывает
+        архитектуру, технологический стек, стандарты кодирования и ключевые
+        принятые решения.
+      </p>
 
-            <h2>1. Обзор методологии FSD</h2>
-            <p>Feature-Sliced Design — это архитектурная методология для фронтенд-приложений, которая структурирует код по бизнес-областям, а не по техническому назначению. Основная цель — сделать проект управляемым, масштабируемым и понятным для команды.</p>
-            <ul>
-                <li><strong>Модульность:</strong> Код сгруппирован по функциональным частям (слайсам).</li>
-                <li><strong>Низкая связанность:</strong> Модули минимально зависят друг от друга.</li>
-                <li><strong>Высокая сплоченность:</strong> Код внутри модуля максимально связан по смыслу.</li>
-                <li><strong>Контролируемые зависимости:</strong> Строгие правила импорта между слоями.</li>
-            </ul>
+      <Section title="1. Введение" icon={Layers}>
+        <h3>1.1. Общее описание продукта</h3>
+        <p>
+          ProDvor — это социальная веб-платформа, предназначенная для
+          объединения участников дворового и любительского спорта. Она
+          предоставляет инструменты для создания профилей, команд, организации
+          турниров и ведения спортивной жизни онлайн.
+        </p>
 
-            <h2>2. Структура слоев</h2>
-            <p>Проект "ProDvor" строго следует иерархии слоев FSD. Каждый слой имеет свое назначение, и импорты разрешены только от верхних слоев к нижним (например, <code>widgets</code> может импортировать из <code>features</code>, но не наоборот).</p>
-            
-            <FileTree />
+        <h3>1.2. Термины и сокращения</h3>
+        <ul className="list-disc list-inside">
+            <li><strong>FSD (Feature-Sliced Design)</strong> — основная архитектурная методология проекта.</li>
+            <li><strong>RSC (React Server Components)</strong> — серверные компоненты React, используемые по умолчанию.</li>
+            <li><strong>ADR (Architecture Decision Record)</strong> — запись об архитектурном решении.</li>
+            <li><strong>NFR (Non-Functional Requirements)</strong> — нефункциональные требования.</li>
+            <li><strong>API</strong> — интерфейс взаимодействия с бэкендом.</li>
+        </ul>
+      </Section>
 
-            <h2>3. Детальное описание слоев</h2>
-             <dl>
-                <dt><code>/app</code></dt>
-                <dd>Самый верхний слой. Отвечает за инициализацию приложения, роутинг (App Router), глобальные стили и подключение глобальных провайдеров контекста.</dd>
-                
-                <dt><code>/views</code></dt>
-                <dd>Компоненты страниц. Их единственная задача — собрать вместе виджеты, фичи и сущности для формирования конкретной страницы. Они не содержат собственной бизнес-логики.</dd>
-                
-                <dt><code>/widgets</code></dt>
-                <dd>Составные, независимые блоки интерфейса. Примеры: <code>Header</code>, <code>Sidebar</code>, <code>TeamRosterWidget</code>. Виджет — это самодостаточный компонент, который может быть переиспользован на разных страницах.</dd>
-                
-                <dt><code>/features</code></dt>
-                <dd>Пользовательские сценарии (User Stories). Это атомарные действия, которые приносят пользу пользователю. Примеры: <code>отправка сообщения</code>, <code>добавление в друзья</code>, <code>генерация аватара</code>. Фича инкапсулирует в себе всю логику для одного действия: кнопку, модальное окно, API-запрос (Server Action) и обработку состояния.</dd>
-                
-                <dt><code>/entities</code></dt>
-                <dd>Бизнес-сущности проекта, такие как <code>User</code>, <code>Team</code>, <code>Match</code>. Слайс сущности содержит всё, что нужно для её отображения и управления: компоненты (<code>UserCard</code>, <code>UserProfile</code>), типы, функции для работы с API, хуки и т.д.</dd>
-                
-                <dt><code>/shared</code></dt>
-                <dd>Переиспользуемый код, полностью отвязанный от бизнес-логики проекта. Здесь находится UI-кит (кнопки, инпуты), общие утилиты, константы, конфигурации и базовые API-инстансы.</dd>
-            </dl>
-            
-            <h2>4. Безопасность и Аутентификация</h2>
-            <p>Безопасность является ключевым аспектом платформы. В текущем прототипе реализована базовая система аутентификации на основе cookies, но архитектура заложена под более надежную систему.</p>
-            <h3>Middleware</h3>
-            <p>Файл <code>src/middleware.ts</code> играет роль пограничного контроля. Он перехватывает все запросы к приложению и выполняет следующие проверки:</p>
-            <ul>
-                <li>Проверяет наличие у пользователя cookie с сессией.</li>
-                <li>Если пользователь не аутентифицирован и пытается получить доступ к защищенной странице, middleware перенаправляет его на страницу входа (<code>/auth</code>).</li>
-                <li>Если аутентифицированный пользователь пытается зайти на страницу входа, он будет перенаправлен в личный кабинет (<code>/dashboard</code>).</li>
+      <Section title="2. Требования к фронтенду" icon={Cpu}>
+        <Card>
+          <CardHeader>
+            <CardTitle>2.1. Требования к платформе</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="list-disc list-inside">
+              <li><strong>Фреймворк:</strong> Next.js 15.3+ (App Router).</li>
+              <li><strong>Язык:</strong> TypeScript.</li>
+              <li><strong>Сборщик:</strong> Turbopack (в режиме разработки).</li>
+              <li><strong>Стилизация:</strong> Tailwind CSS.</li>
+              <li><strong>UI-компоненты:</strong> ShadCN UI.</li>
+              <li><strong>AI-функциональность:</strong> Genkit.</li>
             </ul>
-             <CodeBlock code={middlewareExample} language="tsx" />
-             <h3>План для продакшена</h3>
-             <p>В продакшн-версии предполагается использование связки **Kong API Gateway** и **Keycloak Identity Provider**. Kong будет проверять JWT-токены перед доступом к API, а Keycloak — управлять пользователями, ролями и процессом входа. Подробнее это описано в <Link href="/documents/backend-documentation">документации бэкенда</Link>.</p>
-            
-            <h2>5. Правила импорта</h2>
-            <p><strong>Золотое правило:</strong> Модуль может импортировать только те модули, что находятся на слоях ниже него. Импорт "вбок" (между слайсами одного слоя) или "вверх" строго запрещен.</p>
-            <ul>
-                <li>✅ <strong>Правильно:</strong> <code>widget/UserProfile</code> импортирует <code>feature/send-friend-request</code>.</li>
-                <li>❌ <strong>Неправильно:</strong> <code>feature/send-friend-request</code> импортирует <code>widget/UserProfile</code>.</li>
-                <li>❌ <strong>Неправильно:</strong> <code>feature/send-friend-request</code> импортирует <code>feature/block-user</code>.</li>
-                <li>✅ <strong>Правильно:</strong> Любой слой может импортировать из <code>shared</code>.</li>
-            </ul>
-            <p>Для обеспечения этих правил используются абсолютные импорты с помощью <code>paths</code> в <code>tsconfig.json</code> (e.g., <code>@/entities/user</code>).</p>
-            
-            <h2>6. Code Splitting и Lazy Loading</h2>
-            <p>Для оптимизации производительности мы активно используем динамические импорты для страниц и крупных виджетов с помощью <code>next/dynamic</code>. Это позволяет загружать код компонента только тогда, когда он действительно нужен, уменьшая начальный размер бандла.</p>
-            <CodeBlock code={codeExample} language="tsx" />
-        </div>
-    );
+          </CardContent>
+        </Card>
+        
+        <h3>2.2. Безопасность</h3>
+        <p>Аутентификация в прототипе реализована через `httpOnly` cookie, которые устанавливаются после успешного входа. Middleware (`src/middleware.ts`) защищает все маршруты, кроме публичных. В продакшен-версии планируется переход на JWT-токены и связку Kong + Keycloak, как описано в <Link href="/documents/backend-documentation">документации бэкенда</Link>.</p>
+        <CodeBlock code={middlewareExample} language="tsx" />
+      </Section>
+      
+      <Section title="3. FSD-структура проекта" icon={Library}>
+         <h3>3.1. Описание слоев</h3>
+        <p>Проект строго следует иерархии слоев Feature-Sliced Design. Импорты разрешены только от верхних слоев к нижним (например, `widgets` может импортировать из `features`, но не наоборот).</p>
+        <FileTree />
+        <h3>3.2. Правила взаимодействия</h3>
+        <p><strong>Золотое правило:</strong> Модуль может импортировать только те модули, что находятся на слоях ниже него. Импорт "вбок" (между слайсами одного слоя) или "вверх" строго запрещен.</p>
+        <ul className="list-disc list-inside">
+            <li>✅ <strong>Правильно:</strong> <code>widget/UserProfile</code> импортирует <code>feature/send-friend-request</code>.</li>
+            <li>❌ <strong>Неправильно:</strong> <code>feature/send-friend-request</code> импортирует <code>widget/UserProfile</code>.</li>
+            <li>❌ <strong>Неправильно:</strong> <code>feature/send-friend-request</code> импортирует <code>feature/block-user</code>.</li>
+        </ul>
+        <p>Для обеспечения этих правил используются абсолютные импорты с помощью `paths` в `tsconfig.json`.</p>
+      </Section>
+      
+      <Section title="4. Функциональные спецификации" icon={Fingerprint}>
+        <Card>
+          <CardHeader>
+             <CardTitle className="flex items-center gap-2"><Trophy /> Система Очков и Рейтингов</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>Платформа использует систему очков опыта (XP) для отражения вовлеченности пользователя. Очки начисляются за различные действия: победы в матчах, создание команды, выполнение квестов. Накопленные XP определяют ранг пользователя на платформе.</p>
+          </CardContent>
+        </Card>
+        <Card>
+           <CardHeader>
+             <CardTitle className="flex items-center gap-2"><Users /> Система Достижений и Верификации</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>В текущем прототипе система достижений основана на доверии — пользователь сам отмечает выполнение. В будущем планируется внедрение системы верификации сообществом для подтверждения реальных спортивных достижений.</p>
+          </CardContent>
+        </Card>
+      </Section>
+      
+      <Section title="5. Записи об архитектурных решениях (ADR)" icon={GitCommit}>
+        <Card>
+            <CardHeader><CardTitle>ADR-001: Выбор Feature-Sliced Design (FSD)</CardTitle></CardHeader>
+            <CardContent>
+                <p><strong>Решение:</strong> Использовать методологию FSD для организации кодовой базы.</p>
+                <p><strong>Обоснование:</strong> FSD обеспечивает масштабируемость, низкую связанность модулей и предсказуемость структуры, что критически важно для крупного проекта. Это упрощает командную работу и поддержку кода в долгосрочной перспективе.</p>
+            </CardContent>
+        </Card>
+        <Card>
+            <CardHeader><CardTitle>ADR-002: Выбор технологического стека</CardTitle></CardHeader>
+            <CardContent>
+                <p><strong>Решение:</strong> Использовать связку Next.js (App Router) + TypeScript + Tailwind CSS + ShadCN UI.</p>
+                <p><strong>Обоснование:</strong> Этот стек является современным стандартом для создания производительных и надежных React-приложений, обеспечивая отличный DX и типизацию.</p>
+            </CardContent>
+        </Card>
+        <Card>
+            <CardHeader><CardTitle>ADR-003: Использование Genkit для AI-функциональности</CardTitle></CardHeader>
+            <CardContent>
+                <p><strong>Решение:</strong> Использовать Genkit от Google в качестве основного инструмента для разработки AI-фичей.</p>
+                <p><strong>Обоснование:</strong> Genkit предоставляет единый API для работы с различными моделями, имеет хорошую интеграцию с Next.js и позволяет создавать сложную, но управляемую логику для ИИ-агентов.</p>
+            </CardContent>
+        </Card>
+         <Card>
+            <CardHeader><CardTitle>ADR-004: Выбор Kafka в качестве брокера сообщений</CardTitle></CardHeader>
+            <CardContent>
+                <p><strong>Решение:</strong> Для бэкенда выбран Apache Kafka.</p>
+                <p><strong>Обоснование:</strong> С учетом требований на поддержку 80 млн. пользователей и стримингового функционала, Kafka является единственным решением, обеспечивающим необходимую масштабируемость и пропускную способность. Подробнее — в <Link href="/documents/backend-documentation">документации бэкенда</Link>.</p>
+            </CardContent>
+        </Card>
+      </Section>
+    </div>
+  );
 }
