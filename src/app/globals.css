@@ -34,7 +34,7 @@ html {
     --accent-foreground: 210 40% 98%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 0 0% 89.8%;
+    --border: 0 0% 100%;
     --input: 0 0% 89.8%;
     --ring: var(--accent);
     
@@ -63,7 +63,7 @@ html {
     --accent-foreground: 210 40% 98%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
-    --border: 220 60% 25%;
+    --border: 220 60% 15%;
     --input: 220 60% 25%;
     --ring: var(--accent);
 
