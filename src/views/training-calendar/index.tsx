@@ -1,4 +1,5 @@
 
+
 import { TrainingCalendar } from '@/widgets/training-calendar';
 import { TrainingProposalsWidget } from '@/widgets/training-proposals';
 
