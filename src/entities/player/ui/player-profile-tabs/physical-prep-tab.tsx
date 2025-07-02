@@ -13,7 +13,6 @@ import { VolumeChart } from '@/widgets/analytics-charts/volume-chart';
 import { Button } from '@/shared/ui/button';
 import { AiFormCheckDialog } from '@/widgets/ai-form-check-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { AiCoachTab } from './ai-coach-tab';
 
 export function PhysicalPrepTab() {
     const { personalRecords, trainingMetrics, volumeByMuscleGroupData } = getTrainingAnalytics(trainingLogData);
@@ -53,8 +52,6 @@ export function PhysicalPrepTab() {
                         </CardHeader>
                     </Card>
                 </div>
-                
-                <AiCoachTab />
                 
                 <Card className="mx-1 border-primary/20 bg-primary/5 shadow-none">
                     <CardHeader>
