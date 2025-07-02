@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,6 +15,8 @@ import { PlusCircle } from 'lucide-react';
 import { fetchMatches } from '@/entities/match/api/get-matches';
 import type { Match } from "@/entities/match/model/types";
 import { Skeleton } from '@/shared/ui/skeleton';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 
 export function MatchesListPage() {
@@ -120,7 +123,7 @@ export function MatchesListPage() {
                       </Link>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">{match.tournament}</TableCell>
-                    <TableCell className="hidden md:table-cell">{match.date}</TableCell>
+                    <TableCell className="hidden md:table-cell">{format(new Date(match.date), 'd MMMM yyyy', { locale: ru })}</TableCell>
                     <TableCell className="text-right space-x-2">
                       <Badge variant={getStatusVariant(match.status)}>{match.status}</Badge>
                       {match.status === "Идет" && (
