@@ -30,13 +30,16 @@ const features = [
     { id: 'Турники', label: 'Турники' },
     { id: 'Силовые тренажеры', label: 'Силовые тренажеры' },
     { id: 'Кардио-зона', label: 'Кардио-зона' },
+    { id: 'Подъемник', label: 'Подъемник' },
+    { id: 'Прокат инвентаря', label: 'Прокат инвентаря' },
+    { id: 'Мишени', label: 'Мишени' },
 ];
 
 const playgroundSchema = z.object({
   name: z.string().min(3, 'Название должно быть не менее 3 символов.'),
   address: z.string().min(10, 'Укажите более подробный адрес.'),
-  type: z.enum(['Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная', 'Фитнес-зал', 'Бассейн', 'Теннисный корт']),
-  surface: z.enum(['Асфальт', 'Резина', 'Искусственный газон', 'Грунт', 'Паркет', 'Профессиональный газон', 'Вода']),
+  type: z.enum(['Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная', 'Фитнес-зал', 'Бассейн', 'Теннисный корт', 'Лыжная трасса', 'Биатлонный комплекс', 'Каток', 'Сноуборд-парк', 'Горнолыжный склон', 'Стрельбище']),
+  surface: z.enum(['Асфальт', 'Резина', 'Искусственный газон', 'Грунт', 'Паркет', 'Профессиональный газон', 'Вода', 'Снег', 'Лед']),
   features: z.array(z.string()).optional(),
 });
 
@@ -130,6 +133,12 @@ export function PlaygroundCreateForm() {
                                     <SelectItem value="Фитнес-зал">Фитнес-зал</SelectItem>
                                     <SelectItem value="Бассейн">Бассейн</SelectItem>
                                     <SelectItem value="Теннисный корт">Теннисный корт</SelectItem>
+                                    <SelectItem value="Лыжная трасса">Лыжная трасса</SelectItem>
+                                    <SelectItem value="Биатлонный комплекс">Биатлонный комплекс</SelectItem>
+                                    <SelectItem value="Каток">Каток</SelectItem>
+                                    <SelectItem value="Сноуборд-парк">Сноуборд-парк</SelectItem>
+                                    <SelectItem value="Горнолыжный склон">Горнолыжный склон</SelectItem>
+                                    <SelectItem value="Стрельбище">Стрельбище</SelectItem>
                                     <SelectItem value="Универсальная">Универсальная</SelectItem>
                                 </SelectContent></Select><FormMessage /></FormItem>
                             )}/>
@@ -142,6 +151,8 @@ export function PlaygroundCreateForm() {
                                     <SelectItem value="Грунт">Грунт</SelectItem>
                                     <SelectItem value="Паркет">Паркет</SelectItem>
                                     <SelectItem value="Вода">Вода</SelectItem>
+                                    <SelectItem value="Снег">Снег</SelectItem>
+                                    <SelectItem value="Лед">Лед</SelectItem>
                                 </SelectContent></Select><FormMessage /></FormItem>
                             )}/>
                         </div>
