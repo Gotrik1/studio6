@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { AlertTriangle, CheckCircle, LineChart, Award, TrendingUp, Video } from 'lucide-react';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
-import { getTrainingAnalytics, type ExerciseSession } from '@/shared/lib/get-training-analytics';
+import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 import { PersonalRecordHistoryChart } from '@/widgets/analytics-charts/personal-record-chart';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
 import { format } from 'date-fns';
