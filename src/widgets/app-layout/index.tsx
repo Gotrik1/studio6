@@ -41,6 +41,7 @@ import {
   ListChecks,
   BarChart3,
   Calendar,
+  Award,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -137,6 +138,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 { href: "/training/log", label: "Дневник" },
                 { href: "/training/calendar", label: "Календарь" },
                 { href: "/training/analytics", label: "Аналитика" },
+                { href: "/training/records", label: "Рекорды" },
             ]
         },
         { href: "/playgrounds", icon: Map, label: "Площадки" },
