@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
@@ -10,9 +10,7 @@ import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { useToast } from '@/shared/hooks/use-toast';
-import { playgroundSchedule, type PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
 import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
 import { PlanGameDialog } from '@/widgets/plan-game-dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import {
@@ -35,15 +33,20 @@ import { PlaygroundActivityFeed } from '@/widgets/playground-activity-feed';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
 import { useSession } from '@/shared/lib/session/client';
+import { useLfg } from '@/app/providers/lfg-provider';
+import type { LfgLobby } from '@/app/providers/lfg-provider';
 
 export function PlaygroundDetails({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
+    const { lobbies, addLobby } = useLfg();
+
     const [playground, setPlayground] = useState(initialPlayground);
-    const [schedule, setSchedule] = useState(playgroundSchedule.filter(s => s.playgroundId === playground.id));
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
+
+    const schedule = useMemo(() => lobbies.filter(l => l.playgroundId === playground.id), [lobbies, playground.id]);
 
     const handleSetHome = () => {
         toast({
@@ -53,20 +56,25 @@ export function PlaygroundDetails({ playground: initialPlayground }: { playgroun
     };
 
     const handlePlanGame = (data: { date: Date, time: string, duration: number }) => {
-        const [hours, minutes] = data.time.split(':').map(Number);
+        if (!user) return;
         const startTime = new Date(data.date);
+        const [hours, minutes] = data.time.split(':').map(Number);
         startTime.setHours(hours, minutes, 0, 0);
         
-        const endTime = new Date(startTime.getTime() + data.duration * 60000);
-
-        const newBooking: PlaygroundBooking = {
-            id: `booking-${Date.now()}`,
+        addLobby({
+            sport: playground.type,
+            location: playground.name,
             playgroundId: playground.id,
-            team: { name: 'Ваша команда', avatar: 'https://placehold.co/100x100.png', avatarHint: 'user team logo' },
             startTime,
-            endTime,
-        };
-        setSchedule(prev => [...prev, newBooking].sort((a,b) => a.startTime.getTime() - b.startTime.getTime()));
+            duration: data.duration,
+            comment: `Открытая игра на площадке ${playground.name}`,
+            playersNeeded: 10,
+        });
+
+        toast({
+            title: "Игра запланирована!",
+            description: `Ваша игра на "${playground.name}" в ${format(startTime, 'HH:mm')} добавлена в расписание и LFG.`
+        });
     };
 
     const handleCheckIn = (comment: string) => {
@@ -133,11 +141,11 @@ export function PlaygroundDetails({ playground: initialPlayground }: { playgroun
                                    </div>
                                </div>
                            </CardContent>
-                        </Card>
+                         </Card>
                          <Card>
                            <CardHeader><CardTitle>Создатель</CardTitle></CardHeader>
                            <CardContent className="flex items-center gap-3">
-                               <Avatar><AvatarImage src={playground.creator.avatar} /><AvatarFallback>{playground.creator.name.charAt(0)}</AvatarFallback></Avatar>
+                               <Avatar><AvatarImage src={playground.creator.avatar} /><AvatarFallback><User className="h-5 w-5"/></AvatarFallback></Avatar>
                                <p className="font-semibold">{playground.creator.name}</p>
                            </CardContent>
                          </Card>
@@ -150,7 +158,7 @@ export function PlaygroundDetails({ playground: initialPlayground }: { playgroun
                                     <AlertDialogHeader>
                                     <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        Вы собираетесь отметить эту площадку как вашу &quot;домашнюю&quot;. Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
+                                        Вы собираетесь отметить эту площадку как вашу "домашнюю". Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
                                     </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
