@@ -9,8 +9,8 @@
 
 import { ai } from '@/shared/api/genkit';
 import { z } from 'zod';
-import { venuesList } from '@/shared/lib/mock-data/booking';
-import { FindVenuesInputSchema, FindVenuesOutputSchema, VenueSchema } from './schemas/find-venues-schema';
+import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
+import { FindVenuesInputSchema, FindVenuesOutputSchema, PlaygroundSchema } from './schemas/find-venues-schema';
 import type { FindVenuesInput, FindVenuesOutput } from './schemas/find-venues-schema';
 
 export type { FindVenuesInput, FindVenuesOutput };
@@ -21,19 +21,19 @@ const findAvailableVenuesTool = ai.defineTool(
     name: 'findAvailableVenues',
     description: 'Finds available sports venues based on a query. Use this to find a place to play.',
     inputSchema: z.string().describe("A query describing the desired venue, e.g., 'футбольное поле в Москве', 'бесплатная баскетбольная площадка', 'корт с освещением'."),
-    outputSchema: z.array(VenueSchema),
+    outputSchema: z.array(PlaygroundSchema),
   },
   async (query) => {
     // Simple keyword filtering for demo purposes.
     const lowercasedQuery = query.toLowerCase();
-    return venuesList
+    return playgroundsList
       .filter(venue =>
         venue.name.toLowerCase().includes(lowercasedQuery) ||
         venue.address.toLowerCase().includes(lowercasedQuery) ||
-        venue.surfaceType.toLowerCase().includes(lowercasedQuery) ||
+        venue.surface.toLowerCase().includes(lowercasedQuery) ||
         venue.features.some(f => f.toLowerCase().includes(lowercasedQuery)) ||
-        (lowercasedQuery.includes('футбол') && venue.name.toLowerCase().includes('футбол')) ||
-        (lowercasedQuery.includes('баскетбол') && venue.name.toLowerCase().includes('баскетбол'))
+        (lowercasedQuery.includes('футбол') && venue.type.toLowerCase().includes('футбол')) ||
+        (lowercasedQuery.includes('баскетбол') && venue.type.toLowerCase().includes('баскетбол'))
       )
       .slice(0, 10); // Return top 10 matches to the LLM for reasoning
   }

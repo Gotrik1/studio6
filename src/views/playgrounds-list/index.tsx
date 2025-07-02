@@ -2,12 +2,12 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Input } from '@/shared/ui/input';
-import { Search, PlusCircle, Map } from 'lucide-react';
+import { Button } from '@/shared/ui/button';
+import { PlusCircle, Map } from 'lucide-react';
 import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 import { PlaygroundCard } from '@/widgets/playground-card';
-import { Button } from '@/shared/ui/button';
 import Link from 'next/link';
+import { PlaygroundFinder } from '@/widgets/playground-finder';
 
 export function PlaygroundsListPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -25,7 +25,7 @@ export function PlaygroundsListPage() {
                 <div className="space-y-2">
                     <h1 className="font-headline text-3xl font-bold tracking-tight flex items-center gap-3">
                         <Map className="h-8 w-8 text-primary"/>
-                        Карта площадок
+                        Площадки
                     </h1>
                     <p className="text-muted-foreground">
                         Найдите или добавьте свою любимую площадку для игр и тренировок.
@@ -39,20 +39,15 @@ export function PlaygroundsListPage() {
                 </Button>
             </div>
             
-            <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <Input
-                    placeholder="Поиск по названию или адресу..."
-                    className="w-full pl-10 md:w-1/2 lg:w-1/3"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                />
-            </div>
+            <PlaygroundFinder />
             
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredPlaygrounds.map(playground => (
-                    <PlaygroundCard key={playground.id} playground={playground} />
-                ))}
+            <div className="space-y-4 pt-6 mt-6 border-t">
+                 <h2 className="font-headline text-2xl font-bold">Все площадки</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {playgroundsList.map(playground => (
+                        <PlaygroundCard key={playground.id} playground={playground} />
+                    ))}
+                </div>
             </div>
         </div>
     );

@@ -1,13 +1,13 @@
 import { z } from 'zod';
 
-export const VenueSchema = z.object({
+export const PlaygroundSchema = z.object({
   id: z.string(),
   name: z.string(),
   address: z.string(),
-  surfaceType: z.string(),
-  price: z.string(),
-  image: z.string(),
-  imageHint: z.string(),
+  type: z.string(),
+  coverImage: z.string(),
+  coverImageHint: z.string(),
+  surface: z.string(),
   features: z.array(z.string()),
   rating: z.number(),
 });
@@ -16,6 +16,6 @@ export const FindVenuesInputSchema = z.string().describe('A natural language pro
 export type FindVenuesInput = z.infer<typeof FindVenuesInputSchema>;
 
 export const FindVenuesOutputSchema = z.object({
-  suggestedVenues: z.array(VenueSchema).describe('A list of up to 5 suggested venues that fit the description.'),
+  suggestedVenues: z.array(PlaygroundSchema).describe('A list of up to 5 suggested venues that fit the description.'),
 });
 export type FindVenuesOutput = z.infer<typeof FindVenuesOutputSchema>;
