@@ -11,22 +11,22 @@ import Image from 'next/image';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
 
-const muscleGroups = ['Все', 'Грудь', 'Спина', 'Ноги', 'Плечи', 'Руки', 'Пресс'];
-const equipmentTypes = ['Все', 'Штанга', 'Гантели', 'Тренажер', 'Собственный вес'];
+const categories = ['Все', 'Грудь', 'Спина', 'Ноги', 'Плечи', 'Руки', 'Пресс', 'Баскетбол', 'Футбол', 'Valorant'];
+const equipmentTypes = ['Все', 'Штанга', 'Гантели', 'Тренажер', 'Собственный вес', 'Мяч', 'Компьютер'];
 
 export function ExercisesCatalogPage() {
     const [searchQuery, setSearchQuery] = useState('');
-    const [muscleFilter, setMuscleFilter] = useState('Все');
+    const [categoryFilter, setCategoryFilter] = useState('Все');
     const [equipmentFilter, setEquipmentFilter] = useState('Все');
 
     const filteredExercises = useMemo(() => {
         return exercisesList.filter(exercise => {
             const matchesSearch = exercise.name.toLowerCase().includes(searchQuery.toLowerCase());
-            const matchesMuscle = muscleFilter === 'Все' || exercise.muscleGroup === muscleFilter;
+            const matchesCategory = categoryFilter === 'Все' || exercise.category === categoryFilter;
             const matchesEquipment = equipmentFilter === 'Все' || exercise.equipment === equipmentFilter;
-            return matchesSearch && matchesMuscle && matchesEquipment;
+            return matchesSearch && matchesCategory && matchesEquipment;
         });
-    }, [searchQuery, muscleFilter, equipmentFilter]);
+    }, [searchQuery, categoryFilter, equipmentFilter]);
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -49,12 +49,12 @@ export function ExercisesCatalogPage() {
                         />
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        <span className="text-sm font-medium p-2">Мышцы:</span>
-                        {muscleGroups.map(group => (
+                        <span className="text-sm font-medium p-2">Категория:</span>
+                        {categories.map(group => (
                             <Button
                                 key={group}
-                                variant={muscleFilter === group ? 'default' : 'outline'}
-                                onClick={() => setMuscleFilter(group)}
+                                variant={categoryFilter === group ? 'default' : 'outline'}
+                                onClick={() => setCategoryFilter(group)}
                             >
                                 {group}
                             </Button>
@@ -93,7 +93,7 @@ export function ExercisesCatalogPage() {
                             <CardContent className="p-4 flex-1">
                                 <CardTitle className="text-lg">{exercise.name}</CardTitle>
                                 <div className="mt-2 flex flex-wrap gap-2">
-                                    <Badge variant="secondary">{exercise.muscleGroup}</Badge>
+                                    <Badge variant="secondary">{exercise.category}</Badge>
                                     <Badge variant="outline">{exercise.equipment}</Badge>
                                 </div>
                             </CardContent>

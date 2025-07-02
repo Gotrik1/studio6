@@ -3,8 +3,8 @@ export type Exercise = {
     id: string;
     name: string;
     description: string;
-    muscleGroup: 'Грудь' | 'Спина' | 'Ноги' | 'Плечи' | 'Руки' | 'Пресс';
-    equipment: 'Штанга' | 'Гантели' | 'Тренажер' | 'Собственный вес';
+    category: 'Грудь' | 'Спина' | 'Ноги' | 'Плечи' | 'Руки' | 'Пресс' | 'Баскетбол' | 'Valorant' | 'Футбол';
+    equipment: 'Штанга' | 'Гантели' | 'Тренажер' | 'Собственный вес' | 'Мяч' | 'Компьютер';
     image: string;
     imageHint: string;
     techniqueTips: string[];
@@ -17,7 +17,7 @@ export const exercisesList: Exercise[] = [
         id: 'ex-1',
         name: 'Жим лежа',
         description: 'Базовое упражнение для развития мышц груди, а также трицепсов и передних дельт.',
-        muscleGroup: 'Грудь',
+        category: 'Грудь',
         equipment: 'Штанга',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'bench press',
@@ -37,7 +37,7 @@ export const exercisesList: Exercise[] = [
         id: 'ex-2',
         name: 'Приседания со штангой',
         description: 'Фундаментальное упражнение для развития мышц ног и ягодиц.',
-        muscleGroup: 'Ноги',
+        category: 'Ноги',
         equipment: 'Штанга',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'barbell squat',
@@ -57,7 +57,7 @@ export const exercisesList: Exercise[] = [
         id: 'ex-3',
         name: 'Становая тяга',
         description: 'Комплексное упражнение, задействующее практически все мышечные группы.',
-        muscleGroup: 'Спина',
+        category: 'Спина',
         equipment: 'Штанга',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'deadlift',
@@ -77,7 +77,7 @@ export const exercisesList: Exercise[] = [
         id: 'ex-4',
         name: 'Подтягивания',
         description: 'Лучшее упражнение для развития широчайших мышц спины с собственным весом.',
-        muscleGroup: 'Спина',
+        category: 'Спина',
         equipment: 'Собственный вес',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'pull ups',
@@ -97,7 +97,7 @@ export const exercisesList: Exercise[] = [
         id: 'ex-5',
         name: 'Жим гантелей сидя',
         description: 'Отличное упражнение для развития дельтовидных мышц.',
-        muscleGroup: 'Плечи',
+        category: 'Плечи',
         equipment: 'Гантели',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'dumbbell press',
@@ -117,7 +117,7 @@ export const exercisesList: Exercise[] = [
         id: 'ex-6',
         name: 'Скручивания на полу',
         description: 'Классическое упражнение для тренировки мышц пресса.',
-        muscleGroup: 'Пресс',
+        category: 'Пресс',
         equipment: 'Собственный вес',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'crunches',
@@ -137,7 +137,7 @@ export const exercisesList: Exercise[] = [
         id: 'ex-7',
         name: 'Разведение гантелей лежа',
         description: 'Изолирующее упражнение для растяжения и проработки грудных мышц.',
-        muscleGroup: 'Грудь',
+        category: 'Грудь',
         equipment: 'Гантели',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'dumbbell flys',
@@ -157,7 +157,7 @@ export const exercisesList: Exercise[] = [
         id: 'ex-8',
         name: 'Сгибание ног в тренажере',
         description: 'Изолирующее упражнение для задней поверхности бедра.',
-        muscleGroup: 'Ноги',
+        category: 'Ноги',
         equipment: 'Тренажер',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'leg curls',
@@ -173,4 +173,64 @@ export const exercisesList: Exercise[] = [
         ],
         alternatives: ['Румынская тяга с гантелями', 'Гиперэкстензия с акцентом на ягодицы']
     },
+    {
+        id: 'ex-9',
+        name: 'Отработка трехочковых бросков',
+        description: 'Упражнение на повышение процента попаданий с дальней дистанции.',
+        category: 'Баскетбол',
+        equipment: 'Мяч',
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'basketball shooting',
+        techniqueTips: [
+            'Сохраняйте равновесие и используйте ноги для силы броска.',
+            'Выпускайте мяч с кончиков пальцев.',
+            'Следите за траекторией мяча до конца.'
+        ],
+        commonMistakes: [
+            'Нестабильная база.',
+            'Слишком плоская траектория.',
+            'Бросок только за счет рук.'
+        ],
+        alternatives: ['Броски со средней дистанции', 'Штрафные броски']
+    },
+    {
+        id: 'ex-10',
+        name: 'Тренировка аима (Aim Lab)',
+        description: 'Комплексная тренировка для улучшения точности, реакции и скорости наводки.',
+        category: 'Valorant',
+        equipment: 'Компьютер',
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'esports gaming setup',
+        techniqueTips: [
+            'Подберите комфортную чувствительность мыши.',
+            'Держите руку расслабленной.',
+            'Фокусируйтесь на цели, а не на прицеле.'
+        ],
+        commonMistakes: [
+            'Слишком высокая чувствительность мыши.',
+            'Напряжение в кисти и предплечье.',
+            'Отсутствие регулярности.'
+        ],
+        alternatives: ['Deathmatch в игре', 'KovaaK\'s FPS Aim Trainer']
+    },
+    {
+        id: 'ex-11',
+        name: 'Пенальти',
+        description: 'Отработка точности и хладнокровия при пробитии одиннадцатиметровых ударов.',
+        category: 'Футбол',
+        equipment: 'Мяч',
+        image: 'https://placehold.co/600x400.png',
+        imageHint: 'football penalty kick',
+        techniqueTips: [
+            'Выберите угол до разбега.',
+            'Смотрите на мяч, а не на вратаря, в момент удара.',
+            'Наносите удар внутренней стороной стопы для точности.'
+        ],
+        commonMistakes: [
+            'Менять решение в последний момент.',
+            'Слишком слабый или неточный удар.',
+            'Телеграфировать направление удара.'
+        ],
+        alternatives: ['Штрафные удары', 'Удары с дальней дистанции']
+    }
 ];
