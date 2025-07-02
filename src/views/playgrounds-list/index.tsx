@@ -10,20 +10,13 @@ import { PlaygroundFinder } from '@/widgets/playground-finder';
 import { Input } from '@/shared/ui/input';
 import { Search } from 'lucide-react';
 import { Card, CardHeader } from '@/shared/ui/card';
-import { teams } from '@/shared/lib/mock-data/teams';
+import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
 
 const sportTypes = ['Все', 'Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная'];
 
 export function PlaygroundsListPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [sportFilter, setSportFilter] = useState('Все');
-
-    const kingTeamMapping = useMemo(() => {
-        return {
-            'playground-1': teams[0],
-            'playground-2': teams[1],
-        };
-    }, []);
 
     const livePlaygrounds = useMemo(() => new Set(['playground-2']), []);
 
@@ -87,7 +80,7 @@ export function PlaygroundsListPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {filteredPlaygrounds.map(playground => {
-                        const kingTeam = kingTeamMapping[playground.id as keyof typeof kingTeamMapping] || null;
+                        const kingTeam = getKingOfTheCourt(playground.id);
                         const isLive = livePlaygrounds.has(playground.id);
                         return (
                              <PlaygroundCard 

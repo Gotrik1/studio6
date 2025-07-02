@@ -5,63 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Button } from '@/shared/ui/button';
 import { Crown, Sword } from 'lucide-react';
-import { matchesList } from '@/shared/lib/mock-data/matches';
-import { teams } from '@/shared/lib/mock-data/teams';
 import Link from 'next/link';
+import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
 
 interface KingOfTheCourtWidgetProps {
     playgroundId: string;
 }
 
 export function KingOfTheCourtWidget({ playgroundId }: KingOfTheCourtWidgetProps) {
-    const homeTeamData = useMemo(() => {
-        const playgroundMatches = matchesList.filter(
-            (match) => match.status === 'Завершен' && match.playgroundId === playgroundId
-        );
-
-        if (playgroundMatches.length === 0) {
-            return null;
-        }
-
-        const winsCount = new Map<string, number>();
-
-        playgroundMatches.forEach(match => {
-            const scoreParts = match.score.split('-');
-            if (scoreParts.length < 2) return;
-            const scores = scoreParts.map(s => parseInt(s.trim()));
-            if (scores.length !== 2 || isNaN(scores[0]) || isNaN(scores[1])) {
-                return;
-            }
-
-            let winnerName: string | null = null;
-            if (scores[0] > scores[1]) {
-                winnerName = match.team1.name;
-            } else if (scores[1] > scores[0]) {
-                winnerName = match.team2.name;
-            }
-
-            if (winnerName) {
-                winsCount.set(winnerName, (winsCount.get(winnerName) || 0) + 1);
-            }
-        });
-
-        if (winsCount.size === 0) {
-            return null;
-        }
-
-        const [topTeamName, topWins] = [...winsCount.entries()].reduce((a, b) => b[1] > a[1] ? b : a);
-
-        const teamInfo = teams.find(t => t.name === topTeamName);
-
-        if (!teamInfo) {
-            return null;
-        }
-
-        return {
-            ...teamInfo,
-            wins: topWins,
-        };
-    }, [playgroundId]);
+    const homeTeamData = useMemo(() => getKingOfTheCourt(playgroundId), [playgroundId]);
 
     if (!homeTeamData) {
         return (
