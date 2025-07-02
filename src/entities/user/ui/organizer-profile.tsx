@@ -39,14 +39,14 @@ type OrganizerProfileProps = {
 export function OrganizerProfile({ user, achievements, tournaments }: OrganizerProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const [avatar, setAvatar] = useState(user.avatar);
-  const [banner, setBanner] = useState('https://placehold.co/1200x400.png');
+  const [banner, setBanner] = useState('https://placehold.co/1280x720.png');
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
 
   return (
     <>
       <Card className="overflow-hidden">
-        <div className="relative h-40 bg-muted/40">
+        <div className="relative h-48 bg-muted/40">
           <Image src={banner} alt="Profile Banner" fill className="object-cover" data-ai-hint="event stage lights" />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
           <Button

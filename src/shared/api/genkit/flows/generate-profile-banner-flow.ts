@@ -29,7 +29,7 @@ const generateProfileBannerFlow = ai.defineFlow(
   async ({prompt}) => {
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `A user profile banner for a sports platform. The theme is: ${prompt}. The image should be visually interesting but not overwhelming, suitable as a background. Avoid text and recognizable faces unless specified in the theme. The desired aspect ratio is approximately 3:1 (wide). Use a digital art or cinematic style.`,
+      prompt: `A user profile banner for a sports platform. The theme is: ${prompt}. Generate a wide aspect ratio (16:9) landscape image. The image should be visually interesting but not overwhelming, suitable as a background. Avoid text. Use a digital art or cinematic style.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },
