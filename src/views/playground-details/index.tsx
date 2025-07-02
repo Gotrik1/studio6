@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -18,12 +17,20 @@ import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-d
 import { PlaygroundConditionStatus } from '@/widgets/playground-condition-status';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
 import { useToast } from '@/shared/hooks/use-toast';
+import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
+import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
+import { useSession } from '@/shared/lib/session/client';
 
 
-export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
+export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
+    const { user } = useSession();
     const { toast } = useToast();
+    const [playground, setPlayground] = useState(initialPlayground);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [conditionReport, setConditionReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
+    const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
+    const [isCheckInOpen, setIsCheckInOpen] = useState(false);
+
 
     const handleReportSubmit = async (data: { category: string; comment: string }) => {
         try {
@@ -45,7 +52,25 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                 description: "Не удалось отправить отчет. Попробуйте позже."
             });
         }
-    }
+    };
+    
+    const handleCheckIn = (comment: string, photo?: File) => {
+        if (!user) return;
+        const newActivity: PlaygroundActivity = {
+            id: `act-${Date.now()}`,
+            user: { name: user.name, avatar: user.avatar },
+            comment,
+            timestamp: 'Только что',
+            photo: photo ? 'https://placehold.co/600x400.png' : undefined, // Use placeholder for demo
+            photoHint: 'user check-in photo',
+        };
+        setActivities(prev => [newActivity, ...prev]);
+        setPlayground(prev => ({...prev, checkIns: prev.checkIns + 1}));
+        toast({
+            title: "Вы отметились!",
+            description: `Вы получили 10 PD за чекин на площадке "${playground.name}".`
+        });
+    };
 
 
     return (
@@ -74,7 +99,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                 )}
 
                 <div className="flex flex-col sm:flex-row gap-4">
-                    <Button className="w-full sm:w-auto" size="lg">
+                    <Button className="w-full sm:w-auto" size="lg" onClick={() => setIsCheckInOpen(true)}>
                         <CheckCircle className="mr-2 h-5 w-5" />
                         Отметиться (чекин)
                     </Button>
@@ -96,7 +121,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                         <PlaygroundOverviewTab playground={playground} />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-4">
-                        <PlaygroundActivityTab />
+                        <PlaygroundActivityTab activities={activities} />
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-4">
                         <PlaygroundLeaderboardTab />
@@ -117,6 +142,12 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                 onOpenChange={setIsReportIssueOpen}
                 playgroundName={playground.name}
                 onReportSubmit={handleReportSubmit}
+            />
+            <PlaygroundCheckInDialog
+                isOpen={isCheckInOpen}
+                onOpenChange={setIsCheckInOpen}
+                playgroundName={playground.name}
+                onCheckIn={handleCheckIn}
             />
         </>
     );

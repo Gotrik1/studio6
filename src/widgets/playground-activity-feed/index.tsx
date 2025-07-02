@@ -4,11 +4,15 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import Image from 'next/image';
-import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
+import { type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
 import { MessageSquare } from 'lucide-react';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 
-export function PlaygroundActivityFeed() {
+interface PlaygroundActivityFeedProps {
+    activities: PlaygroundActivity[];
+}
+
+export function PlaygroundActivityFeed({ activities }: PlaygroundActivityFeedProps) {
     return (
          <Card>
             <CardHeader>
@@ -21,7 +25,7 @@ export function PlaygroundActivityFeed() {
             <CardContent>
                 <ScrollArea className="h-96 pr-4">
                     <div className="space-y-6">
-                        {mockPlaygroundActivity.map(activity => (
+                        {activities.map(activity => (
                             <div key={activity.id} className="flex gap-4">
                                 <Avatar>
                                     <AvatarImage src={activity.user.avatar} />
@@ -41,6 +45,12 @@ export function PlaygroundActivityFeed() {
                                 </div>
                             </div>
                         ))}
+                         {activities.length === 0 && (
+                            <div className="text-center py-16 text-muted-foreground">
+                                <p>На этой площадке еще не было активности.</p>
+                                <p className="text-sm">Станьте первым, кто отметится!</p>
+                            </div>
+                        )}
                     </div>
                 </ScrollArea>
             </CardContent>
