@@ -59,6 +59,6 @@ export const systemCards = [
     { title: "Инструменты AI", description: "Демонстрация работы AI-агентов.", href: "/ai-analysis", icon: BrainCircuit },
     { title: "Readme проекта", description: "Обзор проекта, стек, возможности.", href: "/documents/project-readme", icon: FileText },
     { title: "Архитектура", description: "Описание архитектуры FSD.", href: "/documents/architecture", icon: FolderKanban },
+    { title: "Backend Документация", description: "Тех. док по архитектуре бэкенда.", href: "/documents/backend-documentation", icon: Server },
     { title: "Демо темы", description: "Просмотр всех UI компонентов.", href: "/theme-demo", icon: Palette },
-    { title: "Карта сайта", description: "Обзор всех страниц приложения.", href: "/administration/sitemap", icon: MapIcon },
-]
+    { title: "Карта сайта",
