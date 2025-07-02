@@ -20,7 +20,8 @@ import {
     ShieldAlert,
     FileText,
     HeartPulse,
-    Server
+    Server,
+    Map
 } from 'lucide-react';
 
 export const managementCards = [
@@ -29,6 +30,7 @@ export const managementCards = [
     { title: "Очередь модерации", description: "Жалобы и инциденты.", href: "/administration/moderation-queue", icon: Gavel },
     { title: "Центр судейства", description: "Разрешение споров и управление матчами.", href: "/judge-center", icon: Gavel },
     { title: "Геймификация", description: "Настройка рангов и квестов.", href: "/administration/gamification", icon: ShieldCheck },
+    { title: "Управление площадками", description: "Модерация и одобрение площадок.", href: "/administration/playgrounds", icon: Map },
     { title: "Виды спорта", description: "Управление дисциплинами.", href: "/administration/sports", icon: Handshake },
     { title: "Мед. аккредитация", description: "Аккредитация мед. партнеров.", href: "/documents/med-accreditation", icon: HeartPulse },
 ];

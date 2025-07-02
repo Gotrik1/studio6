@@ -60,4 +60,18 @@ export const playgroundsList: Playground[] = [
         status: 'approved',
         creator: { name: 'Viper', avatar: 'https://placehold.co/100x100.png' },
     },
+    {
+        id: 'playground-4',
+        name: 'Поле у реки',
+        address: 'Санкт-Петербург, наб. реки Карповки, 5',
+        type: 'Универсальная',
+        coverImage: 'https://placehold.co/2560x720.png',
+        coverImageHint: 'sports field river',
+        surface: 'Грунт',
+        features: ['Ворота', 'Баскетбольные кольца'],
+        rating: 3.8,
+        checkIns: 54,
+        status: 'pending_moderation',
+        creator: { name: 'Foxy', avatar: 'https://placehold.co/100x100.png' },
+    },
 ];
