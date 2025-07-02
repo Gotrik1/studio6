@@ -9,7 +9,7 @@ export const promotionsList = [
             logo: 'https://placehold.co/100x100.png',
             logoHint: 'gaming peripherals logo'
         },
-        image: 'https://placehold.co/600x400.png',
+        image: 'https://placehold.co/2560x720.png',
         imageHint: 'gaming highlights montage',
         endDate: '2024-08-15'
     },
@@ -23,7 +23,7 @@ export const promotionsList = [
             logo: 'https://placehold.co/100x100.png',
             logoHint: 'energy drink logo'
         },
-        image: 'https://placehold.co/600x400.png',
+        image: 'https://placehold.co/2560x720.png',
         imageHint: 'energy drink can',
         endDate: '2024-08-04'
     },

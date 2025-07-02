@@ -1,3 +1,4 @@
+
 export type Playground = {
     id: string;
     name: string;
@@ -21,7 +22,7 @@ export const playgroundsList: Playground[] = [
         name: 'Коробка за Пятёрочкой',
         address: 'Москва, ул. Народного Ополчения, 22к2',
         type: 'Футбол',
-        coverImage: 'https://placehold.co/600x400.png',
+        coverImage: 'https://placehold.co/2560x720.png',
         coverImageHint: 'street football cage',
         surface: 'Искусственный газон',
         features: ['Ворота', 'Освещение'],
@@ -34,7 +35,7 @@ export const playgroundsList: Playground[] = [
         name: 'Кольца на Школьном',
         address: 'Москва, Школьная ул., 48',
         type: 'Стритбол',
-        coverImage: 'https://placehold.co/600x400.png',
+        coverImage: 'https://placehold.co/2560x720.png',
         coverImageHint: 'street basketball court',
         surface: 'Асфальт',
         features: ['Кольца', 'Разметка'],
@@ -47,7 +48,7 @@ export const playgroundsList: Playground[] = [
         name: 'Турники в парке',
         address: 'Москва, Парк Фили',
         type: 'Воркаут',
-        coverImage: 'https://placehold.co/600x400.png',
+        coverImage: 'https://placehold.co/2560x720.png',
         coverImageHint: 'workout area park',
         surface: 'Резина',
         features: ['Турники', 'Брусья', 'Лесенка'],

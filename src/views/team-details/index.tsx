@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState } from 'react';
@@ -39,7 +40,7 @@ export function TeamDetailsPage() {
             <div className="space-y-6 opacity-0 animate-fade-in-up">
                 <Card className="overflow-hidden">
                     <div className="relative h-48 sm:h-64">
-                        <Image src="https://placehold.co/1200x400.png" alt={`${team.name} banner`} fill className="object-cover" data-ai-hint="sports team banner" />
+                        <Image src="https://placehold.co/2560x720.png" alt={`${team.name} banner`} fill className="object-cover" data-ai-hint="sports team banner" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                         <div className="absolute bottom-6 left-6 flex items-end gap-4">
                             <Avatar className="h-24 w-24 border-4 border-background">
