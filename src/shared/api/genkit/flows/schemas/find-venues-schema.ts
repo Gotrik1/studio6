@@ -12,7 +12,9 @@ export const PlaygroundSchema = z.object({
   rating: z.number(),
 });
 
-export const FindVenuesInputSchema = z.string().describe('A natural language prompt describing the desired venue. e.g., "Хочу найти футбольное поле с хорошим освещением на вечер"');
+export const FindVenuesInputSchema = z.object({
+  query: z.string().describe('A natural language prompt describing the desired venue. e.g., "Хочу найти футбольное поле с хорошим освещением на вечер"')
+});
 export type FindVenuesInput = z.infer<typeof FindVenuesInputSchema>;
 
 export const FindVenuesOutputSchema = z.object({

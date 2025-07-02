@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -28,7 +29,7 @@ export function PlaygroundFinder() {
         setResult(null);
 
         try {
-            const searchResult = await findVenues(prompt);
+            const searchResult = await findVenues({ query: prompt });
             setResult(searchResult);
             if (searchResult.suggestedVenues.length === 0) {
                  toast({

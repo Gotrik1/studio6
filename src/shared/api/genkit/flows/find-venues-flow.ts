@@ -3,7 +3,7 @@
 
 /**
  * @fileOverview An AI agent for finding sports venues based on natural language.
- * - findVenues - A function that handles the venue search.
+ * - findVenues - a function that handles the venue search.
  * - FindVenuesInput - The input type for the function.
  * - FindVenuesOutput - The return type for the function.
  */
@@ -53,7 +53,7 @@ const prompt = ai.definePrompt({
 - From the tool results, select up to 5 of the most relevant venues to return to the user.
 - Respond in Russian.
 
-User Request: "{{{input}}}"
+User Request: "{{{query}}}"
 `,
 });
 
@@ -65,7 +65,10 @@ const findVenuesFlow = ai.defineFlow(
   },
   async (input) => {
     const { output } = await prompt(input);
-    return output!;
+    if (!output) {
+        return { suggestedVenues: [] };
+    }
+    return output;
   }
 );
 
