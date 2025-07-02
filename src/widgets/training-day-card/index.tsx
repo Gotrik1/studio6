@@ -287,10 +287,33 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                         
                         <RestTimer />
 
+                        <Separator />
+
                          <div className="mt-6 space-y-4">
                             <FormField control={form.control} name="notes" render={({ field }) => (
                                 <FormItem><FormLabel>Заметки к тренировке</FormLabel><FormControl><Textarea placeholder={'Как прошла тренировка?'} {...field} value={field.value ?? ''} /></FormControl></FormItem>
                             )} />
+                            <div className="p-4 bg-primary/10 rounded-lg">
+                                <FormField
+                                control={form.control}
+                                name="coachNotes"
+                                render={({ field }) => (
+                                    <FormItem>
+                                    <FormLabel className="font-semibold flex items-center gap-2">
+                                        <MessageSquare className="h-4 w-4 text-primary" />
+                                        Комментарий тренера
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Textarea
+                                        placeholder={'Оставьте отзыв о тренировке. Например: "Отличная работа с весом, но следи за техникой в последнем подходе."'}
+                                        {...field}
+                                        value={field.value ?? ''}
+                                        />
+                                    </FormControl>
+                                    </FormItem>
+                                )}
+                                />
+                            </div>
                             <FormField control={form.control} name="mood" render={({ field }) => (
                                  <FormItem><FormLabel>Самочувствие</FormLabel><FormControl><div className="flex gap-2">{Object.entries(moodMap).map(([key, value]) => (<Button key={key} type="button" variant={field.value === key ? 'default' : 'outline'} size="icon" onClick={() => field.onChange(key)}><value.icon /></Button>))}</div></FormControl></FormItem>
                             )} />
@@ -302,26 +325,6 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                 </CollapsibleContent>
             </Collapsible>
             
-            {(entry.notes || entry.coachNotes) && (
-                <CollapsibleContent>
-                    <Separator />
-                    <CardContent className="text-sm pt-4 space-y-2">
-                        {entry.notes && (
-                            <div>
-                                <p className="font-semibold">Ваши заметки:</p>
-                                <p className="text-muted-foreground italic">&quot;{entry.notes}&quot;</p>
-                            </div>
-                        )}
-                        {entry.coachNotes && (
-                            <div className="p-3 bg-primary/10 rounded-md">
-                                <p className="font-semibold flex items-center gap-2"><MessageSquare className="h-4 w-4 text-primary" /> Комментарий тренера:</p>
-                                <p className="text-muted-foreground italic">&quot;{entry.coachNotes}&quot;</p>
-                            </div>
-                        )}
-                    </CardContent>
-                </CollapsibleContent>
-            )}
-
             <CardFooter className="flex justify-between items-center text-sm text-muted-foreground bg-muted/50 p-3">
                  <div className="flex items-center gap-2">
                     <StatusIcon className={cn("h-4 w-4", statusColor)} />
