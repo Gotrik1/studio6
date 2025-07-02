@@ -50,3 +50,7 @@ import './flows/generate-tournament-summary-flow';
 import './flows/generate-nutrition-plan-flow';
 import './flows/find-lfg-lobbies-flow';
 import './flows/analyze-playground-details-flow';
+import './flows/generate-playground-workout-flow';
+import './flows/generate-playground-tactic-flow';
+import './flows/generate-playground-drill-flow';
+import './flows/generate-playground-lore';

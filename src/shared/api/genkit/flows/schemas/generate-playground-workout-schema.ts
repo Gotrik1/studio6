@@ -1,4 +1,6 @@
 
+'use client';
+
 import { z } from 'zod';
 
 export const GeneratePlaygroundWorkoutInputSchema = z.object({
