@@ -61,3 +61,4 @@ import './flows/analyze-playground-report-flow';
 import './flows/summarize-playground-reviews-flow';
 import './flows/generate-playground-tactic-flow';
 import './flows/generate-playground-drill-flow';
+import './flows/generate-training-program-flow';

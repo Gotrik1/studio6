@@ -84,6 +84,21 @@ const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: DaySec
                 </div>
                 {fields.map((exField, exIndex) => (
                     <div key={exField.id} className="border-b last:border-b-0 py-2">
+                        <div className="grid grid-cols-[auto_1fr_auto_auto] sm:hidden gap-2">
+                            <div className="col-span-full flex items-center gap-2">
+                                <GripVertical className="h-5 w-5 text-muted-foreground cursor-move" />
+                                <span className="font-medium">{exField.name}</span>
+                                <Button type="button" variant="ghost" size="icon" className="ml-auto" onClick={() => remove(exIndex)}><Trash2 className="h-4 w-4" /></Button>
+                            </div>
+                            <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Подходы</FormLabel><FormControl><Input placeholder="3-4" {...field} className="w-full text-center" /></FormControl></FormItem>)} />
+                            <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Повторы</FormLabel><FormControl><Input placeholder="8-12" {...field} className="w-full text-center" /></FormControl></FormItem>)} />
+                            <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.plannedWeight`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Вес</FormLabel><FormControl><Input placeholder="100кг" {...field} value={field.value ?? ''} className="w-full text-center" /></FormControl></FormItem>)} />
+                             <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.technique`} render={({ field }) => (<FormItem><FormLabel className="text-xs">Техника</FormLabel><FormControl><Input placeholder="Дроп-сет" {...field} value={field.value ?? ''} className="w-full text-center" /></FormControl></FormItem>)} />
+                            {exIndex > 0 && (
+                                <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.isSupersetWithPrevious`} render={({ field }) => (<FormItem className="col-span-full flex items-center space-x-2 pt-2"><FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl><FormLabel className="!mt-0 text-sm flex items-center gap-1"><Link2 className="h-4 w-4" />Суперсет с предыдущим</FormLabel></FormItem>)} />
+                            )}
+                        </div>
+
                         <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] items-center gap-2">
                             <GripVertical className="h-5 w-5 text-muted-foreground cursor-move" />
                             <span className="font-medium">{exField.name}</span>
