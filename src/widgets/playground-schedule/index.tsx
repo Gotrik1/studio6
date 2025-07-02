@@ -6,10 +6,10 @@ import { Button } from '@/shared/ui/button';
 import { Calendar, Clock, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { format } from 'date-fns';
-import type { PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
+import type { LfgLobby } from '@/app/providers/lfg-provider';
 
 interface PlaygroundScheduleProps {
-    schedule: PlaygroundBooking[];
+    schedule: LfgLobby[];
     onPlanClick: () => void;
 }
 
@@ -40,8 +40,8 @@ export function PlaygroundSchedule({ schedule, onPlanClick }: PlaygroundSchedule
                                 </div>
                                 <div className="h-10 w-px bg-border" />
                                 <div className="flex items-center gap-2">
-                                    <Avatar className="h-8 w-8"><AvatarImage src={booking.team.avatar} alt={booking.team.name} data-ai-hint={booking.team.avatarHint} /><AvatarFallback>{booking.team.name.charAt(0)}</AvatarFallback></Avatar>
-                                    <p className="font-medium text-sm">{booking.team.name}</p>
+                                    <Avatar className="h-8 w-8"><AvatarImage src={booking.creator.avatar} alt={booking.creator.name} data-ai-hint="user avatar" /><AvatarFallback>{booking.creator.name.charAt(0)}</AvatarFallback></Avatar>
+                                    <p className="font-medium text-sm">{booking.creator.name}</p>
                                 </div>
                             </div>
                         ))}
@@ -56,4 +56,3 @@ export function PlaygroundSchedule({ schedule, onPlanClick }: PlaygroundSchedule
         </Card>
     );
 }
-

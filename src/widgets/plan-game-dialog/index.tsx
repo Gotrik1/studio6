@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -62,10 +63,6 @@ export function PlanGameDialog({ isOpen, onOpenChange, playgroundName, onPlan, i
         // Simulate API call
         setTimeout(() => {
             onPlan(data);
-            toast({
-                title: "Игра запланирована!",
-                description: `Ваша игра на площадке "${playgroundName}" была добавлена в расписание.`,
-            });
             setIsSubmitting(false);
             onOpenChange(false);
         }, 1000);
