@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, Check, Star, User, Home, Sparkles, Send, Calendar, Clock, PlusCircle, AlertTriangle } from 'lucide-react';
+import { MapPin, Check, Star, User, Home, Send, Calendar, Clock, PlusCircle, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -26,6 +26,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/shared/ui/alert-dialog";
+import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
 
 export function PlaygroundDetails({ playground }: { playground: Playground }) {
     const { toast } = useToast();
@@ -119,19 +120,7 @@ export function PlaygroundDetails({ playground }: { playground: Playground }) {
                                 )}
                             </CardContent>
                         </Card>
-                        <Card>
-                            <CardHeader><CardTitle>AI-сводка по площадке</CardTitle></CardHeader>
-                            <CardContent>
-                                <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                                    <p className="text-sm italic text-muted-foreground flex items-start gap-3">
-                                        <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-1" />
-                                        <span>
-                                            Это популярное место для вечерних игр, особенно по выходным. Судя по отзывам, газон в хорошем состоянии, но освещение может быть неравномерным. Рекомендуем приходить со своей компанией, так как площадка часто занята.
-                                        </span>
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
+                        <AiPlaygroundSummary playground={playground} />
                     </div>
                     <div className="space-y-6">
                         <Card>
