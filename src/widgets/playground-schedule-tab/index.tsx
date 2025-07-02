@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -13,7 +12,7 @@ import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 import { cn } from '@/shared/lib/utils';
 import { useToast } from '@/shared/hooks/use-toast';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-import { Tooltip, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shared/ui/tooltip';
 
 interface PlaygroundScheduleTabProps {
     playground: Playground;
@@ -31,6 +30,7 @@ export function PlaygroundScheduleTab({ playground, initialSchedule: schedule, s
 
     const handlePlanGame = (data: FormValues) => {
         const startTime = setMinutes(setHours(data.date, parseInt(data.time.split(':')[0])), parseInt(data.time.split(':')[1]));
+        
         const endTime = new Date(startTime.getTime() + data.duration * 60000);
 
         const newBooking: PlaygroundBooking = {
@@ -40,7 +40,7 @@ export function PlaygroundScheduleTab({ playground, initialSchedule: schedule, s
             startTime,
             endTime,
         };
-        setSchedule(prev => [...prev, newBooking].sort((a, b) => a.startTime.getTime() - b.startTime.getTime()));
+        setSchedule(prev => [...prev, newBooking].sort((a,b) => a.startTime.getTime() - b.startTime.getTime()));
     };
     
     const handleCellClick = (day: Date, hour: number) => {

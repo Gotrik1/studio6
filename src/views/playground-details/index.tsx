@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -24,6 +23,7 @@ import { useSession } from '@/shared/lib/session/client';
 import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { playgroundSchedule, type PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
+import { ScrollArea } from '@/shared/ui/scroll-area';
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
@@ -113,14 +113,16 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                 </div>
 
                 <Tabs defaultValue="overview">
-                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-                        <TabsTrigger value="overview">Обзор</TabsTrigger>
-                        <TabsTrigger value="schedule"><Calendar className="mr-2 h-4 w-4"/>Расписание</TabsTrigger>
-                        <TabsTrigger value="activity">Активность</TabsTrigger>
-                        <TabsTrigger value="leaderboard"><Users className="mr-2 h-4 w-4"/>Лидеры</TabsTrigger>
-                        <TabsTrigger value="reviews"><MessageSquare className="mr-2 h-4 w-4"/>Отзывы</TabsTrigger>
-                        <TabsTrigger value="condition"><Wrench className="mr-2 h-4 w-4"/>Состояние</TabsTrigger>
-                    </TabsList>
+                    <ScrollArea className="w-full whitespace-nowrap rounded-md">
+                        <TabsList className="inline-flex">
+                            <TabsTrigger value="overview">Обзор</TabsTrigger>
+                            <TabsTrigger value="schedule"><Calendar className="mr-2 h-4 w-4"/>Расписание</TabsTrigger>
+                            <TabsTrigger value="activity">Активность</TabsTrigger>
+                            <TabsTrigger value="leaderboard"><Users className="mr-2 h-4 w-4"/>Лидеры</TabsTrigger>
+                            <TabsTrigger value="reviews"><MessageSquare className="mr-2 h-4 w-4"/>Отзывы</TabsTrigger>
+                            <TabsTrigger value="condition"><Wrench className="mr-2 h-4 w-4"/>Состояние</TabsTrigger>
+                        </TabsList>
+                    </ScrollArea>
                     <TabsContent value="overview" className="mt-4">
                         <PlaygroundOverviewTab playground={playground} />
                     </TabsContent>
