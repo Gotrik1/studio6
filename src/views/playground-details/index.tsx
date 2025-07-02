@@ -33,13 +33,15 @@ import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
 import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
 import { AiPlaygroundTactic } from '@/widgets/ai-playground-tactic';
 import { AiPlaygroundDrill } from '@/widgets/ai-playground-drill';
+import { usePDEconomy } from '@/app/providers/pd-provider';
 
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
     const { lobbies, addLobby } = useLfg();
-    const [playground] = useState(initialPlayground);
+    const { addTransaction } = usePDEconomy();
+    const [playground, setPlayground] = useState(initialPlayground);
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [conditionReport, setConditionReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
@@ -82,6 +84,10 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
             photoHint: 'user uploaded photo',
         };
         setActivities(prev => [newActivity, ...prev]);
+        
+        // Add 10 PD for checking in
+        addTransaction(`Чекин: ${playground.name}`, 10);
+        
         toast({
             title: "Вы отметились!",
             description: `Вы получили 10 PD за отметку на площадке "${playground.name}".`
