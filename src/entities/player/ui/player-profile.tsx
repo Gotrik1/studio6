@@ -24,7 +24,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
-import { ChallengePlayerDialog } from '@/widgets/challenge-player-dialog';
+import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
 
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
@@ -91,7 +91,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
-  const [isChallengeDialogOpen, setIsChallengeDialogOpen] = useState(false);
+  const [isProposeMatchDialogOpen, setIsProposeMatchDialogOpen] = useState(false);
 
   return (
     <>
@@ -160,7 +160,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setIsChallengeDialogOpen(true)}>
+                            <DropdownMenuItem onClick={() => setIsProposeMatchDialogOpen(true)}>
                                 <Sword className="mr-2 h-4 w-4"/>
                                 Бросить вызов
                             </DropdownMenuItem>
@@ -317,9 +317,9 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
             onOpenChange={setIsReportDialogOpen}
             reportedPlayerName={user.name}
         />
-        <ChallengePlayerDialog
-            isOpen={isChallengeDialogOpen}
-            onOpenChange={setIsChallengeDialogOpen}
+        <ProposeMatchDialog
+            isOpen={isProposeMatchDialogOpen}
+            onOpenChange={setIsProposeMatchDialogOpen}
             challengedPlayerName={user.name}
         />
     </>
