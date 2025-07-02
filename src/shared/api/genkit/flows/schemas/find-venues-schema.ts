@@ -18,6 +18,7 @@ export const FindVenuesInputSchema = z.object({
 export type FindVenuesInput = z.infer<typeof FindVenuesInputSchema>;
 
 export const FindVenuesOutputSchema = z.object({
+  summary: z.string().describe('A friendly, natural language summary of the findings, explaining why these venues were suggested.'),
   suggestedVenues: z.array(PlaygroundSchema).describe('A list of up to 5 suggested venues that fit the description.'),
 });
 export type FindVenuesOutput = z.infer<typeof FindVenuesOutputSchema>;

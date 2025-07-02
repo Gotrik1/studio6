@@ -18,6 +18,7 @@ export function PlaygroundFinder() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<FindVenuesOutput | null>(null);
+    const [aiSummary, setAiSummary] = useState<string | null>(null);
 
     const handleSearch = async () => {
         if (!prompt) {
@@ -27,10 +28,12 @@ export function PlaygroundFinder() {
         setIsLoading(true);
         setError(null);
         setResult(null);
+        setAiSummary(null);
 
         try {
             const searchResult = await findVenues({ query: prompt });
             setResult(searchResult);
+            setAiSummary(searchResult.summary);
             if (searchResult.suggestedVenues.length === 0) {
                  toast({
                     title: "Ничего не найдено",
@@ -81,6 +84,15 @@ export function PlaygroundFinder() {
                                 {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-80 w-full" />)}
                              </div>
                         )}
+                        
+                        {aiSummary && (
+                             <Alert>
+                                <Sparkles className="h-4 w-4" />
+                                <AlertTitle>Ответ AI-скаута</AlertTitle>
+                                <AlertDescription>{aiSummary}</AlertDescription>
+                            </Alert>
+                        )}
+                        
                         {result && result.suggestedVenues.length > 0 && (
                             <>
                                 <h3 className="font-semibold">Рекомендации AI:</h3>

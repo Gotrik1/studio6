@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -51,6 +50,7 @@ const prompt = ai.definePrompt({
     prompt: `You are an intelligent assistant for the ProDvor platform helping users find sports venues.
 - Analyze the user's request and use the \`findAvailableVenues\` tool to get a list of potential venues.
 - From the tool results, select up to 5 of the most relevant venues to return to the user.
+- Create a friendly, natural language summary of your findings. Explain briefly why these places are a good match for the user's request. For example, if the user asks for a quiet place, mention which of the results are less crowded.
 - Respond in Russian.
 
 User Request: "{{{query}}}"
@@ -66,7 +66,7 @@ const findVenuesFlow = ai.defineFlow(
   async (input) => {
     const { output } = await prompt(input);
     if (!output) {
-        return { suggestedVenues: [] };
+        return { summary: '', suggestedVenues: [] };
     }
     return output;
   }
