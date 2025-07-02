@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, Wrench, CheckCircle, AlertTriangle, MessageSquare, Star, Users } from 'lucide-react';
+import { MapPin, Wrench, CheckCircle, AlertTriangle, MessageSquare, Star, Users, Calendar } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
@@ -22,39 +22,21 @@ import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
 import { PlanGameDialog } from '@/widgets/plan-game-dialog';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
-import { playgroundSchedule, type PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
+import { playgroundSchedule as initialSchedule, type PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
 import { useSession } from '@/shared/lib/session/client';
 import { useToast } from '@/shared/hooks/use-toast';
+import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const { addTransaction } = usePDEconomy();
     const [playground, setPlayground] = useState(initialPlayground);
-    const [schedule, setSchedule] = useState(playgroundSchedule.filter(s => s.playgroundId === playground.id));
+    const [schedule, setSchedule] = useState(initialSchedule.filter(s => s.playgroundId === playground.id));
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
-    const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [conditionReport, setConditionReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
-
-    const handlePlanGame = (data: { date: Date, time: string, duration: number }) => {
-        const [hours, minutes] = data.time.split(':').map(Number);
-        const startTime = new Date(data.date);
-        startTime.setHours(hours, minutes, 0, 0);
-        
-        const endTime = new Date(startTime.getTime() + data.duration * 60000);
-
-        const newBooking: PlaygroundBooking = {
-            id: `booking-${Date.now()}`,
-            playgroundId: playground.id,
-            team: { name: 'Ваша команда', avatar: 'https://placehold.co/100x100.png', avatarHint: 'user team logo' },
-            startTime,
-            endTime,
-        };
-        setSchedule(prev => [...prev, newBooking].sort((a,b) => a.startTime.getTime() - b.startTime.getTime()));
-    };
 
     const handleCheckIn = (comment: string) => {
         if (!user) return;
@@ -68,7 +50,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
         setPlayground(prev => ({...prev, checkIns: prev.checkIns + 1}));
         
         const checkInReward = 10;
-        addTransaction(`Чекин: ${playground.name}`, checkInReward);
+        // addTransaction(`Чекин: ${playground.name}`, checkInReward);
 
         toast({
             title: "Вы отметились!",
@@ -132,10 +114,6 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                         <CheckCircle className="mr-2 h-5 w-5" />
                         Отметиться (чекин)
                     </Button>
-                    <Button className="w-full sm:w-auto" size="lg" variant="outline" onClick={() => setIsPlanGameOpen(true)}>
-                        <Calendar className="mr-2 h-5 w-5" />
-                        Запланировать игру
-                    </Button>
                      <Button className="w-full sm:w-auto" size="lg" variant="destructive" onClick={() => setIsReportIssueOpen(true)}>
                         <AlertTriangle className="mr-2 h-5 w-5" />
                         Сообщить о проблеме
@@ -147,8 +125,9 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                 )}
 
                 <Tabs defaultValue="overview">
-                    <TabsList className="grid w-full grid-cols-6">
+                    <TabsList className="grid w-full grid-cols-7">
                         <TabsTrigger value="overview">Обзор</TabsTrigger>
+                        <TabsTrigger value="schedule">Расписание</TabsTrigger>
                         <TabsTrigger value="activity">Активность</TabsTrigger>
                         <TabsTrigger value="leaderboard">Лидеры</TabsTrigger>
                         <TabsTrigger value="reviews">Отзывы</TabsTrigger>
@@ -158,8 +137,11 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                     <TabsContent value="overview" className="mt-4">
                         <PlaygroundOverviewTab playground={playground} />
                     </TabsContent>
+                    <TabsContent value="schedule" className="mt-4">
+                        <PlaygroundScheduleTab playground={playground} initialSchedule={schedule} setSchedule={setSchedule} />
+                    </TabsContent>
                     <TabsContent value="activity" className="mt-4">
-                         <PlaygroundActivityTab schedule={schedule} activities={activities} onPlanClick={() => setIsPlanGameOpen(true)} />
+                         <PlaygroundActivityTab activities={activities} />
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-4">
                         <PlaygroundLeaderboardTab playground={playground} />
@@ -178,12 +160,6 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                     </TabsContent>
                 </Tabs>
             </div>
-            <PlanGameDialog 
-                isOpen={isPlanGameOpen}
-                onOpenChange={setIsPlanGameOpen}
-                playgroundName={playground.name}
-                onPlan={handlePlanGame}
-            />
             <PlaygroundCheckInDialog
                 isOpen={isCheckInOpen}
                 onOpenChange={setIsCheckInOpen}

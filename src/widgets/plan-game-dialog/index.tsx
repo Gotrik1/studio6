@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -24,27 +24,39 @@ const planGameSchema = z.object({
   duration: z.coerce.number().min(30, "Минимальная длительность 30 минут").max(180, "Максимальная длительность 3 часа"),
 });
 
-type FormValues = z.infer<typeof planGameSchema>;
+export type FormValues = z.infer<typeof planGameSchema>;
 
 interface PlanGameDialogProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
     playgroundName: string;
     onPlan: (data: FormValues) => void;
+    initialDate?: Date;
+    initialTime?: string;
 }
 
-export function PlanGameDialog({ isOpen, onOpenChange, playgroundName, onPlan }: PlanGameDialogProps) {
+export function PlanGameDialog({ isOpen, onOpenChange, playgroundName, onPlan, initialDate, initialTime }: PlanGameDialogProps) {
     const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<FormValues>({
         resolver: zodResolver(planGameSchema),
         defaultValues: {
-            date: new Date(),
-            time: '19:00',
+            date: initialDate || new Date(),
+            time: initialTime || '19:00',
             duration: 60,
         },
     });
+    
+    useEffect(() => {
+        if(isOpen) {
+            form.reset({
+                date: initialDate || new Date(),
+                time: initialTime || '19:00',
+                duration: 60,
+            })
+        }
+    }, [isOpen, initialDate, initialTime, form]);
 
     const onSubmit = (data: FormValues) => {
         setIsSubmitting(true);
@@ -57,7 +69,6 @@ export function PlanGameDialog({ isOpen, onOpenChange, playgroundName, onPlan }:
             });
             setIsSubmitting(false);
             onOpenChange(false);
-            form.reset();
         }, 1000);
     };
 
