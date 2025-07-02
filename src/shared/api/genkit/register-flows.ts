@@ -59,3 +59,4 @@ import './flows/generate-playground-challenge-flow';
 import './flows/generate-playground-lore';
 import './flows/analyze-playground-report-flow';
 import './flows/summarize-playground-reviews-flow';
+import './flows/generate-playground-tactic-flow';

@@ -32,6 +32,7 @@ import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
 import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
 import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
 import { AiPlaygroundDrill } from '@/widgets/ai-playground-drill';
+import { AiPlaygroundTactic } from '@/widgets/ai-playground-tactic';
 
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
@@ -92,15 +93,17 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
         const [hours, minutes] = data.time.split(':').map(Number);
         startTime.setHours(hours, minutes, 0, 0);
 
-        addLobby({
+        const newLobby: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number } = {
             sport: playground.type,
             location: playground.name,
             playgroundId: playground.id,
-            startTime,
+            startTime: startTime,
             duration: data.duration,
             comment: `Открытая игра на площадке ${playground.name}`,
             playersNeeded: 10,
-        });
+        };
+
+        addLobby(newLobby);
         
         toast({
             title: "Игра запланирована!",
@@ -169,14 +172,17 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                     
                     <TabsContent value="ai-assistant" className="mt-4">
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <AiPlaygroundAnalysis playground={playground} />
                             <div className="space-y-6">
+                                <AiPlaygroundAnalysis playground={playground} />
                                 <AiPlaygroundLore playground={playground} />
+                            </div>
+                            <div className="space-y-6">
                                 {playground.type === 'Воркаут' ? (
                                     <PlaygroundWorkoutGenerator equipment={playground.features} />
                                 ) : (
                                     <AiPlaygroundDrill playground={playground} />
                                 )}
+                                <AiPlaygroundTactic playground={playground} />
                             </div>
                         </div>
                     </TabsContent>
