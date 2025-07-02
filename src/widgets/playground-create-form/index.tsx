@@ -22,18 +22,21 @@ const features = [
     { id: 'Освещение', label: 'Освещение' },
     { id: 'Ограждение', label: 'Ограждение' },
     { id: 'Скамейки', label: 'Скамейки' },
+    { id: 'Раздевалка с душем', label: 'Раздевалка с душем' },
     { id: 'Источник воды', label: 'Источник воды' },
     { id: 'Ворота', label: 'Ворота' },
     { id: 'Кольца (баскетбол)', label: 'Кольца (баскетбол)' },
     { id: 'Сетка (волейбол)', label: 'Сетка (волейбол)' },
     { id: 'Турники', label: 'Турники' },
+    { id: 'Силовые тренажеры', label: 'Силовые тренажеры' },
+    { id: 'Кардио-зона', label: 'Кардио-зона' },
 ];
 
 const playgroundSchema = z.object({
   name: z.string().min(3, 'Название должно быть не менее 3 символов.'),
   address: z.string().min(10, 'Укажите более подробный адрес.'),
-  type: z.enum(['Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная']),
-  surface: z.enum(['Асфальт', 'Резина', 'Искусственный газон', 'Грунт']),
+  type: z.enum(['Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная', 'Фитнес-зал', 'Бассейн', 'Теннисный корт']),
+  surface: z.enum(['Асфальт', 'Резина', 'Искусственный газон', 'Грунт', 'Паркет', 'Профессиональный газон', 'Вода']),
   features: z.array(z.string()).optional(),
 });
 
@@ -60,8 +63,8 @@ export function PlaygroundCreateForm() {
         if (isDuplicate) {
             toast({
                 variant: 'destructive',
-                title: 'Площадка уже существует',
-                description: 'Площадка с таким адресом уже добавлена. Если вы считаете, что это ошибка, уточните адрес.',
+                title: 'Место уже существует',
+                description: 'Место с таким адресом уже добавлено. Если вы считаете, что это ошибка, уточните адрес.',
             });
             setIsSubmitting(false);
             return;
@@ -70,13 +73,13 @@ export function PlaygroundCreateForm() {
         console.log(data); 
         
         setTimeout(() => {
-            let toastDescription = 'Площадка добавлена и отправлена на модерацию! Вы получили 1 месяц PRO-подписки!';
+            let toastDescription = 'Место добавлено и отправлено на модерацию! Вы получили 1 месяц PRO-подписки!';
             if (user?.role === 'Капитан') {
-                toastDescription = 'Площадка добавлена и отправлена на модерацию! Вы и ваша команда получили 1 месяц PRO-подписки!';
+                toastDescription = 'Место добавлено и отправлено на модерацию! Вы и ваша команда получили 1 месяц PRO-подписки!';
             }
 
             toast({
-                title: "Площадка добавлена!",
+                title: "Место добавлено!",
                 description: toastDescription
             });
             router.push('/playgrounds');
@@ -88,14 +91,14 @@ export function PlaygroundCreateForm() {
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <CardHeader>
-                        <CardTitle>Информация о площадке</CardTitle>
+                        <CardTitle>Информация о месте</CardTitle>
                         <CardDescription>
-                            Добавьте площадку. Она появится на карте сразу и будет ожидать проверки модератором. За каждую уникальную площадку вы получите 1 месяц PRO-подписки!
+                            Добавьте новое место. Оно появится на карте и будет ожидать проверки модератором. За каждое уникальное место вы получите 1 месяц PRO-подписки!
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <FormField name="name" control={form.control} render={({field}) => (
-                            <FormItem><FormLabel>Название</FormLabel><FormControl><Input placeholder="Например, Коробка за домом" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Название</FormLabel><FormControl><Input placeholder="Например, Коробка за домом или Фитнес-клуб 'Атлет'" {...field} /></FormControl><FormMessage /></FormItem>
                         )}/>
                         <FormField name="address" control={form.control} render={({field}) => (
                             <FormItem>
@@ -109,20 +112,37 @@ export function PlaygroundCreateForm() {
                         <div className="space-y-2">
                              <FormLabel>Расположение на карте</FormLabel>
                              <div className="h-48 bg-muted rounded-lg flex items-center justify-center text-muted-foreground border">
-                                 <p className="text-sm">Интерактивная карта появится здесь</p>
+                                <MapPin className="h-8 w-8" />
                              </div>
                              <Button type="button" variant="outline" className="w-full" onClick={() => toast({ title: "Карта будет здесь!", description: "В продакшен-версии здесь будет интерактивная карта для установки метки." })}>
                                  <MapPin className="mr-2 h-4 w-4" />
-                                 Отметить на карте
+                                 Уточнить на карте
                              </Button>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <FormField name="type" control={form.control} render={({field}) => (
-                                <FormItem><FormLabel>Тип площадки</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите тип"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Футбол">Футбол</SelectItem><SelectItem value="Баскетбол">Баскетбол</SelectItem><SelectItem value="Стритбол">Стритбол</SelectItem><SelectItem value="Воркаут">Воркаут</SelectItem><SelectItem value="Универсальная">Универсальная</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Тип места</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите тип"/></SelectTrigger></FormControl><SelectContent>
+                                    <SelectItem value="Футбол">Футбол</SelectItem>
+                                    <SelectItem value="Баскетбол">Баскетбол</SelectItem>
+                                    <SelectItem value="Стритбол">Стритбол</SelectItem>
+                                    <SelectItem value="Воркаут">Воркаут</SelectItem>
+                                    <SelectItem value="Фитнес-зал">Фитнес-зал</SelectItem>
+                                    <SelectItem value="Бассейн">Бассейн</SelectItem>
+                                    <SelectItem value="Теннисный корт">Теннисный корт</SelectItem>
+                                    <SelectItem value="Универсальная">Универсальная</SelectItem>
+                                </SelectContent></Select><FormMessage /></FormItem>
                             )}/>
                             <FormField name="surface" control={form.control} render={({field}) => (
-                                <FormItem><FormLabel>Покрытие</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите покрытие"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Асфальт">Асфальт</SelectItem><SelectItem value="Резина">Резина</SelectItem><SelectItem value="Искусственный газон">Искусственный газон</SelectItem><SelectItem value="Грунт">Грунт</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Покрытие</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите покрытие"/></SelectTrigger></FormControl><SelectContent>
+                                    <SelectItem value="Асфальт">Асфальт</SelectItem>
+                                    <SelectItem value="Резина">Резина</SelectItem>
+                                    <SelectItem value="Искусственный газон">Искусственный газон</SelectItem>
+                                    <SelectItem value="Профессиональный газон">Профессиональный газон</SelectItem>
+                                    <SelectItem value="Грунт">Грунт</SelectItem>
+                                    <SelectItem value="Паркет">Паркет</SelectItem>
+                                    <SelectItem value="Вода">Вода</SelectItem>
+                                </SelectContent></Select><FormMessage /></FormItem>
                             )}/>
                         </div>
                         <FormField name="features" control={form.control} render={() => (
@@ -158,7 +178,7 @@ export function PlaygroundCreateForm() {
                     <CardFooter>
                         <Button type="submit" disabled={isSubmitting} className="w-full">
                              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                             <PlusCircle className="mr-2 h-4 w-4" /> Добавить площадку
+                             <PlusCircle className="mr-2 h-4 w-4" /> Добавить место
                         </Button>
                     </CardFooter>
                 </form>

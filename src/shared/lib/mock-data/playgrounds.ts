@@ -2,10 +2,10 @@ export type Playground = {
     id: string;
     name: string;
     address: string;
-    type: 'Футбол' | 'Баскетбол' | 'Стритбол' | 'Воркаут' | 'Универсальная';
+    type: 'Футбол' | 'Баскетбол' | 'Стритбол' | 'Воркаут' | 'Универсальная' | 'Фитнес-зал' | 'Бассейн' | 'Теннисный корт';
     coverImage: string;
     coverImageHint: string;
-    surface: 'Асфальт' | 'Резина' | 'Искусственный газон' | 'Грунт';
+    surface: 'Асфальт' | 'Резина' | 'Искусственный газон' | 'Грунт' | 'Паркет' | 'Профессиональный газон' | 'Вода';
     features: string[];
     rating: number;
     checkIns: number;
@@ -72,5 +72,19 @@ export const playgroundsList: Playground[] = [
         checkIns: 54,
         status: 'pending_moderation',
         creator: { name: 'Foxy', avatar: 'https://placehold.co/100x100.png' },
+    },
+    {
+        id: 'playground-5',
+        name: 'Фитнес-клуб "Атлет"',
+        address: 'Москва, Ленинский проспект, 72',
+        type: 'Фитнес-зал',
+        coverImage: 'https://placehold.co/2560x720.png',
+        coverImageHint: 'fitness gym interior',
+        surface: 'Резина',
+        features: ['Силовые тренажеры', 'Кардио-зона', 'Раздевалка с душем'],
+        rating: 4.9,
+        checkIns: 531,
+        status: 'approved',
+        creator: { name: 'ProDvor', avatar: 'https://placehold.co/100x100.png' },
     },
 ];

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -12,7 +13,7 @@ import { Search } from 'lucide-react';
 import { Card, CardHeader } from '@/shared/ui/card';
 import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
 
-const sportTypes = ['Все', 'Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная'];
+const sportTypes = ['Все', 'Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Фитнес-зал', 'Универсальная'];
 
 export function PlaygroundsListPage() {
     const [searchQuery, setSearchQuery] = useState('');
@@ -34,16 +35,16 @@ export function PlaygroundsListPage() {
                 <div className="space-y-2">
                     <h1 className="font-headline text-3xl font-bold tracking-tight flex items-center gap-3">
                         <Map className="h-8 w-8 text-primary"/>
-                        Площадки
+                        Места для тренировок
                     </h1>
                     <p className="text-muted-foreground">
-                        Найдите или добавьте свою любимую площадку для игр и тренировок.
+                        Найдите или добавьте свое любимое место для игр и тренировок.
                     </p>
                 </div>
                 <Button asChild>
                     <Link href="/playgrounds/new">
                         <PlusCircle className="mr-2 h-4 w-4" />
-                        Добавить площадку
+                        Добавить место
                     </Link>
                 </Button>
             </div>
@@ -51,7 +52,7 @@ export function PlaygroundsListPage() {
             <PlaygroundFinder />
             
             <div className="space-y-4 pt-6 mt-6 border-t">
-                 <h2 className="font-headline text-2xl font-bold">Все площадки</h2>
+                 <h2 className="font-headline text-2xl font-bold">Все места</h2>
                  
                  <Card>
                     <CardHeader className="flex flex-col gap-4 sm:flex-row">
@@ -94,7 +95,7 @@ export function PlaygroundsListPage() {
                 </div>
                  {filteredPlaygrounds.length === 0 && (
                     <div className="col-span-full text-center py-16 text-muted-foreground">
-                        <p>Площадки не найдены. Попробуйте изменить фильтры.</p>
+                        <p>Места не найдены. Попробуйте изменить фильтры.</p>
                     </div>
                 )}
             </div>
