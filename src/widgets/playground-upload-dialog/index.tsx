@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -10,7 +11,6 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
-import { Label } from "@/shared/ui/label";
 import { useToast } from '@/shared/hooks/use-toast';
 import { Loader2, UploadCloud, PlusCircle } from 'lucide-react';
 import Image from 'next/image';
@@ -67,7 +67,6 @@ export function PlaygroundUploadDialog({ isOpen, onOpenChange, onAddMedia }: Pla
     // Simulate API call to upload the file
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    // For the prototype, we'll just use a placeholder
     const newItem: GalleryItem = {
         src: 'https://placehold.co/600x400.png',
         alt: 'Новое фото площадки',
@@ -96,8 +95,7 @@ export function PlaygroundUploadDialog({ isOpen, onOpenChange, onAddMedia }: Pla
         </DialogHeader>
         <div className="py-4 space-y-4">
             <div className="space-y-2">
-                <Label htmlFor="media-upload">Файл</Label>
-                <label htmlFor="media-upload" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-muted/80">
+                <label htmlFor="playground-media-upload" className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-muted/80">
                     {preview ? (
                         <Image src={preview} alt="Предпросмотр" width={400} height={225} className="h-full w-full object-contain p-2" />
                     ) : (
@@ -107,12 +105,12 @@ export function PlaygroundUploadDialog({ isOpen, onOpenChange, onAddMedia }: Pla
                             <p className="text-xs text-muted-foreground">PNG, JPG, GIF</p>
                         </div>
                     )}
-                    <input id="media-upload" type="file" className="hidden" accept="image/png, image/jpeg, image/gif" onChange={handleFileChange} />
+                    <input id="playground-media-upload" type="file" className="hidden" accept="image/png, image/jpeg, image/gif" onChange={handleFileChange} />
                 </label>
             </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isUploading}>Отмена</Button>
+          <Button variant="outline" onClick={() => handleOpenChange(false)} disabled={isUploading}>Отмена</Button>
           <Button onClick={handleUpload} disabled={!file || isUploading}>
             {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isUploading ? 'Загрузка...' : <><PlusCircle className="mr-2 h-4 w-4" /> Добавить в галерею</>}

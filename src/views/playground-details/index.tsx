@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, CheckCircle, AlertTriangle, MessageSquare, Star, Users, Calendar, Wrench } from 'lucide-react';
+import { MapPin, CheckCircle, AlertTriangle, MessageSquare, Star, Users, Calendar, Wrench, Camera } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
@@ -27,6 +27,7 @@ import { useLfg } from '@/app/providers/lfg-provider';
 import type { FormValues } from '@/widgets/plan-game-dialog';
 import { PlanGameDialog } from '@/widgets/plan-game-dialog';
 import { format } from 'date-fns';
+import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
@@ -152,6 +153,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                             <TabsTrigger value="activity">Активность</TabsTrigger>
                             <TabsTrigger value="leaderboard"><Users className="mr-2 h-4 w-4"/>Лидеры</TabsTrigger>
                             <TabsTrigger value="reviews"><MessageSquare className="mr-2 h-4 w-4"/>Отзывы</TabsTrigger>
+                            <TabsTrigger value="media"><Camera className="mr-2 h-4 w-4"/>Медиа</TabsTrigger>
                             <TabsTrigger value="condition"><Wrench className="mr-2 h-4 w-4"/>Состояние</TabsTrigger>
                         </TabsList>
                     </ScrollArea>
@@ -173,6 +175,9 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                     </TabsContent>
                      <TabsContent value="reviews" className="mt-4">
                         <PlaygroundReviewsTab playground={playground} />
+                    </TabsContent>
+                    <TabsContent value="media" className="mt-4">
+                        <PlaygroundMediaTab />
                     </TabsContent>
                      <TabsContent value="condition" className="mt-4">
                         <PlaygroundConditionStatus
