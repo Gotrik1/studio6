@@ -1,6 +1,3 @@
-
-'use server';
-
 export type PlaygroundReview = {
     id: string;
     author: {
