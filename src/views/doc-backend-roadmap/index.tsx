@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { AlertTriangle, Database, Server, UploadCloud } from 'lucide-react';
+import { AlertTriangle, Database, Server, UploadCloud, MessageSquare } from 'lucide-react';
 
 const roadmapItems = [
     { 
@@ -26,9 +26,10 @@ const roadmapItems = [
         ]
     },
     { 
-        title: "Этап 3: Интеграция с AI", 
-        icon: Server,
+        title: "Этап 3: Асинхронное взаимодействие и AI", 
+        icon: MessageSquare,
         points: [
+            "Интеграция брокера сообщений (RabbitMQ / NATS) для decoupling сервисов.",
             "Создание защищенных эндпоинтов для Genkit-инструментов.",
             "Настройка векторной базы данных для RAG-сценариев (поиск, FAQ).",
             "Оптимизация передачи данных для AI-анализа.",
