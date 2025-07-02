@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -28,7 +29,7 @@ const generateProfileBannerFlow = ai.defineFlow(
   async ({prompt}) => {
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `A user profile banner for a sports platform. The theme is: ${prompt}. Generate a 2k, 4k, high resolution, photorealistic, sharp focus, detailed wide aspect ratio (16:9) landscape image. The image should be visually interesting but not overwhelming, suitable as a background. Avoid text. Use a digital art or cinematic style.`,
+      prompt: `Masterpiece, best quality, ultra-detailed, 4k, 8k, UHD, sharp focus. A user profile banner for a sports platform. The theme is: ${prompt}. Generate a visually stunning, wide aspect ratio (16:9) landscape image suitable as a background. The image must be photorealistic and highly detailed. It must not contain any text. The style should be cinematic.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },
