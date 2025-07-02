@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
@@ -29,6 +29,8 @@ type User = (typeof UserListType)[0];
 const allRoles = ["Все роли", "Администратор", "Модератор", "Капитан", "Игрок", "Судья", "Менеджер", "Организатор", "Спонсор", "Болельщик"];
 const allStatuses = ["Все статусы", "Активен", "Забанен"];
 
+const USERS_PER_PAGE = 8;
+
 export function UserManagementPage() {
     const { toast } = useToast();
     const [users, setUsers] = useState<User[]>(initialUserList);
@@ -37,6 +39,7 @@ export function UserManagementPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [roleFilter, setRoleFilter] = useState('Все роли');
     const [statusFilter, setStatusFilter] = useState('Все статусы');
+    const [currentPage, setCurrentPage] = useState(1);
     
     // Dialog states
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -57,6 +60,18 @@ export function UserManagementPage() {
             return matchesSearch && matchesRole && matchesStatus;
         });
     }, [users, searchQuery, roleFilter, statusFilter]);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchQuery, roleFilter, statusFilter]);
+    
+    const paginatedUsers = useMemo(() => {
+        const startIndex = (currentPage - 1) * USERS_PER_PAGE;
+        return filteredUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
+    }, [filteredUsers, currentPage]);
+
+    const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
 
     const handleOpenBanUnbanDialog = (user: User, type: 'ban' | 'unban') => {
         setUserToAction(user);
@@ -142,11 +157,40 @@ export function UserManagementPage() {
                 </Card>
                 
                 <UserTable 
-                    users={filteredUsers}
+                    users={paginatedUsers}
                     onOpenBanUnbanDialog={handleOpenBanUnbanDialog}
                     onEditUser={handleEditUser}
                     onPdAction={handlePdAction}
                 />
+                
+                {totalPages > 1 && (
+                     <div className="flex items-center justify-end space-x-2 py-4">
+                        <div className="flex-1 text-sm text-muted-foreground">
+                           Всего {filteredUsers.length} пользователей.
+                        </div>
+                        <div className="space-x-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                            >
+                                Назад
+                            </Button>
+                             <span className="text-sm text-muted-foreground">
+                                Страница {currentPage} из {totalPages}
+                            </span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                            >
+                                Вперед
+                            </Button>
+                        </div>
+                    </div>
+                )}
                 
                 <UserEditDialog 
                     user={selectedUser}
