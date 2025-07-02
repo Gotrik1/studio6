@@ -1,6 +1,4 @@
 
-
-
 'use client';
 
 import { useState } from 'react';
@@ -10,11 +8,12 @@ import { Button } from "@/shared/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, BarChart3 } from 'lucide-react';
+import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, BarChart3, Home } from 'lucide-react';
 import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
 import { teams } from '@/shared/lib/mock-data/teams';
+import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 import { teamRoster, challenges } from "@/shared/lib/mock-data/team-details";
 import { DonationDialog } from '@/features/donation-dialog/index';
 import { TeamChatInterface } from '@/widgets/team-chat-interface';
@@ -34,6 +33,7 @@ export function TeamDetailsPage() {
     }
 
     const isCaptain = currentUser?.name === team.captain || currentUser?.role === 'Администратор';
+    const homePlayground = playgroundsList.find(p => p.id === team.homePlaygroundId);
 
     return (
         <>
@@ -58,6 +58,12 @@ export function TeamDetailsPage() {
                             <div className="flex items-center gap-2"><Trophy className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">Ранг: #{team.rank}</span></div>
                             <div className="flex items-center gap-2"><Users className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">{team.members}/11 игроков</span></div>
                             <div className="flex items-center gap-2"><Gamepad2 className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">{team.game}</span></div>
+                            {homePlayground && (
+                                <div className="flex items-center gap-2">
+                                    <Home className="h-4 w-4 text-muted-foreground" /> 
+                                    <Link href={`/playgrounds/${homePlayground.id}`} className="font-semibold hover:underline">{homePlayground.name}</Link>
+                                </div>
+                            )}
                         </div>
                         <div className="flex gap-2">
                             <Button variant="outline" onClick={() => setIsDonationOpen(true)}>

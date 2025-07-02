@@ -10,6 +10,7 @@ export const teams = [
         members: 11,
         captain: 'Superuser',
         slug: 'dvotovyie-atlety',
+        homePlaygroundId: 'playground-1',
     },
     {
         name: 'Соколы',
@@ -21,6 +22,7 @@ export const teams = [
         members: 5,
         captain: 'ColdSniper',
         slug: 'sokoly',
+        homePlaygroundId: 'playground-2',
     },
     {
         name: 'Торпедо',
@@ -32,6 +34,7 @@ export const teams = [
         members: 6,
         captain: 'Foxy',
         slug: 'torpedo',
+        homePlaygroundId: null,
     },
     {
         name: 'Вымпел',
@@ -43,5 +46,6 @@ export const teams = [
         members: 6,
         captain: 'TheWall',
         slug: 'vympel',
+        homePlaygroundId: null,
     },
 ];
