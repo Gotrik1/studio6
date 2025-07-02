@@ -12,6 +12,7 @@ import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 import { KingOfTheCourtWidget } from '@/widgets/playground-home-team';
 import { Avatar, AvatarImage, AvatarFallback } from '@/shared/ui/avatar';
 import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
+import { AiPlaygroundDrill } from '../ai-playground-drill';
 
 
 interface PlaygroundOverviewTabProps {
@@ -33,12 +34,14 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
             <div className="lg:col-span-2 space-y-6">
                 <AiPlaygroundAnalysis playground={playground} />
                 <AiPlaygroundLore playground={playground} />
+                 {playground.type === 'Воркаут' ? (
+                    <PlaygroundWorkoutGenerator equipment={playground.features} />
+                 ) : (
+                    <AiPlaygroundDrill playground={playground} />
+                 )}
             </div>
             <div className="lg:col-span-1 space-y-6">
                  <KingOfTheCourtWidget playgroundId={playground.id} />
-                 {playground.type === 'Воркаут' && (
-                    <PlaygroundWorkoutGenerator equipment={playground.features} />
-                )}
                 <Card>
                    <CardHeader><CardTitle>Основная информация</CardTitle></CardHeader>
                    <CardContent className="space-y-3 text-sm">
