@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { PlusCircle, LineChart, History } from 'lucide-react';
 import { measurementsHistory as initialHistory, type Measurement } from '@/shared/lib/mock-data/measurements';
@@ -75,7 +75,7 @@ export function MeasurementsPage() {
                         <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
                             <div>
                                 <CardTitle className="flex items-center gap-2"><LineChart/> Динамика</CardTitle>
-                                <CardDescription>Выберите показатель для отображения на графике.</CardDescription>
+                                <p className="text-sm text-muted-foreground">Выберите показатель для отображения на графике.</p>
                             </div>
                             <Select value={selectedMetric} onValueChange={(value) => setSelectedMetric(value as keyof Omit<Measurement, 'id' | 'date'>)}>
                                 <SelectTrigger className="w-full sm:w-[180px]">
