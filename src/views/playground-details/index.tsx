@@ -32,6 +32,7 @@ import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
 import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
 import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
 import { AiPlaygroundTactic } from '@/widgets/ai-playground-tactic';
+import { AiPlaygroundDrill } from '@/widgets/ai-playground-drill';
 
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
@@ -170,15 +171,14 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                     </TabsContent>
                     
                     <TabsContent value="ai-assistant" className="mt-4">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <div className="space-y-6">
-                                <AiPlaygroundAnalysis playground={playground} />
+                        <div className="space-y-6">
+                             <AiPlaygroundAnalysis playground={playground} />
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <AiPlaygroundLore playground={playground} />
-                            </div>
-                            <div className="space-y-6">
                                 <PlaygroundWorkoutGenerator playground={playground} />
                                 <AiPlaygroundTactic playground={playground} />
-                            </div>
+                                <AiPlaygroundDrill playground={playground} />
+                             </div>
                         </div>
                     </TabsContent>
 

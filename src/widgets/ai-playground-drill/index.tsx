@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -83,7 +84,7 @@ export function AiPlaygroundDrill({ playground }: AiPlaygroundDrillProps) {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Target className="h-5 w-5 text-primary" />
-                    Персональная тренировка
+                    Персональный дрилл
                 </CardTitle>
                 <CardDescription>AI-задание для улучшения ваших навыков прямо сейчас.</CardDescription>
             </CardHeader>
