@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useTraining } from "@/app/providers/training-provider";

@@ -32,6 +32,8 @@ export function TrainingLogPage() {
                             plannedWeight: ex.plannedWeight || '',
                             isCompleted: false,
                         })),
+                        isSupersetWithPrevious: ex.isSupersetWithPrevious,
+                        technique: ex.technique,
                     };
                 });
 

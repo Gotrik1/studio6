@@ -23,6 +23,7 @@ import { Badge } from '@/shared/ui/badge';
 import Link from 'next/link';
 import { exercisesList } from '@/shared/lib/mock-data/exercises';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
+import { useToast } from '@/shared/hooks/use-toast';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;
@@ -194,6 +195,7 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, personalRecords, exerci
 };
 
 export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate, fullExerciseHistory }: TrainingDayCardProps) {
+    const { toast } = useToast();
     const StatusIcon = statusMap[entry.status].icon;
     const statusColor = statusMap[entry.status].color;
     const MoodIcon = entry.mood ? moodMap[entry.mood].icon : null;
