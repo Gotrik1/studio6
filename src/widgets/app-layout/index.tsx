@@ -125,7 +125,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/tournaments", icon: Trophy, label: "Соревнования" },
         { href: "/lfg", icon: Swords, label: "Поиск игры" },
         { href: "/chats", icon: MessageSquare, label: "Сообщения" },
-        { 
+        {
             label: "Тренировки",
             icon: Dumbbell,
             href: '/training',
