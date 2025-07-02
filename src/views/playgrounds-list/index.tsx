@@ -13,7 +13,7 @@ import { Search } from 'lucide-react';
 import { Card, CardHeader } from '@/shared/ui/card';
 import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
 
-const sportTypes = ['Все', 'Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Фитнес-зал', 'Универсальная', 'Лыжная трасса', 'Биатлонный комплекс', 'Каток', 'Сноуборд-парк', 'Горнолыжный склон', 'Стрельбище'];
+const sportTypes = ['Все', 'Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная', 'Фитнес-зал', 'Бассейн', 'Теннисный корт', 'Лыжная трасса', 'Биатлонный комплекс', 'Каток', 'Сноуборд-парк', 'Горнолыжный склон', 'Стрельбище'];
 
 export function PlaygroundsListPage() {
     const [searchQuery, setSearchQuery] = useState('');
