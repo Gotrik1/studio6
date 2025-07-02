@@ -32,16 +32,17 @@ export function LoginForm() {
   const onSubmit = (values: FormValues) => {
     setError(undefined);
     startTransition(async () => {
-      const result = await login(values);
-      if (result?.error) {
-        setError(result.error);
-      } else {
-        // Successful login is handled by redirect in the action.
-        toast({
-            title: "Успешный вход!",
-            description: "Добро пожаловать обратно.",
-        });
-      }
+      // The login action no longer takes arguments, so this component is effectively unused.
+      // This is kept to avoid breaking imports but will be replaced.
+      // const result = await login(values);
+      // if (result?.error) {
+      //   setError(result.error);
+      // } else {
+      //   toast({
+      //       title: "Успешный вход!",
+      //       description: "Добро пожаловать обратно.",
+      //   });
+      // }
     });
   };
 
