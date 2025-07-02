@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI agent for analyzing playground details to create a rich summary.
+ * @fileOverview An AI agent for generating a rich, structured analysis of a sports playground.
  *
  * - analyzePlaygroundDetails - A function that handles the analysis.
  * - AnalyzePlaygroundDetailsInput - The input type for the function.
@@ -21,23 +21,21 @@ const prompt = ai.definePrompt({
   name: 'analyzePlaygroundDetailsPrompt',
   input: { schema: AnalyzePlaygroundDetailsInputSchema },
   output: { schema: AnalyzePlaygroundDetailsOutputSchema },
-  prompt: `You are a local sports guru and community guide. Analyze the provided data for a sports playground and create a rich, structured summary for other players. Respond in Russian.
+  prompt: `You are an expert local sports guide. You provide witty, insightful, and honest reviews of sports venues. Analyze the provided playground data and generate a structured review. Respond in Russian.
 
   Playground Data:
   - Name: {{{name}}}
-  - Type: {{{type}}}
+  - Sport Type: {{{type}}}
   - Surface: {{{surface}}}
   - Features: {{#each features}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
-  - User Rating: {{{rating}}} / 5
+  - User Rating: {{{rating}}}/5
 
   Instructions:
-  1.  **Title**: Give the playground a catchy, informal nickname.
-  2.  **Vibe**: Describe the general atmosphere in one sentence. Is it competitive, family-friendly, hardcore?
-  3.  **Pros**: List 2-3 main advantages. Consider features like "Освещение" for evening games or "Резина" surface for safety.
-  4.  **Cons**: List 2-3 potential drawbacks. Consider "Асфальт" surface (hard on joints), or lack of features. A high rating might mean it gets crowded.
-  5.  **Best For**: Suggest what this place is best for (e.g., "Идеально для вечерних игр 3x3", "Отлично для серьезных тренировок по воркауту").
-
-  Be creative and helpful. Your goal is to give a real feel for the place.
+  1.  **Title**: Create a catchy, informal title or nickname for the playground. Something memorable.
+  2.  **Vibe**: Describe the overall vibe in one sentence. Is it competitive, chill, family-friendly, hardcore?
+  3.  **Pros**: List 2-3 specific positive points. Base them on the features and high rating. For example, 'Освещение' means it's great for evening games. A high rating means it's popular.
+  4.  **Cons**: List 2-3 potential drawbacks. Be creative but realistic. 'Асфальт' can be tough on the knees. If there are few features, that's a con. A low rating is a major con.
+  5.  **Best For**: Recommend what type of activity this playground is best suited for. E.g., "serious team training," "a quick pickup game after work," "practicing your free throws alone."
   `,
 });
 
@@ -50,7 +48,7 @@ const analyzePlaygroundDetailsFlow = ai.defineFlow(
   async (input) => {
     const { output } = await prompt(input);
     if (!output) {
-      throw new Error("AI failed to analyze playground details.");
+      throw new Error("AI failed to generate playground details.");
     }
     return output;
   }
