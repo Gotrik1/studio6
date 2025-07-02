@@ -42,7 +42,7 @@ type FanProfileProps = {
 export function FanProfile({ user, achievements, favoriteTeams, isCurrentUser }: FanProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const [avatar, setAvatar] = useState(user.avatar);
-  const [banner, setBanner] = useState('https://placehold.co/1280x360.png');
+  const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
 
