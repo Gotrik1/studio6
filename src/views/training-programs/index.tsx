@@ -79,7 +79,7 @@ export function TrainingProgramsPage() {
                                                 <Edit className="mr-2 h-4 w-4" />Редактировать
                                             </Link>
                                         </DropdownMenuItem>
-                                        <DropdownMenuItem className="text-destructive" onClick={() => handleDelete(program)}>
+                                        <DropdownMenuItem className="text-destructive focus:bg-destructive/10 focus:text-destructive" onClick={() => handleDelete(program)}>
                                             <Trash2 className="mr-2 h-4 w-4" />Удалить
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>

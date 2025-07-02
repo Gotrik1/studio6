@@ -48,8 +48,8 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
                     sets: ex.sets, 
                     reps: ex.reps,
                     plannedWeight: ex.plannedWeight,
-                    isSupersetWithPrevious: ex.isSupersetWithPrevious,
-                    technique: ex.technique,
+                    isSupersetWithPrevious: ex.isSupersetWithPrevious || false,
+                    technique: ex.technique || '',
                 })),
             })),
         };
