@@ -3,17 +3,29 @@ import { Folder, File } from 'lucide-react';
 const treeData = [
     { name: 'src', type: 'folder' as const, children: [
         { name: 'app', type: 'folder' as const, children: [
-            { name: '(app)', type: 'folder' as const, description: 'Группа роутов для защищенных страниц' },
-            { name: 'api', type: 'folder' as const, description: 'API роуты Next.js' },
-            { name: 'globals.css', type: 'file' as const, description: 'Глобальные стили' },
-            { name: 'layout.tsx', type: 'file' as const, description: 'Корневой layout' },
+            { name: '(app)', type: 'folder' as const, description: 'Группа роутов для защищенных страниц (dashboard, profile, etc.)' },
+            { name: 'auth', type: 'folder' as const, description: 'Страница входа и регистрации' },
+            { name: 'api', type: 'folder' as const, description: 'API роуты Next.js (e.g. /api/session)' },
+            { name: 'providers', type: 'folder' as const, description: 'Глобальные React Context провайдеры' },
+            { name: 'globals.css', type: 'file' as const, description: 'Глобальные стили и переменные Tailwind' },
+            { name: 'layout.tsx', type: 'file' as const, description: 'Корневой layout приложения (html, body)' },
         ]},
-        { name: 'views', type: 'folder' as const, description: 'Компоненты страниц, собирающие виджеты' },
-        { name: 'widgets', type: 'folder' as const, description: 'Составные блоки интерфейса' },
-        { name: 'features', type: 'folder' as const, description: 'Пользовательские сценарии (user stories)' },
-        { name: 'entities', type: 'folder' as const, description: 'Бизнес-сущности (User, Team)' },
-        { name: 'shared', type: 'folder' as const, description: 'Переиспользуемый код (UI-кит, утилиты)' },
-    ]}
+        { name: 'views', type: 'folder' as const, description: 'Компоненты страниц, собирающие виджеты (e.g., DashboardPage)' },
+        { name: 'widgets', type: 'folder' as const, description: 'Составные блоки интерфейса (e.g., Sidebar, TeamChat, PollCard)' },
+        { name: 'features', type: 'folder' as const, description: 'Пользовательские сценарии (e.g., user-avatar-generator, report-player)' },
+        { name: 'entities', type: 'folder' as const, description: 'Бизнес-сущности (User, Team, Match) и их UI-представления' },
+        { name: 'shared', type: 'folder' as const, children: [
+            { name: 'api', type: 'folder' as const, description: 'Общие API-инстансы и Genkit-флоу' },
+            { name: 'config', type: 'folder' as const, description: 'Конфигурационные файлы (e.g., ranks)' },
+            { name: 'hooks', type: 'folder' as const, description: 'Переиспользуемые React-хуки' },
+            { name: 'lib', type: 'folder' as const, description: 'Общие утилиты и хелперы (cn, mock-data)' },
+            { name: 'ui', type: 'folder' as const, description: 'UI-кит (Button, Card, Input) на базе ShadCN' },
+        ]},
+    ]},
+    { name: 'middleware.ts', type: 'file' as const, description: 'Проверка аутентификации для всех запросов' },
+    { name: 'tailwind.config.ts', type: 'file' as const, description: 'Конфигурация Tailwind CSS' },
+    { name: 'next.config.ts', type: 'file' as const, description: 'Конфигурация Next.js' },
+    { name: 'package.json', type: 'file' as const, description: 'Зависимости и скрипты проекта' },
 ];
 
 type TreeNode = {
