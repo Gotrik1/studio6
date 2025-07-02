@@ -25,6 +25,7 @@ import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-dialog';
 import { PlaygroundConditionStatus } from '@/widgets/playground-condition-status';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
+import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
 
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
@@ -141,6 +142,10 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                         Сообщить о проблеме
                     </Button>
                 </div>
+
+                {playground.type === 'Воркаут' && (
+                    <PlaygroundWorkoutGenerator equipment={playground.features} />
+                )}
 
                 <Tabs defaultValue="overview">
                     <TabsList className="grid w-full grid-cols-5">
