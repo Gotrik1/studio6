@@ -186,8 +186,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                     </TabsContent>
 
                     <TabsContent value="schedule" className="mt-4">
-                         <PlaygroundScheduleTab 
-                            playground={playground} 
+                         <PlaygroundScheduleTab
                             schedule={schedule}
                             onPlanClick={handleOpenPlanDialog}
                          />

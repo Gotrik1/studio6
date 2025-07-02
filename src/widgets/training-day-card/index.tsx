@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -6,7 +7,8 @@ import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown, Link2, Award, History } from 'lucide-react';
-import type { TrainingLogEntry, ExerciseLog, ExerciseSession } from '@/shared/lib/mock-data/training-log';
+import type { TrainingLogEntry, ExerciseLog } from '@/shared/lib/mock-data/training-log';
+import type { ExerciseSession } from '@/shared/lib/get-training-analytics';
 import { cn } from '@/shared/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { Separator } from '@/shared/ui/separator';
@@ -24,6 +26,7 @@ import { exercisesList } from '@/shared/lib/mock-data/exercises';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { useToast } from '@/shared/hooks/use-toast';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;
@@ -164,7 +167,7 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, personalRecords, exerci
                         </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pt-2 animate-in fade-in-0 zoom-in-95">
-                        <ExerciseHistoryTable sessions={exerciseHistory} limit={3} />
+                        <ExerciseHistoryTable sessions={exerciseHistory} />
                     </CollapsibleContent>
                 </Collapsible>
                 <Collapsible>
@@ -195,6 +198,7 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, personalRecords, exerci
 };
 
 export function TrainingDayCard({ entry, personalRecords, onDelete, onCopy, onUpdate, fullExerciseHistory }: TrainingDayCardProps) {
+    const { toast } = useToast();
     const StatusIcon = statusMap[entry.status].icon;
     const statusColor = statusMap[entry.status].color;
     const MoodIcon = entry.mood ? moodMap[entry.mood].icon : null;
