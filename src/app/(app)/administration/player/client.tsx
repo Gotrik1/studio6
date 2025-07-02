@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -21,6 +22,10 @@ type PlayerClientProps = {
     status: string;
     isVerified: boolean;
     xp: number;
+    dateOfBirth: string;
+    age: number;
+    preferredSports: string[];
+    contacts: { telegram: string; discord: string };
   };
   isCurrentUser: boolean;
   achievements: typeof AchievementsArray;

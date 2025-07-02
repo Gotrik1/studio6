@@ -8,7 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit } from "lucide-react";
+import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -22,6 +22,8 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
 import { ReportPlayerDialog } from '@/features/report-player-dialog';
 import Image from "next/image";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
 
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
@@ -65,6 +67,10 @@ type PlayerProfileProps = {
     status: string;
     isVerified: boolean;
     xp: number;
+    dateOfBirth: string;
+    age: number;
+    preferredSports: string[];
+    contacts: { telegram: string; discord: string };
   };
   isCurrentUser: boolean;
   achievements: typeof AchievementsArray;
@@ -186,6 +192,52 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
             <Progress value={progressValue} className="h-2" />
             </div>
         </CardContent>
+
+        <CardContent className="grid gap-6 border-b p-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="flex items-center gap-4">
+                <Cake className="h-6 w-6 flex-shrink-0 text-muted-foreground" />
+                <div>
+                    <p className="text-sm text-muted-foreground">Возраст</p>
+                    <p className="font-semibold">{user.age} лет ({format(new Date(user.dateOfBirth), 'd MMMM yyyy', { locale: ru })})</p>
+                </div>
+            </div>
+            <div className="flex items-center gap-4">
+                <MapPin className="h-6 w-6 flex-shrink-0 text-muted-foreground" />
+                <div>
+                    <p className="text-sm text-muted-foreground">Город</p>
+                    <p className="font-semibold">{user.location}</p>
+                </div>
+            </div>
+            <div className="flex items-start gap-4">
+                <Gamepad2 className="h-6 w-6 flex-shrink-0 text-muted-foreground" />
+                <div>
+                    <p className="text-sm text-muted-foreground">Дисциплины</p>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                        {user.preferredSports.map(sport => <Badge key={sport} variant="secondary">{sport}</Badge>)}
+                    </div>
+                </div>
+            </div>
+            <div className="flex items-start gap-4">
+                <Send className="h-6 w-6 flex-shrink-0 text-muted-foreground" />
+                <div>
+                    <p className="text-sm text-muted-foreground">Контакты</p>
+                    <div className="mt-1 flex flex-wrap gap-2">
+                        <Button variant="outline" size="sm" asChild>
+                            <Link href={`https://t.me/${user.contacts.telegram.slice(1)}`} target="_blank">Telegram</Link>
+                        </Button>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button variant="outline" size="sm">Discord</Button>
+                                </TooltipTrigger>
+                                <TooltipContent><p>{user.contacts.discord}</p></TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
+                </div>
+            </div>
+        </CardContent>
+
         <div className="p-4 md:p-6">
             <Tabs defaultValue="overview">
             <ScrollArea className="w-full whitespace-nowrap rounded-md">

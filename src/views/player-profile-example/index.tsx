@@ -1,6 +1,7 @@
 
 import PlayerClient from "@/app/(app)/administration/player/client";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
+import { differenceInYears } from "date-fns";
 
 const examplePlayerUser = {
   id: 'player-example-001',
@@ -13,6 +14,13 @@ const examplePlayerUser = {
   status: "Активен",
   isVerified: true,
   xp: 1250,
+  dateOfBirth: '1998-05-15',
+  age: differenceInYears(new Date(), new Date('1998-05-15')),
+  preferredSports: ["Футбол", "Баскетбол", "Valorant"],
+  contacts: {
+      telegram: '@player_example',
+      discord: 'player#1234'
+  }
 };
 
 export function PlayerProfilePage() {
