@@ -187,8 +187,16 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
 
     return (
         <>
+             <div className="space-y-6 opacity-0 animate-fade-in-up">
+                <div className="space-y-2 text-center">
+                    <h1 className="font-headline text-3xl font-bold tracking-tight">{isEditMode ? 'Редактирование программы' : 'Конструктор программ'}</h1>
+                    <p className="text-muted-foreground max-w-2xl mx-auto">
+                        {isEditMode ? 'Внесите необходимые изменения в вашу программу тренировок.' : 'Создайте свою идеальную программу тренировок с нуля.'}
+                    </p>
+                </div>
+            </div>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
                     <Card>
                         <CardHeader>
                             <CardTitle>Общая информация</CardTitle>
