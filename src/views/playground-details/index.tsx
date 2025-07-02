@@ -1,42 +1,26 @@
-
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, Check, Star, User, Home, Calendar, PlusCircle, AlertTriangle, CheckCircle } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
+import { PlusCircle, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { playgroundSchedule, type PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
 import { PlanGameDialog } from '@/widgets/plan-game-dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/shared/ui/alert-dialog";
-import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
-import { AiPlaygroundChallenge } from '@/widgets/ai-playground-challenge';
-import { PlaygroundLeaderboard } from '@/widgets/playground-leaderboard';
-import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
-import { PlaygroundSchedule } from '@/widgets/playground-schedule';
-import { PlaygroundActivityFeed } from '@/widgets/playground-activity-feed';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
 import { useSession } from '@/shared/lib/session/client';
-import { teams } from '@/shared/lib/mock-data/teams';
-import Link from 'next/link';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import { usePDEconomy } from '@/app/providers/pd-provider';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import { PlaygroundOverviewTab } from '@/widgets/playground-overview-tab';
+import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
+import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
+import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 
 export function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
@@ -47,15 +31,6 @@ export function PlaygroundDetailsPage({ playground: initialPlayground }: { playg
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
-    
-    const homeTeams = teams.filter(team => team.homePlaygroundId === playground.id);
-
-    const handleSetHome = () => {
-        toast({
-            title: 'Домашняя площадка установлена!',
-            description: `Площадка "${playground.name}" теперь ваша домашняя.`
-        });
-    };
 
     const handlePlanGame = (data: { date: Date, time: string, duration: number }) => {
         const [hours, minutes] = data.time.split(':').map(Number);
@@ -119,88 +94,37 @@ export function PlaygroundDetailsPage({ playground: initialPlayground }: { playg
                     </Alert>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 space-y-6">
-                        <AiPlaygroundSummary playground={playground} />
-                        <PlaygroundSchedule schedule={schedule} onPlanClick={() => setIsPlanGameOpen(true)} />
-                        <PlaygroundActivityFeed activities={activities} />
-                    </div>
-                    <div className="space-y-6">
-                        <Button className="w-full" size="lg" onClick={() => setIsCheckInOpen(true)}>
-                            <CheckCircle className="mr-2 h-5 w-5" />
-                            Отметиться (чекин)
-                        </Button>
-                        <AiPlaygroundChallenge playground={playground} />
-                        {homeTeams.length > 0 && (
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><Home className="h-5 w-5 text-primary" />Хозяева площадки</CardTitle>
-                                </CardHeader>
-                                <CardContent className="flex flex-wrap gap-4">
-                                    {homeTeams.map(team => (
-                                        <Link key={team.slug} href={`/teams/${team.slug}`}>
-                                            <TooltipProvider>
-                                                <Tooltip>
-                                                    <TooltipTrigger asChild>
-                                                        <Avatar className="h-12 w-12 border-2 hover:border-primary">
-                                                            <AvatarImage src={team.logo} />
-                                                            <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
-                                                        </Avatar>
-                                                    </TooltipTrigger>
-                                                    <TooltipContent>
-                                                        <p>{team.name}</p>
-                                                    </TooltipContent>
-                                                </Tooltip>
-                                            </TooltipProvider>
-                                        </Link>
-                                    ))}
-                                </CardContent>
-                            </Card>
-                        )}
-                        <AiPlaygroundLore playground={playground} />
-                        <PlaygroundLeaderboard />
-                        <Card>
-                           <CardHeader><CardTitle>Основная информация</CardTitle></CardHeader>
-                           <CardContent className="space-y-3 text-sm">
-                               <div className="flex justify-between"><span>Покрытие:</span><span className="font-semibold">{playground.surface}</span></div>
-                               <div className="flex justify-between"><span>Рейтинг:</span><span className="font-semibold flex items-center gap-1">{playground.rating}/5.0 <Star className="h-4 w-4 text-amber-500"/></span></div>
-                               <div className="flex justify-between"><span>Чекинов:</span><span className="font-semibold">{playground.checkIns}</span></div>
-                               <div>
-                                   <p>Особенности:</p>
-                                   <div className="flex flex-wrap gap-2 mt-1">
-                                       {playground.features.map(f => <Badge key={f}>{f}</Badge>)}
-                                   </div>
-                               </div>
-                           </CardContent>
-                         </Card>
-                         <Card>
-                           <CardHeader><CardTitle>Создатель</CardTitle></CardHeader>
-                           <CardContent className="flex items-center gap-3">
-                               <Avatar><AvatarImage src={playground.creator.avatar} /><AvatarFallback>{playground.creator.name.charAt(0)}</AvatarFallback></Avatar>
-                               <p className="font-semibold">{playground.creator.name}</p>
-                           </CardContent>
-                         </Card>
-                         <div className="space-y-2">
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button className="w-full"><Home className="mr-2 h-4 w-4"/> Сделать домашней</Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                    <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Вы собираетесь отметить эту площадку как вашу &quot;домашнюю&quot;. Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
-                                    </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                    <AlertDialogCancel>Отмена</AlertDialogCancel>
-                                    <AlertDialogAction onClick={handleSetHome}>Подтвердить</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                         </div>
-                    </div>
+                <div className="flex flex-col sm:flex-row gap-4">
+                    <Button className="w-full sm:w-auto" size="lg" onClick={() => setIsCheckInOpen(true)}>
+                        <CheckCircle className="mr-2 h-5 w-5" />
+                        Отметиться (чекин)
+                    </Button>
+                    <Button className="w-full sm:w-auto" size="lg" variant="outline" onClick={() => setIsPlanGameOpen(true)}>
+                        <PlusCircle className="mr-2 h-5 w-5" />
+                        Запланировать игру
+                    </Button>
                 </div>
+
+                <Tabs defaultValue="overview">
+                    <TabsList className="grid w-full grid-cols-4">
+                        <TabsTrigger value="overview">Обзор</TabsTrigger>
+                        <TabsTrigger value="activity">Активность</TabsTrigger>
+                        <TabsTrigger value="leaderboard">Лидеры</TabsTrigger>
+                        <TabsTrigger value="media">Медиа</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="overview" className="mt-4">
+                        <PlaygroundOverviewTab playground={playground} />
+                    </TabsContent>
+                    <TabsContent value="activity" className="mt-4">
+                         <PlaygroundActivityTab schedule={schedule} activities={activities} onPlanClick={() => setIsPlanGameOpen(true)} />
+                    </TabsContent>
+                    <TabsContent value="leaderboard" className="mt-4">
+                        <PlaygroundLeaderboardTab playground={playground} />
+                    </TabsContent>
+                    <TabsContent value="media" className="mt-4">
+                        <PlaygroundMediaTab />
+                    </TabsContent>
+                </Tabs>
             </div>
             <PlanGameDialog 
                 isOpen={isPlanGameOpen}
