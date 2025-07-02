@@ -61,4 +61,5 @@ export const systemCards = [
     { title: "Архитектура", description: "Описание архитектуры FSD.", href: "/documents/architecture", icon: FolderKanban },
     { title: "Backend Документация", description: "Тех. док по архитектуре бэкенда.", href: "/documents/backend-documentation", icon: Server },
     { title: "Демо темы", description: "Просмотр всех UI компонентов.", href: "/theme-demo", icon: Palette },
-    { title: "Карта сайта",
+    { title: "Карта сайта", description: "Обзор всех страниц приложения.", href: "/administration/sitemap", icon: Map },
+];
