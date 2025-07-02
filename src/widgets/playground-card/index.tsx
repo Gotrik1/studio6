@@ -28,7 +28,7 @@ export function PlaygroundCard({ playground }: { playground: Playground }) {
                  </CardContent>
                 <CardFooter className="flex justify-between text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><Check className="h-3 w-3"/>{playground.checkIns} чекинов</span>
-                    <span className="flex items-center gap-1"><Star className="h-3 w-3 text-amber-400"/>{playground.rating}/5.0</span>
+                    <span className="flex items-center gap-1"><Star className="h-3 w-3 text-amber-500"/>{playground.rating}/5.0</span>
                 </CardFooter>
             </Card>
         </Link>
