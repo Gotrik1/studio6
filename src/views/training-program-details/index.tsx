@@ -5,7 +5,7 @@ import { Button } from "@/shared/ui/button";
 import { useToast } from "@/shared/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
-import { CheckCircle, Dumbbell, Target, CalendarDays, Bot, User, Link2 } from 'lucide-react';
+import { CheckCircle, Dumbbell, Target, CalendarDays, Bot, User, Link2, Share2 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/shared/ui/accordion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { useTraining } from "@/app/providers/training-provider";
@@ -28,7 +28,16 @@ export function TrainingProgramDetailsPage({ program }: TrainingProgramDetailsPa
             title: "Программа выбрана!",
             description: `Вы успешно переключились на программу "${program.name}".`
         });
-        router.push('/training');
+        router.push('/training/log');
+    };
+
+    const handleShare = () => {
+        const url = window.location.href;
+        navigator.clipboard.writeText(url);
+        toast({
+            title: "Ссылка скопирована!",
+            description: "Вы можете поделиться этой программой с друзьями.",
+        });
     };
 
     return (
@@ -107,10 +116,14 @@ export function TrainingProgramDetailsPage({ program }: TrainingProgramDetailsPa
                         <p className="text-muted-foreground">Детальный план для этой программы еще не добавлен.</p>
                     )}
                 </CardContent>
-                 <CardFooter>
+                 <CardFooter className="flex flex-col sm:flex-row gap-2">
                      <Button size="lg" className="w-full" onClick={handleSelectProgram} disabled={isCurrent}>
                         <CheckCircle className="mr-2 h-5 w-5" />
                         {isCurrent ? 'Это ваша текущая программа' : 'Выбрать эту программу'}
+                    </Button>
+                    <Button size="lg" variant="outline" className="w-full sm:w-auto" onClick={handleShare}>
+                        <Share2 className="mr-2 h-4 w-4" />
+                        Поделиться
                     </Button>
                 </CardFooter>
             </Card>
