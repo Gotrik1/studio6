@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -6,13 +7,9 @@ import { Badge } from '@/shared/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/shared/ui/alert-dialog";
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
-import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
-import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 import { KingOfTheCourtWidget } from '@/widgets/playground-home-team';
 import { Avatar, AvatarImage, AvatarFallback } from '@/shared/ui/avatar';
-import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
-import { AiPlaygroundDrill } from '../ai-playground-drill';
 
 
 interface PlaygroundOverviewTabProps {
@@ -32,22 +29,13 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-                <AiPlaygroundAnalysis playground={playground} />
-                <AiPlaygroundLore playground={playground} />
-                 {playground.type === 'Воркаут' ? (
-                    <PlaygroundWorkoutGenerator equipment={playground.features} />
-                 ) : (
-                    <AiPlaygroundDrill playground={playground} />
-                 )}
-            </div>
-            <div className="lg:col-span-1 space-y-6">
-                 <KingOfTheCourtWidget playgroundId={playground.id} />
+                <KingOfTheCourtWidget playgroundId={playground.id} />
                 <Card>
                    <CardHeader><CardTitle>Основная информация</CardTitle></CardHeader>
                    <CardContent className="space-y-3 text-sm">
                        <div className="flex justify-between"><span>Покрытие:</span><span className="font-semibold">{playground.surface}</span></div>
                        <div className="flex justify-between"><span>Рейтинг:</span><span className="font-semibold flex items-center gap-1">{playground.rating}/5.0 <Star className="h-4 w-4 text-amber-500"/></span></div>
-                       <div className="flex justify-between"><span>Чекинов:</span><span className="font-semibold">{playground.checkIns}</span></div>
+                       <div className="flex justify-between"><span>Отметок:</span><span className="font-semibold">{playground.checkIns}</span></div>
                        <div>
                            <p>Особенности:</p>
                            <div className="flex flex-wrap gap-2 mt-1">
@@ -56,6 +44,8 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
                        </div>
                    </CardContent>
                  </Card>
+            </div>
+            <div className="lg:col-span-1 space-y-6">
                  <Card>
                    <CardHeader><CardTitle>Создатель</CardTitle></CardHeader>
                    <CardContent className="flex items-center gap-3">

@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, CheckCircle, AlertTriangle, MessageSquare, Star, Users, Calendar, Wrench, Camera } from 'lucide-react';
+import { MapPin, CheckCircle, AlertTriangle, MessageSquare, Star, Users, Calendar, Wrench, Camera, BrainCircuit } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
@@ -28,6 +28,11 @@ import type { FormValues } from '@/widgets/plan-game-dialog';
 import { PlanGameDialog } from '@/widgets/plan-game-dialog';
 import { format } from 'date-fns';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
+import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
+import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
+import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
+import { AiPlaygroundDrill } from '@/widgets/ai-playground-drill';
+
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
@@ -149,6 +154,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                     <ScrollArea className="w-full whitespace-nowrap rounded-md">
                         <TabsList className="inline-flex">
                             <TabsTrigger value="overview">Обзор</TabsTrigger>
+                            <TabsTrigger value="ai-assistant"><BrainCircuit className="mr-2 h-4 w-4"/>AI Помощник</TabsTrigger>
                             <TabsTrigger value="schedule"><Calendar className="mr-2 h-4 w-4"/>Расписание</TabsTrigger>
                             <TabsTrigger value="activity">Активность</TabsTrigger>
                             <TabsTrigger value="leaderboard"><Users className="mr-2 h-4 w-4"/>Лидеры</TabsTrigger>
@@ -160,6 +166,21 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                     <TabsContent value="overview" className="mt-4">
                         <PlaygroundOverviewTab playground={playground} />
                     </TabsContent>
+                    
+                    <TabsContent value="ai-assistant" className="mt-4">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <AiPlaygroundAnalysis playground={playground} />
+                            <div className="space-y-6">
+                                <AiPlaygroundLore playground={playground} />
+                                {playground.type === 'Воркаут' ? (
+                                    <PlaygroundWorkoutGenerator equipment={playground.features} />
+                                ) : (
+                                    <AiPlaygroundDrill playground={playground} />
+                                )}
+                            </div>
+                        </div>
+                    </TabsContent>
+
                     <TabsContent value="schedule" className="mt-4">
                          <PlaygroundScheduleTab 
                             playground={playground} 
