@@ -39,10 +39,6 @@ export function PlaygroundCheckInDialog({ isOpen, onOpenChange, onCheckIn, playg
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 1000));
         onCheckIn(comment, photo || undefined);
-        toast({
-            title: "Вы отметились!",
-            description: `Ваш чекин на площадке "${playgroundName}" засчитан.`
-        });
         setIsSubmitting(false);
         onOpenChange(false);
     };
@@ -61,7 +57,7 @@ export function PlaygroundCheckInDialog({ isOpen, onOpenChange, onCheckIn, playg
             <DialogContent>
                 <DialogHeader>
                     <DialogTitle>Чекин на площадке</DialogTitle>
-                    <DialogDescription>Подтвердите свое присутствие на &quot;{playgroundName}&quot;. Вы можете оставить комментарий или прикрепить фото.</DialogDescription>
+                    <DialogDescription>Подтвердите свое присутствие на &quot;{playgroundName}&quot;. За каждый чекин вы получите 10 PD! Вы можете оставить комментарий или прикрепить фото.</DialogDescription>
                 </DialogHeader>
                 <div className="py-4 space-y-4">
                     <div className="space-y-2">

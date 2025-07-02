@@ -26,10 +26,11 @@ const prompt = ai.definePrompt({
   Playground Details:
   - Name: {{{playgroundName}}}
   - Sport: {{{playgroundType}}}
+  - King of the Court: {{{topPlayerName}}} ({{{topPlayerStat}}})
 
   Instructions:
-  1.  Create a catchy title for the challenge.
-  2.  Write a clear, one-sentence description of the task. The task should be something a user can realistically do and track themselves (e.g., 'Сделай 10 точных трехочковых бросков подряд', 'Забей 5 голов с пенальти').
+  1.  Create a catchy title for the challenge. You can mention the top player, e.g., "Вызов от Короля".
+  2.  Write a clear, one-sentence description of the task. The task should be something a user can realistically do and track themselves. Sometimes, it can be related to beating the top player's record. Examples: 'Сделай 10 точных трехочковых бросков подряд', 'Забей 5 голов с пенальти', 'Продержись в планке дольше, чем Король {{{topPlayerName}}} (его рекорд 3 минуты)'.
   3.  Assign a fair reward in PD (ProDvor Dollars), typically between 10 and 50.
 
   Respond in Russian. The tone should be motivating and fun.

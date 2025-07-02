@@ -36,10 +36,12 @@ import { useSession } from '@/shared/lib/session/client';
 import { teams } from '@/shared/lib/mock-data/teams';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
+import { usePDEconomy } from '@/app/providers/pd-provider';
 
 export function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
+    const { addTransaction } = usePDEconomy();
     const [playground, setPlayground] = useState(initialPlayground);
     const [schedule, setSchedule] = useState(playgroundSchedule.filter(s => s.playgroundId === playground.id));
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
@@ -82,6 +84,14 @@ export function PlaygroundDetailsPage({ playground: initialPlayground }: { playg
         };
         setActivities(prev => [newActivity, ...prev]);
         setPlayground(prev => ({...prev, checkIns: prev.checkIns + 1}));
+        
+        const checkInReward = 10;
+        addTransaction(`Чекин: ${playground.name}`, checkInReward);
+
+        toast({
+            title: "Вы отметились!",
+            description: `Ваш чекин на площадке "${playground.name}" засчитан. Вы получили ${checkInReward} PD!`
+        });
     };
 
     return (

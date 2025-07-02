@@ -1,16 +1,12 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Trophy, CheckCircle } from 'lucide-react';
+import { playgroundLeaderboardData as leaderboardData } from '@/shared/lib/mock-data/playground-leaderboard';
 
-// Mock data, in a real app this would come from an API based on playground ID
-const leaderboardData = [
-    { rank: 1, name: 'Superuser', checkIns: 45, wins: 30, avatar: 'https://placehold.co/40x40.png' },
-    { rank: 2, name: 'Echo', checkIns: 38, wins: 25, avatar: 'https://placehold.co/40x40.png' },
-    { rank: 3, name: 'Viper', checkIns: 32, wins: 22, avatar: 'https://placehold.co/40x40.png' },
-];
 
 export function PlaygroundLeaderboard() {
     return (

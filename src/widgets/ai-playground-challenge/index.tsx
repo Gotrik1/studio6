@@ -10,6 +10,7 @@ import { Target, AlertCircle, Sparkles, Award } from 'lucide-react';
 import { generatePlaygroundChallenge, type GeneratePlaygroundChallengeOutput } from '@/shared/api/genkit/flows/generate-playground-challenge-flow';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 import { useToast } from '@/shared/hooks/use-toast';
+import { playgroundLeaderboardData } from '@/shared/lib/mock-data/playground-leaderboard';
 
 interface AiPlaygroundChallengeProps {
     playground: Playground;
@@ -29,9 +30,12 @@ export function AiPlaygroundChallenge({ playground }: AiPlaygroundChallengeProps
             setError(null);
             setIsAccepted(false);
             try {
+                const topPlayer = playgroundLeaderboardData[0];
                 const challengeData = await generatePlaygroundChallenge({
                     playgroundName: playground.name,
                     playgroundType: playground.type,
+                    topPlayerName: topPlayer.name,
+                    topPlayerStat: `${topPlayer.checkIns} чекинов`
                 });
                 setResult(challengeData);
             } catch (e) {
