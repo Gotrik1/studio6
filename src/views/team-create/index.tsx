@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -60,6 +61,7 @@ export function NewTeamPage() {
                 logo: result.avatarDataUri,
                 dataAiHint: prompt.split(' ').slice(0, 2).join(' '),
                 game: 'Футбол', // In a real app, this would be selected
+                homePlaygroundId: null,
             });
 
             toast({

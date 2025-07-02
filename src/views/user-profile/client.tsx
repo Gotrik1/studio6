@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -16,6 +17,7 @@ import { sponsorUser, sponsorAchievements } from "@/shared/lib/mock-data/sponsor
 import { achievements, teams as playerTeams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
 import { crmTournaments } from '@/shared/lib/mock-data/crm-tournaments';
 import { teams as allTeamsData } from '@/shared/lib/mock-data/teams';
+import { differenceInYears } from 'date-fns';
 
 
 const ProfileSkeleton = () => (
@@ -62,6 +64,13 @@ export default function UserProfileClient({ user, isCurrentUser }: UserProfileCl
         status: user.role === 'Капитан' ? "Капитан команды 'Дворовые Атлеты'" : "Активен",
         isVerified: true,
         xp: isCurrentUser ? 4500 : 1250, // Richer data for the current user
+        dateOfBirth: '1998-05-15',
+        age: differenceInYears(new Date(), new Date('1998-05-15')),
+        preferredSports: ["Футбол", "Баскетбол", "Valorant"],
+        contacts: {
+            telegram: '@player_example',
+            discord: 'player#1234'
+        }
     };
 
     const favoriteTeams = allTeamsData.slice(0, 2);
@@ -73,7 +82,7 @@ export default function UserProfileClient({ user, isCurrentUser }: UserProfileCl
         case 'Тренер':
             return <CoachProfile user={coachUser} achievements={coachAchievements} />;
         case 'Болельщик':
-            return <FanProfile user={fanUser} achievements={fanAchievements} favoriteTeams={favoriteTeams} />;
+            return <FanProfile user={fanUser} achievements={fanAchievements} favoriteTeams={favoriteTeams} isCurrentUser={isCurrentUser} />;
         case 'Судья':
             return <JudgeProfile user={judgeUser} achievements={judgeAchievements} />;
         case 'Менеджер':

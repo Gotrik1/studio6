@@ -23,7 +23,7 @@ import { useSession } from '@/shared/lib/session/client';
 import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-import { useLfg } from '@/app/providers/lfg-provider';
+import { useLfg, type LfgLobby } from '@/app/providers/lfg-provider';
 import type { FormValues } from '@/widgets/plan-game-dialog';
 import { PlanGameDialog } from '@/widgets/plan-game-dialog';
 import { format } from 'date-fns';
@@ -95,6 +95,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
     };
     
     const handlePlanGame = (data: FormValues) => {
+        if (!user) return;
         const startTime = new Date(data.date);
         const [hours, minutes] = data.time.split(':').map(Number);
         startTime.setHours(hours, minutes, 0, 0);

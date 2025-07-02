@@ -5,6 +5,8 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { initialLfgLobbies, type LfgLobby } from '@/shared/lib/mock-data/lfg';
 import { useSession } from '@/shared/lib/session/client';
 
+export type { LfgLobby };
+
 interface LfgContextType {
   lobbies: LfgLobby[];
   addLobby: (data: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number }) => void;

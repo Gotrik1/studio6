@@ -19,7 +19,7 @@ export async function generateTrainingProgram(input: GenerateTrainingProgramInpu
   return generateTrainingProgramFlow(input);
 }
 
-const allExercisesString = exercisesList.map(ex => `- ${ex.name} (Группа мышц: ${ex.muscleGroup}, Оборудование: ${ex.equipment})`).join('\n');
+const allExercisesString = exercisesList.map(ex => `- ${ex.name} (Группа мышц: ${ex.category}, Оборудование: ${ex.equipment})`).join('\n');
 
 const prompt = ai.definePrompt({
   name: 'generateTrainingProgramPrompt',
