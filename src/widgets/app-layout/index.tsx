@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -17,6 +16,9 @@ import {
   SidebarTrigger,
   SidebarSeparator,
   useSidebar,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/shared/ui/sidebar";
 import { UserNav } from "@/widgets/user-nav";
 import { Logo } from "@/shared/ui/icons";
@@ -36,6 +38,9 @@ import {
   Gavel,
   Map,
   Backpack,
+  ListChecks,
+  BarChart3,
+  Calendar,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -44,6 +49,8 @@ import { NotificationsPopover } from "@/widgets/notifications-popover";
 import { Button } from '@/shared/ui/button';
 import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
 import { usePathname } from 'next/navigation';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
+
 
 interface AppLayoutProps {
     user: User;
@@ -120,7 +127,18 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/tournaments", icon: Trophy, label: "Соревнования" },
         { href: "/lfg", icon: Swords, label: "Поиск игры" },
         { href: "/chats", icon: MessageSquare, label: "Сообщения" },
-        { href: "/training", icon: Dumbbell, label: "Тренировки" },
+        { 
+            label: "Тренировки",
+            icon: Dumbbell,
+            href: '/training',
+            children: [
+                { href: "/training/programs", label: "Программы" },
+                { href: "/training/exercises", label: "Упражнения" },
+                { href: "/training/log", label: "Дневник" },
+                { href: "/training/calendar", label: "Календарь" },
+                { href: "/training/analytics", label: "Аналитика" },
+            ]
+        },
         { href: "/playgrounds", icon: Map, label: "Площадки" },
         { href: "/inventory", icon: Backpack, label: "Инвентарь" },
         { href: "/store", icon: ShoppingCart, label: "Магазин" },
@@ -148,11 +166,36 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                     <div className="flex-1 overflow-y-auto">
                         <SidebarMenu className="space-y-1">
                             {mainNavItems.map(item => (
-                                <SidebarMenuItem key={item.href}>
+                                item.children ? (
+                                    <SidebarMenuItem key={item.label}>
+                                        <Collapsible>
+                                            <CollapsibleTrigger className="w-full">
+                                                <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'} className="w-full">
+                                                    <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                                                </SidebarMenuButton>
+                                            </CollapsibleTrigger>
+                                            {state === 'expanded' && (
+                                                <CollapsibleContent>
+                                                    <SidebarMenuSub>
+                                                        {item.children.map(child => (
+                                                            <SidebarMenuSubItem key={child.href}>
+                                                                <SidebarMenuSubButton href={child.href} variant={isActive(child.href) ? 'active' : 'default'}>
+                                                                    {child.label}
+                                                                </SidebarMenuSubButton>
+                                                            </SidebarMenuSubItem>
+                                                        ))}
+                                                    </SidebarMenuSub>
+                                                </CollapsibleContent>
+                                            )}
+                                        </Collapsible>
+                                    </SidebarMenuItem>
+                                ) : (
+                                    <SidebarMenuItem key={item.href}>
                                         <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
-                                        <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
+                                            <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                )
                             ))}
                             
                             {user.role === 'Тренер' && (
