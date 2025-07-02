@@ -5,18 +5,10 @@ import { useState } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, Wrench } from 'lucide-react';
+import { MapPin, Wrench, CheckCircle, AlertTriangle, MessageSquare, Star, Users } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { PlusCircle, AlertTriangle, CheckCircle } from 'lucide-react';
-import { useToast } from '@/shared/hooks/use-toast';
-import { playgroundSchedule, type PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
-import { PlanGameDialog } from '@/widgets/plan-game-dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
-import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
-import { useSession } from '@/shared/lib/session/client';
-import { usePDEconomy } from '@/app/providers/pd-provider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { PlaygroundOverviewTab } from '@/widgets/playground-overview-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
@@ -26,6 +18,13 @@ import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-d
 import { PlaygroundConditionStatus } from '@/widgets/playground-condition-status';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
 import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
+import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
+import { PlanGameDialog } from '@/widgets/plan-game-dialog';
+import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
+import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
+import { playgroundSchedule, type PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
+import { useSession } from '@/shared/lib/session/client';
+import { useToast } from '@/shared/hooks/use-toast';
 
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
@@ -134,7 +133,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                         Отметиться (чекин)
                     </Button>
                     <Button className="w-full sm:w-auto" size="lg" variant="outline" onClick={() => setIsPlanGameOpen(true)}>
-                        <PlusCircle className="mr-2 h-5 w-5" />
+                        <Calendar className="mr-2 h-5 w-5" />
                         Запланировать игру
                     </Button>
                      <Button className="w-full sm:w-auto" size="lg" variant="destructive" onClick={() => setIsReportIssueOpen(true)}>
@@ -148,10 +147,11 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                 )}
 
                 <Tabs defaultValue="overview">
-                    <TabsList className="grid w-full grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-6">
                         <TabsTrigger value="overview">Обзор</TabsTrigger>
                         <TabsTrigger value="activity">Активность</TabsTrigger>
                         <TabsTrigger value="leaderboard">Лидеры</TabsTrigger>
+                        <TabsTrigger value="reviews">Отзывы</TabsTrigger>
                         <TabsTrigger value="media">Медиа</TabsTrigger>
                         <TabsTrigger value="condition"><Wrench className="mr-2 h-4 w-4"/>Состояние</TabsTrigger>
                     </TabsList>
@@ -163,6 +163,9 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-4">
                         <PlaygroundLeaderboardTab playground={playground} />
+                    </TabsContent>
+                    <TabsContent value="reviews" className="mt-4">
+                        <PlaygroundReviewsTab playground={playground} />
                     </TabsContent>
                     <TabsContent value="media" className="mt-4">
                         <PlaygroundMediaTab />
