@@ -115,7 +115,7 @@ export function SponsorProfile({ user, achievements }: SponsorProfileProps) {
             onOpenChange={setIsBannerDialogOpen}
             currentBanner={banner}
             onBannerSave={setBanner}
-            defaultPrompt={`corporate building abstract`}
+            defaultPrompt={`corporate building background`}
         />
     </>
   );

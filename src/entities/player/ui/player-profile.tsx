@@ -302,7 +302,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
             onOpenChange={setIsBannerDialogOpen}
             currentBanner={banner}
             onBannerSave={setBanner}
-            defaultPrompt={`abstract background for esports player, main sport is ${user.mainSport}`}
+            defaultPrompt={`esports gaming background for a player, main sport is ${user.mainSport}`}
         />
         <ReportPlayerDialog
             isOpen={isReportDialogOpen}

@@ -73,7 +73,7 @@ export function ProfileBannerGeneratorDialog({ isOpen, onOpenChange, onBannerSav
         <DialogHeader>
           <DialogTitle>Сгенерировать фон профиля</DialogTitle>
           <DialogDescription>
-            Опишите фон, который вы хотите создать. ИИ сгенерирует абстрактное изображение.
+            Опишите фон, который вы хотите создать.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
@@ -83,7 +83,7 @@ export function ProfileBannerGeneratorDialog({ isOpen, onOpenChange, onBannerSav
               id="banner-prompt"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
-              placeholder="например, абстрактный фон в стиле футбол"
+              placeholder="например, фон в стиле футбол"
               disabled={isLoading}
             />
           </div>

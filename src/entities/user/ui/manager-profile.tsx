@@ -123,7 +123,7 @@ export function ManagerProfile({ user, achievements }: ManagerProfileProps) {
             onOpenChange={setIsBannerDialogOpen}
             currentBanner={banner}
             onBannerSave={setBanner}
-            defaultPrompt={`business cityscape abstract`}
+            defaultPrompt={`business cityscape background`}
         />
     </>
   );

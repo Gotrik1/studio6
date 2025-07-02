@@ -115,7 +115,7 @@ export function ModeratorProfile({ user, achievements }: ModeratorProfileProps) 
             onOpenChange={setIsBannerDialogOpen}
             currentBanner={banner}
             onBannerSave={setBanner}
-            defaultPrompt={`shield security abstract`}
+            defaultPrompt={`security shield background`}
         />
     </>
   );

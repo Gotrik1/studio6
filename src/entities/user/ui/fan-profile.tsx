@@ -138,7 +138,7 @@ export function FanProfile({ user, achievements, favoriteTeams, isCurrentUser }:
             onOpenChange={setIsBannerDialogOpen}
             currentBanner={banner}
             onBannerSave={setBanner}
-            defaultPrompt={`stadium with cheering crowd, abstract art`}
+            defaultPrompt={`stadium with cheering crowd`}
         />
     </>
   );

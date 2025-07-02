@@ -125,7 +125,7 @@ export function OrganizerProfile({ user, achievements, tournaments }: OrganizerP
             onOpenChange={setIsBannerDialogOpen}
             currentBanner={banner}
             onBannerSave={setBanner}
-            defaultPrompt={`event stage lights abstract`}
+            defaultPrompt={`event stage lights background`}
         />
     </>
   );

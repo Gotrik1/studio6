@@ -150,7 +150,7 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
             onOpenChange={setIsBannerDialogOpen}
             currentBanner={banner}
             onBannerSave={setBanner}
-            defaultPrompt={`sports strategy playbook, abstract`}
+            defaultPrompt={`sports strategy playbook background`}
         />
     </>
   );

@@ -124,7 +124,7 @@ export function JudgeProfile({ user, achievements }: JudgeProfileProps) {
             onOpenChange={setIsBannerDialogOpen}
             currentBanner={banner}
             onBannerSave={setBanner}
-            defaultPrompt={`justice scales gavel abstract`}
+            defaultPrompt={`justice scales and gavel background`}
         />
     </>
   );
