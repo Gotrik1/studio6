@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -65,7 +66,7 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
                             <AlertDialogHeader>
                             <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
                             <AlertDialogDescription>
-                                Вы собираетесь отметить эту площадку как вашу &quot;домашнюю&quot;. Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
+                                Вы собираетесь отметить эту площадку как вашу "домашнюю". Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
                             </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>

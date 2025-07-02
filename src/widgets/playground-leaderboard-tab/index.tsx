@@ -1,14 +1,13 @@
+
 'use client';
 
 import { PlaygroundLeaderboard } from '@/widgets/playground-leaderboard';
 import { AiPlaygroundChallenge } from '@/widgets/ai-playground-challenge';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 
-interface PlaygroundLeaderboardTabProps {
-    playground: Playground;
-}
+export function PlaygroundLeaderboardTab() {
+    const playground = playgroundsList[0]; // Mock: use the first playground for the demo
 
-export function PlaygroundLeaderboardTab({ playground }: PlaygroundLeaderboardTabProps) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <PlaygroundLeaderboard />
