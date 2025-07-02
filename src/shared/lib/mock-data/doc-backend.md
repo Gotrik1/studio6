@@ -13,7 +13,7 @@
     -   **`team-service`**: Создание команд, управление составом, заявки на вступление.
     -   **`tournament-service`**: Управление турнирами, генерация сеток, обработка результатов.
     -   **`match-service`**: Логика матчей, статистика, разрешение споров.
-    -   **`chat-service`**: Обработка real-time сообщений через WebSocket, управление комнатами чатов, история сообщений.
+    -   **`chat-service`**: Обработка real-time сообщений через WebSocket, управление комнатами чатов, история сообщений. Для обеспечения надежной доставки и масштабируемости использует брокер сообщений.
     -   **`notification-service`**: Отправка асинхронных уведомлений (push, email).
 -   **Брокер сообщений (NATS / RabbitMQ)**: Асинхронное взаимодействие между сервисами. Используется для доставки сообщений в `chat-service`, обработки оффлайн-сообщений и для `notification-service`.
 -   **База данных (PostgreSQL)**: Основное хранилище данных для всех сервисов.
@@ -30,179 +30,34 @@
 | **API Gateway** | Kong | Централизованная обработка входящих запросов. |
 | **GUI для Kong** | Konga | Веб-интерфейс для удобной настройки Kong. |
 | **IdP** | Keycloak | Управление пользователями, ролями и аутентификацией. |
-| **Брокер сообщений** | NATS / RabbitMQ | Для асинхронных операций (чаты, нотификации). |
+| **Брокер сообщений** | NATS (с JetStream) / RabbitMQ | Для асинхронных операций (чаты, нотификации). См. обоснование ниже. |
 | **Контейнеризация** | Docker, Docker Compose | Для локальной разработки и развертывания. |
 | **Кеширование** | Redis | Для кеширования сессий, часто запрашиваемых данных. |
+
+### Выбор брокера: NATS vs. Kafka
+
+Для задач нашего проекта, таких как чаты и уведомления, рекомендуется **NATS с JetStream**. Вот почему:
+
+| Критерий | NATS | Kafka | Почему для ProDvor подходит NATS |
+| :--- | :--- | :--- | :--- |
+| **Основное назначение** | "Центральная нервная система" для микросервисов. Pub/sub, request/reply. | Распределенный лог для стриминга данных. | Нам нужна быстрая коммуникация между сервисами, а не хранилище событий. |
+| **Производительность** | Очень низкая задержка (low latency). | Очень высокая пропускная способность (high throughput). | Для чата и real-time уведомлений задержка важнее пропускной способности. |
+| **Сложность** | Простой в развертывании и управлении. | Более сложный, требует Zookeeper (или KRaft). | Простота снижает затраты на разработку и поддержку, что идеально для прототипа. |
+| **Персистентность** | Включается через **JetStream** для гарантии доставки. | Встроена в ядро (хранит логи на диске). | JetStream предоставляет достаточную персистентность для чатов без излишней сложности. |
+
+**Вывод:** Kafka — мощный, но избыточный инструмент для наших задач. NATS обеспечивает необходимую производительность и надежность при значительно меньшей сложности.
 
 ## 3. Настройка окружения
 
 ### Пример `docker-compose.yml`
 
-```yaml
-version: '3.8'
-
-services:
-  postgres:
-    image: postgres:15
-    container_name: prodvor_postgres
-    environment:
-      POSTGRES_USER: prodvor
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: prodvor
-    ports:
-      - "5432:5432"
-    volumes:
-      - prodvor_db_data:/var/lib/postgresql/data
-
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: prodvor_pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@example.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    depends_on:
-      - postgres
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:24.0
-    container_name: prodvor_keycloak
-    command: start-dev
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-    ports:
-      - "8080:8080"
-    depends_on:
-      - postgres
-
-  kong-db:
-    image: postgres:13
-    container_name: prodvor_kong_db
-    environment:
-      - POSTGRES_USER=kong
-      - POSTGRES_PASSWORD=kong
-      - POSTGRES_DB=kong
-    volumes:
-      - kong_db_data:/var/lib/postgresql/data
-    
-  kong-migration:
-    image: kong:3.4
-    container_name: prodvor_kong_migration
-    command: "kong migrations bootstrap"
-    environment:
-      - KONG_DATABASE=postgres
-      - KONG_PG_HOST=kong-db
-      - KONG_PG_USER=kong
-      - KONG_PG_PASSWORD=kong
-      - KONG_PG_DATABASE=kong
-    depends_on:
-      - kong-db
-
-  kong:
-    image: kong:3.4
-    container_name: prodvor_kong
-    environment:
-      KONG_DATABASE: postgres
-      KONG_PG_HOST: kong-db
-      KONG_PG_USER: kong
-      KONG_PG_PASSWORD: kong
-      KONG_PROXY_ACCESS_LOG: /dev/stdout
-      KONG_ADMIN_ACCESS_LOG: /dev/stdout
-      KONG_PROXY_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
-    ports:
-      - "8000:8000"
-      - "8443:8443"
-      - "8001:8001"
-      - "8444:8444"
-    depends_on:
-      - kong-migration
-
-  konga:
-    image: pantsel/konga
-    container_name: prodvor_konga
-    ports:
-      - "1337:1337"
-    environment:
-      - NODE_ENV=development
-      - TOKEN_SECRET=somerandomstring
-    depends_on:
-      - kong
-
-volumes:
-  prodvor_db_data:
-  kong_db_data:
-```
+*Заглушка: Здесь будет полная конфигурация docker-compose.yml для всех сервисов, включая PostgreSQL, Keycloak, Kong, NATS и сервисы приложения.*
 
 ## 4. Спецификация API (Пример для `user-service`)
 
 Все API должны следовать спецификации OpenAPI 3.0.
 
-```yaml
-openapi: 3.0.0
-info:
-  title: User Service API
-  version: 1.0.0
-paths:
-  /users/me:
-    get:
-      summary: Получить профиль текущего пользователя
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Успешный ответ
-          content:
-            application/json:
-              schema:
-                '$ref': '#/components/schemas/UserProfile'
-        '401':
-          description: Не авторизован
-  /users/{id}:
-    get:
-      summary: Получить профиль пользователя по ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Успешный ответ
-          content:
-            application/json:
-              schema:
-                '$ref': '#/components/schemas/UserProfile'
-        '404':
-          description: Пользователь не найден
-
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-  schemas:
-    UserProfile:
-      type: object
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        email:
-          type: string
-          format: email
-        role:
-          type: string
-        avatar:
-          type: string
-          format: uri
-```
+*Заглушка: Здесь будет детальный пример спецификации OpenAPI 3.0 для user-service.*
 
 ## 5. Аутентификация и авторизация (детально)
 
