@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -17,16 +16,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/f
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { RestTimer } from '@/widgets/rest-timer';
-import { getTrainingAnalytics, type PersonalRecord } from '@/shared/lib/get-training-analytics';
+import type { PersonalRecord } from '@/shared/lib/get-training-analytics';
 import { calculate1RM } from '@/shared/lib/calculate-1rm';
 import { Badge } from '@/shared/ui/badge';
 import Link from 'next/link';
 import { exercisesList } from '@/shared/lib/mock-data/exercises';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;
-    allEntries: TrainingLogEntry[];
+    personalRecords: PersonalRecord[];
     onDelete: (id: string) => void;
     onCopy: (id: string) => void;
     onUpdate: (data: TrainingLogEntry) => void;
@@ -193,7 +194,7 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, personalRecords, exerci
     );
 };
 
-export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate, fullExerciseHistory }: TrainingDayCardProps) {
+export function TrainingDayCard({ entry, personalRecords, onDelete, onCopy, onUpdate, fullExerciseHistory }: TrainingDayCardProps) {
     const StatusIcon = statusMap[entry.status].icon;
     const statusColor = statusMap[entry.status].color;
     const MoodIcon = entry.mood ? moodMap[entry.mood].icon : null;
@@ -207,16 +208,8 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate,
         name: 'exercises',
     });
 
-    const { personalRecords } = useMemo(() => {
-        const pastEntries = allEntries.filter(
-            e => e.id !== entry.id && e.status === 'completed' && new Date(e.date) < new Date()
-        );
-        return getTrainingAnalytics(pastEntries);
-    }, [allEntries, entry.id]);
-
-
     const onSubmit = (data: TrainingLogEntry) => {
-        const updatedData = { ...data, status: 'completed' as const };
+        const updatedData = { ...data, status: 'completed' as const, date: new Date().toISOString().split('T')[0] };
         onUpdate(updatedData);
     };
 
@@ -234,7 +227,9 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate,
                     <CollapsibleTrigger asChild>
                          <div className="flex-1 flex items-start gap-4 cursor-pointer group">
                             <div>
-                                <p className="text-sm text-muted-foreground">{entry.date}</p>
+                                <p className="text-sm text-muted-foreground">
+                                    {format(new Date(entry.date), 'EEEE, d MMMM', { locale: ru })}
+                                </p>
                                 <CardTitle className="text-xl flex items-center gap-2 group-hover:text-primary transition-colors">
                                     {entry.workoutName} 
                                     <ChevronDown className="h-5 w-5 transition-transform duration-200 group-data-[state=open]:rotate-180" />

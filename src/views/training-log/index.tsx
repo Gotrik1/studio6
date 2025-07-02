@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -6,7 +5,7 @@ import { Card, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useTraining } from '@/app/providers/training-provider';
-import type { TrainingLogEntry, ExerciseLog } from '@/shared/lib/mock-data/training-log';
+import { trainingLogData as initialLogData, type TrainingLogEntry, type ExerciseLog } from '@/shared/lib/mock-data/training-log';
 import { TrainingDayCard } from '@/widgets/training-day-card';
 import { Dumbbell } from 'lucide-react';
 import Link from 'next/link';
@@ -15,13 +14,14 @@ import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 export function TrainingLogPage() {
     const { toast } = useToast();
     const { currentProgram } = useTraining();
-    const [logEntries, setLogEntries] = useState<TrainingLogEntry[]>([]);
-    
-    const { fullExerciseHistory } = useMemo(() => getTrainingAnalytics(logEntries.filter(e => e.status === 'completed')), [logEntries]);
+    const [logEntries, setLogEntries] = useState<TrainingLogEntry[]>(initialLogData);
+
+    const { personalRecords, fullExerciseHistory } = useMemo(() => getTrainingAnalytics(logEntries.filter(e => e.status === 'completed')), [logEntries]);
 
     useEffect(() => {
         if (currentProgram) {
-            const plannedEntries = currentProgram.weeklySplit.map((day): TrainingLogEntry => {
+            const today = new Date();
+            const plannedEntries = currentProgram.weeklySplit.map((day, index): TrainingLogEntry => {
                 const exercises: ExerciseLog[] = day.exercises.map(ex => {
                     const numSets = parseInt(ex.sets.split('-')[0], 10) || 3;
                     return {
@@ -36,23 +36,27 @@ export function TrainingLogPage() {
                         technique: ex.technique,
                     };
                 });
+                
+                const workoutDate = new Date(today);
+                workoutDate.setDate(today.getDate() + index);
 
                 return {
                     id: `${currentProgram.id}-${day.day}`,
-                    date: `День ${day.day}`,
+                    date: workoutDate.toISOString().split('T')[0],
                     workoutName: day.title,
                     status: 'planned',
                     exercises,
                 };
             });
-            setLogEntries(plannedEntries);
+            
+            const historicalEntries = initialLogData.filter(e => e.status !== 'planned');
+            setLogEntries([...historicalEntries, ...plannedEntries].sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
         } else {
-            setLogEntries([]);
+            setLogEntries(initialLogData.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
         }
     }, [currentProgram]);
 
     const handleUpdateEntry = (updatedEntry: TrainingLogEntry) => {
-        // --- New Record Detection Logic ---
         const oldAnalytics = getTrainingAnalytics(logEntries.filter(e => e.status === 'completed'));
         const oldPRs = new Map(oldAnalytics.personalRecords.map(pr => [pr.exercise, pr.e1RM]));
 
@@ -72,7 +76,6 @@ export function TrainingLogPage() {
                 }, 500); 
             }
         });
-        // --- End of New Record Detection Logic ---
 
         setLogEntries(prev => prev.map(entry => (entry.id === updatedEntry.id ? updatedEntry : entry)));
         toast({
@@ -81,12 +84,23 @@ export function TrainingLogPage() {
         });
     };
 
-    const handleDelete = () => {
-        toast({ title: 'Действие недоступно', description: 'Запланированные тренировки нельзя удалить.' });
+    const handleDelete = (id: string) => {
+        setLogEntries(prev => prev.filter(e => e.id !== id));
+        toast({ title: 'Запись удалена' });
     };
 
-    const handleCopy = () => {
-        toast({ title: 'Действие недоступно', description: 'Запланированные тренировки нельзя скопировать.' });
+    const handleCopy = (id: string) => {
+        const entryToCopy = logEntries.find(e => e.id === id);
+        if (entryToCopy) {
+            const newEntry = {
+                ...JSON.parse(JSON.stringify(entryToCopy)),
+                id: `copy-${Date.now()}`,
+                date: new Date().toISOString().split('T')[0],
+                status: 'planned' as const
+            };
+            setLogEntries(prev => [...prev, newEntry].sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()));
+            toast({ title: 'Тренировка скопирована' });
+        }
     };
 
     if (!currentProgram) {
@@ -123,11 +137,11 @@ export function TrainingLogPage() {
                         <TrainingDayCard
                             key={entry.id}
                             entry={entry}
-                            allEntries={logEntries}
+                            personalRecords={personalRecords}
+                            fullExerciseHistory={fullExerciseHistory}
                             onDelete={handleDelete}
                             onCopy={handleCopy}
                             onUpdate={handleUpdateEntry}
-                            fullExerciseHistory={fullExerciseHistory}
                         />
                     ))}
                 </CardContent>
