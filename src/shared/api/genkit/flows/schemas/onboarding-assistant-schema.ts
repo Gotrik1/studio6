@@ -7,7 +7,7 @@ export const OnboardingInputSchema = z.object({
 export type OnboardingInput = z.infer<typeof OnboardingInputSchema>;
 
 const OnboardingSuggestionSchema = z.object({
-    icon: z.enum(["User", "Users", "Gamepad2", "Trophy", "PlusCircle"]),
+    icon: z.enum(["User", "Users", "Gamepad2", "Trophy", "PlusCircle", "Search"]),
     title: z.string(),
     description: z.string(),
     href: z.string(),

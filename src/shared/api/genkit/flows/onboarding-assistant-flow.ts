@@ -36,6 +36,7 @@ Here are some example links you can use:
 - Tournaments: /tournaments
 - Create Team: /teams/new
 - Create Tournament: /tournaments/new
+- Find Game (LFG): /lfg
 
 Respond in Russian.
 
