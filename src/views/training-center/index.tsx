@@ -1,9 +1,10 @@
+
 'use client';
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
-import { Dumbbell, Calendar, Users, Swords, BarChart3, Ruler, Award, HeartPulse, Gamepad2, Search } from "lucide-react";
+import { Dumbbell, Calendar, Users, Swords, BarChart3, Ruler, Award, HeartPulse, Gamepad2, Search, Users2, GraduationCap, UserSearch, Shapes } from "lucide-react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ProposeTrainingDialog } from '@/widgets/propose-training-dialog';

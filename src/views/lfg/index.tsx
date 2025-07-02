@@ -93,7 +93,7 @@ export function LfgPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const { lobbies, addLobby, joinLobby } = useLfg();
-    const [filteredLobbies, setFilteredLobbies] = useState<LfgLobby[] | null>(null);
+    const [filteredLobbies, setFilteredLobbies] = useState<LfgLobbyType[] | null>(null);
 
     const handleSearch = async () => {
         if (!prompt) {
@@ -106,11 +106,7 @@ export function LfgPage() {
 
         try {
             const searchResult = await findLfgLobbies(prompt);
-            setFilteredLobbies(searchResult.recommendations.map(r => ({
-                ...r,
-                startTime: new Date(),
-                endTime: new Date(),
-            }))); // Map API result to local type, dates are mock
+            setFilteredLobbies(searchResult.recommendations);
             if (searchResult.recommendations.length === 0) {
                  toast({
                     title: "Ничего не найдено",

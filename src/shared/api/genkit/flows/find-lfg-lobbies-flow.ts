@@ -26,13 +26,15 @@ const findLobbiesTool = ai.defineTool(
   },
   async (query) => {
     const lowercasedQuery = query.toLowerCase();
+    const now = new Date();
     // In a real app, this would be a more sophisticated search (e.g., semantic search).
     return initialLfgLobbies
       .filter(lobby =>
-          lobby.sport.toLowerCase().includes(lowercasedQuery) ||
-          lobby.location.toLowerCase().includes(lowercasedQuery) ||
-          lobby.comment.toLowerCase().includes(lowercasedQuery) ||
-          lobby.time.toLowerCase().includes(lowercasedQuery)
+          (
+            lobby.sport.toLowerCase().includes(lowercasedQuery) ||
+            lobby.location.toLowerCase().includes(lowercasedQuery) ||
+            lobby.comment.toLowerCase().includes(lowercasedQuery)
+          ) && lobby.endTime > now
       )
       .slice(0, 10); // Return up to 10 for the LLM to reason over
   }
