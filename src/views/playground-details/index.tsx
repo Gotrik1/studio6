@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, Wrench, CheckCircle, AlertTriangle, MessageSquare, Star, Users, Calendar } from 'lucide-react';
+import { MapPin, CheckCircle, AlertTriangle, MessageSquare, Star, Users, Calendar, Wrench } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
@@ -20,15 +20,18 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
 import { useSession } from '@/shared/lib/session/client';
-
+import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
+import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
+import { playgroundSchedule, type PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const [playground, setPlayground] = useState(initialPlayground);
+    const [playground] = useState(initialPlayground);
+    const [schedule, setSchedule] = useState(playgroundSchedule.filter(s => s.playgroundId === playground.id));
+    const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [conditionReport, setConditionReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
-    const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
 
 
@@ -65,7 +68,6 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
             photoHint: 'user check-in photo',
         };
         setActivities(prev => [newActivity, ...prev]);
-        setPlayground(prev => ({...prev, checkIns: prev.checkIns + 1}));
         toast({
             title: "Вы отметились!",
             description: `Вы получили 10 PD за чекин на площадке "${playground.name}".`
@@ -110,15 +112,19 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                 </div>
 
                 <Tabs defaultValue="overview">
-                    <TabsList className="grid w-full grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
                         <TabsTrigger value="overview">Обзор</TabsTrigger>
+                        <TabsTrigger value="schedule"><Calendar className="mr-2 h-4 w-4"/>Расписание</TabsTrigger>
                         <TabsTrigger value="activity">Активность</TabsTrigger>
-                        <TabsTrigger value="leaderboard">Лидеры</TabsTrigger>
-                        <TabsTrigger value="media">Медиа</TabsTrigger>
+                        <TabsTrigger value="leaderboard"><Users className="mr-2 h-4 w-4"/>Лидеры</TabsTrigger>
+                        <TabsTrigger value="reviews"><MessageSquare className="mr-2 h-4 w-4"/>Отзывы</TabsTrigger>
                         <TabsTrigger value="condition"><Wrench className="mr-2 h-4 w-4"/>Состояние</TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="mt-4">
                         <PlaygroundOverviewTab playground={playground} />
+                    </TabsContent>
+                    <TabsContent value="schedule" className="mt-4">
+                         <PlaygroundScheduleTab playground={playground} initialSchedule={schedule} setSchedule={setSchedule} />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-4">
                         <PlaygroundActivityTab activities={activities} />
@@ -126,8 +132,8 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                     <TabsContent value="leaderboard" className="mt-4">
                         <PlaygroundLeaderboardTab />
                     </TabsContent>
-                    <TabsContent value="media" className="mt-4">
-                        <PlaygroundMediaTab />
+                     <TabsContent value="reviews" className="mt-4">
+                        <PlaygroundReviewsTab playground={playground} />
                     </TabsContent>
                      <TabsContent value="condition" className="mt-4">
                         <PlaygroundConditionStatus
@@ -137,7 +143,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                     </TabsContent>
                 </Tabs>
             </div>
-             <ReportPlaygroundIssueDialog
+            <ReportPlaygroundIssueDialog
                 isOpen={isReportIssueOpen}
                 onOpenChange={setIsReportIssueOpen}
                 playgroundName={playground.name}

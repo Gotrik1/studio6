@@ -12,6 +12,7 @@ import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 import { KingOfTheCourtWidget } from '@/widgets/playground-home-team';
 import { Avatar, AvatarImage, AvatarFallback } from '@/shared/ui/avatar';
+import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
 
 
 interface PlaygroundOverviewTabProps {
@@ -36,6 +37,9 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
             </div>
             <div className="lg:col-span-1 space-y-6">
                  <KingOfTheCourtWidget playgroundId={playground.id} />
+                 {playground.type === 'Воркаут' && (
+                    <PlaygroundWorkoutGenerator equipment={playground.features} />
+                )}
                 <Card>
                    <CardHeader><CardTitle>Основная информация</CardTitle></CardHeader>
                    <CardContent className="space-y-3 text-sm">
