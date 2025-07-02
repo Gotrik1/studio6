@@ -13,6 +13,20 @@ interface KingOfTheCourtWidgetProps {
     playgroundId: string;
 }
 
+const getWinsText = (count: number): string => {
+    const titles = ['победа', 'победы', 'побед'];
+    const cases = [2, 0, 1, 1, 1, 2];
+    const num = Math.abs(count);
+
+    if (num % 100 > 4 && num % 100 < 20) {
+        return titles[2];
+    }
+    if (num % 10 > 4) {
+        return titles[2];
+    }
+    return titles[cases[num % 10]];
+};
+
 export function KingOfTheCourtWidget({ playgroundId }: KingOfTheCourtWidgetProps) {
     const homeTeamData = useMemo(() => getKingOfTheCourt(playgroundId), [playgroundId]);
 
@@ -30,6 +44,8 @@ export function KingOfTheCourtWidget({ playgroundId }: KingOfTheCourtWidgetProps
             </Card>
         );
     }
+    
+    const winsText = `${homeTeamData.wins} ${getWinsText(homeTeamData.wins)} на этой площадке`;
 
     return (
         <Card className="bg-amber-500/5 border-amber-500/30">
@@ -48,7 +64,7 @@ export function KingOfTheCourtWidget({ playgroundId }: KingOfTheCourtWidgetProps
                     <Link href={`/teams/${homeTeamData.slug}`} className="block">
                         <p className="text-xl font-bold hover:underline">{homeTeamData.name}</p>
                     </Link>
-                    <p className="text-muted-foreground">{homeTeamData.wins} побед на этой площадке</p>
+                    <p className="text-muted-foreground">{winsText}</p>
                 </div>
             </CardContent>
             <CardFooter>
