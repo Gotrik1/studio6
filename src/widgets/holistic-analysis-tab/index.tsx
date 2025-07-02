@@ -76,7 +76,7 @@ export function HolisticAnalysisTab() {
                         <div className="space-y-4">
                            <h3 className="font-semibold text-lg flex items-center gap-2"><LinkIcon className="text-primary"/>Выявленные корреляции</h3>
                            {analysisResult.correlations.map((item, i) => (
-                               <Card key={i} className="bg-muted/50">
+                               <Card key={i} className="bg-muted/50 shadow-none">
                                    <CardHeader className="pb-2">
                                        <CardTitle className="text-base flex items-center gap-2">
                                            <TrendingUp className="h-5 w-5"/> {item.observation}

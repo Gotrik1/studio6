@@ -26,7 +26,7 @@ function AiRecommendedCoachCard({ coach, reasoning }: { coach: Coach, reasoning:
     };
 
     return (
-        <Card className="bg-muted/30">
+        <Card className="bg-muted/30 shadow-none">
             <CardHeader className="flex-row items-center gap-4">
                 <Avatar className="h-16 w-16 border">
                     <AvatarImage src={coach.avatar} alt={coach.name} data-ai-hint={coach.avatarHint}/>

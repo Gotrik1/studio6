@@ -36,26 +36,33 @@ export function AiNewsDigest() {
     }, []);
 
     if (isLoading) {
-        return <Skeleton className="w-full h-52" />;
+        return <Skeleton className="w-full h-[320px]" />;
     }
 
     if (error) {
         return (
-            <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Ошибка</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-                <div className="mt-4">
-                    <Button variant="outline" size="sm" onClick={handleFetchNews}>Попробовать снова</Button>
-                </div>
-            </Alert>
+            <Card className="shadow-none">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><Bot /> AI-Дайджест</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Ошибка</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                        <div className="mt-4">
+                            <Button variant="outline" size="sm" onClick={handleFetchNews}>Попробовать снова</Button>
+                        </div>
+                    </Alert>
+                </CardContent>
+            </Card>
         );
     }
     
     if (!data) return null;
 
     return (
-        <Card className="border-primary/20 bg-primary/5">
+        <Card className="border-primary/20 bg-primary/5 shadow-none">
             <CardHeader className="flex-row items-start justify-between">
                 <div>
                     <CardTitle className="flex items-center gap-2">

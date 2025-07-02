@@ -75,7 +75,7 @@ const MatchResultPost = ({ item }: { item: MatchResultFeedItem }) => (
 );
 
 const AchievementPost = ({ item }: { item: AchievementFeedItem }) => (
-    <Card className="bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-amber-950/20 dark:to-purple-950/20">
+    <Card className="bg-gradient-to-br from-amber-50/50 to-purple-50/50 dark:from-amber-950/20 dark:to-purple-950/20 shadow-none">
         <FeedItemHeader user={item.user} timestamp={item.timestamp} icon={Award} />
         <CardContent className="p-4 pt-0 text-center">
             <Award className="h-12 w-12 text-amber-500 mx-auto mb-2"/>
@@ -90,9 +90,9 @@ const AchievementPost = ({ item }: { item: AchievementFeedItem }) => (
 
 const FeedSkeleton = () => (
     <>
-        <Skeleton className="h-24 w-full" />
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-[124px] w-full" />
+        <Skeleton className="h-[218px] w-full" />
+        <Skeleton className="h-[188px] w-full" />
     </>
 );
 

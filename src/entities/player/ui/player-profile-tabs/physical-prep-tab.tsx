@@ -53,7 +53,7 @@ export function PhysicalPrepTab() {
                     </Card>
                 </div>
                 
-                <Card className="border-primary/20 bg-primary/5">
+                <Card className="border-primary/20 bg-primary/5 shadow-none">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><BrainCircuit className="text-primary"/> AI-Проверка техники</CardTitle>
                         <CardDescription>Загрузите видео выполнения упражнения, чтобы получить детальный разбор вашей техники от ИИ.</CardDescription>

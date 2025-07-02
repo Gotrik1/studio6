@@ -115,7 +115,7 @@ export function AiCoachTab() {
                             </div>
                         </div>
                         
-                        <Card className="bg-muted/50">
+                        <Card className="bg-muted/50 shadow-none">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary"/> Персональный план на неделю</CardTitle>
                             </CardHeader>
