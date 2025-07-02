@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -48,7 +49,7 @@ interface AppLayoutProps {
 }
 
 const AppFooter = () => (
-    <footer className="hidden md:block bg-background text-sm border-t">
+    <footer className="hidden md:block bg-background text-sm border-t border-background">
         <div className="container mx-auto px-4 sm:px-6 py-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="space-y-4">
@@ -122,6 +123,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     ];
     
     const systemNavItems = [
+        { href: "/administration", icon: ShieldCheck, label: "Админка", role: 'Администратор' },
         { href: "/support", icon: LifeBuoy, label: "Поддержка" },
         { href: "/settings", icon: Settings, label: "Настройки" },
     ];
@@ -130,7 +132,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     return (
         <>
             <Sidebar>
-                <SidebarContent className="p-2">
+                <SidebarContent className="p-2 flex flex-col">
                     <SidebarHeader>
                         <Link href="/" className="flex items-center gap-2">
                             <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
@@ -166,27 +168,23 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                             )}
                         </SidebarMenu>
                     </div>
-                    <div className="pt-2">
+                    <div className="pt-2 mt-auto">
                         <SidebarSeparator className="my-1" />
-                        {user.role === 'Администратор' && (
-                            <SidebarMenuItem>
-                                <SidebarMenuButton asChild tooltip="Админка" variant={isActive('/administration') ? 'active' : 'default'}>
-                                    <Link href="/administration"><ShieldCheck />{state === 'expanded' && <span>Админка</span>}</Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        )}
-                        {systemNavItems.map(item => (
-                            <SidebarMenuItem key={item.href}>
-                                <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
-                                    <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        ))}
+                        {systemNavItems.map(item => {
+                            if (item.role && item.role !== user.role) return null;
+                            return (
+                                <SidebarMenuItem key={item.href}>
+                                    <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
+                                        <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            )
+                        })}
                     </div>
                 </SidebarContent>
             </Sidebar>
             <SidebarInset className="flex flex-col min-h-screen">
-                <header className="sticky top-0 z-10 flex h-14 items-center gap-4 bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
+                <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b border-background bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
                     <SidebarTrigger className="flex md:hidden" />
                     <div className="flex-1">
                         <Button variant="outline" className="w-full justify-start text-muted-foreground sm:w-auto" onClick={() => setIsSearchOpen(true)}>
@@ -202,7 +200,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                     <ThemeToggle />
                     <UserNav user={user} />
                 </header>
-                <main className="flex-1 overflow-auto p-4 pb-20 sm:p-6 md:pb-6">{children}</main>
+                <main className="flex-1 overflow-auto p-4 sm:p-6 md:pb-6">{children}</main>
                 <AppFooter />
                 <BottomNav />
             </SidebarInset>
