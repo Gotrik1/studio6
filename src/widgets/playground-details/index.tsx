@@ -1,12 +1,11 @@
 
-
 'use client';
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, Check, Star, User, Home, Send, Calendar, Clock, PlusCircle, AlertTriangle } from 'lucide-react';
+import { MapPin, Check, Star, User, Home, Calendar, PlusCircle, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -31,11 +30,20 @@ import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
 import { AiPlaygroundChallenge } from '@/widgets/ai-playground-challenge';
 import { PlaygroundLeaderboard } from '@/widgets/playground-leaderboard';
 import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
+import { PlaygroundSchedule } from '@/widgets/playground-schedule';
+import { PlaygroundActivityFeed } from '@/widgets/playground-activity-feed';
+import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
+import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
+import { useSession } from '@/shared/lib/session/client';
 
-export function PlaygroundDetails({ playground }: { playground: Playground }) {
+export function PlaygroundDetails({ playground: initialPlayground }: { playground: Playground }) {
+    const { user } = useSession();
     const { toast } = useToast();
+    const [playground, setPlayground] = useState(initialPlayground);
     const [schedule, setSchedule] = useState(playgroundSchedule.filter(s => s.playgroundId === playground.id));
+    const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
+    const [isCheckInOpen, setIsCheckInOpen] = useState(false);
 
     const handleSetHome = () => {
         toast({
@@ -59,6 +67,18 @@ export function PlaygroundDetails({ playground }: { playground: Playground }) {
             endTime,
         };
         setSchedule(prev => [...prev, newBooking].sort((a,b) => a.startTime.getTime() - b.startTime.getTime()));
+    };
+
+    const handleCheckIn = (comment: string) => {
+        if (!user) return;
+        const newActivity: PlaygroundActivity = {
+            id: `act-${Date.now()}`,
+            user: { name: user.name, avatar: user.avatar },
+            comment,
+            timestamp: 'Только что',
+        };
+        setActivities(prev => [newActivity, ...prev]);
+        setPlayground(prev => ({...prev, checkIns: prev.checkIns + 1}));
     };
 
     return (
@@ -89,44 +109,14 @@ export function PlaygroundDetails({ playground }: { playground: Playground }) {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 space-y-6">
                         <AiPlaygroundSummary playground={playground} />
-                        <Card>
-                            <CardHeader className="flex-row items-center justify-between">
-                                 <div>
-                                    <CardTitle>Расписание на сегодня</CardTitle>
-                                    <CardDescription>Кто планирует играть здесь в ближайшее время.</CardDescription>
-                                </div>
-                                <Button onClick={() => setIsPlanGameOpen(true)}>
-                                    <PlusCircle className="mr-2 h-4 w-4"/>
-                                    Запланировать игру
-                                </Button>
-                            </CardHeader>
-                            <CardContent>
-                                {schedule.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {schedule.map(booking => (
-                                            <div key={booking.id} className="flex items-center gap-4 rounded-md border p-3">
-                                                <div className="flex flex-col items-center w-16 text-center">
-                                                    <p className="font-bold">{format(booking.startTime, 'HH:mm')}</p>
-                                                    <p className="text-xs text-muted-foreground">до {format(booking.endTime, 'HH:mm')}</p>
-                                                </div>
-                                                <div className="h-10 w-px bg-border" />
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="h-8 w-8"><AvatarImage src={booking.team.avatar} alt={booking.team.name} data-ai-hint={booking.team.avatarHint} /><AvatarFallback>{booking.team.name.charAt(0)}</AvatarFallback></Avatar>
-                                                    <p className="font-medium text-sm">{booking.team.name}</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-8 text-muted-foreground">
-                                        <p>На сегодня игр не запланировано.</p>
-                                        <p className="text-sm">Будьте первыми!</p>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
+                        <PlaygroundSchedule schedule={schedule} onPlanClick={() => setIsPlanGameOpen(true)} />
+                        <PlaygroundActivityFeed activities={activities} />
                     </div>
                     <div className="space-y-6">
+                        <Button className="w-full" size="lg" onClick={() => setIsCheckInOpen(true)}>
+                            <CheckCircle className="mr-2 h-5 w-5" />
+                            Отметиться (чекин)
+                        </Button>
                         <AiPlaygroundChallenge playground={playground} />
                         <AiPlaygroundLore playground={playground} />
                         <PlaygroundLeaderboard />
@@ -178,6 +168,12 @@ export function PlaygroundDetails({ playground }: { playground: Playground }) {
                 onOpenChange={setIsPlanGameOpen}
                 playgroundName={playground.name}
                 onPlan={handlePlanGame}
+            />
+            <PlaygroundCheckInDialog
+                isOpen={isCheckInOpen}
+                onOpenChange={setIsCheckInOpen}
+                playgroundName={playground.name}
+                onCheckIn={handleCheckIn}
             />
         </>
     );
