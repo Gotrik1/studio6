@@ -2,18 +2,17 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import Link from 'next/link';
 import { Home, Star, User } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/shared/ui/alert-dialog";
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
 import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
 import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
-import { teams } from '@/shared/lib/mock-data/teams';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import { PlaygroundHomeTeam } from '@/widgets/playground-home-team';
+import { Avatar, AvatarImage, AvatarFallback } from '@/shared/ui/avatar';
+
 
 interface PlaygroundOverviewTabProps {
     playground: Playground;
@@ -21,7 +20,6 @@ interface PlaygroundOverviewTabProps {
 
 export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps) {
     const { toast } = useToast();
-    const homeTeams = teams.filter(team => team.homePlaygroundId === playground.id);
 
     const handleSetHome = () => {
         toast({
@@ -37,32 +35,7 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
                 <AiPlaygroundLore playground={playground} />
             </div>
             <div className="lg:col-span-1 space-y-6">
-                 {homeTeams.length > 0 && (
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><Home className="h-5 w-5 text-primary" />Хозяева площадки</CardTitle>
-                        </CardHeader>
-                        <CardContent className="flex flex-wrap gap-4">
-                            {homeTeams.map(team => (
-                                <Link key={team.slug} href={`/teams/${team.slug}`}>
-                                    <TooltipProvider>
-                                        <Tooltip>
-                                            <TooltipTrigger asChild>
-                                                <Avatar className="h-12 w-12 border-2 hover:border-primary">
-                                                    <AvatarImage src={team.logo} data-ai-hint={team.dataAiHint} />
-                                                    <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
-                                                </Avatar>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                                <p>{team.name}</p>
-                                            </TooltipContent>
-                                        </Tooltip>
-                                    </TooltipProvider>
-                                </Link>
-                            ))}
-                        </CardContent>
-                    </Card>
-                )}
+                 <PlaygroundHomeTeam playgroundId={playground.id} />
                 <Card>
                    <CardHeader><CardTitle>Основная информация</CardTitle></CardHeader>
                    <CardContent className="space-y-3 text-sm">
@@ -80,10 +53,7 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
                  <Card>
                    <CardHeader><CardTitle>Создатель</CardTitle></CardHeader>
                    <CardContent className="flex items-center gap-3">
-                        <Avatar>
-                            <AvatarImage src={playground.creator.avatar} />
-                            <AvatarFallback><User className="h-5 w-5"/></AvatarFallback>
-                        </Avatar>
+                       <Avatar><AvatarImage src={playground.creator.avatar} /><AvatarFallback><User className="h-5 w-5"/></AvatarFallback></Avatar>
                        <p className="font-semibold">{playground.creator.name}</p>
                    </CardContent>
                  </Card>

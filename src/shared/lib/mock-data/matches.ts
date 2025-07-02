@@ -1,4 +1,5 @@
 
+
 export const matchesList = [
     {
         id: '1',
@@ -9,7 +10,8 @@ export const matchesList = [
         game: 'Valorant',
         date: '26 Июля 2024',
         status: 'Завершен',
-        href: '/matches/123'
+        href: '/matches/123',
+        playgroundId: null,
     },
     {
         id: '2',
@@ -20,29 +22,32 @@ export const matchesList = [
         game: 'Valorant',
         date: '29 Июля 2024',
         status: 'Идет',
-        href: '/matches/123'
+        href: '/matches/123',
+        playgroundId: null,
     },
     {
         id: '3',
         team1: { name: 'Соколы', logo: 'https://placehold.co/100x100.png', logoHint: 'falcon logo' },
         team2: { name: 'Торпедо', logo: 'https://placehold.co/100x100.png', logoHint: 'torpedo logo' },
-        score: 'VS',
+        score: '2-2',
         tournament: 'Moscow Open',
         game: 'Футбол',
         date: '1 Августа 2024',
-        status: 'Предстоящий',
-        href: '/matches/123'
+        status: 'Завершен',
+        href: '/matches/123',
+        playgroundId: 'playground-1',
     },
     {
         id: '4',
         team1: { name: 'Дворовые Атлеты', logo: 'https://placehold.co/100x100.png', logoHint: 'athletic team logo' },
         team2: { name: 'Вымпел', logo: 'https://placehold.co/100x100.png', logoHint: 'pennant logo' },
-        score: 'VS',
+        score: '5-2',
         tournament: 'Кубок Города',
         game: 'Футбол',
         date: '3 Августа 2024',
-        status: 'Предстоящий',
-        href: '/matches/123'
+        status: 'Завершен',
+        href: '/matches/123',
+        playgroundId: 'playground-1',
     },
      {
         id: '5',
@@ -53,8 +58,45 @@ export const matchesList = [
         game: 'Valorant',
         date: '5 Августа 2024',
         status: 'Предстоящий',
-        href: '/matches/123'
+        href: '/matches/123',
+        playgroundId: null,
     },
+    {
+        id: '6',
+        team1: { name: 'Дворовые Атлеты', logo: 'https://placehold.co/100x100.png', logoHint: 'athletic team logo' },
+        team2: { name: 'Соколы', logo: 'https://placehold.co/100x100.png', logoHint: 'falcon logo' },
+        score: '4-1',
+        tournament: 'Товарищеский матч',
+        game: 'Футбол',
+        date: '4 Августа 2024',
+        status: 'Завершен',
+        href: '/matches/123',
+        playgroundId: 'playground-1',
+    },
+    {
+        id: '7',
+        team1: { name: 'Дворовые Атлеты', logo: 'https://placehold.co/100x100.png', logoHint: 'athletic team logo' },
+        team2: { name: 'Торпедо', logo: 'https://placehold.co/100x100.png', logoHint: 'torpedo logo' },
+        score: '2-3',
+        tournament: 'Товарищеский матч',
+        game: 'Футбол',
+        date: '5 Августа 2024',
+        status: 'Завершен',
+        href: '/matches/123',
+        playgroundId: 'playground-1',
+    },
+    {
+        id: '8',
+        team1: { name: 'Соколы', logo: 'https://placehold.co/100x100.png', logoHint: 'falcon logo' },
+        team2: { name: 'Вымпел', logo: 'https://placehold.co/100x100.png', logoHint: 'pennant logo' },
+        score: '21-18',
+        tournament: 'Товарищеский матч',
+        game: 'Стритбол',
+        date: '6 Августа 2024',
+        status: 'Завершен',
+        href: '/matches/123',
+        playgroundId: 'playground-2',
+    }
 ];
 
-export type Match = (typeof matchesList)[0];
+export type Match = (typeof matchesList)[0] & { playgroundId?: string | null };
