@@ -15,6 +15,17 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { PlanGameDialog } from '@/widgets/plan-game-dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/shared/ui/alert-dialog";
 
 export function PlaygroundDetails({ playground }: { playground: Playground }) {
     const { toast } = useToast();
@@ -145,7 +156,23 @@ export function PlaygroundDetails({ playground }: { playground: Playground }) {
                            </CardContent>
                          </Card>
                          <div className="space-y-2">
-                           <Button className="w-full" onClick={handleSetHome}><Home className="mr-2 h-4 w-4"/> Сделать домашней</Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button className="w-full"><Home className="mr-2 h-4 w-4"/> Сделать домашней</Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                    <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Вы собираетесь отметить эту площадку как вашу &quot;домашнюю&quot;. Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
+                                    </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                    <AlertDialogCancel>Отмена</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleSetHome}>Подтвердить</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                          </div>
                     </div>
                 </div>
