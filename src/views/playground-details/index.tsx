@@ -27,7 +27,7 @@ import { PlaygroundConditionStatus } from '@/widgets/playground-condition-status
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
 
 
-export function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
+export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
     const { addTransaction } = usePDEconomy();
