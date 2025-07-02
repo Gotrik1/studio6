@@ -28,7 +28,7 @@ export function PlayerProfilePage() {
     // In a real scenario, this data might come from a specific user ID lookup.
     return <PlayerClient 
         user={examplePlayerUser} 
-        isCurrentUser={false}
+        isCurrentUser={true}
         achievements={achievements}
         teams={teams}
         recentMatches={recentMatches}
