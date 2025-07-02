@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -117,7 +118,7 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, lastPerformance, person
     const isSuperset = exercise.isSupersetWithPrevious;
 
     return (
-        <div className={cn("mb-4", isSuperset && "pl-4 border-l-2 border-primary/20 ml-2 pt-2")}>
+        <div className={cn("mb-4", isSuperset && "pl-4 border-l-2 border-dashed border-primary/20 ml-2 pt-2")}>
             <div className="flex items-baseline gap-2 mb-2">
                 <h4 className="font-semibold flex items-center gap-2">
                     {isSuperset && <Link2 className="h-4 w-4 text-primary/50" />}
