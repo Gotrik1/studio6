@@ -1,3 +1,4 @@
+
 import { PlaygroundDetails } from '@/widgets/playground-details';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 

@@ -1,3 +1,4 @@
+
 import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 import { PlaygroundDetailsPage } from '@/views/playground-details';
 import { notFound } from 'next/navigation';
