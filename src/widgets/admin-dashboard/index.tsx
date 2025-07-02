@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
@@ -28,6 +29,8 @@ const AdminSectionCard = ({ title, description, href, icon: Icon }: AdminSection
 );
 
 export function AdminDashboard() {
+    const demoProfileCards = profileCards.map(card => ({...card, href: `/profiles/${card.href.split('/').pop()}/1`}));
+    
     return (
         <div className="space-y-8">
             <div className="space-y-2 opacity-0 animate-fade-in-up">
@@ -45,7 +48,7 @@ export function AdminDashboard() {
             <section className="opacity-0 animate-fade-in-up [animation-delay:400ms]">
                 <h2 className="font-headline text-2xl font-semibold mb-4">Демонстрация профилей ролей</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {profileCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
+                    {demoProfileCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
                 </div>
             </section>
             

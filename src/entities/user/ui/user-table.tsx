@@ -22,6 +22,24 @@ interface UserTableProps {
     onPdAction: (user: User, action: 'credit' | 'debit') => void;
 }
 
+const roleToPathMap: {[key: string]: string} = {
+      'Игрок': 'player',
+      'Капитан': 'player',
+      'Администратор': 'administrator',
+      'Тренер': 'coach',
+      'Судья': 'judge',
+      'Менеджер': 'manager',
+      'Модератор': 'moderator',
+      'Организатор': 'organizer',
+      'Спонсор': 'sponsor',
+      'Болельщик': 'fan',
+};
+
+const getProfileUrl = (user: User) => {
+    const pathSegment = roleToPathMap[user.role] || 'player';
+    return `/profiles/${pathSegment}/${user.id}`;
+};
+
 export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onEditUser, onPdAction }) => {
     
     if (users.length === 0) {
@@ -75,7 +93,7 @@ export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onE
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuItem asChild>
-                                                <Link href={user.profileUrl}>Просмотр профиля</Link>
+                                                <Link href={getProfileUrl(user)}>Просмотр профиля</Link>
                                             </DropdownMenuItem>
                                              <DropdownMenuItem onClick={() => onEditUser(user)}>
                                                 <Pencil className="mr-2 h-4 w-4"/>
