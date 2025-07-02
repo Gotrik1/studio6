@@ -1,3 +1,4 @@
+
 export const goalDynamicsData = [
   { month: 'Март', ratio: 0.5 },
   { month: 'Апрель', ratio: 0.7 },

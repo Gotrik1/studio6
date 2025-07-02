@@ -1,3 +1,4 @@
+
 export const winrateByStadiumData = [
   { stadium: 'Лужники', winrate: 68 },
   { stadium: 'Центральный', winrate: 75 },
