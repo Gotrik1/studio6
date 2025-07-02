@@ -18,7 +18,6 @@ import { cn } from '@/shared/lib/utils';
 import { useState } from 'react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
-import { ScrollArea } from '@/shared/ui/scroll-area';
 import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
 import { ReportPlayerDialog } from '@/features/report-player-dialog';
 import Image from "next/image";
@@ -232,8 +231,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
 
         <div className="p-4 md:p-6">
             <Tabs defaultValue="overview">
-            <ScrollArea className="w-full whitespace-nowrap rounded-md">
-                <TabsList className="inline-flex">
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8">
                 <TabsTrigger value="overview"><Activity className="mr-2 h-4 w-4"/>Обзор</TabsTrigger>
                 <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
                 <TabsTrigger value="physical-prep"><HeartPulse className="mr-2 h-4 w-4" />Физ. подготовка</TabsTrigger>
@@ -243,7 +241,6 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
                 <TabsTrigger value="teams"><Users className="mr-2 h-4 w-4"/>Команды</TabsTrigger>
                 <TabsTrigger value="gallery"><GalleryHorizontal className="mr-2 h-4 w-4"/>Галерея</TabsTrigger>
                 </TabsList>
-            </ScrollArea>
 
             <TabsContent value="overview" className="mt-4">
                 <OverviewTab recentMatches={recentMatches} isCurrentUser={isCurrentUser} />
