@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -6,14 +5,14 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { Loader2, PlusCircle, UploadCloud } from 'lucide-react';
+import { Loader2, PlusCircle, UploadCloud, MapPin } from 'lucide-react';
 import { useSession } from '@/shared/lib/session/client';
 import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 
@@ -98,8 +97,25 @@ export function PlaygroundCreateForm() {
                             <FormItem><FormLabel>Название</FormLabel><FormControl><Input placeholder="Например, Коробка за домом" {...field} /></FormControl><FormMessage /></FormItem>
                         )}/>
                         <FormField name="address" control={form.control} render={({field}) => (
-                            <FormItem><FormLabel>Адрес</FormLabel><FormControl><Input placeholder="Город, улица, дом" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem>
+                                <FormLabel>Адрес</FormLabel>
+                                <FormControl><Input placeholder="Город, улица, дом" {...field} /></FormControl>
+                                <FormDescription>Начните вводить адрес, а затем уточните положение на карте.</FormDescription>
+                                <FormMessage />
+                            </FormItem>
                         )}/>
+                        
+                        <div className="space-y-2">
+                             <FormLabel>Расположение на карте</FormLabel>
+                             <div className="h-48 bg-muted rounded-lg flex items-center justify-center text-muted-foreground border">
+                                 <p className="text-sm">Интерактивная карта появится здесь</p>
+                             </div>
+                             <Button type="button" variant="outline" className="w-full" onClick={() => toast({ title: "Карта будет здесь!", description: "В продакшен-версии здесь будет интерактивная карта для установки метки." })}>
+                                 <MapPin className="mr-2 h-4 w-4" />
+                                 Отметить на карте
+                             </Button>
+                        </div>
+                        
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <FormField name="type" control={form.control} render={({field}) => (
                                 <FormItem><FormLabel>Тип площадки</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите тип"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Футбол">Футбол</SelectItem><SelectItem value="Баскетбол">Баскетбол</SelectItem><SelectItem value="Стритбол">Стритбол</SelectItem><SelectItem value="Воркаут">Воркаут</SelectItem><SelectItem value="Универсальная">Универсальная</SelectItem></SelectContent></Select><FormMessage /></FormItem>
