@@ -18,29 +18,29 @@ html {
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 220 13% 90%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: var(--accent);
-    --primary-foreground: var(--accent-foreground);
-    --secondary: 0 0% 96.1%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 220 13% 96%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 0 0% 96.1%;
+    --muted: 220 13% 96%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217 91% 60%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 145 63% 59%;
+    --accent-foreground: 145 63% 5%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-    --border: 0 0% 100%;
-    --input: 0 0% 89.8%;
-    --ring: var(--accent);
+    --border: 220 13% 80%;
+    --input: 220 13% 85%;
+    --ring: var(--primary);
     
     /* Chart colors */
-    --chart-1: var(--accent);
-    --chart-2: 142 71% 59%;
+    --chart-1: 217 91% 60%; /* Primary Blue */
+    --chart-2: 145 63% 59%; /* Accent Green */
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
@@ -53,23 +53,23 @@ html {
     --card-foreground: 210 40% 98%;
     --popover: 220 60% 15%;
     --popover-foreground: 220 60% 100%;
-    --primary: var(--accent);
-    --primary-foreground: var(--accent-foreground);
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
     --secondary: 220 60% 15%;
     --secondary-foreground: 210 40% 98%;
     --muted: 220 60% 20%;
     --muted-foreground: 215 20% 65%;
-    --accent: 217 91% 60%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 145 70% 55%;
+    --accent-foreground: 145 70% 95%;
     --destructive: 0 63% 31%;
     --destructive-foreground: 210 40% 98%;
     --border: 220 60% 15%;
     --input: 220 60% 25%;
-    --ring: var(--accent);
+    --ring: var(--primary);
 
      /* Chart colors */
-    --chart-1: var(--accent);
-    --chart-2: 142 70% 65%;
+    --chart-1: 217 91% 60%; /* Primary Blue */
+    --chart-2: 145 70% 55%; /* Accent Green */
     --chart-3: 30 70% 60%;
     --chart-4: 280 60% 65%;
     --chart-5: 340 70% 60%;
