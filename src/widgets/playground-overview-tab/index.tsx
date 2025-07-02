@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -10,7 +9,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
 import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { PlaygroundHomeTeam } from '@/widgets/playground-home-team';
+import { KingOfTheCourtWidget } from '@/widgets/playground-home-team';
 import { Avatar, AvatarImage, AvatarFallback } from '@/shared/ui/avatar';
 
 
@@ -35,7 +34,7 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
                 <AiPlaygroundLore playground={playground} />
             </div>
             <div className="lg:col-span-1 space-y-6">
-                 <PlaygroundHomeTeam playgroundId={playground.id} />
+                 <KingOfTheCourtWidget playgroundId={playground.id} />
                 <Card>
                    <CardHeader><CardTitle>Основная информация</CardTitle></CardHeader>
                    <CardContent className="space-y-3 text-sm">

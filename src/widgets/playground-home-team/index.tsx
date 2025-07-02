@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -10,11 +9,11 @@ import { matchesList } from '@/shared/lib/mock-data/matches';
 import { teams } from '@/shared/lib/mock-data/teams';
 import Link from 'next/link';
 
-interface PlaygroundHomeTeamProps {
+interface KingOfTheCourtWidgetProps {
     playgroundId: string;
 }
 
-export function PlaygroundHomeTeam({ playgroundId }: PlaygroundHomeTeamProps) {
+export function KingOfTheCourtWidget({ playgroundId }: KingOfTheCourtWidgetProps) {
     const homeTeamData = useMemo(() => {
         const playgroundMatches = matchesList.filter(
             (match) => match.status === 'Завершен' && match.playgroundId === playgroundId
@@ -27,7 +26,9 @@ export function PlaygroundHomeTeam({ playgroundId }: PlaygroundHomeTeamProps) {
         const winsCount = new Map<string, number>();
 
         playgroundMatches.forEach(match => {
-            const scores = match.score.split('-').map(s => parseInt(s.trim()));
+            const scoreParts = match.score.split('-');
+            if (scoreParts.length < 2) return;
+            const scores = scoreParts.map(s => parseInt(s.trim()));
             if (scores.length !== 2 || isNaN(scores[0]) || isNaN(scores[1])) {
                 return;
             }

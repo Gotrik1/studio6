@@ -10,12 +10,22 @@ import { PlaygroundFinder } from '@/widgets/playground-finder';
 import { Input } from '@/shared/ui/input';
 import { Search } from 'lucide-react';
 import { Card, CardHeader } from '@/shared/ui/card';
+import { teams } from '@/shared/lib/mock-data/teams';
 
 const sportTypes = ['Все', 'Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная'];
 
 export function PlaygroundsListPage() {
     const [searchQuery, setSearchQuery] = useState('');
     const [sportFilter, setSportFilter] = useState('Все');
+
+    const kingTeamMapping = useMemo(() => {
+        return {
+            'playground-1': teams[0],
+            'playground-2': teams[1],
+        };
+    }, []);
+
+    const livePlaygrounds = useMemo(() => new Set(['playground-2']), []);
 
     const filteredPlaygrounds = useMemo(() => {
         return playgroundsList.filter(p => {
@@ -76,9 +86,18 @@ export function PlaygroundsListPage() {
                 </Card>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredPlaygrounds.map(playground => (
-                        <PlaygroundCard key={playground.id} playground={playground} />
-                    ))}
+                    {filteredPlaygrounds.map(playground => {
+                        const kingTeam = kingTeamMapping[playground.id as keyof typeof kingTeamMapping] || null;
+                        const isLive = livePlaygrounds.has(playground.id);
+                        return (
+                             <PlaygroundCard 
+                                key={playground.id} 
+                                playground={playground}
+                                kingTeam={kingTeam}
+                                isLive={isLive}
+                            />
+                        )
+                    })}
                 </div>
                  {filteredPlaygrounds.length === 0 && (
                     <div className="col-span-full text-center py-16 text-muted-foreground">
