@@ -2,33 +2,26 @@
 'use client';
 
 import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
-import { Target, Shield, Handshake, Footprints } from 'lucide-react';
-import { KdaChart } from '@/widgets/analytics-charts/kda-chart'; // Reusing for goals/match
-import { WinrateByMapChart } from '@/widgets/analytics-charts/winrate-by-map-chart'; // Reusing for winrate/stadium
-import { goalDynamicsData } from '@/shared/lib/mock-data/goal-dynamics';
-import { winrateByStadiumData } from '@/shared/lib/mock-data/winrate-by-stadium';
+import { Swords, Trophy, Shield, Flame } from 'lucide-react';
+import { WinLossChart } from '@/widgets/analytics-charts/win-loss-chart';
+import { winLossData } from '@/shared/lib/mock-data/player-stats';
 
 const playerStats = {
-    matches: 218,
-    winrate: 71.8,
-    goals: 152,
-    assists: 89,
-    tackles: 430,
-    passAccuracy: 85,
+    matches: winLossData.wins + winLossData.losses,
+    winrate: ((winLossData.wins / (winLossData.wins + winLossData.losses)) * 100).toFixed(1),
+    wins: winLossData.wins,
+    losses: winLossData.losses,
+    winStreak: 5,
 };
 
 
 export function StatsTab() {
-    // Adapt data for the charts
-    const goalChartData = goalDynamicsData.map(d => ({ month: d.month, kda: d.ratio }));
-    const stadiumWinrateData = winrateByStadiumData.map(d => ({ map: d.stadium, winrate: d.winrate }));
-
     return (
         <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                  <Card>
                     <CardHeader>
-                        <CardDescription>Матчи</CardDescription>
+                        <CardDescription>Всего матчей</CardDescription>
                         <CardTitle className="font-headline text-4xl">{playerStats.matches}</CardTitle>
                     </CardHeader>
                 </Card>
@@ -42,48 +35,31 @@ export function StatsTab() {
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 <Card>
                     <CardHeader>
-                        <CardDescription className="flex items-center gap-2"><Target className="h-4 w-4"/> Голы</CardDescription>
-                        <CardTitle className="font-headline text-3xl">{playerStats.goals}</CardTitle>
+                        <CardDescription className="flex items-center gap-2"><Trophy className="h-4 w-4"/> Победы</CardDescription>
+                        <CardTitle className="font-headline text-3xl">{playerStats.wins}</CardTitle>
                     </CardHeader>
                 </Card>
                 <Card>
                     <CardHeader>
-                        <CardDescription className="flex items-center gap-2"><Handshake className="h-4 w-4"/> Ассисты</CardDescription>
-                        <CardTitle className="font-headline text-3xl">{playerStats.assists}</CardTitle>
+                        <CardDescription className="flex items-center gap-2"><Shield className="h-4 w-4"/> Поражения</CardDescription>
+                        <CardTitle className="font-headline text-3xl">{playerStats.losses}</CardTitle>
                     </CardHeader>
                 </Card>
                  <Card>
                     <CardHeader>
-                        <CardDescription className="flex items-center gap-2"><Shield className="h-4 w-4"/> Отборы</CardDescription>
-                        <CardTitle className="font-headline text-3xl">{playerStats.tackles}</CardTitle>
+                        <CardDescription className="flex items-center gap-2"><Flame className="h-4 w-4"/> Победная серия</CardDescription>
+                        <CardTitle className="font-headline text-3xl">{playerStats.winStreak}</CardTitle>
                     </CardHeader>
                 </Card>
                  <Card>
                     <CardHeader>
-                        <CardDescription className="flex items-center gap-2"><Footprints className="h-4 w-4"/> Точность пасов</CardDescription>
-                        <CardTitle className="font-headline text-3xl">{playerStats.passAccuracy}%</CardTitle>
+                        <CardDescription className="flex items-center gap-2"><Swords className="h-4 w-4"/> KDA (Valorant)</CardDescription>
+                        <CardTitle className="font-headline text-3xl">1.25</CardTitle>
                     </CardHeader>
                 </Card>
             </div>
-             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Динамика голов за матч</CardTitle>
-                        <CardDescription>Среднее количество голов за матч в последние 5 месяцев.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <KdaChart data={goalChartData} />
-                    </CardContent>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle>Процент побед по стадионам</CardTitle>
-                        <CardDescription>Ваша эффективность на разных полях.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <WinrateByMapChart data={stadiumWinrateData} />
-                    </CardContent>
-                </Card>
+            <div className="grid grid-cols-1">
+                <WinLossChart data={winLossData} />
             </div>
         </div>
     );
