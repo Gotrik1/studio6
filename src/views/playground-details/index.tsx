@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, Wrench, CheckCircle, AlertTriangle, MessageSquare, Star, Users, Calendar } from 'lucide-react';
+import { MapPin, Wrench, CheckCircle, AlertTriangle, MessageSquare, Star, Users, Calendar, Trophy } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
@@ -19,15 +18,12 @@ import { PlaygroundConditionStatus } from '@/widgets/playground-condition-status
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
 import { PlaygroundWorkoutGenerator } from '@/widgets/playground-workout-generator';
 import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
-import { PlanGameDialog } from '@/widgets/plan-game-dialog';
+import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
 import { playgroundSchedule as initialSchedule, type PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
 import { useSession } from '@/shared/lib/session/client';
 import { useToast } from '@/shared/hooks/use-toast';
-import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
-import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
-
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
@@ -130,7 +126,7 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                         <TabsTrigger value="overview">Обзор</TabsTrigger>
                         <TabsTrigger value="schedule">Расписание</TabsTrigger>
                         <TabsTrigger value="activity">Активность</TabsTrigger>
-                        <TabsTrigger value="leaderboard">Лидеры</TabsTrigger>
+                        <TabsTrigger value="leaderboard"><Trophy className="mr-2 h-4 w-4"/>Лидеры</TabsTrigger>
                         <TabsTrigger value="reviews">Отзывы</TabsTrigger>
                         <TabsTrigger value="media">Медиа</TabsTrigger>
                         <TabsTrigger value="condition"><Wrench className="mr-2 h-4 w-4"/>Состояние</TabsTrigger>
