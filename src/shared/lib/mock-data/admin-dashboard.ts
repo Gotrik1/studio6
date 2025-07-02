@@ -21,7 +21,8 @@ import {
     FileText,
     HeartPulse,
     Server,
-    Map
+    Map,
+    FileSignature
 } from 'lucide-react';
 
 export const managementCards = [
@@ -58,8 +59,9 @@ export const contentCards = [
 export const systemCards = [
     { title: "Инструменты AI", description: "Демонстрация работы AI-агентов.", href: "/ai-analysis", icon: BrainCircuit },
     { title: "Readme проекта", description: "Обзор проекта, стек, возможности.", href: "/documents/project-readme", icon: FileText },
-    { title: "Архитектура", description: "Описание архитектуры FSD.", href: "/documents/architecture", icon: FolderKanban },
-    { title: "Backend Документация", description: "Тех. док по архитектуре бэкенда.", href: "/documents/backend-documentation", icon: Server },
+    { title: "Архитектура (Frontend)", description: "Описание архитектуры FSD.", href: "/documents/architecture", icon: FolderKanban },
+    { title: "Архитектура (Backend)", description: "Обзор архитектуры бэкенда.", href: "/documents/backend-documentation", icon: Server },
+    { title: "ADR: Выбор брокера", description: "Почему был выбран Kafka, а не RabbitMQ/NATS.", href: "/documents/adr/ADR-001-Message-Broker-Choice", icon: FileSignature },
     { title: "Демо темы", description: "Просмотр всех UI компонентов.", href: "/theme-demo", icon: Palette },
-    { title: "Карта сайта", description: "Обзор всех страниц приложения.", href: "/administration/sitemap", icon: Map },
+    { title: "Карта сайта", description: "Обзор всех страниц приложения.", href: "/administration/sitemap", icon: MapIcon },
 ];

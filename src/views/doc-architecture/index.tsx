@@ -48,8 +48,8 @@ export const config = {
 export function ArchitecturePage() {
     return (
         <div className="prose dark:prose-invert max-w-none opacity-0 animate-fade-in-up">
-            <h1>Архитектура Проекта &quot;ProDvor&quot; (Feature-Sliced Design)</h1>
-            <p className="lead">Этот документ является основным техническим руководством для разработчиков фронтенд-части платформы &quot;ProDvor&quot; и описывает внедренную архитектурную методологию **Feature-Sliced Design (FSD)**.</p>
+            <h1>Архитектура Проекта "ProDvor" (Feature-Sliced Design)</h1>
+            <p className="lead">Этот документ является основным техническим руководством для разработчиков фронтенд-части платформы "ProDvor" и описывает внедренную архитектурную методологию **Feature-Sliced Design (FSD)**.</p>
 
             <h2>1. Обзор методологии FSD</h2>
             <p>Feature-Sliced Design — это архитектурная методология для фронтенд-приложений, которая структурирует код по бизнес-областям, а не по техническому назначению. Основная цель — сделать проект управляемым, масштабируемым и понятным для команды.</p>
@@ -61,7 +61,7 @@ export function ArchitecturePage() {
             </ul>
 
             <h2>2. Структура слоев</h2>
-            <p>Проект &quot;ProDvor&quot; строго следует иерархии слоев FSD. Каждый слой имеет свое назначение, и импорты разрешены только от верхних слоев к нижним (например, <code>widgets</code> может импортировать из <code>features</code>, но не наоборот).</p>
+            <p>Проект "ProDvor" строго следует иерархии слоев FSD. Каждый слой имеет свое назначение, и импорты разрешены только от верхних слоев к нижним (например, <code>widgets</code> может импортировать из <code>features</code>, но не наоборот).</p>
             
             <FileTree />
 
@@ -100,7 +100,7 @@ export function ArchitecturePage() {
              <p>В продакшн-версии предполагается использование связки **Kong API Gateway** и **Keycloak Identity Provider**. Kong будет проверять JWT-токены перед доступом к API, а Keycloak — управлять пользователями, ролями и процессом входа. Подробнее это описано в <Link href="/documents/backend-documentation">документации бэкенда</Link>.</p>
             
             <h2>5. Правила импорта</h2>
-            <p><strong>Золотое правило:</strong> Модуль может импортировать только те модули, что находятся на слоях ниже него. Импорт &quot;вбок&quot; (между слайсами одного слоя) или &quot;вверх&quot; строго запрещен.</p>
+            <p><strong>Золотое правило:</strong> Модуль может импортировать только те модули, что находятся на слоях ниже него. Импорт "вбок" (между слайсами одного слоя) или "вверх" строго запрещен.</p>
             <ul>
                 <li>✅ <strong>Правильно:</strong> <code>widget/UserProfile</code> импортирует <code>feature/send-friend-request</code>.</li>
                 <li>❌ <strong>Неправильно:</strong> <code>feature/send-friend-request</code> импортирует <code>widget/UserProfile</code>.</li>
