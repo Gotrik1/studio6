@@ -9,5 +9,5 @@ export function FanProfilePage() {
     const achievements = fanAchievements;
     const favoriteTeams = mockTeams.slice(0, 2);
 
-    return <FanClient user={user} achievements={achievements} favoriteTeams={favoriteTeams} />;
+    return <FanClient user={user} achievements={achievements} favoriteTeams={favoriteTeams} isCurrentUser={true} />;
 }

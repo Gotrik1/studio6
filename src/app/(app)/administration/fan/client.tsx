@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -18,8 +19,9 @@ type FanClientProps = {
   user: typeof fanUser;
   achievements: typeof fanAchievements;
   favoriteTeams: Team[];
+  isCurrentUser: boolean;
 };
 
-export default function FanClient({ user, achievements, favoriteTeams }: FanClientProps) {
-  return <FanProfile user={user} achievements={achievements} favoriteTeams={favoriteTeams} />;
+export default function FanClient({ user, achievements, favoriteTeams, isCurrentUser }: FanClientProps) {
+  return <FanProfile user={user} achievements={achievements} favoriteTeams={favoriteTeams} isCurrentUser={isCurrentUser} />;
 }
