@@ -55,13 +55,84 @@
 
 ### Пример `docker-compose.yml`
 
-*Заглушка: Здесь будет полная конфигурация docker-compose.yml для всех сервисов, включая PostgreSQL, Keycloak, Kong, NATS и сервисы приложения.*
+```yaml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: prodvor_user
+      POSTGRES_PASSWORD: very_strong_password
+      POSTGRES_DB: prodvor_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:22.0.1
+    command: start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8180:8080"
+
+  app-service:
+    build: .
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - keycloak
+
+volumes:
+  postgres_data:
+```
 
 ## 4. Спецификация API (Пример для `user-service`)
 
 Все API должны следовать спецификации OpenAPI 3.0.
 
-*Заглушка: Здесь будет детальный пример спецификации OpenAPI 3.0 для user-service.*
+```yaml
+openapi: 3.0.0
+info:
+  title: User Service API
+  version: 1.0.0
+paths:
+  /users/{userId}:
+    get:
+      summary: Get user by ID
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A user object
+          content:
+            application/json:
+              schema:
+                '$ref': '#/components/schemas/User'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+```
 
 ## 5. Аутентификация и авторизация (детально)
 
