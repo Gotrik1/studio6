@@ -43,6 +43,7 @@ import {
   Calendar,
   Award,
   Ruler,
+  HeartPulse,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -141,6 +142,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 { href: "/training/analytics", label: "Аналитика" },
                 { href: "/training/records", label: "Рекорды" },
                 { href: "/training/measurements", label: "Замеры тела" },
+                { href: "/training/nutrition", icon: HeartPulse, label: "Питание" },
             ]
         },
         { href: "/playgrounds", icon: Map, label: "Площадки" },
@@ -184,6 +186,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                                                         {item.children.map(child => (
                                                             <SidebarMenuSubItem key={child.href}>
                                                                 <SidebarMenuSubButton href={child.href} variant={isActive(child.href) ? 'active' : 'default'}>
+                                                                    {child.label === 'Питание' && <HeartPulse className="mr-2 h-4 w-4"/>}
                                                                     {child.label}
                                                                 </SidebarMenuSubButton>
                                                             </SidebarMenuSubItem>
