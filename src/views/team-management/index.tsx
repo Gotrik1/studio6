@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter }
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Check, X, Handshake } from 'lucide-react';
+import { Check, X, Handshake, Calendar } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
 import { JoinRequestAnalysisDialog } from '@/widgets/join-request-analysis-dialog';
@@ -16,6 +16,7 @@ import { TeamCoachTab } from '@/widgets/team-coach-tab';
 import { RosterManagementTab } from '@/widgets/roster-management-tab';
 import { TeamSponsorScout } from '@/widgets/team-sponsor-scout';
 import { useJoinRequests, type JoinRequest } from '@/app/providers/join-request-provider';
+import { TeamScheduleTab } from '@/widgets/team-schedule-tab';
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
@@ -62,8 +63,9 @@ export function TeamManagementPage() {
                     </p>
                 </div>
                 <Tabs defaultValue="roster">
-                    <TabsList className="grid w-full grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-6">
                         <TabsTrigger value="roster">Состав</TabsTrigger>
+                        <TabsTrigger value="schedule"><Calendar className="mr-2 h-4 w-4"/>Расписание</TabsTrigger>
                         <TabsTrigger value="requests">Заявки</TabsTrigger>
                         <TabsTrigger value="sponsorship"><Handshake className="mr-2 h-4 w-4"/>Спонсорство</TabsTrigger>
                         <TabsTrigger value="ai-coach">AI-Коуч</TabsTrigger>
@@ -72,6 +74,10 @@ export function TeamManagementPage() {
                     
                     <TabsContent value="roster" className="mt-4">
                         <RosterManagementTab />
+                    </TabsContent>
+
+                    <TabsContent value="schedule" className="mt-4">
+                        <TeamScheduleTab />
                     </TabsContent>
 
                     <TabsContent value="requests" className="mt-4">
