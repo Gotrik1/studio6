@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -27,6 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/shared/ui/alert-dialog";
 import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
+import { AiPlaygroundChallenge } from '@/widgets/ai-playground-challenge';
 
 export function PlaygroundDetails({ playground }: { playground: Playground }) {
     const { toast } = useToast();
@@ -84,6 +86,7 @@ export function PlaygroundDetails({ playground }: { playground: Playground }) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 space-y-6">
+                        <AiPlaygroundSummary playground={playground} />
                         <Card>
                             <CardHeader className="flex-row items-center justify-between">
                                  <div>
@@ -120,9 +123,9 @@ export function PlaygroundDetails({ playground }: { playground: Playground }) {
                                 )}
                             </CardContent>
                         </Card>
-                        <AiPlaygroundSummary playground={playground} />
                     </div>
                     <div className="space-y-6">
+                        <AiPlaygroundChallenge playground={playground} />
                         <Card>
                            <CardHeader><CardTitle>Основная информация</CardTitle></CardHeader>
                            <CardContent className="space-y-3 text-sm">

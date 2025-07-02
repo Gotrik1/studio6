@@ -57,3 +57,5 @@ import './flows/find-coaches-flow';
 import './flows/generate-sport-summary-flow';
 import './flows/generate-profile-banner-flow';
 import './flows/generate-playground-summary-flow';
+import './flows/generate-playground-challenge-flow';
+
