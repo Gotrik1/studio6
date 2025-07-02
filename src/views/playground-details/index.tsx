@@ -37,7 +37,7 @@ import { teams } from '@/shared/lib/mock-data/teams';
 import Link from 'next/link';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 
-export function PlaygroundDetails({ playground: initialPlayground }: { playground: Playground }) {
+export function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
     const [playground, setPlayground] = useState(initialPlayground);
@@ -162,7 +162,7 @@ export function PlaygroundDetails({ playground: initialPlayground }: { playgroun
                                    </div>
                                </div>
                            </CardContent>
-                        </Card>
+                         </Card>
                          <Card>
                            <CardHeader><CardTitle>Создатель</CardTitle></CardHeader>
                            <CardContent className="flex items-center gap-3">
