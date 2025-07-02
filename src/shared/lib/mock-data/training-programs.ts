@@ -4,6 +4,9 @@ export type ExerciseDetail = {
     name: string;
     sets: string;
     reps: string;
+    plannedWeight?: string;
+    isSupersetWithPrevious?: boolean;
+    technique?: string;
 };
 
 export type WorkoutDay = {
@@ -102,6 +105,30 @@ export const trainingPrograms: TrainingProgram[] = [
         coverImage: 'https://placehold.co/600x400.png',
         coverImageHint: 'ai circuit board',
         isAiGenerated: true,
+        weeklySplit: [],
+    },
+    {
+        id: 'fat-loss-hiit',
+        name: 'HIIT для сжигания жира',
+        description: 'Высокоинтенсивная интервальная тренировка для максимального расхода калорий и ускорения метаболизма.',
+        goal: 'Снижение веса',
+        daysPerWeek: 3,
+        splitType: 'Full-body',
+        author: 'Coach Elena', // New author
+        coverImage: 'https://placehold.co/600x400.png',
+        coverImageHint: 'woman running fast',
+        weeklySplit: [],
+    },
+    {
+        id: 'bodyweight-strength',
+        name: 'Сила без железа',
+        description: 'Программа для развития силы и выносливости с использованием только собственного веса. Идеально для дома или улицы.',
+        goal: 'Сила',
+        daysPerWeek: 4,
+        splitType: 'Full-body',
+        author: 'StreetWorkout Pro', // New author
+        coverImage: 'https://placehold.co/600x400.png',
+        coverImageHint: 'calisthenics workout',
         weeklySplit: [],
     }
 ];
