@@ -10,6 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDes
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { register } from '@/features/auth/actions';
+import { registerSchema } from '@/features/auth/schemas';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { cn } from '@/shared/lib/utils';
 import { CalendarIcon, Loader2 } from 'lucide-react';
@@ -18,24 +19,19 @@ import { format } from 'date-fns';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Checkbox } from '@/shared/ui/checkbox';
 import Link from 'next/link';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { AlertCircle } from 'lucide-react';
 
-const registerFormSchema = z.object({
-  name: z.string().min(2, { message: "Имя должно содержать не менее 2 символов." }),
-  email: z.string().email({ message: "Введите корректный email." }),
-  password: z.string().min(8, { message: "Пароль должен содержать не менее 8 символов." }),
-  dob: z.date({ required_error: "Выберите дату рождения." }),
-  role: z.string({ required_error: "Выберите вашу основную роль." }),
-  terms: z.boolean().refine(val => val === true, { message: "Вы должны принять условия." }),
-});
-
-type FormValues = z.infer<typeof registerFormSchema>;
+type FormValues = z.infer<typeof registerSchema>;
 
 export function RegisterForm() {
     const [isPending, startTransition] = useTransition();
     const { toast } = useToast();
+    const [error, setError] = useState<string | undefined>();
+    const [success, setSuccess] = useState<string | undefined>();
 
     const form = useForm<FormValues>({
-        resolver: zodResolver(registerFormSchema),
+        resolver: zodResolver(registerSchema),
         defaultValues: {
             name: "",
             email: "",
@@ -45,13 +41,19 @@ export function RegisterForm() {
     });
 
     const onSubmit = (values: FormValues) => {
+        setError(undefined);
+        setSuccess(undefined);
         startTransition(async () => {
             const result = await register(values);
             if (result?.error) {
-                toast({
-                    variant: 'destructive',
-                    title: 'Ошибка регистрации',
-                    description: result.error,
+                setError(result.error);
+            }
+            if (result?.success) {
+                setSuccess(result.success);
+                form.reset();
+                 toast({
+                    title: "Успех!",
+                    description: result.success,
                 });
             }
         });
@@ -66,6 +68,20 @@ export function RegisterForm() {
                         <CardDescription>Присоединяйтесь к сообществу ProDvor.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
+                        {error && (
+                            <Alert variant="destructive">
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>Ошибка регистрации</AlertTitle>
+                                <AlertDescription>{error}</AlertDescription>
+                            </Alert>
+                        )}
+                        {success && (
+                            <Alert>
+                                <AlertCircle className="h-4 w-4" />
+                                <AlertTitle>Успешно</AlertTitle>
+                                <AlertDescription>{success}</AlertDescription>
+                            </Alert>
+                        )}
                         <FormField control={form.control} name="name" render={({ field }) => (
                             <FormItem><FormLabel>Имя</FormLabel><FormControl><Input placeholder="Иван Иванов" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
