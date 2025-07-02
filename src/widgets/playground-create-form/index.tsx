@@ -14,6 +14,9 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Loader2, PlusCircle, UploadCloud } from 'lucide-react';
+import { useSession } from '@/shared/lib/session/client';
+import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
+
 
 const features = [
     { id: 'Освещение', label: 'Освещение' },
@@ -40,6 +43,7 @@ export function PlaygroundCreateForm() {
     const { toast } = useToast();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const { user } = useSession();
 
     const form = useForm<FormValues>({
         resolver: zodResolver(playgroundSchema),
@@ -48,11 +52,32 @@ export function PlaygroundCreateForm() {
 
     const onSubmit = (data: FormValues) => {
         setIsSubmitting(true);
-        console.log(data); // In real app, send to backend
+
+        const isDuplicate = playgroundsList.some(
+            (p) => p.address.toLowerCase() === data.address.toLowerCase()
+        );
+
+        if (isDuplicate) {
+            toast({
+                variant: 'destructive',
+                title: 'Площадка уже существует',
+                description: `Площадка с таким адресом уже добавлена на платформу.`,
+            });
+            setIsSubmitting(false);
+            return;
+        }
+
+        console.log(data); 
+        
         setTimeout(() => {
+            let toastDescription = 'Вы получили 1 месяц PRO-подписки!';
+            if (user?.role === 'Капитан') {
+                toastDescription = 'Вы и ваша команда получили 1 месяц PRO-подписки!';
+            }
+
             toast({
                 title: "Площадка добавлена!",
-                description: `Площадка "${data.name}" теперь на карте. Спасибо за ваш вклад!`
+                description: toastDescription
             });
             router.push('/playgrounds');
         }, 1000);
@@ -64,7 +89,7 @@ export function PlaygroundCreateForm() {
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <CardHeader>
                         <CardTitle>Информация о площадке</CardTitle>
-                        <CardDescription>Заполните поля, чтобы добавить площадку на карту.</CardDescription>
+                        <CardDescription>Заполните поля, чтобы добавить площадку на карту. За каждую уникальную площадку вы получите 1 месяц PRO-подписки!</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <FormField name="name" control={form.control} render={({field}) => (
