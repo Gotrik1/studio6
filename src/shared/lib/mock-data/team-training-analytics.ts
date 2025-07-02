@@ -1,3 +1,4 @@
+
 export const teamTrainingAnalyticsData = [
     {
         playerId: 'p1',

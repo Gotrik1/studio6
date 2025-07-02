@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter }
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Check, X, Handshake, Calendar } from 'lucide-react';
+import { Check, X, Handshake, Calendar, BarChart3 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
 import { JoinRequestAnalysisDialog } from '@/widgets/join-request-analysis-dialog';
@@ -17,6 +17,7 @@ import { RosterManagementTab } from '@/widgets/roster-management-tab';
 import { TeamSponsorScout } from '@/widgets/team-sponsor-scout';
 import { useJoinRequests, type JoinRequest } from '@/app/providers/join-request-provider';
 import { TeamScheduleTab } from '@/widgets/team-schedule-tab';
+import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
@@ -63,11 +64,12 @@ export function TeamManagementPage() {
                     </p>
                 </div>
                 <Tabs defaultValue="roster">
-                    <TabsList className="grid w-full grid-cols-6">
+                    <TabsList className="grid w-full grid-cols-7">
                         <TabsTrigger value="roster">Состав</TabsTrigger>
                         <TabsTrigger value="schedule"><Calendar className="mr-2 h-4 w-4"/>Расписание</TabsTrigger>
                         <TabsTrigger value="requests">Заявки</TabsTrigger>
                         <TabsTrigger value="sponsorship"><Handshake className="mr-2 h-4 w-4"/>Спонсорство</TabsTrigger>
+                        <TabsTrigger value="training-analytics"><BarChart3 className="mr-2 h-4 w-4"/>Аналитика</TabsTrigger>
                         <TabsTrigger value="ai-coach">AI-Коуч</TabsTrigger>
                         <TabsTrigger value="ai-assistant">AI-Ассистент</TabsTrigger>
                     </TabsList>
@@ -124,6 +126,10 @@ export function TeamManagementPage() {
                     <TabsContent value="sponsorship" className="mt-4 space-y-6">
                         <TeamSponsorScout />
                         <SponsorshipPitchGenerator />
+                    </TabsContent>
+
+                    <TabsContent value="training-analytics" className="mt-4">
+                        <TeamTrainingAnalytics />
                     </TabsContent>
                     
                     <TabsContent value="ai-coach" className="mt-4">
