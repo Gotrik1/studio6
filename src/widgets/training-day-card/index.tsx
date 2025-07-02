@@ -23,7 +23,6 @@ import { Badge } from '@/shared/ui/badge';
 import Link from 'next/link';
 import { exercisesList } from '@/shared/lib/mock-data/exercises';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
-import { useToast } from '@/shared/hooks/use-toast';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;

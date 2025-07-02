@@ -1,11 +1,11 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
+import { useState } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, Check, Star, User, Home, Calendar, PlusCircle, AlertTriangle, CheckCircle } from 'lucide-react';
+import { MapPin, User, Home, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -34,14 +34,14 @@ import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
 import { useSession } from '@/shared/lib/session/client';
 import { useLfg } from '@/app/providers/lfg-provider';
-import type { LfgLobby } from '@/app/providers/lfg-provider';
+import { useMemo } from 'react';
 
 export function PlaygroundDetails({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const { lobbies, addLobby } = useLfg();
+    const { addLobby, lobbies } = useLfg();
 
-    const [playground, setPlayground] = useState(initialPlayground);
+    const [playground] = useState(initialPlayground);
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
@@ -86,7 +86,6 @@ export function PlaygroundDetails({ playground: initialPlayground }: { playgroun
             timestamp: 'Только что',
         };
         setActivities(prev => [newActivity, ...prev]);
-        setPlayground(prev => ({...prev, checkIns: prev.checkIns + 1}));
     };
 
     return (
@@ -129,20 +128,6 @@ export function PlaygroundDetails({ playground: initialPlayground }: { playgroun
                         <AiPlaygroundLore playground={playground} />
                         <PlaygroundLeaderboard />
                         <Card>
-                           <CardHeader><CardTitle>Основная информация</CardTitle></CardHeader>
-                           <CardContent className="space-y-3 text-sm">
-                               <div className="flex justify-between"><span>Покрытие:</span><span className="font-semibold">{playground.surface}</span></div>
-                               <div className="flex justify-between"><span>Рейтинг:</span><span className="font-semibold flex items-center gap-1">{playground.rating}/5.0 <Star className="h-4 w-4 text-amber-500"/></span></div>
-                               <div className="flex justify-between"><span>Чекинов:</span><span className="font-semibold">{playground.checkIns}</span></div>
-                               <div>
-                                   <p>Особенности:</p>
-                                   <div className="flex flex-wrap gap-2 mt-1">
-                                       {playground.features.map(f => <Badge key={f}>{f}</Badge>)}
-                                   </div>
-                               </div>
-                           </CardContent>
-                         </Card>
-                         <Card>
                            <CardHeader><CardTitle>Создатель</CardTitle></CardHeader>
                            <CardContent className="flex items-center gap-3">
                                <Avatar><AvatarImage src={playground.creator.avatar} /><AvatarFallback><User className="h-5 w-5"/></AvatarFallback></Avatar>
@@ -158,7 +143,7 @@ export function PlaygroundDetails({ playground: initialPlayground }: { playgroun
                                     <AlertDialogHeader>
                                     <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        Вы собираетесь отметить эту площадку как вашу "домашнюю". Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
+                                        Вы собираетесь отметить эту площадку как вашу &quot;домашнюю&quot;. Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
                                     </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>

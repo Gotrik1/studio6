@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, CheckCircle, AlertTriangle, MessageSquare, Star, Users, Calendar, Wrench, Camera, BrainCircuit } from 'lucide-react';
+import { MapPin, CheckCircle, AlertTriangle, MessageSquare, Users, Calendar, Wrench, Camera, BrainCircuit } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
@@ -36,12 +36,11 @@ import { AiPlaygroundDrill } from '@/widgets/ai-playground-drill';
 import { usePDEconomy } from '@/app/providers/pd-provider';
 
 
-export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
+export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
     const { lobbies, addLobby } = useLfg();
     const { addTransaction } = usePDEconomy();
-    const [playground, setPlayground] = useState(initialPlayground);
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [conditionReport, setConditionReport] = useState<AnalyzePlaygroundReportOutput | null>(null);

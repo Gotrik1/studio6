@@ -12,7 +12,7 @@ import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Troph
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
-import { RANKS, getRankByPoints } from "@/shared/config/ranks";
+import { getRankByPoints } from "@/shared/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/ui/tooltip";
 import { cn } from '@/shared/lib/utils';
 import { useState } from 'react';
