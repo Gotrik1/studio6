@@ -8,7 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send, Image as ImageIcon } from "lucide-react";
+import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send, Image as ImageIcon, Sword } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -24,6 +24,7 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
+import { ChallengePlayerDialog } from '@/widgets/challenge-player-dialog';
 
 
 const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
@@ -90,6 +91,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
+  const [isChallengeDialogOpen, setIsChallengeDialogOpen] = useState(false);
 
   return (
     <>
@@ -158,8 +160,14 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem>Бросить вызов</DropdownMenuItem>
-                            <DropdownMenuItem>Поделиться</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setIsChallengeDialogOpen(true)}>
+                                <Sword className="mr-2 h-4 w-4"/>
+                                Бросить вызов
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <Share2 className="mr-2 h-4 w-4"/>
+                                Поделиться
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem 
                                 className="text-destructive"
@@ -308,6 +316,11 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
             isOpen={isReportDialogOpen}
             onOpenChange={setIsReportDialogOpen}
             reportedPlayerName={user.name}
+        />
+        <ChallengePlayerDialog
+            isOpen={isChallengeDialogOpen}
+            onOpenChange={setIsChallengeDialogOpen}
+            challengedPlayerName={user.name}
         />
     </>
   );
