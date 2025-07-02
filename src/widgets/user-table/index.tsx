@@ -3,7 +3,7 @@
 
 import type { FC } from 'react';
 import Link from "next/link";
-import { MoreHorizontal, Gavel, Pencil, Coins } from "lucide-react";
+import { MoreHorizontal, Gavel, Pencil, Coins, Undo2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -17,12 +17,30 @@ type User = (typeof userList)[0];
 
 interface UserTableProps {
     users: User[];
-    onBanUser: (userId: string) => void;
+    onOpenBanUnbanDialog: (user: User, action: 'ban' | 'unban') => void;
     onEditUser: (user: User) => void;
     onPdAction: (user: User, action: 'credit' | 'debit') => void;
 }
 
-export const UserTable: FC<UserTableProps> = ({ users, onBanUser, onEditUser, onPdAction }) => {
+const roleToPathMap: {[key: string]: string} = {
+      'Игрок': 'player',
+      'Капитан': 'player',
+      'Администратор': 'administrator',
+      'Тренер': 'coach',
+      'Судья': 'judge',
+      'Менеджер': 'manager',
+      'Модератор': 'moderator',
+      'Организатор': 'organizer',
+      'Спонсор': 'sponsor',
+      'Болельщик': 'fan',
+};
+
+const getProfileUrl = (user: User) => {
+    const pathSegment = roleToPathMap[user.role] || 'player';
+    return `/profiles/${pathSegment}/${user.id}`;
+};
+
+export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onEditUser, onPdAction }) => {
     
     if (users.length === 0) {
         return (
@@ -75,7 +93,7 @@ export const UserTable: FC<UserTableProps> = ({ users, onBanUser, onEditUser, on
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
                                             <DropdownMenuItem asChild>
-                                                <Link href={user.profileUrl}>Просмотр профиля</Link>
+                                                <Link href={getProfileUrl(user)}>Просмотр профиля</Link>
                                             </DropdownMenuItem>
                                              <DropdownMenuItem onClick={() => onEditUser(user)}>
                                                 <Pencil className="mr-2 h-4 w-4"/>
@@ -91,14 +109,23 @@ export const UserTable: FC<UserTableProps> = ({ users, onBanUser, onEditUser, on
                                                 Списать PD
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
-                                            <DropdownMenuItem 
-                                                className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-                                                onClick={() => onBanUser(user.id)}
-                                                disabled={user.status === 'Забанен'}
-                                            >
-                                                <Gavel className="mr-2 h-4 w-4"/>
-                                                Забанить
-                                            </DropdownMenuItem>
+                                            {user.status !== 'Забанен' ? (
+                                                <DropdownMenuItem 
+                                                    className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+                                                    onClick={() => onOpenBanUnbanDialog(user, 'ban')}
+                                                >
+                                                    <Gavel className="mr-2 h-4 w-4"/>
+                                                    Забанить
+                                                </DropdownMenuItem>
+                                            ) : (
+                                                 <DropdownMenuItem 
+                                                    className="text-green-600 focus:bg-green-100 dark:focus:bg-green-900/50 dark:focus:text-green-400"
+                                                    onClick={() => onOpenBanUnbanDialog(user, 'unban')}
+                                                >
+                                                    <Undo2 className="mr-2 h-4 w-4"/>
+                                                    Разбанить
+                                                </DropdownMenuItem>
+                                            )}
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
