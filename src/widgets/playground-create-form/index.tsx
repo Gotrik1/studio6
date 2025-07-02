@@ -61,7 +61,7 @@ export function PlaygroundCreateForm() {
             toast({
                 variant: 'destructive',
                 title: 'Площадка уже существует',
-                description: `Площадка с таким адресом уже добавлена на платформу.`,
+                description: 'Площадка с таким адресом уже добавлена. Если вы считаете, что это ошибка, уточните адрес.',
             });
             setIsSubmitting(false);
             return;
@@ -70,9 +70,9 @@ export function PlaygroundCreateForm() {
         console.log(data); 
         
         setTimeout(() => {
-            let toastDescription = 'Вы получили 1 месяц PRO-подписки!';
+            let toastDescription = 'Площадка добавлена и отправлена на модерацию! Вы получили 1 месяц PRO-подписки!';
             if (user?.role === 'Капитан') {
-                toastDescription = 'Вы и ваша команда получили 1 месяц PRO-подписки!';
+                toastDescription = 'Площадка добавлена и отправлена на модерацию! Вы и ваша команда получили 1 месяц PRO-подписки!';
             }
 
             toast({
@@ -89,7 +89,9 @@ export function PlaygroundCreateForm() {
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <CardHeader>
                         <CardTitle>Информация о площадке</CardTitle>
-                        <CardDescription>Заполните поля, чтобы добавить площадку на карту. За каждую уникальную площадку вы получите 1 месяц PRO-подписки!</CardDescription>
+                        <CardDescription>
+                            Добавьте площадку. Она появится на карте сразу и будет ожидать проверки модератором. За каждую уникальную площадку вы получите 1 месяц PRO-подписки!
+                        </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
                         <FormField name="name" control={form.control} render={({field}) => (

@@ -10,6 +10,7 @@ export type Playground = {
     features: string[];
     rating: number;
     checkIns: number;
+    status: 'approved' | 'pending_moderation';
     creator: {
         name: string;
         avatar: string;
@@ -28,6 +29,7 @@ export const playgroundsList: Playground[] = [
         features: ['Ворота', 'Освещение'],
         rating: 4.5,
         checkIns: 128,
+        status: 'approved',
         creator: { name: 'Superuser', avatar: 'https://placehold.co/100x100.png' },
     },
     {
@@ -41,6 +43,7 @@ export const playgroundsList: Playground[] = [
         features: ['Кольца', 'Разметка'],
         rating: 4.2,
         checkIns: 97,
+        status: 'approved',
         creator: { name: 'Echo', avatar: 'https://placehold.co/100x100.png' },
     },
     {
@@ -54,6 +57,7 @@ export const playgroundsList: Playground[] = [
         features: ['Турники', 'Брусья', 'Лесенка'],
         rating: 4.8,
         checkIns: 215,
+        status: 'approved',
         creator: { name: 'Viper', avatar: 'https://placehold.co/100x100.png' },
     },
 ];

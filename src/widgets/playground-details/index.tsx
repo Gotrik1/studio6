@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, Check, Star, User, Home, Sparkles, Send, Calendar, Clock, PlusCircle } from 'lucide-react';
+import { MapPin, Check, Star, User, Home, Sparkles, Send, Calendar, Clock, PlusCircle, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -14,6 +14,7 @@ import { playgroundSchedule, type PlaygroundBooking } from '@/shared/lib/mock-da
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { PlanGameDialog } from '@/widgets/plan-game-dialog';
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 
 export function PlaygroundDetails({ playground }: { playground: Playground }) {
     const { toast } = useToast();
@@ -58,6 +59,17 @@ export function PlaygroundDetails({ playground }: { playground: Playground }) {
                         </div>
                     </div>
                 </Card>
+
+                 {playground.status === 'pending_moderation' && (
+                    <Alert variant="destructive" className="bg-yellow-500/10 border-yellow-500/50 text-yellow-600 [&>svg]:text-yellow-600">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertTitle>На модерации</AlertTitle>
+                        <AlertDescription>
+                            Эта площадка ожидает проверки модератором. Она может быть удалена, если является дубликатом или нарушает правила.
+                        </AlertDescription>
+                    </Alert>
+                )}
+
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 space-y-6">
                         <Card>

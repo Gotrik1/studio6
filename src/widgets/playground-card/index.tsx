@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Image from 'next/image';
 import Link from 'next/link';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, Check, Star } from 'lucide-react';
+import { MapPin, Check, Star, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 
 export function PlaygroundCard({ playground }: { playground: Playground }) {
@@ -14,6 +14,12 @@ export function PlaygroundCard({ playground }: { playground: Playground }) {
             <Card className="h-full overflow-hidden transition-all hover:shadow-lg hover:border-primary">
                 <div className="relative h-40 w-full">
                     <Image src={playground.coverImage} alt={playground.name} fill className="object-cover" data-ai-hint={playground.coverImageHint}/>
+                     {playground.status === 'pending_moderation' && (
+                        <Badge variant="destructive" className="absolute top-2 right-2 bg-yellow-500/90 hover:bg-yellow-600 text-white">
+                            <AlertTriangle className="h-3 w-3 mr-1"/>
+                            На модерации
+                        </Badge>
+                    )}
                 </div>
                 <CardHeader>
                     <CardTitle>{playground.name}</CardTitle>
