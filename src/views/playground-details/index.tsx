@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
@@ -12,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { PlaygroundOverviewTab } from '@/widgets/playground-overview-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
-import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-dialog';
 import { PlaygroundConditionStatus } from '@/widgets/playground-condition-status';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
@@ -22,19 +22,25 @@ import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mo
 import { useSession } from '@/shared/lib/session/client';
 import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
-import { playgroundSchedule, type PlaygroundBooking } from '@/shared/lib/mock-data/playground-schedule';
 import { ScrollArea } from '@/shared/ui/scroll-area';
+import { useLfg } from '@/app/providers/lfg-provider';
+import type { FormValues } from '@/widgets/plan-game-dialog';
+import { PlanGameDialog } from '@/widgets/plan-game-dialog';
+import { format } from 'date-fns';
 
 export default function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
+    const { lobbies, addLobby } = useLfg();
     const [playground] = useState(initialPlayground);
-    const [schedule, setSchedule] = useState(playgroundSchedule.filter(s => s.playgroundId === playground.id));
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [conditionReport, setConditionReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
+    const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
+    const [dialogInitialData, setDialogInitialData] = useState<{ date: Date, time: string } | undefined>();
 
+    const schedule = useMemo(() => lobbies.filter(l => l.playgroundId === playground.id), [lobbies, playground.id]);
 
     const handleReportSubmit = async (data: { category: string; comment: string }) => {
         try {
@@ -73,6 +79,32 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
             title: "Вы отметились!",
             description: `Вы получили 10 PD за чекин на площадке "${playground.name}".`
         });
+    };
+    
+    const handlePlanGame = (data: FormValues) => {
+        const startTime = new Date(data.date);
+        const [hours, minutes] = data.time.split(':').map(Number);
+        startTime.setHours(hours, minutes, 0, 0);
+
+        addLobby({
+            sport: playground.type,
+            location: playground.name,
+            playgroundId: playground.id,
+            startTime,
+            duration: data.duration,
+            comment: `Открытая игра на площадке ${playground.name}`,
+            playersNeeded: 10,
+        });
+        
+        toast({
+            title: "Игра запланирована!",
+            description: `Ваша игра на "${playground.name}" в ${format(startTime, 'HH:mm')} добавлена в расписание и LFG.`
+        });
+    };
+
+    const handleOpenPlanDialog = (date: Date, hour: number) => {
+        setDialogInitialData({ date, time: `${String(hour).padStart(2, '0')}:00` });
+        setIsPlanGameOpen(true);
     };
 
 
@@ -127,7 +159,11 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                         <PlaygroundOverviewTab playground={playground} />
                     </TabsContent>
                     <TabsContent value="schedule" className="mt-4">
-                         <PlaygroundScheduleTab playground={playground} initialSchedule={schedule} setSchedule={setSchedule} />
+                         <PlaygroundScheduleTab 
+                            playground={playground} 
+                            schedule={schedule}
+                            onPlanClick={handleOpenPlanDialog}
+                         />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-4">
                         <PlaygroundActivityTab activities={activities} />
@@ -157,6 +193,14 @@ export default function PlaygroundDetailsPage({ playground: initialPlayground }:
                 onOpenChange={setIsCheckInOpen}
                 playgroundName={playground.name}
                 onCheckIn={handleCheckIn}
+            />
+            <PlanGameDialog
+                isOpen={isPlanGameOpen}
+                onOpenChange={setIsPlanGameOpen}
+                playgroundName={playground.name}
+                onPlan={handlePlanGame}
+                initialDate={dialogInitialData?.date}
+                initialTime={dialogInitialData?.time}
             />
         </>
     );

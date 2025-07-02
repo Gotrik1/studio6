@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { initialLfgLobbies, type LfgLobby as InitialLfgLobby } from '@/shared/lib/mock-data/lfg';
+import { useLfg, type LfgLobby } from '@/app/providers/lfg-provider';
 import { PlusCircle, MapPin, Clock, Users, Gamepad2, UserPlus, Swords, Search, Loader2, Sparkles, Users2, GraduationCap, UserSearch, BarChart3, Shapes } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Badge } from '@/shared/ui/badge';
@@ -16,6 +16,8 @@ import type { LfgLobby as LfgLobbyType } from '@/shared/api/genkit/flows/schemas
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import Link from 'next/link';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 function LfgCard({ lobby, onJoin }: { lobby: LfgLobbyType, onJoin: (lobbyId: string) => void }) {
     return (
@@ -35,7 +37,7 @@ function LfgCard({ lobby, onJoin }: { lobby: LfgLobbyType, onJoin: (lobbyId: str
                     <MapPin className="h-3 w-3" /> {lobby.location}
                 </CardDescription>
                 <CardDescription className="flex items-center gap-1.5 text-xs">
-                    <Clock className="h-3 w-3" /> {lobby.time}
+                    <Clock className="h-3 w-3" /> {format(new Date(lobby.startTime), 'd MMMM, HH:mm', { locale: ru })}
                 </CardDescription>
             </CardHeader>
             <CardContent className="flex-1">
@@ -90,7 +92,8 @@ export function LfgPage() {
     const [prompt, setPrompt] = useState('Хочу поиграть в футбол вечером');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [lobbies, setLobbies] = useState<LfgLobbyType[]>(initialLfgLobbies);
+    const { lobbies, addLobby, joinLobby } = useLfg();
+    const [filteredLobbies, setFilteredLobbies] = useState<LfgLobby[] | null>(null);
 
     const handleSearch = async () => {
         if (!prompt) {
@@ -99,11 +102,15 @@ export function LfgPage() {
         }
         setIsLoading(true);
         setError(null);
-        setLobbies([]);
+        setFilteredLobbies(null);
 
         try {
             const searchResult = await findLfgLobbies(prompt);
-            setLobbies(searchResult.recommendations);
+            setFilteredLobbies(searchResult.recommendations.map(r => ({
+                ...r,
+                startTime: new Date(),
+                endTime: new Date(),
+            }))); // Map API result to local type, dates are mock
             if (searchResult.recommendations.length === 0) {
                  toast({
                     title: "Ничего не найдено",
@@ -119,27 +126,25 @@ export function LfgPage() {
     };
 
     const handleJoin = (lobbyId: string) => {
-        setLobbies(prevLobbies => prevLobbies.map(lobby => {
-            if (lobby.id === lobbyId && lobby.playersJoined < lobby.playersNeeded) {
-                toast({
-                    title: "Вы присоединились к лобби!",
-                    description: `Вы успешно присоединились к игре по ${lobby.sport}.`,
-                });
-                return { ...lobby, playersJoined: lobby.playersJoined + 1 };
-            }
-            return lobby;
-        }));
+        joinLobby(lobbyId);
+        const lobby = lobbies.find(l => l.id === lobbyId);
+        if (lobby) {
+            toast({
+                title: "Вы присоединились к лобби!",
+                description: `Вы успешно присоединились к игре по ${lobby.sport}.`,
+            });
+        }
     };
 
-    const handleCreateLobby = (newLobbyData: Omit<InitialLfgLobby, 'id' | 'creator' | 'playersJoined'>) => {
-        const newLobby: InitialLfgLobby = {
-            id: `lfg-${Date.now()}`,
-            creator: { name: 'Вы', avatar: 'https://placehold.co/100x100.png' },
-            playersJoined: 1,
-            ...newLobbyData
-        };
-        setLobbies(prev => [newLobby, ...prev]);
+    const handleCreateLobby = (data: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number }) => {
+        addLobby(data);
+        toast({
+            title: "Лобби создано!",
+            description: "Ваш запрос на игру опубликован.",
+        });
     };
+    
+    const lobbiesToDisplay = filteredLobbies === null ? lobbies : filteredLobbies;
 
     return (
         <>
@@ -193,11 +198,11 @@ export function LfgPage() {
                         <Card key={i}><Skeleton className="h-80 w-full" /></Card>
                     ))}
 
-                    {lobbies.map(lobby => (
+                    {lobbiesToDisplay.map(lobby => (
                         <LfgCard key={lobby.id} lobby={lobby} onJoin={handleJoin} />
                     ))}
                 </div>
-                 {!isLoading && lobbies.length === 0 && (
+                 {!isLoading && lobbiesToDisplay.length === 0 && (
                     <div className="text-center py-16 text-muted-foreground">
                         <p>Активных лобби по вашему запросу не найдено.</p>
                         <p>Попробуйте изменить запрос или создайте свое лобби.</p>

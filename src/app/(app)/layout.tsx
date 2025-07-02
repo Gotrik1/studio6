@@ -8,6 +8,7 @@ import { AccentThemeProvider } from "@/app/providers/accent-theme-provider";
 import { NutritionProvider } from "@/app/providers/nutrition-provider";
 import { JoinRequestProvider } from "@/app/providers/join-request-provider";
 import { PDEconomyProvider } from "@/app/providers/pd-provider";
+import { LfgProvider } from "@/app/providers/lfg-provider";
 
 export default async function ApplicationLayout({
   children,
@@ -26,11 +27,13 @@ export default async function ApplicationLayout({
         <TrainingProvider>
             <NutritionProvider>
                 <PDEconomyProvider>
-                    <JoinRequestProvider>
-                        <AppLayout user={user}>
-                            {children}
-                        </AppLayout>
-                    </JoinRequestProvider>
+                    <LfgProvider>
+                        <JoinRequestProvider>
+                            <AppLayout user={user}>
+                                {children}
+                            </AppLayout>
+                        </JoinRequestProvider>
+                    </LfgProvider>
                 </PDEconomyProvider>
             </NutritionProvider>
         </TrainingProvider>
