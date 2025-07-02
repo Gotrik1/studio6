@@ -6,8 +6,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/u
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Checkbox } from '@/shared/ui/checkbox';
-import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown, Link2, Award } from 'lucide-react';
-import type { TrainingLogEntry, ExerciseLog } from '@/shared/lib/mock-data/training-log';
+import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown, Link2, Award, History } from 'lucide-react';
+import type { TrainingLogEntry, ExerciseLog, ExerciseSession } from '@/shared/lib/mock-data/training-log';
 import { cn } from '@/shared/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { Separator } from '@/shared/ui/separator';
@@ -22,6 +22,7 @@ import { calculate1RM } from '@/shared/lib/calculate-1rm';
 import { Badge } from '@/shared/ui/badge';
 import Link from 'next/link';
 import { exercisesList } from '@/shared/lib/mock-data/exercises';
+import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;
@@ -29,14 +30,15 @@ interface TrainingDayCardProps {
     onDelete: (id: string) => void;
     onCopy: (id: string) => void;
     onUpdate: (data: TrainingLogEntry) => void;
+    fullExerciseHistory: { [key: string]: ExerciseSession[] };
 }
 
 interface ExerciseRowProps {
     control: Control<TrainingLogEntry>;
     exerciseIndex: number;
     exercise: ExerciseLog;
-    lastPerformance?: string;
     personalRecords: PersonalRecord[];
+    exerciseHistory: ExerciseSession[];
 }
 
 interface SetRowProps {
@@ -109,7 +111,7 @@ const SetRow = ({ control, exerciseIndex, setIndex, personalRecords, exercise }:
 };
 
 
-const ExerciseRow = ({ control, exerciseIndex, exercise, lastPerformance, personalRecords }: ExerciseRowProps) => {
+const ExerciseRow = ({ control, exerciseIndex, exercise, personalRecords, exerciseHistory }: ExerciseRowProps) => {
     const { fields } = useFieldArray({
         control,
         name: `exercises.${exerciseIndex}.sets`
@@ -126,7 +128,6 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, lastPerformance, person
                         {exercise.name}
                     </Link>
                 </h4>
-                {lastPerformance && <p className="text-xs text-muted-foreground">(Прошлый раз: {lastPerformance})</p>}
             </div>
             <Table>
                 <TableHeader>
@@ -152,39 +153,53 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, lastPerformance, person
                     ))}
                 </TableBody>
             </Table>
-            <Collapsible className="mt-2">
-                <CollapsibleTrigger asChild>
-                    <Button type="button" variant="ghost" size="sm" className="text-xs text-muted-foreground flex items-center gap-2 group">
-                        <MessageSquare className="h-4 w-4" />
-                        <span>Заметки к упражнению</span>
-                        <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
-                    </Button>
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-2 animate-in fade-in-0 zoom-in-95">
-                    <FormField
-                        control={control}
-                        name={`exercises.${exerciseIndex}.notes`}
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <Textarea placeholder="Например: 'Было тяжело, но техника хорошая'" {...field} value={field.value ?? ''} />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                </CollapsibleContent>
-            </Collapsible>
+            <div className="flex flex-wrap gap-2 mt-2">
+                 <Collapsible>
+                    <CollapsibleTrigger asChild>
+                        <Button type="button" variant="ghost" size="sm" className="text-xs text-muted-foreground flex items-center gap-2 group">
+                            <History className="h-4 w-4" />
+                            <span>История</span>
+                            <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                        </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-2 animate-in fade-in-0 zoom-in-95">
+                        <ExerciseHistoryTable sessions={exerciseHistory} limit={3} />
+                    </CollapsibleContent>
+                </Collapsible>
+                <Collapsible>
+                    <CollapsibleTrigger asChild>
+                        <Button type="button" variant="ghost" size="sm" className="text-xs text-muted-foreground flex items-center gap-2 group">
+                            <MessageSquare className="h-4 w-4" />
+                            <span>Заметки</span>
+                            <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                        </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-2 animate-in fade-in-0 zoom-in-95">
+                        <FormField
+                            control={control}
+                            name={`exercises.${exerciseIndex}.notes`}
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormControl>
+                                        <Textarea placeholder="Например: 'Было тяжело, но техника хорошая'" {...field} value={field.value ?? ''} />
+                                    </FormControl>
+                                </FormItem>
+                            )}
+                        />
+                    </CollapsibleContent>
+                </Collapsible>
+            </div>
         </div>
     );
 };
 
-export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate }: TrainingDayCardProps) {
+export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate, fullExerciseHistory }: TrainingDayCardProps) {
     const StatusIcon = statusMap[entry.status].icon;
     const statusColor = statusMap[entry.status].color;
     const MoodIcon = entry.mood ? moodMap[entry.mood].icon : null;
     
     const form = useForm<TrainingLogEntry>({
-        defaultValues: JSON.parse(JSON.stringify(entry)), // Deep copy to avoid mutation
+        defaultValues: JSON.parse(JSON.stringify(entry)),
     });
     
     const { fields } = useFieldArray({
@@ -199,35 +214,6 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
         return getTrainingAnalytics(pastEntries);
     }, [allEntries, entry.id]);
 
-    const lastPerformances = useMemo(() => {
-        const performanceMap = new Map<string, string>();
-
-        entry.exercises.forEach(currentExercise => {
-            const relevantPastEntries = allEntries
-                .filter(e => e.id !== entry.id && e.status === 'completed' && new Date(e.date) < new Date())
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-            for (const pastEntry of relevantPastEntries) {
-                const pastExercise = pastEntry.exercises.find(ex => ex.name === currentExercise.name);
-                if (pastExercise) {
-                    let bestSet = { weight: 0, reps: 0 };
-                    pastExercise.sets.forEach(set => {
-                        if (set.isCompleted && set.loggedWeight && set.loggedReps) {
-                           if ((set.loggedWeight * set.loggedReps) > (bestSet.weight * bestSet.reps)) {
-                               bestSet = { weight: set.loggedWeight, reps: set.loggedReps };
-                           }
-                        }
-                    });
-
-                    if (bestSet.weight > 0) {
-                        performanceMap.set(currentExercise.name, `${bestSet.reps}x${bestSet.weight} кг`);
-                        return; // Found the most recent performance for this exercise, move to next exercise
-                    }
-                }
-            }
-        });
-        return performanceMap;
-    }, [entry, allEntries]);
 
     const onSubmit = (data: TrainingLogEntry) => {
         const updatedData = { ...data, status: 'completed' as const };
@@ -280,8 +266,8 @@ export function TrainingDayCard({ entry, allEntries, onDelete, onCopy, onUpdate 
                                 control={form.control}
                                 exerciseIndex={index}
                                 exercise={entry.exercises[index]}
-                                lastPerformance={lastPerformances.get(entry.exercises[index]?.name)}
                                 personalRecords={personalRecords}
+                                exerciseHistory={fullExerciseHistory[entry.exercises[index]?.name] || []}
                            />
                         ))}
                         

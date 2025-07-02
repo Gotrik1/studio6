@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -16,6 +16,8 @@ export function TrainingLogPage() {
     const { toast } = useToast();
     const { currentProgram } = useTraining();
     const [logEntries, setLogEntries] = useState<TrainingLogEntry[]>([]);
+    
+    const { fullExerciseHistory } = useMemo(() => getTrainingAnalytics(logEntries.filter(e => e.status === 'completed')), [logEntries]);
 
     useEffect(() => {
         if (currentProgram) {
@@ -49,28 +51,23 @@ export function TrainingLogPage() {
 
     const handleUpdateEntry = (updatedEntry: TrainingLogEntry) => {
         // --- New Record Detection Logic ---
-        // 1. Get analytics BEFORE the update
         const oldAnalytics = getTrainingAnalytics(logEntries.filter(e => e.status === 'completed'));
         const oldPRs = new Map(oldAnalytics.personalRecords.map(pr => [pr.exercise, pr.e1RM]));
 
-        // 2. Prepare the updated list of entries
         const updatedEntries = logEntries.map(entry => (entry.id === updatedEntry.id ? updatedEntry : entry));
         
-        // 3. Get analytics AFTER the update
         const newAnalytics = getTrainingAnalytics(updatedEntries.filter(e => e.status === 'completed'));
         
-        // 4. Check for new PRs
         newAnalytics.personalRecords.forEach(newPR => {
             const oldPRValue = oldPRs.get(newPR.exercise) || 0;
             if (newPR.e1RM > oldPRValue) {
-                // New PR found!
                 setTimeout(() => {
                     toast({
                         title: `Новый рекорд! 🎉`,
                         description: `Вы установили новый личный рекорд в упражнении "${newPR.exercise}": ${newPR.e1RM} кг!`,
                         duration: 6000,
                     });
-                }, 500); // Delay to show after main toast
+                }, 500); 
             }
         });
         // --- End of New Record Detection Logic ---
@@ -128,6 +125,7 @@ export function TrainingLogPage() {
                             onDelete={handleDelete}
                             onCopy={handleCopy}
                             onUpdate={handleUpdateEntry}
+                            fullExerciseHistory={fullExerciseHistory}
                         />
                     ))}
                 </CardContent>

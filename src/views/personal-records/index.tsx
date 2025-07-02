@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -6,7 +5,7 @@ import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
-import { Award, LineChart, TrendingUp } from 'lucide-react';
+import { Award, LineChart, TrendingUp, Dumbbell } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { PersonalRecordHistoryChart } from '@/widgets/analytics-charts/personal-record-chart';
@@ -110,7 +109,19 @@ export function PersonalRecordsPage() {
                                     </div>
                                 </CardContent>
                             </Card>
-                            <ExerciseHistoryTable sessions={selectedFullHistory} exerciseName={selectedRecord.exercise} />
+                            {selectedFullHistory.length > 0 && (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle className="flex items-center gap-2"><Dumbbell className="h-5 w-5 text-primary" />Полная история: {selectedRecord.exercise}</CardTitle>
+                                        <CardDescription>Просмотрите каждую тренировку, где вы выполняли это упражнение.</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <ScrollArea className="h-96 pr-4">
+                                            <ExerciseHistoryTable sessions={selectedFullHistory} />
+                                        </ScrollArea>
+                                    </CardContent>
+                                </Card>
+                            )}
                         </>
                     ) : (
                         <Card className="flex items-center justify-center h-full">
