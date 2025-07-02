@@ -1,0 +1,123 @@
+'use client';
+
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Input } from '@/shared/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { Checkbox } from '@/shared/ui/checkbox';
+import { useToast } from '@/shared/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { Loader2, PlusCircle, UploadCloud } from 'lucide-react';
+
+const features = [
+    { id: 'Освещение', label: 'Освещение' },
+    { id: 'Ограждение', label: 'Ограждение' },
+    { id: 'Скамейки', label: 'Скамейки' },
+    { id: 'Источник воды', label: 'Источник воды' },
+    { id: 'Ворота', label: 'Ворота' },
+    { id: 'Кольца', label: 'Кольца (баскетбол)' },
+    { id: 'Сетка', label: 'Сетка (волейбол)' },
+    { id: 'Турники', label: 'Турники' },
+];
+
+const playgroundSchema = z.object({
+  name: z.string().min(3, 'Название должно быть не менее 3 символов.'),
+  address: z.string().min(10, 'Укажите более подробный адрес.'),
+  type: z.enum(['Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная']),
+  surface: z.enum(['Асфальт', 'Резина', 'Искусственный газон', 'Грунт']),
+  features: z.array(z.string()).optional(),
+});
+
+type FormValues = z.infer<typeof playgroundSchema>;
+
+export function PlaygroundCreateForm() {
+    const { toast } = useToast();
+    const router = useRouter();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const form = useForm<FormValues>({
+        resolver: zodResolver(playgroundSchema),
+        defaultValues: { name: '', address: '', features: [] },
+    });
+
+    const onSubmit = (data: FormValues) => {
+        setIsSubmitting(true);
+        console.log(data); // In real app, send to backend
+        setTimeout(() => {
+            toast({
+                title: "Площадка добавлена!",
+                description: `Площадка "${data.name}" теперь на карте. Спасибо за ваш вклад!`
+            });
+            router.push('/playgrounds');
+        }, 1000);
+    };
+
+    return (
+        <Card className="max-w-2xl mx-auto">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <CardHeader>
+                        <CardTitle>Информация о площадке</CardTitle>
+                        <CardDescription>Заполните поля, чтобы добавить площадку на карту.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <FormField name="name" control={form.control} render={({field}) => (
+                            <FormItem><FormLabel>Название</FormLabel><FormControl><Input placeholder="Например, Коробка за домом" {...field} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <FormField name="address" control={form.control} render={({field}) => (
+                            <FormItem><FormLabel>Адрес</FormLabel><FormControl><Input placeholder="Город, улица, дом" {...field} /></FormControl><FormMessage /></FormItem>
+                        )}/>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <FormField name="type" control={form.control} render={({field}) => (
+                                <FormItem><FormLabel>Тип площадки</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите тип"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Футбол">Футбол</SelectItem><SelectItem value="Баскетбол">Баскетбол</SelectItem><SelectItem value="Стритбол">Стритбол</SelectItem><SelectItem value="Воркаут">Воркаут</SelectItem><SelectItem value="Универсальная">Универсальная</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                            )}/>
+                            <FormField name="surface" control={form.control} render={({field}) => (
+                                <FormItem><FormLabel>Покрытие</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите покрытие"/></SelectTrigger></FormControl><SelectContent><SelectItem value="Асфальт">Асфальт</SelectItem><SelectItem value="Резина">Резина</SelectItem><SelectItem value="Искусственный газон">Искусственный газон</SelectItem><SelectItem value="Грунт">Грунт</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                            )}/>
+                        </div>
+                        <FormField name="features" control={form.control} render={() => (
+                            <FormItem>
+                                <div className="mb-4"><FormLabel>Особенности</FormLabel></div>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                {features.map((item) => (
+                                    <FormField key={item.id} control={form.control} name="features" render={({ field }) => (
+                                        <FormItem key={item.id} className="flex flex-row items-start space-x-3 space-y-0">
+                                            <FormControl><Checkbox checked={field.value?.includes(item.id)} onCheckedChange={(checked) => {
+                                                return checked ? field.onChange([...(field.value || []), item.id]) : field.onChange(field.value?.filter((value) => value !== item.id))
+                                            }} /></FormControl>
+                                            <FormLabel className="font-normal">{item.label}</FormLabel>
+                                        </FormItem>
+                                    )} />
+                                ))}
+                                </div>
+                            </FormItem>
+                        )}/>
+                        <FormItem>
+                            <FormLabel>Фотография</FormLabel>
+                            <FormControl>
+                                <label htmlFor="media-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-muted/80">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <UploadCloud className="w-8 h-8 mb-2 text-muted-foreground" />
+                                        <p className="mb-2 text-sm text-muted-foreground">Нажмите, чтобы загрузить фото</p>
+                                    </div>
+                                    <input id="media-upload" type="file" className="hidden" accept="image/png, image/jpeg" />
+                                </label>
+                            </FormControl>
+                        </FormItem>
+                    </CardContent>
+                    <CardFooter>
+                        <Button type="submit" disabled={isSubmitting} className="w-full">
+                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                             <PlusCircle className="mr-2 h-4 w-4" /> Добавить площадку
+                        </Button>
+                    </CardFooter>
+                </form>
+            </Form>
+        </Card>
+    );
+}

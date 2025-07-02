@@ -1,133 +1,58 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { useState, useMemo } from 'react';
+import { Input } from '@/shared/ui/input';
+import { Search, PlusCircle, Map } from 'lucide-react';
+import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
+import { PlaygroundCard } from '@/widgets/playground-card';
 import { Button } from '@/shared/ui/button';
-import { Textarea } from '@/shared/ui/textarea';
-import { findVenues, type FindVenuesOutput } from '@/shared/api/genkit/flows/find-venues-flow';
-import { Loader2, Sparkles, MapPin, DollarSign, Star, Search } from 'lucide-react';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { useToast } from '@/shared/hooks/use-toast';
-import { Skeleton } from '@/shared/ui/skeleton';
-import Image from 'next/image';
-import { Badge } from '@/shared/ui/badge';
+import Link from 'next/link';
 
-export function BookingPage() {
-    const { toast } = useToast();
-    const [prompt, setPrompt] = useState('Хочу найти футбольное поле с хорошим освещением на вечер.');
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [result, setResult] = useState<FindVenuesOutput | null>(null);
+export function PlaygroundsListPage() {
+    const [searchQuery, setSearchQuery] = useState('');
 
-    const handleSearch = async () => {
-        if (!prompt) {
-            setError('Пожалуйста, опишите, какую площадку вы ищете.');
-            return;
-        }
-        setIsLoading(true);
-        setError(null);
-        setResult(null);
-
-        try {
-            const searchResult = await findVenues(prompt);
-            setResult(searchResult);
-            if (searchResult.suggestedVenues.length === 0) {
-                 toast({
-                    title: "Ничего не найдено",
-                    description: "Попробуйте изменить ваш запрос.",
-                });
-            }
-        } catch (e) {
-            console.error(e);
-            setError('Не удалось выполнить поиск. Попробуйте еще раз.');
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleBook = (venueName: string) => {
-        toast({
-            title: 'Забронировано!',
-            description: `Площадка "${venueName}" успешно забронирована на выбранное вами время.`,
-        });
-    };
+    const filteredPlaygrounds = useMemo(() => {
+        return playgroundsList.filter(p =>
+            p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            p.address.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    }, [searchQuery]);
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
-            <div className="space-y-2 text-center">
-                <Search className="mx-auto h-12 w-12 text-primary" />
-                <h1 className="font-headline text-3xl font-bold tracking-tight">AI-поиск площадок</h1>
-                <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Просто опишите, что вы ищете, и наш AI-ассистент подберет лучшие варианты.
-                </p>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-2">
+                    <h1 className="font-headline text-3xl font-bold tracking-tight flex items-center gap-3">
+                        <Map className="h-8 w-8 text-primary"/>
+                        Карта площадок
+                    </h1>
+                    <p className="text-muted-foreground">
+                        Найдите или добавьте свою любимую площадку для игр и тренировок.
+                    </p>
+                </div>
+                <Button asChild>
+                    <Link href="/playgrounds/new">
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Добавить площадку
+                    </Link>
+                </Button>
             </div>
             
-            <Card className="max-w-3xl mx-auto">
-                <CardHeader>
-                    <CardTitle>Ваш запрос</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Textarea
-                        placeholder="Например: 'Бесплатная баскетбольная площадка с хорошим покрытием в центре города'"
-                        value={prompt}
-                        onChange={(e) => setPrompt(e.target.value)}
-                        disabled={isLoading}
-                        className="min-h-[100px] text-base"
-                    />
-                    {error && (
-                        <Alert variant="destructive" className="mt-4">
-                            <AlertTitle>Ошибка</AlertTitle>
-                            <AlertDescription>{error}</AlertDescription>
-                        </Alert>
-                    )}
-                </CardContent>
-                <CardFooter>
-                     <Button onClick={handleSearch} disabled={isLoading} size="lg" className="w-full">
-                        {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sparkles className="mr-2 h-5 w-5" />}
-                        {isLoading ? 'Идет поиск...' : 'Найти площадки'}
-                    </Button>
-                </CardFooter>
-            </Card>
-
-            <div className="mt-8">
-                {isLoading && (
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-80" />)}
-                    </div>
-                )}
-                
-                {result?.suggestedVenues && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in-50">
-                        {result.suggestedVenues.map((venue) => (
-                            <Card key={venue.id} className="flex flex-col">
-                                <div className="relative h-48 w-full">
-                                    <Image src={venue.image} alt={venue.name} fill className="object-cover rounded-t-lg" data-ai-hint={venue.imageHint} />
-                                </div>
-                                <CardHeader>
-                                    <CardTitle>{venue.name}</CardTitle>
-                                    <CardDescription className="flex items-center gap-1.5 pt-1">
-                                        <MapPin className="h-4 w-4" /> {venue.address}
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="flex-1 space-y-2">
-                                     <div className="flex flex-wrap gap-2">
-                                        {venue.features.map(feature => <Badge key={feature} variant="outline">{feature}</Badge>)}
-                                    </div>
-                                    <div className="flex justify-between items-center text-sm pt-2">
-                                        <span className="flex items-center gap-1.5"><DollarSign className="h-4 w-4" />{venue.price}</span>
-                                        <span className="flex items-center gap-1.5"><Star className="h-4 w-4 text-amber-400" />{venue.rating}/5.0</span>
-                                    </div>
-                                </CardContent>
-                                <CardFooter>
-                                    <Button className="w-full" onClick={() => handleBook(venue.name)}>
-                                        Забронировать
-                                    </Button>
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
-                )}
+            <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                    placeholder="Поиск по названию или адресу..."
+                    className="w-full pl-10 md:w-1/2 lg:w-1/3"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredPlaygrounds.map(playground => (
+                    <PlaygroundCard key={playground.id} playground={playground} />
+                ))}
             </div>
         </div>
     );

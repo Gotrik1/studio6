@@ -52,7 +52,7 @@ const sitemapData: TreeNode[] = [
              ]},
              { name: 'Фан-зона', type: 'file', href: '/fan-zone' },
              { name: 'Партнеры и спонсоры', type: 'file', href: '/sponsors' },
-             { name: 'Бронирование площадок', type: 'file', href: '/booking' },
+             { name: 'Площадки', type: 'file', href: '/playgrounds' },
         ]},
     ]},
     { name: 'Профиль', type: 'folder', children: [

@@ -1,3 +1,3 @@
-import { BookingPage } from '@/views/booking';
+import { PlaygroundsListPage } from '@/views/playgrounds-list';
 
-export default BookingPage;
+export default PlaygroundsListPage;
