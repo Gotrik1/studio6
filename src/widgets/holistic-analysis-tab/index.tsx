@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -8,10 +7,9 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Loader2, Sparkles, BrainCircuit, AlertCircle, TrendingUp, Goal, Link as LinkIcon } from "lucide-react";
 import { analyzeHolisticPerformance, type AnalyzeHolisticPerformanceOutput } from '@/shared/api/genkit/flows/analyze-holistic-performance-flow';
-
-// Mock data for the flow
-const mockPhysicalSummary = "Consistent training 3-4 times a week. Focus on strength (bench press, squats). Recent increase in total volume. Personal record in deadlift last week.";
-const mockEsportsSummary = "Win rate stable at 62%. KDA slightly dropped in the last 7 days. Best performance on Fridays and Saturdays.";
+import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
+import { trainingLogData } from '@/shared/lib/mock-data/training-log';
+import { winLossData } from '@/shared/lib/mock-data/player-stats';
 
 export function HolisticAnalysisTab() {
     const [isLoading, setIsLoading] = useState(false);
@@ -24,9 +22,32 @@ export function HolisticAnalysisTab() {
         setAnalysisResult(null);
 
         try {
+            // Generate summaries from mock data
+            const { trainingMetrics } = getTrainingAnalytics(trainingLogData);
+            const physicalSummary = `
+                Всего тренировок: ${trainingMetrics.totalWorkouts},
+                Ежемесячный объем: ${trainingMetrics.monthlyVolume},
+                Тренировочный стрик: ${trainingMetrics.workoutStreak},
+                Любимое упражнение: ${trainingMetrics.favoriteExercise},
+                Последняя тренировка: ${trainingMetrics.lastWorkout}.
+            `;
+
+            const esportsStats = {
+                matches: winLossData.wins + winLossData.losses,
+                winrate: ((winLossData.wins / (winLossData.wins + winLossData.losses)) * 100).toFixed(1) + '%',
+                kda: '1.25',
+                winStreak: 5,
+            };
+            const esportsSummary = `
+                Процент побед: ${esportsStats.winrate},
+                Всего матчей: ${esportsStats.matches},
+                Победная серия: ${esportsStats.winStreak},
+                Средний KDA: ${esportsStats.kda}.
+            `;
+
             const analysis = await analyzeHolisticPerformance({
-                physicalSummary: mockPhysicalSummary,
-                esportsSummary: mockEsportsSummary,
+                physicalSummary,
+                esportsSummary,
             });
             setAnalysisResult(analysis);
         } catch (e) {
