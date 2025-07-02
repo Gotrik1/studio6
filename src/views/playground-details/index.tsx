@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useState } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin } from 'lucide-react';
+import { MapPin, Wrench } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { PlusCircle, AlertTriangle, CheckCircle } from 'lucide-react';
@@ -21,6 +22,10 @@ import { PlaygroundOverviewTab } from '@/widgets/playground-overview-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
+import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-dialog';
+import { PlaygroundConditionStatus } from '@/widgets/playground-condition-status';
+import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
+
 
 export function PlaygroundDetailsPage({ playground: initialPlayground }: { playground: Playground }) {
     const { user } = useSession();
@@ -31,6 +36,8 @@ export function PlaygroundDetailsPage({ playground: initialPlayground }: { playg
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
+    const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
+    const [conditionReport, setConditionReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
 
     const handlePlanGame = (data: { date: Date, time: string, duration: number }) => {
         const [hours, minutes] = data.time.split(':').map(Number);
@@ -69,6 +76,32 @@ export function PlaygroundDetailsPage({ playground: initialPlayground }: { playg
         });
     };
 
+    const handleReportSubmit = async (data: { category: string; comment: string }) => {
+        toast({
+            title: "Спасибо за ваше сообщение!",
+            description: "Начинаем анализ проблемы с помощью AI...",
+        });
+
+        try {
+            const analysis = await analyzePlaygroundReport({
+                playgroundName: initialPlayground.name,
+                issueCategory: data.category,
+                userComment: data.comment,
+            });
+            setConditionReport(analysis);
+            toast({
+                title: "Проблема зарегистрирована",
+                description: `Статус площадки обновлен. AI-анализ: "${analysis.summary}".`
+            });
+        } catch (e) {
+            toast({
+                variant: 'destructive',
+                title: 'Ошибка анализа',
+                description: 'Не удалось обработать ваше сообщение. Попробуйте позже.',
+            });
+        }
+    };
+
     return (
         <>
             <div className="space-y-6">
@@ -103,14 +136,19 @@ export function PlaygroundDetailsPage({ playground: initialPlayground }: { playg
                         <PlusCircle className="mr-2 h-5 w-5" />
                         Запланировать игру
                     </Button>
+                     <Button className="w-full sm:w-auto" size="lg" variant="destructive" onClick={() => setIsReportIssueOpen(true)}>
+                        <AlertTriangle className="mr-2 h-5 w-5" />
+                        Сообщить о проблеме
+                    </Button>
                 </div>
 
                 <Tabs defaultValue="overview">
-                    <TabsList className="grid w-full grid-cols-4">
+                    <TabsList className="grid w-full grid-cols-5">
                         <TabsTrigger value="overview">Обзор</TabsTrigger>
                         <TabsTrigger value="activity">Активность</TabsTrigger>
                         <TabsTrigger value="leaderboard">Лидеры</TabsTrigger>
                         <TabsTrigger value="media">Медиа</TabsTrigger>
+                        <TabsTrigger value="condition"><Wrench className="mr-2 h-4 w-4"/>Состояние</TabsTrigger>
                     </TabsList>
                     <TabsContent value="overview" className="mt-4">
                         <PlaygroundOverviewTab playground={playground} />
@@ -123,6 +161,12 @@ export function PlaygroundDetailsPage({ playground: initialPlayground }: { playg
                     </TabsContent>
                     <TabsContent value="media" className="mt-4">
                         <PlaygroundMediaTab />
+                    </TabsContent>
+                     <TabsContent value="condition" className="mt-4">
+                        <PlaygroundConditionStatus
+                            status={conditionReport ? 'issue' : 'ok'}
+                            report={conditionReport || undefined}
+                        />
                     </TabsContent>
                 </Tabs>
             </div>
@@ -137,6 +181,12 @@ export function PlaygroundDetailsPage({ playground: initialPlayground }: { playg
                 onOpenChange={setIsCheckInOpen}
                 playgroundName={playground.name}
                 onCheckIn={handleCheckIn}
+            />
+            <ReportPlaygroundIssueDialog
+                isOpen={isReportIssueOpen}
+                onOpenChange={setIsReportIssueOpen}
+                playgroundName={playground.name}
+                onReportSubmit={handleReportSubmit}
             />
         </>
     );
