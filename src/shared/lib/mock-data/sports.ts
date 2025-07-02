@@ -28,6 +28,7 @@ export const sportsList: Sport[] = [
     // Некомандные виды спорта
     { id: 'athletics', name: 'Лёгкая атлетика', icon: 'Footprints', category: 'Некомандный' },
     { id: 'tennis', name: 'Теннис', icon: 'Circle', category: 'Некомандный' },
+    { id: 'table_tennis', name: 'Настольный теннис', icon: 'Circle', category: 'Некомандный' },
     { id: 'cycling', name: 'Велоспорт', icon: 'Bike', category: 'Некомандный' },
     { id: 'boxing', name: 'Бокс', icon: 'Hand', category: 'Некомандный' },
     { id: 'swimming', name: 'Плавание', icon: 'Waves', category: 'Некомандный' },
