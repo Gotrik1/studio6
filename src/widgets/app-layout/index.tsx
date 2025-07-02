@@ -35,6 +35,7 @@ import {
   ClipboardList,
   Gavel,
   Map,
+  Backpack,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -121,6 +122,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/chats", icon: MessageSquare, label: "Сообщения" },
         { href: "/training", icon: Dumbbell, label: "Тренировки" },
         { href: "/playgrounds", icon: Map, label: "Площадки" },
+        { href: "/inventory", icon: Backpack, label: "Инвентарь" },
         { href: "/store", icon: ShoppingCart, label: "Магазин" },
     ];
     
