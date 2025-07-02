@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -20,12 +21,14 @@ const findAvailableVenuesTool = ai.defineTool(
   {
     name: 'findAvailableVenues',
     description: 'Finds available sports venues based on a query. Use this to find a place to play.',
-    inputSchema: z.string().describe("A query describing the desired venue, e.g., 'футбольное поле в Москве', 'бесплатная баскетбольная площадка', 'корт с освещением'."),
+    inputSchema: z.object({
+        query: z.string().describe("A query describing the desired venue, e.g., 'футбольное поле в Москве', 'бесплатная баскетбольная площадка', 'корт с освещением'."),
+    }),
     outputSchema: z.array(PlaygroundSchema),
   },
-  async (query) => {
+  async (input) => {
     // Simple keyword filtering for demo purposes.
-    const lowercasedQuery = query.toLowerCase();
+    const lowercasedQuery = input.query.toLowerCase();
     return playgroundsList
       .filter(venue =>
         venue.name.toLowerCase().includes(lowercasedQuery) ||
