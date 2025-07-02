@@ -1,5 +1,6 @@
 
 import { TrainingCalendar } from '@/widgets/training-calendar';
+import { TrainingProposalsWidget } from '@/widgets/training-proposals';
 
 export function TrainingCalendarPage() {
     return (
@@ -10,7 +11,14 @@ export function TrainingCalendarPage() {
                     Визуализируйте свой план тренировок и матчей, отслеживайте прогресс и планируйте будущие сессии.
                 </p>
             </div>
-            <TrainingCalendar />
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2">
+                    <TrainingCalendar />
+                </div>
+                <div className="lg:col-span-1">
+                     <TrainingProposalsWidget />
+                </div>
+            </div>
         </div>
     );
 }

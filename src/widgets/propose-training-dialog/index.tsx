@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -19,6 +20,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { sportsList } from '@/shared/lib/mock-data/sports';
 import { friendsList } from '@/shared/lib/mock-data/friends';
+import { useTrainingProposals } from '@/app/providers/training-proposal-provider';
 
 const trainingSchema = z.object({
   friendId: z.string({ required_error: "Выберите друга." }),
@@ -37,6 +39,7 @@ interface ProposeTrainingDialogProps {
 
 export function ProposeTrainingDialog({ isOpen, onOpenChange }: ProposeTrainingDialogProps) {
     const { toast } = useToast();
+    const { addProposal } = useTrainingProposals();
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const form = useForm<FormValues>({
@@ -44,14 +47,20 @@ export function ProposeTrainingDialog({ isOpen, onOpenChange }: ProposeTrainingD
         defaultValues: {
             time: '18:00',
             comment: '',
+            date: new Date(),
         },
     });
 
     const onSubmit = (data: FormValues) => {
         setIsSubmitting(true);
-        // Simulate API call
+        // Combine date and time
+        const [hours, minutes] = data.time.split(':').map(Number);
+        const combinedDate = new Date(data.date);
+        combinedDate.setHours(hours, minutes, 0, 0);
+
         setTimeout(() => {
             const friend = friendsList.find(f => f.id === data.friendId);
+            addProposal(data.friendId, data.sport, combinedDate, data.comment || '');
             toast({
                 title: "Предложение отправлено!",
                 description: `Ваше предложение о совместной тренировке отправлено игроку ${friend?.name}.`,
