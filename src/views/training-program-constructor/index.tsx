@@ -10,6 +10,7 @@ import { Wand2, Hand } from 'lucide-react';
 import { TrainingProgramForm, type ProgramFormValues } from '@/widgets/training-program-form';
 import { AiProgramGenerator } from '@/widgets/ai-program-generator';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
+import { exercisesList } from '@/shared/lib/mock-data/exercises';
 
 export function TrainingProgramConstructorPage() {
     const { addProgram } = useTraining();
@@ -35,14 +36,17 @@ export function TrainingProgramConstructorPage() {
             weeklySplit: data.days.map((day, index) => ({
                 day: index + 1,
                 title: day.title,
-                exercises: day.exercises.map(ex => ({ 
-                    name: ex.name, 
-                    sets: ex.sets, 
-                    reps: ex.reps, 
-                    plannedWeight: ex.plannedWeight,
-                    isSupersetWithPrevious: ex.isSupersetWithPrevious,
-                    technique: ex.technique,
-                })),
+                exercises: day.exercises.map(ex => {
+                    const fullExercise = exercisesList.find(e => e.id === ex.id);
+                    return { 
+                        name: ex.name, 
+                        sets: ex.sets, 
+                        reps: ex.reps, 
+                        plannedWeight: ex.plannedWeight,
+                        isSupersetWithPrevious: ex.isSupersetWithPrevious,
+                        technique: ex.technique,
+                    };
+                }),
             })),
         };
         addAndRedirect(newProgram);

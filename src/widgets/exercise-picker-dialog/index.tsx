@@ -17,8 +17,8 @@ interface ExercisePickerDialogProps {
   onSelectExercises: (exercises: Exercise[]) => void;
 }
 
-const muscleGroups = ['Все', 'Грудь', 'Спина', 'Ноги', 'Плечи', 'Руки', 'Пресс'];
-const equipmentTypes = ['Все', 'Штанга', 'Гантели', 'Тренажер', 'Собственный вес'];
+const muscleGroups = ['Все', 'Грудь', 'Спина', 'Ноги', 'Плечи', 'Руки', 'Пресс', 'Баскетбол', 'Футбол', 'Valorant'];
+const equipmentTypes = ['Все', 'Штанга', 'Гантели', 'Тренажер', 'Собственный вес', 'Мяч', 'Компьютер'];
 
 export function ExercisePickerDialog({ isOpen, onOpenChange, onSelectExercises }: ExercisePickerDialogProps) {
   const [searchQuery, setSearchQuery] = useState('');
@@ -38,7 +38,7 @@ export function ExercisePickerDialog({ isOpen, onOpenChange, onSelectExercises }
   const filteredExercises = useMemo(() => {
     return exercisesList.filter(exercise => {
       const matchesSearch = exercise.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesMuscle = muscleFilter === 'Все' || exercise.muscleGroup === muscleFilter;
+      const matchesMuscle = muscleFilter === 'Все' || exercise.category === muscleFilter;
       const matchesEquipment = equipmentFilter === 'Все' || exercise.equipment === equipmentFilter;
       return matchesSearch && matchesMuscle && matchesEquipment;
     });
@@ -82,7 +82,7 @@ export function ExercisePickerDialog({ isOpen, onOpenChange, onSelectExercises }
             </div>
             <div className="space-y-2">
                  <div className="flex flex-wrap gap-2">
-                    <span className="text-sm font-medium p-2 self-center">Мышцы:</span>
+                    <span className="text-sm font-medium p-2 self-center">Категория:</span>
                     {muscleGroups.map(group => (
                         <Button
                             key={group}
@@ -121,7 +121,7 @@ export function ExercisePickerDialog({ isOpen, onOpenChange, onSelectExercises }
                         />
                         <label htmlFor={`ex-picker-${exercise.id}`} className="font-medium text-sm cursor-pointer flex-1">
                             {exercise.name}
-                             <Badge variant="secondary" className="ml-2">{exercise.muscleGroup}</Badge>
+                             <Badge variant="secondary" className="ml-2">{exercise.category}</Badge>
                              <Badge variant="outline" className="ml-1">{exercise.equipment}</Badge>
                         </label>
                     </div>
