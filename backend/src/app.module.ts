@@ -5,9 +5,10 @@ import { UsersModule } from './modules/users/users.module';
 import { TeamsModule } from './modules/teams/teams.module';
 import { TournamentsModule } from './modules/tournaments/tournaments.module';
 import { MatchesModule } from './modules/matches/matches.module';
+import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [UsersModule, TeamsModule, TournamentsModule, MatchesModule],
+  imports: [PrismaModule, UsersModule, TeamsModule, TournamentsModule, MatchesModule],
   controllers: [AppController],
   providers: [AppService],
 })

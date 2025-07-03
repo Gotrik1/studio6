@@ -1,21 +1,37 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-    private readonly users = []; // Mock database
+  constructor(private prisma: PrismaService) {}
 
-  create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<User> {
     // In a real app, you would hash the password here
     // before saving to the database.
-    return 'This action adds a new user';
+    const { name, email } = createUserDto;
+    return this.prisma.user.create({
+      data: {
+        name,
+        email,
+        role: 'Игрок', // default role
+        passwordHash: 'hashed_password_placeholder', // placeholder
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll(): Promise<User[]> {
+    return this.prisma.user.findMany();
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.user.delete({ where: { id } });
   }
 }

@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String
+  email        String   @unique
+  role         String
+  passwordHash String
+
+  captainOf Team? @relation("TeamCaptain")
+  teams     Team[]  @relation("TeamMembers")
+
+  @@map("users")
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  game      String
+
+  captainId String @unique
+  captain   User   @relation("TeamCaptain", fields: [captainId], references: [id])
+
+  members   User[]   @relation("TeamMembers")
+  matchesA  Match[]  @relation("TeamA")
+  matchesB  Match[]  @relation("TeamB")
+  
+  tournaments Tournament[]
+
+  @@map("teams")
+}
+
+model Tournament {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  game      String
+  format    String // 'single_elimination' | 'round_robin'
+  prizePool Float
+  startDate DateTime
+  status    String // 'registration' | 'ongoing' | 'finished'
+
+  teams   Team[]
+  matches Match[]
+
+  @@map("tournaments")
+}
+
+model Match {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  scheduledAt DateTime
+  score       String?
+  status      String // 'planned' | 'live' | 'finished' | 'disputed'
+
+  teamAId String
+  teamA   Team   @relation("TeamA", fields: [teamAId], references: [id])
+
+  teamBId String
+  teamB   Team   @relation("TeamB", fields: [teamBId], references: [id])
+
+  tournamentId String?
+  tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+
+  @@map("matches")
+}
