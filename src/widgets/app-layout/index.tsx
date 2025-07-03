@@ -39,6 +39,11 @@ import {
   Map,
   Backpack,
   HeartPulse,
+  FolderKanban,
+  FileText,
+  Palette,
+  BrainCircuit,
+  Coins
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -109,6 +114,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     }, []);
 
     const isActive = (href: string) => {
+        if (!pathname) return false;
         if (href === '/dashboard' || href === '/') {
             return pathname === '/dashboard' || pathname === '/';
         }
@@ -144,13 +150,68 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/inventory", icon: Backpack, label: "Инвентарь" },
         { href: "/store", icon: ShoppingCart, label: "Магазин" },
     ];
+
+    const adminNavItems = {
+        label: "Администрирование",
+        icon: ShieldCheck,
+        href: '/administration',
+        role: 'Администратор',
+        children: [
+            { href: "/administration/users", label: "Пользователи" },
+            { href: "/administration/tournament-crm/dashboard", label: "Турниры (CRM)" },
+            { href: "/administration/moderation-queue", label: "Очередь модерации" },
+            { href: "/administration/pd-economy", label: "Экономика PD" },
+            { href: "/administration/gamification", label: "Геймификация" },
+            { href: "/administration/playgrounds", label: "Площадки" },
+            { href: "/administration/sports", label: "Виды спорта" },
+        ]
+    };
     
+    const docsNavItems = {
+        label: "Документация",
+        icon: FolderKanban,
+        href: '/documents',
+        role: 'Администратор', // Assuming docs are also for admin
+        children: [
+            { href: "/documents/project-readme", label: "Readme проекта" },
+            { href: "/documents/architecture", label: "Архитектура" },
+            { href: "/documents/vision-and-principles", label: "Видение проекта" },
+            { href: "/ai-analysis", icon: BrainCircuit, label: "AI-Песочница" },
+            { href: "/theme-demo", icon: Palette, label: "Демо темы" },
+            { href: "/administration/sitemap", icon: Map, label: "Карта сайта" },
+        ]
+    };
+
     const systemNavItems = [
-        { href: "/administration", icon: ShieldCheck, label: "Админка", role: 'Администратор' },
         { href: "/support", icon: LifeBuoy, label: "Поддержка" },
         { href: "/settings", icon: Settings, label: "Настройки" },
     ];
 
+    const renderCollapsibleMenu = (item: typeof adminNavItems) => (
+         <SidebarMenuItem key={item.label}>
+            <Collapsible>
+                <CollapsibleTrigger className="w-full">
+                    <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'} className="w-full">
+                        <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                    </SidebarMenuButton>
+                </CollapsibleTrigger>
+                {state === 'expanded' && (
+                    <CollapsibleContent>
+                        <SidebarMenuSub>
+                            {item.children.map(child => (
+                                <SidebarMenuSubItem key={child.href}>
+                                    <SidebarMenuSubButton href={child.href} variant={isActive(child.href) ? 'active' : 'default'}>
+                                        {child.icon && <child.icon className="mr-2 h-4 w-4"/>}
+                                        {child.label}
+                                    </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                            ))}
+                        </SidebarMenuSub>
+                    </CollapsibleContent>
+                )}
+            </Collapsible>
+        </SidebarMenuItem>
+    );
 
     return (
         <>
@@ -168,29 +229,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                         <SidebarMenu className="space-y-1">
                             {mainNavItems.map(item => (
                                 item.children ? (
-                                    <SidebarMenuItem key={item.label}>
-                                        <Collapsible>
-                                            <CollapsibleTrigger className="w-full">
-                                                <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'} className="w-full">
-                                                    <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
-                                                </SidebarMenuButton>
-                                            </CollapsibleTrigger>
-                                            {state === 'expanded' && (
-                                                <CollapsibleContent>
-                                                    <SidebarMenuSub>
-                                                        {item.children.map(child => (
-                                                            <SidebarMenuSubItem key={child.href}>
-                                                                <SidebarMenuSubButton href={child.href} variant={isActive(child.href) ? 'active' : 'default'}>
-                                                                    {child.icon && <child.icon className="mr-2 h-4 w-4"/>}
-                                                                    {child.label}
-                                                                </SidebarMenuSubButton>
-                                                            </SidebarMenuSubItem>
-                                                        ))}
-                                                    </SidebarMenuSub>
-                                                </CollapsibleContent>
-                                            )}
-                                        </Collapsible>
-                                    </SidebarMenuItem>
+                                    renderCollapsibleMenu(item as any) // Type assertion for simplicity
                                 ) : (
                                     <SidebarMenuItem key={item.href}>
                                         <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
@@ -219,16 +258,16 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                     </div>
                     <div className="pt-2 mt-auto">
                         <SidebarSeparator className="my-1" />
-                        {systemNavItems.map(item => {
-                            if (item.role && item.role !== user.role) return null;
-                            return (
-                                <SidebarMenuItem key={item.href}>
-                                    <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
-                                        <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            )
-                        })}
+                        {user.role === 'Администратор' && renderCollapsibleMenu(adminNavItems)}
+                        {user.role === 'Администратор' && renderCollapsibleMenu(docsNavItems)}
+
+                        {systemNavItems.map(item => (
+                            <SidebarMenuItem key={item.href}>
+                                <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
+                                    <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
                     </div>
                 </SidebarContent>
             </Sidebar>

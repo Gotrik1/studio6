@@ -16,7 +16,7 @@ type AdminSectionCardProps = {
 
 const AdminSectionCard = ({ title, description, href, icon: Icon }: AdminSectionCardProps) => (
      <Link href={href} className="block h-full">
-        <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-2xl cursor-pointer">
+        <Card className="flex flex-col h-full transition-all duration-300 hover:shadow-2xl cursor-pointer hover:border-primary">
             <CardHeader className="flex-row items-start gap-4 space-y-0 flex-grow pb-4">
                 <div className="p-2 bg-muted rounded-md">
                     <Icon className="h-6 w-6 text-primary" />
