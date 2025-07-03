@@ -5,6 +5,7 @@ export type PdRule = {
     value: number;
     type: 'credit' | 'debit';
     editable: boolean;
+    isCustom?: boolean;
 };
 
 // This now represents the default rules for the economy.

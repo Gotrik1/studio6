@@ -51,7 +51,7 @@ export const profileCards = [
 
 export const contentCards = [
     { title: "Партнеры", description: "Управление спонсорами и партнерами.", href: "/sponsors", icon: Handshake },
-    { title: "Экономика PD", description: "Настройка правил начисления PD.", href: "/pd-economy", icon: Coins },
+    { title: "Экономика PD", description: "Настройка правил начисления PD.", href: "/administration/pd-economy", icon: Coins },
     { title: "Монетизация", description: "Управление подписками.", href: "/monetization", icon: DollarSign },
     { title: "Магазин", description: "Редактирование товаров в магазине.", href: "/administration/store", icon: ShoppingCart },
     { title: "Промо-акции", description: "Создание и управление акциями.", href: "/promotions", icon: Megaphone },
