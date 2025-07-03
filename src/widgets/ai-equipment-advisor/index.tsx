@@ -14,7 +14,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export function AiEquipmentAdvisor() {
-    const [prompt, setPrompt] = useState('Мне нужна легкая игровая мышь для шутеров, до $100');
+    const [prompt, setPrompt] = useState('Легкая игровая мышь для шутеров, до $100');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<FindEquipmentOutput | null>(null);
