@@ -18,7 +18,7 @@ import { cn } from '@/shared/lib/utils';
 import { useState } from 'react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
-import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
+import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray, playerActivity as PlayerActivityArray } from "@/shared/lib/mock-data/profiles";
 import { ReportPlayerDialog } from '@/features/report-player-dialog';
 import Image from "next/image";
 import { format } from "date-fns";
@@ -26,11 +26,8 @@ import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
 import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
+import { PlayerActivityFeed } from '@/widgets/player-activity-feed';
 
-const PlayerActivityFeed = dynamic(() => import('@/widgets/player-activity-feed').then(mod => mod.PlayerActivityFeed), {
-  loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
-  ssr: false,
-});
 const CareerTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/career-tab').then(mod => mod.CareerTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
   ssr: false,
@@ -75,9 +72,10 @@ type PlayerProfileProps = {
   recentMatches: typeof MatchesArray;
   gallery: typeof GalleryArray;
   careerHistory: typeof CareerHistoryArray;
+  playerActivity: typeof PlayerActivityArray;
 };
 
-export function PlayerProfile({ user, isCurrentUser, achievements, teams, recentMatches, gallery, careerHistory }: PlayerProfileProps) {
+export function PlayerProfile({ user, isCurrentUser, achievements, teams, recentMatches, gallery, careerHistory, playerActivity }: PlayerProfileProps) {
   const [avatar, setAvatar] = useState(user.avatar);
   const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
   const initials = user.name.split(' ').map((n) => n[0]).join('');
