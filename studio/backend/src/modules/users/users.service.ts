@@ -23,7 +23,6 @@ export class UsersService {
     
     // In a real app with Keycloak, we wouldn't handle the password.
     // This is a placeholder for the prototype's self-contained auth.
-    // A secure password would be received from a trusted source or not at all.
     const passwordHash = await bcrypt.hash('password-placeholder', 10);
 
     const user = await this.prisma.user.create({
