@@ -1,57 +1,49 @@
+
 'use server';
 
 /**
- * @fileOverview An AI agent for generating a complete team concept from a single prompt.
+ * @fileOverview An API client for generating a complete team concept via the backend.
  *
- * - generateTeamConcept - A function that handles the generation.
+ * - generateTeamConcept - A function that calls the backend to handle the generation.
  * - GenerateTeamConceptInput - The input type for the function.
  * - GenerateTeamConceptOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
-import {z} from 'genkit';
-import {createTeam} from './create-team-flow';
-import {generateTeamAvatar} from './generate-team-avatar-flow';
 import { GenerateTeamConceptInputSchema, GenerateTeamConceptOutputSchema } from './schemas/generate-team-concept-schema';
 import type { GenerateTeamConceptInput, GenerateTeamConceptOutput } from './schemas/generate-team-concept-schema';
 
 export type { GenerateTeamConceptInput, GenerateTeamConceptOutput };
 
-
 export async function generateTeamConcept(input: GenerateTeamConceptInput): Promise<GenerateTeamConceptOutput> {
-  return generateTeamConceptFlow(input);
-}
-
-
-const generateTeamConceptFlow = ai.defineFlow(
-  {
-    name: 'generateTeamConceptFlow',
-    inputSchema: GenerateTeamConceptInputSchema,
-    outputSchema: GenerateTeamConceptOutputSchema,
-  },
-  async ({ prompt }) => {
-    // Generate name, motto, avatar, and description in parallel
-    const [details, avatar, descriptionResult] = await Promise.all([
-      createTeam({ description: prompt }),
-      generateTeamAvatar({ prompt }),
-      ai.generate({
-          prompt: `Based on the team idea "${prompt}", write a short, epic and engaging description for their team profile page. Keep it to 2-3 sentences. Respond in Russian.`,
-          output: {
-              schema: z.string(),
-          }
-      })
-    ]);
-    
-    const description = descriptionResult.output;
-    if (!description) {
-        throw new Error("Failed to generate team description.");
-    }
-
-    return {
-        name: details.name,
-        motto: details.motto,
-        description,
-        avatarDataUri: avatar.avatarDataUri,
-    };
+  // Validate input using Zod
+  const parsedInput = GenerateTeamConceptInputSchema.safeParse(input);
+  if (!parsedInput.success) {
+    throw new Error('Invalid input for generating team concept.');
   }
-);
+
+  const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:3001'}/ai/generate-team-concept`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ prompt: parsedInput.data.prompt }),
+    // Important for Next.js to not cache API route results
+    cache: 'no-store', 
+  });
+
+  if (!response.ok) {
+    // You might want to handle different status codes differently
+    throw new Error(`Backend API responded with status: ${response.status}`);
+  }
+
+  const result = await response.json();
+  
+  // Validate output
+  const parsedOutput = GenerateTeamConceptOutputSchema.safeParse(result);
+  if (!parsedOutput.success) {
+      console.error("Invalid response from backend:", parsedOutput.error);
+      throw new Error("Received invalid data structure from backend.");
+  }
+  
+  return parsedOutput.data;
+}
