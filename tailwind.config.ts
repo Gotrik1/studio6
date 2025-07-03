@@ -134,7 +134,10 @@ export default {
       },
       animationDelay: {
         '300': '300ms',
+        '400': '400ms',
+        '500': '500ms',
         '600': '600ms',
+        '700': '700ms',
       },
       typography: ({ theme }: { theme: (path: string) => string }) => ({
         DEFAULT: {
@@ -185,8 +188,17 @@ export default {
           '.animation-delay-300': {
             animationDelay: theme('animationDelay.300'),
           },
+          '.animation-delay-400': {
+            animationDelay: theme('animationDelay.400'),
+          },
+           '.animation-delay-500': {
+            animationDelay: theme('animationDelay.500'),
+          },
           '.animation-delay-600': {
             animationDelay: theme('animationDelay.600'),
+          },
+           '.animation-delay-700': {
+            animationDelay: theme('animationDelay.700'),
           },
         }
         addUtilities(newUtilities)
