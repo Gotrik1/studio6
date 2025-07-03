@@ -49,3 +49,4 @@ import './flows/analyze-exercise-form-flow';
 import './flows/find-lfg-lobbies-flow';
 import './flows/generate-nutrition-plan-flow';
 import './flows/generate-match-post-flow';
+import './flows/generate-playground-summary-flow';
