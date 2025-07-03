@@ -1,34 +1,60 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { User } from './entities/user.entity';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    // In a real app, you would hash the password here
-    // before saving to the database.
-    const { name, email } = createUserDto;
-    return this.prisma.user.create({
+  async create(createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
+    const { name, email, password } = createUserDto;
+
+    const existingUser = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUser) {
+      throw new ConflictException('Пользователь с таким email уже существует');
+    }
+
+    // В реальном приложении здесь будет хеширование пароля
+    // const passwordHash = await bcrypt.hash(password, 10);
+    const passwordHash = `hashed_${password}_placeholder`;
+
+    const user = await this.prisma.user.create({
       data: {
         name,
         email,
         role: 'Игрок', // default role
-        passwordHash: 'hashed_password_placeholder', // placeholder
+        passwordHash,
       },
     });
+
+    // Никогда не возвращаем хэш пароля клиенту
+    const { passwordHash: _, ...result } = user;
+    return result;
   }
 
-  async findAll(): Promise<User[]> {
-    return this.prisma.user.findMany();
+  async findAll(): Promise<Omit<User, 'passwordHash'>[]> {
+    const users = await this.prisma.user.findMany();
+    return users.map(user => {
+      const { passwordHash, ...result } = user;
+      return result;
+    });
   }
 
-  async findOne(id: string): Promise<User | null> {
-    return this.prisma.user.findUnique({
+  async findOne(id: string): Promise<Omit<User, 'passwordHash'> | null> {
+    const user = await this.prisma.user.findUnique({
       where: { id },
     });
+
+    if (!user) {
+      return null;
+    }
+
+    const { passwordHash, ...result } = user;
+    return result;
   }
 
   async remove(id: string) {
