@@ -70,27 +70,28 @@ export async function register(values: z.infer<typeof registerSchema>) {
         return { error: 'Предоставлены неверные данные.' };
     }
 
-    const { name, email, role } = validatedFields.data;
+    const { name, email, password, role } = validatedFields.data;
 
-    // In a real app, you would save the user to the database.
-    // For this prototype, we'll create a user object and save it to the session.
-    const newUser: User = {
-        id: `user-${Date.now()}`,
-        name,
-        email,
-        role,
-        avatar: 'https://placehold.co/100x100.png',
-    };
+    try {
+        const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:3001'}/users`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ name, email, role, password }), // Password will be ignored by backend for now
+        });
 
-    const cookieStore = await cookies();
-    cookieStore.set('session', JSON.stringify(newUser), {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 60 * 60 * 24 * 7, // One week
-        path: '/',
-    });
-    
-    redirect('/welcome');
+        if (!response.ok) {
+            const errorData = await response.json();
+            return { error: errorData.message || 'Ошибка регистрации.' };
+        }
+
+        return { success: 'Аккаунт успешно создан! Теперь вы можете войти.' };
+
+    } catch (error) {
+        console.error(error);
+        return { error: 'Не удалось подключиться к серверу.' };
+    }
 }
 
 

@@ -9,7 +9,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
-    const { name, email } = createUserDto;
+    const { name, email, role } = createUserDto;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -21,14 +21,13 @@ export class UsersService {
 
     // В реальном приложении здесь будет вызов Keycloak Admin API для создания пользователя.
     // Пароль обрабатывается и хранится в Keycloak, а не в нашем сервисе.
-    // Для демо мы просто создаем пользователя в нашей БД.
     const passwordHash = `keycloak_managed_password_${Date.now()}`;
 
     const user = await this.prisma.user.create({
       data: {
         name,
         email,
-        role: 'Игрок', // default role
+        role: role || 'Игрок', // default role
         passwordHash, // This field is just a placeholder
       },
     });
