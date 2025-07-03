@@ -1,4 +1,3 @@
-
 export function TermsOfUsePage() {
     return (
         <div className="prose dark:prose-invert max-w-none opacity-0 animate-fade-in-up">
