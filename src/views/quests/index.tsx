@@ -99,7 +99,7 @@ export function QuestsPage() {
                         Центр Квестов
                     </h1>
                     <p className="text-muted-foreground">
-                        Выполняйте задания, чтобы заработать ProDvor Dollars (PD) и разблокировать достижения.
+                        Выполняйте задания, чтобы заработать PD и разблокировать достижения.
                     </p>
                 </div>
                 <Button variant="outline" onClick={handleResetDailies}>

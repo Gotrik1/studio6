@@ -33,7 +33,7 @@ export const storeItems = [
     {
         id: 'pd-pack-small',
         name: 'Набор PD (500)',
-        description: 'Пополните свой баланс на 500 ProDvor Dollars.',
+        description: 'Пополните свой баланс на 500 PD.',
         price: 4.99,
         isRealMoney: true,
         image: 'https://placehold.co/600x400.png',
