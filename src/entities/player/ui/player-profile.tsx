@@ -76,7 +76,7 @@ type PlayerProfileProps = {
   playerActivity: typeof PlayerActivityArray;
 };
 
-export function PlayerProfile({ user, isCurrentUser, achievements, teams, recentMatches, gallery, careerHistory, playerActivity }: PlayerProfileProps) {
+export function PlayerProfile({ user, isCurrentUser, achievements, teams, gallery, careerHistory, playerActivity }: PlayerProfileProps) {
   const [avatar, setAvatar] = useState(user.avatar);
   const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
   const initials = user.name.split(' ').map((n) => n[0]).join('');

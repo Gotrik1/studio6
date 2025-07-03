@@ -9,7 +9,7 @@ export default async function AdrPage({ params }: { params: { slug: string } }) 
     try {
         const markdown = await fs.readFile(docPath, 'utf-8');
         return <AdrClient markdown={markdown} />;
-    } catch (error) {
+    } catch {
         notFound();
     }
 }

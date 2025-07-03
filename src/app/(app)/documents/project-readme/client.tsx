@@ -4,16 +4,15 @@ import { CodeBlock } from '@/widgets/code-block';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Image from "next/image";
+import type { Components } from 'react-markdown';
 
-const MarkdownComponents = {
+const MarkdownComponents: Components = {
   // a custom renderer for images to use next/image for optimization
   // and to handle the custom data-ai-hint attribute.
-  img: (props: any) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {node, ...rest} = props;
-    return <Image {...rest} alt={props.alt || ''} width={1200} height={630} className="rounded-lg shadow-lg not-prose" data-ai-hint={node.properties['data-ai-hint']} />;
+  img: ({node, ...props}) => {
+    return <Image {...props} alt={props.alt || ''} width={1200} height={630} className="rounded-lg shadow-lg not-prose" data-ai-hint={node?.properties?.['data-ai-hint']} />;
   },
-  code({ node, inline, className, children, ...props }: any) {
+  code({ inline, className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || '');
     return !inline && match ? (
       <CodeBlock

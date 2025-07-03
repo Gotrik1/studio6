@@ -2,9 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 import type { PlaygroundReview } from '@/shared/lib/mock-data/playground-reviews';
-import { useSession } from '@/shared/lib/session/client';
 import { PlaygroundReviewsFeed } from '@/widgets/playground-reviews-feed';
 import { PlaygroundReviewSummary } from '@/widgets/playground-review-summary';
 import { PlaygroundReviewDialog } from '@/widgets/playground-review-dialog';

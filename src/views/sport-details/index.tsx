@@ -12,13 +12,13 @@ import { Badge } from '@/shared/ui/badge';
 import { leaderboardData } from '@/shared/lib/mock-data/leaderboards';
 import { allTournaments } from '@/shared/lib/mock-data/tournaments';
 import { teams } from '@/shared/lib/mock-data/teams';
-import { initialLfgLobbies, type LfgLobby } from '@/shared/lib/mock-data/lfg';
+import { initialLfgLobbies } from '@/shared/lib/mock-data/lfg';
 import { LfgCard } from '@/widgets/lfg-card';
 import { useLfg } from '@/app/providers/lfg-provider';
 import Link from 'next/link';
 import { cn } from '@/shared/lib/utils';
 import { AiSportSummary } from '@/widgets/ai-sport-summary';
-import { Star, Swords, Users, Gamepad2, Trophy } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { useToast } from '@/shared/hooks/use-toast';
 

@@ -11,7 +11,6 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { ShoppingCart, Trash2, Coins, Loader2, CreditCard } from "lucide-react";
 import Image from "next/image";
 import { ScrollArea } from '@/shared/ui/scroll-area';
-import { Separator } from '@/shared/ui/separator';
 import { Input } from '@/shared/ui/input';
 
 export function CartDialog() {

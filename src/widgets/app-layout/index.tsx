@@ -39,17 +39,12 @@ import {
   Gavel,
   Map,
   Backpack,
-  HeartPulse,
   FolderKanban,
-  FileText,
+  FileSignature,
   Palette,
   BrainCircuit,
-  Coins,
-  Ruler,
   Flame,
   Target,
-  FileSignature,
-  Lock,
   type LucideIcon,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
@@ -57,7 +52,7 @@ import { ThemeToggle } from "@/shared/ui/theme-toggle";
 import { ThemeCustomizer } from "@/shared/ui/theme-customizer";
 import { NotificationsPopover } from "@/widgets/notifications-popover";
 import { Button } from '@/shared/ui/button';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
 import { HeaderCart } from '@/widgets/header-cart';
 import { CartDialog } from '@/widgets/cart-dialog';
@@ -106,6 +101,19 @@ const AppFooter = () => (
     </footer>
 );
 
+interface NavItemChild {
+  href: string;
+  label: string;
+  icon?: LucideIcon;
+}
+
+type NavItemWithChildren = {
+    label: string;
+    icon: LucideIcon;
+    href: string;
+    role: string;
+    children: NavItemChild[];
+};
 
 const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     const { state } = useSidebar();
@@ -150,7 +158,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/quests", icon: ShieldCheck, label: "Квесты" },
     ];
 
-    const adminNavItems = {
+    const adminNavItems: NavItemWithChildren = {
         label: "Администрирование",
         icon: ShieldCheck,
         href: '/administration',
@@ -165,7 +173,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         ]
     };
     
-    const docsNavItems = {
+    const docsNavItems: NavItemWithChildren = {
         label: "Документация",
         icon: FolderKanban,
         href: '/documents',
@@ -188,17 +196,6 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/settings", icon: Settings, label: "Настройки" },
     ];
 
-    type NavItemWithChildren = {
-        label: string;
-        icon: LucideIcon;
-        href: string;
-        role: string;
-        children: {
-            href: string;
-            label: string;
-            icon?: LucideIcon; // Make icon optional
-        }[];
-    };
 
     const renderCollapsibleMenu = (item: NavItemWithChildren) => (
          <SidebarMenuItem key={item.label}>

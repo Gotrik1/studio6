@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -71,7 +72,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                 title: "Спасибо за ваше сообщение!",
                 description: "Информация о проблеме была передана модераторам."
             });
-        } catch(e) {
+        } catch {
             toast({
                 variant: 'destructive',
                 title: "Ошибка",

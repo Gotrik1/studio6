@@ -13,7 +13,6 @@ import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { useSession } from '@/shared/lib/session/client';
 import { mockPlaygroundReviews, type PlaygroundReview } from '@/shared/lib/mock-data/playground-reviews';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { useLfg } from '@/app/providers/lfg-provider';
 
 // Import Tab Widgets
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
@@ -24,20 +23,16 @@ import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from '@/widgets/report-playground-issue-dialog';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
-import { PlanGameDialog } from '@/widgets/plan-game-dialog';
 
 
 export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const { addLobby } = useLfg();
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [reviews, setReviews] = useState<PlaygroundReview[]>(mockPlaygroundReviews);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [latestIssueReport, setLatestIssueReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
-    const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
-
 
     const handleCheckIn = (comment: string) => {
         if (!user) return;
@@ -77,36 +72,13 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                 title: "Спасибо за ваше сообщение!",
                 description: "Информация о проблеме была передана модераторам."
             });
-        } catch(e) {
+        } catch {
             toast({
                 variant: 'destructive',
                 title: "Ошибка",
                 description: "Не удалось отправить отчет. Пожалуйста, попробуйте еще раз."
             })
         }
-    };
-    
-    const handlePlanGame = (data: { date: Date, time: string, duration: number }) => {
-        if (!user) return;
-        const startTime = new Date(data.date);
-        const [hours, minutes] = data.time.split(':').map(Number);
-        startTime.setHours(hours, minutes, 0, 0);
-        
-        addLobby({
-            type: 'game',
-            sport: playground.type,
-            location: playground.name,
-            playgroundId: playground.id,
-            startTime,
-            duration: data.duration,
-            comment: `Открытая игра на площадке ${playground.name}`,
-            playersNeeded: 10,
-        });
-
-        toast({
-            title: "Игра запланирована!",
-            description: `Ваша игра на "${playground.name}" добавлена в расписание и LFG.`
-        });
     };
 
     return (
@@ -171,12 +143,6 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                 onOpenChange={setIsReportIssueOpen}
                 playgroundName={playground.name}
                 onReportSubmit={handleReportSubmit}
-            />
-             <PlanGameDialog 
-                isOpen={isPlanGameOpen}
-                onOpenChange={setIsPlanGameOpen}
-                playgroundName={playground.name}
-                onPlan={handlePlanGame}
             />
         </>
     );

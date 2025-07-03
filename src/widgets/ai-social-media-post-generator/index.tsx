@@ -82,7 +82,7 @@ export function AiSocialMediaPostGenerator() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      <div className="space-y-2">
                         <Label>Тип поста</Label>
-                        <Select value={postType} onValueChange={(v) => setPostType(v as any)}>
+                        <Select value={postType} onValueChange={(v) => setPostType(v as GenerateSocialMediaPostInput['postType'])}>
                             <SelectTrigger>
                                 <SelectValue/>
                             </SelectTrigger>

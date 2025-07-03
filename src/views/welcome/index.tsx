@@ -41,9 +41,6 @@ export function WelcomePage() {
             setIsLoading(false);
         }
     }, [user, userLoading]);
-
-    // Mock completion status for demo purposes
-    const completedQuests = suggestions ? Math.floor(suggestions.suggestions.length / 2) : 0;
     
     if (userLoading || isLoading) {
         return (

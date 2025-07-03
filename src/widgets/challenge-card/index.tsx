@@ -4,7 +4,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/shared/u
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Coins, Swords, Check, Clock, User, Trophy } from 'lucide-react';
+import { Coins, Swords, Check, User, Trophy } from 'lucide-react';
 import type { Challenge } from '@/shared/lib/mock-data/challenges';
 import { cn } from '@/shared/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';

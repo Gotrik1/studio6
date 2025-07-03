@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Coins, Swords, Check, Clock, User, Trophy, Gamepad2, Dumbbell, MapPin, Users, UserPlus } from 'lucide-react';
+import { Clock, Gamepad2, Dumbbell, MapPin, Users, UserPlus } from 'lucide-react';
 import type { LfgLobby } from '@/app/providers/lfg-provider';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';

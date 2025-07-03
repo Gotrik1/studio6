@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardTitle } from '@/shared/ui/card';
 import { leagues } from '@/shared/lib/mock-data/leagues';
 import Link from 'next/link';
 import Image from 'next/image';

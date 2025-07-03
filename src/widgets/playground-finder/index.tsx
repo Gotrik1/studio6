@@ -5,7 +5,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Textarea } from '@/shared/ui/textarea';
-import { findVenues, type FindVenuesOutput } from '@/shared/api/genkit/flows/find-venues-flow';
+import { findVenues } from '@/shared/api/genkit/flows/find-venues-flow';
 import { Loader2, Sparkles, BrainCircuit } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -20,7 +20,6 @@ export function PlaygroundFinder() {
     const [prompt, setPrompt] = useState('Хочу найти тихое футбольное поле с хорошим освещением на вечер');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [result, setResult] = useState<FindVenuesOutput | null>(null);
     const [aiSummary, setAiSummary] = useState<string | null>(null);
     const [suggestedPlaygrounds, setSuggestedPlaygrounds] = useState<Playground[] | null>(null);
 
@@ -33,13 +32,11 @@ export function PlaygroundFinder() {
         }
         setIsLoading(true);
         setError(null);
-        setResult(null);
         setAiSummary(null);
         setSuggestedPlaygrounds(null);
 
         try {
             const searchResult = await findVenues({ query: prompt });
-            setResult(searchResult);
             setAiSummary(searchResult.summary);
             if (searchResult.suggestedVenues.length > 0) {
                  const fullPlaygrounds = searchResult.suggestedVenues.map(p => 
