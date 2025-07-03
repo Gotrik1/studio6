@@ -31,7 +31,6 @@ const AdminSectionCard = ({ title, description, href, icon: Icon }: AdminSection
 );
 
 export function AdminDashboard() {
-    const demoProfileCards = profileCards.map(card => ({...card, href: `/profiles/${card.href.split('/').pop()}/1`}));
     
     return (
         <div className="space-y-8">
@@ -54,7 +53,7 @@ export function AdminDashboard() {
             <section className="opacity-0 animate-fade-in-up animation-delay-500">
                 <h2 className="font-headline text-2xl font-semibold mb-4">Демонстрация профилей ролей</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {demoProfileCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
+                    {profileCards.map(card => <AdminSectionCard key={card.href} {...card} />)}
                 </div>
             </section>
             
