@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,90 +10,70 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id           String @id @default(cuid())
-  email        String @unique
-  name         String
-  role         String
-  passwordHash String
-  avatar       String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  status       String @default("Активен")
-  xp           Int @default(0)
-
-  teamsAsCaptain Team[] @relation("CaptainToTeams")
-  teamsAsMember  Team[] @relation("TeamMembers")
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String
+  passwordHash    String
+  role            String    @default("Игрок")
+  avatar          String?
+  status          String    @default("Активен")
+  xp              Int       @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  teamsAsCaptain  Team[]    @relation("CaptainToTeams")
+  teamsAsMember   Team[]    @relation("TeamMembers")
+  
+  // New fields for rich profile
+  location        String?
+  mainSport       String?
+  dateOfBirth     String?
+  preferredSports String[]  @default([])
+  telegram        String?
+  discord         String?
 }
 
 model Team {
-  id               String @id @default(cuid())
-  slug             String @unique
-  name             String
-  motto            String?
-  logo             String?
-  dataAiHint       String?
-  game             String
-  rank             Int?
-  homePlaygroundId String?
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  name            String
+  game            String
+  motto           String?
+  logo            String?
+  dataAiHint      String?
+  rank            Int?
+  wins            Int       @default(0)
+  losses          Int       @default(0)
+  draws           Int       @default(0)
   
-  captainId String
-  captain   User   @relation("CaptainToTeams", fields: [captainId], references: [id])
-  members   User[] @relation("TeamMembers")
+  captainId       String
+  captain         User      @relation("CaptainToTeams", fields: [captainId], references: [id])
+  members         User[]    @relation("TeamMembers")
 
-  tournaments Tournament[]
+  tournaments     Tournament[]
+
+  // Matches where this team is team1
   matchesAsTeam1 Match[] @relation("Team1Matches")
+
+  // Matches where this team is team2
   matchesAsTeam2 Match[] @relation("Team2Matches")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  wins Int @default(0)
-  losses Int @default(0)
-  draws Int @default(0)
+  
+  homePlaygroundId  String?
 }
 
 model Tournament {
-  id              String   @id @default(cuid())
-  slug            String   @unique
-  name            String
-  game            String
-  format          String // "single_elimination" or "round_robin"
-  prizePool       Float
-  startDate       DateTime
-  status          String // "REGISTRATION", "ONGOING", "FINISHED"
-  bannerImage     String?
-  bannerImageHint String?
-
-  teams   Team[]
-  matches Match[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Match {
-  id          String   @id @default(cuid())
-  team1Score  Int?
-  team2Score  Int?
-  location    String?
-  refereeName String?
-
-  status      MatchStatus @default(PLANNED)
-  scheduledAt DateTime
-  finishedAt  DateTime?
-
-  team1Id String
-  team1   Team   @relation("Team1Matches", fields: [team1Id], references: [id])
-  team2Id String
-  team2   Team   @relation("Team2Matches", fields: [team2Id], references: [id])
-
-  tournamentId String?
-  tournament   Tournament? @relation(fields: [tournamentId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  name             String
+  game             String
+  format           String
+  prizePool        Float
+  startDate        DateTime
+  status           String
+  bannerImage      String?
+  bannerImageHint  String?
+  teams            Team[]
+  matches          Match[]
 }
 
 enum MatchStatus {
@@ -105,4 +82,21 @@ enum MatchStatus {
   FINISHED
   DISPUTED
   CANCELLED
+}
+
+model Match {
+  id           String      @id @default(cuid())
+  team1Id      String
+  team2Id      String
+  team1        Team        @relation("Team1Matches", fields: [team1Id], references: [id])
+  team2        Team        @relation("Team2Matches", fields: [team2Id], references: [id])
+  team1Score   Int?
+  team2Score   Int?
+  status       MatchStatus @default(PLANNED)
+  scheduledAt  DateTime
+  finishedAt   DateTime?
+  tournamentId String?
+  tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  location     String?
+  refereeName  String?
 }

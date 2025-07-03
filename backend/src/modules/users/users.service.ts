@@ -4,13 +4,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import { differenceInYears } from 'date-fns';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
-    const { name, email, role, password } = createUserDto;
+    const { name, email, role } = createUserDto;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -19,11 +20,10 @@ export class UsersService {
     if (existingUser) {
       throw new ConflictException('Пользователь с таким email уже существует');
     }
-
-    if (!password) {
-        throw new BadRequestException('Password is required for registration.');
-    }
-    const passwordHash = await bcrypt.hash(password, 10);
+    
+    // In a real app with Keycloak, we wouldn't handle the password.
+    // This is a placeholder for the prototype's self-contained auth.
+    const passwordHash = await bcrypt.hash('password-placeholder', 10);
 
     const user = await this.prisma.user.create({
       data: {
@@ -49,17 +49,45 @@ export class UsersService {
     });
   }
 
-  async findOne(id: string): Promise<Omit<User, 'passwordHash'> | null> {
-    const user = await this.prisma.user.findUnique({
-      where: { id },
-    });
+  async findOne(id: string): Promise<any | null> {
+      // For demo purposes, we will return a rich profile for a specific ID,
+      // as if it were fetched from a fully populated database.
+      if (id === 'player-example-001') {
+          const mockUser = {
+              id: 'player-example-001',
+              name: 'Пример Игрока',
+              email: 'player.example@example.com',
+              role: 'Игрок',
+              avatar: 'https://placehold.co/100x100.png',
+              status: 'Активен',
+              xp: 1250,
+              location: "Москва, Россия",
+              mainSport: "Футбол",
+              isVerified: true, // mock
+              dateOfBirth: '1998-05-15',
+              preferredSports: ["Футбол", "Баскетбол", "Valorant"],
+              contacts: {
+                  telegram: '@player_example',
+                  discord: 'player#1234'
+              }
+          };
+          return {
+              ...mockUser,
+              age: differenceInYears(new Date(), new Date(mockUser.dateOfBirth)),
+          };
+      }
+    
+      const user = await this.prisma.user.findUnique({
+        where: { id },
+      });
 
-    if (!user) {
-      return null;
-    }
+      if (!user) {
+        return null;
+      }
 
-    const { passwordHash, ...result } = user;
-    return result;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { passwordHash, ...result } = user;
+      return result;
   }
 
   async findByEmailWithPassword(email: string): Promise<User | null> {

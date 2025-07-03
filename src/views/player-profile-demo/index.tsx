@@ -1,39 +1,31 @@
+
 import PlayerClient from "@/app/(app)/administration/player/client";
-import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
-import { playerActivity } from '@/shared/lib/mock-data/player-activity';
-import { differenceInYears } from "date-fns";
+import { getPlayerProfile } from "@/entities/user/api/get-user";
+import { notFound } from "next/navigation";
 
-const examplePlayerUser = {
-  id: 'player-example-001',
-  name: 'Пример Игрока',
-  email: 'player.example@example.com',
-  role: 'Игрок',
-  avatar: 'https://placehold.co/100x100.png',
-  location: "Москва, Россия",
-  mainSport: "Футбол",
-  status: "Активен",
-  isVerified: true,
-  xp: 1250,
-  dateOfBirth: '1998-05-15',
-  age: differenceInYears(new Date(), new Date('1998-05-15')),
-  preferredSports: ["Футбол", "Баскетбол", "Valorant"],
-  contacts: {
-      telegram: '@player_example',
-      discord: 'player#1234'
-  }
-};
+// For demo purposes, we fetch a hardcoded user ID.
+// In a real profile page, this would come from `params`.
+const DEMO_USER_ID = 'player-example-001'; 
 
-export function PlayerProfilePage() {
-    // This is an example player profile page for demonstration in the admin section.
-    // In a real scenario, this data might come from a specific user ID lookup.
+export async function PlayerProfilePage() {
+    // This now fetches from the backend API
+    const profileData = await getPlayerProfile(DEMO_USER_ID);
+
+    if (!profileData) {
+        notFound();
+    }
+    
+    // In a real app, you would also check if the session user is viewing their own profile.
+    const isCurrentUser = true; // Mocked for demo
+
     return <PlayerClient 
-        user={examplePlayerUser} 
-        isCurrentUser={true}
-        achievements={achievements}
-        teams={teams}
-        recentMatches={recentMatches}
-        gallery={gallery}
-        careerHistory={careerHistory}
-        playerActivity={playerActivity}
+        user={profileData.user} 
+        isCurrentUser={isCurrentUser}
+        achievements={profileData.achievements}
+        teams={profileData.teams}
+        recentMatches={profileData.recentMatches}
+        gallery={profileData.gallery}
+        careerHistory={profileData.careerHistory}
+        playerActivity={profileData.playerActivity}
     />;
 }
