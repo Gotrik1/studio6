@@ -1,16 +1,16 @@
 'use client';
 
 import { AccentThemeProvider } from "@/shared/context/accent-theme-provider";
-import { TeamProvider } from "@/app/providers/team-provider";
-import { TrainingProvider } from "@/app/providers/training-provider";
-import { NutritionProvider } from "@/app/providers/nutrition-provider";
-import { JoinRequestProvider } from "@/app/providers/join-request-provider";
-import { PDEconomyProvider } from "@/app/providers/pd-provider";
-import { LfgProvider } from "@/app/providers/lfg-provider";
-import { TrainingProposalProvider } from "@/app/providers/training-proposal-provider";
-import { MeasurementsProvider } from "@/app/providers/measurements-provider";
-import { CartProvider } from "@/app/providers/cart-provider";
-import { InventoryProvider } from "@/app/providers/inventory-provider";
+import { TeamProvider } from "@/shared/context/team-provider";
+import { TrainingProvider } from "@/shared/context/training-provider";
+import { NutritionProvider } from "@/shared/context/nutrition-provider";
+import { JoinRequestProvider } from "@/shared/context/join-request-provider";
+import { PDEconomyProvider } from "@/shared/context/pd-provider";
+import { LfgProvider } from "@/shared/context/lfg-provider";
+import { TrainingProposalProvider } from "@/shared/context/training-proposal-provider";
+import { MeasurementsProvider } from "@/shared/context/measurements-provider";
+import { CartProvider } from "@/shared/context/cart-provider";
+import { InventoryProvider } from "@/shared/context/inventory-provider";
 
 export function AppProviders({
   children,

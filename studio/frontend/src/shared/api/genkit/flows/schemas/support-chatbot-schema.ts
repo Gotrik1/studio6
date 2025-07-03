@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 export const SupportChatbotInputSchema = z.string().describe("User's question for the support chatbot.");
