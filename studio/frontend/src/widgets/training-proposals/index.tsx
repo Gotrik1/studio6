@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useTrainingProposals } from '@/shared/context/training-proposal-provider';
