@@ -14,7 +14,7 @@ const MarkdownComponents: Components = {
     if (!rest.src) return null;
     const dataAiHint = node?.properties?.['data-ai-hint'] as string | undefined;
 
-    return <Image {...rest} alt={rest.alt || ''} width={1200} height={630} className="rounded-lg shadow-lg not-prose" data-ai-hint={dataAiHint} />;
+    return <Image src={rest.src} alt={rest.alt || ''} width={1200} height={630} className="rounded-lg shadow-lg not-prose" data-ai-hint={dataAiHint} />;
   },
   code(props) {
     const { className, children, ...rest } = props;
