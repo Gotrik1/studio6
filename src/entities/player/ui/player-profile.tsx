@@ -26,9 +26,6 @@ import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
 import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
-import { StatsTab } from '@/entities/player/ui/player-profile-tabs/stats-tab';
-import { PhysicalPrepTab } from '@/entities/player/ui/player-profile-tabs/physical-prep-tab';
-import { playerActivity } from '@/shared/lib/mock-data/player-activity';
 
 const PlayerActivityFeed = dynamic(() => import('@/widgets/player-activity-feed').then(mod => mod.PlayerActivityFeed), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -49,6 +46,14 @@ const TeamsTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/
 const GalleryTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/gallery-tab').then(mod => mod.GalleryTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
   ssr: false,
+});
+const StatsTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/stats-tab').then(mod => mod.StatsTab), {
+    loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+    ssr: false,
+});
+const PhysicalPrepTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/physical-prep-tab').then(mod => mod.PhysicalPrepTab), {
+    loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
+    ssr: false,
 });
 
 
