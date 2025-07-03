@@ -9,6 +9,7 @@ import { Trophy, Dumbbell, Flame, Star, Activity, BarChart3 } from 'lucide-react
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { VolumeChart } from '@/widgets/analytics-charts/volume-chart';
+import { PlayerPerformanceCoach } from '@/widgets/player-performance-coach';
 
 export function PhysicalPrepTab() {
     const { personalRecords, trainingMetrics, volumeByMuscleGroupData } = getTrainingAnalytics(trainingLogData);
@@ -83,6 +84,8 @@ export function PhysicalPrepTab() {
                     </CardContent>
                 </Card>
             </div>
+
+            <PlayerPerformanceCoach />
         </div>
     );
 }
