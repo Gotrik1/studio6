@@ -1,9 +1,9 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { fetchTeams } from '@/entities/team/api/teams';
 import type { Team } from '@/entities/team/model/types';
 import { useSession } from '@/shared/lib/session/client';
+import { teams as mockTeams } from '@/shared/lib/mock-data/teams';
 
 interface TeamContextType {
   teams: Team[];
@@ -20,14 +20,10 @@ export const TeamProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     async function getTeams() {
-      try {
-        const fetchedTeams = await fetchTeams();
-        setTeams(fetchedTeams);
-      } catch (error) {
-        console.error("Failed to fetch teams:", error);
-      } finally {
-        setLoading(false);
-      }
+      // In a real app, you would fetch teams from the backend.
+      // Here, we simulate it with mock data.
+      setTeams(mockTeams);
+      setLoading(false);
     }
     getTeams();
   }, []);
