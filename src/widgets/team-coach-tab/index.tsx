@@ -1,8 +1,7 @@
-
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Loader2, Sparkles, AlertCircle, TrendingUp, TrendingDown, UserCheck, Activity, BrainCircuit } from 'lucide-react';
 import { analyzeTeamPerformance, type AnalyzeTeamPerformanceOutput } from '@/shared/api/genkit/flows/analyze-team-performance-flow';
@@ -50,7 +49,7 @@ export function TeamCoachTab() {
                         <CardTitle>Продвинутый AI-Коуч</CardTitle>
                         <CardDescription>Глубокий анализ производительности вашей команды.</CardDescription>
                     </div>
-                    <Button onClick={handleAnalyze} disabled={isLoading}>
+                     <Button onClick={handleAnalyze} disabled={isLoading}>
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4" />}
                         {result ? 'Проанализировать заново' : 'Начать анализ'}
                     </Button>
