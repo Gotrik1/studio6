@@ -7,9 +7,10 @@ import { Button } from '@/shared/ui/button';
 import { Progress } from '@/shared/ui/progress';
 import { useToast } from '@/shared/hooks/use-toast';
 import { quests as initialQuests, type Quest } from '@/shared/config/gamification';
-import { Award, Check, Repeat } from 'lucide-react';
+import { Award, Check, Repeat, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { usePDEconomy } from '@/app/providers/pd-provider';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 
 function QuestCard({ quest, onClaim, claimed }: { quest: Quest, onClaim: (id: string, reward: number) => void, claimed: boolean }) {
     const isCompleted = quest.progress >= quest.goal;
@@ -93,7 +94,10 @@ export function QuestsPage() {
          <div className="space-y-8 opacity-0 animate-fade-in-up">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="space-y-2">
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">Квесты</h1>
+                    <h1 className="font-headline text-3xl font-bold tracking-tight flex items-center gap-3">
+                        <ShieldCheck className="h-8 w-8 text-primary"/>
+                        Центр Квестов
+                    </h1>
                     <p className="text-muted-foreground">
                         Выполняйте задания, чтобы заработать ProDvor Dollars (PD) и разблокировать достижения.
                     </p>
@@ -104,10 +108,22 @@ export function QuestsPage() {
                 </Button>
             </div>
             
-            <QuestsSection title="Ежедневные" quests={quests.daily} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
-            <QuestsSection title="Еженедельные" quests={quests.weekly} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
-            <QuestsSection title="Специальные" quests={quests.special} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
-
+            <Tabs defaultValue="daily">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="daily">Ежедневные</TabsTrigger>
+                    <TabsTrigger value="weekly">Еженедельные</TabsTrigger>
+                    <TabsTrigger value="special">Специальные</TabsTrigger>
+                </TabsList>
+                <TabsContent value="daily" className="mt-6">
+                    <QuestsSection title="Ежедневные" quests={quests.daily} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+                </TabsContent>
+                <TabsContent value="weekly" className="mt-6">
+                    <QuestsSection title="Еженедельные" quests={quests.weekly} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+                </TabsContent>
+                <TabsContent value="special" className="mt-6">
+                    <QuestsSection title="Специальные" quests={quests.special} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

@@ -2,7 +2,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
-import { pdHistory as initialPdHistory } from '@/shared/lib/mock-data/gamification';
+import { pdHistory as initialPdHistory } from '@/shared/config/gamification';
 
 type PdTransaction = {
     id: string;

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -142,6 +143,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/playgrounds", icon: Map, label: "Площадки" },
         { href: "/inventory", icon: Backpack, label: "Инвентарь" },
         { href: "/store", icon: ShoppingCart, label: "Магазин" },
+        { href: "/quests", icon: ShieldCheck, label: "Квесты" },
     ];
 
     const adminNavItems = {
