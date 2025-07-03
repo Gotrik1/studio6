@@ -48,6 +48,7 @@ import {
   Flame,
   Target,
   FileSignature,
+  Lock
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
