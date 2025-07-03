@@ -1,20 +1,26 @@
 
 'use client';
 
+import { useMemo } from 'react';
 import type { Sport } from '@/shared/lib/mock-data/sports';
 import { DynamicIcon } from '@/shared/ui/dynamic-icon';
 import { icons } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Badge } from '@/shared/ui/badge';
 import { leaderboardData } from '@/shared/lib/mock-data/leaderboards';
 import { allTournaments } from '@/shared/lib/mock-data/tournaments';
-import { matchesList } from '@/shared/lib/mock-data/matches';
+import { teams } from '@/shared/lib/mock-data/teams';
+import { initialLfgLobbies, type LfgLobby } from '@/shared/lib/mock-data/lfg';
+import { LfgCard } from '@/widgets/lfg-card';
+import { useLfg } from '@/app/providers/lfg-provider';
 import Link from 'next/link';
 import { cn } from '@/shared/lib/utils';
 import { AiSportSummary } from '@/widgets/ai-sport-summary';
-import { Star } from 'lucide-react';
+import { Star, Swords, Users, Gamepad2, Trophy } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import { useToast } from '@/shared/hooks/use-toast';
 
 interface SportDetailsPageProps {
     sport: Sport;
@@ -37,10 +43,22 @@ const getStatusVariant = (status: string) => {
 };
 
 export function SportDetailsPage({ sport }: SportDetailsPageProps) {
+    const { toast } = useToast();
+    const { joinLobby: joinLfgLobby } = useLfg();
+
     // Mock filtering, in a real app this would be an API call
-    const sportTournaments = allTournaments.filter(t => t.game.toLowerCase() === sport.name.toLowerCase()).slice(0, 3);
-    const sportMatches = matchesList.filter(m => m.game.toLowerCase() === sport.name.toLowerCase()).slice(0, 5);
-    const topPlayers = leaderboardData.slice(0, 5); // No sport data on players, so just show top players
+    const sportTournaments = useMemo(() => allTournaments.filter(t => t.game.toLowerCase() === sport.name.toLowerCase()).slice(0, 3), [sport]);
+    const topTeams = useMemo(() => teams.filter(t => t.game === sport.name).slice(0, 5), [sport]);
+    const topPlayers = useMemo(() => leaderboardData.slice(0, 10), []);
+    const sportLobbies = useMemo(() => initialLfgLobbies.filter(l => l.sport.toLowerCase().includes(sport.name.toLowerCase())), [sport]);
+
+    const handleJoinLobby = (lobbyId: string) => {
+        joinLfgLobby(lobbyId);
+        toast({
+            title: "Вы присоединились к лобби!",
+            description: "Вы успешно присоединились к активности.",
+        });
+    };
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -54,12 +72,20 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 space-y-6">
+            <Tabs defaultValue="overview">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
+                    <TabsTrigger value="overview">Обзор</TabsTrigger>
+                    <TabsTrigger value="leaders">Лидеры</TabsTrigger>
+                    <TabsTrigger value="teams">Команды</TabsTrigger>
+                    <TabsTrigger value="lfg">Поиск игры</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="overview" className="mt-4 space-y-6">
+                    <AiSportSummary sportName={sport.name} />
                     <Card>
                         <CardHeader>
                             <CardTitle>Активные и недавние турниры</CardTitle>
-                            <p className="text-sm text-muted-foreground">Главные соревнования по дисциплине {sport.name}.</p>
+                            <CardDescription>Главные соревнования по дисциплине {sport.name}.</CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-2">
                              {sportTournaments.length > 0 ? sportTournaments.map(t => (
@@ -75,53 +101,21 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
                             )) : <p className="text-sm text-muted-foreground text-center p-4">Нет турниров по этой дисциплине.</p>}
                         </CardContent>
                     </Card>
+                </TabsContent>
 
+                <TabsContent value="leaders" className="mt-4">
                     <Card>
-                        <CardHeader>
-                            <CardTitle>Последние матчи</CardTitle>
-                        </CardHeader>
-                         <CardContent>
-                            <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Матч</TableHead>
-                                        <TableHead className="text-right">Результат</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {sportMatches.length > 0 ? sportMatches.map(match => (
-                                        <TableRow key={match.id}>
-                                            <TableCell>
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="h-6 w-6"><AvatarImage src={match.team1.logo} data-ai-hint={match.team1.logoHint} /></Avatar>
-                                                    <span>{match.team1.name} vs {match.team2.name}</span>
-                                                     <Avatar className="h-6 w-6"><AvatarImage src={match.team2.logo} data-ai-hint={match.team2.logoHint} /></Avatar>
-                                                </div>
-                                            </TableCell>
-                                            <TableCell className="text-right font-mono">{match.score}</TableCell>
-                                        </TableRow>
-                                    )) : (
-                                        <TableRow><TableCell colSpan={2} className="text-center">Нет недавних матчей.</TableCell></TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                         </CardContent>
-                    </Card>
-                </div>
-
-                <div className="lg:col-span-1 space-y-6">
-                    <AiSportSummary sportName={sport.name} />
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Топ-5 игроков</CardTitle>
-                            <p className="text-sm text-muted-foreground">Лучшие игроки в дисциплине {sport.name}.</p>
+                         <CardHeader>
+                            <CardTitle>Таблица лидеров</CardTitle>
+                            <CardDescription>Лучшие игроки в дисциплине {sport.name}.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                             <Table>
+                            <Table>
                                 <TableHeader>
                                     <TableRow>
                                         <TableHead className="w-[50px]">Ранг</TableHead>
                                         <TableHead>Игрок</TableHead>
+                                        <TableHead className="text-right">Очки</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
@@ -141,14 +135,60 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
                                                     <span className="font-medium text-sm">{player.name}</span>
                                                 </div>
                                             </TableCell>
+                                            <TableCell className="text-right font-semibold">{player.points.toLocaleString('ru-RU')} PD</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
+                         </CardContent>
+                    </Card>
+                </TabsContent>
+                
+                 <TabsContent value="teams" className="mt-4">
+                    <Card>
+                         <CardHeader>
+                            <CardTitle>Топ команд</CardTitle>
+                            <CardDescription>Лучшие команды в дисциплине {sport.name}.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                               {topTeams.map(team => (
+                                   <Link key={team.slug} href={`/teams/${team.slug}`} className="block">
+                                        <Card className="p-4 flex items-center gap-3 hover:bg-muted transition-colors">
+                                            <Avatar>
+                                                <AvatarImage src={team.logo} data-ai-hint={team.dataAiHint} />
+                                                <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
+                                            </Avatar>
+                                            <div>
+                                                <p className="font-semibold">{team.name}</p>
+                                                <Badge variant="secondary" className="mt-1">Ранг #{team.rank}</Badge>
+                                            </div>
+                                        </Card>
+                                   </Link>
+                               ))}
+                            </div>
+                            {topTeams.length === 0 && <p className="text-sm text-center p-4 text-muted-foreground">Пока нет команд в этой дисциплине.</p>}
                         </CardContent>
                     </Card>
-                </div>
-            </div>
+                </TabsContent>
+                
+                <TabsContent value="lfg" className="mt-4">
+                    <Card>
+                         <CardHeader>
+                            <CardTitle>Поиск игры (LFG)</CardTitle>
+                            <CardDescription>Открытые лобби для игры в {sport.name}.</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {sportLobbies.map(lobby => (
+                                    <LfgCard key={lobby.id} lobby={lobby} onJoin={handleJoinLobby} />
+                                ))}
+                            </div>
+                            {sportLobbies.length === 0 && <p className="text-sm text-center p-4 text-muted-foreground">Нет открытых лобби. Создайте свое!</p>}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
         </div>
     )
 }
