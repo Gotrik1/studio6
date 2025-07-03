@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/shared/ui/button";
 import { Logo } from "@/shared/ui/icons";
 import { BrainCircuit, Trophy, Users, UserPlus, ShieldPlus, Sword } from "lucide-react";
-import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
+import { Card, CardContent } from "@/shared/ui/card";
 
 export function LandingPage() {
   const Slogan = ({ text }: { text: string }) => {
@@ -56,13 +56,11 @@ export function LandingPage() {
   
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="sticky top-0 z-50 flex items-center justify-between p-4 bg-background/80 backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                <Logo className="h-5 w-5" />
-            </div>
-            <div className="font-headline text-lg font-semibold">ProDvor</div>
-        </div>
+      <header className="sticky top-0 z-50 flex items-center justify-between h-16 px-4 border-b bg-background/80 backdrop-blur-sm sm:px-6">
+        <Link href="/" className="flex items-center gap-2">
+            <Logo className="w-6 h-6 text-primary" />
+            <span className="text-lg font-semibold font-headline">ProDvor</span>
+        </Link>
         <Button asChild>
           <Link href="/auth">Войти</Link>
         </Button>
@@ -89,18 +87,18 @@ export function LandingPage() {
 
         {/* Features Section */}
         <section id="features" className="py-16 bg-muted/50">
-            <div className="container mx-auto px-4 sm:px-6">
-                <div className="text-center space-y-2 mb-12">
-                     <h2 className="font-headline text-3xl font-bold tracking-tight">Все, что нужно для победы</h2>
-                     <p className="text-muted-foreground max-w-2xl mx-auto">Платформа ProDvor предоставляет полный набор инструментов для игроков и команд любого уровня.</p>
+            <div className="container px-4 mx-auto sm:px-6">
+                <div className="mb-12 space-y-2 text-center">
+                     <h2 className="text-3xl font-bold tracking-tight font-headline">Все, что нужно для победы</h2>
+                     <p className="max-w-2xl mx-auto text-muted-foreground">Платформа ProDvor предоставляет полный набор инструментов для игроков и команд любого уровня.</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                     {features.map((feature, index) => (
                         <div key={index} className="text-center">
-                            <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-primary text-primary-foreground mx-auto mb-4">
-                                <feature.icon className="h-6 w-6" />
+                            <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-lg bg-primary text-primary-foreground">
+                                <feature.icon className="w-6 h-6" />
                             </div>
-                            <h3 className="font-semibold text-xl mb-2">{feature.title}</h3>
+                            <h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
                             <p className="text-muted-foreground">{feature.description}</p>
                         </div>
                     ))}
@@ -110,21 +108,21 @@ export function LandingPage() {
 
         {/* How It Works Section */}
         <section id="how-it-works" className="py-16">
-             <div className="container mx-auto px-4 sm:px-6">
-                 <div className="text-center space-y-2 mb-12">
-                     <h2 className="font-headline text-3xl font-bold tracking-tight">Начните свой путь в три шага</h2>
-                     <p className="text-muted-foreground max-w-2xl mx-auto">Присоединиться к сообществу ProDvor очень просто.</p>
+             <div className="container px-4 mx-auto sm:px-6">
+                 <div className="mb-12 space-y-2 text-center">
+                     <h2 className="text-3xl font-bold tracking-tight font-headline">Начните свой путь в три шага</h2>
+                     <p className="max-w-2xl mx-auto text-muted-foreground">Присоединиться к сообществу ProDvor очень просто.</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                      {steps.map((step, index) => (
-                        <Card key={index} className="text-center">
-                            <CardHeader>
-                                <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-muted text-primary mx-auto mb-4">
-                                    <step.icon className="h-6 w-6" />
+                        <Card key={index} className="p-6 text-center">
+                            <CardContent className="p-0">
+                                <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 rounded-full border-2 border-primary/20 bg-primary/10 text-primary">
+                                    <step.icon className="w-6 h-6" />
                                 </div>
-                                <CardTitle>{step.title}</CardTitle>
-                            </CardHeader>
-                            <CardDescription className="p-6 pt-0">{step.description}</CardDescription>
+                                <h3 className="mb-2 text-xl font-semibold">{step.title}</h3>
+                                <p className="text-sm text-muted-foreground">{step.description}</p>
+                            </CardContent>
                         </Card>
                     ))}
                 </div>
@@ -133,9 +131,9 @@ export function LandingPage() {
 
         {/* Final CTA Section */}
         <section className="py-16 bg-muted/50">
-             <div className="container mx-auto px-4 sm:px-6 text-center">
-                 <h2 className="font-headline text-3xl font-bold tracking-tight">Готовы ворваться в игру?</h2>
-                 <p className="mt-4 text-muted-foreground max-w-xl mx-auto">Присоединяйтесь к тысячам игроков, которые уже соревнуются и побеждают на ProDvor.</p>
+             <div className="container px-4 mx-auto text-center sm:px-6">
+                 <h2 className="text-3xl font-bold tracking-tight font-headline">Готовы ворваться в игру?</h2>
+                 <p className="max-w-xl mx-auto mt-4 text-muted-foreground">Присоединяйтесь к тысячам игроков, которые уже соревнуются и побеждают на ProDvor.</p>
                  <div className="mt-8">
                      <Button asChild size="lg">
                          <Link href="/auth">Создать аккаунт бесплатно</Link>
@@ -143,10 +141,9 @@ export function LandingPage() {
                  </div>
             </div>
         </section>
-
       </main>
 
-      <footer className="p-4 text-center text-sm text-muted-foreground">
+      <footer className="p-4 text-sm text-center border-t text-muted-foreground">
         © {new Date().getFullYear()} ProDvor. Все права защищены.
       </footer>
     </div>
