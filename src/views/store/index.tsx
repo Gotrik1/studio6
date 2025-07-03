@@ -5,17 +5,30 @@ import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { storeItems, type StoreItem } from '@/shared/lib/mock-data/store';
-import { Coins, ShoppingCart, Loader2, Sparkles, ShieldCheck, Backpack, Megaphone, Handshake, DollarSign } from 'lucide-react';
+import { Coins, ShoppingCart, Loader2, Sparkles, ShieldCheck, Backpack, Megaphone, Handshake, DollarSign, CreditCard } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/shared/hooks/use-toast';
 import { findEquipment, type FindEquipmentOutput } from '@/shared/api/genkit/flows/find-equipment-flow';
 import { Textarea } from '@/shared/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { usePDEconomy } from '@/app/providers/pd-provider';
 import Link from 'next/link';
+import { useCart } from '@/app/providers/cart-provider';
+import { usePDEconomy } from '@/app/providers/pd-provider';
 
-function StoreItemCard({ item, onPurchase, disabled }: { item: StoreItem; onPurchase: (item: StoreItem) => void; disabled: boolean }) {
+function StoreItemCard({ item }: { item: StoreItem }) {
+    const { addItem, setIsCartOpen } = useCart();
+    const { toast } = useToast();
+    
+    const handleAddToCart = () => {
+        addItem(item);
+        toast({
+            title: 'Товар добавлен в корзину',
+            description: `"${item.name}" был добавлен в вашу корзину.`,
+            action: <Button variant="secondary" size="sm" onClick={() => setIsCartOpen(true)}>Открыть корзину</Button>
+        });
+    }
+
     return (
         <Card className="flex flex-col">
             <CardHeader className="p-0 relative h-40">
@@ -25,15 +38,23 @@ function StoreItemCard({ item, onPurchase, disabled }: { item: StoreItem; onPurc
                 <CardTitle>{item.name}</CardTitle>
                 <CardDescription className="mt-2">{item.description}</CardDescription>
             </CardContent>
-            <CardFooter>
-                <Button className="w-full" onClick={() => onPurchase(item)} disabled={disabled}>
-                    <ShoppingCart className="mr-2 h-4 w-4" />
-                    {item.isRealMoney ? `Купить за $${item.price}` : (
+            <CardFooter className="flex-col items-start gap-2">
+                <div className="flex items-center gap-1 font-semibold text-lg">
+                    {item.isRealMoney ? (
                         <>
-                            Купить за {item.price}
-                            <Coins className="ml-1.5 h-4 w-4 text-amber-300" />
+                            <CreditCard className="h-5 w-5 text-green-500" />
+                            <span>${item.price.toFixed(2)}</span>
+                        </>
+                    ) : (
+                        <>
+                            <Coins className="h-5 w-5 text-amber-400" />
+                            <span>{item.price} PD</span>
                         </>
                     )}
+                </div>
+                 <Button className="w-full" onClick={handleAddToCart}>
+                    <ShoppingCart className="mr-2 h-4 w-4" />
+                    Добавить в корзину
                 </Button>
             </CardFooter>
         </Card>
@@ -65,11 +86,12 @@ const PlatformLinkCard = ({ href, icon: Icon, title, description }: (typeof plat
 
 export function StorePage() {
     const { toast } = useToast();
-    const { balance, addTransaction } = usePDEconomy();
     const [prompt, setPrompt] = useState('Легкая игровая мышь для шутеров');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<FindEquipmentOutput | null>(null);
+    const { balance } = usePDEconomy();
+
 
     const handleSearch = async () => {
         if (!prompt) {
@@ -95,31 +117,6 @@ export function StorePage() {
         } finally {
             setIsLoading(false);
         }
-    };
-    
-    const handlePurchase = (item: StoreItem) => {
-        if (item.isRealMoney) {
-            toast({
-                title: 'Перенаправляем на страницу оплаты...',
-                description: 'Эта функция будет реализована в продакшен-версии.',
-            });
-            return;
-        }
-
-        if (balance < item.price) {
-            toast({
-                variant: 'destructive',
-                title: 'Недостаточно средств',
-                description: `У вас ${balance} PD, а для покупки нужно ${item.price} PD.`,
-            });
-            return;
-        }
-        
-        addTransaction(`Покупка: ${item.name}`, -item.price);
-        toast({
-            title: 'Покупка совершена!',
-            description: `Вы успешно приобрели "${item.name}". С вашего счета списано ${item.price} PD.`,
-        });
     };
     
     const itemsToDisplay = result ? result.recommendations : storeItems;
@@ -163,15 +160,13 @@ export function StorePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {isLoading && Array.from({ length: 3 }).map((_, i) => (
-                    <Skeleton key={i} className="h-[380px] w-full" />
+                    <Skeleton key={i} className="h-[420px] w-full" />
                 ))}
 
                 {!isLoading && itemsToDisplay.map(item => (
                     <StoreItemCard
                         key={item.id}
                         item={item}
-                        onPurchase={handlePurchase}
-                        disabled={!item.isRealMoney && balance < item.price}
                     />
                 ))}
             </div>

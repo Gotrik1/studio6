@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -53,6 +54,8 @@ import { Button } from '@/shared/ui/button';
 import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
 import { usePathname } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
+import { HeaderCart } from '@/widgets/header-cart';
+import { CartDialog } from '@/widgets/cart-dialog';
 
 
 interface AppLayoutProps {
@@ -283,6 +286,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                             </kbd>
                         </Button>
                     </div>
+                    <HeaderCart />
                     <NotificationsPopover />
                     <ThemeCustomizer />
                     <ThemeToggle />
@@ -293,6 +297,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 <BottomNav />
             </SidebarInset>
             <GlobalSearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
+            <CartDialog />
         </>
     );
 };
