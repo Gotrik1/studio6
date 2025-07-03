@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -8,12 +9,12 @@ import { Label } from '@/shared/ui/label';
 import { Loader2, Sparkles, Upload, Wand2, Users } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/shared/hooks/use-toast';
-import { useTeams } from '@/shared/context/team-provider';
 import { useRouter } from 'next/navigation';
 import { Textarea } from '@/shared/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateTeamConcept, type GenerateTeamConceptOutput } from '@/shared/api/genkit/flows/generate-team-concept-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { useTeams } from '@/shared/context/team-provider';
 
 export function NewTeamPage() {
     const { toast } = useToast();
