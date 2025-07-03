@@ -8,7 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, BarChart3, Home } from 'lucide-react';
+import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, BarChart3, Home, Heart } from 'lucide-react';
 import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
@@ -67,7 +67,7 @@ export function TeamDetailsPage() {
                         </div>
                         <div className="flex gap-2">
                             <Button variant="outline" onClick={() => setIsDonationOpen(true)}>
-                                <Users className="mr-2 h-4 w-4 text-red-500" />Поддержать
+                                <Heart className="mr-2 h-4 w-4 text-red-500" />Поддержать
                             </Button>
                             <Button variant="outline" onClick={() => setIsApplyOpen(true)}><UserPlus className="mr-2 h-4 w-4" />Подать заявку</Button>
                             <Button><MessageCircle className="mr-2 h-4 w-4" />Написать</Button>
