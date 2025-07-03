@@ -1,12 +1,11 @@
 
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { PlayerActivityFeed } from '@/widgets/player-activity-feed';
-import type { playerActivity as PlayerActivityArray } from "@/shared/lib/mock-data/profiles";
+import type { PlayerActivityItem } from "@/shared/lib/mock-data/player-activity";
 
 interface OverviewTabProps {
-    playerActivity: typeof PlayerActivityArray;
+    playerActivity: PlayerActivityItem[];
 }
 
 export function OverviewTab({ playerActivity }: OverviewTabProps) {

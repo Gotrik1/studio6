@@ -1,6 +1,7 @@
 
 import PlayerClient from "@/app/(app)/administration/player/client";
 import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
+import { playerActivity } from '@/shared/lib/mock-data/player-activity';
 import { differenceInYears } from "date-fns";
 
 const examplePlayerUser = {
@@ -34,5 +35,6 @@ export function PlayerProfilePage() {
         recentMatches={recentMatches}
         gallery={gallery}
         careerHistory={careerHistory}
+        playerActivity={playerActivity}
     />;
 }

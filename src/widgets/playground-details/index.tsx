@@ -2,59 +2,90 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
+import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, User, Home, AlertTriangle, CheckCircle } from 'lucide-react';
+import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { useToast } from '@/shared/hooks/use-toast';
-import { format } from 'date-fns';
-import { PlanGameDialog } from '@/widgets/plan-game-dialog';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/shared/ui/alert-dialog";
-import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
-import { AiPlaygroundChallenge } from '@/widgets/ai-playground-challenge';
-import { PlaygroundLeaderboard } from '@/widgets/playground-leaderboard';
-import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
-import { PlaygroundSchedule } from '@/widgets/playground-schedule';
-import { PlaygroundActivityFeed } from '@/widgets/playground-activity-feed';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
-import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
 import { useSession } from '@/shared/lib/session/client';
+import { mockPlaygroundReviews, type PlaygroundReview } from '@/shared/lib/mock-data/playground-reviews';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { useLfg } from '@/app/providers/lfg-provider';
-import { useMemo } from 'react';
 
-export function PlaygroundDetails({ playground: initialPlayground }: { playground: Playground }) {
+// Import Tab Widgets
+import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
+import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
+import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
+import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
+import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
+import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
+import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from '@/widgets/report-playground-issue-dialog';
+import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
+import { PlanGameDialog } from '@/widgets/plan-game-dialog';
+
+
+export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const { addLobby, lobbies } = useLfg();
-
-    const [playground] = useState(initialPlayground);
+    const { addLobby } = useLfg();
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
-    const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
+    const [reviews, setReviews] = useState<PlaygroundReview[]>(mockPlaygroundReviews);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
+    const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
+    const [latestIssueReport, setLatestIssueReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
+    const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
 
-    const schedule = useMemo(() => lobbies.filter(l => l.playgroundId === playground.id), [lobbies, playground.id]);
 
-    const handleSetHome = () => {
+    const handleCheckIn = (comment: string) => {
+        if (!user) return;
+        const newActivity: PlaygroundActivity = {
+            id: `act-${Date.now()}`,
+            user: { name: user.name, avatar: user.avatar },
+            comment,
+            timestamp: 'Только что',
+        };
+        setActivities(prev => [newActivity, ...prev]);
         toast({
-            title: 'Домашняя площадка установлена!',
-            description: `Площадка "${playground.name}" теперь ваша домашняя.`
+            title: "Вы отметились!",
+            description: `Вы получили 10 PD за чекин на площадке "${playground.name}".`
         });
     };
+    
+    const handleAddReview = (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => {
+        if (!user) return;
+        const newReview: PlaygroundReview = {
+            id: `rev-${Date.now()}`,
+            author: { name: user.name, avatar: user.avatar },
+            timestamp: 'Только что',
+            ...reviewData
+        };
+        setReviews(prev => [newReview, ...prev]);
+    };
 
+    const handleReportSubmit = async (data: ReportFormValues) => {
+        try {
+            const reportAnalysis = await analyzePlaygroundReport({
+                playgroundName: playground.name,
+                issueCategory: data.category,
+                userComment: data.comment,
+            });
+            setLatestIssueReport(reportAnalysis);
+            toast({
+                title: "Спасибо за ваше сообщение!",
+                description: "Информация о проблеме была передана модераторам."
+            });
+        } catch(e) {
+            toast({
+                variant: 'destructive',
+                title: "Ошибка",
+                description: "Не удалось отправить отчет. Пожалуйста, попробуйте еще раз."
+            })
+        }
+    };
+    
     const handlePlanGame = (data: { date: Date, time: string, duration: number }) => {
         if (!user) return;
         const startTime = new Date(data.date);
@@ -62,6 +93,7 @@ export function PlaygroundDetails({ playground: initialPlayground }: { playgroun
         startTime.setHours(hours, minutes, 0, 0);
         
         addLobby({
+            type: 'game',
             sport: playground.type,
             location: playground.name,
             playgroundId: playground.id,
@@ -73,19 +105,8 @@ export function PlaygroundDetails({ playground: initialPlayground }: { playgroun
 
         toast({
             title: "Игра запланирована!",
-            description: `Ваша игра на "${playground.name}" в ${format(startTime, 'HH:mm')} добавлена в расписание и LFG.`
+            description: `Ваша игра на "${playground.name}" добавлена в расписание и LFG.`
         });
-    };
-
-    const handleCheckIn = (comment: string) => {
-        if (!user) return;
-        const newActivity: PlaygroundActivity = {
-            id: `act-${Date.now()}`,
-            user: { name: user.name, avatar: user.avatar },
-            comment,
-            timestamp: 'Только что',
-        };
-        setActivities(prev => [newActivity, ...prev]);
     };
 
     return (
@@ -94,79 +115,68 @@ export function PlaygroundDetails({ playground: initialPlayground }: { playgroun
                 <Card className="overflow-hidden">
                     <div className="relative h-64 w-full">
                         <Image src={playground.coverImage} alt={playground.name} fill className="object-cover" data-ai-hint={playground.coverImageHint}/>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                         <div className="absolute bottom-6 left-6 text-white">
                             <Badge variant="secondary">{playground.type}</Badge>
                             <h1 className="font-headline text-4xl font-bold mt-1">{playground.name}</h1>
                             <p className="flex items-center gap-2 mt-1"><MapPin className="h-4 w-4" /> {playground.address}</p>
                         </div>
+                        <div className="absolute top-4 right-4 flex gap-2">
+                             <Button variant="destructive" onClick={() => setIsReportIssueOpen(true)}>
+                                <AlertTriangle className="mr-2 h-5 w-5" />
+                                Сообщить о проблеме
+                            </Button>
+                            <Button onClick={() => setIsCheckInOpen(true)}>
+                                <CheckCircle className="mr-2 h-5 w-5" />
+                                Отметиться
+                            </Button>
+                        </div>
                     </div>
                 </Card>
 
-                 {playground.status === 'pending_moderation' && (
-                    <Alert variant="destructive" className="bg-yellow-500/10 border-yellow-500/50 text-yellow-600 [&>svg]:text-yellow-600">
-                        <AlertTriangle className="h-4 w-4" />
-                        <AlertTitle>На модерации</AlertTitle>
-                        <AlertDescription>
-                            Эта площадка ожидает проверки модератором. Она может быть удалена, если является дубликатом или нарушает правила.
-                        </AlertDescription>
-                    </Alert>
-                )}
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 space-y-6">
-                        <AiPlaygroundSummary playground={playground} />
-                        <PlaygroundSchedule schedule={schedule} onPlanClick={() => setIsPlanGameOpen(true)} />
-                        <PlaygroundActivityFeed activities={activities} />
-                    </div>
-                    <div className="space-y-6">
-                        <Button className="w-full" size="lg" onClick={() => setIsCheckInOpen(true)}>
-                            <CheckCircle className="mr-2 h-5 w-5" />
-                            Отметиться (чекин)
-                        </Button>
-                        <AiPlaygroundChallenge playground={playground} />
-                        <AiPlaygroundLore playground={playground} />
-                        <PlaygroundLeaderboard />
-                        <Card>
-                           <CardHeader><CardTitle>Создатель</CardTitle></CardHeader>
-                           <CardContent className="flex items-center gap-3">
-                               <Avatar><AvatarImage src={playground.creator.avatar} /><AvatarFallback><User className="h-5 w-5"/></AvatarFallback></Avatar>
-                               <p className="font-semibold">{playground.creator.name}</p>
-                           </CardContent>
-                         </Card>
-                         <div className="space-y-2">
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button className="w-full"><Home className="mr-2 h-4 w-4"/> Сделать домашней</Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                    <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        Вы собираетесь отметить эту площадку как вашу &quot;домашнюю&quot;. Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
-                                    </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                    <AlertDialogCancel>Отмена</AlertDialogCancel>
-                                    <AlertDialogAction onClick={handleSetHome}>Подтвердить</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                         </div>
-                    </div>
-                </div>
+                <Tabs defaultValue="info">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-5">
+                        <TabsTrigger value="info"><List className="mr-2 h-4 w-4" />Обзор</TabsTrigger>
+                        <TabsTrigger value="reviews"><MessagesSquare className="mr-2 h-4 w-4" />Отзывы</TabsTrigger>
+                        <TabsTrigger value="activity"><MapPin className="mr-2 h-4 w-4" />Активность</TabsTrigger>
+                        <TabsTrigger value="leaderboard"><Star className="mr-2 h-4 w-4" />Лидеры</TabsTrigger>
+                        <TabsTrigger value="media"><BarChart className="mr-2 h-4 w-4" />Медиа</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="info" className="mt-6">
+                        <PlaygroundInfoTab playground={playground} issueReport={latestIssueReport} />
+                    </TabsContent>
+                    <TabsContent value="reviews" className="mt-6">
+                        <PlaygroundReviewsTab reviews={reviews} onAddReview={handleAddReview} playgroundName={playground.name} />
+                    </TabsContent>
+                    <TabsContent value="activity" className="mt-6">
+                        <PlaygroundActivityTab activities={activities} />
+                    </TabsContent>
+                    <TabsContent value="leaderboard" className="mt-6">
+                        <PlaygroundLeaderboardTab />
+                    </TabsContent>
+                    <TabsContent value="media" className="mt-6">
+                        <PlaygroundMediaTab />
+                    </TabsContent>
+                </Tabs>
             </div>
-            <PlanGameDialog 
-                isOpen={isPlanGameOpen}
-                onOpenChange={setIsPlanGameOpen}
-                playgroundName={playground.name}
-                onPlan={handlePlanGame}
-            />
+            
             <PlaygroundCheckInDialog
                 isOpen={isCheckInOpen}
                 onOpenChange={setIsCheckInOpen}
                 playgroundName={playground.name}
                 onCheckIn={handleCheckIn}
+            />
+            <ReportPlaygroundIssueDialog
+                isOpen={isReportIssueOpen}
+                onOpenChange={setIsReportIssueOpen}
+                playgroundName={playground.name}
+                onReportSubmit={handleReportSubmit}
+            />
+             <PlanGameDialog 
+                isOpen={isPlanGameOpen}
+                onOpenChange={setIsPlanGameOpen}
+                playgroundName={playground.name}
+                onPlan={handlePlanGame}
             />
         </>
     );

@@ -16,14 +16,14 @@ const initialRequests: JoinRequest[] = [
     { 
         id: 'req-1',
         teamId: 'dvotovyie-atlety',
-        applicant: { name: "ShadowStriker", role: "Нападающий", avatar: 'https://placehold.co/100x100.png', email: 'shadow@example.com' },
+        applicant: { id: 'user-shadow', name: "ShadowStriker", role: "Нападающий", avatar: 'https://placehold.co/100x100.png', email: 'shadow@example.com' },
         message: "Привет, ищу сильную команду, чтобы выигрывать турниры. Готов играть на любой роли, но предпочитаю нападающего.",
         statsSummary: "Опытный нападающий, высокий процент голов, играет в основном в Valorant."
     },
     { 
         id: 'req-2',
         teamId: 'dvotovyie-atlety',
-        applicant: { name: "Foxy", role: "Полузащитник", avatar: 'https://placehold.co/100x100.png', email: 'foxy@example.com' },
+        applicant: { id: 'user-foxy', name: "Foxy", role: "Полузащитник", avatar: 'https://placehold.co/100x100.png', email: 'foxy@example.com' },
         message: "Ищу команду для регулярных тренировок и участия в лиге. Хорошо вижу поле.",
         statsSummary: "Универсальный игрок, хорошо видит поле. Основная игра - футбол."
     },

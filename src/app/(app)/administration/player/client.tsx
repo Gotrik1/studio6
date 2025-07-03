@@ -4,7 +4,8 @@
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
 import type { User } from '@/shared/lib/types';
-import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray, playerActivity as PlayerActivityArray } from "@/shared/lib/mock-data/profiles";
+import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
+import type { playerActivity as PlayerActivityArray } from "@/shared/lib/mock-data/player-activity";
 
 const PlayerProfile = dynamic(() => import('@/entities/player/ui/player-profile').then(mod => mod.PlayerProfile), {
     loading: () => <div className="space-y-6">

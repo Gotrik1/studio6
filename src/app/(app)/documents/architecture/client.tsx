@@ -3,11 +3,10 @@
 
 import { CodeBlock } from '@/widgets/code-block';
 import ReactMarkdown from 'react-markdown';
-import type { CodeProps } from 'react-markdown/lib/ast-to-react';
 import remarkGfm from 'remark-gfm';
 
 const MarkdownComponents = {
-  code({ node, inline, className, children, ...props }: CodeProps) {
+  code({ node, inline, className, children, ...props }: any) {
     const match = /language-(\w+)/.exec(className || '');
     return !inline && match ? (
       <CodeBlock

@@ -49,7 +49,8 @@ import {
   Flame,
   Target,
   FileSignature,
-  Lock
+  Lock,
+  type LucideIcon,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -187,7 +188,19 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/settings", icon: Settings, label: "Настройки" },
     ];
 
-    const renderCollapsibleMenu = (item: typeof adminNavItems) => (
+    type NavItemWithChildren = {
+        label: string;
+        icon: LucideIcon;
+        href: string;
+        role: string;
+        children: {
+            href: string;
+            label: string;
+            icon?: LucideIcon; // Make icon optional
+        }[];
+    };
+
+    const renderCollapsibleMenu = (item: NavItemWithChildren) => (
          <SidebarMenuItem key={item.label}>
             <Collapsible>
                 <CollapsibleTrigger className="w-full">
