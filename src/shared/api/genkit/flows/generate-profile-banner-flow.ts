@@ -29,7 +29,7 @@ const generateProfileBannerFlow = ai.defineFlow(
   async ({prompt}) => {
     const {media} = await ai.generate({
       model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `Masterpiece, best quality, ultra-detailed, 4k, 8k, UHD, sharp focus. A user profile banner for a sports platform. The theme is: ${prompt}. Generate a visually stunning, ultra-wide aspect ratio (32:9) landscape image suitable as a background. The image must be photorealistic and highly detailed. It must not contain any text. The style should be cinematic.`,
+      prompt: `Masterpiece, best quality, ultra-detailed, 4k, 8k, UHD, sharp focus. A user profile banner for a sports platform. The theme is: ${prompt}. Generate a visually stunning, ultra-wide aspect ratio (32:9) landscape image suitable as a background. The image must not contain any text. The style should be cinematic.`,
       config: {
         responseModalities: ['TEXT', 'IMAGE'],
       },
