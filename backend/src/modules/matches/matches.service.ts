@@ -173,6 +173,10 @@ export class MatchesService {
 
     const match = await this.prisma.match.findUnique({
       where: { id },
+      include: {
+        team1: { include: { members: true } },
+        team2: { include: { members: true } },
+      },
     });
 
     if (!match) {
@@ -190,18 +194,24 @@ export class MatchesService {
       draws?: { increment: 1 };
     } = {};
 
+    let winningTeamMembers: { id: string }[] = [];
+    const XP_FOR_WIN = 100; // Define XP reward
+
     if (score1 > score2) {
       team1Update.wins = { increment: 1 };
       team2Update.losses = { increment: 1 };
+      winningTeamMembers = match.team1.members;
     } else if (score2 > score1) {
       team1Update.losses = { increment: 1 };
       team2Update.wins = { increment: 1 };
+      winningTeamMembers = match.team2.members;
     } else {
       team1Update.draws = { increment: 1 };
       team2Update.draws = { increment: 1 };
     }
 
     return this.prisma.$transaction(async (tx) => {
+      // Update team stats
       await tx.team.update({
         where: { id: match.team1Id },
         data: team1Update,
@@ -211,6 +221,16 @@ export class MatchesService {
         data: team2Update,
       });
 
+      // Award XP to winning team members
+      if (winningTeamMembers.length > 0) {
+        const memberIds = winningTeamMembers.map((member) => member.id);
+        await tx.user.updateMany({
+          where: { id: { in: memberIds } },
+          data: { xp: { increment: XP_FOR_WIN } },
+        });
+      }
+
+      // Update match details
       const updatedMatch = await tx.match.update({
         where: { id },
         data: {
