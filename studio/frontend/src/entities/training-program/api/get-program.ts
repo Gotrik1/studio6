@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useTraining } from "@/app/providers/training-provider";
+import { useTraining } from "@/shared/context/training-provider";
 import type { TrainingProgram } from '../model/types';
 
 // This is now a hook because it needs to access the context
