@@ -3,10 +3,15 @@ export type Sport = {
     id: string;
     name: string;
     icon: string;
-    category: 'Командный' | 'Некомандный';
+    category: 'Командный' | 'Некомандный' | 'Киберспорт';
 };
 
 export const sportsList: Sport[] = [
+    // Киберспорт
+    { id: 'valorant', name: 'Valorant', icon: 'Crosshair', category: 'Киберспорт' },
+    { id: 'csgo', name: 'CS:GO 2', icon: 'Crosshair', category: 'Киберспорт' },
+    { id: 'dota2', name: 'Dota 2', icon: 'Swords', category: 'Киберспорт' },
+
     // Командные виды спорта
     { id: 'football', name: 'Футбол', icon: 'Futbol', category: 'Командный' },
     { id: 'basketball', name: 'Баскетбол', icon: 'Dribbble', category: 'Командный' },

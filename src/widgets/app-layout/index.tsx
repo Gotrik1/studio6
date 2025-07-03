@@ -46,6 +46,7 @@ import {
   Coins,
   Ruler,
   Flame,
+  Target,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -134,6 +135,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/teams", icon: Users, label: "Команды" },
         { href: "/tournaments", icon: Trophy, label: "Турниры" },
         { href: "/leagues", icon: Flame, label: "Лиги" },
+        { href: "/challenges", icon: Target, label: "Вызовы" },
         { href: "/lfg", icon: Swords, label: "Поиск игры" },
         { href: "/chats", icon: MessageSquare, label: "Сообщения" },
         {

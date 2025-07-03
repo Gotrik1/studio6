@@ -3,7 +3,7 @@ export type Exercise = {
     id: string;
     name: string;
     description: string;
-    category: 'Грудь' | 'Спина' | 'Ноги' | 'Плечи' | 'Руки' | 'Пресс' | 'Баскетбол' | 'Valorant' | 'Футбол';
+    category: 'Грудь' | 'Спина' | 'Ноги' | 'Плечи' | 'Руки' | 'Пресс' | 'Баскетбол' | 'Valorant' | 'CS:GO 2' | 'Футбол';
     equipment: 'Штанга' | 'Гантели' | 'Тренажер' | 'Собственный вес' | 'Мяч' | 'Компьютер';
     image: string;
     imageHint: string;
