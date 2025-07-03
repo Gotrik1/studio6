@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const loginSchema = z.object({
   email: z.string().email({ message: "Введите корректный email." }),
-  phone: z.string().optional(),
+  password: z.string().min(1, { message: "Пароль не может быть пустым."}),
 });
 
 export const registerSchema = z.object({

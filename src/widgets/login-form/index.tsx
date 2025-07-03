@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -8,7 +7,7 @@ import { useTransition, useState } from 'react';
 import Image from 'next/image';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shared/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { login } from '@/features/auth/actions';
@@ -31,14 +30,14 @@ export const LoginForm = ({ onSwitchToRegister }: { onSwitchToRegister: () => vo
         resolver: zodResolver(loginSchema),
         defaultValues: {
             email: "admin@example.com",
-            phone: "",
+            password: "superuser",
         },
     });
     
     const onSubmit = (values: FormValues) => {
         setError(undefined);
         startTransition(async () => {
-            const result = await login(values.email);
+            const result = await login(values);
             if (result?.error) {
                 setError(result.error);
             }
@@ -92,10 +91,18 @@ export const LoginForm = ({ onSwitchToRegister }: { onSwitchToRegister: () => vo
                                             <Input placeholder="+7 (___) ___-__-__" className="pl-10" />
                                         </div>
                                     </TabsContent>
-                                    <TabsContent value="email" className="pt-2">
+                                    <TabsContent value="email" className="pt-2 space-y-4">
                                          <FormField control={form.control} name="email" render={({ field }) => (
                                             <FormItem>
+                                                <FormLabel>Email</FormLabel>
                                                 <FormControl><Input placeholder="you@example.com" {...field} /></FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )} />
+                                        <FormField control={form.control} name="password" render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Пароль</FormLabel>
+                                                <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
                                                 <FormMessage />
                                             </FormItem>
                                         )} />
