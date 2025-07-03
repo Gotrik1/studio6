@@ -48,6 +48,7 @@ import {
   Ruler,
   Flame,
   Target,
+  FileSignature,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -183,6 +184,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
             { href: "/documents/project-readme", label: "Readme проекта" },
             { href: "/documents/architecture", label: "Архитектура" },
             { href: "/documents/vision-and-principles", label: "Видение проекта" },
+            { href: "/documents/auth-implementation", label: "План Аутентификации", icon: FileSignature },
             { href: "/ai-analysis", icon: BrainCircuit, label: "AI-Песочница" },
             { href: "/theme-demo", icon: Palette, label: "Демо темы" },
             { href: "/administration/sitemap", icon: Map, label: "Карта сайта" },

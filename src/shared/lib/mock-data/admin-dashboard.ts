@@ -23,7 +23,8 @@ import {
     HeartPulse,
     Server,
     Map,
-    FileSignature
+    FileSignature,
+    Lock
 } from 'lucide-react';
 
 export const managementCards = [
@@ -62,6 +63,7 @@ export const systemCards = [
     { title: "Readme проекта", description: "Обзор проекта, стек, возможности.", href: "/documents/project-readme", icon: FileText },
     { title: "Документация (Frontend)", description: "Подробная техническая документация фронтенда, включая стек, структуру, ADR и гайдлайны.", href: "/documents/architecture", icon: FolderKanban },
     { title: "Документация (Backend)", description: "Обзор архитектуры бэкенда.", href: "/documents/backend-documentation", icon: Server },
+    { title: "План Аутентификации", description: "Реализация с Keycloak и Kong.", href: "/documents/auth-implementation", icon: Lock },
     { title: "ADR: Выбор брокера", description: "Почему был выбран Kafka, а не RabbitMQ/NATS.", href: "/documents/adr/ADR-001-Message-Broker-Choice", icon: FileSignature },
     { title: "Демо темы", description: "Просмотр всех UI компонентов.", href: "/theme-demo", icon: Palette },
     { title: "Карта сайта", description: "Обзор всех страниц приложения.", href: "/administration/sitemap", icon: MapIcon },

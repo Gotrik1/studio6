@@ -3,7 +3,7 @@ import path from 'path';
 import BackendDocumentationClient from './client';
 
 export default async function BackendDocumentationPage() {
-    const docPath = path.join(process.cwd(), 'src/shared/lib/mock-data/doc-backend.md');
+    const docPath = path.join(process.cwd(), 'BACKEND_DOCUMENTATION.md');
     const markdown = await fs.readFile(docPath, 'utf-8');
 
     return <BackendDocumentationClient markdown={markdown} />;
