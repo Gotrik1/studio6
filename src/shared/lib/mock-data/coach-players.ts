@@ -1,4 +1,3 @@
-
 export const coachedPlayers = [
     {
         id: 'p1',
