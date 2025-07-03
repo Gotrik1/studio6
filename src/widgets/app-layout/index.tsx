@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React from 'react';
@@ -59,6 +60,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
 import { HeaderCart } from '@/widgets/header-cart';
 import { CartDialog } from '@/widgets/cart-dialog';
+import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
 
 
 interface AppLayoutProps {
@@ -106,18 +108,18 @@ const AppFooter = () => (
 const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     const { state } = useSidebar();
     const pathname = usePathname();
-    const router = useRouter();
+    const [isSearchOpen, setIsSearchOpen] = React.useState(false);
 
     React.useEffect(() => {
         const down = (e: KeyboardEvent) => {
             if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
-                router.push('/search');
+                setIsSearchOpen((open) => !open);
             }
         };
         document.addEventListener('keydown', down);
         return () => document.removeEventListener('keydown', down);
-    }, [router]);
+    }, []);
 
     const isActive = (href: string) => {
         if (!pathname) return false;
@@ -267,14 +269,12 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b border-background bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
                     <SidebarTrigger className="flex md:hidden" />
                     <div className="flex-1">
-                        <Button variant="outline" className="w-full justify-start text-muted-foreground sm:w-auto" asChild>
-                            <Link href="/search">
-                                <Search className="mr-2 h-4 w-4" />
-                                <span className="hidden sm:inline">Поиск...</span>
-                                <kbd className="pointer-events-none ml-4 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-                                    <span className="text-xs">⌘</span>K
-                                </kbd>
-                            </Link>
+                        <Button variant="outline" className="w-full justify-start text-muted-foreground sm:w-auto" onClick={() => setIsSearchOpen(true)}>
+                            <Search className="mr-2 h-4 w-4" />
+                            <span className="hidden sm:inline">Поиск...</span>
+                            <kbd className="pointer-events-none ml-4 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                                <span className="text-xs">⌘</span>K
+                            </kbd>
                         </Button>
                     </div>
                     <HeaderCart />
@@ -287,6 +287,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 <AppFooter />
                 <BottomNav />
             </SidebarInset>
+            <GlobalSearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
             <CartDialog />
         </>
     );
