@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -79,8 +78,6 @@ export function UserEditDialog({ user, isOpen, onOpenChange, onUserUpdate }: Use
         setAiError(null);
 
         try {
-            // In a real app, this would be fetched from a user service.
-            const mockUserHistory = "Пользователь Maria 'Shadow' Petrova имеет 2 предыдущих предупреждения за токсичность. В остальном активность в рамках нормы.";
             const result = await analyzeRoleChange({
                 userName: user.name,
                 currentRole: user.role,
