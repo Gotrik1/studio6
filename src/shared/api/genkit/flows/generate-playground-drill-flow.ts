@@ -29,7 +29,7 @@ const prompt = ai.definePrompt({
   Instructions:
   1.  Create a catchy, motivating title for a skill drill that targets this weakness.
   2.  Write a clear, one-sentence description of a specific, measurable task the player can perform right now on this playground.
-  3.  Assign a fair reward in PD (ProDvor Dollars) for completing the drill, typically between 25 and 75 PD.
+  3.  Assign a fair reward in PD for completing the drill, typically between 25 and 75 PD.
 
   Respond in Russian. The tone should be encouraging and direct.
   `,

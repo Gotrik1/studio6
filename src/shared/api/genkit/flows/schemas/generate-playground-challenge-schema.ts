@@ -12,6 +12,6 @@ export type GeneratePlaygroundChallengeInput = z.infer<typeof GeneratePlayground
 export const GeneratePlaygroundChallengeOutputSchema = z.object({
   title: z.string().describe('A catchy title for the challenge.'),
   description: z.string().describe('A short, clear description of what the user needs to do.'),
-  reward: z.number().describe('The reward in PD (ProDvor Dollars) for completing the challenge.'),
+  reward: z.number().describe('The reward in PD for completing the challenge.'),
 });
 export type GeneratePlaygroundChallengeOutput = z.infer<typeof GeneratePlaygroundChallengeOutputSchema>;

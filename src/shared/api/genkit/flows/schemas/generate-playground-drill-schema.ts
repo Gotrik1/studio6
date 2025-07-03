@@ -10,6 +10,6 @@ export type GeneratePlaygroundDrillInput = z.infer<typeof GeneratePlaygroundDril
 export const GeneratePlaygroundDrillOutputSchema = z.object({
   title: z.string().describe('A catchy, motivating title for the skill drill.'),
   description: z.string().describe('A clear, one-sentence description of the task to perform.'),
-  reward: z.number().describe('The reward in PD (ProDvor Dollars) for completing the drill.'),
+  reward: z.number().describe('The reward in PD for completing the drill.'),
 });
 export type GeneratePlaygroundDrillOutput = z.infer<typeof GeneratePlaygroundDrillOutputSchema>;

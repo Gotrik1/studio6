@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -34,9 +35,8 @@ const generatePromotionWizardFlow = ai.defineFlow(
     const detailsPromise = generatePromotionDetails({ prompt });
     const imagePromise = generatePromotionImage(prompt);
     
-    // Suggest a participation cost
     const costGenPromise = ai.generate({
-        prompt: `Based on the promotion idea "${prompt}", suggest a fair participation cost in PD (ProDvor Dollars). It should be a number. If it sounds like a big event, cost can be 50-100. If it's a simple creative contest, it can be 0 or 10. Just return the number.`,
+        prompt: `Based on the promotion idea "${prompt}", suggest a fair participation cost in PD. It should be a number. If it sounds like a big event, cost can be 50-100. If it's a simple creative contest, it can be 0 or 10. Just return the number.`,
         output: {
             schema: z.string().describe('A number as a string, e.g. "50"'),
         }

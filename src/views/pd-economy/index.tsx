@@ -40,7 +40,7 @@ export function PDEconomyPage() {
             <div className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Экономика ProDvor</h1>
                 <p className="text-muted-foreground max-w-2xl">
-                    Узнайте всё о ProDvor Dollars (PD) — нашей внутренней валюте, которую можно заработать за активность и потратить на крутые вещи.
+                    Узнайте всё о PD — нашей внутренней валюте, которую можно заработать за активность и потратить на крутые вещи.
                 </p>
             </div>
 
