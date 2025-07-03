@@ -30,7 +30,7 @@ export function ModerationQueuePage() {
             // In a real app, you would also persist this resolution.
             toast({
                 title: "Решение принято",
-                description: `Жалоба на ${reportToResolve.reportedUser.name} была обработана. Действие: ${action}.`
+                description: `Вы вынесли решение по жалобе на ${reportToResolve.reportedUser.name}. Действие: ${action}.`
             });
         }
         setIsDialogOpen(false);
