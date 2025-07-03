@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { TournamentsService } from './tournaments.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
+import { RegisterTeamDto } from './dto/register-team.dto';
 
 @Controller('tournaments')
 export class TournamentsController {
@@ -19,5 +20,10 @@ export class TournamentsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tournamentsService.findOne(id);
+  }
+
+  @Post(':id/register')
+  registerTeam(@Param('id') tournamentId: string, @Body() registerTeamDto: RegisterTeamDto) {
+    return this.tournamentsService.registerTeam(tournamentId, registerTeamDto.teamId);
   }
 }

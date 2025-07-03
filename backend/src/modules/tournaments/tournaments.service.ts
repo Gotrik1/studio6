@@ -34,6 +34,18 @@ export class TournamentsService {
     });
   }
 
+  async registerTeam(tournamentId: string, teamId: string): Promise<Tournament> {
+    return this.prisma.tournament.update({
+      where: { id: tournamentId },
+      data: {
+        teams: {
+          connect: { id: teamId },
+        },
+      },
+      include: { teams: true },
+    });
+  }
+
   async remove(id: string): Promise<Tournament> {
     return this.prisma.tournament.delete({ where: { id } });
   }
