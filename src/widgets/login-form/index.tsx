@@ -6,7 +6,7 @@ import * as z from 'zod';
 import { useTransition, useState } from 'react';
 import Image from 'next/image';
 
-import { Card } from '@/shared/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
@@ -21,7 +21,7 @@ import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shar
 
 type FormValues = z.infer<typeof loginSchema>;
 
-export function LoginForm({ onSwitchToRegister }: { onSwitchToRegister: () => void }) {
+export const LoginForm = ({ onSwitchToRegister }: { onSwitchToRegister: () => void }) => {
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | undefined>();
 
@@ -127,4 +127,4 @@ export function LoginForm({ onSwitchToRegister }: { onSwitchToRegister: () => vo
             </div>
         </div>
     );
-}
+};
