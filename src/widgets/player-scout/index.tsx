@@ -69,7 +69,7 @@ export function PlayerScout() {
                         className="min-h-[100px] text-base"
                     />
                     {error && (
-                        <Alert variant="destructive">
+                        <Alert variant="destructive" className="mt-4">
                             <AlertTitle>Ошибка</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
                         </Alert>
