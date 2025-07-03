@@ -6,9 +6,9 @@ import remarkGfm from 'remark-gfm';
 import type { Components } from 'react-markdown';
 
 const MarkdownComponents: Components = {
-  code({ inline, className, children, ...props }) {
+  code({ className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || '');
-    return !inline && match ? (
+    return match ? (
       <CodeBlock
         language={match[1]}
         code={String(children).replace(/\n$/, '')}

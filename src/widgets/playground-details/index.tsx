@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState } from 'react';
@@ -96,19 +95,20 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
 
     const handlePlanGame = (data: PlanGameFormValues) => {
         if (!user) return;
-        const endTime = new Date(data.date);
-        endTime.setHours(new Date(data.date).getHours() + Math.floor(data.duration / 60));
-        endTime.setMinutes(new Date(data.date).getMinutes() + (data.duration % 60));
+
+        const [hours, minutes] = data.time.split(':').map(Number);
+        const combinedDate = new Date(data.date);
+        combinedDate.setHours(hours, minutes, 0, 0);
 
         addLobby({
             type: 'game',
             sport: playground.type,
             location: playground.name,
             playgroundId: playground.id,
-            startTime: data.date,
+            startTime: combinedDate,
             duration: data.duration,
             comment: data.comment || `Игра на площадке ${playground.name}`,
-            playersNeeded: 10, // Example value
+            playersNeeded: 10,
         });
 
         toast({

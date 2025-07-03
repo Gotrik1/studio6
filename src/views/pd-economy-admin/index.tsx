@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -134,11 +134,11 @@ export function PDEconomyAdminPage() {
                                 </div>
                             </div>
                         </CardContent>
-                        <CardFooter>
+                        <CardContent>
                              <Button className="w-full" onClick={handleAddRule}>
                                 <PlusCircle className="mr-2 h-4 w-4" /> Добавить правило
                             </Button>
-                        </CardFooter>
+                        </CardContent>
                     </Card>
                 </div>
             </div>

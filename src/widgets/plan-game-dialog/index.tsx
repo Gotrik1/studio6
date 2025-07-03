@@ -16,11 +16,13 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from '@/shared/ui/dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { Textarea } from '@/shared/ui/textarea';
 
 const planGameSchema = z.object({
   date: z.date({ required_error: "Выберите дату." }),
   time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Введите время в формате HH:MM."),
   duration: z.coerce.number().min(30, "Минимальная длительность 30 минут").max(180, "Максимальная длительность 3 часа"),
+  comment: z.string().max(200, 'Комментарий слишком длинный').optional(),
 });
 
 export type FormValues = z.infer<typeof planGameSchema>;
@@ -43,6 +45,7 @@ export function PlanGameDialog({ isOpen, onOpenChange, playgroundName, onPlan, i
             date: initialDate || new Date(),
             time: initialTime || '19:00',
             duration: 60,
+            comment: '',
         },
     });
     
@@ -52,6 +55,7 @@ export function PlanGameDialog({ isOpen, onOpenChange, playgroundName, onPlan, i
                 date: initialDate || new Date(),
                 time: initialTime || '19:00',
                 duration: 60,
+                comment: '',
             })
         }
     }, [isOpen, initialDate, initialTime, form]);
@@ -89,6 +93,9 @@ export function PlanGameDialog({ isOpen, onOpenChange, playgroundName, onPlan, i
                             </div>
                             <FormField control={form.control} name="duration" render={({ field }) => (
                                 <FormItem><FormLabel>Продолжительность (в минутах)</FormLabel><FormControl><Input type="number" step="15" {...field} /></FormControl><FormMessage /></FormItem>
+                            )} />
+                            <FormField control={form.control} name="comment" render={({ field }) => (
+                                <FormItem><FormLabel>Комментарий (необязательно)</FormLabel><FormControl><Textarea placeholder="Например: 'Ищем игроков для расслабленной игры...'" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                         </div>
                         <DialogFooter>
