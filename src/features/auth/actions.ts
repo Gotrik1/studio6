@@ -3,8 +3,6 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { User } from '@/shared/lib/types';
-import { z } from 'zod';
-import { registerSchema } from './schemas';
 
 // This function now simulates a successful redirect from an external provider like Keycloak.
 // In a real OAuth2 flow, the user would be redirected to Keycloak, log in,
@@ -27,10 +25,8 @@ export async function login() {
         path: '/',
     });
 
-    // In a real app, this redirect would happen after a successful login & token exchange.
-    // For a new user, it should be '/welcome'. For an existing user, '/dashboard'.
-    // We'll redirect to welcome to show the onboarding flow.
-    redirect('/welcome');
+    // Redirect to the main dashboard after login.
+    redirect('/dashboard');
 
   } catch (error) {
     if (error instanceof Error) {
@@ -42,40 +38,6 @@ export async function login() {
     }
     throw error;
   }
-}
-
-// Registration action - updated to call the backend API
-export async function register(values: z.infer<typeof registerSchema>) {
-    const validatedFields = registerSchema.safeParse(values);
-    if (!validatedFields.success) {
-      return { error: 'Предоставлены неверные данные.' };
-    }
-    
-    // In a real application, the BASE_URL would come from environment variables
-    const API_URL = process.env.API_BASE_URL || 'http://localhost:3001';
-
-    try {
-        // This will call the backend service which in turn uses the Keycloak Admin API.
-        const response = await fetch(`${API_URL}/api/register`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(values),
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            return { error: errorData.message || 'Произошла ошибка при регистрации.' };
-        }
-
-        return { success: 'Регистрация прошла успешно! Теперь вы можете войти.' };
-
-    } catch (error) {
-       console.error("Registration API call failed:", error);
-       // This will catch network errors
-       return { error: 'Не удалось связаться с сервером регистрации. Пожалуйста, попробуйте еще раз позже.' };
-    }
 }
 
 
