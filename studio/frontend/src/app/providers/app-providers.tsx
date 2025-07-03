@@ -1,6 +1,6 @@
 'use client';
 
-import { AccentThemeProvider } from "@/app/providers/accent-theme-provider";
+import { AccentThemeProvider } from "@/shared/context/accent-theme-provider";
 import { TeamProvider } from "@/app/providers/team-provider";
 import { TrainingProvider } from "@/app/providers/training-provider";
 import { NutritionProvider } from "@/app/providers/nutrition-provider";
