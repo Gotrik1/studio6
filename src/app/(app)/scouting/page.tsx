@@ -1,3 +1,5 @@
-import { PlayerScoutPage } from '@/views/scouting';
+import { redirect } from 'next/navigation';
 
-export default PlayerScoutPage;
+export default function PlayerScoutPage() {
+    redirect('/search?tab=players');
+}

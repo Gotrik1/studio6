@@ -4,14 +4,14 @@
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Textarea } from '@/shared/ui/textarea';
 import { playerScout, type PlayerScoutOutput } from '@/shared/api/genkit/flows/player-scout-flow';
-import { Loader2, Sparkles, Send, UserCheck } from 'lucide-react';
+import { Textarea } from '@/shared/ui/textarea';
+import { Loader2, Sparkles, Send, UserSearch } from 'lucide-react';
+import { useToast } from '@/shared/hooks/use-toast';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import Link from 'next/link';
-import { useToast } from '@/shared/hooks/use-toast';
 
 export function PlayerScout() {
     const { toast } = useToast();
@@ -55,12 +55,13 @@ export function PlayerScout() {
 
     return (
         <div className="space-y-6">
-            <Card className="max-w-3xl mx-auto">
+            <Card>
                 <CardHeader>
-                    <CardTitle>Запрос для скаута</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><UserSearch /> AI-Скаут Игроков</CardTitle>
+                    <CardDescription>Опишите идеального кандидата для вашей команды, и наш AI-скаут найдет лучших игроков на платформе.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                     <Textarea
+                <CardContent>
+                    <Textarea
                         id="scout-prompt"
                         placeholder="Например: 'Нужен агрессивный нападающий для футбольной команды, свободный для тренировок 3 раза в неделю...'"
                         value={prompt}
@@ -68,7 +69,7 @@ export function PlayerScout() {
                         disabled={isLoading}
                         className="min-h-[100px] text-base"
                     />
-                    {error && (
+                     {error && (
                         <Alert variant="destructive" className="mt-4">
                             <AlertTitle>Ошибка</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
@@ -76,8 +77,8 @@ export function PlayerScout() {
                     )}
                 </CardContent>
                 <CardFooter>
-                     <Button onClick={handleSearch} disabled={isLoading} size="lg" className="w-full">
-                        {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Sparkles className="mr-2 h-5 w-5" />}
+                     <Button onClick={handleSearch} disabled={isLoading}>
+                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                         {isLoading ? 'Идет поиск...' : 'Найти игроков'}
                     </Button>
                 </CardFooter>

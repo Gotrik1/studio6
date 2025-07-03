@@ -7,7 +7,6 @@ import { PlusCircle, Map } from 'lucide-react';
 import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 import { PlaygroundCard } from '@/widgets/playground-card';
 import Link from 'next/link';
-import { PlaygroundFinder } from '@/widgets/playground-finder';
 import { Input } from '@/shared/ui/input';
 import { Search } from 'lucide-react';
 import { Card, CardHeader } from '@/shared/ui/card';
@@ -49,56 +48,50 @@ export function PlaygroundsListPage() {
                 </Button>
             </div>
             
-            <PlaygroundFinder />
-            
-            <div className="space-y-4 pt-6 mt-6 border-t">
-                 <h2 className="font-headline text-2xl font-bold">Все места</h2>
-                 
-                 <Card>
-                    <CardHeader className="flex flex-col gap-4 sm:flex-row">
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                            <Input
-                                placeholder="Поиск по названию или адресу..."
-                                className="w-full pl-10"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                            {sportTypes.map((type) => (
-                                <Button 
-                                    key={type} 
-                                    variant={sportFilter === type ? "default" : "outline"}
-                                    onClick={() => setSportFilter(type)}
-                                >
-                                    {type}
-                                </Button>
-                            ))}
-                        </div>
-                    </CardHeader>
-                </Card>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredPlaygrounds.map(playground => {
-                        const kingTeam = getKingOfTheCourt(playground.id);
-                        const isLive = livePlaygrounds.has(playground.id);
-                        return (
-                             <PlaygroundCard 
-                                key={playground.id} 
-                                playground={playground}
-                                kingTeam={kingTeam}
-                                isLive={isLive}
-                            />
-                        )
-                    })}
-                </div>
-                 {filteredPlaygrounds.length === 0 && (
-                    <div className="col-span-full text-center py-16 text-muted-foreground">
-                        <p>Места не найдены. Попробуйте изменить фильтры.</p>
+            <Card>
+                <CardHeader className="flex flex-col gap-4 sm:flex-row">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input
+                            placeholder="Поиск по названию или адресу..."
+                            className="w-full pl-10"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
                     </div>
-                )}
+                    <div className="flex flex-wrap gap-2">
+                        {sportTypes.map((type) => (
+                            <Button 
+                                key={type} 
+                                variant={sportFilter === type ? "default" : "outline"}
+                                onClick={() => setSportFilter(type)}
+                            >
+                                {type}
+                            </Button>
+                        ))}
+                    </div>
+                </CardHeader>
+            </Card>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredPlaygrounds.map(playground => {
+                    const kingTeam = getKingOfTheCourt(playground.id);
+                    const isLive = livePlaygrounds.has(playground.id);
+                    return (
+                         <PlaygroundCard 
+                            key={playground.id} 
+                            playground={playground}
+                            kingTeam={kingTeam}
+                            isLive={isLive}
+                        />
+                    )
+                })}
             </div>
+             {filteredPlaygrounds.length === 0 && (
+                <div className="col-span-full text-center py-16 text-muted-foreground">
+                    <p>Места не найдены. Попробуйте изменить фильтры.</p>
+                </div>
+            )}
         </div>
     );
 }

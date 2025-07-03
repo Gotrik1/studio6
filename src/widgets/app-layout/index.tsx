@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import type { User } from "@/shared/lib/types";
 import Link from 'next/link';
 import {
@@ -54,8 +54,7 @@ import { ThemeToggle } from "@/shared/ui/theme-toggle";
 import { ThemeCustomizer } from "@/shared/ui/theme-customizer";
 import { NotificationsPopover } from "@/widgets/notifications-popover";
 import { Button } from '@/shared/ui/button';
-import { GlobalSearchDialog } from '@/features/global-search/ui/global-search-dialog';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
 import { HeaderCart } from '@/widgets/header-cart';
 import { CartDialog } from '@/widgets/cart-dialog';
@@ -104,20 +103,20 @@ const AppFooter = () => (
 
 
 const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
     const { state } = useSidebar();
     const pathname = usePathname();
+    const router = useRouter();
 
-    useEffect(() => {
+    React.useEffect(() => {
         const down = (e: KeyboardEvent) => {
             if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
-                setIsSearchOpen((open) => !open);
+                router.push('/search');
             }
         };
         document.addEventListener('keydown', down);
         return () => document.removeEventListener('keydown', down);
-    }, []);
+    }, [router]);
 
     const isActive = (href: string) => {
         if (!pathname) return false;
@@ -133,6 +132,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
 
     const mainNavItems = [
         { href: "/dashboard", icon: Newspaper, label: "Лента" },
+        { href: "/search", icon: Search, label: "Поиск" },
         { href: "/teams", icon: Users, label: "Команды" },
         { href: "/tournaments", icon: Trophy, label: "Турниры" },
         { href: "/leagues", icon: Flame, label: "Лиги" },
@@ -282,12 +282,14 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b border-background bg-background/80 px-4 backdrop-blur-sm sm:h-16 sm:px-6">
                     <SidebarTrigger className="flex md:hidden" />
                     <div className="flex-1">
-                        <Button variant="outline" className="w-full justify-start text-muted-foreground sm:w-auto" onClick={() => setIsSearchOpen(true)}>
-                            <Search className="mr-2 h-4 w-4" />
-                            <span>Поиск...</span>
-                            <kbd className="pointer-events-none ml-4 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-                                <span className="text-xs">⌘</span>K
-                            </kbd>
+                        <Button variant="outline" className="w-full justify-start text-muted-foreground sm:w-auto" asChild>
+                            <Link href="/search">
+                                <Search className="mr-2 h-4 w-4" />
+                                <span className="hidden sm:inline">Поиск...</span>
+                                <kbd className="pointer-events-none ml-4 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                                    <span className="text-xs">⌘</span>K
+                                </kbd>
+                            </Link>
                         </Button>
                     </div>
                     <HeaderCart />
@@ -300,7 +302,6 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 <AppFooter />
                 <BottomNav />
             </SidebarInset>
-            <GlobalSearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
             <CartDialog />
         </>
     );
