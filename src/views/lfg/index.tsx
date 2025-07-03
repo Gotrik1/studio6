@@ -1,11 +1,12 @@
 
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useLfg, type LfgLobby } from '@/app/providers/lfg-provider';
-import { PlusCircle, MapPin, Clock, Users, Gamepad2, UserPlus, Swords, Search, Loader2, Sparkles, Users2, GraduationCap, UserSearch, BarChart3, Shapes } from 'lucide-react';
+import { PlusCircle, MapPin, Clock, Users, Gamepad2, UserPlus, Swords, Search, Loader2, Sparkles, Dumbbell } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Badge } from '@/shared/ui/badge';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -15,17 +16,18 @@ import { findLfgLobbies } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow'
 import type { LfgLobby as LfgLobbyType } from '@/shared/api/genkit/flows/schemas/find-lfg-lobbies-schema';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import Link from 'next/link';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
 function LfgCard({ lobby, onJoin }: { lobby: LfgLobbyType, onJoin: (lobbyId: string) => void }) {
+    const Icon = lobby.type === 'training' ? Dumbbell : Gamepad2;
+
     return (
         <Card className="flex flex-col">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                        <Gamepad2 className="h-5 w-5 text-primary" />
+                        <Icon className="h-5 w-5 text-primary" />
                         <CardTitle className="text-lg">{lobby.sport}</CardTitle>
                     </div>
                     <Badge variant={lobby.playersJoined >= lobby.playersNeeded ? 'destructive' : 'default'}>
@@ -64,28 +66,6 @@ function LfgCard({ lobby, onJoin }: { lobby: LfgLobbyType, onJoin: (lobbyId: str
     );
 }
 
-const communityLinks = [
-    { href: "/friends", icon: Users2, title: "Друзья", description: "Ваш список друзей и заявки." },
-    { href: "/coaches", icon: GraduationCap, title: "Найти тренера", description: "Подберите наставника для роста." },
-    { href: "/scouting", icon: UserSearch, title: "Поиск игроков", description: "Найдите новых членов команды." },
-    { href: "/leaderboards", icon: BarChart3, title: "Таблицы лидеров", description: "Сравните свои результаты с лучшими." },
-    { href: "/sports", icon: Shapes, title: "Виды спорта", description: "Все доступные дисциплины." },
-];
-
-const CommunityLinkCard = ({ href, icon: Icon, title, description }: (typeof communityLinks)[0]) => (
-    <Card className="hover:bg-muted/50 transition-colors h-full">
-        <Link href={href} className="block p-4 h-full">
-            <div className="flex items-start gap-4">
-                <Icon className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
-                <div>
-                    <p className="font-semibold">{title}</p>
-                    <p className="text-sm text-muted-foreground">{description}</p>
-                </div>
-            </div>
-        </Link>
-    </Card>
-);
-
 export function LfgPage() {
     const { toast } = useToast();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -94,6 +74,7 @@ export function LfgPage() {
     const [error, setError] = useState<string | null>(null);
     const { lobbies, addLobby, joinLobby } = useLfg();
     const [filteredLobbies, setFilteredLobbies] = useState<LfgLobbyType[] | null>(null);
+    const [typeFilter, setTypeFilter] = useState<'all' | 'game' | 'training'>('all');
 
     const handleSearch = async () => {
         if (!prompt) {
@@ -127,7 +108,7 @@ export function LfgPage() {
         if (lobby) {
             toast({
                 title: "Вы присоединились к лобби!",
-                description: `Вы успешно присоединились к игре по ${lobby.sport}.`,
+                description: `Вы успешно присоединились к активности по ${lobby.sport}.`,
             });
         }
     };
@@ -140,7 +121,13 @@ export function LfgPage() {
         });
     };
     
-    const lobbiesToDisplay = filteredLobbies === null ? lobbies : filteredLobbies;
+    const lobbiesToDisplay = useMemo(() => {
+        const source = filteredLobbies === null ? lobbies : filteredLobbies;
+        if (typeFilter === 'all') {
+            return source;
+        }
+        return source.filter(lobby => lobby.type === typeFilter);
+    }, [filteredLobbies, lobbies, typeFilter]);
 
     return (
         <>
@@ -149,15 +136,15 @@ export function LfgPage() {
                     <div className="space-y-2">
                         <div className="flex items-center gap-3">
                             <Swords className="h-8 w-8 text-primary"/>
-                            <h1 className="font-headline text-3xl font-bold tracking-tight">Поиск игры (LFG)</h1>
+                            <h1 className="font-headline text-3xl font-bold tracking-tight">Поиск игры и тренировок</h1>
                         </div>
                         <p className="text-muted-foreground">
-                            Найдите компанию для игры с помощью AI или создайте свое лобби.
+                            Найдите компанию для игры или тренировки с помощью AI или создайте свое лобби.
                         </p>
                     </div>
                     <Button onClick={() => setIsCreateOpen(true)}>
                         <PlusCircle className="mr-2 h-4 w-4" />
-                        Создать лобби вручную
+                        Создать лобби
                     </Button>
                 </div>
 
@@ -189,6 +176,12 @@ export function LfgPage() {
                     </CardFooter>
                 </Card>
 
+                <div className="flex justify-center gap-2">
+                    <Button variant={typeFilter === 'all' ? 'default' : 'outline'} onClick={() => setTypeFilter('all')}>Все</Button>
+                    <Button variant={typeFilter === 'game' ? 'default' : 'outline'} onClick={() => setTypeFilter('game')}>Игры</Button>
+                    <Button variant={typeFilter === 'training' ? 'default' : 'outline'} onClick={() => setTypeFilter('training')}>Тренировки</Button>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {isLoading && Array.from({ length: 3 }).map((_, i) => (
                         <Card key={i}><Skeleton className="h-80 w-full" /></Card>
@@ -204,16 +197,6 @@ export function LfgPage() {
                         <p>Попробуйте изменить запрос или создайте свое лобби.</p>
                     </div>
                 )}
-                
-                <div className="space-y-4 pt-6 mt-6 border-t">
-                    <h2 className="font-headline text-2xl font-bold">Разделы сообщества</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {communityLinks.map(link => (
-                            <CommunityLinkCard key={link.href} {...link} />
-                        ))}
-                    </div>
-                </div>
-
             </div>
             <LfgCreateDialog 
                 isOpen={isCreateOpen}

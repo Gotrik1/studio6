@@ -1,4 +1,5 @@
 
+
 'use server';
 
 /**
@@ -20,8 +21,8 @@ export type { FindLfgLobbiesInput, FindLfgLobbiesOutput };
 const findLobbiesTool = ai.defineTool(
   {
     name: 'findLobbies',
-    description: 'Searches the platform for available game lobbies based on a query.',
-    inputSchema: z.string().describe("A query to filter lobbies, e.g., 'футбол', 'баскетбол в парке горького', 'вечер'."),
+    description: 'Searches the platform for available game or training lobbies based on a query.',
+    inputSchema: z.string().describe("A query to filter lobbies, e.g., 'футбол', 'баскетбол в парке горького', 'ищу напарника для тренировки'."),
     outputSchema: z.array(LfgLobbySchema),
   },
   async (query) => {
@@ -33,7 +34,9 @@ const findLobbiesTool = ai.defineTool(
           (
             lobby.sport.toLowerCase().includes(lowercasedQuery) ||
             lobby.location.toLowerCase().includes(lowercasedQuery) ||
-            lobby.comment.toLowerCase().includes(lowercasedQuery)
+            lobby.comment.toLowerCase().includes(lowercasedQuery) ||
+            ((lowercasedQuery.includes('тренировк') || lowercasedQuery.includes('напарник')) && lobby.type === 'training') || 
+            (lowercasedQuery.includes('игр') && lobby.type === 'game')
           ) && lobby.endTime > now
       )
       .slice(0, 10); // Return up to 10 for the LLM to reason over
@@ -45,7 +48,7 @@ const prompt = ai.definePrompt({
     input: { schema: FindLfgLobbiesInputSchema },
     output: { schema: FindLfgLobbiesOutputSchema },
     tools: [findLobbiesTool],
-    system: `You are an intelligent matchmaker for the ProDvor platform. A user is looking for a game to join.
+    system: `You are an intelligent matchmaker for the ProDvor platform. A user is looking for a game or training session to join.
 1.  Analyze the user's request.
 2.  Use the \`findLobbies\` tool to get a list of relevant lobbies.
 3.  From the tool's results, select up to 5 lobbies that are the BEST fit for the user's request.

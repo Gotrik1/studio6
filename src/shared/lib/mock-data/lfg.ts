@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { addDays, setHours, setMinutes } from 'date-fns';
@@ -8,6 +9,7 @@ const todayAt = (hour: number, minute: number = 0) => setMinutes(setHours(now, h
 
 export type LfgLobby = {
     id: string;
+    type: 'game' | 'training';
     sport: string;
     location: string;
     playgroundId?: string;
@@ -25,6 +27,7 @@ export type LfgLobby = {
 export const initialLfgLobbies: LfgLobby[] = [
     {
         id: 'lfg-1',
+        type: 'game',
         sport: 'Баскетбол 3x3',
         location: 'Кольца на Школьном',
         playgroundId: 'playground-2',
@@ -40,6 +43,7 @@ export const initialLfgLobbies: LfgLobby[] = [
     },
     {
         id: 'lfg-2',
+        type: 'game',
         sport: 'Футбол 5x5',
         location: 'Коробка за Пятёрочкой',
         playgroundId: 'playground-1',
@@ -54,7 +58,24 @@ export const initialLfgLobbies: LfgLobby[] = [
         }
     },
     {
+        id: 'lfg-4',
+        type: 'training',
+        sport: 'Воркаут',
+        location: 'Турники в парке',
+        playgroundId: 'playground-3',
+        startTime: todayAt(18, 0),
+        endTime: todayAt(19, 0),
+        playersNeeded: 2,
+        playersJoined: 1,
+        comment: 'Ищу напарника для совместной силовой тренировки. Будем делать базу: подтягивания, отжимания.',
+        creator: {
+            name: 'Reaper',
+            avatar: 'https://placehold.co/100x100.png',
+        }
+    },
+    {
         id: 'lfg-3',
+        type: 'game',
         sport: 'Волейбол',
         location: 'Пляж "Серебряный Бор"',
         startTime: setMinutes(setHours(addDays(now, 2), 12), 0),
