@@ -54,3 +54,6 @@ import './flows/analyze-holistic-performance-flow';
 import './flows/analyze-playground-report-flow';
 import './flows/find-equipment-flow';
 import './flows/generate-social-media-post-flow';
+import './flows/analyze-playground-details-flow';
+import './flows/generate-playground-challenge-flow';
+import './flows/summarize-playground-reviews-flow';
