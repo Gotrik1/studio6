@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,66 +11,76 @@ datasource db {
 }
 
 model User {
-  id              String  @id @default(cuid())
-  email           String  @unique
-  name            String
-  passwordHash    String
-  role            String
-  avatar          String?
-  activitySummary String?
-  statsSummary    String?
-  status          String? @default("Активен")
-  profileUrl      String?
+  id           String  @id @default(cuid()) @db.Uuid
+  name         String
+  email        String  @unique
+  role         String
+  passwordHash String
+  avatar       String?
 
-  teamsAsCaptain Team[]   @relation("TeamCaptain")
-  teams          Team[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  captainOf Team[]   @relation("TeamCaptain")
+  teams     Team[]   @relation("TeamMembers")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Team {
-  id               String       @id @default(cuid())
-  name             String       @unique
-  slug             String       @unique
+  id               String   @id @default(cuid()) @db.Uuid
+  name             String
+  slug             String   @unique
   motto            String?
   logo             String?
   dataAiHint       String?
   game             String
-  rank             Int?         @default(1)
+  rank             Int?
+  wins             Int      @default(0)
+  losses           Int      @default(0)
+  draws            Int      @default(0)
   homePlaygroundId String?
-  captain          User         @relation("TeamCaptain", fields: [captainId], references: [id])
-  captainId        String
-  members          User[]
-  tournaments      Tournament[]
-  wins             Int          @default(0)
-  losses           Int          @default(0)
-  draws            Int          @default(0)
-  matchesAsT1      Match[]      @relation("Team1Matches")
-  matchesAsT2      Match[]      @relation("Team2Matches")
+  captainId        String   @db.Uuid
+  captain          User     @relation("TeamCaptain", fields: [captainId], references: [id])
+  members          User[]   @relation("TeamMembers")
+
+  tournaments Tournament[]
+  matchesAsT1 Match[]      @relation("Team1Matches")
+  matchesAsT2 Match[]      @relation("Team2Matches")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Tournament {
-  id        String   @id @default(cuid())
-  name      String
-  game      String
-  format    String // "single_elimination" or "round_robin"
-  prizePool Float
-  startDate DateTime
-  status    String // "REGISTRATION", "ONGOING", "FINISHED"
-  teams     Team[]
-  matches   Match[]
+  id              String   @id @default(cuid()) @db.Uuid
+  name            String
+  slug            String?  @unique
+  game            String
+  format          String // single_elimination, round_robin
+  status          String // registration, ongoing, finished
+  prizePool       Float
+  startDate       DateTime
+  bannerImage     String?
+  bannerImageHint String?
+
+  teams   Team[]
+  matches Match[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Match {
-  id           String      @id @default(cuid())
-  team1        Team        @relation("Team1Matches", fields: [team1Id], references: [id])
-  team1Id      String
-  team2        Team        @relation("Team2Matches", fields: [team2Id], references: [id])
-  team2Id      String
+  id           String      @id @default(cuid()) @db.Uuid
+  status       String // planned, live, finished, disputed
   score        String?
-  status       String // "PLANNED", "LIVE", "FINISHED", "DISPUTED"
   scheduledAt  DateTime
   finishedAt   DateTime?
+  team1Id      String      @db.Uuid
+  team2Id      String      @db.Uuid
+  tournamentId String?     @db.Uuid
+  team1        Team        @relation("Team1Matches", fields: [team1Id], references: [id])
+  team2        Team        @relation("Team2Matches", fields: [team2Id], references: [id])
   tournament   Tournament? @relation(fields: [tournamentId], references: [id])
-  tournamentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

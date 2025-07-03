@@ -6,6 +6,8 @@ import {
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Tournament } from '@prisma/client';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 @Injectable()
 export class TournamentsService {
@@ -13,9 +15,12 @@ export class TournamentsService {
 
   async create(createTournamentDto: CreateTournamentDto): Promise<Tournament> {
     const { name, game, format, prizePool, startDate } = createTournamentDto;
+    const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    
     return this.prisma.tournament.create({
       data: {
         name,
+        slug,
         game,
         format,
         prizePool,
@@ -76,9 +81,27 @@ export class TournamentsService {
     });
   }
 
-  async findAll(): Promise<Tournament[]> {
-    return this.prisma.tournament.findMany({
-      include: { teams: true, matches: true },
+  async findAll(): Promise<any[]> {
+    const tournaments = await this.prisma.tournament.findMany({
+      include: { _count: { select: { teams: true } } },
+    });
+
+    // Map to frontend shape
+    return tournaments.map(t => {
+      let statusText = 'Завершен';
+      if (t.status === 'REGISTRATION') statusText = 'Регистрация';
+      if (t.status === 'ONGOING') statusText = 'Идет';
+
+      return {
+        name: t.name,
+        game: t.game,
+        prize: `${t.prizePool} PD`,
+        status: statusText,
+        date: format(new Date(t.startDate), 'd MMMM yyyy', { locale: ru }),
+        image: t.bannerImage || 'https://placehold.co/2560x720.png',
+        dataAiHint: t.bannerImageHint || 'esports tournament',
+        slug: t.slug || t.name.toLowerCase().replace(/\s+/g, '-'),
+      };
     });
   }
 
