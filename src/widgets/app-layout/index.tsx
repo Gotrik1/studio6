@@ -135,7 +135,6 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
 
     const mainNavItems = [
         { href: "/dashboard", icon: Newspaper, label: "Лента" },
-        { href: "/search", icon: Search, label: "Поиск" },
         { href: "/teams", icon: Users, label: "Команды" },
         { href: "/tournaments", icon: Trophy, label: "Турниры" },
         { href: "/leagues", icon: Flame, label: "Лиги" },
@@ -172,6 +171,8 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         children: [
             { href: "/documents/project-readme", label: "Readme проекта" },
             { href: "/documents/architecture", label: "Архитектура" },
+            { href: "/documents/backend-documentation", label: "Бэкенд-документация" },
+            { href: "/documents/backend-roadmap", label: "Backend Roadmap", icon: FileSignature },
             { href: "/documents/vision-and-principles", label: "Видение проекта" },
             { href: "/documents/auth-implementation", label: "План Аутентификации", icon: FileSignature },
             { href: "/ai-analysis", icon: BrainCircuit, label: "AI-Песочница" },
