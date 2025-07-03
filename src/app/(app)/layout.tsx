@@ -10,6 +10,7 @@ import { JoinRequestProvider } from "@/app/providers/join-request-provider";
 import { PDEconomyProvider } from "@/app/providers/pd-provider";
 import { LfgProvider } from "@/app/providers/lfg-provider";
 import { TrainingProposalProvider } from "@/app/providers/training-proposal-provider";
+import { MeasurementsProvider } from "@/app/providers/measurements-provider";
 
 export default async function ApplicationLayout({
   children,
@@ -27,17 +28,19 @@ export default async function ApplicationLayout({
         <TeamProvider>
         <TrainingProvider>
             <NutritionProvider>
-                <PDEconomyProvider>
-                    <LfgProvider>
-                        <JoinRequestProvider>
-                            <TrainingProposalProvider>
-                                <AppLayout user={user}>
-                                    {children}
-                                </AppLayout>
-                            </TrainingProposalProvider>
-                        </JoinRequestProvider>
-                    </LfgProvider>
-                </PDEconomyProvider>
+                <MeasurementsProvider>
+                    <PDEconomyProvider>
+                        <LfgProvider>
+                            <JoinRequestProvider>
+                                <TrainingProposalProvider>
+                                    <AppLayout user={user}>
+                                        {children}
+                                    </AppLayout>
+                                </TrainingProposalProvider>
+                            </JoinRequestProvider>
+                        </LfgProvider>
+                    </PDEconomyProvider>
+                </MeasurementsProvider>
             </NutritionProvider>
         </TrainingProvider>
         </TeamProvider>

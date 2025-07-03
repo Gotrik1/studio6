@@ -76,14 +76,14 @@ export function LogMeasurementDialog({ isOpen, onOpenChange, onLog, latestMeasur
                             <FormItem><Label>Вес (кг)</Label><FormControl><Input type="number" step="0.1" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="bodyFat" render={({ field }) => (
-                             <FormItem><Label>Жир (%)</Label><FormControl><Input type="number" step="0.1" {...field} /></FormControl><FormMessage /></FormItem>
+                             <FormItem><Label>Жир (%)</Label><FormControl><Input type="number" step="0.1" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <div className="grid grid-cols-2 gap-4">
-                            <FormField control={form.control} name="chest" render={({ field }) => (<FormItem><Label>Грудь (см)</Label><FormControl><Input type="number" step="0.5" {...field} /></FormControl></FormItem>)} />
-                            <FormField control={form.control} name="waist" render={({ field }) => (<FormItem><Label>Талия (см)</Label><FormControl><Input type="number" step="0.5" {...field} /></FormControl></FormItem>)} />
-                            <FormField control={form.control} name="hips" render={({ field }) => (<FormItem><Label>Бедра (см)</Label><FormControl><Input type="number" step="0.5" {...field} /></FormControl></FormItem>)} />
-                            <FormField control={form.control} name="biceps" render={({ field }) => (<FormItem><Label>Бицепс (см)</Label><FormControl><Input type="number" step="0.5" {...field} /></FormControl></FormItem>)} />
-                            <FormField control={form.control} name="thigh" render={({ field }) => (<FormItem><Label>Бедро (см)</Label><FormControl><Input type="number" step="0.5" {...field} /></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="chest" render={({ field }) => (<FormItem><Label>Грудь (см)</Label><FormControl><Input type="number" step="0.5" {...field} value={field.value ?? ''}/></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="waist" render={({ field }) => (<FormItem><Label>Талия (см)</Label><FormControl><Input type="number" step="0.5" {...field} value={field.value ?? ''}/></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="hips" render={({ field }) => (<FormItem><Label>Бедра (см)</Label><FormControl><Input type="number" step="0.5" {...field} value={field.value ?? ''}/></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="biceps" render={({ field }) => (<FormItem><Label>Бицепс (см)</Label><FormControl><Input type="number" step="0.5" {...field} value={field.value ?? ''}/></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="thigh" render={({ field }) => (<FormItem><Label>Бедро (см)</Label><FormControl><Input type="number" step="0.5" {...field} value={field.value ?? ''}/></FormControl></FormItem>)} />
                         </div>
                          <DialogFooter className="pt-4">
                             <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Отмена</Button>

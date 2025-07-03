@@ -5,11 +5,12 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { PlusCircle, LineChart, History } from 'lucide-react';
-import { measurementsHistory as initialHistory, type Measurement } from '@/shared/lib/mock-data/measurements';
+import type { Measurement } from '@/shared/lib/mock-data/measurements';
 import { LogMeasurementDialog } from '@/widgets/log-measurement-dialog';
 import { MeasurementChart } from '@/widgets/analytics-charts/measurements-chart';
 import { MeasurementsHistoryTable } from '@/widgets/measurements-history-table';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/ui/select';
+import { useMeasurements } from '@/app/providers/measurements-provider';
 
 const metricOptions: { value: keyof Omit<Measurement, 'id' | 'date'>, label: string }[] = [
     { value: 'weight', label: 'Вес (кг)' },
@@ -21,19 +22,17 @@ const metricOptions: { value: keyof Omit<Measurement, 'id' | 'date'>, label: str
     { value: 'thigh', label: 'Бедро (см)' },
 ];
 
+const StatCard = ({ title, value, unit }: { title: string, value?: number, unit: string}) => (
+    <Card>
+        <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">{title}</CardTitle></CardHeader>
+        <CardContent><p className="text-2xl font-bold">{value || '-'} <span className="text-lg text-muted-foreground">{unit}</span></p></CardContent>
+    </Card>
+);
+
 export function MeasurementsPage() {
-    const [history, setHistory] = useState<Measurement[]>(initialHistory);
+    const { history, addMeasurement } = useMeasurements();
     const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
     const [selectedMetric, setSelectedMetric] = useState<keyof Omit<Measurement, 'id' | 'date'>>('weight');
-
-    const handleLogMeasurement = (newMeasurement: Omit<Measurement, 'id' | 'date' | 'weight'> & { weight: number }) => {
-        const newEntry: Measurement = {
-            id: `m-${Date.now()}`,
-            date: new Date().toISOString().split('T')[0],
-            ...newMeasurement,
-        };
-        setHistory(prev => [newEntry, ...prev].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
-    };
 
     const latestMeasurement = history[0];
 
@@ -52,22 +51,10 @@ export function MeasurementsPage() {
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <Card>
-                        <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Вес</CardTitle></CardHeader>
-                        <CardContent><p className="text-2xl font-bold">{latestMeasurement?.weight || 0} кг</p></CardContent>
-                    </Card>
-                     <Card>
-                        <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Жир</CardTitle></CardHeader>
-                        <CardContent><p className="text-2xl font-bold">{latestMeasurement?.bodyFat || 0}%</p></CardContent>
-                    </Card>
-                     <Card>
-                        <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Грудь</CardTitle></CardHeader>
-                        <CardContent><p className="text-2xl font-bold">{latestMeasurement?.chest || 0} см</p></CardContent>
-                    </Card>
-                     <Card>
-                        <CardHeader className="pb-2"><CardTitle className="text-sm font-medium">Талия</CardTitle></CardHeader>
-                        <CardContent><p className="text-2xl font-bold">{latestMeasurement?.waist || 0} см</p></CardContent>
-                    </Card>
+                     <StatCard title="Вес" value={latestMeasurement?.weight} unit="кг" />
+                     <StatCard title="Жир" value={latestMeasurement?.bodyFat} unit="%" />
+                     <StatCard title="Грудь" value={latestMeasurement?.chest} unit="см" />
+                     <StatCard title="Талия" value={latestMeasurement?.waist} unit="см" />
                 </div>
                 
                 <Card>
@@ -105,7 +92,7 @@ export function MeasurementsPage() {
             <LogMeasurementDialog
                 isOpen={isLogDialogOpen}
                 onOpenChange={setIsLogDialogOpen}
-                onLog={handleLogMeasurement}
+                onLog={addMeasurement}
                 latestMeasurement={latestMeasurement}
             />
         </>
