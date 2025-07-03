@@ -1,22 +1,28 @@
-
 'use client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import type { Playground } from "@/shared/lib/mock-data/playgrounds";
 import { MapPin, Shield, CheckCircle2 } from "lucide-react";
 import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
+import { PlaygroundWorkoutGenerator } from "@/widgets/playground-workout-generator";
+import { AiPlaygroundTactic } from "@/widgets/ai-playground-tactic";
+import { AiPlaygroundLore } from "@/widgets/ai-playground-lore";
 
 interface PlaygroundInfoTabProps {
     playground: Playground;
 }
 
 export function PlaygroundInfoTab({ playground }: PlaygroundInfoTabProps) {
+    const isTeamSport = ['Футбол', 'Баскетбол', 'Стритбол', 'Волейбол', 'Хоккей'].includes(playground.type);
+    const isWorkout = ['Воркаут', 'Фитнес-зал'].includes(playground.type);
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-6">
                 <AiPlaygroundAnalysis playground={playground} />
+                <AiPlaygroundLore playground={playground} />
             </div>
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 space-y-6">
                  <Card>
                     <CardHeader>
                         <CardTitle>Факты</CardTitle>
@@ -49,6 +55,8 @@ export function PlaygroundInfoTab({ playground }: PlaygroundInfoTabProps) {
                         </div>
                     </CardContent>
                 </Card>
+                 {isWorkout && <PlaygroundWorkoutGenerator playground={playground} />}
+                 {isTeamSport && <AiPlaygroundTactic playground={playground} />}
             </div>
         </div>
     );
