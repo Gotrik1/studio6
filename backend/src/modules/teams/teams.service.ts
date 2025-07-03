@@ -35,6 +35,18 @@ export class TeamsService {
       include: { captain: true, members: true, tournaments: true },
     });
   }
+  
+  async joinTeam(teamId: string, userId: string): Promise<Team> {
+    return this.prisma.team.update({
+      where: { id: teamId },
+      data: {
+        members: {
+          connect: { id: userId },
+        },
+      },
+      include: { members: true },
+    });
+  }
 
   async remove(id: string): Promise<Team> {
     return this.prisma.team.delete({ where: { id } });
