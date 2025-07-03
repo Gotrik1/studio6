@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -43,7 +44,8 @@ import {
   Palette,
   BrainCircuit,
   Coins,
-  Ruler
+  Ruler,
+  Flame,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -130,7 +132,8 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
     const mainNavItems = [
         { href: "/dashboard", icon: Newspaper, label: "Лента" },
         { href: "/teams", icon: Users, label: "Команды" },
-        { href: "/tournaments", icon: Trophy, label: "Соревнования" },
+        { href: "/tournaments", icon: Trophy, label: "Турниры" },
+        { href: "/leagues", icon: Flame, label: "Лиги" },
         { href: "/lfg", icon: Swords, label: "Поиск игры" },
         { href: "/chats", icon: MessageSquare, label: "Сообщения" },
         {
