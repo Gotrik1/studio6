@@ -52,7 +52,7 @@ export function AiNutritionist() {
                 carbs: plan.macronutrients.carbs,
             });
         } catch (e) {
-            console.error(e);
+            console.error("AI Program Generation failed:", e);
             setError("Не удалось сгенерировать план питания. Попробуйте еще раз.");
         } finally {
             setIsLoading(false);
