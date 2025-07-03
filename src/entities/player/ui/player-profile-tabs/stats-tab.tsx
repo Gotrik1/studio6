@@ -1,10 +1,15 @@
 
 'use client';
 
-import { Card, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Swords, Trophy, Shield, Flame } from 'lucide-react';
+import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
+import { Swords, Trophy, Shield, Flame, Map, LineChart as LineChartIcon } from 'lucide-react';
 import { WinLossChart } from '@/widgets/analytics-charts/win-loss-chart';
+import { WinrateByMapChart } from '@/widgets/analytics-charts/winrate-by-map-chart';
+import { KdaChart } from '@/widgets/analytics-charts/kda-chart';
 import { winLossData } from '@/shared/lib/mock-data/player-stats';
+import { kdaByMonthData } from '@/shared/lib/mock-data/kda-by-month';
+import { winrateByMapData } from '@/shared/lib/mock-data/winrate-by-map';
+
 
 const playerStats = {
     matches: winLossData.wins + winLossData.losses,
@@ -14,53 +19,52 @@ const playerStats = {
     winStreak: 5,
 };
 
+const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, icon: React.ElementType }) => (
+    <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{title}</CardTitle>
+            <Icon className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent>
+            <div className="text-2xl font-bold">{value}</div>
+        </CardContent>
+    </Card>
+);
 
 export function StatsTab() {
     return (
         <div className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                 <Card>
-                    <CardHeader>
-                        <CardDescription>Всего матчей</CardDescription>
-                        <CardTitle className="font-headline text-4xl">{playerStats.matches}</CardTitle>
-                    </CardHeader>
-                </Card>
-                <Card>
-                     <CardHeader>
-                        <CardDescription>Процент побед</CardDescription>
-                        <CardTitle className="font-headline text-4xl">{playerStats.winrate}%</CardTitle>
-                    </CardHeader>
-                </Card>
-            </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card>
+                <StatCard title="Всего матчей" value={String(playerStats.matches)} icon={Trophy} />
+                <StatCard title="Процент побед" value={`${playerStats.winrate}%`} icon={Shield} />
+                <StatCard title="Победная серия" value={String(playerStats.winStreak)} icon={Flame} />
+                <StatCard title="KDA (Valorant)" value="1.25" icon={Swords} />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                 <div className="lg:col-span-1">
+                    <WinLossChart data={winLossData} />
+                 </div>
+                 <Card className="lg:col-span-2">
                     <CardHeader>
-                        <CardDescription className="flex items-center gap-2"><Trophy className="h-4 w-4"/> Победы</CardDescription>
-                        <CardTitle className="font-headline text-3xl">{playerStats.wins}</CardTitle>
+                        <CardTitle className="flex items-center gap-2"><Map className="h-5 w-5 text-primary"/> Винрейт по картам (Valorant)</CardTitle>
+                        <CardDescription>Процент побед на различных картах.</CardDescription>
                     </CardHeader>
-                </Card>
-                <Card>
-                    <CardHeader>
-                        <CardDescription className="flex items-center gap-2"><Shield className="h-4 w-4"/> Поражения</CardDescription>
-                        <CardTitle className="font-headline text-3xl">{playerStats.losses}</CardTitle>
-                    </CardHeader>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardDescription className="flex items-center gap-2"><Flame className="h-4 w-4"/> Победная серия</CardDescription>
-                        <CardTitle className="font-headline text-3xl">{playerStats.winStreak}</CardTitle>
-                    </CardHeader>
-                </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardDescription className="flex items-center gap-2"><Swords className="h-4 w-4"/> KDA (Valorant)</CardDescription>
-                        <CardTitle className="font-headline text-3xl">1.25</CardTitle>
-                    </CardHeader>
+                    <CardContent>
+                        <WinrateByMapChart data={winrateByMapData} />
+                    </CardContent>
                 </Card>
             </div>
-            <div className="grid grid-cols-1">
-                <WinLossChart data={winLossData} />
-            </div>
+            
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2"><LineChartIcon className="h-5 w-5 text-primary"/> Динамика KDA (Valorant)</CardTitle>
+                    <CardDescription>Изменение вашего KDA за последние месяцы.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <KdaChart data={kdaByMonthData} />
+                </CardContent>
+            </Card>
         </div>
     );
 }
