@@ -1,6 +1,9 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,72 +14,66 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-  name         String
-  email        String   @unique
-  role         String
-  passwordHash String
+  id              String  @id @default(cuid())
+  email           String  @unique
+  name            String
+  passwordHash    String
+  role            String
+  avatar          String?
+  activitySummary String?
+  statsSummary    String?
+  status          String? @default("Активен")
+  profileUrl      String?
 
-  captainOf Team? @relation("TeamCaptain")
-  teams     Team[]  @relation("TeamMembers")
-
-  @@map("users")
+  teamsAsCaptain Team[]   @relation("TeamCaptain")
+  teams          Team[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Team {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String
-  game      String
-
-  captainId String @unique
-  captain   User   @relation("TeamCaptain", fields: [captainId], references: [id])
-
-  members   User[]   @relation("TeamMembers")
-  matchesA  Match[]  @relation("TeamA")
-  matchesB  Match[]  @relation("TeamB")
-  
-  tournaments Tournament[]
-
-  @@map("teams")
+  id               String       @id @default(cuid())
+  name             String       @unique
+  slug             String       @unique
+  motto            String?
+  logo             String?
+  dataAiHint       String?
+  game             String
+  rank             Int?         @default(1)
+  homePlaygroundId String?
+  captain          User         @relation("TeamCaptain", fields: [captainId], references: [id])
+  captainId        String
+  members          User[]
+  tournaments      Tournament[]
+  wins             Int          @default(0)
+  losses           Int          @default(0)
+  draws            Int          @default(0)
+  matchesAsT1      Match[]      @relation("Team1Matches")
+  matchesAsT2      Match[]      @relation("Team2Matches")
 }
 
 model Tournament {
   id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
   name      String
   game      String
-  format    String // 'single_elimination' | 'round_robin'
+  format    String // "single_elimination" or "round_robin"
   prizePool Float
   startDate DateTime
-  status    String // 'registration' | 'ongoing' | 'finished'
-
-  teams   Team[]
-  matches Match[]
-
-  @@map("tournaments")
+  status    String // "REGISTRATION", "ONGOING", "FINISHED"
+  teams     Team[]
+  matches   Match[]
 }
 
 model Match {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  scheduledAt DateTime
-  score       String?
-  status      String // 'planned' | 'live' | 'finished' | 'disputed'
-
-  teamAId String
-  teamA   Team   @relation("TeamA", fields: [teamAId], references: [id])
-
-  teamBId String
-  teamB   Team   @relation("TeamB", fields: [teamBId], references: [id])
-
-  tournamentId String?
+  id           String      @id @default(cuid())
+  team1        Team        @relation("Team1Matches", fields: [team1Id], references: [id])
+  team1Id      String
+  team2        Team        @relation("Team2Matches", fields: [team2Id], references: [id])
+  team2Id      String
+  score        String?
+  status       String // "PLANNED", "LIVE", "FINISHED", "DISPUTED"
+  scheduledAt  DateTime
+  finishedAt   DateTime?
   tournament   Tournament? @relation(fields: [tournamentId], references: [id])
-
-  @@map("matches")
+  tournamentId String?
 }
