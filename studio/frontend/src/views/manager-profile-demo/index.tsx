@@ -1,3 +1,4 @@
+
 import { managerUser, managerAchievements } from "@/shared/lib/mock-data/manager-profile";
 import ManagerClient from "@/app/(app)/administration/manager/client";
 

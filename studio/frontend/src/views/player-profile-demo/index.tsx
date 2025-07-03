@@ -1,3 +1,4 @@
+
 import PlayerClient from "@/app/(app)/administration/player/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";

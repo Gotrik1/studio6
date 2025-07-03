@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -21,7 +22,7 @@ function LfgCard({ lobby, onJoin }: { lobby: LfgLobbyType, onJoin: (lobbyId: str
     const Icon = lobby.type === 'training' ? Dumbbell : Gamepad2;
 
     return (
-        <Card className="flex flex-col">
+        <Card className="flex flex-col h-full">
             <CardHeader>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
