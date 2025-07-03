@@ -1,4 +1,3 @@
-
 'use server';
 
 import { config } from 'dotenv';
@@ -57,3 +56,4 @@ import './flows/generate-social-media-post-flow';
 import './flows/analyze-playground-details-flow';
 import './flows/generate-playground-challenge-flow';
 import './flows/summarize-playground-reviews-flow';
+import './flows/generate-nutrition-plan-flow';
