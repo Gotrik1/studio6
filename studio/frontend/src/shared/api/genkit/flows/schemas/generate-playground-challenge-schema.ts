@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 export const GeneratePlaygroundChallengeInputSchema = z.object({
