@@ -14,7 +14,7 @@ import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getRankByPoints } from "@/shared/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/ui/tooltip";
-import { cn } from '@/shared/lib/utils';
+import { cn } from "@/shared/lib/utils";
 import { useState } from 'react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';

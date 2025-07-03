@@ -1,3 +1,4 @@
+
 import { summerKickoffTournament, footballCupTournament } from '@/shared/lib/mock-data/tournament-details';
 import type { TournamentDetails } from '@/entities/tournament/model/types';
 

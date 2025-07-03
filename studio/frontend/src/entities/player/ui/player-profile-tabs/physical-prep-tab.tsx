@@ -10,7 +10,7 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { VolumeChart } from '@/widgets/analytics-charts/volume-chart';
 import { PlayerPerformanceCoach } from '@/widgets/player-performance-coach';
-import { useNutrition } from '@/app/providers/nutrition-provider';
+import { useNutrition } from '@/shared/context/nutrition-provider';
 
 export function PhysicalPrepTab() {
     const { personalRecords, trainingMetrics, volumeByMuscleGroupData } = getTrainingAnalytics(trainingLogData);
