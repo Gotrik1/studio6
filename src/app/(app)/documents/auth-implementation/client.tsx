@@ -6,15 +6,16 @@ import remarkGfm from 'remark-gfm';
 import type { Components } from 'react-markdown';
 
 const MarkdownComponents: Components = {
-  code({ inline, className, children, ...props }) {
+  code(props) {
+    const { className, children, ...rest } = props;
     const match = /language-(\w+)/.exec(className || '');
-    return !inline && match ? (
+    return match ? (
       <CodeBlock
         language={match[1]}
         code={String(children).replace(/\n$/, '')}
       />
     ) : (
-      <code className={className} {...props}>
+      <code className={className} {...rest}>
         {children}
       </code>
     );

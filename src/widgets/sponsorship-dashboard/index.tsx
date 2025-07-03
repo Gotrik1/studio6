@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
@@ -7,8 +8,6 @@ import { Handshake, DollarSign, Megaphone, Users, UserSearch, Send } from 'lucid
 import Image from 'next/image';
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
 
 import { promotionsList } from '@/shared/lib/mock-data/promotions';
 import { sponsoredTeams, teamsSeekingSponsorship } from '@/shared/lib/mock-data/sponsorship';
@@ -80,7 +79,7 @@ export function SponsorshipDashboard() {
                                 <div key={promo.id} className="flex items-center justify-between p-2 -mx-2 rounded-md hover:bg-muted">
                                     <div>
                                         <p className="font-semibold">{promo.title}</p>
-                                        <p className="text-sm text-muted-foreground">Заканчивается: {format(new Date(promo.endDate), "d MMMM yyyy", { locale: ru })}</p>
+                                        <p className="text-sm text-muted-foreground">Приз: {promo.prize}</p>
                                     </div>
                                     <Button variant="outline" size="sm" asChild><Link href="/promotions">Управлять</Link></Button>
                                 </div>

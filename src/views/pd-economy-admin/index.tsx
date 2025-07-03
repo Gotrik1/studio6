@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -58,7 +58,7 @@ export function PDEconomyAdminPage() {
             <div className="space-y-2">
                 <h1 className="font-headline text-3xl font-bold tracking-tight">Управление экономикой PD</h1>
                 <p className="text-muted-foreground">
-                    Настраивайте правила начисления и списания ProDvor Dollars для пользователей.
+                    Настраивайте правила начисления и списания PD для пользователей.
                 </p>
             </div>
 

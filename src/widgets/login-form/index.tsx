@@ -14,11 +14,12 @@ import { login } from '@/features/auth/actions';
 import { loginSchema } from '@/features/auth/schemas';
 import { Loader2, AlertCircle, RefreshCw, HelpCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { Logo } from '@/shared/ui/icons';
+import { Logo, YandexIcon, VkIcon, TelegramIcon, GosuslugiIcon } from '@/shared/ui/icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shared/ui/tooltip';
 import { Label } from '@/shared/ui/label';
+import { Separator } from '@/shared/ui/separator';
 
 type FormValues = z.infer<typeof loginSchema>;
 
@@ -124,10 +125,10 @@ export const LoginForm = ({ onSwitchToRegister }: { onSwitchToRegister: () => vo
                                 </Button>
                             </form>
                         </Form>
-                        <Button type="button" variant="secondary" className="w-full mt-2" onClick={onSwitchToRegister}>
+                         <Separator className="my-6" />
+                        <Button type="button" variant="secondary" className="w-full" onClick={onSwitchToRegister}>
                             Создать аккаунт
                         </Button>
-                        <p className="text-xs text-muted-foreground text-center mt-4">Нажимая «Продолжить», вы принимаете пользовательское соглашение и политику конфиденциальности</p>
                     </div>
                 </div>
             </Card>

@@ -9,18 +9,23 @@ import type { Components } from 'react-markdown';
 const MarkdownComponents: Components = {
   // a custom renderer for images to use next/image for optimization
   // and to handle the custom data-ai-hint attribute.
-  img: ({node, ...props}) => {
-    return <Image {...props} alt={props.alt || ''} width={1200} height={630} className="rounded-lg shadow-lg not-prose" data-ai-hint={node?.properties?.['data-ai-hint']} />;
+  img: (props) => {
+    const { node, ...rest } = props;
+    if (!rest.src) return null;
+    const dataAiHint = node?.properties?.['data-ai-hint'] as string | undefined;
+
+    return <Image {...rest} alt={rest.alt || ''} width={1200} height={630} className="rounded-lg shadow-lg not-prose" data-ai-hint={dataAiHint} />;
   },
-  code({ inline, className, children, ...props }) {
+  code(props) {
+    const { className, children, ...rest } = props;
     const match = /language-(\w+)/.exec(className || '');
-    return !inline && match ? (
+    return match ? (
       <CodeBlock
         language={match[1]}
         code={String(children).replace(/\n$/, '')}
       />
     ) : (
-      <code className={className} {...props}>
+      <code className={className} {...rest}>
         {children}
       </code>
     );

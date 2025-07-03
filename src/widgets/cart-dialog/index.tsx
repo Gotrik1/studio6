@@ -40,11 +40,9 @@ export function CartDialog() {
             
             // Add items to inventory
             items.forEach(item => {
-                if (!item.isRealMoney) {
-                    // Assuming you might buy multiple quantities of the same item
-                    for (let i = 0; i < item.quantity; i++) {
-                        addStoreItem(item);
-                    }
+                // Assuming you might buy multiple quantities of the same item
+                for (let i = 0; i < item.quantity; i++) {
+                    addStoreItem(item);
                 }
             });
 
