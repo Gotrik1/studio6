@@ -1,4 +1,3 @@
-
 'use server';
 
 import type { MatchDetails } from '@/entities/match/model/types';
