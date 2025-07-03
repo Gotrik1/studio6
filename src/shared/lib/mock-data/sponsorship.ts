@@ -49,4 +49,38 @@ export const sponsoredTeams = [
         since: '2024-06-01',
         investment: '10,000 PD',
     }
-]
+];
+
+export type SponsorshipOffer = {
+  id: string;
+  sponsor: {
+    name: string;
+    logo: string;
+    logoHint: string;
+  };
+  offer: string;
+  status: 'pending' | 'accepted' | 'declined';
+};
+
+export const incomingSponsorshipOffers: SponsorshipOffer[] = [
+  {
+    id: 'offer-1',
+    sponsor: {
+      name: 'G-Fuel',
+      logo: 'https://placehold.co/100x100.png',
+      logoHint: 'energy drink logo',
+    },
+    offer: '5,000 PD/месяц за лого на форме и 2 поста в соцсетях.',
+    status: 'pending',
+  },
+  {
+    id: 'offer-2',
+    sponsor: {
+      name: 'Razer',
+      logo: 'https://placehold.co/100x100.png',
+      logoHint: 'gaming peripherals logo',
+    },
+    offer: 'Полный комплект девайсов для 5 игроков.',
+    status: 'pending',
+  },
+];

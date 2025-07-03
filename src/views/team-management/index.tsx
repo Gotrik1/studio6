@@ -17,6 +17,7 @@ import { TeamSponsorScout } from '@/widgets/team-sponsor-scout';
 import { useJoinRequests, type JoinRequest } from '@/app/providers/join-request-provider';
 import { TeamScheduleTab } from '@/widgets/team-schedule-tab';
 import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
+import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
@@ -123,6 +124,7 @@ export function TeamManagementPage() {
                     </TabsContent>
                     
                     <TabsContent value="sponsorship" className="mt-4 space-y-6">
+                        <SponsorshipOffers />
                         <TeamSponsorScout />
                         <SponsorshipPitchGenerator />
                     </TabsContent>
