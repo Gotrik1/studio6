@@ -17,7 +17,7 @@ import { useLfg } from '@/app/providers/lfg-provider';
 import Link from 'next/link';
 import { cn } from '@/shared/lib/utils';
 import { AiSportSummary } from '@/widgets/ai-sport-summary';
-import { Star, Trophy, Users, Calendar } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { useToast } from '@/shared/hooks/use-toast';
 

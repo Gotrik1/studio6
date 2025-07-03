@@ -6,7 +6,7 @@ import * as z from 'zod';
 import { useTransition, useState } from 'react';
 import Image from 'next/image';
 
-import { Card, CardHeader, CardContent, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
+import { Card } from '@/shared/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
@@ -14,7 +14,7 @@ import { login } from '@/features/auth/actions';
 import { loginSchema } from '@/features/auth/schemas';
 import { Loader2, AlertCircle, RefreshCw, HelpCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { Logo, YandexIcon, VkIcon, TelegramIcon, GosuslugiIcon } from '@/shared/ui/icons';
+import { Logo } from '@/shared/ui/icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shared/ui/tooltip';

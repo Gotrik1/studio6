@@ -78,7 +78,8 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                 title: "Спасибо за ваше сообщение!",
                 description: "Информация о проблеме была передана модераторам."
             });
-        } catch {
+        } catch (e) {
+             console.error(e);
             toast({
                 variant: 'destructive',
                 title: "Ошибка",

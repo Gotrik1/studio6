@@ -10,14 +10,13 @@ const MarkdownComponents: Components = {
   // a custom renderer for images to use next/image for optimization
   // and to handle the custom data-ai-hint attribute.
   img: (props) => {
-    const { node, ...rest } = props;
-    if (!rest.src) return null;
+    const { node, src, ...rest } = props;
+    if (!src) return null;
     const dataAiHint = node?.properties?.['data-ai-hint'] as string | undefined;
 
-    return <Image src={rest.src} alt={rest.alt || ''} width={1200} height={630} className="rounded-lg shadow-lg not-prose" data-ai-hint={dataAiHint} />;
+    return <Image src={src} {...rest} alt={rest.alt || ''} width={1200} height={630} className="rounded-lg shadow-lg not-prose" data-ai-hint={dataAiHint} />;
   },
-  code(props) {
-    const { className, children, ...rest } = props;
+  code({ className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || '');
     return match ? (
       <CodeBlock
@@ -25,7 +24,7 @@ const MarkdownComponents: Components = {
         code={String(children).replace(/\n$/, '')}
       />
     ) : (
-      <code className={className} {...rest}>
+      <code className={className} {...props}>
         {children}
       </code>
     );

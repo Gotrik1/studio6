@@ -7,8 +7,7 @@ import remarkGfm from 'remark-gfm';
 import type { Components } from 'react-markdown';
 
 const MarkdownComponents: Components = {
-  code(props) {
-    const { className, children, ...rest } = props;
+  code({ className, children, ...props }) {
     const match = /language-(\w+)/.exec(className || '');
     return match ? (
       <CodeBlock
@@ -16,7 +15,7 @@ const MarkdownComponents: Components = {
         code={String(children).replace(/\n$/, '')}
       />
     ) : (
-      <code className={className} {...rest}>
+      <code className={className} {...props}>
         {children}
       </code>
     );
