@@ -1,4 +1,3 @@
-
 'use client';
 
 import { AccentThemeProvider } from "@/app/providers/accent-theme-provider";
