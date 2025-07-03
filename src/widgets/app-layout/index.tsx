@@ -73,7 +73,7 @@ const AppFooter = () => (
         <div className="container mx-auto px-4 sm:px-6 py-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="space-y-4">
-                        <Link href="/" className="flex items-center gap-2">
+                    <Link href="/" className="flex items-center gap-2">
                         <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                             <Logo className="h-5 w-5" />
                         </div>
@@ -82,6 +82,7 @@ const AppFooter = () => (
                     <p className="text-muted-foreground">
                         © {new Date().getFullYear()} ProDvor. Все права защищены.
                     </p>
+                    <p className="text-xs text-muted-foreground/80">Версия 1.0.0 (Прототип)</p>
                 </div>
                 <div className="space-y-2">
                     <h4 className="font-semibold">Навигация</h4>
