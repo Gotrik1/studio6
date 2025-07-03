@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import React from 'react';
@@ -140,21 +138,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         { href: "/challenges", icon: Target, label: "Вызовы" },
         { href: "/lfg", icon: Swords, label: "Поиск игры" },
         { href: "/chats", icon: MessageSquare, label: "Сообщения" },
-        {
-            label: "Тренировки",
-            icon: Dumbbell,
-            href: '/training',
-            children: [
-                { href: "/training/programs", label: "Программы" },
-                { href: "/training/exercises", label: "Упражнения" },
-                { href: "/training/log", label: "Дневник" },
-                { href: "/training/calendar", label: "Календарь" },
-                { href: "/training/analytics", label: "Аналитика" },
-                { href: "/training/records", label: "Рекорды" },
-                { href: "/training/measurements", icon: Ruler, label: "Замеры тела" },
-                { href: "/training/nutrition", icon: HeartPulse, label: "Питание" },
-            ]
-        },
+        { href: "/training", icon: Dumbbell, label: "Тренировки" },
         { href: "/playgrounds", icon: Map, label: "Площадки" },
         { href: "/inventory", icon: Backpack, label: "Инвентарь" },
         { href: "/store", icon: ShoppingCart, label: "Магазин" },
@@ -237,15 +221,11 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                     <div className="flex-1 overflow-y-auto">
                         <SidebarMenu className="space-y-1">
                             {mainNavItems.map(item => (
-                                item.children ? (
-                                    renderCollapsibleMenu(item as any) // Type assertion for simplicity
-                                ) : (
-                                    <SidebarMenuItem key={item.href}>
-                                        <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
-                                            <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
-                                        </SidebarMenuButton>
-                                    </SidebarMenuItem>
-                                )
+                                <SidebarMenuItem key={item.href}>
+                                    <SidebarMenuButton asChild tooltip={item.label} variant={isActive(item.href) ? 'active' : 'default'}>
+                                        <Link href={item.href}><item.icon />{state === 'expanded' && <span>{item.label}</span>}</Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
                             ))}
                             
                             {user.role === 'Тренер' && (
