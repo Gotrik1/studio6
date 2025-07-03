@@ -29,7 +29,7 @@ const prompt = ai.definePrompt({
 
   Instructions:
   1.  **Assess Severity**: Based on the category and comment, determine the severity. 'high' for safety risks (e.g., broken glass, major equipment failure), 'medium' for significant functional issues (e.g., broken hoop, large cracks), 'low' for minor issues (e.g., graffiti, worn-out net).
-  2.  **Create Summary**: Write a very short, clear summary of the issue to warn other players. e.g., "Баскетбольное кольцо сломано" or "На покрытии есть трещины".
+  2.  **Create Summary**: Write a very short, clear summary of the problem to warn other players. e.g., "Баскетбольное кольцо сломано" or "На покрытии есть трещины".
   3.  **Suggest Action**: Recommend a next step for the platform moderators. e.g., "Отправить волонтера для проверки" or "Временно пометить площадку как небезопасную".
 
   Respond in Russian.
