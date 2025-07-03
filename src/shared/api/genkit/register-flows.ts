@@ -52,3 +52,4 @@ import './flows/generate-match-post-flow';
 import './flows/generate-playground-summary-flow';
 import './flows/generate-playground-challenge-flow';
 import './flows/generate-playground-lore';
+import './flows/summarize-playground-reviews-flow';
