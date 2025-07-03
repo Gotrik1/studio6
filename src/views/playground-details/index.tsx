@@ -1,16 +1,18 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, CheckCircle, Home } from 'lucide-react';
+import { MapPin, User, Home, AlertTriangle, CheckCircle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { useToast } from '@/shared/hooks/use-toast';
+import { format } from 'date-fns';
+import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { AlertTriangle } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -26,16 +28,54 @@ import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
 import { AiPlaygroundChallenge } from '@/widgets/ai-playground-challenge';
 import { PlaygroundLeaderboard } from '@/widgets/playground-leaderboard';
 import { AiPlaygroundLore } from '@/widgets/ai-playground-lore';
+import { PlaygroundSchedule } from '@/widgets/playground-schedule';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
-import type { PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
+import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
 import { useSession } from '@/shared/lib/session/client';
+import { useLfg } from '@/app/providers/lfg-provider';
+import { PlaygroundActivityFeed } from '@/widgets/playground-activity-feed';
 import { KingOfTheCourtWidget } from '@/widgets/playground-home-team';
 
 
 export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
+    const { addLobby, lobbies } = useLfg();
+
+    const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
+    const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
+
+    const schedule = useMemo(() => lobbies.filter(l => l.playgroundId === playground.id), [lobbies, playground.id]);
+
+    const handleSetHome = () => {
+        toast({
+            title: 'Домашняя площадка установлена!',
+            description: `Площадка "${playground.name}" теперь ваша домашняя.`
+        });
+    };
+    
+    const handlePlanGame = (data: PlanGameFormValues) => {
+        if (!user) return;
+        const startTime = new Date(data.date);
+        const [hours, minutes] = data.time.split(':').map(Number);
+        startTime.setHours(hours, minutes, 0, 0);
+        
+        addLobby({
+            sport: playground.type,
+            location: playground.name,
+            playgroundId: playground.id,
+            startTime,
+            duration: data.duration,
+            comment: `Открытая игра на площадке ${playground.name}`,
+            playersNeeded: 10,
+        });
+
+        toast({
+            title: "Игра запланирована!",
+            description: `Ваша игра на "${playground.name}" в ${format(startTime, 'HH:mm')} добавлена в расписание и LFG.`
+        });
+    };
 
     const handleCheckIn = (comment: string) => {
         if (!user) return;
@@ -47,6 +87,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         };
         // In a real app, this would be an API call
         console.log("New check-in:", newActivity);
+        setActivities(prev => [newActivity, ...prev]);
         toast({
             title: "Вы отметились!",
             description: `Вы получили 10 PD за чекин на площадке "${playground.name}".`
@@ -81,8 +122,8 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 space-y-6">
                         <AiPlaygroundSummary playground={playground} />
-                        <AiPlaygroundLore playground={playground} />
-                         <PlaygroundLeaderboard />
+                        <PlaygroundSchedule schedule={schedule} onPlanClick={() => setIsPlanGameOpen(true)} />
+                        <PlaygroundActivityFeed activities={activities} />
                     </div>
                     <div className="space-y-6">
                         <Button className="w-full" size="lg" onClick={() => setIsCheckInOpen(true)}>
@@ -91,9 +132,43 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                         </Button>
                         <KingOfTheCourtWidget playgroundId={playground.id} />
                         <AiPlaygroundChallenge playground={playground} />
+                        <AiPlaygroundLore playground={playground} />
+                        <PlaygroundLeaderboard />
+                        <Card>
+                           <CardHeader><CardTitle>Создатель</CardTitle></CardHeader>
+                           <CardContent className="flex items-center gap-3">
+                               <Avatar><AvatarImage src={playground.creator.avatar} /><AvatarFallback><User className="h-5 w-5"/></AvatarFallback></Avatar>
+                               <p className="font-semibold">{playground.creator.name}</p>
+                           </CardContent>
+                         </Card>
+                         <div className="space-y-2">
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button className="w-full"><Home className="mr-2 h-4 w-4"/> Сделать домашней</Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                    <AlertDialogTitle>Вы уверены?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Вы собираетесь отметить эту площадку как вашу &quot;домашнюю&quot;. Помните, что это общественное место. В случае препятствования играм других команд (физически, угрозами или иным способом), ваша команда и все ее участники будут дисквалифицированы на срок от 1 года до пожизненного.
+                                    </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                    <AlertDialogCancel>Отмена</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleSetHome}>Подтвердить</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                         </div>
                     </div>
                 </div>
             </div>
+            <PlanGameDialog 
+                isOpen={isPlanGameOpen}
+                onOpenChange={setIsPlanGameOpen}
+                playgroundName={playground.name}
+                onPlan={handlePlanGame}
+            />
             <PlaygroundCheckInDialog
                 isOpen={isCheckInOpen}
                 onOpenChange={setIsCheckInOpen}
