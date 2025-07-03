@@ -5,7 +5,7 @@ import { mainPoll } from "@/shared/lib/mock-data/dashboard";
 import { Feed } from '@/widgets/feed';
 import { StatusUpdateForm } from '@/widgets/status-update-form';
 import { AiNewsDigest } from "@/widgets/ai-news-digest";
-import { MatchOfTheWeekWidget } from "@/widgets/match-of-the-week";
+import { MatchPredictionWidget } from "@/widgets/match-predictions-widget";
 import { AiCoachTip } from "@/widgets/ai-coach-tip";
 
 export function DashboardPage() {
@@ -24,7 +24,7 @@ export function DashboardPage() {
                 <Feed />
             </div>
             <aside className="w-full lg:w-1/3 space-y-6 lg:sticky lg:top-24">
-                <MatchOfTheWeekWidget />
+                <MatchPredictionWidget />
                 <PollCard poll={mainPoll} />
             </aside>
         </div>

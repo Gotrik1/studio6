@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { ArrowRight, Flame, Megaphone } from 'lucide-react';
 import { promotionsList } from '@/shared/lib/mock-data/promotions';
 import { Button } from '@/shared/ui/button';
-import { MatchPredictionWidget } from '@/widgets/match-predictions-widget';
+import { MatchOfTheWeekWidget } from '@/widgets/match-of-the-week';
 
 export function FanZonePage() {
     const popularTeams = teams.slice(0, 4); // Take top 4 for display
@@ -26,7 +26,7 @@ export function FanZonePage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
-                    <MatchPredictionWidget />
+                    <MatchOfTheWeekWidget />
                     <Card>
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
