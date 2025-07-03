@@ -42,6 +42,7 @@ export class MatchesService {
       LIVE: 'Идет',
       FINISHED: 'Завершен',
       DISPUTED: 'Спорный',
+      CANCELLED: 'Отменен',
     };
 
     return matches.map((match) => ({
@@ -56,7 +57,10 @@ export class MatchesService {
         logo: match.team2.logo || 'https://placehold.co/100x100.png',
         logoHint: match.team2.dataAiHint || 'team logo',
       },
-      score: match.score || 'VS',
+      score:
+        match.team1Score !== null && match.team2Score !== null
+          ? `${match.team1Score}-${match.team2Score}`
+          : 'VS',
       tournament: match.tournament?.name || 'Товарищеский матч',
       game: match.tournament?.game || 'Неизвестно',
       date: format(new Date(match.scheduledAt), 'yyyy-MM-dd'),
@@ -70,8 +74,12 @@ export class MatchesService {
     const match = await this.prisma.match.findUnique({
       where: { id },
       include: {
-        team1: { include: { members: { select: { name: true, role: true, avatar: true } } } },
-        team2: { include: { members: { select: { name: true, role: true, avatar: true } } } },
+        team1: {
+          include: { members: { select: { name: true, role: true, avatar: true } } },
+        },
+        team2: {
+          include: { members: { select: { name: true, role: true, avatar: true } } },
+        },
         tournament: true,
       },
     });
@@ -80,43 +88,76 @@ export class MatchesService {
       throw new NotFoundException(`Матч с ID ${id} не найден`);
     }
 
-    const scoreParts = match.score?.split('-').map(s => parseInt(s.trim())) || [0, 0];
+    const scoreParts =
+      match.team1Score !== null && match.team2Score !== null
+        ? [match.team1Score, match.team2Score]
+        : [0, 0];
 
     // Mock data for things not yet in the DB for a richer frontend experience
     const mockEvents = [
-        { time: "05:12", event: "Гол", player: "Echo", team: match.team1.name },
-        { time: "15:30", event: "Желтая карточка", player: "ColdSniper", team: match.team2.name },
-        { time: "22:45", event: "Гол", player: "Viper", team: match.team1.name },
-        { time: "35:01", event: "Финальный свисток", player: "", team: "" },
+      { time: '05:12', event: 'Гол', player: 'Echo', team: match.team1.name },
+      {
+        time: '15:30',
+        event: 'Желтая карточка',
+        player: 'ColdSniper',
+        team: match.team2.name,
+      },
+      { time: '22:45', event: 'Гол', player: 'Viper', team: match.team1.name },
+      { time: '35:01', event: 'Финальный свисток', player: '', team: '' },
     ];
     const mockTeamStats = {
-        goals: { label: "Голы", team1: scoreParts[0], team2: scoreParts[1] },
-        shotsOnTarget: { label: "Удары в створ", team1: 12, team2: 8 },
-        possession: { label: "Владение мячом (%)", team1: 62, team2: 38 },
-        corners: { label: "Угловые", team1: 8, team2: 4 },
+      goals: { label: 'Голы', team1: scoreParts[0], team2: scoreParts[1] },
+      shotsOnTarget: { label: 'Удары в створ', team1: 12, team2: 8 },
+      possession: { label: 'Владение мячом (%)', team1: 62, team2: 38 },
+      corners: { label: 'Угловые', team1: 8, team2: 4 },
     };
     const mockMedia = [
-        { type: "image", src: "https://placehold.co/600x400.png", hint: 'football action' },
-        { type: "video", src: "https://placehold.co/600x400.png", hint: 'football goal' },
-        { type: "image", src: "https://placehold.co/600x400.png", hint: 'team celebration' },
-        { type: "image", src: "https://placehold.co/600x400.png", hint: 'football player' },
+      { type: 'image', src: 'https://placehold.co/600x400.png', hint: 'football action' },
+      { type: 'video', src: 'https://placehold.co/600x400.png', hint: 'football goal' },
+      { type: 'image', src: 'https://placehold.co/600x400.png', hint: 'team celebration' },
+      { type: 'image', src: 'https://placehold.co/600x400.png', hint: 'football player' },
     ];
-    
+
     // Map Prisma result to the frontend's MatchDetails shape
     return {
       id: match.id,
       tournament: match.tournament?.name || 'Товарищеский матч',
       status: match.status === 'FINISHED' ? 'Завершен' : 'Идет',
-      score: match.score || 'VS',
+      score:
+        match.team1Score !== null && match.team2Score !== null
+          ? `${match.team1Score}-${match.team2Score}`
+          : 'VS',
       date: format(new Date(match.scheduledAt), 'd MMMM yyyy', { locale: ru }),
       time: format(new Date(match.scheduledAt), 'HH:mm'),
-      location: "Футбольное поле 'Центральный'", // Mock
-      referee: { name: "Иван Петров" }, // Mock
-      team1: { name: match.team1.name, logo: match.team1.logo || 'https://placehold.co/100x100.png', logoHint: match.team1.dataAiHint || 'team logo' },
-      team2: { name: match.team2.name, logo: match.team2.logo || 'https://placehold.co/100x100.png', logoHint: match.team2.dataAiHint || 'team logo' },
+      location: match.location || 'Место не указано',
+      referee: { name: match.refereeName || 'Судья не назначен' },
+      team1: {
+        name: match.team1.name,
+        logo: match.team1.logo || 'https://placehold.co/100x100.png',
+        logoHint: match.team1.dataAiHint || 'team logo',
+      },
+      team2: {
+        name: match.team2.name,
+        logo: match.team2.logo || 'https://placehold.co/100x100.png',
+        logoHint: match.team2.dataAiHint || 'team logo',
+      },
       lineups: {
-          team1: match.team1.members.slice(0,3).map(m => ({name: m.name, role: m.role, avatar: m.avatar || 'https://placehold.co/40x40.png', avatarHint: 'sports player'})),
-          team2: match.team2.members.slice(0,3).map(m => ({name: m.name, role: m.role, avatar: m.avatar || 'https://placehold.co/40x40.png', avatarHint: 'sports player'})),
+        team1: match.team1.members
+          .slice(0, 3)
+          .map((m) => ({
+            name: m.name,
+            role: m.role,
+            avatar: m.avatar || 'https://placehold.co/40x40.png',
+            avatarHint: 'sports player',
+          })),
+        team2: match.team2.members
+          .slice(0, 3)
+          .map((m) => ({
+            name: m.name,
+            role: m.role,
+            avatar: m.avatar || 'https://placehold.co/40x40.png',
+            avatarHint: 'sports player',
+          })),
       },
       events: mockEvents,
       teamStats: mockTeamStats,
@@ -173,7 +214,8 @@ export class MatchesService {
       const updatedMatch = await tx.match.update({
         where: { id },
         data: {
-          score: `${score1}-${score2}`,
+          team1Score: score1,
+          team2Score: score2,
           status: 'FINISHED',
           finishedAt: new Date(),
         },

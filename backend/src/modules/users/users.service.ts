@@ -31,6 +31,8 @@ export class UsersService {
         email,
         role: role || 'Игрок', // default role
         passwordHash,
+        status: 'Активен',
+        xp: 0,
       },
     });
 
