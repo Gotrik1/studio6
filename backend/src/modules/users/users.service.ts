@@ -1,15 +1,16 @@
 
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
-    const { name, email, role } = createUserDto;
+    const { name, email, role, password } = createUserDto;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -19,16 +20,17 @@ export class UsersService {
       throw new ConflictException('Пользователь с таким email уже существует');
     }
 
-    // В реальном приложении здесь будет вызов Keycloak Admin API для создания пользователя.
-    // Пароль обрабатывается и хранится в Keycloak, а не в нашем сервисе.
-    const passwordHash = `keycloak_managed_password_${Date.now()}`;
+    if (!password) {
+        throw new BadRequestException('Password is required for registration.');
+    }
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await this.prisma.user.create({
       data: {
         name,
         email,
         role: role || 'Игрок', // default role
-        passwordHash, // This field is just a placeholder
+        passwordHash,
       },
     });
 
@@ -56,6 +58,12 @@ export class UsersService {
 
     const { passwordHash, ...result } = user;
     return result;
+  }
+
+  async findByEmailWithPassword(email: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { email },
+    });
   }
 
   async remove(id: string) {
