@@ -14,9 +14,9 @@ export function PlaygroundLeaderboard() {
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Trophy className="h-5 w-5 text-amber-500" />
-                    Короли площадки
+                    Лидеры площадки
                 </CardTitle>
-                <CardDescription>Топ-3 игрока по активности и победам на этой площадке.</CardDescription>
+                <CardDescription>Топ-3 игрока по количеству чекинов на этой площадке.</CardDescription>
             </CardHeader>
             <CardContent>
                 <Table>

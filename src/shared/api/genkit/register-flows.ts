@@ -50,3 +50,5 @@ import './flows/find-lfg-lobbies-flow';
 import './flows/generate-nutrition-plan-flow';
 import './flows/generate-match-post-flow';
 import './flows/generate-playground-summary-flow';
+import './flows/generate-playground-challenge-flow';
+import './flows/generate-playground-lore';

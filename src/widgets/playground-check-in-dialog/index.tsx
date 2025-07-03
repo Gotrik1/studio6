@@ -68,7 +68,7 @@ export function PlaygroundCheckInDialog({ isOpen, onOpenChange, onCheckIn, playg
                             {preview ? (
                                 <Image src={preview} alt="Предпросмотр" width={128} height={128} className="h-full w-auto object-contain p-2" />
                             ) : (
-                                <div className="flex flex-col items-center justify-center">
+                                <div className="flex flex-col items-center justify-center pt-5 pb-6">
                                     <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
                                     <p className="text-sm text-muted-foreground">Загрузить фото</p>
                                 </div>
