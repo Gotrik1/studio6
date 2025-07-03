@@ -8,7 +8,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic, Share2, Copy, Download, Volume2 } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import type { MatchDetails } from "@/entities/match/model/types";
-import { analyzeMatchReport, type AnalyzeMatchReportOutput } from "@/shared/api/genkit/flows/analyze-match-report-flow";
+import { analyzeMatchReport, type AnalyzeMatchReportOutput } from '@/shared/api/genkit/flows/analyze-match-report-flow';
 import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
 import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
 import { Textarea } from "@/shared/ui/textarea";
@@ -141,8 +141,8 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
             setIsGeneratingCommentary(false);
         }
     };
-    
-     const handleCopyText = (text: string) => {
+
+    const handleCopyText = (text: string) => {
         if (text) {
           navigator.clipboard.writeText(text);
           toast({
@@ -324,7 +324,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
-                                            <Button onClick={handleCopyText}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
+                                            <Button onClick={() => handleCopyText(postResult.postText)}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
                                             <Button variant="outline" asChild>
                                                 <a href={postResult.imageDataUri} download="match_post_image.png">
                                                     <Download className="mr-2 h-4 w-4"/> Скачать изображение
