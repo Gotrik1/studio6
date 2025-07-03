@@ -50,3 +50,4 @@ import './flows/generate-playground-workout-flow';
 import './flows/generate-playground-tactic-flow';
 import './flows/generate-playground-lore';
 import './flows/analyze-holistic-performance-flow';
+import './flows/analyze-playground-report-flow';

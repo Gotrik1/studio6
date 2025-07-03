@@ -1,11 +1,10 @@
-
 'use client';
 
 import { useState } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart } from 'lucide-react';
+import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -21,6 +20,8 @@ import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mo
 import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
+import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from '@/widgets/report-playground-issue-dialog';
+import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
 
 
 export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
@@ -29,6 +30,8 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
     const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
     const [reviews, setReviews] = useState<PlaygroundReview[]>(mockPlaygroundReviews);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
+    const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
+    const [latestIssueReport, setLatestIssueReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
 
     const handleCheckIn = (comment: string) => {
         if (!user) return;
@@ -56,19 +59,44 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         setReviews(prev => [newReview, ...prev]);
     };
 
+    const handleReportSubmit = async (data: ReportFormValues) => {
+        try {
+            const reportAnalysis = await analyzePlaygroundReport({
+                playgroundName: playground.name,
+                issueCategory: data.category,
+                userComment: data.comment,
+            });
+            setLatestIssueReport(reportAnalysis);
+            toast({
+                title: "Спасибо за ваше сообщение!",
+                description: "Информация о проблеме была передана модераторам."
+            });
+        } catch(e) {
+            toast({
+                variant: 'destructive',
+                title: "Ошибка",
+                description: "Не удалось отправить отчет. Пожалуйста, попробуйте еще раз."
+            })
+        }
+    };
+
     return (
         <>
             <div className="space-y-6">
                 <Card className="overflow-hidden">
                     <div className="relative h-64 w-full">
                         <Image src={playground.coverImage} alt={playground.name} fill className="object-cover" data-ai-hint={playground.coverImageHint}/>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                         <div className="absolute bottom-6 left-6 text-white">
                             <Badge variant="secondary">{playground.type}</Badge>
                             <h1 className="font-headline text-4xl font-bold mt-1">{playground.name}</h1>
                             <p className="flex items-center gap-2 mt-1"><MapPin className="h-4 w-4" /> {playground.address}</p>
                         </div>
-                        <div className="absolute top-4 right-4">
+                        <div className="absolute top-4 right-4 flex gap-2">
+                             <Button variant="destructive" onClick={() => setIsReportIssueOpen(true)}>
+                                <AlertTriangle className="mr-2 h-5 w-5" />
+                                Сообщить о проблеме
+                            </Button>
                             <Button onClick={() => setIsCheckInOpen(true)}>
                                 <CheckCircle className="mr-2 h-5 w-5" />
                                 Отметиться
@@ -86,7 +114,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                         <TabsTrigger value="media"><BarChart className="mr-2 h-4 w-4" />Медиа</TabsTrigger>
                     </TabsList>
                     <TabsContent value="info" className="mt-6">
-                        <PlaygroundInfoTab playground={playground} />
+                        <PlaygroundInfoTab playground={playground} issueReport={latestIssueReport} />
                     </TabsContent>
                     <TabsContent value="reviews" className="mt-6">
                         <PlaygroundReviewsTab reviews={reviews} onAddReview={handleAddReview} playgroundName={playground.name} />
@@ -108,6 +136,12 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                 onOpenChange={setIsCheckInOpen}
                 playgroundName={playground.name}
                 onCheckIn={handleCheckIn}
+            />
+            <ReportPlaygroundIssueDialog
+                isOpen={isReportIssueOpen}
+                onOpenChange={setIsReportIssueOpen}
+                playgroundName={playground.name}
+                onReportSubmit={handleReportSubmit}
             />
         </>
     );

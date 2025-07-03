@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -17,7 +16,7 @@ const issueSchema = z.object({
   comment: z.string().min(10, "Пожалуйста, опишите проблему подробнее (минимум 10 символов)."),
 });
 
-type FormValues = z.infer<typeof issueSchema>;
+export type FormValues = z.infer<typeof issueSchema>;
 
 const issueCategories = [
     "Сломанное оборудование (кольцо, ворота)",

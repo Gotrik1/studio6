@@ -7,12 +7,15 @@ import { AiPlaygroundAnalysis } from '@/widgets/ai-playground-analysis';
 import { PlaygroundWorkoutGenerator } from "@/widgets/playground-workout-generator";
 import { AiPlaygroundTactic } from "@/widgets/ai-playground-tactic";
 import { AiPlaygroundLore } from "@/widgets/ai-playground-lore";
+import { PlaygroundConditionStatus } from "@/widgets/playground-condition-status";
+import type { AnalyzePlaygroundReportOutput } from "@/shared/api/genkit/flows/schemas/analyze-playground-report-schema";
 
 interface PlaygroundInfoTabProps {
     playground: Playground;
+    issueReport?: AnalyzePlaygroundReportOutput | null;
 }
 
-export function PlaygroundInfoTab({ playground }: PlaygroundInfoTabProps) {
+export function PlaygroundInfoTab({ playground, issueReport }: PlaygroundInfoTabProps) {
     const isTeamSport = ['Футбол', 'Баскетбол', 'Стритбол', 'Волейбол', 'Хоккей'].includes(playground.type);
     const isWorkout = ['Воркаут', 'Фитнес-зал'].includes(playground.type);
 
@@ -23,6 +26,7 @@ export function PlaygroundInfoTab({ playground }: PlaygroundInfoTabProps) {
                 <AiPlaygroundLore playground={playground} />
             </div>
             <div className="lg:col-span-1 space-y-6">
+                 <PlaygroundConditionStatus status={issueReport ? 'issue' : 'ok'} report={issueReport || undefined} />
                  <Card>
                     <CardHeader>
                         <CardTitle>Факты</CardTitle>
