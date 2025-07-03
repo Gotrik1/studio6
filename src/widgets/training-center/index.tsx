@@ -80,7 +80,7 @@ export function TrainingCenterPage() {
         { href: "/training/analytics", icon: BarChart3, label: "Общая аналитика" },
         { href: "/training/records", icon: Award, label: "Личные рекорды" },
         { href: "/training/measurements", icon: Ruler, label: "Замеры тела" },
-        { href: "/training/nutrition-diary", icon: HeartPulse, label: "Дневник питания" },
+        { href: "/training/nutrition", icon: HeartPulse, label: "Центр питания" },
     ];
     
     const communityLinks = [
@@ -109,7 +109,7 @@ export function TrainingCenterPage() {
                         {gamesLinks.map(link => <FeatureLink key={link.label} {...link} />)}
                     </FeatureCard>
                     
-                    <FeatureCard title="Аналитика" description="Отслеживайте достижения и анализируйте результаты для роста." icon={BarChart3}>
+                    <FeatureCard title="Аналитика" description="Отслеживайте достижения, питание и анализируйте результаты для роста." icon={BarChart3}>
                         {analyticsLinks.map(link => <FeatureLink key={link.label} {...link} />)}
                     </FeatureCard>
 
