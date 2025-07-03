@@ -1,4 +1,3 @@
-
 // This component is a placeholder for a more robust code block with syntax highlighting.
 // For the purpose of this demo, it displays code in a simple preformatted block.
 

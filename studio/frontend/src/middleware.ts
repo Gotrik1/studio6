@@ -26,7 +26,7 @@ export function middleware(request: NextRequest) {
     }
     return NextResponse.next();
   }
-
+  
   if (!isLoggedIn && !isPublicRoute) {
     return NextResponse.redirect(new URL('/auth', nextUrl));
   }

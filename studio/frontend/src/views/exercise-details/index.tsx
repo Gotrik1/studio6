@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo } from 'react';
@@ -88,7 +89,7 @@ export function ExerciseDetailsPage({ exercise }: ExerciseDetailsPageProps) {
                                             <Award className="h-6 w-6 text-amber-500" />
                                             {record.e1RM} кг
                                         </p>
-                                        <p className="text-xs text-muted-foreground">({record.reps}x{record.weight}кг on {format(new Date(record.date), 'd MMM yyyy', { locale: ru })})</p>
+                                        <p className="text-xs text-muted-foreground">({record.reps}x{record.weight}кг on {format(new Date(record.date), 'd MMMM yyyy', { locale: ru })})</p>
                                     </div>
                                     <div className="flex justify-between items-center text-sm">
                                         <span className="font-medium">Первый замер</span>
@@ -130,15 +131,7 @@ export function ExerciseDetailsPage({ exercise }: ExerciseDetailsPageProps) {
             </div>
             
             {fullHistory.length > 0 && (
-                <Card>
-                     <CardHeader>
-                        <CardTitle>Полная история</CardTitle>
-                        <CardDescription>Все записанные сеты для этого упражнения.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <ExerciseHistoryTable sessions={fullHistory} />
-                    </CardContent>
-                </Card>
+                <ExerciseHistoryTable sessions={fullHistory} />
             )}
 
         </div>

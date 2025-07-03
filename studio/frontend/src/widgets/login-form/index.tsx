@@ -10,7 +10,7 @@ import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { login } from '@/features/auth/actions';
 import { loginSchema } from '@/features/auth/schemas';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, HelpCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Logo } from '@/shared/ui/icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';

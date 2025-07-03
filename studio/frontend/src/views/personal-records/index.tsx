@@ -92,7 +92,7 @@ export function PersonalRecordsPage() {
                                             <Award className="h-6 w-6 text-amber-500" />
                                             {selectedRecord.e1RM} кг
                                         </p>
-                                         <p className="text-xs text-muted-foreground">({format(new Date(selectedRecord.date), 'd MMM yyyy', { locale: ru })})</p>
+                                         <p className="text-xs text-muted-foreground">({selectedRecord.reps}x{selectedRecord.weight}кг on {format(new Date(selectedRecord.date), 'd MMMM yyyy', { locale: ru })})</p>
                                     </div>
                                     <div className="p-4 bg-muted rounded-lg">
                                         <p className="text-sm text-muted-foreground">Первый замер</p>

@@ -13,8 +13,8 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
-import { useCart } from '@/app/providers/cart-provider';
-import { usePDEconomy } from '@/app/providers/pd-provider';
+import { useCart } from '@/shared/context/cart-provider';
+import { usePDEconomy } from '@/shared/context/pd-provider';
 
 function StoreItemCard({ item }: { item: StoreItem }) {
     const { addItem, setIsCartOpen } = useCart();

@@ -1,4 +1,3 @@
-
 'use server';
 
 import { ai } from '@/shared/api/genkit';

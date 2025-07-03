@@ -10,7 +10,7 @@ import Image from 'next/image';
 import { differenceInMonths } from 'date-fns';
 import { AiEquipmentAdvisor } from '@/widgets/ai-equipment-advisor';
 import { AddItemDialog } from '@/widgets/add-item-dialog';
-import { useInventory } from '@/app/providers/inventory-provider';
+import { useInventory } from '@/shared/context/inventory-provider';
 
 const getWearPercentage = (purchaseDate: string, lifespanMonths: number) => {
     const monthsUsed = differenceInMonths(new Date(), new Date(purchaseDate));

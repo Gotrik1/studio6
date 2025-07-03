@@ -4,16 +4,16 @@ import { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/shared/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic, Share2, Copy, Download, Volume2 } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import type { MatchDetails } from "@/entities/match/model/types";
-import { analyzeMatchReport, type AnalyzeMatchReportOutput } from '@/shared/api/genkit/flows/analyze-match-report-flow';
+import { analyzeMatchReport, type AnalyzeMatchReportOutput } from "@/shared/api/genkit/flows/analyze-match-report-flow";
 import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
 import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
 import { Textarea } from "@/shared/ui/textarea";
 import { Label } from "@/shared/ui/label";
-import { useToast } from "@/shared/hooks/use-toast";
+import { useToast } from '@/shared/hooks/use-toast';
 import { generateMatchCommentary, type GenerateMatchCommentaryOutput } from "@/shared/api/genkit/flows/generate-match-commentary-flow";
 
 
@@ -122,11 +122,16 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
         setCommentaryError(null);
         setCommentaryResult(null);
 
+        const mockEvents = [
+            {time: '10:00', event: 'Гол', player: 'Иванов', team: 'Дворовые Атлеты'},
+            {time: '25:00', event: 'Гол', player: 'Петров', team: 'Вымпел'},
+        ];
+
         try {
             const commentaryData = await generateMatchCommentary({
                 team1Name: match.team1.name,
                 team2Name: match.team2.name,
-                events: match.events,
+                events: mockEvents,
             });
             setCommentaryResult(commentaryData);
         } catch (e) {

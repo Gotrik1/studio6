@@ -13,7 +13,7 @@ import { leaderboardData } from '@/shared/lib/mock-data/leaderboards';
 import { allTournaments } from '@/shared/lib/mock-data/tournaments';
 import { teams } from '@/shared/lib/mock-data/teams';
 import { LfgCard } from '@/widgets/lfg-card';
-import { useLfg } from '@/app/providers/lfg-provider';
+import { useLfg } from '@/shared/context/lfg-provider';
 import Link from 'next/link';
 import { cn } from '@/shared/lib/utils';
 import { AiSportSummary } from '@/widgets/ai-sport-summary';
