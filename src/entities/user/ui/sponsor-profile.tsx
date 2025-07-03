@@ -8,6 +8,8 @@ import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { sponsorUser, sponsorAchievements } from "@/shared/lib/mock-data/sponsor-profile";
+import { sponsoredTeams } from '@/shared/lib/mock-data/sponsorship';
+import { promotionsList } from '@/shared/lib/mock-data/promotions';
 import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -23,6 +25,15 @@ const SponsorAchievementsTab = dynamic(() => import('@/entities/user/ui/sponsor-
   loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
   ssr: false,
 });
+const SponsoredTeamsTab = dynamic(() => import('@/entities/user/ui/sponsor-profile-tabs/sponsored-teams-tab').then(mod => mod.SponsoredTeamsTab), {
+  loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
+  ssr: false,
+});
+const ActiveCampaignsTab = dynamic(() => import('@/entities/user/ui/sponsor-profile-tabs/active-campaigns-tab').then(mod => mod.ActiveCampaignsTab), {
+  loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
+  ssr: false,
+});
+
 
 type SponsorProfileProps = {
   user: typeof sponsorUser;
@@ -89,13 +100,21 @@ export function SponsorProfile({ user, achievements }: SponsorProfileProps) {
             </div>
         </div>
         <div className="border-t p-4 md:p-6">
-          <Tabs defaultValue="stats">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="stats">ROI спонсорства</TabsTrigger>
-              <TabsTrigger value="achievements">Вехи спонсора</TabsTrigger>
+           <Tabs defaultValue="stats">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="stats">Статистика</TabsTrigger>
+              <TabsTrigger value="teams">Команды</TabsTrigger>
+              <TabsTrigger value="campaigns">Кампании</TabsTrigger>
+              <TabsTrigger value="achievements">Достижения</TabsTrigger>
             </TabsList>
             <TabsContent value="stats" className="mt-4">
               <SponsorStatsTab />
+            </TabsContent>
+            <TabsContent value="teams" className="mt-4">
+                <SponsoredTeamsTab teams={sponsoredTeams} />
+            </TabsContent>
+            <TabsContent value="campaigns" className="mt-4">
+                 <ActiveCampaignsTab campaigns={promotionsList.filter(p => p.sponsor.name === user.name)} />
             </TabsContent>
             <TabsContent value="achievements" className="mt-4">
               <SponsorAchievementsTab achievements={achievements} />
