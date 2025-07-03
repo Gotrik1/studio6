@@ -1,3 +1,4 @@
+
 'use server';
 
 import { config } from 'dotenv';
@@ -52,4 +53,6 @@ import './flows/generate-playground-summary-flow';
 import './flows/generate-playground-challenge-flow';
 import './flows/generate-playground-lore';
 import './flows/summarize-playground-reviews-flow';
-import './flows/analyze-holistic-performance-flow';
+import './flows/generate-playground-workout-flow';
+import './flows/generate-playground-tactic-flow';
+import './flows/analyze-playground-report-flow';
