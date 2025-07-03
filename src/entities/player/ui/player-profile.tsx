@@ -8,7 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import { Users, Share2, Activity, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send, Image as ImageIcon, Sword } from "lucide-react";
+import { Users, Share2, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send, Image as ImageIcon, Sword, ListChecks } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -28,9 +28,9 @@ import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
 import { StatsTab } from '@/entities/player/ui/player-profile-tabs/stats-tab';
 import { PhysicalPrepTab } from '@/entities/player/ui/player-profile-tabs/physical-prep-tab';
+import { playerActivity } from '@/shared/lib/mock-data/player-activity';
 
-
-const OverviewTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/overview-tab').then(mod => mod.OverviewTab), {
+const PlayerActivityFeed = dynamic(() => import('@/widgets/player-activity-feed').then(mod => mod.PlayerActivityFeed), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
   ssr: false,
 });
@@ -243,9 +243,9 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
         </CardContent>
 
         <div className="p-4 md:p-6">
-            <Tabs defaultValue="overview">
+            <Tabs defaultValue="activity">
                 <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8">
-                <TabsTrigger value="overview"><Activity className="mr-2 h-4 w-4"/>Обзор</TabsTrigger>
+                <TabsTrigger value="activity"><ListChecks className="mr-2 h-4 w-4"/>Активность</TabsTrigger>
                 <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
                 <TabsTrigger value="physical-prep"><HeartPulse className="mr-2 h-4 w-4" />Физ. подготовка</TabsTrigger>
                 <TabsTrigger value="holistic-analysis"><BrainCircuit className="mr-2 h-4 w-4" />Компл. анализ</TabsTrigger>
@@ -255,8 +255,8 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, recent
                 <TabsTrigger value="gallery"><GalleryHorizontal className="mr-2 h-4 w-4"/>Галерея</TabsTrigger>
                 </TabsList>
 
-            <TabsContent value="overview" className="mt-4">
-                <OverviewTab recentMatches={recentMatches} isCurrentUser={isCurrentUser} />
+            <TabsContent value="activity" className="mt-4">
+                <PlayerActivityFeed activities={playerActivity} />
             </TabsContent>
 
             <TabsContent value="stats" className="mt-4">
