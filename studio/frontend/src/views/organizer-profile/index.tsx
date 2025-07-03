@@ -1,4 +1,3 @@
-
 import { organizerUser, organizerAchievements } from "@/shared/lib/mock-data/organizer-profile";
 import { crmTournaments } from '@/shared/lib/mock-data/crm-tournaments';
 import OrganizerClient from "@/app/(app)/administration/organizer/client";

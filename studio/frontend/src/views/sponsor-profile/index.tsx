@@ -1,4 +1,3 @@
-
 import { sponsorUser, sponsorAchievements } from "@/shared/lib/mock-data/sponsor-profile";
 import SponsorClient from "@/app/(app)/administration/sponsor/client";
 

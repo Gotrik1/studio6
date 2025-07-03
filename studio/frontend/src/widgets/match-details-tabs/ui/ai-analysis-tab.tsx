@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from "react";
@@ -314,7 +315,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="post-text">Текст поста</Label>
-                                                <Textarea id="post-text" value={postResult.postText} readOnly className="h-48"/>
+                                                <Textarea id="post-text" value={result.socialMediaPost} readOnly className="h-48"/>
                                             </div>
                                             <div className="space-y-2">
                                                 <Label>Изображение</Label>
@@ -324,7 +325,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                                             </div>
                                         </div>
                                         <div className="flex gap-2">
-                                            <Button onClick={() => handleCopyText(postResult.postText)}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
+                                            <Button onClick={() => handleCopyText(result.socialMediaPost)}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
                                             <Button variant="outline" asChild>
                                                 <a href={postResult.imageDataUri} download="match_post_image.png">
                                                     <Download className="mr-2 h-4 w-4"/> Скачать изображение

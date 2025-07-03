@@ -1,4 +1,3 @@
-
 export const adminUser = {
   id: 'admin-001',
   name: 'Superuser',

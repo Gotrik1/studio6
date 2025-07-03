@@ -1,4 +1,3 @@
-
 import { moderatorUser, moderatorAchievements } from "@/shared/lib/mock-data/moderator-profile";
 import ModeratorClient from "@/app/(app)/administration/moderator/client";
 
