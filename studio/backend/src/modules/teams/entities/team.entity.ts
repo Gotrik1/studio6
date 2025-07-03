@@ -1,3 +1,4 @@
+
 // Представление сущности команды (например, для Prisma или TypeORM)
 export class Team {
     id: string;

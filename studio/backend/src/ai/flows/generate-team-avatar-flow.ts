@@ -1,3 +1,4 @@
+
 /**
  * @fileOverview An AI agent for generating team avatars.
  *

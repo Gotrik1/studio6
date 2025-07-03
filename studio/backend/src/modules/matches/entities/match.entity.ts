@@ -1,3 +1,4 @@
+
 // Представление сущности матча (например, для Prisma или TypeORM)
 export class Match {
     id: string;

@@ -1,3 +1,4 @@
+
 // Представление сущности пользователя (например, для Prisma или TypeORM)
 export class User {
     id: string;

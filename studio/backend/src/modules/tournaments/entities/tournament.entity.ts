@@ -1,3 +1,4 @@
+
 // Представление сущности турнира (например, для Prisma или TypeORM)
 export class Tournament {
     id: string;

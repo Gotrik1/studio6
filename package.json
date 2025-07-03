@@ -11,7 +11,7 @@
     "build": "npm run build -w studio/frontend",
     "genkit:watch": "npm run genkit:watch -w studio/frontend",
     "prisma:generate": "npm run prisma:generate -w studio/backend",
-    "prisma:migrate": "npm run prisma:migrate -w studio/backend",
-    "prisma:studio": "npm run prisma:studio -w studio/backend"
+    "prisma:migrate": "npm run prisma:migrate -w backend",
+    "prisma:studio": "npm run prisma:studio -w backend"
   }
 }
