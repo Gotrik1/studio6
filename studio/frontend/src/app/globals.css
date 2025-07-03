@@ -1,0 +1,191 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CUSTOM SCROLLBAR HIDING */
+::-webkit-scrollbar {
+  display: none;
+  width: 0px;
+  height: 0px;
+}
+* {
+  -ms-overflow-style: none; /* IE and Edge */
+}
+html {
+  scrollbar-width: none; /* Firefox */
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 220 13% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 220 13% 96%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 145 63% 59%;
+    --accent-foreground: 145 63% 5%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 13% 80%;
+    --input: 220 13% 85%;
+    --ring: var(--primary);
+    
+    /* Chart colors */
+    --chart-1: 217 91% 60%; /* Primary Blue */
+    --chart-2: 145 63% 59%; /* Accent Green */
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+  }
+
+  .dark {
+    --background: 220 60% 15%;
+    --foreground: 220 60% 100%;
+    --card: 220 60% 18%;
+    --card-foreground: 210 40% 98%;
+    --popover: 220 60% 15%;
+    --popover-foreground: 220 60% 100%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 220 60% 15%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 220 60% 20%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 145 70% 55%;
+    --accent-foreground: 145 70% 95%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 60% 15%;
+    --input: 220 60% 25%;
+    --ring: var(--primary);
+
+     /* Chart colors */
+    --chart-1: 217 91% 60%; /* Primary Blue */
+    --chart-2: 145 70% 55%; /* Accent Green */
+    --chart-3: 30 70% 60%;
+    --chart-4: 280 60% 65%;
+    --chart-5: 340 70% 60%;
+  }
+  
+  /* Accent color themes */
+  .theme-blue { --accent: 217 91% 60%; --accent-foreground: 210 40% 98%; }
+  .theme-green { --accent: 142 71% 45%; --accent-foreground: 142 71% 95%; }
+  .theme-yellow { --accent: 48 96% 51%; --accent-foreground: 48 96% 5%; }
+  .theme-orange { --accent: 25 95% 53%; --accent-foreground: 25 95% 95%; }
+  .theme-red { --accent: 0 84% 60%; --accent-foreground: 0 84% 98%; }
+  .theme-purple { --accent: 262 83% 58%; --accent-foreground: 262 83% 98%; }
+  .theme-pink { --accent: 340 95% 68%; --accent-foreground: 340 95% 5%; }
+  .theme-cyan { --accent: 199 98% 48%; --accent-foreground: 199 98% 98%; }
+
+
+  /* Sidebar variables */
+  :root, .dark {
+    --sidebar-background: var(--background);
+    --sidebar-foreground: var(--foreground);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: var(--accent);
+    --sidebar-accent-foreground: var(--accent-foreground);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+  h1,h2,h3,h4,h5,h6 {
+    font-family: theme('fontFamily.headline');
+  }
+}
+
+@layer utilities {
+  .animated-slogan span {
+    opacity: 0;
+    transform: translateY(20px);
+    display: inline-block;
+    animation: slogan-fade-in 0.5s ease-out forwards;
+  }
+
+  .shine-button {
+    position: relative;
+    overflow: hidden;
+  }
+  .shine-button::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    transform: translateX(-100%);
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shine 4s infinite;
+  }
+
+  .hologram-skeleton {
+    @apply relative overflow-hidden rounded-lg;
+    background-color: hsl(var(--muted));
+  }
+
+  .hologram-skeleton::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background-image: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0,
+      rgba(255, 255, 255, 0.05) 20%,
+      rgba(255, 255, 255, 0.1) 60%,
+      rgba(255, 255, 255, 0)
+    );
+    animation: shimmer 2s infinite;
+    content: "";
+  }
+  
+  .dark .hologram-skeleton::after {
+     background-image: linear-gradient(
+      90deg,
+      transparent 0,
+      hsl(var(--primary) / 0.1) 20%,
+      hsl(var(--primary) / 0.2) 60%,
+      transparent 100%
+    );
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slogan-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  20% {
+    transform: translateX(200%);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
