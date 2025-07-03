@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -7,7 +8,7 @@ import { useTransition, useState } from 'react';
 import Image from 'next/image';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { login } from '@/features/auth/actions';
@@ -18,6 +19,7 @@ import { Logo } from '@/shared/ui/icons';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shared/ui/tooltip';
+import { Label } from '@/shared/ui/label';
 
 type FormValues = z.infer<typeof loginSchema>;
 
