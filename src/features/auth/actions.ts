@@ -3,20 +3,18 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { User } from '@/shared/lib/types';
+import { z } from 'zod';
+import { registerSchema } from './schemas';
+import { userList } from '@/shared/lib/mock-data/users';
 
-// This function now simulates a successful redirect from an external provider like Keycloak.
-// In a real OAuth2 flow, the user would be redirected to Keycloak, log in,
-// and then be redirected back to our app with a code, which we'd exchange for a token.
-// For this prototype, we'll just create the session for the demo user directly.
-export async function login() {
+export async function login(email: string) {
   try {
-    const user: User = {
-        name: 'Superuser',
-        email: 'admin@example.com',
-        role: 'Администратор',
-        avatar: 'https://placehold.co/100x100.png',
-    };
+    const user = userList.find(u => u.email === email);
     
+    if (!user) {
+        return { error: 'Пользователь не найден или пароль неверный.' };
+    }
+
     const cookieStore = await cookies();
     cookieStore.set('session', JSON.stringify(user), {
         httpOnly: true,
@@ -24,20 +22,45 @@ export async function login() {
         maxAge: 60 * 60 * 24 * 7, // One week
         path: '/',
     });
-
-    // Redirect to the main dashboard after login.
-    redirect('/dashboard');
-
   } catch (error) {
     if (error instanceof Error) {
-        if (error.message === 'NEXT_REDIRECT') {
+        if (error.message.includes('NEXT_REDIRECT')) {
           throw error;
         }
-        console.error("Login action failed:", error);
-        // We could return an error here to be displayed on the auth page.
+        return { error: 'Что-то пошло не так.' };
     }
-    throw error;
   }
+  redirect('/dashboard');
+}
+
+export async function register(values: z.infer<typeof registerSchema>) {
+    const validatedFields = registerSchema.safeParse(values);
+
+    if (!validatedFields.success) {
+        return { error: 'Предоставлены неверные данные.' };
+    }
+
+    const { name, email, role } = validatedFields.data;
+
+    // In a real app, you would save the user to the database.
+    // For this prototype, we'll create a user object and save it to the session.
+    const newUser: User = {
+        id: `user-${Date.now()}`,
+        name,
+        email,
+        role,
+        avatar: 'https://placehold.co/100x100.png',
+    };
+
+    const cookieStore = await cookies();
+    cookieStore.set('session', JSON.stringify(newUser), {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24 * 7, // One week
+        path: '/',
+    });
+    
+    redirect('/welcome');
 }
 
 

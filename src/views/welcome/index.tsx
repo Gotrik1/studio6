@@ -34,12 +34,17 @@ export function WelcomePage() {
     useEffect(() => {
         if (user) {
             getOnboardingSuggestions({ userName: user.name, userRole: user.role })
-                .then(setSuggestions)
+                .then((data) => setSuggestions(data))
                 .catch(console.error)
                 .finally(() => setIsLoading(false));
+        } else if (!userLoading) {
+            setIsLoading(false);
         }
-    }, [user]);
+    }, [user, userLoading]);
 
+    // Mock completion status for demo purposes
+    const completedQuests = suggestions ? Math.floor(suggestions.suggestions.length / 2) : 0;
+    
     if (userLoading || isLoading) {
         return (
             <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">

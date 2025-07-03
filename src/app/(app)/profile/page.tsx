@@ -1,6 +1,5 @@
 import { getSession } from "@/features/auth/session";
 import { redirect } from "next/navigation";
-import { userList } from '@/shared/lib/mock-data/users';
 
 export default async function ProfileRedirectPage() {
   const sessionUser = await getSession();
@@ -9,17 +8,9 @@ export default async function ProfileRedirectPage() {
     redirect("/auth");
   }
 
-  // Find the full user object to get their ID and role for redirection
-  const fullUser = userList.find(u => u.email === sessionUser.email);
-  if (!fullUser) {
-    // Fallback or error, maybe redirect to a generic profile or dashboard
-    redirect('/dashboard');
-  }
-
-  const rolePath = fullUser.role.toLowerCase();
-  
   // This logic is a bit naive for a real app but works for demo
   // It maps roles to profile paths
+  const rolePath = sessionUser.role.toLowerCase();
   const roleToPathMap: {[key: string]: string} = {
       'игрок': 'player',
       'капитан': 'player', // Captains also view the player profile
@@ -35,5 +26,5 @@ export default async function ProfileRedirectPage() {
 
   const profilePathSegment = roleToPathMap[rolePath] || 'player';
 
-  redirect(`/profiles/${profilePathSegment}/${fullUser.id}`);
+  redirect(`/profiles/${profilePathSegment}/${sessionUser.id}`);
 }
