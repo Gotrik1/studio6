@@ -22,6 +22,11 @@ export class TeamsController {
     return this.teamsService.findOne(id);
   }
 
+  @Get('slug/:slug')
+  findBySlug(@Param('slug') slug: string) {
+    return this.teamsService.findBySlug(slug);
+  }
+
   @Post(':id/join')
   join(@Param('id') teamId: string, @Body() joinTeamDto: JoinTeamDto) {
     return this.teamsService.joinTeam(teamId, joinTeamDto.userId);

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Team } from '@prisma/client';
@@ -56,6 +56,50 @@ export class TeamsService {
       where: { id },
       include: { captain: true, members: true, tournaments: true },
     });
+  }
+
+  async findBySlug(slug: string): Promise<any | null> {
+    const team = await this.prisma.team.findUnique({
+      where: { slug },
+      include: {
+        captain: true,
+        members: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+            role: true,
+          },
+        },
+      },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Команда со слагом "${slug}" не найдена`);
+    }
+
+    const roster = team.members.map((member) => ({
+      id: member.id,
+      name: member.name,
+      avatar: member.avatar || 'https://placehold.co/100x100.png',
+      role: member.role,
+      rating: 'Immortal', // Mock data for now
+      status: 'Онлайн', // Mock data for now
+    }));
+
+    return {
+      name: team.name,
+      motto: team.motto || 'Девиз не указан',
+      logo: team.logo || 'https://placehold.co/100x100.png',
+      dataAiHint: team.dataAiHint || 'team logo',
+      game: team.game,
+      rank: team.rank || 99,
+      membersCount: team.members.length,
+      captainName: team.captain.name,
+      slug: team.slug,
+      homePlaygroundId: team.homePlaygroundId,
+      roster,
+    };
   }
   
   async joinTeam(teamId: string, userId: string): Promise<Team> {

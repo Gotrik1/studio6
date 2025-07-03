@@ -12,19 +12,21 @@ import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, BarCha
 import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
-import { teams } from '@/shared/lib/mock-data/teams';
 import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
-import { teamRoster, challenges } from "@/shared/lib/mock-data/team-details";
+import { challenges } from "@/shared/lib/mock-data/team-details";
 import { DonationDialog } from '@/features/donation-dialog/index';
 import { TeamChatInterface } from '@/widgets/team-chat-interface';
 import { TeamStatsTab } from '@/widgets/team-stats-tab';
 import { ApplyToTeamDialog } from '@/widgets/apply-to-team-dialog';
 import { TeamOverviewDashboard } from '@/widgets/team-overview-dashboard';
+import type { TeamDetails } from '@/entities/team/model/types';
 
-export function TeamDetailsPage() {
+interface TeamDetailsPageProps {
+  team: TeamDetails;
+}
+
+export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
     const { user: currentUser } = useSession();
-    // For this demo, we are hardcoding the team. In a real app, this would come from params.
-    const team = teams.find(t => t.slug === 'dvotovyie-atlety');
     const [isDonationOpen, setIsDonationOpen] = useState(false);
     const [isApplyOpen, setIsApplyOpen] = useState(false);
 
@@ -32,7 +34,7 @@ export function TeamDetailsPage() {
         return <div>Команда не найдена.</div>;
     }
 
-    const isCaptain = currentUser?.name === team.captain || currentUser?.role === 'Администратор';
+    const isCaptain = currentUser?.name === team.captainName || currentUser?.role === 'Администратор';
     const homePlayground = playgroundsList.find(p => p.id === team.homePlaygroundId);
 
     return (
@@ -56,7 +58,7 @@ export function TeamDetailsPage() {
                     <CardHeader className="flex-row items-center justify-between border-t p-4">
                         <div className="flex flex-wrap items-center gap-4">
                             <div className="flex items-center gap-2"><Trophy className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">Ранг: #{team.rank}</span></div>
-                            <div className="flex items-center gap-2"><Users className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">{team.members}/11 игроков</span></div>
+                            <div className="flex items-center gap-2"><Users className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">{team.membersCount}/11 игроков</span></div>
                             <div className="flex items-center gap-2"><Gamepad2 className="h-4 w-4 text-muted-foreground" /> <span className="font-semibold">{team.game}</span></div>
                             {homePlayground && (
                                 <div className="flex items-center gap-2">
@@ -112,10 +114,10 @@ export function TeamDetailsPage() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {teamRoster.map(player => (
+                                    {team.roster.map(player => (
                                         <TableRow key={player.id}>
                                             <TableCell className="font-medium flex items-center gap-2">
-                                                <Avatar className="h-8 w-8"><AvatarImage src={player.avatar} /><AvatarFallback>{player.name.charAt(0)}</AvatarFallback></Avatar>
+                                                <Avatar className="h-8 w-8"><AvatarImage src={player.avatar} /><AvatarFallback>{String(player.name).charAt(0)}</AvatarFallback></Avatar>
                                                 {player.name}
                                             </TableCell>
                                             <TableCell>{player.role}</TableCell>
