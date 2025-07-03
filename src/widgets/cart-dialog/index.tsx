@@ -6,6 +6,7 @@ import { Button } from "@/shared/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { useCart } from '@/app/providers/cart-provider';
 import { usePDEconomy } from '@/app/providers/pd-provider';
+import { useInventory } from '@/app/providers/inventory-provider';
 import { useToast } from '@/shared/hooks/use-toast';
 import { ShoppingCart, Trash2, Coins, Loader2, CreditCard } from "lucide-react";
 import Image from "next/image";
@@ -17,6 +18,7 @@ export function CartDialog() {
     const { toast } = useToast();
     const { items, removeItem, updateQuantity, clearCart, totalPricePD, totalPriceReal, isCartOpen, setIsCartOpen } = useCart();
     const { balance, addTransaction } = usePDEconomy();
+    const { addStoreItem } = useInventory();
     const [isCheckingOut, setIsCheckingOut] = useState(false);
 
     const handleCheckout = () => {
@@ -37,6 +39,16 @@ export function CartDialog() {
                  addTransaction('Покупка в магазине', -totalPricePD);
             }
             
+            // Add items to inventory
+            items.forEach(item => {
+                if (!item.isRealMoney) {
+                    // Assuming you might buy multiple quantities of the same item
+                    for (let i = 0; i < item.quantity; i++) {
+                        addStoreItem(item);
+                    }
+                }
+            });
+
             // Handle real money items (mock)
             if (totalPriceReal > 0) {
                 toast({
@@ -47,7 +59,7 @@ export function CartDialog() {
 
             toast({
                 title: 'Заказ успешно оформлен!',
-                description: 'Спасибо за покупку.'
+                description: 'Спасибо за покупку. Товары добавлены в ваш инвентарь.',
             });
 
             clearCart();

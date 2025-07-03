@@ -10,6 +10,7 @@ import { LfgProvider } from "@/app/providers/lfg-provider";
 import { TrainingProposalProvider } from "@/app/providers/training-proposal-provider";
 import { MeasurementsProvider } from "@/app/providers/measurements-provider";
 import { CartProvider } from "./cart-provider";
+import { InventoryProvider } from "./inventory-provider";
 
 export function AppProviders({
   children,
@@ -17,26 +18,28 @@ export function AppProviders({
   children: React.ReactNode;
 }) {
     return (
-        <CartProvider>
-            <AccentThemeProvider>
-                <TeamProvider>
-                <TrainingProvider>
-                    <NutritionProvider>
-                        <MeasurementsProvider>
-                            <PDEconomyProvider>
-                                <LfgProvider>
-                                    <JoinRequestProvider>
-                                        <TrainingProposalProvider>
-                                            {children}
-                                        </TrainingProposalProvider>
-                                    </JoinRequestProvider>
-                                </LfgProvider>
-                            </PDEconomyProvider>
-                        </MeasurementsProvider>
-                    </NutritionProvider>
-                </TrainingProvider>
-                </TeamProvider>
-            </AccentThemeProvider>
-        </CartProvider>
+        <InventoryProvider>
+            <CartProvider>
+                <AccentThemeProvider>
+                    <TeamProvider>
+                    <TrainingProvider>
+                        <NutritionProvider>
+                            <MeasurementsProvider>
+                                <PDEconomyProvider>
+                                    <LfgProvider>
+                                        <JoinRequestProvider>
+                                            <TrainingProposalProvider>
+                                                {children}
+                                            </TrainingProposalProvider>
+                                        </JoinRequestProvider>
+                                    </LfgProvider>
+                                </PDEconomyProvider>
+                            </MeasurementsProvider>
+                        </NutritionProvider>
+                    </TrainingProvider>
+                    </TeamProvider>
+                </AccentThemeProvider>
+            </CartProvider>
+        </InventoryProvider>
     );
 }

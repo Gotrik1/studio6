@@ -6,11 +6,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { Button } from '@/shared/ui/button';
 import { Progress } from '@/shared/ui/progress';
 import { PlusCircle, Backpack } from 'lucide-react';
-import { inventory, type InventoryItem } from '@/shared/lib/mock-data/inventory';
+import { type InventoryItem } from '@/shared/lib/mock-data/inventory';
 import Image from 'next/image';
 import { differenceInMonths } from 'date-fns';
 import { AiEquipmentAdvisor } from '@/widgets/ai-equipment-advisor';
 import { AddItemDialog } from '@/widgets/add-item-dialog';
+import { useInventory } from '@/app/providers/inventory-provider';
 
 const getWearPercentage = (purchaseDate: string, lifespanMonths: number) => {
     const monthsUsed = differenceInMonths(new Date(), new Date(purchaseDate));
@@ -45,19 +46,9 @@ function InventoryItemCard({ item }: { item: InventoryItem }) {
 }
 
 export function InventoryPage() {
-    const [items, setItems] = useState<InventoryItem[]>(inventory);
+    const { items, addManualItem } = useInventory();
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
-    const handleAddItem = (newItemData: Omit<InventoryItem, 'id' | 'image' | 'imageHint'>) => {
-        const newItem: InventoryItem = {
-            id: `item-${Date.now()}`,
-            image: 'https://placehold.co/600x400.png',
-            imageHint: 'new item',
-            ...newItemData
-        };
-        setItems(prev => [newItem, ...prev]);
-    };
-    
     return (
          <>
              <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -93,7 +84,7 @@ export function InventoryPage() {
             <AddItemDialog 
                 isOpen={isAddDialogOpen}
                 onOpenChange={setIsAddDialogOpen}
-                onAddItem={handleAddItem}
+                onAddItem={addManualItem}
             />
         </>
     );
