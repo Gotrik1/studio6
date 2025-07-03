@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useProgramById } from "@/entities/training-program/api/get-program";

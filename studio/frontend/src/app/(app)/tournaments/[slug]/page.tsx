@@ -1,4 +1,3 @@
-
 import { getTournamentBySlug } from "@/entities/tournament/api/get-tournament";
 import { TournamentDetailsPage } from "@/views/tournament-details";
 import { notFound } from "next/navigation";

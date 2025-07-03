@@ -1,4 +1,3 @@
-
 import { ExerciseDetailsPage } from "@/views/exercise-details";
 import { exercisesList } from "@/shared/lib/mock-data/exercises";
 import { notFound } from "next/navigation";

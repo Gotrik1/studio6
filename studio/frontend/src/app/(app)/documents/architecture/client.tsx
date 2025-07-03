@@ -1,4 +1,3 @@
-
 'use client';
 
 import { CodeBlock } from '@/widgets/code-block';

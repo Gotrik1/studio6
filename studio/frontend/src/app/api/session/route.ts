@@ -1,4 +1,3 @@
-
 import { getSession } from "@/features/auth/session";
 import { NextResponse } from "next/server";
 
