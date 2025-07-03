@@ -1,20 +1,40 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { Tournament } from '@prisma/client';
 
 @Injectable()
 export class TournamentsService {
-  private readonly tournaments = []; // Mock database
+  constructor(private prisma: PrismaService) {}
 
-  create(createTournamentDto: CreateTournamentDto) {
-    // Logic to create a tournament
-    return 'This action adds a new tournament';
+  async create(createTournamentDto: CreateTournamentDto): Promise<Tournament> {
+    const { name, game, format, prizePool, startDate } = createTournamentDto;
+    return this.prisma.tournament.create({
+      data: {
+        name,
+        game,
+        format,
+        prizePool,
+        startDate,
+        status: 'REGISTRATION',
+      },
+    });
   }
 
-  findAll() {
-    return `This action returns all tournaments`;
+  async findAll(): Promise<Tournament[]> {
+    return this.prisma.tournament.findMany({
+      include: { teams: true, matches: true },
+    });
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} tournament`;
+  async findOne(id: string): Promise<Tournament | null> {
+    return this.prisma.tournament.findUnique({
+      where: { id },
+      include: { teams: true, matches: true },
+    });
+  }
+
+  async remove(id: string): Promise<Tournament> {
+    return this.prisma.tournament.delete({ where: { id } });
   }
 }
