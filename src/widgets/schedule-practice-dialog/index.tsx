@@ -23,7 +23,7 @@ import type { TeamPractice } from '@/shared/lib/mock-data/team-practices';
 const practiceSchema = z.object({
   title: z.string().min(5, 'Название должно содержать не менее 5 символов.'),
   date: z.date({ required_error: "Выберите дату." }),
-  time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Введите время в формате HH:MM."),
+  time: z.string().regex(/^([01]\\d|2[0-3]):([0-5]\\d)$/, "Введите время в формате HH:MM."),
   playgroundId: z.string({ required_error: "Выберите площадку." }),
   description: z.string().min(10, 'Добавьте описание (минимум 10 символов).'),
 });
