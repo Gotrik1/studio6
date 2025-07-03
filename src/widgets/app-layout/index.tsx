@@ -170,7 +170,6 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
             { href: "/administration/moderation-queue", label: "Очередь модерации" },
             { href: "/administration/pd-economy", label: "Экономика PD" },
             { href: "/administration/gamification", label: "Геймификация" },
-            { href: "/administration/playgrounds", label: "Площадки" },
             { href: "/administration/sports", label: "Виды спорта" },
         ]
     };
