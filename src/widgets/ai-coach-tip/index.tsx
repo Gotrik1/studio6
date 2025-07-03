@@ -9,8 +9,9 @@ import { BrainCircuit, AlertCircle, RefreshCw } from 'lucide-react';
 import { generateDashboardTip, type GenerateDashboardTipOutput } from '@/shared/api/genkit/flows/generate-dashboard-tip-flow';
 import { cn } from '@/shared/lib/utils';
 import { useSession } from '@/shared/lib/session/client';
+import { trainingLogData } from '@/shared/lib/mock-data/training-log';
+import { matchesList } from '@/shared/lib/mock-data/matches';
 
-const mockLastActivity = "Выиграл сложный матч по Valorant со счетом 13-11, сделав несколько ключевых фрагов в конце игры.";
 
 export function AiCoachTip() {
     const { user } = useSession();
@@ -23,9 +24,33 @@ export function AiCoachTip() {
         setIsLoading(true);
         setError(null);
         try {
+            // Find the last completed workout
+            const lastWorkout = [...trainingLogData]
+                .filter(log => log.status === 'completed')
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+            // Find the last completed match for the user's team (mocked as 'Дворовые Атлеты')
+            const lastMatch = [...matchesList]
+                .filter(m => m.status === 'Завершен' && (m.team1.name === 'Дворовые Атлеты' || m.team2.name === 'Дворовые Атлеты'))
+                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+
+            let lastActivityText = "Начал пользоваться платформой.";
+
+            if (lastWorkout && lastMatch) {
+                if (new Date(lastWorkout.date) > new Date(lastMatch.date)) {
+                    lastActivityText = `Завершил тренировку: "${lastWorkout.workoutName}".`;
+                } else {
+                    lastActivityText = `Сыграл матч за команду ${lastMatch.team1.name} против ${lastMatch.team2.name}, счет ${lastMatch.score}.`;
+                }
+            } else if (lastWorkout) {
+                lastActivityText = `Завершил тренировку: "${lastWorkout.workoutName}".`;
+            } else if (lastMatch) {
+                lastActivityText = `Сыграл матч за команду ${lastMatch.team1.name} против ${lastMatch.team2.name}, счет ${lastMatch.score}.`;
+            }
+
             const tipData = await generateDashboardTip({
                 userName: user.name,
-                lastActivity: mockLastActivity, // In a real app, this would be fetched dynamically
+                lastActivity: lastActivityText,
             });
             setTip(tipData);
         } catch (e) {
