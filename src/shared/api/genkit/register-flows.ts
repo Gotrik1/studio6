@@ -52,3 +52,4 @@ import './flows/generate-playground-summary-flow';
 import './flows/generate-playground-challenge-flow';
 import './flows/generate-playground-lore';
 import './flows/summarize-playground-reviews-flow';
+import './flows/analyze-holistic-performance-flow';
