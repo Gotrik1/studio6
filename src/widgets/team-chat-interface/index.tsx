@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
@@ -47,30 +46,32 @@ export function TeamChatInterface({ teamId }: TeamChatInterfaceProps) {
     const handleSend = async () => {
         if (!input.trim() || !user) return;
 
-        const userMessage: ChatMessage = { sender: 'user', name: user.name, avatar: user.avatar, text: input };
+        const text = input;
+        setInput('');
+        
+        const userMessage: ChatMessage = { sender: 'user', name: user.name, avatar: user.avatar, text };
         setMessages(prev => [...prev, userMessage]);
         
         // Check if the message is a command for the bot
-        if (input.toLowerCase().startsWith('/ai') || input.toLowerCase().startsWith('@ai')) {
+        if (text.toLowerCase().startsWith('/ai') || text.toLowerCase().startsWith('@ai')) {
             const thinkingMessage: ChatMessage = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Думаю...', isThinking: true };
             setMessages(prev => [...prev, thinkingMessage]);
             setIsLoading(true);
-            const query = input.replace(/^\/ai\s*|^\@ai\s*/, '');
+            const query = text.replace(/^\/ai\s*|^\@ai\s*/, '');
             
             try {
                 const aiResponseText = await askTeamChatbot({ teamId, query });
                 const aiMessage: ChatMessage = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: aiResponseText };
-                setMessages(prev => [...prev.slice(0, -1), aiMessage]);
+                setMessages(prev => [...prev.filter(m => !m.isThinking), aiMessage]);
             } catch(e) {
                 console.error(e);
                 const errorMessage: ChatMessage = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Произошла ошибка при обработке вашего запроса.' };
-                setMessages(prev => [...prev.slice(0, -1), errorMessage]);
+                setMessages(prev => [...prev.filter(m => !m.isThinking), errorMessage]);
             } finally {
                 setIsLoading(false);
             }
         }
         
-        setInput('');
     };
     
     const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
