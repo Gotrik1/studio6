@@ -45,6 +45,7 @@ import {
   BrainCircuit,
   Flame,
   Target,
+  BookUser,
   type LucideIcon,
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
@@ -177,9 +178,10 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
         label: "Документация",
         icon: FolderKanban,
         href: '/documents',
-        role: 'Администратор', // Assuming docs are also for admin
+        role: 'Администратор',
         children: [
             { href: "/documents/project-readme", label: "Readme проекта" },
+            { href: "/documents/user-guide", label: "Руководство", icon: BookUser },
             { href: "/documents/architecture", label: "Архитектура" },
             { href: "/documents/backend-documentation", label: "Бэкенд-документация" },
             { href: "/documents/backend-roadmap", label: "Backend Roadmap", icon: FileSignature },

@@ -24,7 +24,8 @@ import {
     Server,
     Map,
     FileSignature,
-    Lock
+    Lock,
+    BookUser
 } from 'lucide-react';
 
 export const managementCards = [
@@ -61,6 +62,7 @@ export const contentCards = [
 export const systemCards = [
     { title: "Инструменты AI", description: "Демонстрация работы AI-агентов.", href: "/ai-analysis", icon: BrainCircuit },
     { title: "Readme проекта", description: "Обзор проекта, стек, возможности.", href: "/documents/project-readme", icon: FileText },
+    { title: "Руководство пользователя", description: "Подробная инструкция по использованию платформы.", href: "/documents/user-guide", icon: BookUser },
     { title: "Документация (Frontend)", description: "Подробная техническая документация фронтенда, включая стек, структуру, ADR и гайдлайны.", href: "/documents/architecture", icon: FolderKanban },
     { title: "Документация (Backend)", description: "Обзор архитектуры бэкенда.", href: "/documents/backend-documentation", icon: Server },
     { title: "План Аутентификации", description: "Реализация с Keycloak и Kong.", href: "/documents/auth-implementation", icon: Lock },
