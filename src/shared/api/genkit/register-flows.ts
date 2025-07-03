@@ -56,3 +56,5 @@ import './flows/summarize-playground-reviews-flow';
 import './flows/generate-playground-workout-flow';
 import './flows/generate-playground-tactic-flow';
 import './flows/analyze-playground-report-flow';
+import './flows/find-coaches-flow';
+import './flows/find-equipment-flow';
