@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateNutritionPlan, type GenerateNutritionPlanOutput } from '@/shared/api/genkit/flows/generate-nutrition-plan-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { useNutrition } from '@/app/providers/nutrition-provider';
+import { useNutrition } from '@/shared/context/nutrition-provider';
 
 // Schema for the form
 const nutritionistFormSchema = z.object({

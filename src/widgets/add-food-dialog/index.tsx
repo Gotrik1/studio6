@@ -8,7 +8,7 @@ import { Label } from "@/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { PlusCircle } from "lucide-react";
 import type { FoodItem } from '@/shared/lib/mock-data/nutrition';
-import { useNutrition } from '@/app/providers/nutrition-provider';
+import { useNutrition } from '@/shared/context/nutrition-provider';
 import { useToast } from '@/shared/hooks/use-toast';
 import type { FoodLogEntry } from '@/shared/lib/mock-data/nutrition-diary';
 

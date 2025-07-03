@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 import { Textarea } from '@/shared/ui/textarea';
 import { analyzeMatchChallenge, type AnalyzeMatchChallengeOutput } from '@/shared/api/genkit/flows/analyze-match-challenge-flow';
 import { Loader2, Sparkles, Send, MapPin } from 'lucide-react';

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,7 +8,7 @@ import { Target, Award, CheckCircle } from 'lucide-react';
 import { generatePlaygroundDrill, type GeneratePlaygroundDrillOutput } from '@/shared/api/genkit/flows/generate-playground-drill-flow';
 import type { Playground } from '@/shared/lib/mock-data/playgrounds';
 import { useToast } from '@/shared/hooks/use-toast';
-import { usePDEconomy } from '@/app/providers/pd-provider';
+import { usePDEconomy } from '@/shared/context/pd-provider';
 
 interface AiPlaygroundDrillProps {
     playground: Playground;
