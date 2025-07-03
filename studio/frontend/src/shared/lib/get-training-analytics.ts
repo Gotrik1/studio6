@@ -1,4 +1,3 @@
-
 import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
 import { calculate1RM } from './calculate-1rm';
 

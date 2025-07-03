@@ -1,4 +1,3 @@
-
 export const RANKS = [
     { name: "Возьмите меня", minPoints: 0, maxPoints: 100, title: "только встал с дивана (и уже жалею)", color: "text-gray-400" },
     { name: "Уже бегу", minPoints: 101, maxPoints: 500, title: "первые осознанные попытки (но пока больше падаю)", color: "text-stone-500" },

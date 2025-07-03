@@ -1,4 +1,3 @@
-
 import { matchesList } from '@/shared/lib/mock-data/matches';
 import { teams } from '@/shared/lib/mock-data/teams';
 import type { Team } from '@/entities/team/model/types';
