@@ -1,3 +1,4 @@
+
 import { getMatchById } from "@/entities/match/api/get-match";
 import { notFound } from "next/navigation";
 import { MatchDetailsPage } from "@/views/match-details";

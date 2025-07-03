@@ -1,3 +1,4 @@
+
 import { LeagueDetailsPage } from '@/views/league-details';
 import { leagues } from '@/shared/lib/mock-data/leagues';
 import { notFound } from 'next/navigation';
