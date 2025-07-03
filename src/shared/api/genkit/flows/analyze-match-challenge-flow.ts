@@ -11,7 +11,7 @@
 import { ai } from '@/shared/api/genkit';
 import { z } from 'zod';
 import { teams as allTeams } from '@/shared/lib/mock-data/teams';
-import { venuesList } from '@/shared/lib/mock-data/booking';
+import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 import { AnalyzeMatchChallengeInputSchema, AnalyzeMatchChallengeOutputSchema, TeamSchema, VenueSchema } from './schemas/analyze-match-challenge-schema';
 import type { AnalyzeMatchChallengeInput, AnalyzeMatchChallengeOutput } from './schemas/analyze-match-challenge-schema';
 
@@ -52,14 +52,14 @@ const findAvailableVenues = ai.defineTool(
   async (query) => {
     // Simple keyword filtering for demo purposes.
     const lowercasedQuery = query.toLowerCase();
-    return venuesList
+    return playgroundsList
       .filter(venue =>
         venue.name.toLowerCase().includes(lowercasedQuery) ||
         venue.address.toLowerCase().includes(lowercasedQuery) ||
-        venue.surfaceType.toLowerCase().includes(lowercasedQuery)
+        venue.surface.toLowerCase().includes(lowercasedQuery)
       )
       .slice(0, 5) // Return top 5 matches to the LLM
-      .map(v => ({ id: v.id, name: v.name, address: v.address, surfaceType: v.surfaceType, price: v.price, image: v.image, imageHint: v.imageHint }));
+      .map(v => ({ id: v.id, name: v.name, address: v.address, surfaceType: v.surface, price: 'Бесплатно', image: v.coverImage, imageHint: v.coverImageHint }));
   }
 );
 

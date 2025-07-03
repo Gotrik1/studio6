@@ -19,8 +19,8 @@ import { cn } from '@/shared/lib/utils';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { teams } from '@/shared/lib/mock-data/teams';
-import { venuesList } from '@/shared/lib/mock-data/booking';
 import { sportsList } from '@/shared/lib/mock-data/sports';
+import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 
 const challengeSchema = z.object({
   opponentId: z.string({ required_error: "Выберите соперника." }),
@@ -85,7 +85,7 @@ export function ManualMatchForm() {
                             )} />
                         </div>
                          <FormField control={form.control} name="venueId" render={({ field }) => (
-                                <FormItem><FormLabel>Место проведения</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите площадку" /></SelectTrigger></FormControl><SelectContent>{venuesList.map(venue => <SelectItem key={venue.id} value={venue.id}>{venue.name} ({venue.address})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Место проведения</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите площадку" /></SelectTrigger></FormControl><SelectContent>{playgroundsList.map(venue => <SelectItem key={venue.id} value={venue.id}>{venue.name} ({venue.address})</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="comment" render={({ field }) => (
                                 <FormItem><FormLabel>Комментарий (необязательно)</FormLabel><FormControl><Textarea placeholder="Любые детали или пожелания..." {...field} /></FormControl><FormMessage /></FormItem>
