@@ -7,12 +7,15 @@ import { z } from 'zod';
 import { registerSchema } from './schemas';
 import { userList } from '@/shared/lib/mock-data/users';
 
+// This is a mock function that simulates the first step of a multi-step login.
+// It checks if the user exists and then would typically redirect to a password/2FA step.
+// For the prototype, we log the user in directly if they are the demo user.
 export async function login(email: string) {
   try {
     const user = userList.find(u => u.email === email);
     
     if (!user) {
-        return { error: 'Пользователь не найден или пароль неверный.' };
+        return { error: 'Пользователь не найден.' };
     }
 
     const cookieStore = await cookies();

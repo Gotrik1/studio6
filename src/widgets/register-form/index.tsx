@@ -52,7 +52,7 @@ const GosuslugiIcon = () => (
 
 type FormValues = z.infer<typeof registerSchema>;
 
-export function RegisterForm() {
+export function RegisterForm({ onSwitchToLogin }: { onSwitchToLogin: () => void }) {
     const [isPending, startTransition] = useTransition();
     const [error, setError] = useState<string | undefined>();
     
@@ -77,9 +77,9 @@ export function RegisterForm() {
     };
 
     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <Card>
+        <Card className="w-full max-w-md shadow-2xl">
+            <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <CardHeader>
                         <CardTitle>Создать аккаунт</CardTitle>
                         <CardDescription>Присоединяйтесь к сообществу ProDvor.</CardDescription>
@@ -120,22 +120,25 @@ export function RegisterForm() {
                                 <div className="space-y-1 leading-none">
                                     <FormLabel>Принять условия использования</FormLabel>
                                     <FormDescription>
-                                        Вы соглашаетесь с нашими <Link href="#" className="underline">Условиями</Link> и <Link href="#" className="underline">Политикой конфиденциальности</Link>.
+                                        Вы соглашаетесь с нашими <Link href="/documents/terms-of-use" className="underline">Условиями</Link> и <Link href="/documents/privacy-policy" className="underline">Политикой конфиденциальности</Link>.
                                     </FormDescription>
                                 </div>
                              </FormItem>
                         )} />
                     </CardContent>
-                    <CardFooter>
+                    <CardFooter className="flex-col gap-4">
                         <Button type="submit" className="w-full" disabled={isPending}>
                             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Зарегистрироваться
+                        </Button>
+                        <Button type="button" variant="link" size="sm" onClick={onSwitchToLogin}>
+                            Уже есть аккаунт? Войти
                         </Button>
                     </CardFooter>
                      <CardFooter className="flex flex-col gap-4">
                         <div className="relative w-full">
                             <Separator />
-                            <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">
+                            <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
                                 Или через соцсети
                             </p>
                         </div>
