@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useTrainingProposals } from '@/app/providers/training-proposal-provider';
