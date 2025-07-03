@@ -1,58 +1,40 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import type { User } from '@/shared/lib/types';
-
-// The predefined superuser for the backdoor.
-const superuser: User = {
-    name: 'Superuser',
-    email: 'admin@example.com',
-    role: 'Администратор',
-    avatar: 'https://placehold.co/100x100.png',
-};
+import {
+  DEFAULT_LOGIN_REDIRECT,
+  apiAuthPrefix,
+  authRoutes,
+  publicRoutes,
+} from '@/routes';
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // Development-only backdoor to log in as a superuser.
-  // Access it via /dashboard?as=superuser
-  if (process.env.NODE_ENV === 'development' && request.nextUrl.searchParams.get('as') === 'superuser') {
-    const response = NextResponse.redirect(new URL('/dashboard', request.url));
-    const cookieOptions = {
-        httpOnly: true,
-        secure: process.env.NODE_ENV !== 'development', // Fixed to avoid TS error
-        maxAge: 60 * 60 * 24 * 7, // One week
-        path: '/',
-    };
-    response.cookies.set('session', JSON.stringify(superuser), cookieOptions);
-    return response;
-  }
-
+  const { nextUrl } = request;
   const session = request.cookies.get('session');
-  
-  // Define public paths that don't require authentication.
-  const publicPaths = ['/auth', '/'];
+  const isLoggedIn = !!session;
 
-  const isPublicPath = publicPaths.includes(pathname);
+  const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
-  // If the user has a session, redirect from public paths to the dashboard.
-  if (session) {
-    if (isPublicPath) {
-      return NextResponse.redirect(new URL('/dashboard', request.url));
-    }
-  } 
-  // If the user does not have a session and is trying to access a protected path, redirect to auth.
-  else if (!isPublicPath) {
-    return NextResponse.redirect(new URL('/auth', request.url));
+  if (isApiAuthRoute) {
+    return NextResponse.next();
   }
 
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return NextResponse.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
+    return NextResponse.next();
+  }
+
+  if (!isLoggedIn && !isPublicRoute) {
+    return NextResponse.redirect(new URL('/auth', nextUrl));
+  }
+  
   return NextResponse.next();
 }
 
+// Optionally, don't invoke Middleware on some paths
 export const config = {
-  // Match all request paths except for the ones starting with:
-  // - api (API routes)
-  // - _next/static (static files)
-  // - _next/image (image optimization files)
-  // - favicon.ico (favicon file)
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
