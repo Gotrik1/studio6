@@ -44,7 +44,8 @@ import {
   FileText,
   Palette,
   BrainCircuit,
-  Coins
+  Coins,
+  Ruler
 } from "lucide-react";
 import { BottomNav } from "@/shared/ui/bottom-nav";
 import { ThemeToggle } from "@/shared/ui/theme-toggle";
@@ -145,7 +146,7 @@ const AppLayoutContent = ({ user, children }: AppLayoutProps) => {
                 { href: "/training/calendar", label: "Календарь" },
                 { href: "/training/analytics", label: "Аналитика" },
                 { href: "/training/records", label: "Рекорды" },
-                { href: "/training/measurements", label: "Замеры тела" },
+                { href: "/training/measurements", icon: Ruler, label: "Замеры тела" },
                 { href: "/training/nutrition", icon: HeartPulse, label: "Питание" },
             ]
         },
