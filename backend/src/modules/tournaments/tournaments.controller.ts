@@ -12,6 +12,11 @@ export class TournamentsController {
     return this.tournamentsService.create(createTournamentDto);
   }
 
+  @Post(':id/start')
+  start(@Param('id') id: string) {
+    return this.tournamentsService.startTournament(id);
+  }
+
   @Get()
   findAll() {
     return this.tournamentsService.findAll();
@@ -23,7 +28,13 @@ export class TournamentsController {
   }
 
   @Post(':id/register')
-  registerTeam(@Param('id') tournamentId: string, @Body() registerTeamDto: RegisterTeamDto) {
-    return this.tournamentsService.registerTeam(tournamentId, registerTeamDto.teamId);
+  registerTeam(
+    @Param('id') tournamentId: string,
+    @Body() registerTeamDto: RegisterTeamDto,
+  ) {
+    return this.tournamentsService.registerTeam(
+      tournamentId,
+      registerTeamDto.teamId,
+    );
   }
 }

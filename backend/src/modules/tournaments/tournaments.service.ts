@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Tournament } from '@prisma/client';
@@ -21,6 +25,57 @@ export class TournamentsService {
     });
   }
 
+  async startTournament(id: string): Promise<Tournament> {
+    const tournament = await this.prisma.tournament.findUnique({
+      where: { id },
+      include: { teams: true },
+    });
+
+    if (!tournament) {
+      throw new NotFoundException(`Турнир с ID ${id} не найден`);
+    }
+    if (tournament.status !== 'REGISTRATION') {
+      throw new BadRequestException('Турнир уже начался или завершен.');
+    }
+    if (tournament.teams.length < 2) {
+      throw new BadRequestException(
+        'Недостаточно команд для начала турнира (минимум 2).',
+      );
+    }
+    if (tournament.teams.length % 2 !== 0) {
+      throw new BadRequestException(
+        'Для начала турнира требуется четное количество команд.',
+      );
+    }
+
+    // Простая логика жеребьевки: перемешиваем и создаем пары
+    const shuffledTeams = tournament.teams.sort(() => 0.5 - Math.random());
+    const matchesToCreate = [];
+    for (let i = 0; i < shuffledTeams.length; i += 2) {
+      matchesToCreate.push({
+        team1Id: shuffledTeams[i].id,
+        team2Id: shuffledTeams[i + 1].id,
+        tournamentId: id,
+        status: 'PLANNED',
+        scheduledAt: new Date(), // Placeholder для логики расписания
+      });
+    }
+
+    // Используем транзакцию, чтобы оба действия выполнились успешно
+    return this.prisma.$transaction(async (tx) => {
+      await tx.match.createMany({
+        data: matchesToCreate,
+      });
+
+      return tx.tournament.update({
+        where: { id },
+        data: {
+          status: 'ONGOING',
+        },
+      });
+    });
+  }
+
   async findAll(): Promise<Tournament[]> {
     return this.prisma.tournament.findMany({
       include: { teams: true, matches: true },
@@ -34,7 +89,10 @@ export class TournamentsService {
     });
   }
 
-  async registerTeam(tournamentId: string, teamId: string): Promise<Tournament> {
+  async registerTeam(
+    tournamentId: string,
+    teamId: string,
+  ): Promise<Tournament> {
     return this.prisma.tournament.update({
       where: { id: tournamentId },
       data: {

@@ -13,3 +13,4 @@
 - `GET /tournaments` - Получить список всех турниров
 - `GET /tournaments/:id` - Получить турнир по ID
 - `POST /tournaments/:id/register` - Зарегистрировать команду на турнир
+- `POST /tournaments/:id/start` - Начать турнир (генерирует матчи первого раунда)
