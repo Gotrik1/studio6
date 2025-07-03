@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useTraining } from '@/shared/context/training-provider';
+import { useTraining } from "@/shared/context/training-provider";
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
