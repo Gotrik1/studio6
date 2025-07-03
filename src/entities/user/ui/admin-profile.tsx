@@ -9,6 +9,11 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { adminUser, adminAchievements } from "@/shared/lib/mock-data/admin-profile";
 import { Skeleton } from '@/shared/ui/skeleton';
+import { useState } from 'react';
+import { Wand2, ImageIcon } from 'lucide-react';
+import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
+import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
+import Link from 'next/link';
 
 const AdminStatsTab = dynamic(() => import('@/entities/user/ui/admin-profile-tabs/stats-tab').then(mod => mod.AdminStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -26,19 +31,46 @@ type AdminProfileProps = {
 
 export function AdminProfile({ user, achievements }: AdminProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
+  const [avatar, setAvatar] = useState(user.avatar);
+  const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
+  const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
+  const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
 
   return (
+    <>
     <Card className="overflow-hidden">
       <div className="relative aspect-[3/1] bg-muted/40">
-        <Image src="https://placehold.co/2560x720.png" alt="Profile Banner" fill className="object-cover" data-ai-hint="abstract geometric pattern" />
+        <Image src={banner} alt="Profile Banner" fill className="object-cover" data-ai-hint="abstract geometric pattern" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+         <Button
+            variant="outline"
+            size="icon"
+            className="absolute top-4 right-4 rounded-full h-8 w-8 bg-background/50 backdrop-blur-sm"
+            onClick={() => setIsBannerDialogOpen(true)}
+            title="Сгенерировать фон"
+            >
+            <ImageIcon className="h-4 w-4" />
+            <span className="sr-only">Сгенерировать фон</span>
+        </Button>
       </div>
       <div className="relative p-6">
           <div className="flex items-end gap-6 -mt-20">
-               <Avatar className="h-32 w-32 border-4 border-background bg-background">
-                  <AvatarImage src={user.avatar} alt={user.name} data-ai-hint="administrator avatar" />
-                  <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
-              </Avatar>
+               <div className="relative shrink-0">
+                  <Avatar className="h-32 w-32 border-4 border-background bg-background">
+                      <AvatarImage src={avatar} alt={user.name} data-ai-hint="administrator avatar" />
+                      <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
+                  </Avatar>
+                   <Button
+                        variant="outline"
+                        size="icon"
+                        className="absolute bottom-1 right-1 rounded-full h-8 w-8 bg-background"
+                        onClick={() => setIsAvatarDialogOpen(true)}
+                        title="Изменить аватар"
+                    >
+                        <Wand2 className="h-4 w-4" />
+                        <span className="sr-only">Изменить аватар</span>
+                    </Button>
+               </div>
               <div className="flex-1 space-y-2">
                   <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                       <div className="space-y-1">
@@ -46,7 +78,7 @@ export function AdminProfile({ user, achievements }: AdminProfileProps) {
                           <p className="text-muted-foreground">{user.email}</p>
                       </div>
                       <div className="flex gap-2">
-                          <Button>Панель администратора</Button>
+                          <Link href="/administration"><Button>Панель администратора</Button></Link>
                       </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
@@ -71,5 +103,19 @@ export function AdminProfile({ user, achievements }: AdminProfileProps) {
         </Tabs>
       </div>
     </Card>
+      <UserAvatarGeneratorDialog
+            isOpen={isAvatarDialogOpen}
+            onOpenChange={setIsAvatarDialogOpen}
+            currentAvatar={avatar}
+            onAvatarSave={setAvatar}
+        />
+        <ProfileBannerGeneratorDialog
+            isOpen={isBannerDialogOpen}
+            onOpenChange={setIsBannerDialogOpen}
+            currentBanner={banner}
+            onBannerSave={setBanner}
+            defaultPrompt={`abstract geometric pattern background`}
+        />
+    </>
   );
 }

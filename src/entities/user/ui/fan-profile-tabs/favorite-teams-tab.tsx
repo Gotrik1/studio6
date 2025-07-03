@@ -22,7 +22,7 @@ export function FavoriteTeamsTab({ teams, userName }: FavoriteTeamsTabProps) {
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                   {teams.map((team) => (
                       <Link href={`/teams/${team.slug}`} key={team.name} className="block h-full">
-                          <Card className="flex h-full flex-col items-center p-6 text-center transition-all hover:shadow-lg">
+                          <Card className="flex h-full flex-col items-center p-6 text-center transition-all hover:shadow-lg hover:border-primary">
                             <Image 
                               src={team.logo} 
                               alt={`Логотип ${team.name}`} 
