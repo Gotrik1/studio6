@@ -1,145 +1,113 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
 import { Progress } from '@/shared/ui/progress';
-import { Badge } from '@/shared/ui/badge';
-import { CheckCircle, Circle, Award } from 'lucide-react';
+import { useToast } from '@/shared/hooks/use-toast';
+import { quests as initialQuests, type Quest } from '@/shared/config/gamification';
+import { Award, Check, Repeat } from 'lucide-react';
 import Link from 'next/link';
-import { cn } from '@/shared/lib/utils';
-import { useSession } from '@/shared/lib/session/client';
-import { getOnboardingSuggestions, type OnboardingOutput } from '@/shared/api/genkit/flows/onboarding-assistant-flow';
-import { Skeleton } from '@/shared/ui/skeleton';
-import * as LucideIcons from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { usePDEconomy } from '@/app/providers/pd-provider';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const iconMap: { [key: string]: LucideIcon } = LucideIcons as any;
-
-const QuestSkeleton = () => (
-    <>
-        <Card>
-            <CardHeader><CardTitle><Skeleton className="h-6 w-1/2" /></CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-                <Skeleton className="h-8 w-full" />
-                <Skeleton className="h-4 w-3/4" />
+function QuestCard({ quest, onClaim, claimed }: { quest: Quest, onClaim: (id: string, reward: number) => void, claimed: boolean }) {
+    const isCompleted = quest.progress >= quest.goal;
+    
+    return (
+        <Card className="flex flex-col">
+            <CardHeader>
+                <CardTitle>{quest.title}</CardTitle>
+                {quest.description && <CardDescription>{quest.description}</CardDescription>}
+            </CardHeader>
+            <CardContent className="space-y-3 flex-1">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Progress value={(quest.progress / quest.goal) * 100} />
+                    <span>{quest.progress}/{quest.goal}</span>
+                </div>
+                 <div className="flex items-center gap-2 font-bold text-amber-500">
+                    <Award className="h-5 w-5" />
+                    <span>Награда: {quest.reward} PD</span>
+                </div>
             </CardContent>
+            <CardFooter>
+                {quest.href && !isCompleted && (
+                    <Button asChild variant="secondary" className="w-full">
+                        <Link href={quest.href}>Перейти к выполнению</Link>
+                    </Button>
+                )}
+                {isCompleted && (
+                     <Button onClick={() => onClaim(quest.id, quest.reward)} disabled={claimed} className="w-full">
+                        {claimed ? <><Check className="mr-2 h-4 w-4"/>Получено</> : "Забрать награду"}
+                    </Button>
+                )}
+            </CardFooter>
         </Card>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Skeleton className="h-40 w-full" />
-            <Skeleton className="h-40 w-full" />
-            <Skeleton className="h-40 w-full" />
+    )
+}
+
+function QuestsSection({ title, quests, onClaim, claimedQuests }: { title: string, quests: Quest[], onClaim: (id: string, reward: number) => void, claimedQuests: Set<string> }) {
+    if (quests.length === 0) return null;
+    return (
+        <div className="space-y-4">
+            <h2 className="font-headline text-2xl font-bold">{title}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {quests.map(quest => (
+                    <QuestCard key={quest.id} quest={quest} onClaim={onClaim} claimed={claimedQuests.has(quest.id)} />
+                ))}
+            </div>
         </div>
-    </>
-);
+    );
+}
+
 
 export function QuestsPage() {
-    const { user, loading: userLoading } = useSession();
-    const [questsData, setQuestsData] = useState<OnboardingOutput['suggestions'] | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const { toast } = useToast();
+    const { addTransaction } = usePDEconomy();
+    const [quests, setQuests] = useState(initialQuests);
+    const [claimedQuests, setClaimedQuests] = useState<Set<string>>(new Set(initialQuests.special.filter(q => q.progress >= q.goal).map(q => q.id)));
 
-    useEffect(() => {
-        if (user) {
-            getOnboardingSuggestions({ userName: user.name, userRole: user.role })
-                .then((data) => setQuestsData(data.suggestions))
-                .catch(console.error)
-                .finally(() => setIsLoading(false));
-        } else if (!userLoading) {
-            setIsLoading(false);
-        }
-    }, [user, userLoading]);
-
-    // Mock completion status for demo purposes
-    const completedQuests = questsData ? Math.floor(questsData.length / 2) : 0;
-    const totalQuests = questsData ? questsData.length : 0;
-    const completionPercentage = totalQuests > 0 ? (completedQuests / totalQuests) * 100 : 0;
-    const totalReward = questsData ? questsData.slice(0, completedQuests).reduce((sum, q) => sum + (parseInt(q.reward?.replace('+', '').replace(' PD', '')) || 0), 0) : 0;
-
-    if (userLoading || isLoading) {
-        return (
-            <div className="space-y-6">
-                 <div className="space-y-2">
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">Квесты</h1>
-                    <p className="text-muted-foreground">
-                        Выполняйте персонализированные задания, чтобы заработать ProDvor Dollars (PD) и разблокировать достижения.
-                    </p>
-                </div>
-                <QuestSkeleton />
-            </div>
-        )
-    }
+    const handleClaimReward = (questId: string, reward: number) => {
+        setClaimedQuests(prev => new Set(prev).add(questId));
+        addTransaction(`Награда за квест`, reward);
+        const quest = [...quests.daily, ...quests.weekly, ...quests.special].find(q => q.id === questId);
+        toast({
+            title: `Награда получена!`,
+            description: `Вы получили ${reward} PD за выполнение квеста "${quest?.title}".`
+        });
+    };
     
-    if (!questsData) {
-        return (
-             <div className="space-y-6">
-                 <div className="space-y-2">
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">Квесты</h1>
-                    <p className="text-muted-foreground">
-                        Выполняйте персонализированные задания, чтобы заработать ProDvor Dollars (PD) и разблокировать достижения.
-                    </p>
-                </div>
-                <Card className="flex items-center justify-center h-64">
-                    <p className="text-muted-foreground">Не удалось загрузить квесты.</p>
-                </Card>
-            </div>
-        )
+    // In a real app, this would be a server-side reset based on cron jobs
+    const handleResetDailies = () => {
+        setQuests(prev => ({
+            ...prev,
+            daily: prev.daily.map(q => ({...q, progress: 0}))
+        }));
+        // Remove daily quests from claimed set
+        const dailyIds = new Set(quests.daily.map(q => q.id));
+        setClaimedQuests(prev => new Set([...prev].filter(id => !dailyIds.has(id))));
+        toast({ title: 'Ежедневные квесты обновлены!' });
     }
 
     return (
-        <div className="space-y-6 opacity-0 animate-fade-in-up">
-            <div className="space-y-2">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Квесты</h1>
-                <p className="text-muted-foreground">
-                    Выполняйте персонализированные задания, чтобы заработать ProDvor Dollars (PD) и разблокировать достижения.
-                </p>
+         <div className="space-y-8 opacity-0 animate-fade-in-up">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="space-y-2">
+                    <h1 className="font-headline text-3xl font-bold tracking-tight">Квесты</h1>
+                    <p className="text-muted-foreground">
+                        Выполняйте задания, чтобы заработать ProDvor Dollars (PD) и разблокировать достижения.
+                    </p>
+                </div>
+                <Button variant="outline" onClick={handleResetDailies}>
+                    <Repeat className="mr-2 h-4 w-4" />
+                    Обновить ежедневные квесты (демо)
+                </Button>
             </div>
+            
+            <QuestsSection title="Ежедневные" quests={quests.daily} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+            <QuestsSection title="Еженедельные" quests={quests.weekly} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+            <QuestsSection title="Специальные" quests={quests.special} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>Ваш прогресс</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-1">
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="font-medium">Выполнено квестов</span>
-                            <span>{completedQuests} из {totalQuests}</span>
-                        </div>
-                        <Progress value={completionPercentage} />
-                    </div>
-                     <div className="flex justify-between items-center text-sm">
-                        <span className="font-medium">Заработано PD за квесты</span>
-                        <span className="font-bold text-primary">{totalReward} PD</span>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {questsData.map((quest, index) => {
-                    const isCompleted = index < completedQuests; // Mock logic
-                    const Icon = iconMap[quest.icon] || LucideIcons.HelpCircle;
-                    return (
-                    <Link key={quest.title} href={isCompleted ? '#' : quest.href} className={cn("block h-full", isCompleted && "pointer-events-none")}>
-                        <Card className={cn("flex flex-col h-full transition-all hover:border-primary", isCompleted ? 'opacity-60 bg-muted/50' : 'cursor-pointer hover:shadow-2xl')}>
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2">
-                                    {isCompleted ? <CheckCircle className="h-5 w-5 text-green-500" /> : <Circle className="h-5 w-5 text-muted-foreground" />}
-                                    {quest.title}
-                                </CardTitle>
-                                <CardDescription>{quest.description}</CardDescription>
-                            </CardHeader>
-                            <CardContent className="flex-1">
-                                {quest.reward && (
-                                    <Badge variant="secondary" className="flex items-center gap-1.5 w-fit">
-                                        <Award className="h-4 w-4 text-amber-500" />
-                                        Награда: {quest.reward}
-                                    </Badge>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </Link>
-                )})}
-            </div>
         </div>
     );
 }

@@ -34,45 +34,31 @@ export const pdHistory = [
     { id: 'tx5', timestamp: '2024-07-30T12:00:00Z', source: 'CREATE_TEAM', value: 150 },
 ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-export const quests = [
-    { 
-        id: 'q1', 
-        title: 'Первые шаги', 
-        description: 'Заполните свой профиль полностью, чтобы получить первую награду.', 
-        reward: 100, 
-        isCompleted: true, 
-        href: '/profile',
-    },
-    { 
-        id: 'q2', 
-        title: 'Боевое крещение', 
-        description: 'Сыграйте свой первый матч на платформе.', 
-        reward: 25, 
-        isCompleted: true,
-        href: '/matches',
-    },
-    { 
-        id: 'q3', 
-        title: 'Командный игрок', 
-        description: 'Вступите в команду или создайте свою.', 
-        reward: 150, 
-        isCompleted: true,
-        href: '/teams',
-    },
-    { 
-        id: 'q4', 
-        title: 'Путь к славе', 
-        description: 'Примите участие в своем первом турнире.', 
-        reward: 200, 
-        isCompleted: false,
-        href: '/tournaments',
-    },
-    { 
-        id: 'q5', 
-        title: 'Душа компании', 
-        description: 'Добавьте 5 друзей на платформе.', 
-        reward: 50, 
-        isCompleted: false,
-        href: '/friends',
-    },
-];
+
+export type Quest = {
+    id: string;
+    title: string;
+    description?: string;
+    progress: number;
+    goal: number;
+    reward: number;
+    href?: string;
+};
+
+export const quests = {
+    daily: [
+        { id: 'd1', title: 'Сыграть 1 матч', progress: 0, goal: 1, reward: 25, href: '/matches' },
+        { id: 'd2', title: 'Отметиться на площадке', progress: 0, goal: 1, reward: 10, href: '/playgrounds' },
+        { id: 'd3', title: 'Оставить 3 комментария', progress: 2, goal: 3, reward: 15, href: '/dashboard' },
+    ],
+    weekly: [
+        { id: 'w1', title: 'Выиграть 3 матча', progress: 1, goal: 3, reward: 100 },
+        { id: 'w2', title: 'Выполнить 3 тренировки', progress: 2, goal: 3, reward: 75, href: '/training/log' },
+        { id: 'w3', title: 'Добавить 1 друга', progress: 0, goal: 1, reward: 50, href: '/friends' },
+    ],
+    special: [
+         { id: 's1', title: 'Участник Summer Kickoff', description: 'Зарегистрируйтесь на турнир Summer Kickoff 2024', progress: 1, goal: 1, reward: 200, href: '/tournaments/summer-streetball-cup-2024' },
+         { id: 's2', title: 'Создатель контента', description: 'Добавьте первую фотографию в галерею', progress: 0, goal: 1, reward: 30, href: '/profile' },
+         { id: 's3', title: 'Дуэлянт', description: 'Победить в 5 вызовах', progress: 3, goal: 5, reward: 150, href: '/challenges' },
+    ]
+};
