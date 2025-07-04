@@ -1,7 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { CoachFinder } from '@/widgets/coach-finder';
-import { coachesList } from '@/shared/lib/mock-data/coaches';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -9,8 +9,10 @@ import { Badge } from '@/shared/ui/badge';
 import Link from 'next/link';
 import { Send, Star, UserSearch } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
+import { getCoaches } from '@/entities/coach/api/get-coaches';
+import type { Coach } from '@/entities/coach/model/types';
+import { Skeleton } from '@/shared/ui/skeleton';
 
-type Coach = (typeof coachesList)[0];
 
 function CoachCard({ coach }: { coach: Coach }) {
     const { toast } = useToast();
@@ -53,7 +55,28 @@ function CoachCard({ coach }: { coach: Coach }) {
     );
 }
 
+const CoachListSkeleton = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Skeleton className="h-72 w-full" />
+        <Skeleton className="h-72 w-full" />
+        <Skeleton className="h-72 w-full" />
+    </div>
+);
+
 export function CoachesPage() {
+    const [coaches, setCoaches] = useState<Coach[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadCoaches = async () => {
+            setIsLoading(true);
+            const data = await getCoaches();
+            setCoaches(data);
+            setIsLoading(false);
+        };
+        loadCoaches();
+    }, []);
+
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
              <div className="space-y-2 text-center">
@@ -66,9 +89,11 @@ export function CoachesPage() {
             <CoachFinder />
             <div className="space-y-4 pt-6 border-t">
                 <h3 className="text-xl font-bold">Все тренеры</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {coachesList.map(coach => <CoachCard key={coach.id} coach={coach} />)}
-                </div>
+                 {isLoading ? <CoachListSkeleton /> : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {coaches.map(coach => <CoachCard key={coach.id} coach={coach} />)}
+                    </div>
+                )}
             </div>
         </div>
     );

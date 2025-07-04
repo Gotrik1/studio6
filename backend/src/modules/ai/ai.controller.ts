@@ -83,6 +83,8 @@ import { GeneratePromotionImageDto } from './dto/generate-promotion-image.dto';
 import type { GeneratePromotionImageOutput } from '@/ai/flows/schemas/generate-promotion-image-schema';
 import { GenerateDashboardTipDto } from './dto/generate-dashboard-tip.dto';
 import type { GenerateDashboardTipOutput } from '@/ai/flows/schemas/generate-dashboard-tip-schema';
+import { FindCoachesDto } from './dto/find-coaches.dto';
+import type { FindCoachesOutput } from '@/ai/flows/schemas/find-coaches-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -408,5 +410,13 @@ export class AiController {
     @Body() generateDashboardTipDto: GenerateDashboardTipDto,
   ): Promise<GenerateDashboardTipOutput> {
     return this.aiService.generateDashboardTip(generateDashboardTipDto);
+  }
+  
+  @Post('find-coaches')
+  @HttpCode(HttpStatus.OK)
+  async findCoaches(
+    @Body() findCoachesDto: FindCoachesDto,
+  ): Promise<FindCoachesOutput> {
+    return this.aiService.findCoaches(findCoachesDto.input);
   }
 }

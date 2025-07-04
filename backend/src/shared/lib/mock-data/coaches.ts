@@ -1,4 +1,3 @@
-
 export const coachesList = [
     {
         id: 'coach-1',
@@ -37,3 +36,5 @@ export const coachesList = [
         profileUrl: '/administration/coach',
     },
 ];
+
+export type Coach = (typeof coachesList)[0];

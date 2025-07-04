@@ -13,6 +13,7 @@ import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { CacheModule } from './modules/cache/cache.module';
 import { ChallengesModule } from './modules/challenges/challenges.module';
 import { PlaygroundsModule } from './modules/playgrounds/playgrounds.module';
+import { CoachesModule } from './modules/coaches/coaches.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PlaygroundsModule } from './modules/playgrounds/playgrounds.module';
     AuthModule,
     ChallengesModule,
     PlaygroundsModule,
+    CoachesModule,
   ],
   controllers: [AppController],
   providers: [
