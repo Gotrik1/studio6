@@ -21,7 +21,7 @@ import './flows/analyze-match-report-flow';
 import './flows/support-chatbot-flow';
 import './flows/analyze-role-change-flow';
 // import './flows/generate-user-avatar-flow'; // Moved to backend
-import './flows/generate-profile-banner-flow';
+// import './flows/generate-profile-banner-flow'; // Moved to backend
 import './flows/generate-promotion-details-flow';
 import './flows/generate-promotion-image-flow';
 import './flows/generate-promotion-wizard-flow';

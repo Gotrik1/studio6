@@ -3,6 +3,8 @@ import { generateTeamConcept } from '../../ai/flows/generate-team-concept-flow';
 import type { GenerateTeamConceptOutput } from '../../ai/flows/schemas/generate-team-concept-schema';
 import { generateUserAvatar } from '../../ai/flows/generate-user-avatar-flow';
 import type { GenerateUserAvatarOutput } from '../../ai/flows/schemas/generate-user-avatar-schema';
+import { generateProfileBanner } from '../../ai/flows/generate-profile-banner-flow';
+import type { GenerateProfileBannerOutput } from '../../ai/flows/schemas/generate-profile-banner-schema';
 import { generatePlatformNewsWithAudio } from '../../ai/flows/generate-platform-news-flow';
 import type { NewsWithAudio } from '../../ai/flows/schemas/generate-platform-news-schema';
 import { analyzeJoinRequest, type AnalyzeJoinRequestInput, type AnalyzeJoinRequestOutput } from '@/ai/flows/analyze-join-request-flow';
@@ -24,6 +26,10 @@ export class AiService {
 
   async generateUserAvatar(prompt: string): Promise<GenerateUserAvatarOutput> {
     return generateUserAvatar({ prompt });
+  }
+
+  async generateProfileBanner(prompt: string): Promise<GenerateProfileBannerOutput> {
+    return generateProfileBanner({ prompt });
   }
 
   async generateDashboardNews(): Promise<NewsWithAudio> {

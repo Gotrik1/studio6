@@ -1,49 +1,14 @@
-'use server';
+import { z } from 'zod';
 
-import './flows/analyze-content-generation';
-import './flows/generate-content-flow';
-// import './flows/generate-team-avatar-flow'; // Now part of generate-team-concept on backend
-import './flows/analyze-security-flow';
-// import './flows/create-team-flow'; // Now part of generate-team-concept on backend
-// import './flows/tts-flow'; // Moved to backend
-import './flows/dialogue-generation-flow';
-import './flows/multi-speaker-tts-flow';
-import './flows/generate-post-image-flow';
-import './flows/analyze-dispute-flow';
-import './flows/generate-tournament-details-flow';
-import './flows/generate-tournament-image-flow';
-import './flows/smart-search-flow';
-import './flows/suggest-reply-flow';
-// import './flows/analyze-join-request-flow'; // Moved to backend
-import './flows/generate-tournament-wizard-flow';
-import './flows/analyze-match-challenge-flow';
-import './flows/analyze-match-report-flow';
-import './flows/support-chatbot-flow';
-import './flows/analyze-role-change-flow';
-// import './flows/generate-user-avatar-flow'; // Moved to backend
-import './flows/generate-profile-banner-flow';
-import './flows/generate-promotion-details-flow';
-import './flows/generate-promotion-image-flow';
-import './flows/generate-promotion-wizard-flow';
-import './flows/team-chatbot-flow';
-import './flows/generate-match-interview-flow';
-import './flows/analyze-report-flow';
-import './flows/generate-sponsorship-pitch';
-import './flows/sponsorship-scout-flow';
-// import './flows/generate-platform-news-flow'; // Moved to backend
-import './flows/analyze-team-performance-flow';
-import './flows/onboarding-assistant-flow';
-import './flows/player-scout-flow';
-import './flows/analyze-player-performance-flow';
-import './flows/generate-training-plan-flow';
-import './flows/generate-training-program-flow';
-import './flows/analyze-esports-performance-flow';
-import './flows/generate-match-commentary-flow';
-import './flows/find-sponsors-for-team-flow';
-import './flows/find-venues-flow';
-import './flows/analyze-exercise-form-flow';
-import './flows/find-lfg-lobbies-flow';
-import './flows/generate-playground-workout-flow';
-import './flows/generate-playground-tactic-flow';
-import './flows/generate-playground-lore';
-import './flows/analyze-holistic-performance-flow';
+export const AnalyzeJoinRequestInputSchema = z.object({
+  teamNeeds: z.string().describe("A summary of the team's current needs, preferred roles, and playstyle."),
+  playerProfile: z.string().describe("A summary of the applying player's profile, including their stats, preferred roles, and match history."),
+});
+export type AnalyzeJoinRequestInput = z.infer<typeof AnalyzeJoinRequestInputSchema>;
+
+export const AnalyzeJoinRequestOutputSchema = z.object({
+  recommendation: z.enum(['accept', 'consider', 'decline']).describe("The AI's recommendation on whether to accept the player."),
+  reasoning: z.string().describe("A brief explanation for the recommendation, highlighting how the player fits or doesn't fit the team's needs."),
+  confidence: z.enum(['high', 'medium', 'low']).describe("The AI's confidence in its recommendation."),
+});
+export type AnalyzeJoinRequestOutput = z.infer<typeof AnalyzeJoinRequestOutputSchema>;

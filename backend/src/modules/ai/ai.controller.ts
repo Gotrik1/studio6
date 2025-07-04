@@ -5,6 +5,8 @@ import { GenerateTeamConceptDto } from './dto/generate-team-concept.dto';
 import type { GenerateTeamConceptOutput } from '../../ai/flows/schemas/generate-team-concept-schema';
 import { GenerateUserAvatarDto } from './dto/generate-user-avatar.dto';
 import type { GenerateUserAvatarOutput } from '../../ai/flows/schemas/generate-user-avatar-schema';
+import { GenerateProfileBannerDto } from './dto/generate-profile-banner.dto';
+import type { GenerateProfileBannerOutput } from '../../ai/flows/schemas/generate-profile-banner-schema';
 import type { NewsWithAudio } from '../../ai/flows/schemas/generate-platform-news-schema';
 import { AnalyzeJoinRequestDto } from './dto/analyze-join-request.dto';
 import type { AnalyzeJoinRequestOutput } from '@/ai/flows/schemas/analyze-join-request-schema';
@@ -43,6 +45,14 @@ export class AiController {
     @Body() generateUserAvatarDto: GenerateUserAvatarDto,
   ): Promise<GenerateUserAvatarOutput> {
     return this.aiService.generateUserAvatar(generateUserAvatarDto.prompt);
+  }
+
+  @Post('generate-profile-banner')
+  @HttpCode(HttpStatus.OK)
+  async generateProfileBanner(
+    @Body() generateProfileBannerDto: GenerateProfileBannerDto,
+  ): Promise<GenerateProfileBannerOutput> {
+    return this.aiService.generateProfileBanner(generateProfileBannerDto.prompt);
   }
 
   @Get('dashboard-news')
