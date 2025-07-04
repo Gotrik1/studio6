@@ -1,15 +1,22 @@
-
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Match, MatchStatus, ActivityType } from '@prisma/client';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class MatchesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly amqpConnection: AmqpConnection,
+  ) {}
 
   async create(createMatchDto: CreateMatchDto): Promise<Match> {
     const { team1Id, team2Id, tournamentId, scheduledAt } = createMatchDto;
@@ -179,7 +186,7 @@ export class MatchesService {
       team2Update.draws = { increment: 1 };
     }
 
-    return this.prisma.$transaction(async (tx) => {
+    const updatedMatch = await this.prisma.$transaction(async (tx) => {
       // Update team stats
       await tx.team.update({
         where: { id: match.team1Id },
@@ -223,7 +230,7 @@ export class MatchesService {
 
 
       // Update match details
-      const updatedMatch = await tx.match.update({
+      const matchAfterUpdate = await tx.match.update({
         where: { id },
         data: {
           team1Score: score1,
@@ -233,8 +240,20 @@ export class MatchesService {
         },
       });
 
-      return updatedMatch;
+      return matchAfterUpdate;
     });
+
+    // Publish event to RabbitMQ AFTER transaction is successful
+    this.amqpConnection.publish('prodvor_exchange', 'match.finished', {
+        matchId: updatedMatch.id,
+        team1Name: match.team1.name,
+        team2Name: match.team2.name,
+        score1,
+        score2,
+        participantIds: allMemberIds,
+    });
+
+    return updatedMatch;
   }
 
   async remove(id: string): Promise<Match> {

@@ -22,6 +22,7 @@ const iconMap: { [key: string]: React.ElementType } = {
   TOURNAMENT_REGISTERED: Trophy,
   NEW_MESSAGE: MessageSquare,
   DISPUTE_RESOLVED: Gavel,
+  MATCH_RESULT: Trophy,
   default: AlertTriangle,
 };
 

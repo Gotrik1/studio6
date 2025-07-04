@@ -26,6 +26,33 @@ export class NotificationsService {
     });
   }
 
+  @RabbitSubscribe({
+    exchange: 'prodvor_exchange',
+    routingKey: 'match.finished',
+    queue: 'notifications_queue',
+  })
+  public async handleMatchFinished(msg: { 
+      matchId: string;
+      team1Name: string;
+      team2Name: string;
+      score1: number;
+      score2: number;
+      participantIds: string[];
+   }) {
+    this.logger.log(`Received match finished event: ${JSON.stringify(msg)}`);
+
+    const notificationsToCreate = msg.participantIds.map(userId => ({
+        userId,
+        type: 'MATCH_RESULT' as const,
+        message: `Матч ${msg.team1Name} vs ${msg.team2Name} завершился со счетом ${msg.score1}-${msg.score2}.`,
+        href: `/matches/${msg.matchId}`,
+    }));
+
+    await this.prisma.notification.createMany({
+        data: notificationsToCreate,
+    });
+  }
+
   async getNotifications(userId: string) {
       return this.prisma.notification.findMany({
           where: { userId },
