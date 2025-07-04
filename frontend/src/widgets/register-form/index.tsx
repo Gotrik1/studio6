@@ -12,13 +12,16 @@ import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { register } from '@/features/auth/actions';
 import { registerSchema } from '@/features/auth/schemas';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, HelpCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Checkbox } from '@/shared/ui/checkbox';
 import Link from 'next/link';
+import { Logo } from '@/shared/ui/icons';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shared/ui/tooltip';
+import { Label } from '@/shared/ui/label';
 import { Separator } from '@/shared/ui/separator';
-
 
 type FormValues = z.infer<typeof registerSchema>;
 

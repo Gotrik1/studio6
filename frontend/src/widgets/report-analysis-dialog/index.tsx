@@ -11,23 +11,23 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
-import type { disputedMatches } from "@/shared/lib/mock-data/judge-center";
-import { Avatar, AvatarImage } from "@/shared/ui/avatar";
+import type { reportsQueue } from '@/shared/lib/mock-data/moderation';
 import { Separator } from "@/shared/ui/separator";
-import { ImageIcon, MessageSquare, Shield, BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
-import { analyzeDispute, type AnalyzeDisputeOutput } from '@/shared/api/genkit/flows/analyze-dispute-flow';
+import { BrainCircuit, Loader2, AlertCircle, Sparkles, MessageCircle, Clock, Flag, UserX } from "lucide-react";
+import { analyzeReport, type AnalyzeReportOutput } from '@/shared/api/genkit/flows/analyze-report-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
 import { cn } from '@/shared/lib/utils';
-import { useToast } from '@/shared/hooks/use-toast';
+import { formatDistanceToNow } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
-type DisputedMatch = (typeof disputedMatches)[0];
+type Report = (typeof reportsQueue)[0];
 
-interface DisputeResolutionDialogProps {
+interface ReportAnalysisDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  match: DisputedMatch | null;
-  onResolve: (matchId: string, resolution: string) => void;
+  report: Report | null;
+  onResolve: (reportId: string, action: string) => void;
 }
 
 const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
@@ -36,31 +36,47 @@ const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
         case 'medium': return 'text-yellow-500';
         case 'low': return 'text-orange-500';
     }
-}
+};
 
-export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve }: DisputeResolutionDialogProps) {
+const getRecommendationText = (rec?: AnalyzeReportOutput['recommendation']) => {
+    switch (rec) {
+        case 'warning': return 'Выдать предупреждение';
+        case 'temp_ban': return 'Временный бан';
+        case 'perm_ban': return 'Постоянный бан';
+        case 'no_action': return 'Нет нарушений';
+        default: return '...';
+    }
+};
+
+const getRecommendationVariant = (rec?: AnalyzeReportOutput['recommendation']): "destructive" | "secondary" | "default" | "outline" | null | undefined => {
+    switch (rec) {
+        case 'perm_ban': return 'destructive';
+        case 'temp_ban': return 'destructive';
+        case 'warning': return 'secondary';
+        default: return 'outline';
+    }
+};
+
+
+export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }: ReportAnalysisDialogProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [aiResult, setAiResult] = useState<AnalyzeDisputeOutput | null>(null);
+  const [aiResult, setAiResult] = useState<AnalyzeReportOutput | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
 
-  const handleAnalyzeDispute = async () => {
-      if (!match) return;
+  const handleAnalyzeReport = async () => {
+      if (!report) return;
 
       setIsAnalyzing(true);
       setAiResult(null);
       setAiError(null);
 
-      const mockEvidence = {
-          team1Evidence: "Chat log shows team 2 player admitting to using a bug. Screenshot of final score: 9-12.",
-          team2Evidence: "Player claims they were joking in chat. Provided video shows unusual lag at the time of the alleged incident."
-      };
+      const mockUserHistory = "Пользователь ToxicPlayer123 имеет 2 предыдущих предупреждения за токсичное поведение в чате.";
 
       try {
-          const result = await analyzeDispute({
-              team1Name: match.team1.name,
-              team2Name: match.team2.name,
-              disputeReason: match.reason,
-              ...mockEvidence,
+          const result = await analyzeReport({
+              reportReason: report.reason,
+              evidenceContext: report.context,
+              reportedUserActivity: mockUserHistory,
           });
           setAiResult(result);
       } catch (e) {
@@ -70,10 +86,10 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
           setIsAnalyzing(false);
       }
   };
-  
+
   const onOpenChangeHandler = (open: boolean) => {
-    if (open && match) {
-        handleAnalyzeDispute();
+    if (open && report) {
+        handleAnalyzeReport();
     } else {
       setAiResult(null);
       setAiError(null);
@@ -81,65 +97,41 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
     onOpenChange(open);
   };
   
-  if (!match) return null;
+  if (!report) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChangeHandler}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Рассмотрение спора: {match.team1.name} vs {match.team2.name}</DialogTitle>
+          <DialogTitle>Разбор жалобы</DialogTitle>
           <DialogDescription>
-            Турнир: {match.tournament}. Заявленный счет: {match.score}.
+            Жалоба от <strong>{report.reportedBy.name}</strong> на <strong>{report.reportedUser.name}</strong>
           </DialogDescription>
         </DialogHeader>
-        <div className="py-4 space-y-6">
-            <div>
-                <h4 className="font-semibold text-sm mb-2">Причина спора</h4>
-                <p className="text-sm p-3 bg-muted rounded-md">{match.reason}</p>
+        <div className="py-4 space-y-4">
+            <div className="space-y-1">
+                <h4 className="font-semibold text-sm flex items-center gap-2"><Flag className="h-4 w-4"/>Причина</h4>
+                <p className="text-sm p-2 bg-muted rounded-md">{report.reason}</p>
             </div>
-            <Separator />
-             <div>
-                <h4 className="font-semibold text-sm mb-2">Доказательства</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-2 font-medium">
-                            <Avatar className="h-6 w-6">
-                                <AvatarImage src={match.team1.logo} data-ai-hint={match.team1.logoHint} />
-                            </Avatar>
-                            <span>{match.team1.name}</span>
-                        </div>
-                        <div className="space-y-2">
-                            <Button variant="outline" className="w-full justify-start"><ImageIcon className="mr-2 h-4 w-4" /> Скриншот конца матча</Button>
-                            <Button variant="outline" className="w-full justify-start"><MessageSquare className="mr-2 h-4 w-4" /> Лог чата</Button>
-                        </div>
-                    </div>
-                     <div className="space-y-2">
-                        <div className="flex items-center gap-2 font-medium">
-                             <Avatar className="h-6 w-6">
-                                <AvatarImage src={match.team2.logo} data-ai-hint={match.team2.logoHint} />
-                            </Avatar>
-                            <span>{match.team2.name}</span>
-                        </div>
-                         <div className="space-y-2">
-                            <Button variant="outline" className="w-full justify-start"><ImageIcon className="mr-2 h-4 w-4" /> Видеозапись спорного момента</Button>
-                            <Button variant="outline" className="w-full justify-start"><MessageSquare className="mr-2 h-4 w-4" /> Лог чата</Button>
-                        </div>
-                    </div>
-                </div>
+            <div className="space-y-1">
+                <h4 className="font-semibold text-sm flex items-center gap-2"><MessageSquare className="h-4 w-4"/>Контекст</h4>
+                <p className="text-sm p-2 bg-muted rounded-md whitespace-pre-wrap">{report.context}</p>
+                 <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" />{formatDistanceToNow(new Date(report.timestamp), { addSuffix: true, locale: ru })}</p>
+            </div>
+            <div className="space-y-1">
+                <h4 className="font-semibold text-sm flex items-center gap-2"><UserX className="h-4 w-4"/>История нарушителя</h4>
+                <p className="text-sm p-2 bg-muted rounded-md">Пользователь ToxicPlayer123 имеет 2 предыдущих предупреждения за токсичное поведение в чате.</p>
             </div>
              <Separator />
              <div>
                 <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold text-sm">Помощник судьи (AI)</h4>
-                    <Button variant="outline" size="sm" onClick={handleAnalyzeDispute} disabled={isAnalyzing}>
-                        {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
-                        Проанализировать заново
-                    </Button>
+                    <h4 className="font-semibold text-sm">Помощник модератора (AI)</h4>
                 </div>
-                {isAnalyzing && (
-                    <div className="space-y-2 p-4 border border-dashed rounded-lg">
-                        <div className="h-4 w-1/3" />
-                        <div className="h-8 w-full" />
+                 {isAnalyzing && (
+                    <div className="p-4 border border-dashed rounded-lg">
+                        <div className="flex items-center justify-center h-20">
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>
+                        </div>
                     </div>
                 )}
                  {aiError && (
@@ -153,9 +145,9 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                     <Alert>
                         <Sparkles className="h-4 w-4" />
                         <AlertTitle className="flex justify-between items-center">
-                            <span>Рекомендация ИИ (Уверенность: {aiResult.confidence})</span>
+                            <span>Рекомендация: {getRecommendationText(aiResult.recommendation)}</span>
                              <Badge variant="outline" className={cn(getConfidenceColor(aiResult.confidence))}>
-                                {aiResult.recommendation}
+                                Уверенность: {aiResult.confidence}
                             </Badge>
                         </AlertTitle>
                         <AlertDescription className="mt-2">
@@ -164,24 +156,16 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                     </Alert>
                 )}
              </div>
-             <Separator />
-            <div>
-                <h4 className="font-semibold text-sm mb-2">Вынести решение</h4>
-                 <div className="flex flex-col sm:flex-row gap-2">
-                    <Button className="flex-1" onClick={() => onResolve(match.id, `победа присуждена ${match.team1.name}`)}>
-                        <Shield className="mr-2 h-4 w-4"/>Победа {match.team1.name}
-                    </Button>
-                    <Button className="flex-1" onClick={() => onResolve(match.id, `победа присуждена ${match.team2.name}`)}>
-                        <Shield className="mr-2 h-4 w-4"/>Победа {match.team2.name}
-                    </Button>
-                    <Button className="flex-1" variant="destructive" onClick={() => onResolve(match.id, 'назначена переигровка')}>
-                        Переигровка
-                    </Button>
-                 </div>
-            </div>
         </div>
         <DialogFooter>
-          <Button variant="ghost" onClick={() => onOpenChangeHandler(false)}>Закрыть</Button>
+          <Button variant="outline" onClick={() => onOpenChangeHandler(false)}>Отложить</Button>
+          <Button 
+            variant={getRecommendationVariant(aiResult?.recommendation) || 'default'}
+            onClick={() => onResolve(report.id, getRecommendationText(aiResult?.recommendation))}
+            disabled={!aiResult}
+          >
+              Применить рекомендацию
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

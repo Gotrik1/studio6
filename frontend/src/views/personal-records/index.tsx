@@ -14,7 +14,6 @@ import type { PersonalRecord } from '@/shared/lib/get-training-analytics';
 import { cn } from '@/shared/lib/utils';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
-import type { ExerciseSession } from '@/shared/lib/get-training-analytics';
 
 export function PersonalRecordsPage() {
     const { personalRecords, recordHistory, fullExerciseHistory } = useMemo(() => getTrainingAnalytics(trainingLogData), []);
