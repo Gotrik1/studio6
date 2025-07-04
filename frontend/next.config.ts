@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
+        // In a Docker environment, the frontend needs to talk to the backend service name.
         destination: 'http://backend:3001/:path*',
       },
     ]

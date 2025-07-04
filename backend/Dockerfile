@@ -1,31 +1,28 @@
-# Dockerfile for NestJS backend
-FROM node:20-alpine AS development
-
+# 1. Install dependencies
+FROM node:20-slim AS deps
 WORKDIR /usr/src/app
-
 COPY package*.json ./
-# Use --legacy-peer-deps to avoid issues with dependency resolution
-RUN npm install --legacy-peer-deps
+RUN npm install --frozen-lockfile
 
+# 2. Build the app
+FROM node:20-slim AS builder
+WORKDIR /usr/src/app
+COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
-
+# Generate prisma client
 RUN npx prisma generate
-
 RUN npm run build
 
-FROM node:20-alpine as production
-
-ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
-
+# 3. Production image
+FROM node:20-slim AS runner
 WORKDIR /usr/src/app
-
+# Copy built app and production dependencies
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY package*.json ./
-# Use --legacy-peer-deps to avoid issues with dependency resolution
-RUN npm install --only=production --legacy-peer-deps
-
-COPY --from=development /usr/src/app/dist ./dist
-COPY --from=development /usr/src/app/node_modules/.prisma ./node_modules/.prisma
 COPY prisma ./prisma
+# Make sure to only install production dependencies
+RUN npm ci --only=production
 
+EXPOSE 3001
 CMD ["node", "dist/main"]
