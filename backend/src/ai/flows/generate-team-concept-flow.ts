@@ -10,14 +10,25 @@
 
 import { ai } from '../genkit';
 import { z } from 'zod';
-import { generateTeamAvatar } from './generate-team-avatar-flow';
 import { GenerateTeamConceptInputSchema, GenerateTeamConceptOutputSchema } from './schemas/generate-team-concept-schema';
 import type { GenerateTeamConceptInput, GenerateTeamConceptOutput } from './schemas/generate-team-concept-schema';
 
 export type { GenerateTeamConceptInput, GenerateTeamConceptOutput };
 
-export async function generateTeamConcept(input: GenerateTeamConceptInput): Promise<GenerateTeamConceptOutput> {
-  return generateTeamConceptFlow_Backend(input);
+async function generateTeamAvatar(prompt: string): Promise<string> {
+    const {media} = await ai.generate({
+      model: 'googleai/gemini-2.0-flash-preview-image-generation',
+      prompt: `A sports team logo, ${prompt}. Minimalist, vector style, on a plain background.`,
+      config: {
+        responseModalities: ['TEXT', 'IMAGE'],
+      },
+    });
+
+    if (!media?.url) {
+        throw new Error('Image generation failed.');
+    }
+
+    return media.url;
 }
 
 // Define a new, more comprehensive prompt for generating all text content at once.
@@ -44,12 +55,12 @@ const generateTeamConceptFlow_Backend = ai.defineFlow(
   },
   async ({ prompt }) => {
     // Generate name, motto, description, and avatar in parallel
-    const [details, avatar] = await Promise.all([
+    const [detailsResult, avatarDataUri] = await Promise.all([
       generateTeamDetailsPrompt(prompt),
-      generateTeamAvatar({ prompt }),
+      generateTeamAvatar(prompt),
     ]);
     
-    const detailsOutput = details.output;
+    const detailsOutput = detailsResult.output;
     if (!detailsOutput) {
         throw new Error("Failed to generate team details.");
     }
@@ -58,7 +69,12 @@ const generateTeamConceptFlow_Backend = ai.defineFlow(
         name: detailsOutput.name,
         motto: detailsOutput.motto,
         description: detailsOutput.description,
-        avatarDataUri: avatar.avatarDataUri,
+        avatarDataUri,
     };
   }
 );
+
+
+export async function generateTeamConcept(input: GenerateTeamConceptInput): Promise<GenerateTeamConceptOutput> {
+  return generateTeamConceptFlow_Backend(input);
+}
