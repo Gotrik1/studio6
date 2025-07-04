@@ -72,10 +72,42 @@ import type { SuggestReplyOutput } from '@/ai/flows/suggest-reply-flow';
 import { SupportChatbotDto } from './dto/support-chatbot.dto';
 import type { SupportChatbotOutput } from '@/ai/flows/support-chatbot-flow';
 import type { GenerateMatchCommentaryOutput } from '@/ai/flows/generate-match-commentary-flow';
+import { CreateTeamDto } from './dto/create-team.dto';
+import type { CreateTeamOutput } from '@/ai/flows/schemas/create-team-schema';
+import { GenerateTeamAvatarDto } from './dto/generate-team-avatar.dto';
+import type { GenerateTeamAvatarOutput } from '@/ai/flows/schemas/generate-team-avatar-schema';
+import { GeneratePromotionDetailsDto } from './dto/generate-promotion-details.dto';
+import type { GeneratePromotionDetailsOutput } from '@/ai/flows/schemas/generate-promotion-details-schema';
+import { GeneratePromotionImageDto } from './dto/generate-promotion-image.dto';
+import type { GeneratePromotionImageOutput } from '@/ai/flows/schemas/generate-promotion-image-schema';
 
 @Controller('ai')
 export class AiController {
   constructor(private readonly aiService: AiService) {}
+
+  @Post('create-team')
+  @HttpCode(HttpStatus.OK)
+  async createTeam(@Body() createTeamDto: CreateTeamDto): Promise<CreateTeamOutput> {
+      return this.aiService.createTeam(createTeamDto);
+  }
+
+  @Post('generate-team-avatar')
+  @HttpCode(HttpStatus.OK)
+  async generateTeamAvatar(@Body() generateTeamAvatarDto: GenerateTeamAvatarDto): Promise<GenerateTeamAvatarOutput> {
+      return this.aiService.generateTeamAvatar(generateTeamAvatarDto);
+  }
+
+  @Post('generate-promotion-details')
+  @HttpCode(HttpStatus.OK)
+  async generatePromotionDetails(@Body() generatePromotionDetailsDto: GeneratePromotionDetailsDto): Promise<GeneratePromotionDetailsOutput> {
+      return this.aiService.generatePromotionDetails(generatePromotionDetailsDto);
+  }
+
+  @Post('generate-promotion-image')
+  @HttpCode(HttpStatus.OK)
+  async generatePromotionImage(@Body() generatePromotionImageDto: GeneratePromotionImageDto): Promise<GeneratePromotionImageOutput> {
+      return this.aiService.generatePromotionImage(generatePromotionImageDto.prompt);
+  }
 
   @Post('generate-team-concept')
   @HttpCode(HttpStatus.OK)

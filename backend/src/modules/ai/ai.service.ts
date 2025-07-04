@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { generateTeamConcept } from '../../ai/flows/generate-team-concept-flow';
-import type { GenerateTeamConceptOutput } from '../../ai/flows/schemas/generate-team-concept-schema';
-import { generateUserAvatar } from '../../ai/flows/generate-user-avatar-flow';
-import type { GenerateUserAvatarOutput } from '../../ai/flows/schemas/generate-user-avatar-schema';
-import { generateProfileBanner } from '../../ai/flows/generate-profile-banner-flow';
-import type { GenerateProfileBannerOutput } from '../../ai/flows/schemas/generate-profile-banner-schema';
+import { generateTeamConcept, type GenerateTeamConceptInput, type GenerateTeamConceptOutput } from '../../ai/flows/generate-team-concept-flow';
+import { generateUserAvatar, type GenerateUserAvatarInput, type GenerateUserAvatarOutput } from '../../ai/flows/generate-user-avatar-flow';
+import { generateProfileBanner, type GenerateProfileBannerInput, type GenerateProfileBannerOutput } from '../../ai/flows/generate-profile-banner-flow';
 import { generatePlatformNewsWithAudio } from '../../ai/flows/generate-platform-news-flow';
 import type { NewsWithAudio } from '../../ai/flows/schemas/generate-platform-news-schema';
 import { analyzeJoinRequest, type AnalyzeJoinRequestInput, type AnalyzeJoinRequestOutput } from '@/ai/flows/analyze-join-request-flow';
@@ -39,10 +36,30 @@ import { generateMatchInterview, type GenerateMatchInterviewInput, type Generate
 import { analyzeHolisticPerformance, type AnalyzeHolisticPerformanceInput, type AnalyzeHolisticPerformanceOutput } from '@/ai/flows/analyze-holistic-performance-flow';
 import { suggestReply, type SuggestReplyInput, type SuggestReplyOutput } from '@/ai/flows/suggest-reply-flow';
 import { askSupportChatbot, type SupportChatbotInput, type SupportChatbotOutput } from '@/ai/flows/support-chatbot-flow';
+import { createTeam, type CreateTeamInput, type CreateTeamOutput } from '@/ai/flows/create-team-flow';
+import { generateTeamAvatar, type GenerateTeamAvatarOutput } from '@/ai/flows/generate-team-avatar-flow';
+import { generatePromotionDetails, type GeneratePromotionDetailsInput, type GeneratePromotionDetailsOutput } from '@/ai/flows/generate-promotion-details-flow';
+import { generatePromotionImage, type GeneratePromotionImageOutput } from '@/ai/flows/generate-promotion-image-flow';
 
 
 @Injectable()
 export class AiService {
+  async createTeam(input: CreateTeamInput): Promise<CreateTeamOutput> {
+    return createTeam(input);
+  }
+
+  async generateTeamAvatar(input: { prompt: string }): Promise<GenerateTeamAvatarOutput> {
+      return generateTeamAvatar(input);
+  }
+
+  async generatePromotionDetails(input: GeneratePromotionDetailsInput): Promise<GeneratePromotionDetailsOutput> {
+      return generatePromotionDetails(input);
+  }
+
+  async generatePromotionImage(prompt: string): Promise<GeneratePromotionImageOutput> {
+      return generatePromotionImage(prompt);
+  }
+
   async generateTeamConcept(prompt: string): Promise<GenerateTeamConceptOutput> {
     return generateTeamConcept({ prompt });
   }

@@ -1,42 +1,23 @@
 'use server';
 
-/**
- * @fileOverview An AI agent for generating team avatars.
- *
- * - generateTeamAvatar - A function that handles avatar generation.
- * - GenerateTeamAvatarInput - The input type for the function.
- * - GenerateTeamAvatarOutput - The return type for the function.
- */
-
-import { ai } from '@/shared/api/genkit';
-import { GenerateTeamAvatarInputSchema, GenerateTeamAvatarOutputSchema } from './schemas/generate-team-avatar-schema';
 import type { GenerateTeamAvatarInput, GenerateTeamAvatarOutput } from './schemas/generate-team-avatar-schema';
 
-export type { GenerateTeamAvatarInput, GenerateTeamAvatarOutput };
-
 export async function generateTeamAvatar(input: GenerateTeamAvatarInput): Promise<GenerateTeamAvatarOutput> {
-  return generateTeamAvatarFlow(input);
-}
+  const response = await fetch('/api/ai/generate-team-avatar', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+    cache: 'no-store',
+  });
 
-const generateTeamAvatarFlow = ai.defineFlow(
-  {
-    name: 'generateTeamAvatarFlow',
-    inputSchema: GenerateTeamAvatarInputSchema,
-    outputSchema: GenerateTeamAvatarOutputSchema,
-  },
-  async ({prompt}) => {
-    const {media} = await ai.generate({
-      model: 'googleai/gemini-2.0-flash-preview-image-generation',
-      prompt: `A sports team logo, ${prompt}. Minimalist, vector style, on a plain background.`,
-      config: {
-        responseModalities: ['TEXT', 'IMAGE'],
-      },
-    });
-
-    if (!media?.url) {
-        throw new Error('Image generation failed.');
-    }
-
-    return { avatarDataUri: media.url };
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("Backend API error:", errorBody);
+    throw new Error(`Backend API responded with status: ${response.status}`);
   }
-);
+
+  const result = await response.json();
+  return result;
+}
