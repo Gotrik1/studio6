@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -14,8 +13,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Loader2, PlusCircle, UploadCloud, MapPin } from 'lucide-react';
-import { useSession } from '@/shared/lib/session/client';
-import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
+import { createPlayground } from '@/entities/playground/api/playgrounds';
 
 
 const features = [
@@ -49,44 +47,33 @@ export function PlaygroundCreateForm() {
     const { toast } = useToast();
     const router = useRouter();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const { user } = useSession();
 
     const form = useForm<FormValues>({
         resolver: zodResolver(playgroundSchema),
         defaultValues: { name: '', address: '', features: [] },
     });
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
-
-        const isDuplicate = playgroundsList.some(
-            (p) => p.address.toLowerCase() === data.address.toLowerCase()
-        );
-
-        if (isDuplicate) {
-            toast({
-                variant: 'destructive',
-                title: 'Место уже существует',
-                description: 'Место с таким адресом уже добавлено. Если вы считаете, что это ошибка, уточните адрес.',
-            });
-            setIsSubmitting(false);
-            return;
-        }
-
-        console.log(data); 
         
-        setTimeout(() => {
-            let toastDescription = 'Место добавлено и отправлено на модерацию! Вы получили 1 месяц PRO-подписки!';
-            if (user?.role === 'Капитан') {
-                toastDescription = 'Место добавлено и отправлено на модерацию! Вы и ваша команда получили 1 месяц PRO-подписки!';
-            }
+        const result = await createPlayground({ ...data, features: data.features || [] });
 
+        if (result.success) {
+             let toastDescription = 'Место добавлено и отправлено на модерацию! Вы получили 1 месяц PRO-подписки!';
+            // Could check user role here in a real app
             toast({
                 title: "Место добавлено!",
                 description: toastDescription
             });
             router.push('/playgrounds');
-        }, 1000);
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: result.error || "Не удалось добавить место.",
+            });
+        }
+        setIsSubmitting(false);
     };
 
     return (

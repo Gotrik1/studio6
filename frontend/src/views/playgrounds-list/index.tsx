@@ -1,32 +1,53 @@
-
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
-import { PlusCircle, Map } from 'lucide-react';
-import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
+import { PlusCircle, Map, Search } from 'lucide-react';
 import { PlaygroundCard } from '@/widgets/playground-card';
 import Link from 'next/link';
 import { Input } from '@/shared/ui/input';
-import { Search } from 'lucide-react';
 import { Card, CardHeader } from '@/shared/ui/card';
 import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
+import { getPlaygrounds } from '@/entities/playground/api/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { useToast } from '@/shared/hooks/use-toast';
 
 const sportTypes = ['Все', 'Футбол', 'Баскетбол', 'Стритбол', 'Воркаут', 'Универсальная', 'Фитнес-зал', 'Бассейн', 'Теннисный корт', 'Лыжная трасса', 'Биатлонный комплекс', 'Каток', 'Сноуборд-парк', 'Горнолыжный склон', 'Стрельбище'];
 
 export function PlaygroundsListPage() {
+    const { toast } = useToast();
+    const [playgrounds, setPlaygrounds] = useState<Playground[]>([]);
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [sportFilter, setSportFilter] = useState('Все');
 
-    const livePlaygrounds = useMemo(() => new Set(['playground-2']), []);
+    const livePlaygrounds = useMemo(() => new Set(['playground-2']), []); // This can remain mock for now
+
+    useEffect(() => {
+        async function loadPlaygrounds() {
+            setLoading(true);
+            try {
+                const data = await getPlaygrounds();
+                setPlaygrounds(data);
+            } catch (error) {
+                console.error(error);
+                toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить площадки.' });
+            } finally {
+                setLoading(false);
+            }
+        }
+        loadPlaygrounds();
+    }, [toast]);
+
 
     const filteredPlaygrounds = useMemo(() => {
-        return playgroundsList.filter(p => {
+        return playgrounds.filter(p => {
             const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) || p.address.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesSport = sportFilter === 'Все' || p.type === sportFilter;
             return matchesSearch && matchesSport;
         });
-    }, [searchQuery, sportFilter]);
+    }, [playgrounds, searchQuery, sportFilter]);
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -73,21 +94,29 @@ export function PlaygroundsListPage() {
                 </CardHeader>
             </Card>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredPlaygrounds.map(playground => {
-                    const kingTeam = getKingOfTheCourt(playground.id);
-                    const isLive = livePlaygrounds.has(playground.id);
-                    return (
-                         <PlaygroundCard 
-                            key={playground.id} 
-                            playground={playground}
-                            kingTeam={kingTeam}
-                            isLive={isLive}
-                        />
-                    )
-                })}
-            </div>
-             {filteredPlaygrounds.length === 0 && (
+            {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Array.from({ length: 3 }).map((_, i) => (
+                        <Skeleton key={i} className="h-80 w-full" />
+                    ))}
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {filteredPlaygrounds.map(playground => {
+                        const kingTeam = getKingOfTheCourt(playground.id);
+                        const isLive = livePlaygrounds.has(playground.id);
+                        return (
+                             <PlaygroundCard 
+                                key={playground.id} 
+                                playground={playground as any} // Cast to satisfy component, since backend and frontend types are slightly different
+                                kingTeam={kingTeam}
+                                isLive={isLive}
+                            />
+                        )
+                    })}
+                </div>
+            )}
+             {!loading && filteredPlaygrounds.length === 0 && (
                 <div className="col-span-full text-center py-16 text-muted-foreground">
                     <p>Места не найдены. Попробуйте изменить фильтры.</p>
                 </div>

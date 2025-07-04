@@ -12,6 +12,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { CacheModule } from './modules/cache/cache.module';
 import { ChallengesModule } from './modules/challenges/challenges.module';
+import { PlaygroundsModule } from './modules/playgrounds/playgrounds.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { ChallengesModule } from './modules/challenges/challenges.module';
     AiModule,
     AuthModule,
     ChallengesModule,
+    PlaygroundsModule,
   ],
   controllers: [AppController],
   providers: [
