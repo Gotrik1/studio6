@@ -33,6 +33,9 @@ import { generateTrainingPlan, type GenerateTrainingPlanInput, type GenerateTrai
 import { generatePlaygroundWorkout, type GeneratePlaygroundWorkoutInput, type GeneratePlaygroundWorkoutOutput } from '@/ai/flows/generate-playground-workout-flow';
 import { generatePlaygroundTactic, type GeneratePlaygroundTacticInput, type GeneratePlaygroundTacticOutput } from '@/ai/flows/generate-playground-tactic-flow';
 import { generatePlaygroundLore, type GeneratePlaygroundLoreInput, type GeneratePlaygroundLoreOutput } from '@/ai/flows/generate-playground-lore';
+import { analyzeMatchReport, type AnalyzeMatchReportInput, type AnalyzeMatchReportOutput } from '@/ai/flows/analyze-match-report-flow';
+import { generateMatchCommentary, type GenerateMatchCommentaryInput, type GenerateMatchCommentaryOutput } from '@/ai/flows/generate-match-commentary-flow';
+import { generateMatchInterview, type GenerateMatchInterviewInput, type GenerateMatchInterviewOutput } from '@/ai/flows/generate-match-interview-flow';
 
 
 @Injectable()
@@ -155,5 +158,17 @@ export class AiService {
 
   async generatePlaygroundLore(input: GeneratePlaygroundLoreInput): Promise<GeneratePlaygroundLoreOutput> {
     return generatePlaygroundLore(input);
+  }
+  
+  async analyzeMatchReport(input: AnalyzeMatchReportInput): Promise<AnalyzeMatchReportOutput> {
+    return analyzeMatchReport(input);
+  }
+
+  async generateMatchCommentary(input: GenerateMatchCommentaryInput): Promise<GenerateMatchCommentaryOutput & { audioDataUri: string; }> {
+    return generateMatchCommentary(input);
+  }
+
+  async generateMatchInterview(input: GenerateMatchInterviewInput): Promise<GenerateMatchInterviewOutput> {
+    return generateMatchInterview(input);
   }
 }

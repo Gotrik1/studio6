@@ -1,45 +1,29 @@
 'use server';
 
-/**
- * @fileOverview A flow for generating a post-match audio interview.
- * - generateMatchInterview - A function that handles interview generation.
- * - GenerateMatchInterviewInput - The input type for the function.
- * - GenerateMatchInterviewOutput - The return type for the function.
- */
+export type GenerateMatchInterviewInput = {
+  matchSummary: string;
+  mvpName: string;
+};
 
-import { ai } from '@/shared/api/genkit';
-import { generateDialogue } from './dialogue-generation-flow';
-import { multiSpeakerTts } from './multi-speaker-tts-flow';
-import { GenerateMatchInterviewInputSchema, GenerateMatchInterviewOutputSchema } from './schemas/generate-match-interview-schema';
-import type { GenerateMatchInterviewInput, GenerateMatchInterviewOutput } from './schemas/generate-match-interview-schema';
-
-export type { GenerateMatchInterviewInput, GenerateMatchInterviewOutput };
+export type GenerateMatchInterviewOutput = {
+  audioDataUri: string;
+  script: string;
+};
 
 
 export async function generateMatchInterview(input: GenerateMatchInterviewInput): Promise<GenerateMatchInterviewOutput> {
-  return generateMatchInterviewFlow(input);
-}
+  const response = await fetch('/api/ai/generate-match-interview', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+    cache: 'no-store',
+  });
 
-
-const generateMatchInterviewFlow = ai.defineFlow(
-  {
-    name: 'generateMatchInterviewFlow',
-    inputSchema: GenerateMatchInterviewInputSchema,
-    outputSchema: GenerateMatchInterviewOutputSchema,
-  },
-  async ({ matchSummary, mvpName }) => {
-    // Generate the dialogue script first.
-    // The dialogue flow is designed to create a two-speaker dialogue.
-    const dialogueTopic = `A short post-match interview between a commentator (Speaker1) and the MVP, ${mvpName} (Speaker2). The commentator asks about a key moment from the match. Use this summary for context: ${matchSummary}`;
-    
-    const { dialogue } = await generateDialogue(dialogueTopic);
-
-    // Now, generate the multi-speaker audio from the script.
-    const { audioDataUri } = await multiSpeakerTts(dialogue);
-
-    return {
-      audioDataUri,
-      script: dialogue,
-    };
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("Backend API error:", errorBody);
+    throw new Error(`Backend API responded with status: ${response.status}`);
   }
-);
+
+  return response.json();
+}

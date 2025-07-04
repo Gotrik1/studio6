@@ -60,6 +60,12 @@ import { GeneratePlaygroundTacticDto } from './dto/generate-playground-tactic.dt
 import type { GeneratePlaygroundTacticOutput } from '@/ai/flows/schemas/generate-playground-tactic-schema';
 import { GeneratePlaygroundLoreDto } from './dto/generate-playground-lore.dto';
 import type { GeneratePlaygroundLoreOutput } from '@/ai/flows/schemas/generate-playground-lore-schema';
+import { AnalyzeMatchReportDto } from './dto/analyze-match-report.dto';
+import type { AnalyzeMatchReportOutput } from '@/ai/flows/schemas/analyze-match-report-schema';
+import { GenerateMatchCommentaryDto } from './dto/generate-match-commentary.dto';
+import type { GenerateMatchCommentaryOutput } from '@/ai/flows/schemas/generate-match-commentary-schema';
+import { GenerateMatchInterviewDto } from './dto/generate-match-interview.dto';
+import type { GenerateMatchInterviewOutput } from '@/ai/flows/schemas/generate-match-interview-schema';
 
 @Controller('ai')
 export class AiController {
@@ -301,5 +307,29 @@ export class AiController {
     @Body() generatePlaygroundLoreDto: GeneratePlaygroundLoreDto,
   ): Promise<GeneratePlaygroundLoreOutput> {
     return this.aiService.generatePlaygroundLore(generatePlaygroundLoreDto);
+  }
+
+  @Post('analyze-match-report')
+  @HttpCode(HttpStatus.OK)
+  async analyzeMatchReport(
+    @Body() analyzeMatchReportDto: AnalyzeMatchReportDto,
+  ): Promise<AnalyzeMatchReportOutput> {
+    return this.aiService.analyzeMatchReport(analyzeMatchReportDto);
+  }
+
+  @Post('generate-match-commentary')
+  @HttpCode(HttpStatus.OK)
+  async generateMatchCommentary(
+    @Body() generateMatchCommentaryDto: GenerateMatchCommentaryDto,
+  ): Promise<GenerateMatchCommentaryOutput & { audioDataUri: string }> {
+    return this.aiService.generateMatchCommentary(generateMatchCommentaryDto);
+  }
+
+  @Post('generate-match-interview')
+  @HttpCode(HttpStatus.OK)
+  async generateMatchInterview(
+    @Body() generateMatchInterviewDto: GenerateMatchInterviewDto,
+  ): Promise<GenerateMatchInterviewOutput> {
+    return this.aiService.generateMatchInterview(generateMatchInterviewDto);
   }
 }
