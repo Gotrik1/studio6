@@ -9,6 +9,8 @@ import { AnalyzeJoinRequestDto } from './dto/analyze-join-request.dto';
 import type { AnalyzeJoinRequestOutput } from '@/ai/flows/schemas/analyze-join-request-schema';
 import { AnalyzeTeamPerformanceDto } from './dto/analyze-team-performance.dto';
 import type { AnalyzeTeamPerformanceOutput } from '@/ai/flows/schemas/analyze-team-performance-schema';
+import { AnalyzeEsportsPerformanceDto } from './dto/analyze-esports-performance.dto';
+import type { AnalyzeEsportsPerformanceOutput } from '@/ai/flows/schemas/analyze-esports-performance-schema';
 
 @Controller('ai')
 export class AiController {
@@ -50,5 +52,13 @@ export class AiController {
     @Body() analyzeTeamPerformanceDto: AnalyzeTeamPerformanceDto,
   ): Promise<AnalyzeTeamPerformanceOutput> {
     return this.aiService.analyzeTeamPerformance(analyzeTeamPerformanceDto);
+  }
+
+  @Post('analyze-esports-performance')
+  @HttpCode(HttpStatus.OK)
+  async analyzeEsportsPerformance(
+    @Body() analyzeEsportsPerformanceDto: AnalyzeEsportsPerformanceDto,
+  ): Promise<AnalyzeEsportsPerformanceOutput> {
+    return this.aiService.analyzeEsportsPerformance(analyzeEsportsPerformanceDto);
   }
 }

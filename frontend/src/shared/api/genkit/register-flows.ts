@@ -37,7 +37,7 @@ import './flows/player-scout-flow';
 import './flows/analyze-player-performance-flow';
 import './flows/generate-training-plan-flow';
 import './flows/generate-training-program-flow';
-import './flows/analyze-esports-performance-flow';
+// import './flows/analyze-esports-performance-flow'; // Moved to backend
 import './flows/generate-match-commentary-flow';
 import './flows/find-sponsors-for-team-flow';
 import './flows/find-venues-flow';
