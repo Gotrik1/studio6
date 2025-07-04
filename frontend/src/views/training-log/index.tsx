@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
@@ -13,7 +13,7 @@ import { useTraining } from '@/shared/context/training-provider';
 import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
 import { useToast } from '@/shared/hooks/use-toast';
 
-export function TrainingLogPage() {
+export default function TrainingLogPage() {
     const { toast } = useToast();
     const router = useRouter();
     const { currentProgram } = useTraining();

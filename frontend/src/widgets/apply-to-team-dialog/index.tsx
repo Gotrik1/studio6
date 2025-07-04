@@ -10,15 +10,12 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Send } from 'lucide-react';
 import { useJoinRequests } from '@/shared/context/join-request-provider';
 import { useSession } from '@/shared/lib/session/client';
-import type { Team } from '@/entities/team/model/types';
+import type { TeamDetails } from '@/entities/team/model/types';
 
 interface ApplyToTeamDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  team: {
-      name: string;
-      slug: string;
-  };
+  team: Pick<TeamDetails, 'name' | 'slug'>;
 }
 
 export function ApplyToTeamDialog({ isOpen, onOpenChange, team }: ApplyToTeamDialogProps) {
