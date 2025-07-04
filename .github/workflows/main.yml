@@ -46,6 +46,9 @@ jobs:
           KEYCLOAK_URL=http://keycloak:8080
           KEYCLOAK_REALM=prodvor
           KEYCLOAK_CLIENT_ID=prodvor-frontend
+          RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
+          RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
+          RABBITMQ_URL=amqp://${{ secrets.RABBITMQ_DEFAULT_USER }}:${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}@rabbitmq:5672
           EOF
 
       # 4. Собираем и запускаем все контейнеры в фоне
