@@ -38,4 +38,9 @@ export class UsersController {
   findUserTeams(@Param('id') id: string) {
     return this.usersService.findUserTeams(id);
   }
+
+  @Get(':id/gallery')
+  findUserGallery(@Param('id') id: string) {
+    return this.usersService.findUserGallery(id);
+  }
 }

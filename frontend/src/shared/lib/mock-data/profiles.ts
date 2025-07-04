@@ -17,18 +17,6 @@ export const teams = [
     { name: 'Соколы', role: 'Игрок', logo: 'https://placehold.co/100x100.png', dataAiHint: 'falcon logo', slug: 'sokoly', rank: 4, game: 'Баскетбол'},
 ];
 
-export const recentMatches = [
-    { id: 1, teamA: 'Дворовые Атлеты', scoreA: 5, teamB: 'Торпедо', scoreB: 3, game: 'Футбол', map: 'Поле "Центральный"' },
-    { id: 2, teamA: 'Дворовые Атлеты', scoreA: 2, teamB: 'Вымпел', scoreB: 4, game: 'Футбол', map: 'Поле "Лужники"' },
-];
-
-export const gallery = [
-    { src: 'https://placehold.co/600x400.png', alt: 'Фото с матча', dataAiHint: 'football action' },
-    { src: 'https://placehold.co/600x400.png', alt: 'Фото с турнира', dataAiHint: 'sports tournament' },
-    { src: 'https://placehold.co/600x400.png', alt: 'Лучший момент', dataAiHint: 'sports highlights' },
-    { src: 'https://placehold.co/600x400.png', alt: 'Командное фото', dataAiHint: 'team photo' },
-];
-
 export const careerHistory = [
     { teamName: 'Юность', period: '2022-2023', role: 'Запасной игрок', review: 'Показал большой потенциал во время тренировок.' },
     { teamName: 'Дворовые Атлеты', period: '2023-н.в.', role: 'Капитан', review: 'Привел команду к победе в нескольких региональных турнирах.' },

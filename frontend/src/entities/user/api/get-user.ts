@@ -2,9 +2,10 @@
 'use server';
 
 import type { User } from '@/shared/lib/types';
-import { achievements, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
+import { achievements, careerHistory } from "@/shared/lib/mock-data/profiles";
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 import type { UserTeam } from '@/entities/team/model/types';
+import type { gallery } from '@/shared/lib/mock-data/gallery';
 
 
 // Define the rich user profile type that the frontend expects
@@ -28,7 +29,7 @@ export type FullPlayerProfile = {
     teams: UserTeam[];
     gallery: typeof gallery;
     careerHistory: typeof careerHistory;
-    playerActivity: PlayerActivityItem[]; // This will be replaced by user.activities
+    playerActivity: PlayerActivityItem[];
 };
 
 
@@ -36,8 +37,9 @@ export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | 
     try {
         const userRes = fetch(`${process.env.BACKEND_URL}/users/${id}`, { cache: 'no-store' });
         const teamsRes = fetch(`${process.env.BACKEND_URL}/users/${id}/teams`, { cache: 'no-store' });
+        const galleryRes = fetch(`${process.env.BACKEND_URL}/users/${id}/gallery`, { cache: 'no-store' });
         
-        const [userResponse, teamsResponse] = await Promise.all([userRes, teamsRes]);
+        const [userResponse, teamsResponse, galleryResponse] = await Promise.all([userRes, teamsRes, galleryRes]);
         
         if (!userResponse.ok) {
             console.error(`Failed to fetch user ${id}:`, userResponse.statusText);
@@ -45,8 +47,9 @@ export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | 
         }
 
         const user: PlayerProfileData = await userResponse.json();
-        // Gracefully handle if teams fetch fails
+        // Gracefully handle if other fetches fail
         const userTeams: UserTeam[] = teamsResponse.ok ? await teamsResponse.json() : [];
+        const userGallery: typeof gallery = galleryResponse.ok ? await galleryResponse.json() : [];
         
         // Transform backend activities to frontend format
         const playerActivity: PlayerActivityItem[] = user.activities.map((activity: any) => {
@@ -70,10 +73,10 @@ export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | 
         return {
             user,
             teams: userTeams, // Use real data
+            gallery: userGallery, // Use real data
             playerActivity, // Use real data
             // These remain mock for now, as per the plan.
             achievements,
-            gallery,
             careerHistory,
         };
 

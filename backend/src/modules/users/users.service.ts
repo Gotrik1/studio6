@@ -6,6 +6,7 @@ import { User } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
 import * as bcrypt from 'bcrypt';
 import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
+import { gallery } from '@/shared/lib/mock-data/gallery';
 
 @Injectable()
 export class UsersService {
@@ -133,6 +134,12 @@ export class UsersService {
       rank: team.rank,
       game: team.game,
     }));
+  }
+  
+  async findUserGallery(userId: string): Promise<any[]> {
+    // In a real app, this would query the database for the user's media.
+    // For this prototype, we return mock data.
+    return gallery;
   }
 
   async findByEmailWithPassword(email: string): Promise<User | null> {
