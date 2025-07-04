@@ -3,7 +3,7 @@ name: Docker Compose CI
 on:
   push:
     branches:
-      - master       # поменяй, если у тебя main
+      - master     # замени на main, если нужно
   pull_request:
     branches:
       - master
@@ -14,58 +14,45 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Клонируем репозиторий
+      # 1. Клонируем репозиторий
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2) Создаём файл .env с ВСЕМИ переменными из docker-compose
+      # 2. Устанавливаем Docker Compose (и Docker, если вдруг нужен)
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      # 3. Создаём .env со всеми переменными
       - name: Create .env for docker-compose
         run: |
           cat > .env <<EOF
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-
           PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
           PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-
           KEYCLOAK_ADMIN=${{ secrets.KEYCLOAK_ADMIN }}
           KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-
           KONG_PG_USER=${{ secrets.KONG_PG_USER }}
           KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
           KONG_PG_DATABASE=${{ secrets.KONG_PG_DATABASE }}
           KONG_ADMIN_LISTEN=${{ secrets.KONG_ADMIN_LISTEN }}
           KONG_PROXY_LISTEN=${{ secrets.KONG_PROXY_LISTEN }}
-
           DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
           REDIS_URL=redis://redis:6379
           KAFKA_BROKERS=kafka:9092
-
           KEYCLOAK_URL=http://keycloak:8080
           KEYCLOAK_REALM=prodvor
           KEYCLOAK_CLIENT_ID=prodvor-frontend
           EOF
 
-      
-      - name: Launch services
-        run: docker-compose up -d --build
-
-      - name: Show backend logs on failure
-        if: failure()
-        run: docker-compose logs backend    
-
-      # 3) Устанавливаем Docker Compose
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      # 4) Собираем и запускаем все контейнеры в фоне
+      # 4. Собираем и запускаем все контейнеры в фоне
       - name: Launch all services
         run: docker-compose up -d --build
 
-      # 5) Ждём готовности Postgres (чтобы миграции не упали)
+      # 5. Ждём готовности Postgres (чтобы миграции не упали)
       - name: Wait for Postgres readiness
         run: |
           until docker exec $(docker ps -q -f ancestor=postgres:15) pg_isready -U $POSTGRES_USER -d $POSTGRES_DB; do
@@ -73,15 +60,15 @@ jobs:
             sleep 2
           done
 
-      # 6) Применяем миграции в prisma-migrate
+      # 6. Применяем миграции в prisma-migrate
       - name: Run database migrations
         run: docker-compose run --rm prisma-migrate
 
-      # 7) Запускаем backend тесты
+      # 7. Запускаем backend тесты
       - name: Run backend tests
         run: docker-compose exec backend npm test
 
-      # 8) Запускаем frontend тесты (если есть)
+      # 8. Запускаем frontend тесты (если есть)
       - name: Run frontend tests
         run: |
           if docker-compose exec frontend npm test; then
@@ -90,12 +77,12 @@ jobs:
             echo "No frontend tests or they failed"
           fi
 
-      # 9) В случае ошибки, покажем логи backend
+      # 9. В случае ошибки, показываем логи backend
       - name: Show backend logs on failure
         if: failure()
         run: docker-compose logs backend
 
-      # 10) Останавливаем и удаляем контейнеры и тома
+      # 10. Останавливаем и удаляем контейнеры и тома
       - name: Tear down
         if: always()
         run: docker-compose down -v
