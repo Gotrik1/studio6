@@ -1,101 +1,116 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
 model User {
-  id                   String       @id @default(cuid())
+  id                   String      @id @default(cuid())
+  email                String      @unique
   name                 String
-  email                String       @unique
-  emailVerified        DateTime?    @map("email_verified")
-  passwordHash         String       @map("password_hash")
+  passwordHash         String
+  role                 String      @default("Игрок")
+  status               String      @default("Активен")
   avatar               String?
-  role                 String
-  status               String
-  xp                   Int          @default(0)
-  dateOfBirth          DateTime?    @map("date_of_birth")
+  bannerImage          String?
+  bannerImageHint      String?
+  dateOfBirth          DateTime?
   location             String?
-  mainSport            String?      @map("main_sport")
+  mainSport            String?
   preferredSports      String[]
   telegram             String?
   discord              String?
-  createdAt            DateTime     @default(now()) @map("created_at")
-  updatedAt            DateTime     @updatedAt @map("updated_at")
-  teams                Team[]       @relation("TeamMembers")
-  captainOfTeams       Team[]       @relation("Captain")
-  organizedTournaments Tournament[] @relation("OrganizedTournaments")
+  xp                   Int         @default(0)
+  teamsAsCaptain       Team[]      @relation("CaptainToTeams")
+  teamsAsMember        Team[]      @relation("MembersToTeams")
+  challengesAsCreator  Challenge[] @relation("Creator")
+  challengesAsOpponent Challenge[] @relation("Opponent")
   createdPlaygrounds   Playground[]
-  createdChallenges    Challenge[]  @relation("ChallengeCreator")
-  opponentInChallenges Challenge[]  @relation("ChallengeOpponent")
+  organizedTournaments Tournament[]
   activities           Activity[]
+  messages             Message[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Team {
   id               String       @id @default(cuid())
-  name             String
   slug             String       @unique
-  game             String
+  name             String
   motto            String?
   logo             String?
-  dataAiHint       String?      @map("data_ai_hint")
+  dataAiHint       String?
+  game             String
   rank             Int          @default(0)
   wins             Int          @default(0)
   losses           Int          @default(0)
   draws            Int          @default(0)
-  captainId        String       @map("captain_id")
-  captain          User         @relation("Captain", fields: [captainId], references: [id])
-  members          User[]       @relation("TeamMembers")
-  tournaments      Tournament[] @relation("TournamentTeams")
-  homePlaygroundId String?      @map("home_playground_id")
-  homePlayground   Playground?  @relation(fields: [homePlaygroundId], references: [id])
+  captainId        String
+  captain          User         @relation("CaptainToTeams", fields: [captainId], references: [id])
+  members          User[]       @relation("MembersToTeams")
+  tournaments      Tournament[]
   matchesAsTeam1   Match[]      @relation("Team1Matches")
   matchesAsTeam2   Match[]      @relation("Team2Matches")
+  homePlayground   Playground?  @relation(fields: [homePlaygroundId], references: [id])
+  homePlaygroundId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Tournament {
-  id                    String    @id @default(cuid())
+  id                    String   @id @default(cuid())
+  slug                  String   @unique
   name                  String
-  slug                  String    @unique
   game                  String
-  status                String
-  format                String
-  prizePool             String?   @map("prize_pool")
-  tournamentStartDate   DateTime  @map("tournament_start_date")
   description           String?
-  rules                 String?
-  bannerImage           String?   @map("banner_image")
-  bannerImageHint       String?   @map("banner_image_hint")
-  type                  String
+  format                String // e.g., 'single_elimination', 'round_robin'
+  type                  String // 'team' or 'individual'
   category              String
   location              String
-  participantCount      Int       @map("participant_count")
-  registrationStartDate DateTime  @map("registration_start_date")
-  registrationEndDate   DateTime  @map("registration_end_date")
-  organizerId           String    @map("organizer_id")
-  organizer             User      @relation("OrganizedTournaments", fields: [organizerId], references: [id])
-  teams                 Team[]    @relation("TournamentTeams")
+  participantCount      Int
+  prizePool             String?
+  rules                 String?
+  registrationStartDate DateTime
+  registrationEndDate   DateTime
+  tournamentStartDate   DateTime
+  status                String // 'REGISTRATION', 'ONGOING', 'FINISHED'
+  organizerId           String
+  organizer             User     @relation(fields: [organizerId], references: [id])
+  teams                 Team[]
   matches               Match[]
+  bannerImage           String?
+  bannerImageHint       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Match {
   id           String      @id @default(cuid())
-  team1Id      String      @map("team1_id")
-  team2Id      String      @map("team2_id")
+  team1Id      String
+  team2Id      String
   team1        Team        @relation("Team1Matches", fields: [team1Id], references: [id])
   team2        Team        @relation("Team2Matches", fields: [team2Id], references: [id])
-  team1Score   Int?        @map("team1_score")
-  team2Score   Int?        @map("team2_score")
+  team1Score   Int?
+  team2Score   Int?
   status       MatchStatus
-  scheduledAt  DateTime    @map("scheduled_at")
-  finishedAt   DateTime?   @map("finished_at")
+  scheduledAt  DateTime
+  finishedAt   DateTime?
   location     String?
-  refereeName  String?     @map("referee_name")
-  tournamentId String?     @map("tournament_id")
+  refereeName  String?
+  tournamentId String?
   tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum MatchStatus {
@@ -106,37 +121,20 @@ enum MatchStatus {
   CANCELLED
 }
 
-model Playground {
-  id             String   @id @default(cuid())
-  name           String
-  address        String
-  type           String
-  coverImage     String?  @map("cover_image")
-  coverImageHint String?  @map("cover_image_hint")
-  surface        String
-  features       String[]
-  rating         Float    @default(0)
-  checkIns       Int      @default(0)
-  status         String // APPROVED, PENDING_MODERATION
-  creatorId      String   @map("creator_id")
-  creator        User     @relation(fields: [creatorId], references: [id])
-  homeForTeams   Team[]
-}
-
 model Challenge {
   id          String          @id @default(cuid())
   title       String
   description String
   discipline  String
   wager       Int
-  creatorId   String          @map("creator_id")
-  opponentId  String?         @map("opponent_id")
-  creator     User            @relation("ChallengeCreator", fields: [creatorId], references: [id])
-  opponent    User?           @relation("ChallengeOpponent", fields: [opponentId], references: [id])
+  creatorId   String
+  opponentId  String?
+  creator     User            @relation("Creator", fields: [creatorId], references: [id])
+  opponent    User?           @relation("Opponent", fields: [opponentId], references: [id])
   status      ChallengeStatus
   result      String?
-  createdAt   DateTime        @default(now()) @map("created_at")
-  updatedAt   DateTime        @updatedAt @map("updated_at")
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
 
 enum ChallengeStatus {
@@ -146,18 +144,48 @@ enum ChallengeStatus {
   CANCELLED
 }
 
-model Activity {
-  id        String       @id @default(cuid())
-  type      ActivityType
-  userId    String       @map("user_id")
-  user      User         @relation(fields: [userId], references: [id])
-  timestamp DateTime     @default(now())
-  metadata  Json
+model Playground {
+  id             String @id @default(cuid())
+  name           String
+  address        String
+  type           String
+  surface        String
+  features       String[]
+  rating         Float  @default(0)
+  checkIns       Int    @default(0)
+  status         String // PENDING_MODERATION, APPROVED
+  coverImage     String?
+  coverImageHint String?
+  creatorId      String
+  creator        User   @relation(fields: [creatorId], references: [id])
+  homeTeams      Team[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum ActivityType {
   MATCH_PLAYED
-  ACHIEVEMENT_UNLOCKED
-  TRAINING_COMPLETED
   TEAM_JOINED
+  TOURNAMENT_REGISTERED
+}
+
+model Activity {
+  id        String       @id @default(cuid())
+  type      ActivityType
+  timestamp DateTime     @default(now())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id])
+  metadata  Json
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  text      String
+  chatId    String // e.g., 'team-slug' or 'user1-id_user2-id'
+  createdAt DateTime @default(now())
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+
+  @@index([chatId, createdAt])
 }

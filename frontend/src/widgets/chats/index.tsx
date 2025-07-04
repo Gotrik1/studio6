@@ -40,17 +40,25 @@ export function ChatsPage() {
     };
 
     useEffect(() => {
+        if (!user) return; // Wait for user session
+
         const newSocket = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001');
         setSocket(newSocket);
         
-        newSocket.on('receiveMessage', (message: Message) => {
-            setMessages(prev => [...prev, message]);
+        newSocket.on('receiveMessage', (message: any) => {
+            const newMessage: Message = {
+                sender: message.sender.id === user.id ? 'user' : 'other',
+                name: message.sender.name,
+                avatar: message.sender.avatar,
+                text: message.text,
+            };
+            setMessages(prev => [...prev, newMessage]);
         });
 
         return () => {
             newSocket.disconnect();
         };
-    }, []);
+    }, [user]);
     
     useEffect(() => {
         // In a real app, this would fetch message history for the selected chat
@@ -70,14 +78,14 @@ export function ChatsPage() {
         if (!input.trim() || !selectedChat || !user || !socket) return;
         const text = input;
         
-        const userMessage: Message = { sender: 'user', name: user.name, avatar: user.avatar, text };
-        
         const isTeamChat = selectedChat.type === 'team';
         const isAiCommand = text.toLowerCase().startsWith('/ai') || text.toLowerCase().startsWith('@ai');
 
         if (isTeamChat && isAiCommand) {
+            const userMessage: Message = { sender: 'user', name: user.name, avatar: user.avatar, text };
             setMessages(prev => [...prev, userMessage]);
             setInput('');
+
             const thinkingMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Думаю...', isThinking: true };
             setMessages(prev => [...prev, thinkingMessage]);
             setIsThinking(true);
@@ -95,10 +103,14 @@ export function ChatsPage() {
                 setIsThinking(false);
             }
         } else {
+            // This is the payload sent to the backend
             const messageToSend = {
-                sender: 'other', // From other user's perspective
-                name: user.name,
-                avatar: user.avatar,
+                sender: {
+                    id: user.id,
+                    name: user.name,
+                    avatar: user.avatar,
+                },
+                chatId: selectedChat.id,
                 text
             };
             socket.emit('sendMessage', messageToSend);
@@ -192,16 +204,16 @@ export function ChatsPage() {
                             <ScrollArea className="h-[calc(100vh-22rem)] p-6">
                                 <div className="space-y-6">
                                     {messages.map((message, index) => (
-                                       <div key={index} className={cn("flex items-start gap-2", message.sender === 'user' ? 'justify-end' : 'justify-start')}>
-                                           {message.sender !== 'user' && (
+                                       <div key={index} className={cn("flex items-end gap-2", message.sender === 'user' ? 'justify-end' : 'justify-start')}>
+                                           {(message.sender === 'other' || message.sender === 'ai') && (
                                                <Avatar className="h-8 w-8 border flex-shrink-0">
                                                     {message.sender === 'ai' ? <AvatarFallback><Bot /></AvatarFallback> : <AvatarImage src={message.avatar} />}
                                                     <AvatarFallback>{getAvatarFallback(message.name)}</AvatarFallback>
                                                </Avatar>
                                            )}
-                                           <div className="flex flex-col gap-1" style={{alignItems: message.sender === 'user' ? 'flex-end' : 'flex-start'}}>
-                                                {message.sender !== 'user' && (
-                                                    <p className="text-xs text-muted-foreground px-1">{message.name}</p>
+                                           <div className="flex flex-col gap-1 items-start" style={{alignItems: message.sender === 'user' ? 'flex-end' : 'flex-start'}}>
+                                                {(message.sender === 'other' || message.sender === 'ai') && (
+                                                    <p className="text-xs text-muted-foreground mb-0.5 ml-1">{message.name}</p>
                                                 )}
                                                 <div className={cn(
                                                    "max-w-md rounded-lg p-3 text-sm shadow-sm",
