@@ -25,6 +25,8 @@ import { generateTournamentWizard, type GenerateTournamentWizardInput, type Gene
 import { aiTeamAssistant, type AiTeamAssistantInput, type AiTeamAssistantOutput } from '@/ai/flows/ai-team-assistant-flow';
 import { findSponsorsForTeam, type FindSponsorsForTeamInput, type FindSponsorsForTeamOutput } from '@/ai/flows/find-sponsors-for-team-flow';
 import { generatePostImage_Backend, type GeneratePostImageInput, type GeneratePostImageOutput } from '@/ai/flows/generate-post-image-flow';
+import { analyzePlaygroundDetails, type AnalyzePlaygroundDetailsInput, type AnalyzePlaygroundDetailsOutput } from '@/ai/flows/analyze-playground-details-flow';
+import { analyzePlaygroundReport, type AnalyzePlaygroundReportInput, type AnalyzePlaygroundReportOutput } from '@/ai/flows/analyze-playground-report-flow';
 
 
 @Injectable()
@@ -115,5 +117,13 @@ export class AiService {
 
   async generatePostImage(prompt: GeneratePostImageInput): Promise<GeneratePostImageOutput> {
     return generatePostImage_Backend(prompt);
+  }
+
+  async analyzePlaygroundDetails(input: AnalyzePlaygroundDetailsInput): Promise<AnalyzePlaygroundDetailsOutput> {
+    return analyzePlaygroundDetails(input);
+  }
+
+  async analyzePlaygroundReport(input: AnalyzePlaygroundReportInput): Promise<AnalyzePlaygroundReportOutput> {
+    return analyzePlaygroundReport(input);
   }
 }

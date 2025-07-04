@@ -45,3 +45,5 @@ import './flows/generate-playground-workout-flow';
 import './flows/generate-playground-tactic-flow';
 import './flows/generate-playground-lore';
 import './flows/analyze-holistic-performance-flow';
+// import './flows/analyze-playground-details-flow'; // Moved to backend
+// import './flows/analyze-playground-report-flow'; // Moved to backend

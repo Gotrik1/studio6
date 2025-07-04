@@ -44,6 +44,10 @@ import type { AiTeamAssistantOutput } from '@/ai/flows/schemas/ai-team-assistant
 import type { FindSponsorsForTeamOutput } from '@/ai/flows/schemas/find-sponsors-for-team-schema';
 import type { GeneratePostImageOutput } from '@/ai/flows/schemas/generate-post-image-schema';
 import type { GenerateTournamentWizardOutput } from '@/ai/flows/schemas/generate-tournament-wizard-schema';
+import { AnalyzePlaygroundDetailsDto } from './dto/analyze-playground-details.dto';
+import { AnalyzePlaygroundReportDto } from './dto/analyze-playground-report.dto';
+import type { AnalyzePlaygroundDetailsOutput } from '@/ai/flows/schemas/analyze-playground-details-schema';
+import type { AnalyzePlaygroundReportOutput } from '@/ai/flows/schemas/analyze-playground-report-schema';
 
 @Controller('ai')
 export class AiController {
@@ -221,5 +225,21 @@ export class AiController {
     @Body() generatePostImageDto: GeneratePostImageDto,
   ): Promise<GeneratePostImageOutput> {
     return this.aiService.generatePostImage(generatePostImageDto.prompt);
+  }
+
+  @Post('analyze-playground-details')
+  @HttpCode(HttpStatus.OK)
+  async analyzePlaygroundDetails(
+    @Body() analyzePlaygroundDetailsDto: AnalyzePlaygroundDetailsDto,
+  ): Promise<AnalyzePlaygroundDetailsOutput> {
+    return this.aiService.analyzePlaygroundDetails(analyzePlaygroundDetailsDto);
+  }
+
+  @Post('analyze-playground-report')
+  @HttpCode(HttpStatus.OK)
+  async analyzePlaygroundReport(
+    @Body() analyzePlaygroundReportDto: AnalyzePlaygroundReportDto,
+  ): Promise<AnalyzePlaygroundReportOutput> {
+    return this.aiService.analyzePlaygroundReport(analyzePlaygroundReportDto);
   }
 }
