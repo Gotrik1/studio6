@@ -1,9 +1,10 @@
 'use server';
 
-import type { AiTeamAssistantInput, AiTeamAssistantOutput } from './schemas/ai-team-assistant-schema';
+import type { FindSponsorsForTeamInput, FindSponsorsForTeamOutput } from './schemas/find-sponsors-for-team-schema';
+export type { FindSponsorsForTeamInput, FindSponsorsForTeamOutput };
 
-export async function aiTeamAssistant(input: AiTeamAssistantInput): Promise<AiTeamAssistantOutput> {
-    const response = await fetch('/api/ai/ai-team-assistant', {
+export async function findSponsorsForTeam(input: FindSponsorsForTeamInput): Promise<FindSponsorsForTeamOutput> {
+    const response = await fetch('/api/ai/find-sponsors-for-team', {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json',

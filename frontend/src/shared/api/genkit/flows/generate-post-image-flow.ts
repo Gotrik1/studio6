@@ -1,14 +1,14 @@
 'use server';
 
-import type { AiTeamAssistantInput, AiTeamAssistantOutput } from './schemas/ai-team-assistant-schema';
+import type { GeneratePostImageInput, GeneratePostImageOutput } from './schemas/generate-post-image-schema';
 
-export async function aiTeamAssistant(input: AiTeamAssistantInput): Promise<AiTeamAssistantOutput> {
-    const response = await fetch('/api/ai/ai-team-assistant', {
+export async function generatePostImage(prompt: GeneratePostImageInput): Promise<GeneratePostImageOutput> {
+    const response = await fetch('/api/ai/generate-post-image', {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json',
         },
-        body: JSON.stringify(input),
+        body: JSON.stringify({ prompt }),
         cache: 'no-store',
     });
 

@@ -36,6 +36,12 @@ import type { GenerateSponsorshipPitchOutput } from '@/ai/flows/schemas/generate
 import type { SponsorshipScoutOutput } from '@/ai/flows/schemas/sponsorship-scout-schema';
 import { GeneratePromotionWizardDto } from './dto/generate-promotion-wizard.dto';
 import type { GeneratePromotionWizardOutput } from '@/ai/flows/schemas/generate-promotion-wizard-schema';
+import { AiTeamAssistantDto } from './dto/ai-team-assistant.dto';
+import { FindSponsorsForTeamDto } from './dto/find-sponsors-for-team.dto';
+import { GeneratePostImageDto } from './dto/generate-post-image.dto';
+import type { AiTeamAssistantOutput } from '@/ai/flows/schemas/ai-team-assistant-schema';
+import type { FindSponsorsForTeamOutput } from '@/ai/flows/schemas/find-sponsors-for-team-schema';
+import type { GeneratePostImageOutput } from '@/ai/flows/schemas/generate-post-image-schema';
 
 @Controller('ai')
 export class AiController {
@@ -181,5 +187,29 @@ export class AiController {
     @Body() generatePromotionWizardDto: GeneratePromotionWizardDto,
   ): Promise<GeneratePromotionWizardOutput> {
     return this.aiService.generatePromotionWizard(generatePromotionWizardDto);
+  }
+
+  @Post('ai-team-assistant')
+  @HttpCode(HttpStatus.OK)
+  async aiTeamAssistant(
+    @Body() aiTeamAssistantDto: AiTeamAssistantDto,
+  ): Promise<AiTeamAssistantOutput> {
+    return this.aiService.aiTeamAssistant(aiTeamAssistantDto);
+  }
+
+  @Post('find-sponsors-for-team')
+  @HttpCode(HttpStatus.OK)
+  async findSponsorsForTeam(
+    @Body() findSponsorsForTeamDto: FindSponsorsForTeamDto,
+  ): Promise<FindSponsorsForTeamOutput> {
+    return this.aiService.findSponsorsForTeam(findSponsorsForTeamDto);
+  }
+
+  @Post('generate-post-image')
+  @HttpCode(HttpStatus.OK)
+  async generatePostImage(
+    @Body() generatePostImageDto: GeneratePostImageDto,
+  ): Promise<GeneratePostImageOutput> {
+    return this.aiService.generatePostImage(generatePostImageDto.prompt);
   }
 }
