@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { sponsorsList, type Sponsor } from '@/shared/lib/mock-data/sponsors';
+import { PrismaService } from '@/prisma/prisma.service';
+import type { Sponsor } from '@prisma/client';
 
 @Injectable()
 export class SponsorsService {
-  findAll(): Sponsor[] {
-    // In a real app, this would fetch from a database.
-    return sponsorsList;
+    constructor(private prisma: PrismaService) {}
+
+  findAll(): Promise<Sponsor[]> {
+    return this.prisma.sponsor.findMany();
   }
 }

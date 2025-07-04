@@ -27,7 +27,7 @@ function CoachCard({ coach }: { coach: Coach }) {
         <Card>
             <CardHeader className="flex flex-row items-center gap-4">
                 <Avatar className="h-16 w-16 border">
-                    <AvatarImage src={coach.avatar} alt={coach.name} data-ai-hint={coach.avatarHint}/>
+                    <AvatarImage src={coach.avatar || ''} alt={coach.name} data-ai-hint={coach.avatarHint}/>
                     <AvatarFallback>{coach.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -90,9 +90,13 @@ export function CoachesPage() {
             <div className="space-y-4 pt-6 border-t">
                 <h3 className="text-xl font-bold">Все тренеры</h3>
                  {isLoading ? <CoachListSkeleton /> : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {coaches.map(coach => <CoachCard key={coach.id} coach={coach} />)}
-                    </div>
+                    coaches.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {coaches.map(coach => <CoachCard key={coach.id} coach={coach} />)}
+                        </div>
+                    ) : (
+                        <p className="text-muted-foreground text-center py-8">На платформе пока нет зарегистрированных тренеров.</p>
+                    )
                 )}
             </div>
         </div>

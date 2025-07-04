@@ -1,3 +1,7 @@
-import { SponsorshipManagementPage } from '@/views/sponsorship-management';
+import { SponsorshipDashboard } from '@/widgets/sponsorship-dashboard';
+import { getSponsorshipDashboardData } from '@/entities/sponsorship/api/sponsorship';
 
-export default SponsorshipManagementPage;
+export default async function SponsorshipManagementPage() {
+    const sponsorshipData = await getSponsorshipDashboardData();
+    return <SponsorshipDashboard data={sponsorshipData} />;
+}

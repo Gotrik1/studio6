@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -66,11 +66,11 @@ export function PartnersPage() {
                         <SponsorCardSkeleton />
                     </>
                 ) : (
-                    sponsors.map(sponsor => (
-                         <Link key={sponsor.id} href={sponsor.profileUrl} className="block h-full">
+                    sponsors.length > 0 ? sponsors.map(sponsor => (
+                         <Link key={sponsor.id} href={sponsor.profileUrl || '#'} className="block h-full">
                             <Card className="flex flex-col h-full transition-all hover:shadow-2xl hover:border-primary cursor-pointer">
                                 <CardHeader className="flex flex-row items-center gap-4">
-                                    <Image src={sponsor.logo} alt={sponsor.name} width={64} height={64} className="rounded-lg border" data-ai-hint={sponsor.logoHint} />
+                                    <Image src={sponsor.logo || 'https://placehold.co/100x100.png'} alt={sponsor.name} width={64} height={64} className="rounded-lg border" data-ai-hint={sponsor.logoHint || 'sponsor logo'} />
                                     <div>
                                         <CardTitle>{sponsor.name}</CardTitle>
                                         <div className="flex flex-wrap gap-1 mt-2">
@@ -85,7 +85,7 @@ export function PartnersPage() {
                                 </CardContent>
                             </Card>
                         </Link>
-                    ))
+                    )) : <p className="text-muted-foreground text-center py-8">На платформе пока нет спонсоров.</p>
                 )}
             </div>
         </div>

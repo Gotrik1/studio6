@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Handshake, DollarSign, Megaphone, Users, UserSearch, Send } from 'lucide-react';
@@ -8,9 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { useToast } from '@/shared/hooks/use-toast';
-import { getSponsorshipDashboardData } from '@/entities/sponsorship/api/sponsorship';
 import type { SponsorshipDashboardData } from '@/entities/sponsorship/model/types';
-import { Skeleton } from '@/shared/ui/skeleton';
 
 const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, icon: React.ElementType }) => (
     <Card>
@@ -24,25 +21,14 @@ const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, 
     </Card>
 );
 
-export function SponsorshipDashboard() {
+export function SponsorshipDashboard({ data }: { data: SponsorshipDashboardData | null }) {
     const { toast } = useToast();
-    const [data, setData] = useState<SponsorshipDashboardData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        const loadData = async () => {
-            setIsLoading(true);
-            try {
-                const dashboardData = await getSponsorshipDashboardData();
-                setData(dashboardData);
-            } catch (error) {
-                toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить данные дашборда.' });
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        loadData();
-    }, [toast]);
+    if (!data) {
+        return <p>Не удалось загрузить данные.</p>;
+    }
+
+    const { sponsoredTeams, teamsSeekingSponsorship } = data;
 
     const handleContact = (teamName: string) => {
         toast({
@@ -50,32 +36,7 @@ export function SponsorshipDashboard() {
             description: `Команде ${teamName} отправлено ваше предложение.`
         });
     };
-
-    if (isLoading) {
-        return (
-             <div className="space-y-6">
-                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Skeleton className="h-24" />
-                    <Skeleton className="h-24" />
-                    <Skeleton className="h-24" />
-                    <Skeleton className="h-24" />
-                </div>
-                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 space-y-6">
-                        <Skeleton className="h-64" />
-                    </div>
-                     <Skeleton className="h-48" />
-                </div>
-             </div>
-        );
-    }
     
-    if (!data) {
-        return <p>Не удалось загрузить данные.</p>;
-    }
-
-    const { sponsoredTeams, teamsSeekingSponsorship } = data;
-
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

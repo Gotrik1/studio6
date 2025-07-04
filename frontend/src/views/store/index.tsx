@@ -1,10 +1,8 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { storeItems, type StoreItem } from '@/shared/lib/mock-data/store';
 import { Coins, ShoppingCart, Loader2, Sparkles, ShieldCheck, Backpack, Megaphone, Handshake, DollarSign, CreditCard } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -15,6 +13,8 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
 import { useCart } from '@/shared/context/cart-provider';
 import { usePDEconomy } from '@/shared/context/pd-provider';
+import type { StoreItem } from '@/entities/store/model/types';
+import { getStoreItems } from '@/entities/store/api/store';
 
 function StoreItemCard({ item }: { item: StoreItem }) {
     const { addItem, setIsCartOpen } = useCart();
@@ -32,7 +32,7 @@ function StoreItemCard({ item }: { item: StoreItem }) {
     return (
         <Card className="flex flex-col">
             <CardHeader className="p-0 relative h-40">
-                <Image src={item.image} alt={item.name} fill className="object-cover rounded-t-lg" data-ai-hint={item.imageHint} />
+                <Image src={item.image || 'https://placehold.co/600x400.png'} alt={item.name} fill className="object-cover rounded-t-lg" data-ai-hint={item.imageHint || 'store item'} />
             </CardHeader>
             <CardContent className="p-6 flex-1">
                 <CardTitle>{item.name}</CardTitle>
@@ -86,11 +86,29 @@ const PlatformLinkCard = ({ href, icon: Icon, title, description }: (typeof plat
 
 export function StorePage() {
     const { toast } = useToast();
-    const [prompt, setPrompt] = useState('Легкая игровая мышь для шутеров');
-    const [isLoading, setIsLoading] = useState(false);
+    const [prompt, setPrompt] = useState('Легкая игровая мышь для шутеров, до $100');
+    const [isLoading, setIsLoading] = useState(true);
+    const [aiResult, setAiResult] = useState<FindEquipmentOutput | null>(null);
+    const [storeItems, setStoreItems] = useState<StoreItem[]>([]);
     const [error, setError] = useState<string | null>(null);
-    const [result, setResult] = useState<FindEquipmentOutput | null>(null);
+    const [isAiLoading, setIsAiLoading] = useState(false);
     const { balance } = usePDEconomy();
+
+    useEffect(() => {
+        const loadItems = async () => {
+            setIsLoading(true);
+            try {
+                const items = await getStoreItems();
+                setStoreItems(items);
+            } catch (e) {
+                console.error(e);
+                toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить товары.' });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadItems();
+    }, [toast]);
 
 
     const handleSearch = async () => {
@@ -98,13 +116,13 @@ export function StorePage() {
             setError('Пожалуйста, опишите, какой товар вы ищете.');
             return;
         }
-        setIsLoading(true);
+        setIsAiLoading(true);
         setError(null);
-        setResult(null);
+        setAiResult(null);
 
         try {
             const searchResult = await findEquipment(prompt);
-            setResult(searchResult);
+            setAiResult(searchResult);
             if (searchResult.recommendations.length === 0) {
                  toast({
                     title: "Ничего не найдено",
@@ -115,11 +133,11 @@ export function StorePage() {
             console.error(e);
             setError('Не удалось выполнить поиск. Попробуйте еще раз.');
         } finally {
-            setIsLoading(false);
+            setIsAiLoading(false);
         }
     };
     
-    const itemsToDisplay = result ? result.recommendations : storeItems;
+    const itemsToDisplay = aiResult ? aiResult.recommendations : storeItems;
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -133,14 +151,14 @@ export function StorePage() {
             <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2"><Sparkles className="h-5 w-5 text-primary" /> Умный поиск товаров</CardTitle>
-                    <CardDescription>Опишите что вы ищете, и наш AI-ассистент подберет лучшие варианты.</CardDescription>
+                    <CardDescription>Опишите что вы ищете, и наш AI-ассистент подберет лучшие варианты из магазина.</CardDescription>
                 </CardHeader>
                 <CardContent>
                      <Textarea
                         placeholder="Например, 'футбольные бутсы для искусственного газона' или 'хочу недорогую, но качественную клавиатуру'"
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
-                        disabled={isLoading}
+                        disabled={isAiLoading}
                         className="min-h-[80px]"
                     />
                      {error && (
@@ -151,26 +169,26 @@ export function StorePage() {
                     )}
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={handleSearch} disabled={isLoading}>
-                        {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
-                        {isLoading ? 'Идет поиск...' : 'Найти товары'}
+                    <Button onClick={handleSearch} disabled={isAiLoading}>
+                        {isAiLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                        {isAiLoading ? 'Идет поиск...' : 'Найти товары'}
                     </Button>
                 </CardFooter>
             </Card>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {isLoading && Array.from({ length: 3 }).map((_, i) => (
+                {(isLoading || isAiLoading) && Array.from({ length: 3 }).map((_, i) => (
                     <Skeleton key={i} className="h-[420px] w-full" />
                 ))}
 
-                {!isLoading && itemsToDisplay.map(item => (
+                {!isLoading && !isAiLoading && itemsToDisplay.map(item => (
                     <StoreItemCard
                         key={item.id}
                         item={item}
                     />
                 ))}
             </div>
-            {!isLoading && itemsToDisplay.length === 0 && (
+            {!isLoading && !isAiLoading && itemsToDisplay.length === 0 && (
                 <div className="text-center py-16 text-muted-foreground">
                     <p>Товары не найдены. Попробуйте изменить фильтры или сбросить поиск.</p>
                 </div>
