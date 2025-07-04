@@ -5,7 +5,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
-import * as bcrypt from 'bcrypt';
 import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
 
 // Mock data for seeding purposes
@@ -24,8 +23,8 @@ const mockCareerHistory = [
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
-    const { name, email, password, role } = createUserDto;
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const { name, email, role } = createUserDto;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -35,35 +34,23 @@ export class UsersService {
       throw new ConflictException('Пользователь с таким email уже существует');
     }
     
-    // In a real Keycloak architecture, password wouldn't be handled here.
-    // For the prototype's local auth, we hash the password securely.
-    const saltOrRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltOrRounds);
-
+    // NOTE: In a Keycloak architecture, the user would be created via Keycloak Admin API.
+    // Password is not handled here. This is a simplified version for the prototype.
     const user = await this.prisma.user.create({
       data: {
         name,
         email,
         role: role || 'Игрок', // default role
-        passwordHash,
         status: 'Активен',
         xp: 0,
       },
     });
 
-    // Never return the password hash to the client
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { passwordHash: _, ...result } = user;
-    return result;
+    return user;
   }
 
-  async findAll(): Promise<Omit<User, 'passwordHash'>[]> {
-    const users = await this.prisma.user.findMany();
-    return users.map(user => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { passwordHash, ...result } = user;
-      return result;
-    });
+  async findAll(): Promise<User[]> {
+    return this.prisma.user.findMany();
   }
 
   async findOne(id: string): Promise<any | null> {
@@ -141,9 +128,7 @@ export class UsersService {
         }
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { passwordHash, ...result } = augmentedProfile;
-      return result;
+      return augmentedProfile;
   }
 
   async getLeaderboard(): Promise<LeaderboardPlayerDto[]> {
@@ -163,7 +148,7 @@ export class UsersService {
     }));
   }
 
-  async findByEmailWithPassword(email: string): Promise<User | null> {
+  async findByEmail(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { email },
     });

@@ -2,7 +2,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -12,21 +11,12 @@ export class AuthService {
   ) {}
 
   /**
-   * In a real Keycloak architecture, this method would be obsolete.
-   * Token validation would be handled by the gateway (Kong) and a Passport strategy.
-   * For the prototype, this validates if a user exists and their password is correct.
+   * Logs in a user.
+   * NOTE: This is a prototype implementation. In a real Keycloak architecture,
+   * the backend would not handle passwords. The API gateway would validate the JWT,
+   * and this service might handle token exchange or simply trust the validated token.
+   * This implementation simulates a successful login for any existing user for development purposes.
    */
-  async validateUser(email: string, pass: string): Promise<any> {
-    const user = await this.usersService.findByEmailWithPassword(email);
-
-    if (user && (await bcrypt.compare(pass, user.passwordHash))) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { passwordHash, ...result } = user;
-      return result;
-    }
-    return null;
-  }
-
   async login(email: string, pass: string) {
     // Handle special admin user case for the prototype
     if (email === 'admin@example.com' && pass === 'superuser') {
@@ -46,7 +36,7 @@ export class AuthService {
       };
     }
 
-    const user = await this.validateUser(email, pass);
+    const user = await this.usersService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Неверный email или пароль.');
     }
