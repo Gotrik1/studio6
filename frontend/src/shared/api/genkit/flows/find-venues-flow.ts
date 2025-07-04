@@ -1,7 +1,26 @@
 'use server';
 
-import type { FindVenuesInput, FindVenuesOutput } from './schemas/find-venues-schema';
-export type { FindVenuesInput, FindVenuesOutput };
+// Define types locally to decouple from backend schemas.
+export type Playground = {
+  id: string;
+  name: string;
+  address: string;
+  type: string;
+  coverImage: string;
+  coverImageHint: string;
+  surface: string;
+  features: string[];
+  rating: number;
+};
+
+export type FindVenuesInput = {
+  query: string;
+};
+
+export type FindVenuesOutput = {
+  summary: string;
+  suggestedVenues: Playground[];
+};
 
 
 export async function findVenues(input: FindVenuesInput): Promise<FindVenuesOutput> {

@@ -12,7 +12,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { LfgCreateDialog } from '@/widgets/lfg-create-dialog';
 import { Textarea } from '@/shared/ui/textarea';
 import { findLfgLobbies } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
-import type { LfgLobby as LfgLobbyType } from '@/shared/api/genkit/flows/schemas/find-lfg-lobbies-schema';
+import type { LfgLobby as LfgLobbyType } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { format } from 'date-fns';

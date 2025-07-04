@@ -46,6 +46,9 @@ import { analyzeRoleChange, type AnalyzeRoleChangeInput, type AnalyzeRoleChangeO
 import { analyzeDispute, type AnalyzeDisputeInput, type AnalyzeDisputeOutput } from '@/ai/flows/analyze-dispute-flow';
 import { sponsorshipScout, type SponsorshipScoutOutput } from '@/ai/flows/sponsorship-scout-flow';
 import { findCoaches, type FindCoachesOutput } from '@/ai/flows/find-coaches-flow';
+import { findEquipment, type FindEquipmentInput, type FindEquipmentOutput } from '@/ai/flows/find-equipment-flow';
+import { findLfgLobbies, type FindLfgLobbiesInput, type FindLfgLobbiesOutput } from '@/ai/flows/find-lfg-lobbies-flow';
+import { findVenues, type FindVenuesInput, type FindVenuesOutput } from '@/ai/flows/find-venues-flow';
 
 
 @Injectable()
@@ -232,5 +235,17 @@ export class AiService {
 
   async findCoaches(input: string): Promise<FindCoachesOutput> {
     return findCoaches(input);
+  }
+
+  async findEquipment(input: FindEquipmentInput): Promise<FindEquipmentOutput> {
+    return findEquipment(input);
+  }
+
+  async findLfgLobbies(input: FindLfgLobbiesInput): Promise<FindLfgLobbiesOutput> {
+    return findLfgLobbies(input);
+  }
+  
+  async findVenues(input: FindVenuesInput): Promise<FindVenuesOutput> {
+    return findVenues(input);
   }
 }

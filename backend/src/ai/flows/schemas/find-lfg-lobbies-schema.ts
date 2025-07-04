@@ -1,7 +1,3 @@
-
-
-'use client';
-
 import { z } from 'zod';
 
 export const LfgLobbySchema = z.object({
@@ -9,6 +5,7 @@ export const LfgLobbySchema = z.object({
   type: z.enum(['game', 'training']),
   sport: z.string(),
   location: z.string(),
+  playgroundId: z.string().optional(),
   startTime: z.coerce.date(),
   endTime: z.coerce.date(),
   playersNeeded: z.number(),

@@ -93,6 +93,12 @@ import { FindCoachesDto } from './dto/find-coaches.dto';
 import type { FindCoachesOutput } from '@/ai/flows/find-coaches-flow';
 import { SponsorshipScoutDto } from './dto/sponsorship-scout.dto';
 import type { SponsorshipScoutOutput } from '@/ai/flows/sponsorship-scout-flow';
+import { FindEquipmentDto } from './dto/find-equipment.dto';
+import type { FindEquipmentOutput } from '@/ai/flows/find-equipment-flow';
+import { FindLfgLobbiesDto } from './dto/find-lfg-lobbies.dto';
+import type { FindLfgLobbiesOutput } from '@/ai/flows/find-lfg-lobbies-flow';
+import { FindVenuesDto } from './dto/find-venues.dto';
+import type { FindVenuesOutput } from '@/ai/flows/find-venues-flow';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -458,5 +464,29 @@ export class AiController {
     @Body() sponsorshipScoutDto: SponsorshipScoutDto,
   ): Promise<SponsorshipScoutOutput> {
     return this.aiService.sponsorshipScout(sponsorshipScoutDto.prompt);
+  }
+
+  @Post('find-equipment')
+  @HttpCode(HttpStatus.OK)
+  async findEquipment(
+    @Body() findEquipmentDto: FindEquipmentDto,
+  ): Promise<FindEquipmentOutput> {
+    return this.aiService.findEquipment(findEquipmentDto.input);
+  }
+
+  @Post('find-lfg-lobbies')
+  @HttpCode(HttpStatus.OK)
+  async findLfgLobbies(
+    @Body() findLfgLobbiesDto: FindLfgLobbiesDto,
+  ): Promise<FindLfgLobbiesOutput> {
+    return this.aiService.findLfgLobbies(findLfgLobbiesDto.input);
+  }
+
+  @Post('find-venues')
+  @HttpCode(HttpStatus.OK)
+  async findVenues(
+    @Body() findVenuesDto: FindVenuesDto,
+  ): Promise<FindVenuesOutput> {
+    return this.aiService.findVenues(findVenuesDto);
   }
 }
