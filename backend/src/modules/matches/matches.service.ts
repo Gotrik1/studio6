@@ -36,8 +36,8 @@ export class MatchesService {
   async findAll(): Promise<any[]> {
     const matches = await this.prisma.match.findMany({
       include: {
-        team1: { select: { name: true, logo: true, dataAiHint: true } },
-        team2: { select: { name: true, logo: true, dataAiHint: true } },
+        team1: { select: { name: true, logo: true, dataAiHint: true, slug: true } },
+        team2: { select: { name: true, logo: true, dataAiHint: true, slug: true } },
         tournament: { select: { name: true, game: true } },
       },
       orderBy: {
@@ -149,8 +149,8 @@ export class MatchesService {
     const match = await this.prisma.match.findUnique({
       where: { id },
       include: {
-        team1: { include: { members: true } },
-        team2: { include: { members: true } },
+        team1: { include: { members: true, ...{select: { slug: true}} } },
+        team2: { include: { members: true, ...{select: { slug: true}} } },
       },
     });
 

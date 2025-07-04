@@ -1,4 +1,3 @@
-
 import {
   Injectable,
   NotFoundException,
@@ -117,6 +116,7 @@ export class TournamentsService {
       if (t.status === 'ONGOING') statusText = 'Идет';
 
       return {
+        id: t.id,
         name: t.name,
         game: t.game,
         prize: `${t.prizePool} PD`,

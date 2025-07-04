@@ -4,8 +4,7 @@
 import type { User } from '@/shared/lib/types';
 import { achievements } from "@/shared/lib/mock-data/profiles";
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { UserTeam, CareerHistoryItem } from '@/entities/user/model/types';
-import type { GalleryItem } from '@/entities/user/model/types';
+import type { UserTeam, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
 
 // Define the rich user profile type that the frontend expects
 export type PlayerProfileData = User & {
@@ -18,7 +17,7 @@ export type PlayerProfileData = User & {
     age: number;
     preferredSports: string[];
     contacts: { telegram: string; discord: string };
-    activities: any[];
+    activities: PlayerActivityItem[];
     teams: UserTeam[];
     gallery: GalleryItem[];
     careerHistory: CareerHistoryItem[];
@@ -68,7 +67,7 @@ export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | 
         // We just need to add the mocked achievements.
         const augmentedProfile: PlayerProfileData = {
             ...profileData,
-            playerActivity,
+            activities: playerActivity,
         };
 
         return {

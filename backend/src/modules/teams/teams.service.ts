@@ -1,4 +1,3 @@
-
 import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -27,6 +26,9 @@ export class TeamsService {
         logo,
         dataAiHint,
         captain: {
+          connect: { id: captainId },
+        },
+        creator: {
           connect: { id: captainId },
         },
         members: {
