@@ -11,12 +11,10 @@ import { analyzeContent, type AnalyzeContentInput, type AnalyzeContentOutput } f
 import { generateContent, type GenerateContentInput, type GenerateContentOutput } from '@/ai/flows/generate-content-flow';
 import { generateDialogue, type GenerateDialogueInput, type GenerateDialogueOutput } from '@/ai/flows/dialogue-generation-flow';
 import { multiSpeakerTts, type MultiSpeakerTtsInput, type MultiSpeakerTtsOutput } from '@/ai/flows/multi-speaker-tts-flow';
-import { analyzeDispute, type AnalyzeDisputeInput, type AnalyzeDisputeOutput } from '@/ai/flows/analyze-dispute-flow';
 import { textToSpeech, type TextToSpeechInput, type TextToSpeechOutput } from '@/ai/flows/tts-flow';
 import { analyzeSecurity, type AnalyzeSecurityInput, type AnalyzeSecurityOutput } from '@/ai/flows/analyze-security-flow';
 import { generateSocialMediaPost, type GenerateSocialMediaPostInput, type GenerateSocialMediaPostOutput } from '@/ai/flows/generate-social-media-post-flow';
 import { generateSponsorshipPitch, type GenerateSponsorshipPitchInput, type GenerateSponsorshipPitchOutput } from '@/ai/flows/generate-sponsorship-pitch';
-import { sponsorshipScout, type SponsorshipScoutOutput } from '@/ai/flows/sponsorship-scout-flow';
 import { generatePromotionWizard, type GeneratePromotionWizardInput, type GeneratePromotionWizardOutput } from '@/ai/flows/generate-promotion-wizard-flow';
 import { generateTournamentWizard, type GenerateTournamentWizardInput, type GenerateTournamentWizardOutput } from '@/ai/flows/generate-tournament-wizard-flow';
 import { aiTeamAssistant, type AiTeamAssistantInput, type AiTeamAssistantOutput } from '@/ai/flows/ai-team-assistant-flow';
@@ -41,11 +39,13 @@ import { generateTeamAvatar, type GenerateTeamAvatarOutput } from '@/ai/flows/ge
 import { generatePromotionDetails, type GeneratePromotionDetailsInput, type GeneratePromotionDetailsOutput } from '@/ai/flows/generate-promotion-details-flow';
 import { generatePromotionImage, type GeneratePromotionImageOutput } from '@/ai/flows/generate-promotion-image-flow';
 import { generateDashboardTip, type GenerateDashboardTipInput, type GenerateDashboardTipOutput } from '@/ai/flows/generate-dashboard-tip-flow';
-import { findCoaches, type FindCoachesInput, type FindCoachesOutput } from '@/ai/flows/find-coaches-flow';
 import { analyzeMatchChallenge, type AnalyzeMatchChallengeInput, type AnalyzeMatchChallengeOutput } from '@/ai/flows/analyze-match-challenge-flow';
 import { analyzeExerciseForm, type AnalyzeExerciseFormInput, type AnalyzeExerciseFormOutput } from '@/ai/flows/analyze-exercise-form-flow';
 import { analyzeReport, type AnalyzeReportInput, type AnalyzeReportOutput } from '@/ai/flows/analyze-report-flow';
 import { analyzeRoleChange, type AnalyzeRoleChangeInput, type AnalyzeRoleChangeOutput } from '@/ai/flows/analyze-role-change-flow';
+import { analyzeDispute, type AnalyzeDisputeInput, type AnalyzeDisputeOutput } from '@/ai/flows/analyze-dispute-flow';
+import { sponsorshipScout, type SponsorshipScoutOutput } from '@/ai/flows/sponsorship-scout-flow';
+import { findCoaches, type FindCoachesOutput } from '@/ai/flows/find-coaches-flow';
 
 
 @Injectable()
@@ -110,10 +110,6 @@ export class AiService {
     return multiSpeakerTts(script);
   }
 
-  async analyzeDispute(input: AnalyzeDisputeInput): Promise<AnalyzeDisputeOutput> {
-    return analyzeDispute(input);
-  }
-
   async textToSpeech(text: TextToSpeechInput): Promise<TextToSpeechOutput> {
     return textToSpeech(text);
   }
@@ -128,10 +124,6 @@ export class AiService {
   
   async generateSponsorshipPitch(input: GenerateSponsorshipPitchInput): Promise<GenerateSponsorshipPitchOutput> {
     return generateSponsorshipPitch(input);
-  }
-
-  async sponsorshipScout(prompt: string): Promise<SponsorshipScoutOutput> {
-    return sponsorshipScout(prompt);
   }
 
   async generatePromotionWizard(input: GeneratePromotionWizardInput): Promise<GeneratePromotionWizardOutput> {
@@ -214,10 +206,6 @@ export class AiService {
     return generateDashboardTip(input);
   }
 
-  async findCoaches(input: FindCoachesInput): Promise<FindCoachesOutput> {
-    return findCoaches(input);
-  }
-
   async analyzeMatchChallenge(input: AnalyzeMatchChallengeInput): Promise<AnalyzeMatchChallengeOutput> {
     return analyzeMatchChallenge(input);
   }
@@ -232,5 +220,17 @@ export class AiService {
 
   async analyzeRoleChange(input: AnalyzeRoleChangeInput): Promise<AnalyzeRoleChangeOutput> {
     return analyzeRoleChange(input);
+  }
+
+  async analyzeDispute(input: AnalyzeDisputeInput): Promise<AnalyzeDisputeOutput> {
+    return analyzeDispute(input);
+  }
+
+  async sponsorshipScout(prompt: string): Promise<SponsorshipScoutOutput> {
+    return sponsorshipScout(prompt);
+  }
+
+  async findCoaches(input: string): Promise<FindCoachesOutput> {
+    return findCoaches(input);
   }
 }

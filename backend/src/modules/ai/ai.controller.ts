@@ -19,22 +19,18 @@ import { AnalyzeContentDto } from './dto/analyze-content.dto';
 import { GenerateContentDto } from './dto/generate-content.dto';
 import { GenerateDialogueDto } from './dto/generate-dialogue.dto';
 import { MultiSpeakerTtsDto } from './dto/multi-speaker-tts.dto';
-import { AnalyzeDisputeDto } from './dto/analyze-dispute.dto';
 import { TextToSpeechDto } from './dto/text-to-speech.dto';
 import type { AnalyzeContentOutput } from '@/ai/flows/schemas/analyze-content-generation-schema';
 import type { GenerateContentOutput } from '@/ai/flows/schemas/generate-content-schema';
 import type { GenerateDialogueOutput } from '@/ai/flows/schemas/dialogue-generation-schema';
 import type { MultiSpeakerTtsOutput } from '@/ai/flows/schemas/multi-speaker-tts-schema';
-import type { AnalyzeDisputeOutput } from '@/ai/flows/schemas/analyze-dispute-schema';
 import type { TextToSpeechOutput } from '@/ai/flows/schemas/tts-schema';
 import { AnalyzeSecurityDto } from './dto/analyze-security.dto';
 import type { AnalyzeSecurityOutput } from '@/ai/flows/schemas/analyze-security-schema';
 import { GenerateSocialMediaPostDto } from './dto/generate-social-media-post.dto';
 import { GenerateSponsorshipPitchDto } from './dto/generate-sponsorship-pitch.dto';
-import { SponsorshipScoutDto } from './dto/sponsorship-scout.dto';
 import type { GenerateSocialMediaPostOutput } from '@/ai/flows/schemas/generate-social-media-post-schema';
 import type { GenerateSponsorshipPitchOutput } from '@/ai/flows/schemas/generate-sponsorship-pitch-schema';
-import type { SponsorshipScoutOutput } from '@/ai/flows/schemas/sponsorship-scout-schema';
 import { GeneratePromotionWizardDto } from './dto/generate-promotion-wizard.dto';
 import type { GeneratePromotionWizardOutput } from '@/ai/flows/schemas/generate-promotion-wizard-schema';
 import { AiTeamAssistantDto } from './dto/ai-team-assistant.dto';
@@ -83,8 +79,6 @@ import { GeneratePromotionImageDto } from './dto/generate-promotion-image.dto';
 import type { GeneratePromotionImageOutput } from '@/ai/flows/schemas/generate-promotion-image-schema';
 import { GenerateDashboardTipDto } from './dto/generate-dashboard-tip.dto';
 import type { GenerateDashboardTipOutput } from '@/ai/flows/schemas/generate-dashboard-tip-schema';
-import { FindCoachesDto } from './dto/find-coaches.dto';
-import type { FindCoachesOutput } from '@/ai/flows/schemas/find-coaches-schema';
 import { AnalyzeMatchChallengeDto } from './dto/analyze-match-challenge.dto';
 import type { AnalyzeMatchChallengeOutput } from '@/ai/flows/schemas/analyze-match-challenge-schema';
 import { AnalyzeExerciseFormDto } from './dto/analyze-exercise-form.dto';
@@ -93,6 +87,12 @@ import { AnalyzeReportDto } from './dto/analyze-report.dto';
 import type { AnalyzeReportOutput } from '@/ai/flows/schemas/analyze-report-schema';
 import { AnalyzeRoleChangeDto } from './dto/analyze-role-change.dto';
 import type { AnalyzeRoleChangeOutput } from '@/ai/flows/schemas/analyze-role-change-schema';
+import { AnalyzeDisputeDto } from './dto/analyze-dispute.dto';
+import type { AnalyzeDisputeOutput } from '@/ai/flows/schemas/analyze-dispute-schema';
+import { FindCoachesDto } from './dto/find-coaches.dto';
+import type { FindCoachesOutput } from '@/ai/flows/find-coaches-flow';
+import { SponsorshipScoutDto } from './dto/sponsorship-scout.dto';
+import type { SponsorshipScoutOutput } from '@/ai/flows/sponsorship-scout-flow';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -212,14 +212,6 @@ export class AiController {
     return this.aiService.multiSpeakerTts(multiSpeakerTtsDto.script);
   }
 
-  @Post('analyze-dispute')
-  @HttpCode(HttpStatus.OK)
-  async analyzeDispute(
-    @Body() analyzeDisputeDto: AnalyzeDisputeDto,
-  ): Promise<AnalyzeDisputeOutput> {
-    return this.aiService.analyzeDispute(analyzeDisputeDto);
-  }
-
   @Post('text-to-speech')
   @HttpCode(HttpStatus.OK)
   async textToSpeech(
@@ -250,14 +242,6 @@ export class AiController {
     @Body() generateSponsorshipPitchDto: GenerateSponsorshipPitchDto,
   ): Promise<GenerateSponsorshipPitchOutput> {
     return this.aiService.generateSponsorshipPitch(generateSponsorshipPitchDto);
-  }
-
-  @Post('sponsorship-scout')
-  @HttpCode(HttpStatus.OK)
-  async sponsorshipScout(
-    @Body() sponsorshipScoutDto: SponsorshipScoutDto,
-  ): Promise<SponsorshipScoutOutput> {
-    return this.aiService.sponsorshipScout(sponsorshipScoutDto.prompt);
   }
 
   @Post('generate-promotion-wizard')
@@ -420,14 +404,6 @@ export class AiController {
     return this.aiService.generateDashboardTip(generateDashboardTipDto);
   }
   
-  @Post('find-coaches')
-  @HttpCode(HttpStatus.OK)
-  async findCoaches(
-    @Body() findCoachesDto: FindCoachesDto,
-  ): Promise<FindCoachesOutput> {
-    return this.aiService.findCoaches(findCoachesDto.input);
-  }
-
   @Post('analyze-match-challenge')
   @HttpCode(HttpStatus.OK)
   async analyzeMatchChallenge(
@@ -458,5 +434,29 @@ export class AiController {
     @Body() analyzeRoleChangeDto: AnalyzeRoleChangeDto,
   ): Promise<AnalyzeRoleChangeOutput> {
     return this.aiService.analyzeRoleChange(analyzeRoleChangeDto);
+  }
+
+  @Post('analyze-dispute')
+  @HttpCode(HttpStatus.OK)
+  async analyzeDispute(
+    @Body() analyzeDisputeDto: AnalyzeDisputeDto,
+  ): Promise<AnalyzeDisputeOutput> {
+    return this.aiService.analyzeDispute(analyzeDisputeDto);
+  }
+  
+  @Post('find-coaches')
+  @HttpCode(HttpStatus.OK)
+  async findCoaches(
+    @Body() findCoachesDto: FindCoachesDto,
+  ): Promise<FindCoachesOutput> {
+    return this.aiService.findCoaches(findCoachesDto.input);
+  }
+
+  @Post('sponsorship-scout')
+  @HttpCode(HttpStatus.OK)
+  async sponsorshipScout(
+    @Body() sponsorshipScoutDto: SponsorshipScoutDto,
+  ): Promise<SponsorshipScoutOutput> {
+    return this.aiService.sponsorshipScout(sponsorshipScoutDto.prompt);
   }
 }
