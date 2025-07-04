@@ -57,7 +57,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                 team2Name: match.team2.name,
                 score: match.score,
                 tournament: match.tournament,
-                events: match.events,
+                events: match.events || [],
                 lineupTeam1: match.lineups.team1,
                 lineupTeam2: match.lineups.team2,
             });
@@ -132,7 +132,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
             const commentaryData = await generateMatchCommentary({
                 team1Name: match.team1.name,
                 team2Name: match.team2.name,
-                events: mockEvents,
+                events: match.events || mockEvents,
             });
             setCommentaryResult(commentaryData);
         } catch (e) {
@@ -142,8 +142,8 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
             setIsGeneratingCommentary(false);
         }
     };
-
-    const handleCopyText = (text: string) => {
+    
+     const handleCopyText = (text: string) => {
         if (text) {
           navigator.clipboard.writeText(text);
           toast({
@@ -193,7 +193,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                 )}
 
                 {result && (
-                    <div className="space-y-6">
+                    <div className="space-y-6 animate-in fade-in-50">
                         <Card className="bg-muted/30">
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5 text-primary" /> Краткая сводка матча</CardTitle>

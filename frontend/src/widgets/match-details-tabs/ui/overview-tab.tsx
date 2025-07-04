@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -28,18 +29,22 @@ export function OverviewTab({ match }: OverviewTabProps) {
                     <CardDescription>Хронология матча.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <div className="space-y-4">
-                        {match.events.map((event, index) => (
-                            <div key={index} className="flex items-center gap-4">
-                                <div className="font-mono text-sm">{event.time}</div>
-                                <div className="h-full w-px bg-border"></div>
-                                <div>
-                                    <p className="font-semibold">{event.event}</p>
-                                    <p className="text-xs text-muted-foreground">{event.player} ({event.team})</p>
+                    {match.events && match.events.length > 0 ? (
+                        <div className="space-y-4">
+                            {match.events.map((event, index) => (
+                                <div key={index} className="flex items-center gap-4">
+                                    <div className="font-mono text-sm">{event.time}</div>
+                                    <div className="h-full w-px bg-border"></div>
+                                    <div>
+                                        <p className="font-semibold">{event.event}</p>
+                                        <p className="text-xs text-muted-foreground">{event.player} ({event.team})</p>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-sm text-muted-foreground">Ключевые события матча не записаны.</p>
+                    )}
                 </CardContent>
             </Card>
         </div>

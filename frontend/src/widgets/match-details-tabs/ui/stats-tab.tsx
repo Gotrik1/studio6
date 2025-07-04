@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -9,6 +10,19 @@ interface StatsTabProps {
 }
 
 export function StatsTab({ stats }: StatsTabProps) {
+    if (!stats) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Статистика команд</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="text-sm text-center text-muted-foreground p-8">Детальная статистика для этого матча недоступна.</p>
+                </CardContent>
+            </Card>
+        );
+    }
+    
     return (
         <Card>
             <CardHeader>

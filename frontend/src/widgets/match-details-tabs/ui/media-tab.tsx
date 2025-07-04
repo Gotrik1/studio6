@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -10,6 +11,19 @@ interface MediaTabProps {
 }
 
 export function MediaTab({ media }: MediaTabProps) {
+    if (!media || media.length === 0) {
+        return (
+            <Card>
+                <CardHeader>
+                    <CardTitle>Медиагалерея</CardTitle>
+                </CardHeader>
+                <CardContent>
+                     <p className="text-sm text-center text-muted-foreground p-8">Для этого матча нет фото или видео.</p>
+                </CardContent>
+            </Card>
+        );
+    }
+    
     return (
         <Card>
             <CardHeader>

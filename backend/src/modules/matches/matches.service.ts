@@ -76,10 +76,10 @@ export class MatchesService {
       where: { id },
       include: {
         team1: {
-          include: { members: { select: { name: true, role: true, avatar: true } } },
+          include: { members: { select: { id: true, name: true, role: true, avatar: true } } },
         },
         team2: {
-          include: { members: { select: { name: true, role: true, avatar: true } } },
+          include: { members: { select: { id: true, name: true, role: true, avatar: true } } },
         },
         tournament: true,
       },
@@ -89,41 +89,11 @@ export class MatchesService {
       throw new NotFoundException(`Матч с ID ${id} не найден`);
     }
 
-    const scoreParts =
-      match.team1Score !== null && match.team2Score !== null
-        ? [match.team1Score, match.team2Score]
-        : [0, 0];
-
-    // Mock data for things not yet in the DB for a richer frontend experience
-    const mockEvents = [
-      { time: '05:12', event: 'Гол', player: 'Echo', team: match.team1.name },
-      {
-        time: '15:30',
-        event: 'Желтая карточка',
-        player: 'ColdSniper',
-        team: match.team2.name,
-      },
-      { time: '22:45', event: 'Гол', player: 'Viper', team: match.team1.name },
-      { time: '35:01', event: 'Финальный свисток', player: '', team: '' },
-    ];
-    const mockTeamStats = {
-      goals: { label: 'Голы', team1: scoreParts[0], team2: scoreParts[1] },
-      shotsOnTarget: { label: 'Удары в створ', team1: 12, team2: 8 },
-      possession: { label: 'Владение мячом (%)', team1: 62, team2: 38 },
-      corners: { label: 'Угловые', team1: 8, team2: 4 },
-    };
-    const mockMedia = [
-      { type: 'image', src: 'https://placehold.co/600x400.png', hint: 'football action' },
-      { type: 'video', src: 'https://placehold.co/600x400.png', hint: 'football goal' },
-      { type: 'image', src: 'https://placehold.co/600x400.png', hint: 'team celebration' },
-      { type: 'image', src: 'https://placehold.co/600x400.png', hint: 'football player' },
-    ];
-
-    // Map Prisma result to the frontend's MatchDetails shape
+    // Map Prisma result to the frontend's MatchDetails shape, without mock data
     return {
       id: match.id,
       tournament: match.tournament?.name || 'Товарищеский матч',
-      status: match.status === 'FINISHED' ? 'Завершен' : 'Идет',
+      status: match.status === 'FINISHED' ? 'Завершен' : match.status === 'PLANNED' ? 'Запланирован' : 'Идет',
       score:
         match.team1Score !== null && match.team2Score !== null
           ? `${match.team1Score}-${match.team2Score}`
@@ -144,7 +114,6 @@ export class MatchesService {
       },
       lineups: {
         team1: match.team1.members
-          .slice(0, 3)
           .map((m) => ({
             name: m.name,
             role: m.role,
@@ -152,7 +121,6 @@ export class MatchesService {
             avatarHint: 'sports player',
           })),
         team2: match.team2.members
-          .slice(0, 3)
           .map((m) => ({
             name: m.name,
             role: m.role,
@@ -160,9 +128,8 @@ export class MatchesService {
             avatarHint: 'sports player',
           })),
       },
-      events: mockEvents,
-      teamStats: mockTeamStats,
-      media: mockMedia,
+      // Note: events, teamStats, and media are no longer provided from the backend mock.
+      // The frontend will need to handle their absence.
     };
   }
 
