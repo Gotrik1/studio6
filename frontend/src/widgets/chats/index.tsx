@@ -14,6 +14,9 @@ import { contacts, type Contact } from '@/shared/lib/mock-data/chats';
 import { suggestReply } from '@/shared/api/genkit/flows/suggest-reply-flow';
 import { askTeamChatbot } from '@/shared/api/genkit/flows/team-chatbot-flow';
 import { io, type Socket } from 'socket.io-client';
+import { getChatHistory } from '@/entities/chat/api/get-chat-history';
+import { Skeleton } from '@/shared/ui/skeleton';
+
 
 type Message = {
     sender: 'user' | 'ai' | 'other';
@@ -32,6 +35,7 @@ export function ChatsPage() {
     const [input, setInput] = useState('');
     const [replySuggestions, setReplySuggestions] = useState<string[]>([]);
     const [isThinking, setIsThinking] = useState(false);
+    const [isLoadingHistory, setIsLoadingHistory] = useState(false);
     const [socket, setSocket] = useState<Socket | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -40,7 +44,7 @@ export function ChatsPage() {
     };
 
     useEffect(() => {
-        if (!user) return; // Wait for user session
+        if (!user) return; 
 
         const newSocket = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001');
         setSocket(newSocket);
@@ -61,10 +65,32 @@ export function ChatsPage() {
     }, [user]);
     
     useEffect(() => {
-        // In a real app, this would fetch message history for the selected chat
-        setMessages([]); 
+        const loadHistory = async () => {
+            if (selectedChat && user) {
+                setIsLoadingHistory(true);
+                setMessages([]);
+                try {
+                    const history = await getChatHistory(selectedChat.id);
+                    const formattedHistory: Message[] = history.map((msg: any) => ({
+                        sender: msg.author.id === user.id ? 'user' : 'other',
+                        name: msg.author.name,
+                        avatar: msg.author.avatar,
+                        text: msg.text,
+                    }));
+                    setMessages(formattedHistory);
+                } catch (error) {
+                    console.error("Failed to load chat history:", error);
+                } finally {
+                    setIsLoadingHistory(false);
+                }
+            } else {
+                setMessages([]);
+            }
+        };
+
+        loadHistory();
         setReplySuggestions([]);
-    }, [selectedChat]);
+    }, [selectedChat, user]);
 
     useEffect(() => {
         scrollToBottom();
@@ -103,7 +129,6 @@ export function ChatsPage() {
                 setIsThinking(false);
             }
         } else {
-            // This is the payload sent to the backend
             const messageToSend = {
                 sender: {
                     id: user.id,
@@ -203,21 +228,37 @@ export function ChatsPage() {
                         <CardContent className="flex-1 p-0">
                             <ScrollArea className="h-[calc(100vh-22rem)] p-6">
                                 <div className="space-y-6">
-                                    {messages.map((message, index) => (
-                                       <div key={index} className={cn("flex items-end gap-2", message.sender === 'user' ? 'justify-end' : 'justify-start')}>
-                                           {(message.sender === 'other' || message.sender === 'ai') && (
-                                               <Avatar className="h-8 w-8 border flex-shrink-0">
-                                                    {message.sender === 'ai' ? <AvatarFallback><Bot /></AvatarFallback> : <AvatarImage src={message.avatar} />}
-                                                    <AvatarFallback>{getAvatarFallback(message.name)}</AvatarFallback>
-                                               </Avatar>
-                                           )}
-                                           <div className="flex flex-col gap-1 items-start" style={{alignItems: message.sender === 'user' ? 'flex-end' : 'flex-start'}}>
-                                                {(message.sender === 'other' || message.sender === 'ai') && (
-                                                    <p className="text-xs text-muted-foreground mb-0.5 ml-1">{message.name}</p>
-                                                )}
-                                                <div className={cn(
-                                                   "max-w-md rounded-lg p-3 text-sm shadow-sm",
-                                                   message.sender === 'user' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted rounded-bl-none"
+                                     {isLoadingHistory ? (
+                                        <div className="space-y-6">
+                                            <div className="flex items-start gap-2 justify-start">
+                                                <Skeleton className="h-8 w-8 rounded-full" />
+                                                <Skeleton className="h-16 w-48" />
+                                            </div>
+                                            <div className="flex items-start gap-2 justify-end">
+                                                <Skeleton className="h-10 w-32" />
+                                                <Skeleton className="h-8 w-8 rounded-full" />
+                                            </div>
+                                            <div className="flex items-start gap-2 justify-start">
+                                                <Skeleton className="h-8 w-8 rounded-full" />
+                                                <Skeleton className="h-10 w-40" />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        messages.map((message, index) => (
+                                        <div key={index} className={cn("flex items-end gap-2", message.sender === 'user' ? 'justify-end' : 'justify-start')}>
+                                            {(message.sender === 'other' || message.sender === 'ai') && (
+                                                <Avatar className="h-8 w-8 border flex-shrink-0">
+                                                        {message.sender === 'ai' ? <AvatarFallback><Bot /></AvatarFallback> : <AvatarImage src={message.avatar} />}
+                                                        <AvatarFallback>{getAvatarFallback(message.name)}</AvatarFallback>
+                                                </Avatar>
+                                            )}
+                                            <div className="flex flex-col gap-1 items-start" style={{alignItems: message.sender === 'user' ? 'flex-end' : 'flex-start'}}>
+                                                    {(message.sender === 'other' || message.sender === 'ai') && (
+                                                        <p className="text-xs text-muted-foreground mb-0.5 ml-1">{message.name}</p>
+                                                    )}
+                                                    <div className={cn(
+                                                    "max-w-md rounded-lg p-3 text-sm shadow-sm",
+                                                    message.sender === 'user' ? "bg-primary text-primary-foreground rounded-br-none" : "bg-muted rounded-bl-none"
                                                 )}>
                                                     {message.isThinking ? (
                                                         <div className="flex items-center gap-2">
@@ -225,16 +266,17 @@ export function ChatsPage() {
                                                             <span>{message.text}</span>
                                                         </div>
                                                     ) : <p className="whitespace-pre-wrap">{message.text}</p>}
-                                               </div>
-                                           </div>
-                                           {message.sender === 'user' && user && (
-                                               <Avatar className="h-8 w-8 border flex-shrink-0">
-                                                   <AvatarImage src={user.avatar} data-ai-hint="user avatar"/>
-                                                   <AvatarFallback>{getAvatarFallback(user.name)}</AvatarFallback>
-                                               </Avatar>
-                                           )}
-                                       </div>
-                                    ))}
+                                                </div>
+                                            </div>
+                                            {message.sender === 'user' && user && (
+                                                <Avatar className="h-8 w-8 border flex-shrink-0">
+                                                    <AvatarImage src={user.avatar} data-ai-hint="user avatar"/>
+                                                    <AvatarFallback>{getAvatarFallback(user.name)}</AvatarFallback>
+                                                </Avatar>
+                                            )}
+                                        </div>
+                                        ))
+                                    )}
                                     <div ref={messagesEndRef} />
                                 </div>
                             </ScrollArea>

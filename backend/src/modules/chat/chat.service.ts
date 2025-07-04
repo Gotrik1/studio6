@@ -55,4 +55,22 @@ export class ChatService implements OnModuleInit {
       this.logger.error('Failed to connect Kafka consumer', error);
     }
   }
+
+  async getHistory(chatId: string) {
+    this.logger.log(`Fetching history for chat ID: ${chatId}`);
+    return this.prisma.message.findMany({
+      where: { chatId },
+      orderBy: { createdAt: 'asc' },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+      },
+      take: 100, // Limit to last 100 messages for performance
+    });
+  }
 }
