@@ -1,17 +1,1 @@
-{
-  "name": "prodvor-monorepo",
-  "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
-  "scripts": {
-    "dev": "npm run dev -w frontend",
-    "dev:backend": "npm run start:dev -w backend",
-    "build": "npm run build -w frontend",
-    "genkit:watch": "npm run genkit:watch -w frontend",
-    "prisma:generate": "npm run prisma:generate -w backend",
-    "prisma:migrate": "npm run prisma:migrate -w backend",
-    "prisma:studio": "npm run prisma:studio -w backend"
-  }
-}
+{}
