@@ -3,6 +3,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Team } from '@prisma/client';
+import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
 
 @Injectable()
 export class TeamsService {
@@ -103,6 +104,28 @@ export class TeamsService {
     };
   }
   
+  async getLeaderboard(): Promise<LeaderboardTeamDto[]> {
+    // Используем $queryRaw для сложных запросов, когда Prisma API недостаточно.
+    // Это безопасный способ выполнять сырые SQL-запросы.
+    const result: LeaderboardTeamDto[] = await this.prisma.$queryRaw`
+        SELECT
+            id,
+            name,
+            logo,
+            "dataAiHint",
+            game,
+            rank,
+            wins,
+            losses,
+            draws,
+            slug
+        FROM "Team"
+        ORDER BY wins DESC, losses ASC
+        LIMIT 10
+    `;
+    return result;
+  }
+
   async joinTeam(teamId: string, userId: string): Promise<Team> {
     return this.prisma.team.update({
       where: { id: teamId },

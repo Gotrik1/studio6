@@ -3,6 +3,7 @@ import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { JoinTeamDto } from './dto/join-team.dto';
+import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
 
 @Controller('teams')
 export class TeamsController {
@@ -13,6 +14,11 @@ export class TeamsController {
     return this.teamsService.create(createTeamDto);
   }
 
+  @Get('leaderboard')
+  getLeaderboard(): Promise<LeaderboardTeamDto[]> {
+    return this.teamsService.getLeaderboard();
+  }
+  
   @Get()
   findAll() {
     return this.teamsService.findAll();
