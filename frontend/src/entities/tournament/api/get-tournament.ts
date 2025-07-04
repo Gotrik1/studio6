@@ -1,14 +1,23 @@
 
-import { summerKickoffTournament, footballCupTournament } from '@/shared/lib/mock-data/tournament-details';
+'use server';
+
 import type { TournamentDetails } from '@/entities/tournament/model/types';
 
-export function getTournamentBySlug(slug: string): TournamentDetails | null {
-    // In a real app, this would look up the tournament in a database.
-    if (slug === summerKickoffTournament.slug) {
-        return summerKickoffTournament;
+export async function getTournamentBySlug(slug: string): Promise<TournamentDetails | null> {
+    try {
+        const res = await fetch(`/api/tournaments/slug/${slug}`, {
+            cache: 'no-store',
+        });
+
+        if (!res.ok) {
+            console.error(`Failed to fetch tournament ${slug}:`, res.statusText);
+            return null;
+        }
+        
+        const tournament = await res.json();
+        return tournament;
+    } catch (error) {
+        console.error(`Failed to fetch tournament ${slug}:`, error);
+        return null;
     }
-    if (slug === footballCupTournament.slug) {
-        return footballCupTournament;
-    }
-    return null;
 }

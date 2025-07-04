@@ -113,6 +113,93 @@ export class TournamentsService {
     });
   }
 
+  async findBySlug(slug: string): Promise<any> {
+    const tournament = await this.prisma.tournament.findUnique({
+      where: { slug },
+      include: {
+        teams: {
+          select: { name: true, logo: true, dataAiHint: true, slug: true },
+        },
+        matches: {
+          include: {
+            team1: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+            team2: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+          },
+          orderBy: {
+            scheduledAt: 'asc',
+          },
+        },
+      },
+    });
+
+    if (!tournament) {
+      throw new NotFoundException(`Турнир со слагом "${slug}" не найден`);
+    }
+
+    // --- Dynamic Bracket Generation Logic ---
+    // This is a simplified logic for demo purposes.
+    // A real implementation would need a 'round' field in the Match model.
+    const rounds: { name: string; matches: any[] }[] = [];
+    const matches = tournament.matches.map(m => ({
+        ...m, 
+        href: `/matches/${m.id}`,
+        score: m.team1Score !== null ? `${m.team1Score}-${m.team2Score}` : 'VS'
+    }));
+    let champion: any = null;
+
+    // This logic assumes a simple 8-team single elimination bracket for demo
+    if (matches.length >= 4) { // Quarterfinals
+        rounds.push({ name: 'Четвертьфиналы', matches: matches.slice(0, 4) });
+    }
+    if (matches.length >= 6) { // Semifinals
+        rounds.push({ name: 'Полуфиналы', matches: matches.slice(4, 6) });
+    }
+    if (matches.length >= 7) { // Final
+        const finalMatch = matches[6];
+        rounds.push({ name: 'Финал', matches: [finalMatch] });
+        
+        const score1 = finalMatch.team1Score ?? 0;
+        const score2 = finalMatch.team2Score ?? 0;
+        if (score1 > score2) {
+            champion = { id: 99, team1: finalMatch.team1, winner: true };
+        } else if (score2 > score1) {
+            champion = { id: 99, team1: finalMatch.team2, winner: true };
+        }
+    }
+    
+    if (champion) {
+        rounds.push({ name: 'Чемпион', matches: [champion] });
+    }
+    // --- End Bracket Generation ---
+
+    return {
+      name: tournament.name,
+      slug: tournament.slug,
+      game: tournament.game,
+      status: tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен',
+      image: tournament.bannerImage || 'https://placehold.co/2560x720.png',
+      dataAiHint: tournament.bannerImageHint || 'esports tournament',
+      description: tournament.description || 'Описание турнира отсутствует.',
+      prizePool: String(tournament.prizePool),
+      teamsCount: tournament.teams.length,
+      organizer: { name: tournament.organizerName || 'ProDvor Events', logo: tournament.organizerLogo || 'https://placehold.co/40x40.png' },
+      schedule: { // This is simplified, real data would come from match schedules
+        registration: "15-30 Июня",
+        groupStage: "1-3 Июля",
+        playoffs: "5-6 Июля",
+        finals: format(new Date(tournament.startDate), 'd MMMM yyyy', { locale: ru }),
+      },
+      teams: tournament.teams,
+      rules: tournament.rules || "Правила не указаны.",
+      bracket: { rounds },
+      media: [ // Keep media mocked for now
+        { type: 'image', src: 'https://placehold.co/600x400.png', hint: 'esports action' },
+        { type: 'video', src: 'https://placehold.co/600x400.png', hint: 'esports trophy' },
+      ]
+    };
+  }
+
+
   async registerTeam(
     tournamentId: string,
     teamId: string,

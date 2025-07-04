@@ -4,7 +4,7 @@ import { TournamentDetailsPage } from "@/views/tournament-details";
 import { notFound } from "next/navigation";
 
 export default async function TournamentDetailsRoute({ params }: { params: { slug: string } }) {
-  const tournament = getTournamentBySlug(params.slug);
+  const tournament = await getTournamentBySlug(params.slug);
   
   if (!tournament) {
     notFound();
