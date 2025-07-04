@@ -1,16 +1,21 @@
-// start-next.js
 const { spawn } = require('child_process');
 
-// Фильтруем лишние параметры, чтобы запускался только next dev --turbopack ...
+// Фильтруем только dev и turbopack
 const args = ['dev', '--turbopack'];
 
-// Прокидываем переменные окружения, если заданы
-if (process.env.PORT) {
-  args.push('--port', process.env.PORT);
+// Получаем порт и hostname из argv (с конца)
+const portArgIndex = process.argv.findIndex(arg => /^\d+$/.test(arg));
+const port = portArgIndex !== -1 ? process.argv[portArgIndex] : process.env.PORT || '9002';
+const hostname = process.argv[portArgIndex + 1] || process.env.HOSTNAME || '0.0.0.0';
+
+if (port) {
+  args.push('--port', port);
 }
-if (process.env.HOSTNAME) {
-  args.push('--hostname', process.env.HOSTNAME);
+if (hostname) {
+  args.push('--hostname', hostname);
 }
+
+console.log('Launching Next.js with:', args);
 
 const next = spawn('npx', ['next', ...args], { stdio: 'inherit' });
 
