@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,110 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id              String       @id @default(uuid())
-  email           String       @unique
-  name            String
-  passwordHash    String
-  role            String
-  avatar          String?
-  status          String       @default("Активен")
-  xp              Int          @default(0)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-  teams           Team[]       @relation("TeamMembers")
-  captainedTeams  Team[]       @relation("TeamCaptain")
-  MatchResult     MatchResult?
-  dateOfBirth     DateTime?
-  location        String?
-  mainSport       String?
-  isVerified      Boolean      @default(false)
-  preferredSports String[]
-  telegram        String?
-  discord         String?
-}
-
-model Team {
-  id              String       @id @default(uuid())
-  name            String       @unique
-  slug            String       @unique
-  motto           String?
-  description     String?
-  logo            String?
-  dataAiHint      String?
-  game            String
-  rank            Int          @default(0)
-  homePlaygroundId String?
-  captain         User         @relation("TeamCaptain", fields: [captainId], references: [id])
-  captainId       String
-  members         User[]       @relation("TeamMembers")
-  tournaments     Tournament[] @relation("TeamTournaments")
-  matchesAsTeam1  Match[]      @relation("Team1Matches")
-  matchesAsTeam2  Match[]      @relation("Team2Matches")
-  wins            Int          @default(0)
-  losses          Int          @default(0)
-  draws           Int          @default(0)
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
-}
-
-model Tournament {
-  id              String    @id @default(uuid())
-  name            String
-  slug            String    @unique
-  game            String
-  format          String // e.g., 'single_elimination', 'round_robin'
-  prizePool       Float
-  startDate       DateTime
-  status          TournamentStatus @default(REGISTRATION)
-  teams           Team[]    @relation("TeamTournaments")
-  matches         Match[]
-  bannerImage     String?
-  bannerImageHint String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-}
-
-model Match {
-  id           String      @id @default(uuid())
-  team1        Team        @relation("Team1Matches", fields: [team1Id], references: [id])
-  team1Id      String
-  team2        Team        @relation("Team2Matches", fields: [team2Id], references: [id])
-  team2Id      String
-  team1Score   Int?
-  team2Score   Int?
-  status       MatchStatus
-  scheduledAt  DateTime
-  finishedAt   DateTime?
-  tournament   Tournament? @relation(fields: [tournamentId], references: [id])
-  tournamentId String?
-  location     String?
-  refereeName  String?
-  results      MatchResult[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model MatchResult {
-  id          String   @id @default(uuid())
-  match       Match    @relation(fields: [matchId], references: [id])
-  matchId     String
-  reportedBy  User     @relation(fields: [reportedById], references: [id])
-  reportedById String   @unique
-  team1Score  Int
-  team2Score  Int
-  evidence    String?
-  status      String   @default("pending") // pending, confirmed, disputed
-  createdAt   DateTime @default(now())
-}
-
-enum TournamentStatus {
-  REGISTRATION
-  ONGOING
-  FINISHED
-  CANCELLED
-}
+// =====================================
+// ENUMS
+// =====================================
 
 enum MatchStatus {
   PLANNED
@@ -118,4 +20,180 @@ enum MatchStatus {
   FINISHED
   DISPUTED
   CANCELLED
+}
+
+enum TournamentStatus {
+  REGISTRATION
+  ONGOING
+  FINISHED
+}
+
+// =====================================
+// CORE MODELS
+// =====================================
+
+model User {
+  id                      String            @id @default(uuid())
+  email                   String            @unique
+  name                    String
+  passwordHash            String
+  role                    String
+  avatar                  String?
+  status                  String?           @default("Активен")
+  xp                      Int?              @default(0)
+  location                String?
+  mainSport               String?
+  isVerified              Boolean?          @default(false)
+  dateOfBirth             DateTime?
+  preferredSports         Json? // array of strings
+  contacts                Json? // object like { telegram, discord }
+
+  captainOf               Team[]            @relation("CaptainTeams")
+  teams                   Team[]            @relation("TeamMembers")
+  createdTrainingPrograms TrainingProgram[] @relation("ProgramCreator")
+
+  @@index([email])
+}
+
+model Team {
+  id             String       @id @default(uuid())
+  name           String       @unique
+  slug           String       @unique
+  logo           String?
+  motto          String?
+  description    String?
+  dataAiHint     String?      @map("data_ai_hint")
+  game           String
+  wins           Int          @default(0)
+  losses         Int          @default(0)
+  draws          Int          @default(0)
+  rank           Int          @default(0)
+  captainId      String
+  captain        User         @relation("CaptainTeams", fields: [captainId], references: [id])
+  members        User[]       @relation("TeamMembers")
+  tournaments    Tournament[] @relation("TournamentTeams")
+  matchesAsTeam1 Match[]      @relation("Team1Matches")
+  matchesAsTeam2 Match[]      @relation("Team2Matches")
+  
+  homePlaygroundId String?
+  homePlayground   Playground? @relation("HomeTeams", fields: [homePlaygroundId], references: [id])
+
+  @@index([slug])
+  @@index([game])
+}
+
+model Tournament {
+  id              String   @id @default(uuid())
+  name            String
+  slug            String   @unique
+  game            String
+  format          String // e.g., 'single_elimination', 'round_robin'
+  prizePool       Float
+  startDate       DateTime
+  status          TournamentStatus
+  bannerImage     String?
+  bannerImageHint String?
+
+  teams           Team[]   @relation("TournamentTeams")
+  matches         Match[]
+
+  @@index([slug])
+}
+
+model Match {
+  id           String      @id @default(uuid())
+  status       MatchStatus
+  scheduledAt  DateTime
+  finishedAt   DateTime?
+  team1Score   Int?
+  team2Score   Int?
+  location     String?
+  refereeName  String?
+
+  team1Id      String
+  team2Id      String
+  tournamentId String?
+
+  team1        Team        @relation("Team1Matches", fields: [team1Id], references: [id])
+  team2        Team        @relation("Team2Matches", fields: [team2Id], references: [id])
+  tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  
+  @@index([status])
+}
+
+// =====================================
+// NEW MODELS
+// =====================================
+
+model Playground {
+  id             String    @id @default(uuid())
+  name           String
+  address        String    @unique
+  type           String
+  coverImage     String?
+  coverImageHint String?
+  surface        String
+  features       Json?     // Array of strings
+  rating         Float
+  checkIns       Int       @default(0)
+  status         String    @default("pending_moderation") // approved, pending_moderation
+  creatorId      String
+  
+  homeTeams      Team[]    @relation("HomeTeams")
+
+  @@index([type])
+  @@index([address])
+}
+
+model Exercise {
+  id              String             @id @default(uuid())
+  name            String             @unique
+  description     String
+  category        String
+  equipment       String
+  image           String?
+  imageHint       String?
+  techniqueTips   Json?
+  commonMistakes  Json?
+  alternatives    Json?
+  
+  workouts        ExerciseInWorkout[]
+}
+
+model TrainingProgram {
+  id              String    @id @default(uuid())
+  name            String
+  description     String
+  goal            String
+  daysPerWeek     Int
+  splitType       String
+  authorId        String
+  coverImage      String?
+  coverImageHint  String?
+  isAiGenerated   Boolean   @default(false)
+  
+  weeklySplit     Json? // Detailed plan for each day
+
+  creator         User      @relation("ProgramCreator", fields: [authorId], references: [id])
+}
+
+model ExerciseInWorkout {
+  id            String      @id @default(uuid())
+  workoutDayId  String
+  exerciseId    String
+  sets          String
+  reps          String
+  plannedWeight String?
+  
+  workoutDay    WorkoutDay  @relation(fields: [workoutDayId], references: [id])
+  exercise      Exercise    @relation(fields: [exerciseId], references: [id])
+}
+
+model WorkoutDay {
+  id                String              @id @default(uuid())
+  trainingProgramId String
+  dayNumber         Int
+  title             String
+  
+  exercises         ExerciseInWorkout[]
 }
