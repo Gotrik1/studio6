@@ -42,6 +42,7 @@ import { generatePromotionDetails, type GeneratePromotionDetailsInput, type Gene
 import { generatePromotionImage, type GeneratePromotionImageOutput } from '@/ai/flows/generate-promotion-image-flow';
 import { generateDashboardTip, type GenerateDashboardTipInput, type GenerateDashboardTipOutput } from '@/ai/flows/generate-dashboard-tip-flow';
 import { findCoaches, type FindCoachesInput, type FindCoachesOutput } from '@/ai/flows/find-coaches-flow';
+import { analyzeMatchChallenge, type AnalyzeMatchChallengeInput, type AnalyzeMatchChallengeOutput } from '@/ai/flows/analyze-match-challenge-flow';
 
 
 @Injectable()
@@ -212,5 +213,9 @@ export class AiService {
 
   async findCoaches(input: FindCoachesInput): Promise<FindCoachesOutput> {
     return findCoaches(input);
+  }
+
+  async analyzeMatchChallenge(input: AnalyzeMatchChallengeInput): Promise<AnalyzeMatchChallengeOutput> {
+    return analyzeMatchChallenge(input);
   }
 }

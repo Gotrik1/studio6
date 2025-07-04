@@ -85,6 +85,8 @@ import { GenerateDashboardTipDto } from './dto/generate-dashboard-tip.dto';
 import type { GenerateDashboardTipOutput } from '@/ai/flows/schemas/generate-dashboard-tip-schema';
 import { FindCoachesDto } from './dto/find-coaches.dto';
 import type { FindCoachesOutput } from '@/ai/flows/schemas/find-coaches-schema';
+import { AnalyzeMatchChallengeDto } from './dto/analyze-match-challenge.dto';
+import type { AnalyzeMatchChallengeOutput } from '@/ai/flows/schemas/analyze-match-challenge-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -418,5 +420,13 @@ export class AiController {
     @Body() findCoachesDto: FindCoachesDto,
   ): Promise<FindCoachesOutput> {
     return this.aiService.findCoaches(findCoachesDto.input);
+  }
+
+  @Post('analyze-match-challenge')
+  @HttpCode(HttpStatus.OK)
+  async analyzeMatchChallenge(
+    @Body() analyzeMatchChallengeDto: AnalyzeMatchChallengeDto,
+  ): Promise<AnalyzeMatchChallengeOutput> {
+    return this.aiService.analyzeMatchChallenge(analyzeMatchChallengeDto.input);
   }
 }
