@@ -1,3 +1,4 @@
+
 name: Docker Compose CI
 
 on:
@@ -71,6 +72,22 @@ jobs:
       - name: Show backend logs on failure
         if: failure()
         run: docker-compose logs backend
+
+      - name: Install frontend dependencies
+        run: npm install --workspace=frontend
+
+      - name: Lint frontend
+        run: npm run lint --workspace=frontend
+
+      - name: Typecheck frontend
+        run: npm run typecheck --workspace=frontend
+
+      - name: Build frontend
+        run: npm run build --workspace=frontend
+
+      - name: Show frontend logs on failure
+        if: failure()
+        run: docker-compose logs frontend
 
       - name: Tear down
         if: always()
