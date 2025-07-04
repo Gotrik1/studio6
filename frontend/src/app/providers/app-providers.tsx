@@ -1,7 +1,6 @@
 'use client';
 
 import { AccentThemeProvider } from "@/shared/context/accent-theme-provider";
-import { TeamProvider } from "@/shared/context/team-provider";
 import { TrainingProvider } from "@/shared/context/training-provider";
 import { NutritionProvider } from "@/shared/context/nutrition-provider";
 import { JoinRequestProvider } from "@/shared/context/join-request-provider";
@@ -21,7 +20,6 @@ export function AppProviders({
         <InventoryProvider>
             <CartProvider>
                 <AccentThemeProvider>
-                    <TeamProvider>
                     <TrainingProvider>
                         <NutritionProvider>
                             <MeasurementsProvider>
@@ -37,7 +35,6 @@ export function AppProviders({
                             </MeasurementsProvider>
                         </NutritionProvider>
                     </TrainingProvider>
-                    </TeamProvider>
                 </AccentThemeProvider>
             </CartProvider>
         </InventoryProvider>

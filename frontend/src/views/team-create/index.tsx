@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -14,12 +13,13 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateTeamConcept, type GenerateTeamConceptOutput } from '@/shared/api/genkit/flows/generate-team-concept-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { useTeams } from '@/shared/context/team-provider';
+import { createTeamAction } from '@/entities/team/api/create-team';
+import { useSession } from '@/shared/lib/session/client';
 
 export function NewTeamPage() {
     const { toast } = useToast();
     const router = useRouter();
-    const { addTeam } = useTeams();
+    const { user } = useSession();
 
     const [prompt, setPrompt] = useState('Агрессивная футбольная команда из Москвы, наш символ - волк.');
     const [isLoading, setIsLoading] = useState(false);
@@ -48,29 +48,38 @@ export function NewTeamPage() {
         }
     };
 
-    const handleCreateTeam = () => {
-        if (!result) return;
+    const handleCreateTeam = async () => {
+        if (!result || !user) return;
         
         setIsCreating(true);
 
-        // Simulate API call
-        setTimeout(() => {
-            addTeam({
-                name: result.name,
-                motto: result.motto,
-                logo: result.avatarDataUri,
-                dataAiHint: prompt.split(' ').slice(0, 2).join(' '),
-                game: 'Футбол', // In a real app, this would be selected
-                homePlaygroundId: null,
-            });
+        const newTeamData = {
+            name: result.name,
+            motto: result.motto,
+            description: result.description,
+            logo: result.avatarDataUri,
+            dataAiHint: prompt.split(' ').slice(0, 2).join(' '),
+            game: 'Футбол', // This should be a form field in a real app
+            homePlaygroundId: null,
+            captainId: user.id,
+        };
 
+        const createResult = await createTeamAction(newTeamData);
+        
+        if (createResult.success) {
             toast({
                 title: 'Команда создана!',
                 description: `Команда "${result.name}" успешно создана.`,
             });
-            setIsCreating(false);
-            router.push('/teams/dvotovyie-atlety'); // Redirect to new team's page (mocked)
-        }, 1000);
+            router.push(`/teams/${createResult.data.slug}`);
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: createResult.error || 'Не удалось создать команду.',
+            });
+        }
+        setIsCreating(false);
     };
     
      const handleFieldChange = (field: keyof GenerateTeamConceptOutput, value: string) => {
