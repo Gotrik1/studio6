@@ -1,0 +1,70 @@
+name: Docker Compose CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        options: --health-cmd="pg_isready -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }}" --health-interval=10s --health-timeout=5s --health-retries=5
+
+    steps:
+      # Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # Set up Docker Cache (optional)
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      # Install OpenSSL to handle Prisma issues
+      - name: Install OpenSSL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssl
+
+      # Build and start containers
+      - name: Build and start containers
+        run: |
+          docker-compose -f docker-compose.yml up -d --build
+
+      # Wait for services to be ready
+      - name: Wait for services to be ready
+        run: |
+          docker-compose exec -T db pg_isready -U ${{ secrets.POSTGRES_USER }} -d ${{ secrets.POSTGRES_DB }}
+          docker-compose exec -T redis redis-cli ping
+          docker-compose exec -T kafka kafka-topics --list --bootstrap-server kafka:9092
+
+      # Run tests (if applicable)
+      - name: Run tests
+        run: |
+          docker-compose exec backend npm test
+
+      # Shutdown the containers after testing
+      - name: Shutdown containers
+        run: |
+          docker-compose down
