@@ -11,7 +11,7 @@ version: '3.8'
 # - Frontend (Next.js): http://localhost:9002
 # - Backend (NestJS): http://localhost:3001 (for direct access)
 # - Kong API Gateway: http://localhost:8000 (main entry point)
-# - Konga (Kong UI): http://localhost:1337
+# - King GUI (Kong UI): http://localhost:8080
 # - Keycloak (IdP): http://localhost:8180
 # - pgAdmin (DB UI): http://localhost:5050
 
@@ -99,7 +99,7 @@ services:
     restart: always
 
   kong-db:
-    image: postgres:15
+    image: postgres:15.1-alpine
     restart: always
     environment:
       POSTGRES_USER: ${KONG_PG_USER}
@@ -114,7 +114,7 @@ services:
       retries: 5
 
   kong-migrations:
-    image: kong:latest
+    image: kong:3.0.1-alpine
     command: "kong migrations bootstrap"
     depends_on:
       kong-db:
@@ -127,7 +127,7 @@ services:
     restart: on-failure
 
   kong:
-    image: kong:latest
+    image: kong:3.0.1-alpine
     restart: always
     depends_on:
       kong-migrations:
@@ -141,21 +141,25 @@ services:
       KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
       KONG_ADMIN_LISTEN: ${KONG_ADMIN_LISTEN}
       KONG_PROXY_LISTEN: ${KONG_PROXY_LISTEN}
-      KONG_PLUGINS: bundled,oidc # Add other plugins as needed
+      KONG_PLUGINS: bundled,oidc
+      KONG_PROXY_ACCESS_LOG: /dev/stdout
+      KONG_ADMIN_ACCESS_LOG: /dev/stdout
+      KONG_PROXY_ERROR_LOG: /dev/stderr
+      KONG_ADMIN_ERROR_LOG: /dev/stderr
     ports:
       - "8000:8000" # Proxy
       - "8443:8443" # SSL Proxy
       - "8001:8001" # Admin API
 
-  konga:
-    image: pantsel/konga
-    restart: always
-    ports:
-      - "1337:1337"
-    environment:
-      KONGA_NODE_TLS_REJECT_UNAUTHORIZED: ${KONGA_NODE_TLS_REJECT_UNAUTHORIZED}
-    depends_on:
-      - kong
+  # The King GUI service requires a Dockerfile in the project root.
+  # If you have one, you can uncomment this section.
+  # king:
+  #   build:
+  #     context: .
+  #   container_name: king
+  #   restart: on-failure
+  #   ports:
+  #     - 8080:80
 
   # ---------------------------------------------------
   # Application Services (Frontend & Backend)
