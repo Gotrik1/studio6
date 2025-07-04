@@ -225,6 +225,8 @@ services:
     volumes:
       - ./frontend/src:/app/src
       - ./frontend/public:/app/public
+    env_file:
+      - ./.env
     depends_on:
       - backend
       - kong

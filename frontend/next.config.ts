@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
       {
         source: '/api/:path*',
         // In a Docker environment, the frontend needs to talk to the backend service name.
-        destination: 'http://backend:3001/:path*',
+        // For local development, it will fall back to localhost.
+        destination: `${process.env.BACKEND_URL || 'http://localhost:3001'}/:path*`,
       },
     ]
   },
