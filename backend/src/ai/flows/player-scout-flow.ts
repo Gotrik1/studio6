@@ -1,36 +1,46 @@
+
 'use server';
 
 import { ai } from '../genkit';
 import { z } from 'zod';
 import { PlayerScoutInputSchema, PlayerScoutOutputSchema, PlayerProfileSchema } from './schemas/player-scout-schema';
 import type { PlayerScoutInput, PlayerScoutOutput } from './schemas/player-scout-schema';
-import { userList } from '@/shared/lib/mock-data/users';
+import { PrismaService } from '@/prisma/prisma.service';
+
+const prisma = new PrismaService();
 
 const findPlayersTool_Backend = ai.defineTool(
   {
     name: 'findPlayersTool_Backend',
     description: 'Finds players based on a query, including role, playstyle, or availability.',
-    inputSchema: z.string().describe("A query to filter players, e.g., 'Нападающий', 'спокойный стиль'."),
+    inputSchema: z.string().describe("A query to filter players, e.g., 'Нападающий', 'спокойный стиль', 'Valorant'."),
     outputSchema: z.array(PlayerProfileSchema),
   },
   async (query) => {
     const lowercasedQuery = query.toLowerCase();
-    // Simple keyword filtering for demo
-    return userList
-      .filter(player => 
-          player.name.toLowerCase().includes(lowercasedQuery) ||
-          player.role.toLowerCase().includes(lowercasedQuery) ||
-          player.statsSummary.toLowerCase().includes(lowercasedQuery)
-      )
-      .map(p => ({
-          id: p.id,
-          name: p.name,
-          role: p.role,
-          avatar: p.avatar,
-          profileUrl: p.profileUrl,
-          statsSummary: p.statsSummary,
-      }))
-      .slice(0, 5); // Return up to 5 for the LLM to reason over
+    
+    // In a real app, this would use more sophisticated search like full-text or semantic.
+    const users = await prisma.user.findMany({
+        where: {
+            OR: [
+                { name: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { role: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { mainSport: { contains: lowercasedQuery, mode: 'insensitive' } }
+            ],
+            // Exclude administrative roles from regular player scouting
+            role: { notIn: ['Администратор', 'Модератор', 'Судья'] }
+        },
+        take: 10, // Limit results to LLM
+    });
+
+    return users.map(p => ({
+        id: p.id,
+        name: p.name,
+        role: p.role,
+        avatar: p.avatar || 'https://placehold.co/100x100.png',
+        profileUrl: `/profiles/player/${p.id}`,
+        statsSummary: `Роль: ${p.role}. Основной вид спорта: ${p.mainSport || 'не указан'}.`,
+    }));
   }
 );
 
