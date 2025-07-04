@@ -1,3 +1,4 @@
+
 import { Controller, Post, Body, HttpCode, HttpStatus, Get } from '@nestjs/common';
 import { AiService } from './ai.service';
 import { GenerateTeamConceptDto } from './dto/generate-team-concept.dto';
@@ -16,11 +17,13 @@ import { GenerateContentDto } from './dto/generate-content.dto';
 import { GenerateDialogueDto } from './dto/generate-dialogue.dto';
 import { MultiSpeakerTtsDto } from './dto/multi-speaker-tts.dto';
 import { AnalyzeDisputeDto } from './dto/analyze-dispute.dto';
+import { TextToSpeechDto } from './dto/text-to-speech.dto';
 import type { AnalyzeContentOutput } from '@/ai/flows/schemas/analyze-content-generation-schema';
 import type { GenerateContentOutput } from '@/ai/flows/schemas/generate-content-schema';
 import type { GenerateDialogueOutput } from '@/ai/flows/schemas/dialogue-generation-schema';
 import type { MultiSpeakerTtsOutput } from '@/ai/flows/schemas/multi-speaker-tts-schema';
 import type { AnalyzeDisputeOutput } from '@/ai/flows/schemas/analyze-dispute-schema';
+import type { TextToSpeechOutput } from '@/ai/flows/schemas/tts-schema';
 
 @Controller('ai')
 export class AiController {
@@ -110,5 +113,13 @@ export class AiController {
     @Body() analyzeDisputeDto: AnalyzeDisputeDto,
   ): Promise<AnalyzeDisputeOutput> {
     return this.aiService.analyzeDispute(analyzeDisputeDto);
+  }
+
+  @Post('text-to-speech')
+  @HttpCode(HttpStatus.OK)
+  async textToSpeech(
+    @Body() textToSpeechDto: TextToSpeechDto,
+  ): Promise<TextToSpeechOutput> {
+    return this.aiService.textToSpeech(textToSpeechDto.text);
   }
 }

@@ -5,7 +5,7 @@
 // import './flows/generate-team-avatar-flow'; // Now part of generate-team-concept on backend
 import './flows/analyze-security-flow';
 // import './flows/create-team-flow'; // Now part of generate-team-concept on backend
-import './flows/tts-flow'; // Migrating this one by one
+// import './flows/tts-flow'; // Moved to backend
 // import './flows/dialogue-generation-flow'; // Moved to backend
 // import './flows/multi-speaker-tts-flow'; // Moved to backend
 import './flows/generate-post-image-flow';
