@@ -1,9 +1,10 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode, HttpStatus, Get } from '@nestjs/common';
 import { AiService } from './ai.service';
 import { GenerateTeamConceptDto } from './dto/generate-team-concept.dto';
 import type { GenerateTeamConceptOutput } from '../../ai/flows/schemas/generate-team-concept-schema';
 import { GenerateUserAvatarDto } from './dto/generate-user-avatar.dto';
 import type { GenerateUserAvatarOutput } from '../../ai/flows/schemas/generate-user-avatar-schema';
+import type { NewsWithAudio } from '../../ai/flows/schemas/generate-platform-news-schema';
 
 @Controller('ai')
 export class AiController {
@@ -23,5 +24,11 @@ export class AiController {
     @Body() generateUserAvatarDto: GenerateUserAvatarDto,
   ): Promise<GenerateUserAvatarOutput> {
     return this.aiService.generateUserAvatar(generateUserAvatarDto.prompt);
+  }
+
+  @Get('dashboard-news')
+  @HttpCode(HttpStatus.OK)
+  async getDashboardNews(): Promise<NewsWithAudio> {
+      return this.aiService.generateDashboardNews();
   }
 }

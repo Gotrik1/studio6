@@ -6,10 +6,21 @@ import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Bot, AlertCircle, RefreshCw, Volume2 } from 'lucide-react';
-import { generatePlatformNewsWithAudio, type NewsWithAudio } from '@/shared/api/genkit/flows/generate-platform-news-flow';
 import Link from 'next/link';
 import { Badge } from '@/shared/ui/badge';
 import { cn } from '@/shared/lib/utils';
+import type { NewsWithAudio } from '@/shared/api/genkit/flows/schemas/generate-platform-news-schema';
+
+async function fetchDashboardNews(): Promise<NewsWithAudio> {
+    const response = await fetch('/api/ai/dashboard-news', {
+        cache: 'no-store'
+    });
+    if (!response.ok) {
+        throw new Error('Failed to fetch dashboard news');
+    }
+    return response.json();
+}
+
 
 export function AiNewsDigest() {
     const [data, setData] = useState<NewsWithAudio | null>(null);
@@ -21,7 +32,7 @@ export function AiNewsDigest() {
         setError(null);
         setData(null);
         try {
-            const newsData = await generatePlatformNewsWithAudio();
+            const newsData = await fetchDashboardNews();
             setData(newsData);
         } catch (e) {
             console.error('Failed to fetch AI news:', e);
