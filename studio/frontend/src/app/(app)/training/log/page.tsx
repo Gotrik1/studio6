@@ -1,3 +1,3 @@
-import { TrainingLogPage } from '@/views/training-log';
+import TrainingLogPage from '@/views/training-log';
 
 export default TrainingLogPage;

@@ -12,9 +12,8 @@ import { useRouter } from 'next/navigation';
 import { useTraining } from '@/shared/context/training-provider';
 import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
 import { useToast } from '@/shared/hooks/use-toast';
-import { CardContent } from '@/shared/ui/card';
 
-export default function TrainingLogPage() {
+export function TrainingLogPage() {
     const { toast } = useToast();
     const router = useRouter();
     const { currentProgram } = useTraining();

@@ -10,7 +10,7 @@ import { useTraining } from '@/shared/context/training-provider';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 
-export default function TrainingProgramConstructorPage() {
+export function TrainingProgramConstructorPage() {
     const { addProgram } = useTraining();
     const { toast } = useToast();
     const router = useRouter();
