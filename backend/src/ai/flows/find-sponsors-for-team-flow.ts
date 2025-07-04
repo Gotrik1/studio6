@@ -10,13 +10,15 @@
 
 import { ai } from '../genkit';
 import { z } from 'zod';
-import { sponsorsList } from '@/shared/lib/mock-data/sponsors';
+import { PrismaService } from '@/prisma/prisma.service';
 import {
     FindSponsorsForTeamInputSchema,
     FindSponsorsForTeamOutputSchema,
     SponsorSchema
 } from './schemas/find-sponsors-for-team-schema';
 import type { FindSponsorsForTeamInput, FindSponsorsForTeamOutput } from './schemas/find-sponsors-for-team-schema';
+
+const prisma = new PrismaService();
 
 export type { FindSponsorsForTeamInput, FindSponsorsForTeamOutput };
 
@@ -29,14 +31,24 @@ const findSponsorsTool_Backend = ai.defineTool(
   },
   async (query) => {
     const lowercasedQuery = query.toLowerCase();
-    // Simple keyword filtering for demo
-    return sponsorsList
-      .filter(sponsor => 
-          sponsor.name.toLowerCase().includes(lowercasedQuery) ||
-          sponsor.description.toLowerCase().includes(lowercasedQuery) ||
-          sponsor.interests.some(interest => interest.toLowerCase().includes(lowercasedQuery))
-      )
-      .slice(0, 5); // Return up to 5 for the LLM to reason over
+    
+    // In a real app, this could use more sophisticated search like full-text or semantic.
+    const sponsors = await prisma.sponsor.findMany({
+        where: {
+            OR: [
+                { name: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { description: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { interests: { has: lowercasedQuery } }
+            ]
+        },
+        take: 10,
+    });
+    
+    return sponsors.map(s => ({
+        ...s,
+        logo: s.logo || '',
+        logoHint: s.logoHint || 'sponsor logo',
+    }));
   }
 );
 
