@@ -1,4 +1,6 @@
 
+'use server';
+
 /**
  * @fileOverview An AI agent for generating team avatars.
  *
@@ -14,10 +16,10 @@ import type { GenerateTeamAvatarInput, GenerateTeamAvatarOutput } from './schema
 export type { GenerateTeamAvatarInput, GenerateTeamAvatarOutput };
 
 export async function generateTeamAvatar(input: GenerateTeamAvatarInput): Promise<GenerateTeamAvatarOutput> {
-  return generateTeamAvatarFlow(input);
+  return generateTeamAvatarFlow_Backend(input);
 }
 
-const generateTeamAvatarFlow = ai.defineFlow(
+const generateTeamAvatarFlow_Backend = ai.defineFlow(
   {
     name: 'generateTeamAvatarFlow_Backend',
     inputSchema: GenerateTeamAvatarInputSchema,

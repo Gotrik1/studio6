@@ -1,4 +1,6 @@
 
+'use server';
+
 /**
  * @fileOverview An AI agent for generating user avatars.
  *
@@ -14,10 +16,10 @@ import type { GenerateUserAvatarInput, GenerateUserAvatarOutput } from './schema
 export type { GenerateUserAvatarInput, GenerateUserAvatarOutput };
 
 export async function generateUserAvatar(input: GenerateUserAvatarInput): Promise<GenerateUserAvatarOutput> {
-  return generateUserAvatarFlow(input);
+  return generateUserAvatarFlow_Backend(input);
 }
 
-const generateUserAvatarFlow = ai.defineFlow(
+const generateUserAvatarFlow_Backend = ai.defineFlow(
   {
     name: 'generateUserAvatarFlow_Backend',
     inputSchema: GenerateUserAvatarInputSchema,

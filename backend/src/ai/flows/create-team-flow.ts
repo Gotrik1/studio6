@@ -1,4 +1,6 @@
 
+'use server';
+
 /**
  * @fileOverview An AI agent for generating creative team names and mottos.
  *
@@ -14,7 +16,7 @@ import type { CreateTeamInput, CreateTeamOutput } from './schemas/create-team-sc
 export type { CreateTeamInput, CreateTeamOutput };
 
 export async function createTeam(input: CreateTeamInput): Promise<CreateTeamOutput> {
-  return createTeamFlow(input);
+  return createTeamFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
@@ -28,7 +30,7 @@ Description: {{{description}}}
 Generate a team name and motto.`,
 });
 
-const createTeamFlow = ai.defineFlow(
+const createTeamFlow_Backend = ai.defineFlow(
   {
     name: 'createTeamFlow_Backend',
     inputSchema: CreateTeamInputSchema,

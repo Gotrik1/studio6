@@ -1,4 +1,6 @@
 
+'use server';
+
 /**
  * @fileOverview An AI agent for generating a complete team concept from a single prompt.
  *
@@ -16,7 +18,7 @@ import type { GenerateTeamConceptInput, GenerateTeamConceptOutput } from './sche
 export type { GenerateTeamConceptInput, GenerateTeamConceptOutput };
 
 export async function generateTeamConcept(input: GenerateTeamConceptInput): Promise<GenerateTeamConceptOutput> {
-  return generateTeamConceptFlow(input);
+  return generateTeamConceptFlow_Backend(input);
 }
 
 // Define a new, more comprehensive prompt for generating all text content at once.
@@ -35,7 +37,7 @@ Team Idea: {{{input}}}
 });
 
 
-const generateTeamConceptFlow = ai.defineFlow(
+const generateTeamConceptFlow_Backend = ai.defineFlow(
   {
     name: 'generateTeamConceptFlow_Backend',
     inputSchema: GenerateTeamConceptInputSchema,

@@ -16,7 +16,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
 
   const { email, password } = validatedFields.data;
 
-  let user;
+  let data;
   try {
     const response = await fetch(`/api/auth/login`, {
         method: 'POST',
@@ -29,16 +29,20 @@ export async function login(values: z.infer<typeof loginSchema>) {
         return { error: errorData.message || 'Неверный email или пароль.' };
     }
 
-    user = await response.json();
+    data = await response.json();
 
   } catch (error) {
     console.error(error);
     return { error: 'Не удалось подключиться к серверу. Пожалуйста, попробуйте еще раз.' };
   }
   
+  if (!data || !data.user) {
+      return { error: "Не удалось получить данные пользователя от сервера." };
+  }
+  
   // If we got here, user is valid. Set cookie and redirect.
   const cookieStore = await cookies();
-  cookieStore.set('session', JSON.stringify(user), {
+  cookieStore.set('session', JSON.stringify(data.user), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 60 * 24 * 7, // One week

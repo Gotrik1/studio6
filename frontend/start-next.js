@@ -1,7 +1,7 @@
 const { spawn } = require('child_process');
 
 // Фильтруем только dev и turbopack
-const args = ['dev', '--turbopack'];
+const args = ['dev'];
 
 // Получаем порт и hostname из argv (с конца)
 const portArgIndex = process.argv.findIndex(arg => /^\d+$/.test(arg));

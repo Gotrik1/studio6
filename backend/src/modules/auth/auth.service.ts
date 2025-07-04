@@ -30,15 +30,19 @@ export class AuthService {
   }
 
   async login(email: string, pass: string) {
-     // Handle special admin user case for the prototype
+    // Handle special admin user case for the prototype
     if (email === 'admin@example.com' && pass === 'superuser') {
-      const adminPayload = {
-        sub: 'admin-001',
+      const adminUser = {
+        id: 'admin-001',
         name: 'Superuser',
+        email: 'admin@example.com',
         role: 'Администратор',
+        avatar: 'https://placehold.co/100x100.png',
       };
+      const tokenPayload = { sub: adminUser.id, name: adminUser.name, role: adminUser.role };
       return {
-        access_token: this.jwtService.sign(adminPayload),
+        access_token: this.jwtService.sign(tokenPayload),
+        user: adminUser
       };
     }
 
@@ -50,6 +54,13 @@ export class AuthService {
     const payload = { name: user.name, sub: user.id, role: user.role };
     return {
       access_token: this.jwtService.sign(payload),
+      user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar || 'https://placehold.co/100x100.png',
+          role: user.role
+      }
     };
   }
 }
