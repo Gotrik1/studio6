@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { TeamDetails } from '@/entities/team/model/types';

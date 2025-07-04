@@ -10,28 +10,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/sha
 import { Input } from "@/shared/ui/input";
 import { Search, PlusCircle, Gamepad2, Users } from "lucide-react";
 import { Skeleton } from '@/shared/ui/skeleton';
-import { fetchTeams } from '@/entities/team/api/teams';
+import { useTeams } from '@/shared/context/team-provider';
 import type { Team } from "@/entities/team/model/types";
 
 export function TeamsListPage() {
-    const [teams, setTeams] = useState<Team[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { teams, loading } = useTeams();
     const [searchQuery, setSearchQuery] = useState('');
     const [gameFilter, setGameFilter] = useState('all');
-
-    useEffect(() => {
-        async function loadTeams() {
-            try {
-                const fetchedTeams = await fetchTeams();
-                setTeams(fetchedTeams);
-            } catch (error) {
-                console.error("Failed to fetch teams:", error);
-            } finally {
-                setLoading(false);
-            }
-        }
-        loadTeams();
-    }, []);
 
     const uniqueGames = useMemo(() => {
         if (loading) return ['all'];
