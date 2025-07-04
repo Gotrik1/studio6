@@ -1,14 +1,14 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Card, CardHeader, CardContent, CardTitle } from "@/shared/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import { Badge } from "@/shared/ui/badge";
-import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, BarChart3, Home, Heart } from 'lucide-react';
+import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, BarChart3, Home, Heart, Loader2 } from 'lucide-react';
 import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
@@ -17,9 +17,9 @@ import { challenges } from "@/shared/lib/mock-data/team-details";
 import { DonationDialog } from '@/features/donation-dialog/index';
 import { TeamChatInterface } from '@/widgets/team-chat-interface';
 import { TeamStatsTab } from '@/widgets/team-stats-tab';
-import { ApplyToTeamDialog } from '@/widgets/apply-to-team-dialog';
-import { TeamOverviewDashboard } from '@/widgets/team-overview-dashboard';
 import type { TeamDetails } from '@/entities/team/model/types';
+import { useToast } from '@/shared/hooks/use-toast';
+import { joinTeamAction } from '@/entities/team/api/join-team';
 
 interface TeamDetailsPageProps {
   team: TeamDetails;
@@ -27,15 +27,28 @@ interface TeamDetailsPageProps {
 
 export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
     const { user: currentUser } = useSession();
+    const { toast } = useToast();
+    const [isPending, startTransition] = useTransition();
     const [isDonationOpen, setIsDonationOpen] = useState(false);
-    const [isApplyOpen, setIsApplyOpen] = useState(false);
 
     if (!team) {
         return <div>Команда не найдена.</div>;
     }
 
     const isCaptain = currentUser?.name === team.captainName || currentUser?.role === 'Администратор';
+    const isMember = team.roster.some(member => member.id === currentUser?.id);
     const homePlayground = playgroundsList.find(p => p.id === team.homePlaygroundId);
+
+    const handleJoinTeam = () => {
+        startTransition(async () => {
+            const result = await joinTeamAction(team.id, team.slug); 
+            if(result.success) {
+                toast({ title: "Вы присоединились к команде!", description: `Добро пожаловать в ${team.name}!` });
+            } else {
+                toast({ variant: 'destructive', title: "Ошибка", description: result.error });
+            }
+        });
+    };
 
     return (
         <>
@@ -71,7 +84,12 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                             <Button variant="outline" onClick={() => setIsDonationOpen(true)}>
                                 <Heart className="mr-2 h-4 w-4 text-red-500" />Поддержать
                             </Button>
-                            <Button variant="outline" onClick={() => setIsApplyOpen(true)}><UserPlus className="mr-2 h-4 w-4" />Подать заявку</Button>
+                            {!isMember && (
+                                 <Button onClick={handleJoinTeam} disabled={isPending}>
+                                    {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <UserPlus className="mr-2 h-4 w-4" />}
+                                    Вступить в команду
+                                </Button>
+                            )}
                             <Button><MessageCircle className="mr-2 h-4 w-4" />Написать</Button>
                             {isCaptain && (
                                 <Button asChild>
@@ -188,11 +206,6 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                 onOpenChange={setIsDonationOpen}
                 recipientName={team.name}
                 recipientType="команде"
-            />
-            <ApplyToTeamDialog
-                isOpen={isApplyOpen}
-                onOpenChange={setIsApplyOpen}
-                team={team}
             />
         </>
     );

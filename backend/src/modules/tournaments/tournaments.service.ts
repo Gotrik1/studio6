@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Tournament } from '@prisma/client';
+import { Tournament, ActivityType } from '@prisma/client';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
@@ -211,10 +211,11 @@ export class TournamentsService {
     };
 
     return {
+      id: tournament.id,
       name: tournament.name,
       slug: tournament.slug,
       game: tournament.game,
-      status: tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен',
+      status: tournament.status,
       image: tournament.bannerImage || 'https://placehold.co/2560x720.png',
       dataAiHint: tournament.bannerImageHint || 'esports tournament',
       description: tournament.description || 'Описание турнира отсутствует.',
@@ -240,6 +241,32 @@ export class TournamentsService {
     tournamentId: string,
     teamId: string,
   ): Promise<Tournament> {
+     const tournament = await this.prisma.tournament.findUnique({ where: { id: tournamentId } });
+    if (!tournament) {
+      throw new NotFoundException(`Турнир с ID ${tournamentId} не найден.`);
+    }
+
+    const team = await this.prisma.team.findUnique({ where: { id: teamId }, include: { captain: true } });
+    if (!team) {
+      throw new NotFoundException(`Команда с ID ${teamId} не найдена.`);
+    }
+    
+    // Add activity log for the captain
+    if (team.captain) {
+        await this.prisma.activity.create({
+            data: {
+                type: ActivityType.TOURNAMENT_REGISTERED,
+                userId: team.captain.id,
+                metadata: {
+                    teamName: team.name,
+                    tournamentName: tournament.name,
+                    tournamentHref: `/tournaments/${tournament.slug}`,
+                    icon: 'Trophy'
+                }
+            }
+        });
+    }
+
     return this.prisma.tournament.update({
       where: { id: tournamentId },
       data: {

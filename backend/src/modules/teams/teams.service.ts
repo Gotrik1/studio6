@@ -1,8 +1,8 @@
 
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Team } from '@prisma/client';
+import { Team, ActivityType } from '@prisma/client';
 import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -110,6 +110,7 @@ export class TeamsService {
     }));
 
     const result = {
+      id: team.id,
       name: team.name,
       motto: team.motto || 'Девиз не указан',
       logo: team.logo || 'https://placehold.co/100x100.png',
@@ -157,6 +158,31 @@ export class TeamsService {
   }
 
   async joinTeam(teamId: string, userId: string): Promise<Team> {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: { members: { where: { id: userId } } },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Команда с ID ${teamId} не найдена.`);
+    }
+
+    if (team.members.length > 0) {
+      throw new BadRequestException('Вы уже являетесь участником этой команды.');
+    }
+    
+    await this.prisma.activity.create({
+        data: {
+            type: ActivityType.TEAM_JOINED,
+            userId: userId,
+            metadata: {
+                teamName: team.name,
+                teamHref: `/teams/${team.slug}`,
+                icon: 'Users',
+            }
+        }
+    });
+
     return this.prisma.team.update({
       where: { id: teamId },
       data: {

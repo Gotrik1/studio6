@@ -127,6 +127,7 @@ export class UsersService {
 
     // Map to the shape expected by TeamsTab on the frontend
     return teams.map((team) => ({
+      id: team.id,
       name: team.name,
       role: 'Участник', // Simplified. A real app might need a pivot table with roles.
       logo: team.logo,

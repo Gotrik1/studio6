@@ -3,7 +3,6 @@
 import { AccentThemeProvider } from "@/shared/context/accent-theme-provider";
 import { TrainingProvider } from "@/shared/context/training-provider";
 import { NutritionProvider } from "@/shared/context/nutrition-provider";
-import { JoinRequestProvider } from "@/shared/context/join-request-provider";
 import { PDEconomyProvider } from "@/shared/context/pd-provider";
 import { LfgProvider } from "@/shared/context/lfg-provider";
 import { TrainingProposalProvider } from "@/shared/context/training-proposal-provider";
@@ -25,11 +24,9 @@ export function AppProviders({
                             <MeasurementsProvider>
                                 <PDEconomyProvider>
                                     <LfgProvider>
-                                        <JoinRequestProvider>
-                                            <TrainingProposalProvider>
-                                                {children}
-                                            </TrainingProposalProvider>
-                                        </JoinRequestProvider>
+                                        <TrainingProposalProvider>
+                                            {children}
+                                        </TrainingProposalProvider>
                                     </LfgProvider>
                                 </PDEconomyProvider>
                             </MeasurementsProvider>

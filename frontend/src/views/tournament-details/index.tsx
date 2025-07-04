@@ -7,31 +7,62 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import type { TournamentDetails } from "@/entities/tournament/model/types";
 import { Button } from "@/shared/ui/button";
-import { Calendar, Users, Trophy, FileText, Camera } from "lucide-react";
+import { Calendar, Users, Trophy, FileText, Camera, Loader2 } from "lucide-react";
 import { TournamentBracket } from "@/widgets/tournament-bracket";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { ScheduleTab } from "@/widgets/match-details-tabs/ui/schedule-tab";
 import { MediaTab } from "@/widgets/match-details-tabs/ui/media-tab";
+import { useState, useTransition } from "react";
+import { useToast } from "@/shared/hooks/use-toast";
+import { registerTeamForTournamentAction } from "@/entities/tournament/api/register-team";
+import { useSession } from "@/shared/lib/session/client";
+
+interface TournamentDetailsPageProps {
+  tournament: TournamentDetails;
+}
 
 export function TournamentDetailsPage({ tournament }: { tournament: TournamentDetails }) {
+    const { toast } = useToast();
+    const { user } = useSession();
+    const [isPending, startTransition] = useTransition();
 
     const getStatusVariant = (status: string) => {
         if (status === "Завершен") return "outline";
         if (status === "Регистрация") return "default";
         return "destructive";
     };
+    
+    const handleRegisterTeam = () => {
+        startTransition(async () => {
+            const result = await registerTeamForTournamentAction(tournament.id, tournament.slug);
+            if (result.success) {
+                toast({ title: 'Вы успешно зарегистрированы!', description: 'Ваша команда теперь в списке участников.' });
+            } else {
+                toast({ variant: 'destructive', title: 'Ошибка регистрации', description: result.error });
+            }
+        });
+    };
+    
+    const canRegister = tournament.status === 'REGISTRATION';
 
     return (
         <div className="space-y-6">
             <Card className="overflow-hidden">
-                <div className="relative h-48 sm:h-64">
+                 <div className="relative h-48 sm:h-64">
                     <Image src={tournament.image} alt={`${tournament.name} banner`} fill className="object-cover" data-ai-hint={tournament.dataAiHint} />
-                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
                         <div>
-                            <Badge variant={getStatusVariant(tournament.status)}>{tournament.status}</Badge>
+                            <Badge variant={getStatusVariant(tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен')}>{tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен'}</Badge>
                             <h1 className="font-headline text-2xl sm:text-4xl font-bold text-white shadow-lg mt-2">{tournament.name}</h1>
-                            <p className="text-lg text-white/90 shadow-md">{tournament.description}</p>
                         </div>
+                    </div>
+                     <div className="absolute top-4 right-4">
+                        {canRegister && (
+                            <Button onClick={handleRegisterTeam} disabled={isPending}>
+                                {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Trophy className="mr-2 h-4 w-4"/>}
+                                Зарегистрировать команду
+                            </Button>
+                        )}
                     </div>
                 </div>
             </Card>

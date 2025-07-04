@@ -4,17 +4,6 @@ import type { userList } from '@/shared/lib/mock-data/users';
 
 export type Team = (typeof teams)[0];
 
-// This type is now defined in entities/user/model/types.ts
-// export type UserTeam = {
-//   name: string;
-//   role: string;
-//   logo: string | null;
-//   dataAiHint: string | null;
-//   slug: string;
-//   rank: number;
-//   game: string;
-// };
-
 export type TeamRosterMember = {
     id: string;
     name: string;
@@ -25,6 +14,7 @@ export type TeamRosterMember = {
 };
 
 export type TeamDetails = {
+    id: string;
     name: string;
     motto: string;
     logo: string;

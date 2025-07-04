@@ -7,6 +7,7 @@ export type CareerHistoryItem = {
 };
 
 export type UserTeam = {
+  id: string;
   name: string;
   role: string;
   logo: string | null;
