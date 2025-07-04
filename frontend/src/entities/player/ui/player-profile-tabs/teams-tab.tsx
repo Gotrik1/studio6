@@ -4,13 +4,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
-import type { teams } from "@/shared/lib/mock-data/profiles";
 import { Badge } from "@/shared/ui/badge";
-
-type Team = (typeof teams)[0];
+import type { UserTeam } from '@/entities/team/model/types';
 
 interface TeamsTabProps {
-    teams: Team[];
+    teams: UserTeam[];
     isCurrentUser: boolean;
     userName: string;
 }
@@ -31,12 +29,12 @@ export function TeamsTab({ teams, isCurrentUser, userName }: TeamsTabProps) {
                         className="block h-full rounded-lg border p-6 flex flex-col items-center text-center transition-all hover:bg-muted/50 hover:border-primary"
                       >
                         <Image 
-                          src={team.logo} 
+                          src={team.logo || 'https://placehold.co/100x100.png'} 
                           alt={`Логотип ${team.name}`} 
                           width={80} 
                           height={80} 
                           className="rounded-full border"
-                          data-ai-hint={team.dataAiHint}
+                          data-ai-hint={team.dataAiHint || 'team logo'}
                         />
                         <h4 className="mt-4 font-headline text-xl font-semibold">{team.name}</h4>
                         <p className="text-sm text-muted-foreground">{team.role} в {team.game}</p>

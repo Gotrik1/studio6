@@ -3,6 +3,16 @@ import type { userList } from '@/shared/lib/mock-data/users';
 
 export type Team = (typeof teams)[0];
 
+export type UserTeam = {
+  name: string;
+  role: string;
+  logo: string | null;
+  dataAiHint: string | null;
+  slug: string;
+  rank: number;
+  game: string;
+};
+
 export type TeamRosterMember = {
     id: string;
     name: string;

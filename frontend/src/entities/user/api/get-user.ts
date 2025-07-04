@@ -2,8 +2,9 @@
 'use server';
 
 import type { User } from '@/shared/lib/types';
-import { achievements, teams, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
+import { achievements, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
+import type { UserTeam } from '@/entities/team/model/types';
 
 
 // Define the rich user profile type that the frontend expects
@@ -24,7 +25,7 @@ export type PlayerProfileData = User & {
 export type FullPlayerProfile = {
     user: PlayerProfileData;
     achievements: typeof achievements;
-    teams: typeof teams;
+    teams: UserTeam[];
     gallery: typeof gallery;
     careerHistory: typeof careerHistory;
     playerActivity: PlayerActivityItem[]; // This will be replaced by user.activities
@@ -45,7 +46,7 @@ export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | 
 
         const user: PlayerProfileData = await userResponse.json();
         // Gracefully handle if teams fetch fails
-        const userTeams = teamsResponse.ok ? await teamsResponse.json() : [];
+        const userTeams: UserTeam[] = teamsResponse.ok ? await teamsResponse.json() : [];
         
         // Transform backend activities to frontend format
         const playerActivity: PlayerActivityItem[] = user.activities.map((activity: any) => {
