@@ -202,6 +202,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3001:3001"
+    volumes:
+      - ./backend/src:/usr/src/app/src
+      - ./backend/prisma:/usr/src/app/prisma
     env_file:
       - ./.env
     depends_on:
@@ -221,6 +224,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "9002:9002"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
     depends_on:
       - backend
       - kong

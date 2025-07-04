@@ -1,28 +1,22 @@
-# 1. Install dependencies
-FROM node:20-slim AS deps
-WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm install --frozen-lockfile
+# Use an official Node.js runtime as a parent image
+FROM node:20-alpine
 
-# 2. Build the app
-FROM node:20-slim AS builder
+# Set the working directory in the container
 WORKDIR /usr/src/app
-COPY --from=deps /usr/src/app/node_modules ./node_modules
+
+# Copy package.json and package-lock.json
+COPY package*.json ./
+
+# Install app dependencies
+# Using --legacy-peer-deps for compatibility if needed, but will try without first
+RUN npm install
+
+# Bundle app source
 COPY . .
-# Generate prisma client
+
+# Generate Prisma client
 RUN npx prisma generate
-RUN npm run build
 
-# 3. Production image
-FROM node:20-slim AS runner
-WORKDIR /usr/src/app
-# Copy built app and production dependencies
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY package*.json ./
-COPY prisma ./prisma
-# Make sure to only install production dependencies
-RUN npm ci --only=production
-
-EXPOSE 3001
-CMD ["node", "dist/main"]
+# The command to run the app will be specified in docker-compose.yml
+# For production, this would typically be: CMD [ "npm", "run", "start:prod" ]
+# For development, we'll use the command in docker-compose to enable hot-reloading.
