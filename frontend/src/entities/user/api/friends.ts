@@ -1,36 +1,7 @@
 'use server';
 
 import { revalidatePath } from "next/cache";
-
-async function fetchWithAuth(url: string, options: RequestInit = {}) {
-    const { getSession } = await import('@/features/auth/session');
-    const session = await getSession();
-    if (!session?.access_token) {
-        throw new Error('Unauthorized');
-    }
-
-    const response = await fetch(`${process.env.BACKEND_URL}${url}`, {
-        ...options,
-        headers: {
-        ...options.headers,
-        'Authorization': `Bearer ${session.access_token}`,
-        'Content-Type': 'application/json',
-        },
-        cache: 'no-store',
-    });
-
-    if (!response.ok) {
-        const errorBody = await response.text();
-        console.error(`API Error on ${url}:`, response.status, errorBody);
-        throw new Error(`API request failed with status ${response.status}`);
-    }
-
-    if (response.status === 204 || response.headers.get('content-length') === '0') {
-        return null;
-    }
-
-    return response.json();
-}
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
 export type Friend = {
     id: string;
@@ -57,41 +28,50 @@ export type FriendSuggestion = {
 };
 
 export async function getFriends(): Promise<Friend[]> {
-    return fetchWithAuth('/friends');
+    const result = await fetchWithAuth('/friends');
+    if (!result.success) return [];
+    return result.data;
 }
 
 export async function getFriendRequests(): Promise<FriendRequest[]> {
-    return fetchWithAuth('/friends/requests');
+     const result = await fetchWithAuth('/friends/requests');
+    if (!result.success) return [];
+    return result.data;
 }
 
 export async function getFriendSuggestions(): Promise<FriendSuggestion[]> {
-    return fetchWithAuth('/friends/suggestions');
+    const result = await fetchWithAuth('/friends/suggestions');
+    if (!result.success) return [];
+    return result.data;
 }
 
 export async function sendFriendRequest(toId: string) {
-    await fetchWithAuth(`/friends/requests`, {
+    const result = await fetchWithAuth(`/friends/requests`, {
         method: 'POST',
         body: JSON.stringify({ toId }),
     });
+    if (!result.success) throw new Error(result.error);
     revalidatePath('/friends');
 }
 
 export async function addSuggestedFriend(suggestionId: string) {
-    // The suggestionId is the userId of the suggested friend.
     await sendFriendRequest(suggestionId);
 }
 
 export async function acceptFriendRequest(requestId: string) {
-    await fetchWithAuth(`/friends/requests/${requestId}/accept`, { method: 'POST' });
+    const result = await fetchWithAuth(`/friends/requests/${requestId}/accept`, { method: 'POST' });
+    if (!result.success) throw new Error(result.error);
     revalidatePath('/friends');
 }
 
 export async function declineFriendRequest(requestId: string) {
-    await fetchWithAuth(`/friends/requests/${requestId}`, { method: 'DELETE' });
+    const result = await fetchWithAuth(`/friends/requests/${requestId}`, { method: 'DELETE' });
+    if (!result.success) throw new Error(result.error);
     revalidatePath('/friends');
 }
 
 export async function removeFriend(friendId: string) {
-    await fetchWithAuth(`/friends/${friendId}`, { method: 'DELETE' });
+    const result = await fetchWithAuth(`/friends/${friendId}`, { method: 'DELETE' });
+    if (!result.success) throw new Error(result.error);
     revalidatePath('/friends');
 }

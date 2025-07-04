@@ -1,6 +1,7 @@
 
 'use server';
 import { revalidatePath } from 'next/cache';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
 export async function createTeamAction(teamData: {
     name: string;
@@ -12,22 +13,14 @@ export async function createTeamAction(teamData: {
     homePlaygroundId: string | null;
     captainId: string;
 }) {
-    try {
-        const response = await fetch(`${process.env.BACKEND_URL}/teams`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(teamData),
-        });
-
-        if (!response.ok) {
-            const error = await response.json();
-            return { success: false, error: error.message || 'Failed to create team' };
-        }
-
+    const result = await fetchWithAuth('/teams', {
+        method: 'POST',
+        body: JSON.stringify(teamData),
+    });
+    
+    if (result.success) {
         revalidatePath('/teams');
-        return { success: true, data: await response.json() };
-    } catch (error) {
-        console.error('Error creating team:', error);
-        return { success: false, error: 'Server error' };
     }
+
+    return result;
 }

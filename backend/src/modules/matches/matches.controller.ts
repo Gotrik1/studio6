@@ -4,6 +4,7 @@ import { MatchesService } from './matches.service';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Matches')
 @Controller('matches')
@@ -15,11 +16,13 @@ export class MatchesController {
     return this.matchesService.create(createMatchDto);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.matchesService.findAll();
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.matchesService.findOne(id);

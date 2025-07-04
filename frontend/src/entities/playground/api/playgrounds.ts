@@ -2,25 +2,9 @@
 
 import type { Playground } from '@/entities/playground/model/types';
 import { revalidatePath } from 'next/cache';
-import { getSession } from '@/features/auth/session';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
 type CreatePlaygroundData = Omit<Playground, 'id' | 'rating' | 'checkIns' | 'status' | 'creator'>;
-
-async function fetchWithAuth(url: string, options: RequestInit = {}) {
-  const session = await getSession();
-  if (!session?.access_token) {
-    throw new Error('Unauthorized');
-  }
-  return fetch(`${process.env.BACKEND_URL}${url}`, {
-    ...options,
-    headers: {
-      ...options.headers,
-      'Authorization': `Bearer ${session.access_token}`,
-      'Content-Type': 'application/json',
-    },
-    cache: 'no-store',
-  });
-}
 
 export async function getPlaygrounds(): Promise<Playground[]> {
   try {
@@ -45,21 +29,14 @@ export async function getPlaygroundById(id: string): Promise<Playground | null> 
 }
 
 export async function createPlayground(data: CreatePlaygroundData) {
-    try {
-        const response = await fetchWithAuth('/playgrounds', {
-            method: 'POST',
-            body: JSON.stringify(data),
-        });
+    const result = await fetchWithAuth('/playgrounds', {
+        method: 'POST',
+        body: JSON.stringify(data),
+    });
 
-        if (!response.ok) {
-            const error = await response.json();
-            return { success: false, error: error.message || 'Failed to create playground' };
-        }
-
+    if (result.success) {
         revalidatePath('/playgrounds');
-        return { success: true, data: await response.json() };
-    } catch (error) {
-        console.error('Error creating playground:', error);
-        return { success: false, error: 'Server error' };
     }
+    
+    return result;
 }

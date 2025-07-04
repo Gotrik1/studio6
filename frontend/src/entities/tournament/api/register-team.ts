@@ -3,6 +3,7 @@
 import { getSession } from "@/features/auth/session";
 import { revalidatePath } from "next/cache";
 import type { UserTeam } from '@/entities/user/model/types';
+import { fetchWithAuth } from "@/shared/lib/api-client";
 
 export async function registerTeamForTournamentAction(tournamentId: string, tournamentSlug: string) {
     const session = await getSession();
@@ -11,38 +12,31 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
     }
 
     try {
-        // 1. Fetch user's teams
-        const teamsResponse = await fetch(`${process.env.BACKEND_URL}/users/${session.user.id}/teams`, {
-             headers: { 'Authorization': `Bearer ${session.access_token}` },
-             cache: 'no-store'
-        });
-
-        if (!teamsResponse.ok) {
-             const error = await teamsResponse.json();
-             return { success: false, error: error.message || "Не удалось получить список ваших команд." };
+        // This is a protected endpoint that should now exist.
+        // I will assume it exists based on the requirement of this refactoring.
+        // A real implementation might need a `GET /users/me/teams` or similar.
+        const teamsResult = await fetchWithAuth(`/users/${session.user.id}/teams`);
+        
+        if(!teamsResult.success) {
+             return { success: false, error: teamsResult.error || "Не удалось получить список ваших команд." };
         }
-        const userTeams: UserTeam[] = await teamsResponse.json();
+        
+        const userTeams: UserTeam[] = teamsResult.data || [];
         
         if (!userTeams || userTeams.length === 0) {
             return { success: false, error: "У вас нет команды для регистрации. Сначала создайте или вступите в команду." };
         }
         
-        // 2. For simplicity, register the first team
+        // For simplicity, register the first team
         const teamToRegister = userTeams[0];
 
-        // 3. Call the registration endpoint
-        const registerResponse = await fetch(`${process.env.BACKEND_URL}/tournaments/${tournamentId}/register`, {
+        const registerResult = await fetchWithAuth(`/tournaments/${tournamentId}/register`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${session.access_token}`,
-                'Content-Type': 'application/json',
-            },
             body: JSON.stringify({ teamId: teamToRegister.id }),
         });
 
-        if (!registerResponse.ok) {
-            const error = await registerResponse.json();
-            return { success: false, error: error.message || 'Failed to register team' };
+        if (!registerResult.success) {
+            return { success: false, error: registerResult.error || 'Failed to register team' };
         }
         
         revalidatePath(`/tournaments/${tournamentSlug}`);

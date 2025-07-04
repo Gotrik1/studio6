@@ -6,6 +6,7 @@ import { RegisterTeamDto } from './dto/register-team.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Tournaments')
 @Controller('tournaments')
@@ -25,16 +26,19 @@ export class TournamentsController {
     return this.tournamentsService.startTournament(id);
   }
 
+  @Public()
   @Get()
   findAll() {
     return this.tournamentsService.findAll();
   }
 
+  @Public()
   @Get('slug/:slug')
   findBySlug(@Param('slug') slug: string) {
     return this.tournamentsService.findBySlug(slug);
   }
 
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.tournamentsService.findOne(id);

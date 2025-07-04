@@ -2,50 +2,35 @@
 
 import type { Challenge } from '@/entities/challenge/model/types';
 import { revalidatePath } from 'next/cache';
-import { getSession } from '@/features/auth/session';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
-async function fetchWithAuth(url: string, options: RequestInit = {}) {
-  const session = await getSession();
-  if (!session?.access_token) {
-    throw new Error('Unauthorized');
-  }
-
-  const response = await fetch(`${process.env.BACKEND_URL}${url}`, {
-    ...options,
-    headers: {
-      ...options.headers,
-      'Authorization': `Bearer ${session.access_token}`,
-      'Content-Type': 'application/json',
-    },
-    cache: 'no-store',
-  });
-  
-  if (!response.ok) {
-    const errorBody = await response.text();
-    console.error(`API Error on ${url}:`, response.status, errorBody);
-    throw new Error(`API request failed with status ${response.status}`);
-  }
-
-  return response.json();
-}
+type FormValues = Omit<Challenge, 'id' | 'creator' | 'status' | 'opponent' | 'result'>;
 
 export async function getChallenges(filter: 'open' | 'my' | 'history'): Promise<Challenge[]> {
-  return fetchWithAuth(`/challenges?filter=${filter}`);
+  const result = await fetchWithAuth(`/challenges?filter=${filter}`);
+  if (!result.success) return [];
+  return result.data;
 }
 
-export async function createChallenge(data: Omit<Challenge, 'id' | 'creator' | 'status'>) {
+export async function createChallenge(data: FormValues) {
   const result = await fetchWithAuth('/challenges', {
     method: 'POST',
     body: JSON.stringify(data),
   });
+  if (!result.success) {
+    throw new Error(result.error);
+  }
   revalidatePath('/challenges');
-  return result;
+  return result.data;
 }
 
 export async function acceptChallenge(challengeId: string) {
   const result = await fetchWithAuth(`/challenges/${challengeId}/accept`, {
     method: 'POST',
   });
+   if (!result.success) {
+    throw new Error(result.error);
+  }
   revalidatePath('/challenges');
-  return result;
+  return result.data;
 }
