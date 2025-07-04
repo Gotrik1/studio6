@@ -1,10 +1,14 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { suggestedFriends } from '@/shared/lib/mock-data/friends';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class FriendsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+      private prisma: PrismaService,
+      private readonly amqpConnection: AmqpConnection,
+  ) {}
 
   async findAll(userId: string) {
     const userWithFriends = await this.prisma.user.findUnique({
@@ -95,9 +99,19 @@ export class FriendsService {
       }
     }
     
-    return this.prisma.friendRequest.create({
+    const newRequest = await this.prisma.friendRequest.create({
       data: { fromId, toId },
+      include: { from: { select: { name: true } } }
     });
+
+    // Publish event to RabbitMQ
+    this.amqpConnection.publish('prodvor_exchange', 'friend.request.created', {
+        fromUserId: fromId,
+        fromUserName: newRequest.from.name,
+        toUserId: toId,
+    });
+    
+    return newRequest;
   }
   
   async acceptRequest(requestId: string, userId: string) {

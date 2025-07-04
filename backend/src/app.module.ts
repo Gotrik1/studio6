@@ -19,6 +19,8 @@ import { SponsorshipModule } from './modules/sponsorship/sponsorship.module';
 import { FriendsModule } from './modules/friends/friends.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { KafkaModule } from './modules/kafka/kafka.module';
+import { RabbitMQModule } from './modules/rabbitmq/rabbitmq.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -38,6 +40,8 @@ import { KafkaModule } from './modules/kafka/kafka.module';
     FriendsModule,
     ChatModule,
     KafkaModule,
+    RabbitMQModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [
