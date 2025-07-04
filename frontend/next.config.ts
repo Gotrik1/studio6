@@ -2,16 +2,6 @@ import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        // In a Docker environment, the frontend needs to talk to the backend service name.
-        // For local development, it will fall back to localhost.
-        destination: `${process.env.BACKEND_URL || 'http://localhost:3001'}/:path*`,
-      },
-    ]
-  },
   typescript: {
     ignoreBuildErrors: true,
   },

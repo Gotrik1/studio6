@@ -1,10 +1,11 @@
+
 'use server';
 
 import type { Team } from '@/entities/team/model/types';
 
 export async function getTeams(): Promise<Team[]> {
   try {
-    const response = await fetch(`/api/teams`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/teams`, {
       cache: 'no-store', // Disable caching for development
     });
 
@@ -17,6 +18,8 @@ export async function getTeams(): Promise<Team[]> {
     return teams;
   } catch (error) {
     console.error('Error fetching teams:', error);
+    // In a real app, you might want to handle this more gracefully
+    // For now, returning an empty array to prevent crashes.
     return [];
   }
 }
