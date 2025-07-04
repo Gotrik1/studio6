@@ -47,6 +47,14 @@ jobs:
           KEYCLOAK_CLIENT_ID=prodvor-frontend
           EOF
 
+      
+      - name: Launch services
+        run: docker-compose up -d --build
+
+      - name: Show backend logs on failure
+        if: failure()
+        run: docker-compose logs backend    
+
       # 3) Устанавливаем Docker Compose
       - name: Install Docker Compose
         run: |
