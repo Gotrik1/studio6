@@ -89,6 +89,8 @@ import { AnalyzeMatchChallengeDto } from './dto/analyze-match-challenge.dto';
 import type { AnalyzeMatchChallengeOutput } from '@/ai/flows/schemas/analyze-match-challenge-schema';
 import { AnalyzeExerciseFormDto } from './dto/analyze-exercise-form.dto';
 import type { AnalyzeExerciseFormOutput } from '@/ai/flows/schemas/analyze-exercise-form-schema';
+import { AnalyzeReportDto } from './dto/analyze-report.dto';
+import type { AnalyzeReportOutput } from '@/ai/flows/schemas/analyze-report-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -438,5 +440,13 @@ export class AiController {
     @Body() analyzeExerciseFormDto: AnalyzeExerciseFormDto,
   ): Promise<AnalyzeExerciseFormOutput> {
     return this.aiService.analyzeExerciseForm(analyzeExerciseFormDto);
+  }
+
+  @Post('analyze-report')
+  @HttpCode(HttpStatus.OK)
+  async analyzeReport(
+    @Body() analyzeReportDto: AnalyzeReportDto,
+  ): Promise<AnalyzeReportOutput> {
+    return this.aiService.analyzeReport(analyzeReportDto);
   }
 }

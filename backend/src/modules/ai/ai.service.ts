@@ -44,6 +44,7 @@ import { generateDashboardTip, type GenerateDashboardTipInput, type GenerateDash
 import { findCoaches, type FindCoachesInput, type FindCoachesOutput } from '@/ai/flows/find-coaches-flow';
 import { analyzeMatchChallenge, type AnalyzeMatchChallengeInput, type AnalyzeMatchChallengeOutput } from '@/ai/flows/analyze-match-challenge-flow';
 import { analyzeExerciseForm, type AnalyzeExerciseFormInput, type AnalyzeExerciseFormOutput } from '@/ai/flows/analyze-exercise-form-flow';
+import { analyzeReport, type AnalyzeReportInput, type AnalyzeReportOutput } from '@/ai/flows/analyze-report-flow';
 
 
 @Injectable()
@@ -222,5 +223,9 @@ export class AiService {
 
   async analyzeExerciseForm(input: AnalyzeExerciseFormInput): Promise<AnalyzeExerciseFormOutput> {
     return analyzeExerciseForm(input);
+  }
+
+  async analyzeReport(input: AnalyzeReportInput): Promise<AnalyzeReportOutput> {
+    return analyzeReport(input);
   }
 }
