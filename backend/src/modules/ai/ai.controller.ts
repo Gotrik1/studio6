@@ -91,6 +91,8 @@ import { AnalyzeExerciseFormDto } from './dto/analyze-exercise-form.dto';
 import type { AnalyzeExerciseFormOutput } from '@/ai/flows/schemas/analyze-exercise-form-schema';
 import { AnalyzeReportDto } from './dto/analyze-report.dto';
 import type { AnalyzeReportOutput } from '@/ai/flows/schemas/analyze-report-schema';
+import { AnalyzeRoleChangeDto } from './dto/analyze-role-change.dto';
+import type { AnalyzeRoleChangeOutput } from '@/ai/flows/schemas/analyze-role-change-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -448,5 +450,13 @@ export class AiController {
     @Body() analyzeReportDto: AnalyzeReportDto,
   ): Promise<AnalyzeReportOutput> {
     return this.aiService.analyzeReport(analyzeReportDto);
+  }
+
+  @Post('analyze-role-change')
+  @HttpCode(HttpStatus.OK)
+  async analyzeRoleChange(
+    @Body() analyzeRoleChangeDto: AnalyzeRoleChangeDto,
+  ): Promise<AnalyzeRoleChangeOutput> {
+    return this.aiService.analyzeRoleChange(analyzeRoleChangeDto);
   }
 }
