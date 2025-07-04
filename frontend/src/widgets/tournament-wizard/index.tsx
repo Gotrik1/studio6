@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
@@ -19,10 +20,11 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Textarea } from '@/shared/ui/textarea';
+import { createTournament } from '@/entities/tournament/api/create-tournament';
 
 const tournamentSchema = z.object({
   name: z.string().min(3, 'Название должно содержать не менее 3 символов.'),
-  sport: z.string({ required_error: 'Выберите вид спорта.' }),
+  game: z.string({ required_error: 'Выберите вид спорта.' }),
   description: z.string().optional(),
   type: z.enum(['team', 'individual'], { required_error: 'Выберите тип турнира.' }),
   format: z.enum(['single_elimination', 'round_robin', 'groups'], { required_error: 'Выберите формат.' }),
@@ -62,7 +64,7 @@ export function ManualTournamentForm() {
     resolver: zodResolver(tournamentSchema),
     defaultValues: {
       name: '',
-      sport: undefined,
+      game: undefined,
       description: '',
       type: undefined,
       format: undefined,
@@ -76,16 +78,25 @@ export function ManualTournamentForm() {
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
-    console.log('Tournament data:', data); // In a real app, send to backend
-    setTimeout(() => {
+    
+    const result = await createTournament(data);
+
+    if (result.success) {
         toast({
             title: 'Турнир создан!',
-            description: `Турнир "${data.name}" был успешно создан.`
+            description: `Турнир "${data.name}" успешно создан.`
         });
         router.push('/administration/tournament-crm/dashboard');
-    }, 1000);
+    } else {
+         toast({
+            variant: 'destructive',
+            title: 'Ошибка',
+            description: result.error,
+        });
+    }
+    setIsSubmitting(false);
   };
   
   return (
@@ -103,7 +114,7 @@ export function ManualTournamentForm() {
                              <h3 className="font-semibold text-lg">Основная информация</h3>
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Название турнира</FormLabel><FormControl><Input placeholder="Например, Осенний Кубок ProDvor" {...field} /></FormControl><FormMessage /></FormItem>)} />
-                                <FormField control={form.control} name="sport" render={({ field }) => (<FormItem><FormLabel>Вид спорта</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="game" render={({ field }) => (<FormItem><FormLabel>Вид спорта</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
                              </div>
                              <FormField control={form.control} name="description" render={({ field }) => (<FormItem><FormLabel>Краткое описание (необязательно)</FormLabel><FormControl><Textarea placeholder="Опишите главные особенности турнира" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>)} />
                         </div>
@@ -136,7 +147,7 @@ export function ManualTournamentForm() {
                     <CardFooter>
                         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Создать турнир
+                            {isEditMode ? 'Сохранить изменения' : 'Создать турнир'}
                         </Button>
                     </CardFooter>
                 </form>

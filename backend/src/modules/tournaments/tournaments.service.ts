@@ -15,8 +15,22 @@ export class TournamentsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createTournamentDto: CreateTournamentDto, organizerId: string): Promise<Tournament> {
-    const { name, game, format, prizePool, startDate, description, rules } = createTournamentDto;
-    const slug = name.toLowerCase().replace(/\\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const { 
+      name, 
+      game, 
+      format, 
+      prizePool, 
+      tournamentStartDate, 
+      description, 
+      rules,
+      type,
+      category,
+      location,
+      participantCount,
+      registrationStartDate,
+      registrationEndDate,
+    } = createTournamentDto;
+    const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     
     return this.prisma.tournament.create({
       data: {
@@ -25,9 +39,15 @@ export class TournamentsService {
         game,
         format,
         prizePool,
-        startDate,
+        tournamentStartDate,
         description,
         rules,
+        type,
+        category,
+        location,
+        participantCount,
+        registrationStartDate,
+        registrationEndDate,
         organizer: { connect: { id: organizerId } },
         status: 'REGISTRATION',
       },
@@ -101,7 +121,7 @@ export class TournamentsService {
         game: t.game,
         prize: `${t.prizePool} PD`,
         status: statusText,
-        date: format(new Date(t.startDate), 'd MMMM yyyy', { locale: ru }),
+        date: format(new Date(t.tournamentStartDate), 'd MMMM yyyy', { locale: ru }),
         image: t.bannerImage || 'https://placehold.co/2560x720.png',
         dataAiHint: t.bannerImageHint || 'esports tournament',
         slug: t.slug || t.name.toLowerCase().replace(/\\s+/g, '-'),
@@ -179,17 +199,15 @@ export class TournamentsService {
     // --- End Bracket Generation ---
     
     // --- Dynamic Schedule Generation ---
-    // This is mock logic and should be replaced with real scheduling logic
-    const registrationEndDate = new Date(tournament.startDate);
-    registrationEndDate.setDate(registrationEndDate.getDate() - 7);
-    const groupStageDate = new Date(tournament.startDate);
+    const registrationEndDate = new Date(tournament.registrationEndDate);
+    const groupStageDate = new Date(tournament.tournamentStartDate);
     groupStageDate.setDate(groupStageDate.getDate() + 2);
 
     const schedule = {
-        registration: `15-${format(registrationEndDate, 'dd MMMM', { locale: ru })}`,
-        groupStage: `${format(tournament.startDate, 'd')}-${format(groupStageDate, 'd MMMM', { locale: ru })}`,
+        registration: `${format(new Date(tournament.registrationStartDate), 'd MMM', { locale: ru })}-${format(registrationEndDate, 'd MMMM', { locale: ru })}`,
+        groupStage: `${format(new Date(tournament.tournamentStartDate), 'd')}-${format(groupStageDate, 'd MMMM', { locale: ru })}`,
         playoffs: "5-6 Июля", // can remain mock for now
-        finals: format(new Date(tournament.startDate), 'd MMMM yyyy', { locale: ru }),
+        finals: format(new Date(tournament.tournamentStartDate), 'd MMMM yyyy', { locale: ru }),
     };
 
     return {
