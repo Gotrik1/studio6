@@ -8,6 +8,7 @@ import {
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
+import { KafkaService } from '../kafka/kafka.service';
 
 @WebSocketGateway({
   cors: {
@@ -17,6 +18,8 @@ import { Socket, Server } from 'socket.io';
 export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('ChatGateway');
+
+  constructor(private readonly kafkaService: KafkaService) {}
 
   afterInit(server: Server) {
     this.logger.log('ChatGateway Initialized!');
@@ -31,7 +34,13 @@ export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
   
   @SubscribeMessage('sendMessage')
-  handleMessage(client: Socket, payload: any): void {
-    this.server.emit('receiveMessage', payload);
+  async handleMessage(client: Socket, payload: any): Promise<void> {
+    this.logger.log(`Received message from client ${client.id}, producing to Kafka...`);
+    await this.kafkaService.produce('chat-messages', payload);
+  }
+
+  broadcastMessage(payload: any) {
+      this.server.emit('receiveMessage', payload);
+      this.logger.log(`Broadcasted message to all clients: ${JSON.stringify(payload)}`);
   }
 }

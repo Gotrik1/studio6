@@ -10,7 +10,7 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Send, Bot, Sparkles, Loader2, Users } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useSession } from '@/shared/lib/session/client';
-import { contacts, messages as allMessages, type Contact } from '@/shared/lib/mock-data/chats';
+import { contacts, type Contact } from '@/shared/lib/mock-data/chats';
 import { suggestReply } from '@/shared/api/genkit/flows/suggest-reply-flow';
 import { askTeamChatbot } from '@/shared/api/genkit/flows/team-chatbot-flow';
 import { io, type Socket } from 'socket.io-client';
@@ -44,10 +44,6 @@ export function ChatsPage() {
         setSocket(newSocket);
         
         newSocket.on('receiveMessage', (message: Message) => {
-             // Only add the message if it's not from the current user,
-             // as the sender's message is added optimistically.
-             // Or if we want server to be source of truth, remove optimistic update.
-             // For now, simple echo for all.
             setMessages(prev => [...prev, message]);
         });
 
@@ -57,12 +53,8 @@ export function ChatsPage() {
     }, []);
     
     useEffect(() => {
-        if (selectedChat) {
-            const newMessages = (allMessages[selectedChat.id as keyof typeof allMessages] || []) as Message[];
-            setMessages([...newMessages]);
-        } else {
-            setMessages([]);
-        }
+        // In a real app, this would fetch message history for the selected chat
+        setMessages([]); 
         setReplySuggestions([]);
     }, [selectedChat]);
 
@@ -77,7 +69,6 @@ export function ChatsPage() {
     const handleSend = async () => {
         if (!input.trim() || !selectedChat || !user || !socket) return;
         const text = input;
-        setInput('');
         
         const userMessage: Message = { sender: 'user', name: user.name, avatar: user.avatar, text };
         
@@ -86,6 +77,7 @@ export function ChatsPage() {
 
         if (isTeamChat && isAiCommand) {
             setMessages(prev => [...prev, userMessage]);
+            setInput('');
             const thinkingMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Думаю...', isThinking: true };
             setMessages(prev => [...prev, thinkingMessage]);
             setIsThinking(true);
@@ -103,8 +95,14 @@ export function ChatsPage() {
                 setIsThinking(false);
             }
         } else {
-             // The server will broadcast the message back to all clients, including the sender
-            socket.emit('sendMessage', userMessage);
+            const messageToSend = {
+                sender: 'other', // From other user's perspective
+                name: user.name,
+                avatar: user.avatar,
+                text
+            };
+            socket.emit('sendMessage', messageToSend);
+            setInput('');
         }
     };
 

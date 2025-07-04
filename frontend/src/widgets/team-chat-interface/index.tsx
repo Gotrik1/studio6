@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Bot, Send, Loader2, Users, Sparkles } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useSession } from '@/shared/lib/session/client';
-import { contacts, messages as allMessages, type Contact } from '@/shared/lib/mock-data/chats';
+import { contacts } from '@/shared/lib/mock-data/chats';
 import { suggestReply } from '@/shared/api/genkit/flows/suggest-reply-flow';
 import { askTeamChatbot } from '@/shared/api/genkit/flows/team-chatbot-flow';
 
@@ -26,7 +26,7 @@ const getAvatarFallback = (name: string) => name.split(' ').map(n => n[0]).join(
 
 export function TeamChatInterface({ teamId }: { teamId: string }) {
     const { user } = useSession();
-    const [messages, setMessages] = useState<Message[]>(mockInitialMessages);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [replySuggestions, setReplySuggestions] = useState<string[]>([]);
     const [isThinking, setIsThinking] = useState(false);
@@ -161,10 +161,10 @@ export function TeamChatInterface({ teamId }: { teamId: string }) {
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            disabled={isLoading}
+                            disabled={isThinking}
                         />
-                        <Button onClick={handleSend} disabled={isLoading}>
-                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Send className="h-4 w-4"/>}
+                        <Button onClick={handleSend} disabled={isThinking}>
+                            {isThinking ? <Loader2 className="h-4 w-4 animate-spin"/> : <Send className="h-4 w-4"/>}
                         </Button>
                     </div>
                 </div>
