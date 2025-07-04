@@ -17,6 +17,7 @@ import { CoachesModule } from './modules/coaches/coaches.module';
 import { SponsorsModule } from './modules/sponsors/sponsors.module';
 import { SponsorshipModule } from './modules/sponsorship/sponsorship.module';
 import { FriendsModule } from './modules/friends/friends.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { FriendsModule } from './modules/friends/friends.module';
     SponsorsModule,
     SponsorshipModule,
     FriendsModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [

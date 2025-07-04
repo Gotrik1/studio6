@@ -5,6 +5,7 @@ import * as path from 'path';
 import { JsonLogger } from './common/services/json-logger.service';
 import type { LogLevel } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 
 // Load environment variables from the root .env file
 config({ path: path.resolve(__dirname, '../../.env') });
@@ -14,6 +15,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: logger,
   });
+
+  app.useWebSocketAdapter(new IoAdapter(app));
   
   // Swagger Configuration
   const config = new DocumentBuilder()
