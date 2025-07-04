@@ -1,9 +1,11 @@
 
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Req } from '@nestjs/common';
 import { TournamentsService } from './tournaments.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { RegisterTeamDto } from './dto/register-team.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Request } from 'express';
 
 @ApiTags('Tournaments')
 @Controller('tournaments')
@@ -11,8 +13,11 @@ export class TournamentsController {
   constructor(private readonly tournamentsService: TournamentsService) {}
 
   @Post()
-  create(@Body() createTournamentDto: CreateTournamentDto) {
-    return this.tournamentsService.create(createTournamentDto);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  create(@Body() createTournamentDto: CreateTournamentDto, @Req() req: Request) {
+    const organizerId = (req.user as any).userId;
+    return this.tournamentsService.create(createTournamentDto, organizerId);
   }
 
   @Post(':id/start')
