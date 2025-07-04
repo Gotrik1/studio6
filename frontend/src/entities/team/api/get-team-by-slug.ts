@@ -5,7 +5,7 @@ import type { TeamDetails } from '@/entities/team/model/types';
 
 export async function getTeamBySlug(slug: string): Promise<TeamDetails | null> {
     try {
-        const res = await fetch(`/api/teams/slug/${slug}`, {
+        const res = await fetch(`${process.env.BACKEND_URL}/teams/slug/${slug}`, {
             cache: 'no-store',
         });
 

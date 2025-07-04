@@ -1,3 +1,4 @@
+
 'use server';
 import { revalidatePath } from 'next/cache';
 
@@ -12,7 +13,7 @@ export async function createTeamAction(teamData: {
     captainId: string;
 }) {
     try {
-        const response = await fetch('/api/teams', {
+        const response = await fetch(`${process.env.BACKEND_URL}/teams`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(teamData),

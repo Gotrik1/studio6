@@ -1,3 +1,4 @@
+
 'use server';
 
 import { revalidatePath } from 'next/cache';
@@ -9,7 +10,7 @@ export async function updateMatchScore(
   comment?: string
 ) {
   try {
-    const response = await fetch(`/api/matches/${matchId}/score`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/matches/${matchId}/score`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -23,6 +24,7 @@ export async function updateMatchScore(
     }
 
     revalidatePath('/matches');
+    revalidatePath(`/matches/${matchId}`);
     return { success: true, data: await response.json() };
   } catch (error) {
     console.error('Error updating match score:', error);

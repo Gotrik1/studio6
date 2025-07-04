@@ -6,7 +6,7 @@ import type { MatchDetails } from '@/entities/match/model/types';
 
 export async function getMatchById(id: string): Promise<MatchDetails | null> {
     try {
-        const res = await fetch(`/api/matches/${id}`, {
+        const res = await fetch(`${process.env.BACKEND_URL}/matches/${id}`, {
             cache: 'no-store',
         });
         

@@ -35,7 +35,7 @@ export type FullPlayerProfile = {
 // For now, we only fetch the user data from our backend.
 export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | null> {
     try {
-        const res = await fetch(`/api/users/${id}`, {
+        const res = await fetch(`${process.env.BACKEND_URL}/users/${id}`, {
             cache: 'no-store',
         });
         

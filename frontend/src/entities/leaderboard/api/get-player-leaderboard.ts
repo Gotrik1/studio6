@@ -5,7 +5,7 @@ import type { PlayerLeaderboardItem } from '@/entities/leaderboard/model/types';
 
 export async function getPlayerLeaderboard(): Promise<PlayerLeaderboardItem[]> {
     try {
-        const response = await fetch(`/api/users/leaderboard`, {
+        const response = await fetch(`${process.env.BACKEND_URL}/users/leaderboard`, {
             cache: 'no-store',
         });
         if (!response.ok) {

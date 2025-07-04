@@ -5,7 +5,7 @@ import type { TournamentDetails } from '@/entities/tournament/model/types';
 
 export async function getTournamentBySlug(slug: string): Promise<TournamentDetails | null> {
     try {
-        const res = await fetch(`/api/tournaments/slug/${slug}`, {
+        const res = await fetch(`${process.env.BACKEND_URL}/tournaments/slug/${slug}`, {
             cache: 'no-store',
         });
 
