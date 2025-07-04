@@ -1,12 +1,11 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Search } from 'lucide-react';
-import { userList as initialUserList, type userList as UserListType } from '@/shared/lib/mock-data/users';
 import { useToast } from '@/shared/hooks/use-toast';
 import { UserTable } from '@/entities/user/ui/user-table';
 import { UserEditDialog } from '@/widgets/user-edit-dialog';
@@ -22,9 +21,10 @@ import {
 } from "@/shared/ui/alert-dialog";
 import { Button, buttonVariants } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { getUsers } from '@/entities/user/api/get-users';
+import type { User } from '@/shared/lib/types';
 
-
-type User = (typeof UserListType)[0];
 
 const allRoles = ["Все роли", "Администратор", "Модератор", "Капитан", "Игрок", "Судья", "Менеджер", "Организатор", "Спонсор", "Болельщик"];
 const allStatuses = ["Все статусы", "Активен", "Забанен"];
@@ -33,7 +33,8 @@ const USERS_PER_PAGE = 8;
 
 export function UserManagementPage() {
     const { toast } = useToast();
-    const [users, setUsers] = useState<User[]>(initialUserList);
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
     
     // Filter states
     const [searchQuery, setSearchQuery] = useState('');
@@ -51,6 +52,23 @@ export function UserManagementPage() {
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const [userToAction, setUserToAction] = useState<User | null>(null);
     const [actionType, setActionType] = useState<'ban' | 'unban' | null>(null);
+
+     const fetchUsers = useCallback(async () => {
+        setLoading(true);
+        try {
+            const data = await getUsers();
+            setUsers(data);
+        } catch (e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить пользователей.' });
+        } finally {
+            setLoading(false);
+        }
+    }, [toast]);
+
+    useEffect(() => {
+        fetchUsers();
+    }, [fetchUsers]);
 
     const filteredUsers = useMemo(() => {
         return users.filter(user => {
@@ -82,13 +100,15 @@ export function UserManagementPage() {
     const handleConfirmAction = () => {
         if (!userToAction || !actionType) return;
 
-        if (actionType === 'ban') {
-            setUsers(prev => prev.map(u => u.id === userToAction.id ? { ...u, status: 'Забанен' } : u));
-            toast({ title: 'Пользователь забанен', description: `Статус пользователя ${userToAction.name} был изменен на "Забанен".` });
-        } else if (actionType === 'unban') {
-             setUsers(prev => prev.map(u => u.id === userToAction.id ? { ...u, status: 'Активен' } : u));
-            toast({ title: 'Пользователь разбанен', description: `Статус пользователя ${userToAction.name} был изменен на "Активен".`, className: 'bg-green-100 dark:bg-green-900 border-green-500' });
-        }
+        const newStatus = actionType === 'ban' ? 'Забанен' : 'Активен';
+        setUsers(prev => prev.map(u => u.id === userToAction.id ? { ...u, status: newStatus } : u));
+        
+        // In a real app, we'd await an API call here.
+        // For now, optimistic update is shown.
+        toast({
+            title: `Статус пользователя ${userToAction.name} изменен на "${newStatus}".`,
+            variant: actionType === 'unban' ? 'default' : 'destructive'
+        });
         
         setIsAlertOpen(false);
         setUserToAction(null);
@@ -156,12 +176,20 @@ export function UserManagementPage() {
                     </CardContent>
                 </Card>
                 
-                <UserTable 
-                    users={paginatedUsers}
-                    onOpenBanUnbanDialog={handleOpenBanUnbanDialog}
-                    onEditUser={handleEditUser}
-                    onPdAction={handlePdAction}
-                />
+                {loading ? (
+                    <div className="space-y-2">
+                        {Array.from({length: USERS_PER_PAGE}).map((_, i) => (
+                            <Skeleton key={i} className="h-16 w-full" />
+                        ))}
+                    </div>
+                ) : (
+                    <UserTable 
+                        users={paginatedUsers}
+                        onOpenBanUnbanDialog={handleOpenBanUnbanDialog}
+                        onEditUser={handleEditUser}
+                        onPdAction={handlePdAction}
+                    />
+                )}
                 
                 {totalPages > 1 && (
                      <div className="flex items-center justify-end space-x-2 py-4">

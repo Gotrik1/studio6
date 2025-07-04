@@ -9,11 +9,9 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
-import type { userList } from "@/shared/lib/mock-data/users";
+import type { User } from '@/shared/lib/types';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { Users2 } from 'lucide-react';
-
-type User = (typeof userList)[0];
 
 interface UserTableProps {
     users: User[];

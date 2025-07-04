@@ -10,15 +10,15 @@ export default async function ApplicationLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const user = await getSession();
+  const session = await getSession();
 
-  if (!user) {
+  if (!session?.user) {
     redirect("/auth");
   }
 
   return (
     <AppProviders>
-      <AppLayout user={user}>
+      <AppLayout user={session.user}>
         {children}
       </AppLayout>
     </AppProviders>

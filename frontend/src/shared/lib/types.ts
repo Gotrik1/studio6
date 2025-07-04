@@ -4,4 +4,8 @@ export type User = {
     email: string;
     avatar: string;
     role: string;
+    status?: 'Активен' | 'Забанен';
+    xp?: number;
+    activitySummary?: string; // for AI analysis
+    profileUrl?: string; // for search results
 };

@@ -36,6 +36,8 @@ export class AuthService {
         email: 'admin@example.com',
         role: 'Администратор',
         avatar: 'https://placehold.co/100x100.png',
+        status: 'Активен',
+        xp: 99999,
       };
       const tokenPayload = { sub: adminUser.id, name: adminUser.name, role: adminUser.role };
       return {
@@ -57,7 +59,9 @@ export class AuthService {
           name: user.name,
           email: user.email,
           avatar: user.avatar || 'https://placehold.co/100x100.png',
-          role: user.role
+          role: user.role,
+          status: user.status,
+          xp: user.xp,
       }
     };
   }
