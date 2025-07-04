@@ -3,7 +3,7 @@ name: Docker Compose CI
 on:
   push:
     branches:
-      - master       # или main, если у тебя так называется
+      - master       # поменяй, если у тебя main
   pull_request:
     branches:
       - master
@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Checkout repository
-      - name: Checkout repository
+      # 1) Клонируем репозиторий
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2) Create .env for docker-compose
-      - name: Create .env
+      # 2) Создаём файл .env с ВСЕМИ переменными из docker-compose
+      - name: Create .env for docker-compose
         run: |
           cat > .env <<EOF
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
@@ -37,70 +37,57 @@ jobs:
           KONG_PG_DATABASE=${{ secrets.KONG_PG_DATABASE }}
           KONG_ADMIN_LISTEN=${{ secrets.KONG_ADMIN_LISTEN }}
           KONG_PROXY_LISTEN=${{ secrets.KONG_PROXY_LISTEN }}
+
+          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
+          REDIS_URL=redis://redis:6379
+          KAFKA_BROKERS=kafka:9092
+
+          KEYCLOAK_URL=http://keycloak:8080
+          KEYCLOAK_REALM=prodvor
+          KEYCLOAK_CLIENT_ID=prodvor-frontend
           EOF
 
-      # 3) Install Docker Compose
+      # 3) Устанавливаем Docker Compose
       - name: Install Docker Compose
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      # 4) Build & start all services
-      - name: Launch services
+      # 4) Собираем и запускаем все контейнеры в фоне
+      - name: Launch all services
         run: docker-compose up -d --build
 
-      # 5) Wait for Postgres
-      - name: Wait for Postgres
+      # 5) Ждём готовности Postgres (чтобы миграции не упали)
+      - name: Wait for Postgres readiness
         run: |
-          until docker exec $(docker ps -q -f ancestor=postgres:15) \
-            pg_isready -U $POSTGRES_USER -d $POSTGRES_DB; do
-            echo "Waiting for PostgreSQL…"
+          until docker exec $(docker ps -q -f ancestor=postgres:15) pg_isready -U $POSTGRES_USER -d $POSTGRES_DB; do
+            echo "Waiting for Postgres to be ready..."
             sleep 2
           done
 
-      # 6) Wait for Redis
-      - name: Wait for Redis
-        run: |
-          until docker exec $(docker ps -q -f ancestor=redis:latest) \
-            redis-cli ping | grep PONG; do
-            echo "Waiting for Redis…"
-            sleep 2
-          done
-
-      # 7) Wait for Keycloak
-      - name: Wait for Keycloak
-        run: |
-          until curl -s http://localhost:8180/auth/realms/master; do
-            echo "Waiting for Keycloak…"
-            sleep 5
-          done
-
-      # 8) Wait for Kong Admin API
-      - name: Wait for Kong
-        run: |
-          until curl -s http://localhost:8001/status; do
-            echo "Waiting for Kong Admin API…"
-            sleep 2
-          done
-
-      # 9) Run Prisma migrations
+      # 6) Применяем миграции в prisma-migrate
       - name: Run database migrations
         run: docker-compose run --rm prisma-migrate
 
-      # 10) Run backend tests
+      # 7) Запускаем backend тесты
       - name: Run backend tests
         run: docker-compose exec backend npm test
 
-      # 11) Run frontend tests (если есть)
+      # 8) Запускаем frontend тесты (если есть)
       - name: Run frontend tests
         run: |
           if docker-compose exec frontend npm test; then
             echo "Frontend tests passed"
           else
-            echo "Skipping frontend tests (no tests configured?)"
+            echo "No frontend tests or they failed"
           fi
 
-      # 12) Tear down
+      # 9) В случае ошибки, покажем логи backend
+      - name: Show backend logs on failure
+        if: failure()
+        run: docker-compose logs backend
+
+      # 10) Останавливаем и удаляем контейнеры и тома
       - name: Tear down
         if: always()
         run: docker-compose down -v
