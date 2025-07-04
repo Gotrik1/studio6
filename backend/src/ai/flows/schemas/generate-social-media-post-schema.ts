@@ -10,6 +10,6 @@ export type GenerateSocialMediaPostInput = z.infer<typeof GenerateSocialMediaPos
 export const GenerateSocialMediaPostOutputSchema = z.object({
   postText: z.string().describe('The generated text for the social media post.'),
   hashtags: z.array(z.string()).describe('A list of 3-5 relevant hashtags.'),
-  imagePrompt: z.string().describe('A prompt for an image generation model to create a visual for the post.'),
+  imageDataUri: z.string().describe("The generated image for the post as a data URI."),
 });
 export type GenerateSocialMediaPostOutput = z.infer<typeof GenerateSocialMediaPostOutputSchema>;

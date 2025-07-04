@@ -9,6 +9,8 @@
  */
 
 import { ai } from '../genkit';
+import { z } from 'zod';
+import { generatePostImage_Backend } from './generate-post-image-flow';
 import { GenerateSocialMediaPostInputSchema, GenerateSocialMediaPostOutputSchema } from './schemas/generate-social-media-post-schema';
 import type { GenerateSocialMediaPostInput, GenerateSocialMediaPostOutput } from './schemas/generate-social-media-post-schema';
 
@@ -18,10 +20,15 @@ export async function generateSocialMediaPost(input: GenerateSocialMediaPostInpu
   return generateSocialMediaPostFlow_Backend(input);
 }
 
-const prompt = ai.definePrompt({
-  name: 'generateSocialMediaPostPrompt_Backend',
-  input: {schema: GenerateSocialMediaPostInputSchema},
-  output: {schema: GenerateSocialMediaPostOutputSchema},
+// Internal prompt for generating text and an image prompt
+const textContentPrompt = ai.definePrompt({
+  name: 'generateSocialMediaTextContentPrompt_Backend',
+  input: { schema: GenerateSocialMediaPostInputSchema },
+  output: { schema: z.object({
+      postText: z.string().describe('The generated text for the social media post.'),
+      hashtags: z.array(z.string()).describe('A list of 3-5 relevant hashtags.'),
+      imagePrompt: z.string().describe('A prompt for an image generation model to create a visual for the post.'),
+  })},
   prompt: `You are a creative SMM manager for the esports team "{{teamName}}".
 Your task is to generate a social media post based on the provided details.
 The post should be engaging, exciting, and appropriate for platforms like Twitter or Instagram.
@@ -44,7 +51,17 @@ const generateSocialMediaPostFlow_Backend = ai.defineFlow(
     outputSchema: GenerateSocialMediaPostOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
-    return output!;
+    const { output: textContent } = await textContentPrompt(input);
+    if (!textContent) {
+        throw new Error("Failed to generate text content for the post.");
+    }
+    
+    const { imageDataUri } = await generatePostImage_Backend(textContent.imagePrompt);
+
+    return {
+        postText: textContent.postText,
+        hashtags: textContent.hashtags,
+        imageDataUri,
+    };
   }
 );

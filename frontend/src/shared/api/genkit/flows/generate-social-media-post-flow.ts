@@ -1,8 +1,16 @@
 'use server';
 
-import type { GenerateSocialMediaPostInput, GenerateSocialMediaPostOutput } from './schemas/generate-social-media-post-schema';
+export type GenerateSocialMediaPostInput = {
+    teamName: string;
+    postType: 'match_announcement' | 'player_highlight' | 'general_update';
+    context: string;
+};
 
-export type { GenerateSocialMediaPostInput, GenerateSocialMediaPostOutput };
+export type GenerateSocialMediaPostOutput = {
+    postText: string;
+    hashtags: string[];
+    imageDataUri: string;
+};
 
 export async function generateSocialMediaPost(input: GenerateSocialMediaPostInput): Promise<GenerateSocialMediaPostOutput> {
     const response = await fetch('/api/ai/generate-social-media-post', {
