@@ -136,7 +136,7 @@ export function FriendsPage() {
                     <Card>
                          <CardHeader><CardTitle>Входящие запросы</CardTitle><CardDescription>Запросы на добавление в друзья от других игроков.</CardDescription></CardHeader>
                         <CardContent>
-                           {renderContent(loading, requests, handleAcceptRequest, handleDeclineRequest, "Новых запросов нет.")}
+                           {renderContent(loading, requests, RequestsList, handleAcceptRequest, handleDeclineRequest, "Новых запросов нет.")}
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -145,7 +145,7 @@ export function FriendsPage() {
                      <Card>
                          <CardHeader><CardTitle>Возможные друзья</CardTitle><CardDescription>Игроки, которых вы можете знать.</CardDescription></CardHeader>
                         <CardContent>
-                            {renderContent(loading, suggestions, handleAddFriend, undefined, "Нет новых рекомендаций.")}
+                            {renderContent(loading, suggestions, SuggestionsList, handleAddFriend, undefined, "Нет новых рекомендаций.")}
                         </CardContent>
                     </Card>
                 </TabsContent>
