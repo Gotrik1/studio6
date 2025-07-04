@@ -7,7 +7,7 @@
  * - GenerateNutritionPlanOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GenerateNutritionPlanInputSchema, GenerateNutritionPlanOutputSchema } from './schemas/generate-nutrition-plan-schema';
 import type { GenerateNutritionPlanInput, GenerateNutritionPlanOutput } from './schemas/generate-nutrition-plan-schema';
 

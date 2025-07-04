@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - GenerateMatchPostOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { generateContent } from './generate-content-flow';
 import { generatePostImage } from './generate-post-image-flow';
 import { GenerateMatchPostInputSchema, GenerateMatchPostOutputSchema } from './schemas/generate-match-post-schema';

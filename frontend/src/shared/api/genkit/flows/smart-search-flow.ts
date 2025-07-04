@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - SmartSearchOutput - The return type for the smartSearch function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { z } from 'zod';
 import { userList } from '@/shared/lib/mock-data/users';
 import { teams as allTeams } from '@/shared/lib/mock-data/teams';

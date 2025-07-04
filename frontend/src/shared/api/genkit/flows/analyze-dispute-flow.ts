@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - AnalyzeDisputeOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { AnalyzeDisputeInputSchema, AnalyzeDisputeOutputSchema } from './schemas/analyze-dispute-schema';
 import type { AnalyzeDisputeInput, AnalyzeDisputeOutput } from './schemas/analyze-dispute-schema';
 

@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for analyzing individual player physical performance.
@@ -8,7 +7,7 @@
  * - AnalyzePlayerPerformanceOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { AnalyzePlayerPerformanceInputSchema, AnalyzePlayerPerformanceOutputSchema } from './schemas/analyze-player-performance-schema';
 import type { AnalyzePlayerPerformanceInput, AnalyzePlayerPerformanceOutput } from './schemas/analyze-player-performance-schema';
 

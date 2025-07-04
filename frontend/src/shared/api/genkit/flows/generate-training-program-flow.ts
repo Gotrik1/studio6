@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for generating personalized training programs.
@@ -8,7 +7,7 @@
  * - GenerateTrainingProgramOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { exercisesList } from '@/shared/lib/mock-data/exercises';
 import { GenerateTrainingProgramInputSchema, GenerateTrainingProgramOutputSchema } from './schemas/generate-training-program-schema';
 import type { GenerateTrainingProgramInput, GenerateTrainingProgramOutput } from './schemas/generate-training-program-schema';

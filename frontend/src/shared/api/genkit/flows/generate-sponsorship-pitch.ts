@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - GenerateSponsorshipPitchOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GenerateSponsorshipPitchInputSchema, GenerateSponsorshipPitchOutputSchema } from './schemas/generate-sponsorship-pitch-schema';
 import type { GenerateSponsorshipPitchInput, GenerateSponsorshipPitchOutput } from './schemas/generate-sponsorship-pitch-schema';
 

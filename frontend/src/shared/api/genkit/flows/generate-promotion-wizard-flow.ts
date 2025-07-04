@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - GeneratePromotionWizardOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import {z} from 'genkit';
 import {generatePromotionDetails} from './generate-promotion-details-flow';
 import {generatePromotionImage} from './generate-promotion-image-flow';

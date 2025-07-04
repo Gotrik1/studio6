@@ -7,7 +7,7 @@
  * - AnalyzeTeamPerformanceOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { AnalyzeTeamPerformanceInputSchema, AnalyzeTeamPerformanceOutputSchema } from './schemas/analyze-team-performance-schema';
 import type { AnalyzeTeamPerformanceInput, AnalyzeTeamPerformanceOutput } from './schemas/analyze-team-performance-schema';
 

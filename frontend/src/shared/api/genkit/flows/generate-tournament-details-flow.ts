@@ -8,7 +8,7 @@
  * - GenerateTournamentDetailsOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GenerateTournamentDetailsInputSchema, GenerateTournamentDetailsOutputSchema } from './schemas/generate-tournament-details-schema';
 import type { GenerateTournamentDetailsInput, GenerateTournamentDetailsOutput } from './schemas/generate-tournament-details-schema';
 

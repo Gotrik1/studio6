@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - GeneratePostImageOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GeneratePostImageInputSchema, GeneratePostImageOutputSchema } from './schemas/generate-post-image-schema';
 import type { GeneratePostImageInput, GeneratePostImageOutput } from './schemas/generate-post-image-schema';
 

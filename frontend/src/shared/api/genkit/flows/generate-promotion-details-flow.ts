@@ -8,7 +8,7 @@
  * - GeneratePromotionDetailsOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GeneratePromotionDetailsInputSchema, GeneratePromotionDetailsOutputSchema } from './schemas/generate-promotion-details-schema';
 import type { GeneratePromotionDetailsInput, GeneratePromotionDetailsOutput } from './schemas/generate-promotion-details-schema';
 

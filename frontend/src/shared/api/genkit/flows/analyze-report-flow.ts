@@ -8,7 +8,7 @@
  * - AnalyzeReportOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { AnalyzeReportInputSchema, AnalyzeReportOutputSchema } from './schemas/analyze-report-schema';
 import type { AnalyzeReportInput, AnalyzeReportOutput } from './schemas/analyze-report-schema';
 

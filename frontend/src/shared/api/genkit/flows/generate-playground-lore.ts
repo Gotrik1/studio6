@@ -7,7 +7,7 @@
  * - GeneratePlaygroundLoreOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GeneratePlaygroundLoreInputSchema, GeneratePlaygroundLoreOutputSchema } from './schemas/generate-playground-lore-schema';
 import type { GeneratePlaygroundLoreInput, GeneratePlaygroundLoreOutput } from './schemas/generate-playground-lore-schema';
 

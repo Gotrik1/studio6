@@ -7,7 +7,7 @@
  * - OnboardingOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { OnboardingInputSchema, OnboardingOutputSchema } from './schemas/onboarding-assistant-schema';
 import type { OnboardingInput, OnboardingOutput } from './schemas/onboarding-assistant-schema';
 

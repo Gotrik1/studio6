@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - AnalyzeRoleChangeOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { AnalyzeRoleChangeInputSchema, AnalyzeRoleChangeOutputSchema } from './schemas/analyze-role-change-schema';
 import type { AnalyzeRoleChangeInput, AnalyzeRoleChangeOutput } from './schemas/analyze-role-change-schema';
 

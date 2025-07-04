@@ -8,7 +8,7 @@
  * - AnalyzeSecurityOutput - The return type for the analyzeSecurity function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { AnalyzeSecurityInputSchema, AnalyzeSecurityOutputSchema } from './schemas/analyze-security-schema';
 import type { AnalyzeSecurityInput, AnalyzeSecurityOutput } from './schemas/analyze-security-schema';
 

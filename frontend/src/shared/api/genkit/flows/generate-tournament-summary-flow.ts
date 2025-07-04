@@ -7,7 +7,7 @@
  * - GenerateTournamentSummaryOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GenerateTournamentSummaryInputSchema, GenerateTournamentSummaryOutputSchema } from './schemas/generate-tournament-summary-schema';
 import type { GenerateTournamentSummaryInput, GenerateTournamentSummaryOutput } from './schemas/generate-tournament-summary-schema';
 
@@ -30,7 +30,7 @@ Champion: {{{champion}}}
 Final Match: {{{finalMatch.team1}}} vs {{{finalMatch.team2}}} (Score: {{{finalMatch.score}}})
 
 Please provide the following:
-1.  **Summary Article**: A 1-2 paragraph summary article about the tournament. Describe the final match and the champion's journey.
+1.  **Summary Article**: A 1-2 paragraph summary article about the entire tournament, highlighting the champion's path to victory.
 2.  **MVP**: Choose an MVP from the winning team (you can invent a plausible name) and explain your choice.
 3.  **Social Media Post**: A short, exciting post for social media to announce the winner.
 4.  **Image Prompts**: Exactly 4 diverse and exciting prompts for an AI image generator to create visuals for the media kit. Examples: "The winning team lifting the trophy", "MVP player in a heroic pose", etc.

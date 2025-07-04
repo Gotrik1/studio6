@@ -1,5 +1,3 @@
-
-
 'use server';
 
 /**
@@ -10,7 +8,7 @@
  * - FindLfgLobbiesOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { z } from 'zod';
 import { initialLfgLobbies } from '@/shared/lib/mock-data/lfg';
 import { FindLfgLobbiesInputSchema, FindLfgLobbiesOutputSchema, LfgLobbySchema } from './schemas/find-lfg-lobbies-schema';

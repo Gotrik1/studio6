@@ -7,7 +7,7 @@
  * - AnalyzePlaygroundDetailsOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { AnalyzePlaygroundDetailsInputSchema, AnalyzePlaygroundDetailsOutputSchema } from './schemas/analyze-playground-details-schema';
 import type { AnalyzePlaygroundDetailsInput, AnalyzePlaygroundDetailsOutput } from './schemas/analyze-playground-details-schema';
 

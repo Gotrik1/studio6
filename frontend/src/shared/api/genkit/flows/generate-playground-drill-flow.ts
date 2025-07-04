@@ -7,7 +7,7 @@
  * - GeneratePlaygroundDrillOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GeneratePlaygroundDrillInputSchema, GeneratePlaygroundDrillOutputSchema } from './schemas/generate-playground-drill-schema';
 import type { GeneratePlaygroundDrillInput, GeneratePlaygroundDrillOutput } from './schemas/generate-playground-drill-schema';
 

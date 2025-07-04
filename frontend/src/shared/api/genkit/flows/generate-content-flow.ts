@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - GenerateContentOutput - The return type for the generateContent function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GenerateContentInputSchema, GenerateContentOutputSchema } from './schemas/generate-content-schema';
 import type { GenerateContentInput, GenerateContentOutput } from './schemas/generate-content-schema';
 

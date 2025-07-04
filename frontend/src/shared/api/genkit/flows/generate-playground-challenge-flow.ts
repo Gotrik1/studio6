@@ -7,7 +7,7 @@
  * - GeneratePlaygroundChallengeOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GeneratePlaygroundChallengeInputSchema, GeneratePlaygroundChallengeOutputSchema } from './schemas/generate-playground-challenge-schema';
 import type { GeneratePlaygroundChallengeInput, GeneratePlaygroundChallengeOutput } from './schemas/generate-playground-challenge-schema';
 

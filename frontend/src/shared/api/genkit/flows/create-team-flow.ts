@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - CreateTeamOutput - The return type for the createTeam function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { CreateTeamInputSchema, CreateTeamOutputSchema } from './schemas/create-team-schema';
 import type { CreateTeamInput, CreateTeamOutput } from './schemas/create-team-schema';
 

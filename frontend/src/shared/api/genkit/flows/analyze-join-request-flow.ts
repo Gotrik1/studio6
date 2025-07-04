@@ -8,7 +8,7 @@
  * - AnalyzeJoinRequestOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { AnalyzeJoinRequestInputSchema, AnalyzeJoinRequestOutputSchema } from './schemas/analyze-join-request-schema';
 import type { AnalyzeJoinRequestInput, AnalyzeJoinRequestOutput } from './schemas/analyze-join-request-schema';
 

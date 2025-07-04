@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - GenerateTournamentWizardOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import {z} from 'genkit';
 import {generateTournamentDetails} from './generate-tournament-details-flow';
 import {generateTournamentImage} from './generate-tournament-image-flow';

@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for generating a play-by-play commentary for a match.
@@ -8,7 +7,7 @@
  * - GenerateMatchCommentaryOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { z } from 'zod';
 import { GenerateMatchCommentaryInputSchema, GenerateMatchCommentaryOutputSchema } from './schemas/generate-match-commentary-schema';
 import type { GenerateMatchCommentaryInput, GenerateMatchCommentaryOutput } from './schemas/generate-match-commentary-schema';

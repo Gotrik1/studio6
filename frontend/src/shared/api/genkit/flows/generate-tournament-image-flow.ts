@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -9,7 +8,7 @@
  * - GenerateTournamentImageOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GenerateTournamentImageInputSchema, GenerateTournamentImageOutputSchema } from './schemas/generate-tournament-image-schema';
 import type { GenerateTournamentImageInput, GenerateTournamentImageOutput } from './schemas/generate-tournament-image-schema';
 

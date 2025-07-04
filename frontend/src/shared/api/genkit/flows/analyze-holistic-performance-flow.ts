@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for a holistic analysis of physical and esports performance.
@@ -8,7 +7,7 @@
  * - AnalyzeHolisticPerformanceOutput - The return type for the function.
  */
 
-import {ai} from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { AnalyzeHolisticPerformanceInputSchema, AnalyzeHolisticPerformanceOutputSchema } from './schemas/analyze-holistic-performance-schema';
 import type { AnalyzeHolisticPerformanceInput, AnalyzeHolisticPerformanceOutput } from './schemas/analyze-holistic-performance-schema';
 

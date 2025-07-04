@@ -7,7 +7,7 @@
  * - GenerateSportSummaryOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GenerateSportSummaryInputSchema, GenerateSportSummaryOutputSchema } from './schemas/generate-sport-summary-schema';
 import type { GenerateSportSummaryInput, GenerateSportSummaryOutput } from './schemas/generate-sport-summary-schema';
 

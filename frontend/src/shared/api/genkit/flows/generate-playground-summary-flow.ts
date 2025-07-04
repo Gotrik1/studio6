@@ -7,7 +7,7 @@
  * - GeneratePlaygroundSummaryOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { GeneratePlaygroundSummaryInputSchema, GeneratePlaygroundSummaryOutputSchema } from './schemas/generate-playground-summary-schema';
 import type { GeneratePlaygroundSummaryInput, GeneratePlaygroundSummaryOutput } from './schemas/generate-playground-summary-schema';
 

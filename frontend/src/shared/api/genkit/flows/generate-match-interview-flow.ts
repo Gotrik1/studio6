@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -8,7 +7,7 @@
  * - GenerateMatchInterviewOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { generateDialogue } from './dialogue-generation-flow';
 import { multiSpeakerTts } from './multi-speaker-tts-flow';
 import { GenerateMatchInterviewInputSchema, GenerateMatchInterviewOutputSchema } from './schemas/generate-match-interview-schema';

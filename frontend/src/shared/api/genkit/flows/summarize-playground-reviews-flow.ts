@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for summarizing user reviews about a playground.
@@ -8,7 +7,7 @@
  * - SummarizePlaygroundReviewsOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { SummarizePlaygroundReviewsInputSchema, SummarizePlaygroundReviewsOutputSchema } from './schemas/summarize-playground-reviews-schema';
 import type { SummarizePlaygroundReviewsInput, SummarizePlaygroundReviewsOutput } from './schemas/summarize-playground-reviews-schema';
 

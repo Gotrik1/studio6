@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for analyzing a completed match and generating a report.
@@ -8,7 +7,7 @@
  * - AnalyzeMatchReportOutput - The return type for the function.
  */
 
-import { ai } from '@genkit-ai/next';
+import { ai } from '@/shared/api/genkit';
 import { AnalyzeMatchReportInputSchema, AnalyzeMatchReportOutputSchema } from './schemas/analyze-match-report-schema';
 import type { AnalyzeMatchReportInput, AnalyzeMatchReportOutput } from './schemas/analyze-match-report-schema';
 
