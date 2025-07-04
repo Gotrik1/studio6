@@ -30,6 +30,9 @@ import { analyzePlaygroundReport, type AnalyzePlaygroundReportInput, type Analyz
 import { smartSearch, type SmartSearchOutput } from '@/ai/flows/smart-search-flow';
 import { analyzePlayerPerformance, type AnalyzePlayerPerformanceInput, type AnalyzePlayerPerformanceOutput as AnalyzePlayerPerformanceOutput_1 } from '@/ai/flows/analyze-player-performance-flow';
 import { generateTrainingPlan, type GenerateTrainingPlanInput, type GenerateTrainingPlanOutput } from '@/ai/flows/generate-training-plan-flow';
+import { generatePlaygroundWorkout, type GeneratePlaygroundWorkoutInput, type GeneratePlaygroundWorkoutOutput } from '@/ai/flows/generate-playground-workout-flow';
+import { generatePlaygroundTactic, type GeneratePlaygroundTacticInput, type GeneratePlaygroundTacticOutput } from '@/ai/flows/generate-playground-tactic-flow';
+import { generatePlaygroundLore, type GeneratePlaygroundLoreInput, type GeneratePlaygroundLoreOutput } from '@/ai/flows/generate-playground-lore';
 
 
 @Injectable()
@@ -140,5 +143,17 @@ export class AiService {
   
   async generateTrainingPlan(input: GenerateTrainingPlanInput): Promise<GenerateTrainingPlanOutput> {
     return generateTrainingPlan(input);
+  }
+
+  async generatePlaygroundWorkout(input: GeneratePlaygroundWorkoutInput): Promise<GeneratePlaygroundWorkoutOutput> {
+    return generatePlaygroundWorkout(input);
+  }
+
+  async generatePlaygroundTactic(input: GeneratePlaygroundTacticInput): Promise<GeneratePlaygroundTacticOutput> {
+    return generatePlaygroundTactic(input);
+  }
+
+  async generatePlaygroundLore(input: GeneratePlaygroundLoreInput): Promise<GeneratePlaygroundLoreOutput> {
+    return generatePlaygroundLore(input);
   }
 }

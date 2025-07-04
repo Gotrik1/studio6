@@ -54,6 +54,12 @@ import { GenerateTrainingPlanDto } from './dto/generate-training-plan.dto';
 import { AnalyzePlayerPerformanceDto } from './dto/analyze-player-performance.dto';
 import type { GenerateTrainingPlanOutput } from '@/ai/flows/schemas/generate-training-plan-schema';
 import type { AnalyzePlayerPerformanceOutput } from '@/ai/flows/schemas/analyze-player-performance-schema';
+import { GeneratePlaygroundWorkoutDto } from './dto/generate-playground-workout.dto';
+import type { GeneratePlaygroundWorkoutOutput } from '@/ai/flows/schemas/generate-playground-workout-schema';
+import { GeneratePlaygroundTacticDto } from './dto/generate-playground-tactic.dto';
+import type { GeneratePlaygroundTacticOutput } from '@/ai/flows/schemas/generate-playground-tactic-schema';
+import { GeneratePlaygroundLoreDto } from './dto/generate-playground-lore.dto';
+import type { GeneratePlaygroundLoreOutput } from '@/ai/flows/schemas/generate-playground-lore-schema';
 
 @Controller('ai')
 export class AiController {
@@ -271,5 +277,29 @@ export class AiController {
     @Body() generateTrainingPlanDto: GenerateTrainingPlanDto,
   ): Promise<GenerateTrainingPlanOutput> {
     return this.aiService.generateTrainingPlan(generateTrainingPlanDto);
+  }
+
+  @Post('generate-playground-workout')
+  @HttpCode(HttpStatus.OK)
+  async generatePlaygroundWorkout(
+    @Body() generatePlaygroundWorkoutDto: GeneratePlaygroundWorkoutDto,
+  ): Promise<GeneratePlaygroundWorkoutOutput> {
+    return this.aiService.generatePlaygroundWorkout(generatePlaygroundWorkoutDto);
+  }
+
+  @Post('generate-playground-tactic')
+  @HttpCode(HttpStatus.OK)
+  async generatePlaygroundTactic(
+    @Body() generatePlaygroundTacticDto: GeneratePlaygroundTacticDto,
+  ): Promise<GeneratePlaygroundTacticOutput> {
+    return this.aiService.generatePlaygroundTactic(generatePlaygroundTacticDto);
+  }
+
+  @Post('generate-playground-lore')
+  @HttpCode(HttpStatus.OK)
+  async generatePlaygroundLore(
+    @Body() generatePlaygroundLoreDto: GeneratePlaygroundLoreDto,
+  ): Promise<GeneratePlaygroundLoreOutput> {
+    return this.aiService.generatePlaygroundLore(generatePlaygroundLoreDto);
   }
 }
