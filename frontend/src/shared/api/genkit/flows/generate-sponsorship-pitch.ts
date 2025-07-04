@@ -1,52 +1,25 @@
 'use server';
 
-/**
- * @fileOverview An AI agent for generating a compelling sponsorship pitch for an esports team.
- *
- * - generateSponsorshipPitch - A function that handles the pitch generation.
- * - GenerateSponsorshipPitchInput - The input type for the function.
- * - GenerateSponsorshipPitchOutput - The return type for the function.
- */
-
-import { ai } from '@/shared/api/genkit';
-import { GenerateSponsorshipPitchInputSchema, GenerateSponsorshipPitchOutputSchema } from './schemas/generate-sponsorship-pitch-schema';
 import type { GenerateSponsorshipPitchInput, GenerateSponsorshipPitchOutput } from './schemas/generate-sponsorship-pitch-schema';
 
 export type { GenerateSponsorshipPitchInput, GenerateSponsorshipPitchOutput };
 
 export async function generateSponsorshipPitch(input: GenerateSponsorshipPitchInput): Promise<GenerateSponsorshipPitchOutput> {
-  return generateSponsorshipPitchFlow(input);
+   const response = await fetch('/api/ai/generate-sponsorship-pitch', {
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(input),
+        cache: 'no-store',
+    });
+
+    if (!response.ok) {
+        const errorBody = await response.text();
+        console.error("Backend API error:", errorBody);
+        throw new Error(`Backend API responded with status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    return result;
 }
-
-const prompt = ai.definePrompt({
-  name: 'generateSponsorshipPitchPrompt',
-  input: {schema: GenerateSponsorshipPitchInputSchema},
-  output: {schema: GenerateSponsorshipPitchOutputSchema},
-  prompt: `You are a professional sports marketing agent. Your task is to write a compelling sponsorship pitch for an esports team based on the information provided. The pitch should be professional, confident, and clearly outline the value proposition for a potential sponsor. The language must be Russian.
-
-Team Information:
-- Team Name: {{{teamName}}}
-- Key Achievements: {{{achievements}}}
-- Goals & Needs: {{{goals}}}
-- Audience & Media: {{{audience}}}
-
-Structure the pitch as follows:
-1.  A strong opening introducing the team and its status.
-2.  A body paragraph detailing achievements and audience reach, explaining why sponsoring this team is a good investment.
-3.  A concluding paragraph stating the team's goals and what they are looking for in a partnership.
-
-Generate the pitch now.
-`,
-});
-
-const generateSponsorshipPitchFlow = ai.defineFlow(
-  {
-    name: 'generateSponsorshipPitchFlow',
-    inputSchema: GenerateSponsorshipPitchInputSchema,
-    outputSchema: GenerateSponsorshipPitchOutputSchema,
-  },
-  async (input) => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);

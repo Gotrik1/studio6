@@ -3,24 +3,24 @@
 /**
  * @fileOverview An AI agent for generating images for social media posts.
  *
- * - generatePostImage - A function that handles image generation for a post.
+ * - generatePostImage_Backend - A function that handles image generation for a post.
  * - GeneratePostImageInput - The input type for the function.
  * - GeneratePostImageOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '../genkit';
 import { GeneratePostImageInputSchema, GeneratePostImageOutputSchema } from './schemas/generate-post-image-schema';
 import type { GeneratePostImageInput, GeneratePostImageOutput } from './schemas/generate-post-image-schema';
 
 export type { GeneratePostImageInput, GeneratePostImageOutput };
 
-export async function generatePostImage(prompt: GeneratePostImageInput): Promise<GeneratePostImageOutput> {
-  return generatePostImageFlow(prompt);
+export async function generatePostImage_Backend(prompt: GeneratePostImageInput): Promise<GeneratePostImageOutput> {
+  return generatePostImageFlow_Backend(prompt);
 }
 
-const generatePostImageFlow = ai.defineFlow(
+const generatePostImageFlow_Backend = ai.defineFlow(
   {
-    name: 'generatePostImageFlow',
+    name: 'generatePostImageFlow_Backend',
     inputSchema: GeneratePostImageInputSchema,
     outputSchema: GeneratePostImageOutputSchema,
   },

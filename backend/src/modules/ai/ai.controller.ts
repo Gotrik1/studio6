@@ -28,6 +28,12 @@ import type { AnalyzeDisputeOutput } from '@/ai/flows/schemas/analyze-dispute-sc
 import type { TextToSpeechOutput } from '@/ai/flows/schemas/tts-schema';
 import { AnalyzeSecurityDto } from './dto/analyze-security.dto';
 import type { AnalyzeSecurityOutput } from '@/ai/flows/schemas/analyze-security-schema';
+import { GenerateSocialMediaPostDto } from './dto/generate-social-media-post.dto';
+import { GenerateSponsorshipPitchDto } from './dto/generate-sponsorship-pitch.dto';
+import { SponsorshipScoutDto } from './dto/sponsorship-scout.dto';
+import type { GenerateSocialMediaPostOutput } from '@/ai/flows/schemas/generate-social-media-post-schema';
+import type { GenerateSponsorshipPitchOutput } from '@/ai/flows/schemas/generate-sponsorship-pitch-schema';
+import type { SponsorshipScoutOutput } from '@/ai/flows/schemas/sponsorship-scout-schema';
 
 @Controller('ai')
 export class AiController {
@@ -141,5 +147,29 @@ export class AiController {
     @Body() analyzeSecurityDto: AnalyzeSecurityDto,
   ): Promise<AnalyzeSecurityOutput> {
     return this.aiService.analyzeSecurity(analyzeSecurityDto);
+  }
+
+  @Post('generate-social-media-post')
+  @HttpCode(HttpStatus.OK)
+  async generateSocialMediaPost(
+    @Body() generateSocialMediaPostDto: GenerateSocialMediaPostDto,
+  ): Promise<GenerateSocialMediaPostOutput> {
+    return this.aiService.generateSocialMediaPost(generateSocialMediaPostDto);
+  }
+
+  @Post('generate-sponsorship-pitch')
+  @HttpCode(HttpStatus.OK)
+  async generateSponsorshipPitch(
+    @Body() generateSponsorshipPitchDto: GenerateSponsorshipPitchDto,
+  ): Promise<GenerateSponsorshipPitchOutput> {
+    return this.aiService.generateSponsorshipPitch(generateSponsorshipPitchDto);
+  }
+
+  @Post('sponsorship-scout')
+  @HttpCode(HttpStatus.OK)
+  async sponsorshipScout(
+    @Body() sponsorshipScoutDto: SponsorshipScoutDto,
+  ): Promise<SponsorshipScoutOutput> {
+    return this.aiService.sponsorshipScout(sponsorshipScoutDto.prompt);
   }
 }

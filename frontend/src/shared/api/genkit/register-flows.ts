@@ -8,7 +8,7 @@
 // import './flows/tts-flow'; // Moved to backend
 // import './flows/dialogue-generation-flow'; // Moved to backend
 // import './flows/multi-speaker-tts-flow'; // Moved to backend
-import './flows/generate-post-image-flow';
+// import './flows/generate-post-image-flow'; // Moved to backend
 // import './flows/analyze-dispute-flow'; // Moved to backend
 import './flows/generate-tournament-details-flow';
 import './flows/generate-tournament-image-flow';
@@ -28,8 +28,8 @@ import './flows/generate-promotion-wizard-flow';
 import './flows/team-chatbot-flow';
 import './flows/generate-match-interview-flow';
 import './flows/analyze-report-flow';
-import './flows/generate-sponsorship-pitch';
-import './flows/sponsorship-scout-flow';
+// import './flows/generate-sponsorship-pitch'; // Moved to backend
+// import './flows/sponsorship-scout-flow'; // Moved to backend
 // import './flows/generate-platform-news-flow'; // Moved to backend
 // import './flows/analyze-team-performance-flow'; // Moved to backend
 import './flows/onboarding-assistant-flow';

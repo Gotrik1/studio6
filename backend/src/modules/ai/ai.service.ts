@@ -17,6 +17,9 @@ import { multiSpeakerTts, type MultiSpeakerTtsInput, type MultiSpeakerTtsOutput 
 import { analyzeDispute, type AnalyzeDisputeInput, type AnalyzeDisputeOutput } from '@/ai/flows/analyze-dispute-flow';
 import { textToSpeech, type TextToSpeechInput, type TextToSpeechOutput } from '@/ai/flows/tts-flow';
 import { analyzeSecurity, type AnalyzeSecurityInput, type AnalyzeSecurityOutput } from '@/ai/flows/analyze-security-flow';
+import { generateSocialMediaPost, type GenerateSocialMediaPostInput, type GenerateSocialMediaPostOutput } from '@/ai/flows/generate-social-media-post-flow';
+import { generateSponsorshipPitch, type GenerateSponsorshipPitchInput, type GenerateSponsorshipPitchOutput } from '@/ai/flows/generate-sponsorship-pitch';
+import { sponsorshipScout, type SponsorshipScoutOutput } from '@/ai/flows/sponsorship-scout-flow';
 
 
 @Injectable()
@@ -75,5 +78,17 @@ export class AiService {
 
   async analyzeSecurity(input: AnalyzeSecurityInput): Promise<AnalyzeSecurityOutput> {
     return analyzeSecurity(input);
+  }
+  
+  async generateSocialMediaPost(input: GenerateSocialMediaPostInput): Promise<GenerateSocialMediaPostOutput> {
+    return generateSocialMediaPost(input);
+  }
+  
+  async generateSponsorshipPitch(input: GenerateSponsorshipPitchInput): Promise<GenerateSponsorshipPitchOutput> {
+    return generateSponsorshipPitch(input);
+  }
+
+  async sponsorshipScout(prompt: string): Promise<SponsorshipScoutOutput> {
+    return sponsorshipScout(prompt);
   }
 }
