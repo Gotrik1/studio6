@@ -2,7 +2,7 @@
 'use server';
 
 import type { User } from '@/shared/lib/types';
-import { achievements, teams, recentMatches, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
+import { achievements, teams, gallery, careerHistory } from "@/shared/lib/mock-data/profiles";
 import { playerActivity, type PlayerActivityItem } from "@/shared/lib/mock-data/player-activity";
 
 
@@ -24,40 +24,40 @@ export type FullPlayerProfile = {
     user: PlayerProfileData;
     achievements: typeof achievements;
     teams: typeof teams;
-    recentMatches: typeof recentMatches;
     gallery: typeof gallery;
     careerHistory: typeof careerHistory;
     playerActivity: PlayerActivityItem[];
 };
 
 
-// In a real app, you would fetch all this data from different services
-// For now, we only fetch the user data from our backend.
 export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | null> {
     try {
-        const res = await fetch(`${process.env.BACKEND_URL}/users/${id}`, {
-            cache: 'no-store',
-        });
+        const userRes = fetch(`${process.env.BACKEND_URL}/users/${id}`, { cache: 'no-store' });
+        const teamsRes = fetch(`${process.env.BACKEND_URL}/users/${id}/teams`, { cache: 'no-store' });
         
-        if (!res.ok) {
-            console.error(`Failed to fetch user ${id}:`, res.statusText);
+        const [userResponse, teamsResponse] = await Promise.all([userRes, teamsRes]);
+        
+        if (!userResponse.ok) {
+            console.error(`Failed to fetch user ${id}:`, userResponse.statusText);
             return null;
         }
 
-        const user: PlayerProfileData = await res.json();
+        const user: PlayerProfileData = await userResponse.json();
+        // Gracefully handle if teams fetch fails
+        const userTeams = teamsResponse.ok ? await teamsResponse.json() : [];
         
         return {
             user,
+            teams: userTeams, // Use real data
+            // These remain mock for now, as per the plan.
             achievements,
-            teams,
-            recentMatches,
             gallery,
             careerHistory,
             playerActivity,
         };
 
     } catch(error) {
-        console.error(`Error fetching user ${id}:`, error);
+        console.error(`Error fetching user profile for ${id}:`, error);
         return null;
     }
 }

@@ -18,7 +18,7 @@ import { cn } from "@/shared/lib/utils";
 import { useState } from 'react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
-import type { achievements as AchievementsArray, teams as TeamsArray, recentMatches as MatchesArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
+import type { achievements as AchievementsArray, teams as TeamsArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
 import type { playerActivity as PlayerActivityArray } from "@/shared/lib/mock-data/player-activity";
 import { ReportPlayerDialog } from '@/features/report-player-dialog';
 import Image from "next/image";
@@ -70,7 +70,6 @@ type PlayerProfileProps = {
   isCurrentUser: boolean;
   achievements: typeof AchievementsArray;
   teams: typeof TeamsArray;
-  recentMatches: typeof MatchesArray;
   gallery: typeof GalleryArray;
   careerHistory: typeof CareerHistoryArray;
   playerActivity: typeof PlayerActivityArray;

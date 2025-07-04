@@ -101,6 +101,32 @@ export class UsersService {
     }));
   }
 
+  async findUserTeams(userId: string): Promise<any[]> {
+    const teams = await this.prisma.team.findMany({
+      where: {
+        members: {
+          some: { id: userId },
+        },
+      },
+      include: {
+        _count: {
+          select: { members: true },
+        },
+      },
+    });
+
+    // Map to the shape expected by TeamsTab on the frontend
+    return teams.map((team) => ({
+      name: team.name,
+      role: 'Участник', // Simplified. A real app might need a pivot table with roles.
+      logo: team.logo,
+      dataAiHint: team.dataAiHint,
+      slug: team.slug,
+      rank: team.rank,
+      game: team.game,
+    }));
+  }
+
   async findByEmailWithPassword(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { email },

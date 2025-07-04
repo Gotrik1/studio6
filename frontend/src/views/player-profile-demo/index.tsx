@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 
 // For demo purposes, we fetch a hardcoded user ID.
 // In a real profile page, this would come from `params`.
-const DEMO_USER_ID = 'player-example-001'; 
+const DEMO_USER_ID = '1'; 
 
 export async function PlayerProfilePage() {
     // This now fetches from the backend API
@@ -23,7 +23,6 @@ export async function PlayerProfilePage() {
         isCurrentUser={isCurrentUser}
         achievements={profileData.achievements}
         teams={profileData.teams}
-        recentMatches={profileData.recentMatches}
         gallery={profileData.gallery}
         careerHistory={profileData.careerHistory}
         playerActivity={profileData.playerActivity}

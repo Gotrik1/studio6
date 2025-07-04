@@ -33,4 +33,9 @@ export class UsersController {
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
+
+  @Get(':id/teams')
+  findUserTeams(@Param('id') id: string) {
+    return this.usersService.findUserTeams(id);
+  }
 }

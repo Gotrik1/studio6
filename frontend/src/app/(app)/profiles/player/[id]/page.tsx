@@ -21,7 +21,6 @@ export default async function PlayerProfileRoute({ params }: { params: { id: str
         isCurrentUser={isCurrentUser}
         achievements={profileData.achievements}
         teams={profileData.teams}
-        recentMatches={profileData.recentMatches}
         gallery={profileData.gallery}
         careerHistory={profileData.careerHistory}
         playerActivity={profileData.playerActivity}
