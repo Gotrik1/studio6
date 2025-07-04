@@ -1,4 +1,3 @@
-
 'use server';
 
 import { cookies } from 'next/headers';
@@ -24,12 +23,11 @@ export async function login(values: z.infer<typeof loginSchema>) {
         body: JSON.stringify({ email, password }),
     });
     
-    if (!response.ok) {
-        const errorData = await response.json();
-        return { error: errorData.message || 'Неверный email или пароль.' };
-    }
-
     data = await response.json();
+
+    if (!response.ok) {
+        return { error: data.message || 'Неверный email или пароль.' };
+    }
 
   } catch (error) {
     console.error(error);
