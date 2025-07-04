@@ -20,6 +20,7 @@ import { analyzeSecurity, type AnalyzeSecurityInput, type AnalyzeSecurityOutput 
 import { generateSocialMediaPost, type GenerateSocialMediaPostInput, type GenerateSocialMediaPostOutput } from '@/ai/flows/generate-social-media-post-flow';
 import { generateSponsorshipPitch, type GenerateSponsorshipPitchInput, type GenerateSponsorshipPitchOutput } from '@/ai/flows/generate-sponsorship-pitch';
 import { sponsorshipScout, type SponsorshipScoutOutput } from '@/ai/flows/sponsorship-scout-flow';
+import { generatePromotionWizard, type GeneratePromotionWizardInput, type GeneratePromotionWizardOutput } from '@/ai/flows/generate-promotion-wizard-flow';
 
 
 @Injectable()
@@ -90,5 +91,9 @@ export class AiService {
 
   async sponsorshipScout(prompt: string): Promise<SponsorshipScoutOutput> {
     return sponsorshipScout(prompt);
+  }
+
+  async generatePromotionWizard(input: GeneratePromotionWizardInput): Promise<GeneratePromotionWizardOutput> {
+    return generatePromotionWizard(input);
   }
 }

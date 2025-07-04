@@ -34,6 +34,8 @@ import { SponsorshipScoutDto } from './dto/sponsorship-scout.dto';
 import type { GenerateSocialMediaPostOutput } from '@/ai/flows/schemas/generate-social-media-post-schema';
 import type { GenerateSponsorshipPitchOutput } from '@/ai/flows/schemas/generate-sponsorship-pitch-schema';
 import type { SponsorshipScoutOutput } from '@/ai/flows/schemas/sponsorship-scout-schema';
+import { GeneratePromotionWizardDto } from './dto/generate-promotion-wizard.dto';
+import type { GeneratePromotionWizardOutput } from '@/ai/flows/schemas/generate-promotion-wizard-schema';
 
 @Controller('ai')
 export class AiController {
@@ -171,5 +173,13 @@ export class AiController {
     @Body() sponsorshipScoutDto: SponsorshipScoutDto,
   ): Promise<SponsorshipScoutOutput> {
     return this.aiService.sponsorshipScout(sponsorshipScoutDto.prompt);
+  }
+
+  @Post('generate-promotion-wizard')
+  @HttpCode(HttpStatus.OK)
+  async generatePromotionWizard(
+    @Body() generatePromotionWizardDto: GeneratePromotionWizardDto,
+  ): Promise<GeneratePromotionWizardOutput> {
+    return this.aiService.generatePromotionWizard(generatePromotionWizardDto);
   }
 }

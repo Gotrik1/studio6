@@ -22,9 +22,9 @@ import './flows/support-chatbot-flow';
 import './flows/analyze-role-change-flow';
 // import './flows/generate-user-avatar-flow'; // Moved to backend
 // import './flows/generate-profile-banner-flow'; // Moved to backend
-import './flows/generate-promotion-details-flow';
-import './flows/generate-promotion-image-flow';
-import './flows/generate-promotion-wizard-flow';
+// import './flows/generate-promotion-details-flow'; // Moved to backend
+// import './flows/generate-promotion-image-flow'; // Moved to backend
+// import './flows/generate-promotion-wizard-flow'; // Moved to backend
 import './flows/team-chatbot-flow';
 import './flows/generate-match-interview-flow';
 import './flows/analyze-report-flow';
