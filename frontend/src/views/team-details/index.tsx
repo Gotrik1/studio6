@@ -122,7 +122,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                                             </TableCell>
                                             <TableCell>{player.role}</TableCell>
                                             <TableCell className="hidden md:table-cell">{player.rating}</TableCell>
-                                            <TableCell className="text-right"><Badge variant={player.status === 'Онлайн' ? 'default' : 'outline'}>{player.status}</Badge></TableCell>
+                                            <TableCell className="text-right"><Badge variant={player.status === 'Активен' ? 'default' : 'outline'}>{player.status}</Badge></TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>

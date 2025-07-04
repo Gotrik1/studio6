@@ -1,9 +1,16 @@
 import type { teams } from '@/shared/lib/mock-data/teams';
-import type { teamRoster } from '@/shared/lib/mock-data/team-details';
+import type { userList } from '@/shared/lib/mock-data/users';
 
 export type Team = (typeof teams)[0];
 
-export type TeamRosterMember = (typeof teamRoster)[0];
+export type TeamRosterMember = {
+    id: string;
+    name: string;
+    avatar: string;
+    role: string;
+    rating: string;
+    status: string;
+};
 
 export type TeamDetails = {
     name: string;
