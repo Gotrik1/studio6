@@ -6,6 +6,7 @@ import type { GenerateUserAvatarOutput } from '../../ai/flows/schemas/generate-u
 import { generatePlatformNewsWithAudio } from '../../ai/flows/generate-platform-news-flow';
 import type { NewsWithAudio } from '../../ai/flows/schemas/generate-platform-news-schema';
 import { analyzeJoinRequest, type AnalyzeJoinRequestInput, type AnalyzeJoinRequestOutput } from '@/ai/flows/analyze-join-request-flow';
+import { analyzeTeamPerformance, type AnalyzeTeamPerformanceInput, type AnalyzeTeamPerformanceOutput } from '@/ai/flows/analyze-team-performance-flow';
 
 
 @Injectable()
@@ -24,5 +25,9 @@ export class AiService {
 
   async analyzeJoinRequest(input: AnalyzeJoinRequestInput): Promise<AnalyzeJoinRequestOutput> {
     return analyzeJoinRequest(input);
+  }
+
+  async analyzeTeamPerformance(input: AnalyzeTeamPerformanceInput): Promise<AnalyzeTeamPerformanceOutput> {
+    return analyzeTeamPerformance(input);
   }
 }

@@ -7,6 +7,8 @@ import type { GenerateUserAvatarOutput } from '../../ai/flows/schemas/generate-u
 import type { NewsWithAudio } from '../../ai/flows/schemas/generate-platform-news-schema';
 import { AnalyzeJoinRequestDto } from './dto/analyze-join-request.dto';
 import type { AnalyzeJoinRequestOutput } from '@/ai/flows/schemas/analyze-join-request-schema';
+import { AnalyzeTeamPerformanceDto } from './dto/analyze-team-performance.dto';
+import type { AnalyzeTeamPerformanceOutput } from '@/ai/flows/schemas/analyze-team-performance-schema';
 
 @Controller('ai')
 export class AiController {
@@ -40,5 +42,13 @@ export class AiController {
     @Body() analyzeJoinRequestDto: AnalyzeJoinRequestDto,
   ): Promise<AnalyzeJoinRequestOutput> {
     return this.aiService.analyzeJoinRequest(analyzeJoinRequestDto);
+  }
+
+  @Post('analyze-team-performance')
+  @HttpCode(HttpStatus.OK)
+  async analyzeTeamPerformance(
+    @Body() analyzeTeamPerformanceDto: AnalyzeTeamPerformanceDto,
+  ): Promise<AnalyzeTeamPerformanceOutput> {
+    return this.aiService.analyzeTeamPerformance(analyzeTeamPerformanceDto);
   }
 }

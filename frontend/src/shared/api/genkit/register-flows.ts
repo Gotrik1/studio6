@@ -1,4 +1,3 @@
-
 'use server';
 
 import './flows/analyze-content-generation';
@@ -32,7 +31,7 @@ import './flows/analyze-report-flow';
 import './flows/generate-sponsorship-pitch';
 import './flows/sponsorship-scout-flow';
 // import './flows/generate-platform-news-flow'; // Moved to backend
-import './flows/analyze-team-performance-flow';
+// import './flows/analyze-team-performance-flow'; // Moved to backend
 import './flows/onboarding-assistant-flow';
 import './flows/player-scout-flow';
 import './flows/analyze-player-performance-flow';
