@@ -10,7 +10,7 @@ export class TeamsService {
   constructor(private prisma: PrismaService) {}
 
   async create(createTeamDto: CreateTeamDto): Promise<Team> {
-    const { name, captainId, game } = createTeamDto;
+    const { name, captainId, game, motto, description, logo, dataAiHint } = createTeamDto;
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
     return this.prisma.team.create({
@@ -18,6 +18,10 @@ export class TeamsService {
         name,
         slug,
         game,
+        motto,
+        description,
+        logo,
+        dataAiHint,
         captain: {
           connect: { id: captainId },
         },
@@ -31,7 +35,9 @@ export class TeamsService {
   async findAll(): Promise<any[]> {
     const teams = await this.prisma.team.findMany({
       include: {
-        captain: true,
+        captain: {
+          select: { name: true }
+        },
         _count: {
           select: { members: true },
         },
@@ -45,7 +51,7 @@ export class TeamsService {
       logo: team.logo || 'https://placehold.co/100x100.png',
       dataAiHint: team.dataAiHint || 'team logo',
       game: team.game,
-      rank: team.rank || 99,
+      rank: team.rank,
       members: team._count.members,
       captain: team.captain.name,
       slug: team.slug,
@@ -64,13 +70,16 @@ export class TeamsService {
     const team = await this.prisma.team.findUnique({
       where: { slug },
       include: {
-        captain: true,
+        captain: {
+          select: { name: true }
+        },
         members: {
           select: {
             id: true,
             name: true,
             avatar: true,
             role: true,
+            status: true,
           },
         },
       },
@@ -85,8 +94,8 @@ export class TeamsService {
       name: member.name,
       avatar: member.avatar || 'https://placehold.co/100x100.png',
       role: member.role,
-      rating: 'Immortal', // Mock data for now
-      status: 'Онлайн', // Mock data for now
+      rating: 'Immortal', // This can stay as mock for now, as ELO/Rating is not in the schema yet.
+      status: member.status,
     }));
 
     return {
@@ -95,7 +104,7 @@ export class TeamsService {
       logo: team.logo || 'https://placehold.co/100x100.png',
       dataAiHint: team.dataAiHint || 'team logo',
       game: team.game,
-      rank: team.rank || 99,
+      rank: team.rank,
       membersCount: team.members.length,
       captainName: team.captain.name,
       slug: team.slug,
