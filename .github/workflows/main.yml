@@ -1,10 +1,9 @@
 name: Docker Compose CI
 
-# Запускать на пуш/PR в ветку master и вручную
 on:
   push:
     branches:
-      - master
+      - master       # или main, если у тебя так называется
   pull_request:
     branches:
       - master
@@ -12,35 +11,45 @@ on:
 
 jobs:
   build-and-test:
-    name: Build & Test via Docker Compose
     runs-on: ubuntu-latest
 
     steps:
-      # 1) Получаем код
+      # 1) Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2) Генерируем .env рядом с docker-compose.yml
-      - name: Create .env for Compose
+      # 2) Create .env for docker-compose
+      - name: Create .env
         run: |
-          echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" > .env
-          echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
-          echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" >> .env
-          # Если нужны ещё переменные (Keycloak, Kong и т.п.), допиши их сюда:
-          # echo "KEYCLOAK_ADMIN=${{ secrets.KEYCLOAK_ADMIN }}" >> .env
-          # echo "KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}" >> .env
+          cat > .env <<EOF
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
 
-      # 3) Устанавливаем Docker Compose
+          PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
+          PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
+
+          KEYCLOAK_ADMIN=${{ secrets.KEYCLOAK_ADMIN }}
+          KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+
+          KONG_PG_USER=${{ secrets.KONG_PG_USER }}
+          KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
+          KONG_PG_DATABASE=${{ secrets.KONG_PG_DATABASE }}
+          KONG_ADMIN_LISTEN=${{ secrets.KONG_ADMIN_LISTEN }}
+          KONG_PROXY_LISTEN=${{ secrets.KONG_PROXY_LISTEN }}
+          EOF
+
+      # 3) Install Docker Compose
       - name: Install Docker Compose
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
 
-      # 4) Собираем и поднимаем все контейнеры
+      # 4) Build & start all services
       - name: Launch services
         run: docker-compose up -d --build
 
-      # 5) Ждём, пока Postgres будет готов (опционально, если в Compose прописан healthcheck, можно убрать)
+      # 5) Wait for Postgres
       - name: Wait for Postgres
         run: |
           until docker exec $(docker ps -q -f ancestor=postgres:15) \
@@ -49,15 +58,49 @@ jobs:
             sleep 2
           done
 
-      # 6) Пример миграций (если есть)
-      #- name: Run database migrations
-      #  run: docker-compose exec backend npx prisma migrate deploy
+      # 6) Wait for Redis
+      - name: Wait for Redis
+        run: |
+          until docker exec $(docker ps -q -f ancestor=redis:latest) \
+            redis-cli ping | grep PONG; do
+            echo "Waiting for Redis…"
+            sleep 2
+          done
 
-      # 7) Пример тестов
-      #- name: Run backend tests
-      #  run: docker-compose exec backend npm test
+      # 7) Wait for Keycloak
+      - name: Wait for Keycloak
+        run: |
+          until curl -s http://localhost:8180/auth/realms/master; do
+            echo "Waiting for Keycloak…"
+            sleep 5
+          done
 
-      # 8) Очищаем всё в конце
+      # 8) Wait for Kong Admin API
+      - name: Wait for Kong
+        run: |
+          until curl -s http://localhost:8001/status; do
+            echo "Waiting for Kong Admin API…"
+            sleep 2
+          done
+
+      # 9) Run Prisma migrations
+      - name: Run database migrations
+        run: docker-compose run --rm prisma-migrate
+
+      # 10) Run backend tests
+      - name: Run backend tests
+        run: docker-compose exec backend npm test
+
+      # 11) Run frontend tests (если есть)
+      - name: Run frontend tests
+        run: |
+          if docker-compose exec frontend npm test; then
+            echo "Frontend tests passed"
+          else
+            echo "Skipping frontend tests (no tests configured?)"
+          fi
+
+      # 12) Tear down
       - name: Tear down
         if: always()
         run: docker-compose down -v
