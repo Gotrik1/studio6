@@ -7,12 +7,14 @@ import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Bot, Send, Loader2 } from 'lucide-react';
+import { Bot, Send, Loader2, Users, Sparkles } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useSession } from '@/shared/lib/session/client';
+import { contacts, messages as allMessages, type Contact } from '@/shared/lib/mock-data/chats';
+import { suggestReply } from '@/shared/api/genkit/flows/suggest-reply-flow';
 import { askTeamChatbot } from '@/shared/api/genkit/flows/team-chatbot-flow';
 
-type ChatMessage = {
+type Message = {
     sender: 'user' | 'ai' | 'other';
     name: string;
     avatar: string;
@@ -20,21 +22,16 @@ type ChatMessage = {
     isThinking?: boolean;
 };
 
-interface TeamChatInterfaceProps {
-    teamId: string;
-}
+const getAvatarFallback = (name: string) => name.split(' ').map(n => n[0]).join('');
 
-const mockInitialMessages: ChatMessage[] = [
-    { sender: 'other', name: 'Echo', avatar: 'https://placehold.co/100x100.png', text: 'Отлично сыграли вчера!' },
-    { sender: 'other', name: 'Viper', avatar: 'https://placehold.co/100x100.png', text: 'Да, особенно выход на А.' },
-];
-
-export function TeamChatInterface({ teamId }: TeamChatInterfaceProps) {
+export function TeamChatInterface({ teamId }: { teamId: string }) {
     const { user } = useSession();
-    const [messages, setMessages] = useState<ChatMessage[]>(mockInitialMessages);
+    const [messages, setMessages] = useState<Message[]>(mockInitialMessages);
     const [input, setInput] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
+    const [replySuggestions, setReplySuggestions] = useState<string[]>([]);
+    const [isThinking, setIsThinking] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const selectedChat = contacts.find(c => c.type === 'team' && c.teamId === teamId);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -45,49 +42,70 @@ export function TeamChatInterface({ teamId }: TeamChatInterfaceProps) {
     }, [messages]);
 
     const handleSend = async () => {
-        if (!input.trim() || !user) return;
-
+        if (!input.trim() || !selectedChat || !user) return;
         const text = input;
         setInput('');
         
-        const userMessage: ChatMessage = { sender: 'user', name: user.name, avatar: user.avatar, text };
+        const userMessage: Message = { sender: 'user', name: user.name, avatar: user.avatar, text };
         setMessages(prev => [...prev, userMessage]);
-        
-        // Check if the message is a command for the bot
-        if (text.toLowerCase().startsWith('/ai') || text.toLowerCase().startsWith('@ai')) {
-            const thinkingMessage: ChatMessage = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Думаю...', isThinking: true };
+
+        const isAiCommand = text.toLowerCase().startsWith('/ai') || text.toLowerCase().startsWith('@ai');
+
+        if (isAiCommand) {
+            const thinkingMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Думаю...', isThinking: true };
             setMessages(prev => [...prev, thinkingMessage]);
-            setIsLoading(true);
+            setIsThinking(true);
             const query = text.replace(/^\/ai\s*|^\@ai\s*/, '');
             
             try {
                 const aiResponseText = await askTeamChatbot({ teamId, query });
-                const aiMessage: ChatMessage = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: aiResponseText };
+                const aiMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: aiResponseText };
                 setMessages(prev => [...prev.filter(m => !m.isThinking), aiMessage]);
             } catch(e) {
                 console.error(e);
-                const errorMessage: ChatMessage = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Произошла ошибка при обработке вашего запроса.' };
+                const errorMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Произошла ошибка при обработке вашего запроса.' };
                 setMessages(prev => [...prev.filter(m => !m.isThinking), errorMessage]);
             } finally {
-                setIsLoading(false);
+                setIsThinking(false);
             }
         }
+    };
+
+    const handleSuggestReplies = async () => {
+        if (messages.length === 0 || isThinking) return;
         
+        setIsThinking(true);
+        setReplySuggestions([]);
+        
+        const history = messages.map(m => `${m.name}: ${m.text}`).join('\n');
+        
+        try {
+            const { suggestions } = await suggestReply({ history, teamId });
+            setReplySuggestions(suggestions);
+        } catch (e) {
+            console.error("Failed to suggest replies:", e);
+        } finally {
+            setIsThinking(false);
+        }
     };
     
     const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === 'Enter' && !isLoading) {
+        if (event.key === 'Enter' && !isThinking) {
             handleSend();
         }
     };
-    
-    const getAvatarFallback = (name: string) => name.split(' ').map(n => n[0]).join('');
 
     return (
         <Card className="flex flex-col h-[calc(100vh-28rem)]">
-            <CardHeader>
-                <CardTitle>Чат команды</CardTitle>
-                <CardDescription>Общайтесь с командой и задавайте вопросы AI-ассистенту, используя /ai или @ai.</CardDescription>
+            <CardHeader className="flex-row items-center justify-between">
+                <div>
+                    <CardTitle>Чат команды</CardTitle>
+                    <CardDescription>Общайтесь с командой и задавайте вопросы AI-ассистенту, используя /ai или @ai.</CardDescription>
+                </div>
+                 <Button variant="ghost" size="icon" onClick={handleSuggestReplies} disabled={isThinking}>
+                    {isThinking ? <Loader2 className="h-5 w-5 animate-spin" /> : <Sparkles className="h-5 w-5" />}
+                    <span className="sr-only">Suggest replies</span>
+                </Button>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col p-0">
                 <ScrollArea className="flex-1 p-6">
@@ -127,7 +145,16 @@ export function TeamChatInterface({ teamId }: TeamChatInterfaceProps) {
                         <div ref={messagesEndRef} />
                     </div>
                 </ScrollArea>
-                <div className="p-4 border-t bg-background">
+                 <div className="p-4 border-t bg-background space-y-2">
+                    {replySuggestions.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                            {replySuggestions.map((suggestion, i) => (
+                                <Button key={i} variant="outline" size="sm" onClick={() => { setInput(suggestion); setReplySuggestions([]); }}>
+                                    {suggestion}
+                                </Button>
+                            ))}
+                        </div>
+                    )}
                     <div className="flex items-center gap-2">
                         <Input 
                             placeholder="Напишите сообщение или задайте вопрос AI..."
