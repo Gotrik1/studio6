@@ -2,6 +2,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -13,15 +14,12 @@ export class AuthService {
   /**
    * In a real Keycloak architecture, this method would be obsolete.
    * Token validation would be handled by the gateway (Kong) and a Passport strategy.
-   * For the prototype, this validates if a user exists.
+   * For the prototype, this validates if a user exists and their password is correct.
    */
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.usersService.findByEmailWithPassword(email);
 
-    if (user) {
-      // In a real scenario, we would not check the password here.
-      // For the prototype, we assume if the user exists, the password is valid.
-      // The bcrypt check is removed to align with the "no password handling" principle.
+    if (user && (await bcrypt.compare(pass, user.passwordHash))) {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash, ...result } = user;
       return result;

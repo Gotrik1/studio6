@@ -4,13 +4,14 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
-    const { name, email, role } = createUserDto;
+    const { name, email, password, role } = createUserDto;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -20,9 +21,10 @@ export class UsersService {
       throw new ConflictException('Пользователь с таким email уже существует');
     }
     
-    // В реальной архитектуре с Keycloak пароль здесь не обрабатывается.
-    // Оставляем хэш пустым или null.
-    const passwordHash = '';
+    // In a real Keycloak architecture, password wouldn't be handled here.
+    // For the prototype's local auth, we hash the password securely.
+    const saltOrRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltOrRounds);
 
     const user = await this.prisma.user.create({
       data: {
@@ -35,7 +37,7 @@ export class UsersService {
       },
     });
 
-    // Никогда не возвращаем хэш пароля клиенту
+    // Never return the password hash to the client
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _, ...result } = user;
     return result;
