@@ -5,6 +5,7 @@ import { generateUserAvatar } from '../../ai/flows/generate-user-avatar-flow';
 import type { GenerateUserAvatarOutput } from '../../ai/flows/schemas/generate-user-avatar-schema';
 import { generatePlatformNewsWithAudio } from '../../ai/flows/generate-platform-news-flow';
 import type { NewsWithAudio } from '../../ai/flows/schemas/generate-platform-news-schema';
+import { analyzeJoinRequest, type AnalyzeJoinRequestInput, type AnalyzeJoinRequestOutput } from '@/ai/flows/analyze-join-request-flow';
 
 
 @Injectable()
@@ -19,5 +20,9 @@ export class AiService {
 
   async generateDashboardNews(): Promise<NewsWithAudio> {
       return generatePlatformNewsWithAudio();
+  }
+
+  async analyzeJoinRequest(input: AnalyzeJoinRequestInput): Promise<AnalyzeJoinRequestOutput> {
+    return analyzeJoinRequest(input);
   }
 }

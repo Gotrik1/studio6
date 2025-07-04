@@ -1,47 +1,42 @@
 'use server';
 
 /**
- * @fileOverview An AI agent for analyzing a player's request to join a team.
+ * @fileOverview An API client for analyzing a player's request to join a team via the backend.
  *
- * - analyzeJoinRequest - A function that handles the analysis.
+ * - analyzeJoinRequest - A function that calls the backend to handle the analysis.
  * - AnalyzeJoinRequestInput - The input type for the function.
  * - AnalyzeJoinRequestOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
-import { AnalyzeJoinRequestInputSchema, AnalyzeJoinRequestOutputSchema } from './schemas/analyze-join-request-schema';
-import type { AnalyzeJoinRequestInput, AnalyzeJoinRequestOutput } from './schemas/analyze-join-request-schema';
+// Define types here to decouple from backend Zod schemas
+export type AnalyzeJoinRequestInput = {
+  teamNeeds: string;
+  playerProfile: string;
+};
 
-export type { AnalyzeJoinRequestInput, AnalyzeJoinRequestOutput };
+export type AnalyzeJoinRequestOutput = {
+  recommendation: 'accept' | 'consider' | 'decline';
+  reasoning: string;
+  confidence: 'high' | 'medium' | 'low';
+};
+
 
 export async function analyzeJoinRequest(input: AnalyzeJoinRequestInput): Promise<AnalyzeJoinRequestOutput> {
-  return analyzeJoinRequestFlow(input);
-}
+  const response = await fetch(`/api/ai/analyze-join-request`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+    cache: 'no-store',
+  });
 
-const prompt = ai.definePrompt({
-  name: 'analyzeJoinRequestPrompt',
-  input: {schema: AnalyzeJoinRequestInputSchema},
-  output: {schema: AnalyzeJoinRequestOutputSchema},
-  prompt: `You are an expert sports team scout and analyst. Your task is to evaluate a player's request to join a team.
-
-  Analyze the player's profile against the team's needs. Provide a clear recommendation (accept, consider, or decline), a confidence level, and your reasoning.
-
-  Team Needs & Playstyle:
-  {{{teamNeeds}}}
-
-  Applying Player's Profile:
-  {{{playerProfile}}}
-  `,
-});
-
-const analyzeJoinRequestFlow = ai.defineFlow(
-  {
-    name: 'analyzeJoinRequestFlow',
-    inputSchema: AnalyzeJoinRequestInputSchema,
-    outputSchema: AnalyzeJoinRequestOutputSchema,
-  },
-  async (input) => {
-    const {output} = await prompt(input);
-    return output!;
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("Backend API error:", errorBody);
+    throw new Error(`Backend API responded with status: ${response.status}`);
   }
-);
+
+  const result = await response.json();
+  return result;
+}

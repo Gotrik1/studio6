@@ -3,9 +3,9 @@
 
 import './flows/analyze-content-generation';
 import './flows/generate-content-flow';
-import './flows/generate-team-avatar-flow';
+// import './flows/generate-team-avatar-flow'; // Now part of generate-team-concept on backend
 import './flows/analyze-security-flow';
-import './flows/create-team-flow';
+// import './flows/create-team-flow'; // Now part of generate-team-concept on backend
 // import './flows/tts-flow'; // Moved to backend
 import './flows/dialogue-generation-flow';
 import './flows/multi-speaker-tts-flow';
@@ -15,13 +15,13 @@ import './flows/generate-tournament-details-flow';
 import './flows/generate-tournament-image-flow';
 import './flows/smart-search-flow';
 import './flows/suggest-reply-flow';
-import './flows/analyze-join-request-flow';
+// import './flows/analyze-join-request-flow'; // Moved to backend
 import './flows/generate-tournament-wizard-flow';
 import './flows/analyze-match-challenge-flow';
 import './flows/analyze-match-report-flow';
 import './flows/support-chatbot-flow';
 import './flows/analyze-role-change-flow';
-import './flows/generate-user-avatar-flow';
+// import './flows/generate-user-avatar-flow'; // Moved to backend
 import './flows/generate-profile-banner-flow';
 import './flows/generate-promotion-details-flow';
 import './flows/generate-promotion-image-flow';

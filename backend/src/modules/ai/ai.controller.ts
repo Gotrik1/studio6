@@ -5,6 +5,8 @@ import type { GenerateTeamConceptOutput } from '../../ai/flows/schemas/generate-
 import { GenerateUserAvatarDto } from './dto/generate-user-avatar.dto';
 import type { GenerateUserAvatarOutput } from '../../ai/flows/schemas/generate-user-avatar-schema';
 import type { NewsWithAudio } from '../../ai/flows/schemas/generate-platform-news-schema';
+import { AnalyzeJoinRequestDto } from './dto/analyze-join-request.dto';
+import type { AnalyzeJoinRequestOutput } from '@/ai/flows/schemas/analyze-join-request-schema';
 
 @Controller('ai')
 export class AiController {
@@ -30,5 +32,13 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   async getDashboardNews(): Promise<NewsWithAudio> {
       return this.aiService.generateDashboardNews();
+  }
+
+  @Post('analyze-join-request')
+  @HttpCode(HttpStatus.OK)
+  async analyzeJoinRequest(
+    @Body() analyzeJoinRequestDto: AnalyzeJoinRequestDto,
+  ): Promise<AnalyzeJoinRequestOutput> {
+    return this.aiService.analyzeJoinRequest(analyzeJoinRequestDto);
   }
 }
