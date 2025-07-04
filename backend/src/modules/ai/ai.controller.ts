@@ -99,6 +99,10 @@ import { FindLfgLobbiesDto } from './dto/find-lfg-lobbies.dto';
 import type { FindLfgLobbiesOutput } from '@/ai/flows/find-lfg-lobbies-flow';
 import { FindVenuesDto } from './dto/find-venues.dto';
 import type { FindVenuesOutput } from '@/ai/flows/find-venues-flow';
+import { GenerateMatchPostDto } from './dto/generate-match-post.dto';
+import type { GenerateMatchPostOutput } from '@/ai/flows/schemas/generate-match-post-schema';
+import { GenerateSportSummaryDto } from './dto/generate-sport-summary.dto';
+import type { GenerateSportSummaryOutput } from '@/ai/flows/schemas/generate-sport-summary-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -288,6 +292,18 @@ export class AiController {
     @Body() generatePostImageDto: GeneratePostImageDto,
   ): Promise<GeneratePostImageOutput> {
     return this.aiService.generatePostImage(generatePostImageDto.prompt);
+  }
+
+  @Post('generate-match-post')
+  @HttpCode(HttpStatus.OK)
+  async generateMatchPost(@Body() generateMatchPostDto: GenerateMatchPostDto): Promise<GenerateMatchPostOutput> {
+    return this.aiService.generateMatchPost(generateMatchPostDto);
+  }
+
+  @Post('generate-sport-summary')
+  @HttpCode(HttpStatus.OK)
+  async generateSportSummary(@Body() generateSportSummaryDto: GenerateSportSummaryDto): Promise<GenerateSportSummaryOutput> {
+    return this.aiService.generateSportSummary(generateSportSummaryDto);
   }
 
   @Post('analyze-playground-details')

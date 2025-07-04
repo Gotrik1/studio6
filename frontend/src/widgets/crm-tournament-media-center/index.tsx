@@ -15,7 +15,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import Image from 'next/image';
 import { generateMatchCommentary, type GenerateMatchCommentaryOutput } from "@/shared/api/genkit/flows/generate-match-commentary-flow";
 import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
-import { generateMatchPost, type GenerateMatchPostOutput } from '@/shared/api/genkit/flows/generate-match-post-flow';
+import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
 
 
 interface CrmTournamentMediaCenterProps {
@@ -235,13 +235,20 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                              <Card>
                                 <CardHeader><CardTitle>SMM Пост</CardTitle></CardHeader>
                                 <CardContent className="space-y-4">
-                                     <div className="relative aspect-video w-full overflow-hidden rounded-md border">
-                                        <Image src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover"/>
-                                    </div>
-                                    <Label htmlFor="post-text">Текст поста</Label>
-                                    <Textarea id="post-text" value={summaryResult.socialMediaPost} readOnly className="h-24"/>
+                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label htmlFor="post-text">Текст поста</Label>
+                                                <Textarea id="post-text" value={postResult.postText} readOnly className="h-48"/>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Изображение</Label>
+                                                <div className="relative aspect-video w-full overflow-hidden rounded-md border">
+                                                    <Image src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover"/>
+                                                </div>
+                                            </div>
+                                        </div>
                                      <div className="flex gap-2">
-                                        <Button onClick={() => handleCopyText(summaryResult.socialMediaPost)}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
+                                        <Button onClick={() => handleCopyText(postResult.postText)}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
                                         <Button variant="outline" asChild>
                                             <a href={postResult.imageDataUri} download="match_post_image.png">
                                                 <Download className="mr-2 h-4 w-4"/> Скачать изображение

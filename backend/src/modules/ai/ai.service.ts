@@ -49,6 +49,8 @@ import { findCoaches, type FindCoachesOutput } from '@/ai/flows/find-coaches-flo
 import { findEquipment, type FindEquipmentInput, type FindEquipmentOutput } from '@/ai/flows/find-equipment-flow';
 import { findLfgLobbies, type FindLfgLobbiesInput, type FindLfgLobbiesOutput } from '@/ai/flows/find-lfg-lobbies-flow';
 import { findVenues, type FindVenuesInput, type FindVenuesOutput } from '@/ai/flows/find-venues-flow';
+import { generateMatchPost, type GenerateMatchPostInput, type GenerateMatchPostOutput } from '@/ai/flows/generate-match-post-flow';
+import { generateSportSummary, type GenerateSportSummaryInput, type GenerateSportSummaryOutput } from '@/ai/flows/generate-sport-summary-flow';
 
 
 @Injectable()
@@ -147,6 +149,14 @@ export class AiService {
 
   async generatePostImage(prompt: GeneratePostImageInput): Promise<GeneratePostImageOutput> {
     return generatePostImage_Backend(prompt);
+  }
+
+  async generateMatchPost(input: GenerateMatchPostInput): Promise<GenerateMatchPostOutput> {
+    return generateMatchPost(input);
+  }
+
+  async generateSportSummary(input: GenerateSportSummaryInput): Promise<GenerateSportSummaryOutput> {
+    return generateSportSummary(input);
   }
 
   async analyzePlaygroundDetails(input: AnalyzePlaygroundDetailsInput): Promise<AnalyzePlaygroundDetailsOutput> {

@@ -1,7 +1,14 @@
 'use server';
 
-import type { SummarizePlaygroundReviewsInput, SummarizePlaygroundReviewsOutput } from './schemas/summarize-playground-reviews-schema';
-export type { SummarizePlaygroundReviewsInput, SummarizePlaygroundReviewsOutput };
+export type SummarizePlaygroundReviewsInput = {
+  reviews: string[];
+};
+
+export type SummarizePlaygroundReviewsOutput = {
+  pros: string[];
+  cons: string[];
+  averageRating: number;
+};
 
 export async function summarizePlaygroundReviews(input: SummarizePlaygroundReviewsInput): Promise<SummarizePlaygroundReviewsOutput> {
   const response = await fetch('/api/ai/summarize-playground-reviews', {
