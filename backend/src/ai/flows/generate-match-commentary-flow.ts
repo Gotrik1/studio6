@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for generating a play-by-play commentary for a match.
@@ -25,9 +24,8 @@ const generateMatchCommentaryFlow_Backend = ai.defineFlow(
   {
     name: 'generateMatchCommentaryFlow_Backend',
     inputSchema: GenerateMatchCommentaryInputSchema,
-    outputSchema: z.object({
-        ...GenerateMatchCommentaryOutputSchema.shape,
-        audioDataUri: z.string(),
+    outputSchema: GenerateMatchCommentaryOutputSchema.extend({
+        audioDataUri: z.string().describe("The generated audio commentary as a data URI in WAV format."),
     })
   },
   async ({ team1Name, team2Name, events }) => {
