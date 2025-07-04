@@ -87,6 +87,8 @@ import { FindCoachesDto } from './dto/find-coaches.dto';
 import type { FindCoachesOutput } from '@/ai/flows/schemas/find-coaches-schema';
 import { AnalyzeMatchChallengeDto } from './dto/analyze-match-challenge.dto';
 import type { AnalyzeMatchChallengeOutput } from '@/ai/flows/schemas/analyze-match-challenge-schema';
+import { AnalyzeExerciseFormDto } from './dto/analyze-exercise-form.dto';
+import type { AnalyzeExerciseFormOutput } from '@/ai/flows/schemas/analyze-exercise-form-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -428,5 +430,13 @@ export class AiController {
     @Body() analyzeMatchChallengeDto: AnalyzeMatchChallengeDto,
   ): Promise<AnalyzeMatchChallengeOutput> {
     return this.aiService.analyzeMatchChallenge(analyzeMatchChallengeDto.input);
+  }
+
+  @Post('analyze-exercise-form')
+  @HttpCode(HttpStatus.OK)
+  async analyzeExerciseForm(
+    @Body() analyzeExerciseFormDto: AnalyzeExerciseFormDto,
+  ): Promise<AnalyzeExerciseFormOutput> {
+    return this.aiService.analyzeExerciseForm(analyzeExerciseFormDto);
   }
 }

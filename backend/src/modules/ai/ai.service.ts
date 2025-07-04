@@ -43,6 +43,7 @@ import { generatePromotionImage, type GeneratePromotionImageOutput } from '@/ai/
 import { generateDashboardTip, type GenerateDashboardTipInput, type GenerateDashboardTipOutput } from '@/ai/flows/generate-dashboard-tip-flow';
 import { findCoaches, type FindCoachesInput, type FindCoachesOutput } from '@/ai/flows/find-coaches-flow';
 import { analyzeMatchChallenge, type AnalyzeMatchChallengeInput, type AnalyzeMatchChallengeOutput } from '@/ai/flows/analyze-match-challenge-flow';
+import { analyzeExerciseForm, type AnalyzeExerciseFormInput, type AnalyzeExerciseFormOutput } from '@/ai/flows/analyze-exercise-form-flow';
 
 
 @Injectable()
@@ -217,5 +218,9 @@ export class AiService {
 
   async analyzeMatchChallenge(input: AnalyzeMatchChallengeInput): Promise<AnalyzeMatchChallengeOutput> {
     return analyzeMatchChallenge(input);
+  }
+
+  async analyzeExerciseForm(input: AnalyzeExerciseFormInput): Promise<AnalyzeExerciseFormOutput> {
+    return analyzeExerciseForm(input);
   }
 }

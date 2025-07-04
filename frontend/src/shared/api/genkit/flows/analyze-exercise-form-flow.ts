@@ -1,51 +1,37 @@
 'use server';
-/**
- * @fileOverview An AI agent for analyzing a user's exercise form from a video.
- *
- * - analyzeExerciseForm - a function that handles the form analysis.
- * - AnalyzeExerciseFormInput - The input type for the function.
- * - AnalyzeExerciseFormOutput - The return type for the function.
- */
 
-import { ai } from '@/shared/api/genkit';
-import { AnalyzeExerciseFormInputSchema, AnalyzeExerciseFormOutputSchema } from './schemas/analyze-exercise-form-schema';
-import type { AnalyzeExerciseFormInput, AnalyzeExerciseFormOutput } from './schemas/analyze-exercise-form-schema';
+// Define types locally to decouple from backend schemas.
+export type FormCorrection = {
+    part: string;
+    correction: string;
+};
 
-export type { AnalyzeExerciseFormInput, AnalyzeExerciseFormOutput };
+export type AnalyzeExerciseFormInput = {
+  videoDataUri: string;
+  exerciseName: string;
+};
 
+export type AnalyzeExerciseFormOutput = {
+  overallAssessment: string;
+  corrections: FormCorrection[];
+  positivePoints: string[];
+};
 
 export async function analyzeExerciseForm(input: AnalyzeExerciseFormInput): Promise<AnalyzeExerciseFormOutput> {
-  return analyzeExerciseFormFlow(input);
-}
+  const response = await fetch('/api/ai/analyze-exercise-form', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(input),
+    cache: 'no-store',
+  });
 
-const prompt = ai.definePrompt({
-    name: 'analyzeExerciseFormPrompt',
-    input: { schema: AnalyzeExerciseFormInputSchema },
-    output: { schema: AnalyzeExerciseFormOutputSchema },
-    prompt: `You are an expert fitness coach and biomechanics specialist.
-Analyze the user's exercise form in the provided video. The user is performing: {{{exerciseName}}}.
-
-Based on the video, provide the following in Russian:
-1.  **overallAssessment**: A brief, overall assessment of the exercise form.
-2.  **corrections**: A list of specific mistakes found and how to correct them. Identify the body part and the specific correction needed. Be very precise.
-3.  **positivePoints**: A list of things the person did correctly to provide positive reinforcement.
-
-Video of the user's exercise form:
-{{media url=videoDataUri}}
-`
-});
-
-const analyzeExerciseFormFlow = ai.defineFlow(
-  {
-    name: 'analyzeExerciseFormFlow',
-    inputSchema: AnalyzeExerciseFormInputSchema,
-    outputSchema: AnalyzeExerciseFormOutputSchema,
-  },
-  async (input) => {
-    const {output} = await prompt(input);
-    if (!output) {
-      throw new Error("AI failed to generate exercise form analysis.");
-    }
-    return output;
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("Backend API error:", errorBody);
+    throw new Error(`Backend API responded with status: ${response.status}`);
   }
-);
+
+  return response.json();
+}
