@@ -103,6 +103,16 @@ import { GenerateMatchPostDto } from './dto/generate-match-post.dto';
 import type { GenerateMatchPostOutput } from '@/ai/flows/schemas/generate-match-post-schema';
 import { GenerateSportSummaryDto } from './dto/generate-sport-summary.dto';
 import type { GenerateSportSummaryOutput } from '@/ai/flows/schemas/generate-sport-summary-schema';
+import { GenerateNutritionPlanDto } from './dto/generate-nutrition-plan.dto';
+import { GenerateTournamentSummaryDto } from './dto/generate-tournament-summary.dto';
+import { GenerateTrainingProgramDto } from './dto/generate-training-program.dto';
+import { OnboardingAssistantDto } from './dto/onboarding-assistant.dto';
+import { PredictMatchOutcomeDto } from './dto/predict-match-outcome.dto';
+import type { GenerateNutritionPlanOutput } from '@/ai/flows/schemas/generate-nutrition-plan-schema';
+import type { GenerateTournamentSummaryOutput } from '@/ai/flows/schemas/generate-tournament-summary-schema';
+import type { GenerateTrainingProgramOutput } from '@/ai/flows/schemas/generate-training-program-schema';
+import type { OnboardingOutput } from '@/ai/flows/schemas/onboarding-assistant-schema';
+import type { PredictMatchOutcomeOutput } from '@/ai/flows/schemas/predict-match-outcome-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -504,5 +514,45 @@ export class AiController {
     @Body() findVenuesDto: FindVenuesDto,
   ): Promise<FindVenuesOutput> {
     return this.aiService.findVenues(findVenuesDto);
+  }
+  
+  @Post('generate-nutrition-plan')
+  @HttpCode(HttpStatus.OK)
+  async generateNutritionPlan(
+    @Body() generateNutritionPlanDto: GenerateNutritionPlanDto,
+  ): Promise<GenerateNutritionPlanOutput> {
+    return this.aiService.generateNutritionPlan(generateNutritionPlanDto);
+  }
+
+  @Post('generate-tournament-summary')
+  @HttpCode(HttpStatus.OK)
+  async generateTournamentSummary(
+    @Body() generateTournamentSummaryDto: GenerateTournamentSummaryDto,
+  ): Promise<GenerateTournamentSummaryOutput> {
+    return this.aiService.generateTournamentSummary(generateTournamentSummaryDto);
+  }
+  
+  @Post('generate-training-program')
+  @HttpCode(HttpStatus.OK)
+  async generateTrainingProgram(
+    @Body() generateTrainingProgramDto: GenerateTrainingProgramDto,
+  ): Promise<GenerateTrainingProgramOutput> {
+    return this.aiService.generateTrainingProgram(generateTrainingProgramDto);
+  }
+
+  @Post('onboarding-assistant')
+  @HttpCode(HttpStatus.OK)
+  async getOnboardingSuggestions(
+    @Body() onboardingAssistantDto: OnboardingAssistantDto,
+  ): Promise<OnboardingOutput> {
+    return this.aiService.getOnboardingSuggestions(onboardingAssistantDto);
+  }
+
+  @Post('predict-match-outcome')
+  @HttpCode(HttpStatus.OK)
+  async predictMatchOutcome(
+    @Body() predictMatchOutcomeDto: PredictMatchOutcomeDto,
+  ): Promise<PredictMatchOutcomeOutput> {
+    return this.aiService.predictMatchOutcome(predictMatchOutcomeDto);
   }
 }

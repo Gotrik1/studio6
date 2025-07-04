@@ -51,7 +51,11 @@ import { findLfgLobbies, type FindLfgLobbiesInput, type FindLfgLobbiesOutput } f
 import { findVenues, type FindVenuesInput, type FindVenuesOutput } from '@/ai/flows/find-venues-flow';
 import { generateMatchPost, type GenerateMatchPostInput, type GenerateMatchPostOutput } from '@/ai/flows/generate-match-post-flow';
 import { generateSportSummary, type GenerateSportSummaryInput, type GenerateSportSummaryOutput } from '@/ai/flows/generate-sport-summary-flow';
-
+import { generateNutritionPlan, type GenerateNutritionPlanInput, type GenerateNutritionPlanOutput } from '@/ai/flows/generate-nutrition-plan-flow';
+import { generateTournamentSummary, type GenerateTournamentSummaryInput, type GenerateTournamentSummaryOutput } from '@/ai/flows/generate-tournament-summary-flow';
+import { generateTrainingProgram, type GenerateTrainingProgramInput, type GenerateTrainingProgramOutput } from '@/ai/flows/generate-training-program-flow';
+import { getOnboardingSuggestions, type OnboardingInput, type OnboardingOutput } from '@/ai/flows/onboarding-assistant-flow';
+import { predictMatchOutcome, type PredictMatchOutcomeInput, type PredictMatchOutcomeOutput } from '@/ai/flows/predict-match-outcome-flow';
 
 @Injectable()
 export class AiService {
@@ -257,5 +261,25 @@ export class AiService {
   
   async findVenues(input: FindVenuesInput): Promise<FindVenuesOutput> {
     return findVenues(input);
+  }
+
+  async generateNutritionPlan(input: GenerateNutritionPlanInput): Promise<GenerateNutritionPlanOutput> {
+    return generateNutritionPlan(input);
+  }
+
+  async generateTournamentSummary(input: GenerateTournamentSummaryInput): Promise<GenerateTournamentSummaryOutput> {
+    return generateTournamentSummary(input);
+  }
+  
+  async generateTrainingProgram(input: GenerateTrainingProgramInput): Promise<GenerateTrainingProgramOutput> {
+    return generateTrainingProgram(input);
+  }
+
+  async getOnboardingSuggestions(input: OnboardingInput): Promise<OnboardingOutput> {
+    return getOnboardingSuggestions(input);
+  }
+  
+  async predictMatchOutcome(input: PredictMatchOutcomeInput): Promise<PredictMatchOutcomeOutput> {
+    return predictMatchOutcome(input);
   }
 }
