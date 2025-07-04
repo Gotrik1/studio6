@@ -28,6 +28,8 @@ import { generatePostImage_Backend, type GeneratePostImageInput, type GeneratePo
 import { analyzePlaygroundDetails, type AnalyzePlaygroundDetailsInput, type AnalyzePlaygroundDetailsOutput } from '@/ai/flows/analyze-playground-details-flow';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportInput, type AnalyzePlaygroundReportOutput } from '@/ai/flows/analyze-playground-report-flow';
 import { smartSearch, type SmartSearchOutput } from '@/ai/flows/smart-search-flow';
+import { analyzePlayerPerformance, type AnalyzePlayerPerformanceInput, type AnalyzePlayerPerformanceOutput as AnalyzePlayerPerformanceOutput_1 } from '@/ai/flows/analyze-player-performance-flow';
+import { generateTrainingPlan, type GenerateTrainingPlanInput, type GenerateTrainingPlanOutput } from '@/ai/flows/generate-training-plan-flow';
 
 
 @Injectable()
@@ -130,5 +132,13 @@ export class AiService {
 
   async smartSearch(query: string): Promise<SmartSearchOutput> {
     return smartSearch(query);
+  }
+  
+  async analyzePlayerPerformance(input: AnalyzePlayerPerformanceInput): Promise<AnalyzePlayerPerformanceOutput_1> {
+    return analyzePlayerPerformance(input);
+  }
+  
+  async generateTrainingPlan(input: GenerateTrainingPlanInput): Promise<GenerateTrainingPlanOutput> {
+    return generateTrainingPlan(input);
   }
 }

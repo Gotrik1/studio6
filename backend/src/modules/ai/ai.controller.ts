@@ -50,6 +50,10 @@ import type { AnalyzePlaygroundDetailsOutput } from '@/ai/flows/schemas/analyze-
 import type { AnalyzePlaygroundReportOutput } from '@/ai/flows/schemas/analyze-playground-report-schema';
 import { SmartSearchDto } from './dto/smart-search.dto';
 import type { SmartSearchOutput } from '@/ai/flows/schemas/smart-search-schema';
+import { GenerateTrainingPlanDto } from './dto/generate-training-plan.dto';
+import { AnalyzePlayerPerformanceDto } from './dto/analyze-player-performance.dto';
+import type { GenerateTrainingPlanOutput } from '@/ai/flows/schemas/generate-training-plan-schema';
+import type { AnalyzePlayerPerformanceOutput } from '@/ai/flows/schemas/analyze-player-performance-schema';
 
 @Controller('ai')
 export class AiController {
@@ -251,5 +255,21 @@ export class AiController {
     @Body() smartSearchDto: SmartSearchDto,
   ): Promise<SmartSearchOutput> {
     return this.aiService.smartSearch(smartSearchDto.query);
+  }
+  
+  @Post('analyze-player-performance')
+  @HttpCode(HttpStatus.OK)
+  async analyzePlayerPerformance(
+    @Body() analyzePlayerPerformanceDto: AnalyzePlayerPerformanceDto,
+  ): Promise<AnalyzePlayerPerformanceOutput> {
+    return this.aiService.analyzePlayerPerformance(analyzePlayerPerformanceDto);
+  }
+
+  @Post('generate-training-plan')
+  @HttpCode(HttpStatus.OK)
+  async generateTrainingPlan(
+    @Body() generateTrainingPlanDto: GenerateTrainingPlanDto,
+  ): Promise<GenerateTrainingPlanOutput> {
+    return this.aiService.generateTrainingPlan(generateTrainingPlanDto);
   }
 }

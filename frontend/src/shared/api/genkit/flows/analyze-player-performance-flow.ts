@@ -1,47 +1,29 @@
 'use server';
-/**
- * @fileOverview An AI agent for analyzing individual player physical performance.
- *
- * - analyzePlayerPerformance - A function that handles the analysis.
- * - AnalyzePlayerPerformanceInput - The input type for the function.
- * - AnalyzePlayerPerformanceOutput - The return type for the function.
- */
 
-import { ai } from '@/shared/api/genkit';
-import { AnalyzePlayerPerformanceInputSchema, AnalyzePlayerPerformanceOutputSchema } from './schemas/analyze-player-performance-schema';
-import type { AnalyzePlayerPerformanceInput, AnalyzePlayerPerformanceOutput } from './schemas/analyze-player-performance-schema';
+// Define types here to decouple from backend Zod schemas
+export type AnalyzePlayerPerformanceInput = {
+    trainingSummary: string;
+    recentWorkouts: string;
+};
 
-export type { AnalyzePlayerPerformanceInput, AnalyzePlayerPerformanceOutput };
-
+export type AnalyzePlayerPerformanceOutput = {
+    strengths: string[];
+    weaknesses: string[];
+};
 
 export async function analyzePlayerPerformance(input: AnalyzePlayerPerformanceInput): Promise<AnalyzePlayerPerformanceOutput> {
-  return analyzePlayerPerformanceFlow(input);
-}
+  const response = await fetch('/api/ai/analyze-player-performance', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input),
+    cache: 'no-store',
+  });
 
-const prompt = ai.definePrompt({
-  name: 'analyzePlayerPerformancePrompt',
-  input: {schema: AnalyzePlayerPerformanceInputSchema},
-  output: {schema: AnalyzePlayerPerformanceOutputSchema},
-  prompt: `You are an expert fitness and strength coach. Analyze the provided training summary and recent workout logs to identify key strengths and weaknesses. Respond in Russian.
-
-Training Summary:
-{{{trainingSummary}}}
-
-Recent Workouts Log:
-{{{recentWorkouts}}}
-
-Please provide a concise analysis. Identify which muscle groups are lagging or progressing well. ONLY identify strengths and weaknesses. Do not provide recommendations.
-`,
-});
-
-const analyzePlayerPerformanceFlow = ai.defineFlow(
-  {
-    name: 'analyzePlayerPerformanceFlow',
-    inputSchema: AnalyzePlayerPerformanceInputSchema,
-    outputSchema: AnalyzePlayerPerformanceOutputSchema,
-  },
-  async (input) => {
-    const {output} = await prompt(input);
-    return output!;
+  if (!response.ok) {
+    const errorBody = await response.text();
+    console.error("Backend API error:", errorBody);
+    throw new Error(`Backend API responded with status: ${response.status}`);
   }
-);
+
+  return response.json();
+}
