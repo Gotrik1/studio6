@@ -1,11 +1,10 @@
-
 'use server';
 
 import type { Match } from '@/entities/match/model/types';
 
 export async function fetchMatches(): Promise<Match[]> {
   try {
-    const response = await fetch(`/api/matches`, {
+    const response = await fetch(`${process.env.BACKEND_URL}/matches`, {
       cache: 'no-store', // Disable caching for development
     });
 
