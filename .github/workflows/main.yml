@@ -1,32 +1,14 @@
-name: Docker Compose CI
+name: Test secrets
 
 on:
   push:
     branches:
-      - main
+      - main    # если у тебя главная ветка называется иначе (master), поменяй здесь
 
 jobs:
-  test:
+  check-secrets:
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:15
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Установить Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install docker-compose -y
-
-      - name: Запустить postgres
-        run: docker-compose up -d postgres
+      - name: “Echo POSTGRES_USER”
+        run: echo "POSTGRES_USER is '${{ secrets.POSTGRES_USER }}'"
