@@ -38,6 +38,7 @@ import { generateMatchCommentary, type GenerateMatchCommentaryInput, type Genera
 import { generateMatchInterview, type GenerateMatchInterviewInput, type GenerateMatchInterviewOutput } from '@/ai/flows/generate-match-interview-flow';
 import { analyzeHolisticPerformance, type AnalyzeHolisticPerformanceInput, type AnalyzeHolisticPerformanceOutput } from '@/ai/flows/analyze-holistic-performance-flow';
 import { suggestReply, type SuggestReplyInput, type SuggestReplyOutput } from '@/ai/flows/suggest-reply-flow';
+import { askSupportChatbot, type SupportChatbotInput, type SupportChatbotOutput } from '@/ai/flows/support-chatbot-flow';
 
 
 @Injectable()
@@ -180,5 +181,9 @@ export class AiService {
 
   async suggestReply(input: SuggestReplyInput): Promise<SuggestReplyOutput> {
     return suggestReply(input);
+  }
+
+  async askSupportChatbot(query: SupportChatbotInput): Promise<SupportChatbotOutput> {
+    return askSupportChatbot(query);
   }
 }

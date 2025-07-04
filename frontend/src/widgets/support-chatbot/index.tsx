@@ -46,7 +46,7 @@ export function SupportChatbot() {
 
         try {
             const aiResponse = await askSupportChatbot(input);
-            const aiMessage: Message = { sender: 'ai', text: aiResponse };
+            const aiMessage: Message = { sender: 'ai', text: aiResponse.answer };
             setMessages(prev => [...prev.slice(0, -1), aiMessage]);
         } catch (error) {
             console.error('Chatbot error:', error);

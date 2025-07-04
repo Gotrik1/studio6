@@ -70,6 +70,8 @@ import { AnalyzeHolisticPerformanceDto } from './dto/analyze-holistic-performanc
 import type { AnalyzeHolisticPerformanceOutput } from '@/ai/flows/schemas/analyze-holistic-performance-schema';
 import { SuggestReplyDto } from './dto/suggest-reply.dto';
 import type { SuggestReplyOutput } from '@/ai/flows/schemas/suggest-reply-schema';
+import { SupportChatbotDto } from './dto/support-chatbot.dto';
+import type { SupportChatbotOutput } from '@/ai/flows/schemas/support-chatbot-schema';
 
 @Controller('ai')
 export class AiController {
@@ -351,5 +353,13 @@ export class AiController {
     @Body() suggestReplyDto: SuggestReplyDto,
   ): Promise<SuggestReplyOutput> {
     return this.aiService.suggestReply(suggestReplyDto);
+  }
+
+  @Post('support-chatbot')
+  @HttpCode(HttpStatus.OK)
+  async askSupportChatbot(
+    @Body() supportChatbotDto: SupportChatbotDto,
+  ): Promise<SupportChatbotOutput> {
+    return this.aiService.askSupportChatbot(supportChatbotDto.query);
   }
 }

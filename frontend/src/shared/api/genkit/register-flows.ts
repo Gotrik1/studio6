@@ -17,7 +17,7 @@
 // import './flows/generate-tournament-wizard-flow'; // Moved to backend
 import './flows/analyze-match-challenge-flow';
 // import './flows/analyze-match-report-flow'; // Moved to backend
-import './flows/support-chatbot-flow';
+// import './flows/support-chatbot-flow'; // Moved to backend
 import './flows/analyze-role-change-flow';
 // import './flows/generate-user-avatar-flow'; // Moved to backend
 // import './flows/generate-profile-banner-flow'; // Moved to backend
