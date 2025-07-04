@@ -1,9 +1,18 @@
 
+
 export type CareerHistoryItem = {
+    id: string;
     teamName: string;
     period: string;
     role: string;
     review: string;
+};
+
+export type GalleryItem = {
+    id: string;
+    src: string;
+    alt: string;
+    dataAiHint: string;
 };
 
 export type UserTeam = {

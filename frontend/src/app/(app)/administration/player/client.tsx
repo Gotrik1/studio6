@@ -4,9 +4,9 @@
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
 import type { User } from '@/shared/lib/types';
-import type { achievements as AchievementsArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
-import type { playerActivity as PlayerActivityArray } from "@/shared/lib/mock-data/player-activity";
-import type { UserTeam } from '@/entities/team/model/types';
+import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import type { PlayerActivityItem } from '@/widgets/player-activity-feed';
+import type { UserTeam, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
 
 const PlayerProfile = dynamic(() => import('@/entities/player/ui/player-profile').then(mod => mod.PlayerProfile), {
     loading: () => <div className="space-y-6">
@@ -32,9 +32,9 @@ type PlayerClientProps = {
   isCurrentUser: boolean;
   achievements: typeof AchievementsArray;
   teams: UserTeam[];
-  gallery: typeof GalleryArray;
-  careerHistory: typeof CareerHistoryArray;
-  playerActivity: typeof PlayerActivityArray;
+  gallery: GalleryItem[];
+  careerHistory: CareerHistoryItem[];
+  playerActivity: PlayerActivityItem[];
 };
 
 export default function PlayerClient({ user, isCurrentUser, achievements, teams, gallery, careerHistory, playerActivity }: PlayerClientProps) {

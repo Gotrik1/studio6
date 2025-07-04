@@ -2,6 +2,7 @@
 import PlayerClient from "@/app/(app)/administration/player/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";
+import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 
 // For demo purposes, we fetch a hardcoded user ID.
 // In a real profile page, this would come from `params`.
@@ -22,9 +23,9 @@ export async function PlayerProfilePage() {
         user={profileData.user} 
         isCurrentUser={isCurrentUser}
         achievements={profileData.achievements}
-        teams={profileData.teams}
-        gallery={profileData.gallery}
-        careerHistory={profileData.careerHistory}
-        playerActivity={profileData.playerActivity}
+        teams={profileData.user.teams}
+        gallery={profileData.user.gallery}
+        careerHistory={profileData.user.careerHistory}
+        playerActivity={profileData.user.playerActivity as PlayerActivityItem[]}
     />;
 }

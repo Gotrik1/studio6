@@ -5,8 +5,7 @@ import type { User } from '@/shared/lib/types';
 import { achievements } from "@/shared/lib/mock-data/profiles";
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 import type { UserTeam, CareerHistoryItem } from '@/entities/user/model/types';
-import type { gallery } from '@/shared/lib/mock-data/gallery';
-
+import type { GalleryItem } from '@/entities/user/model/types';
 
 // Define the rich user profile type that the frontend expects
 export type PlayerProfileData = User & {
@@ -20,46 +19,40 @@ export type PlayerProfileData = User & {
     preferredSports: string[];
     contacts: { telegram: string; discord: string };
     activities: any[];
+    teams: UserTeam[];
+    gallery: GalleryItem[];
+    careerHistory: CareerHistoryItem[];
 };
 
 // This is the type for the full page props
 export type FullPlayerProfile = {
     user: PlayerProfileData;
     achievements: typeof achievements;
-    teams: UserTeam[];
-    gallery: typeof gallery;
-    careerHistory: CareerHistoryItem[];
-    playerActivity: PlayerActivityItem[];
 };
 
 
 export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | null> {
     try {
-        const userRes = fetch(`${process.env.BACKEND_URL}/users/${id}`, { cache: 'no-store' });
-        const teamsRes = fetch(`${process.env.BACKEND_URL}/users/${id}/teams`, { cache: 'no-store' });
-        const galleryRes = fetch(`${process.env.BACKEND_URL}/users/${id}/gallery`, { cache: 'no-store' });
-        const careerRes = fetch(`${process.env.BACKEND_URL}/users/${id}/career`, { cache: 'no-store' });
+        const res = await fetch(`${process.env.BACKEND_URL}/users/${id}`, { cache: 'no-store' });
         
-        const [userResponse, teamsResponse, galleryResponse, careerResponse] = await Promise.all([userRes, teamsRes, galleryRes, careerRes]);
-        
-        if (!userResponse.ok) {
-            console.error(`Failed to fetch user ${id}:`, userResponse.statusText);
+        if (!res.ok) {
+            console.error(`Failed to fetch user ${id}:`, res.statusText);
             return null;
         }
 
-        const user: PlayerProfileData = await userResponse.json();
-        // Gracefully handle if other fetches fail
-        const userTeams: UserTeam[] = teamsResponse.ok ? await teamsResponse.json() : [];
-        const userGallery: typeof gallery = galleryResponse.ok ? await galleryResponse.json() : [];
-        const userCareer: CareerHistoryItem[] = careerResponse.ok ? await careerResponse.json() : [];
+        const profileData = await res.json();
         
         // Transform backend activities to frontend format
-        const playerActivity: PlayerActivityItem[] = user.activities.map((activity: any) => {
+        const playerActivity: PlayerActivityItem[] = profileData.activities.map((activity: any) => {
             const metadata = activity.metadata as any;
             let text = `Неизвестное событие`;
             
             if (activity.type === 'MATCH_PLAYED') {
                  text = `Сыграл матч за <a href="${metadata.teamHref}" class="font-bold hover:underline">${metadata.team}</a> против <a href="#" class="font-bold hover:underline">${metadata.opponent}</a>. <span class="${metadata.result === 'Победа' ? 'text-green-500' : 'text-red-500'} font-bold">${metadata.result} ${metadata.score}</span>.`;
+            } else if (activity.type === 'TEAM_JOINED') {
+                text = `Присоединился к команде <a href="${metadata.teamHref}" class="font-bold hover:underline">${metadata.teamName}</a>.`;
+            } else if (activity.type === 'TOURNAMENT_REGISTERED') {
+                 text = `Зарегистрировал команду <a href="#" class="font-bold hover:underline">${metadata.teamName}</a> на турнир <a href="${metadata.tournamentHref}" class="font-bold hover:underline">${metadata.tournamentName}</a>.`;
             }
             
             return {
@@ -70,15 +63,17 @@ export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | 
                 timestamp: activity.timestamp,
             }
         }).filter((item): item is PlayerActivityItem => item !== null);
-
+        
+        // The backend now returns an augmented user object that includes teams, gallery, and careerHistory.
+        // We just need to add the mocked achievements.
+        const augmentedProfile: PlayerProfileData = {
+            ...profileData,
+            playerActivity,
+        };
 
         return {
-            user,
-            teams: userTeams,
-            gallery: userGallery,
-            careerHistory: userCareer,
-            playerActivity,
-            // This remains mock for now, as per the plan.
+            user: augmentedProfile,
+            // Achievements are still mocked on the frontend, as there's no backend system for them yet.
             achievements,
         };
 

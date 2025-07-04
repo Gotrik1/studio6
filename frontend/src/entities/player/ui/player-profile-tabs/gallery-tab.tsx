@@ -3,13 +3,12 @@
 
 import Image from "next/image";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
-import type { gallery } from "@/shared/lib/mock-data/profiles";
 import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { MediaUploadDialog } from '@/widgets/media-upload-dialog';
+import type { GalleryItem } from '@/entities/user/model/types';
 
-type GalleryItem = (typeof gallery)[0];
 
 interface GalleryTabProps {
     gallery: GalleryItem[];
@@ -24,8 +23,8 @@ export function GalleryTab({ gallery: initialGallery, isCurrentUser }: GalleryTa
         setGallery(prev => [newItem, ...prev]);
     };
 
-    const handleDeleteMedia = (srcToDelete: string) => {
-        setGallery(prev => prev.filter(item => item.src !== srcToDelete));
+    const handleDeleteMedia = (idToDelete: string) => {
+        setGallery(prev => prev.filter(item => item.id !== idToDelete));
     };
 
     return (
@@ -61,7 +60,7 @@ export function GalleryTab({ gallery: initialGallery, isCurrentUser }: GalleryTa
                                             variant="destructive"
                                             size="icon"
                                             className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            onClick={() => handleDeleteMedia(item.src)}
+                                            onClick={() => handleDeleteMedia(item.id)}
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
