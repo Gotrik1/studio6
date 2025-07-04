@@ -11,11 +11,9 @@ import { BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
 import { cn } from '@/shared/lib/utils';
-
-import type { userList as UserListType } from '@/shared/lib/mock-data/users';
+import type { User } from '@/shared/lib/types';
 import { analyzeRoleChange, type AnalyzeRoleChangeOutput } from '@/shared/api/genkit/flows/analyze-role-change-flow';
 
-type User = (typeof UserListType)[0];
 
 interface UserEditDialogProps {
     user: User | null;
@@ -83,7 +81,7 @@ export function UserEditDialog({ user, isOpen, onOpenChange, onUserUpdate }: Use
                 userName: user.name,
                 currentRole: user.role,
                 requestedRole: selectedRole,
-                activitySummary: user.activitySummary,
+                activitySummary: user.activitySummary || 'Нет данных об активности',
             });
             setAiResult(result);
         } catch (e) {
