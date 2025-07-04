@@ -9,15 +9,13 @@ import type { LogLevel } from '@nestjs/common';
 config({ path: path.resolve(__dirname, '../../.env') });
 
 async function bootstrap() {
+  const logger = new JsonLogger(process.env.LOG_LEVEL as LogLevel);
   const app = await NestFactory.create(AppModule, {
-    logger: new JsonLogger(process.env.LOG_LEVEL as LogLevel),
+    logger: logger,
   });
 
   await app.listen(3001);
 
-  const logger = app.get(JsonLogger);
   logger.log(`Application is running on: ${await app.getUrl()}`, 'Bootstrap');
 }
 bootstrap();
-  
-
