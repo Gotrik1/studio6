@@ -1,12 +1,12 @@
-name: CI Local Docker Compose
+name: Local Docker Compose Test
 
 on:
   push:
     branches:
-      - master   # или main, если твоя ветка называется main
+      - master   # или main, если у тебя ветка main
 
 jobs:
-  build_and_test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,17 +16,24 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and start containers (docker-compose up)
+      - name: Set up Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install docker-compose -y
+
+      - name: Run docker-compose up
         run: |
           docker-compose up -d --build
+          # если нужен лог, можно добавить:
+          docker-compose ps
+          docker-compose logs
 
-      - name: Show running containers
-        run: docker ps
+      - name: Run tests (optional)
+        run: |
+          # сюда пиши команды для тестов, например:
+          # docker-compose exec backend npm test
+          echo "No tests specified"
 
-      # Если есть тесты, можно добавить шаг тестирования. Например, если у тебя есть сервис "backend":
-      # - name: Run backend tests
-      #   run: docker-compose exec backend npm test
-
-      # Останавливаем и чистим контейнеры после тестов:
-      - name: Stop containers and clean up
-        run: docker-compose down
+      - name: Shutdown
+        run: |
+          docker-compose down
