@@ -5,6 +5,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
 import * as bcrypt from 'bcrypt';
+import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
 
 @Injectable()
 export class UsersService {
@@ -81,6 +82,23 @@ export class UsersService {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash, ...result } = augmentedProfile;
       return result;
+  }
+
+  async getLeaderboard(): Promise<LeaderboardPlayerDto[]> {
+    const users = await this.prisma.user.findMany({
+      orderBy: {
+        xp: 'desc',
+      },
+      take: 10,
+    });
+
+    return users.map((user, index) => ({
+      rank: index + 1,
+      name: user.name,
+      points: user.xp,
+      avatar: user.avatar || 'https://placehold.co/40x40.png',
+      avatarHint: 'player avatar',
+    }));
   }
 
   async findByEmailWithPassword(email: string): Promise<User | null> {

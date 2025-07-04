@@ -3,6 +3,7 @@ import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus } from '@nestj
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from '../auth/decorators/public.decorator';
+import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
 
 @Controller('users')
 export class UsersController {
@@ -13,6 +14,12 @@ export class UsersController {
   @HttpCode(HttpStatus.CREATED)
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
+  }
+
+  @Public()
+  @Get('leaderboard')
+  getLeaderboard(): Promise<LeaderboardPlayerDto[]> {
+    return this.usersService.getLeaderboard();
   }
 
   @Get()
