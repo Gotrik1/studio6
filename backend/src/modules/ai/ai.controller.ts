@@ -66,6 +66,8 @@ import { GenerateMatchCommentaryDto } from './dto/generate-match-commentary.dto'
 import type { GenerateMatchCommentaryOutput } from '@/ai/flows/schemas/generate-match-commentary-schema';
 import { GenerateMatchInterviewDto } from './dto/generate-match-interview.dto';
 import type { GenerateMatchInterviewOutput } from '@/ai/flows/schemas/generate-match-interview-schema';
+import { AnalyzeHolisticPerformanceDto } from './dto/analyze-holistic-performance.dto';
+import type { AnalyzeHolisticPerformanceOutput } from '@/ai/flows/schemas/analyze-holistic-performance-schema';
 
 @Controller('ai')
 export class AiController {
@@ -331,5 +333,13 @@ export class AiController {
     @Body() generateMatchInterviewDto: GenerateMatchInterviewDto,
   ): Promise<GenerateMatchInterviewOutput> {
     return this.aiService.generateMatchInterview(generateMatchInterviewDto);
+  }
+
+  @Post('analyze-holistic-performance')
+  @HttpCode(HttpStatus.OK)
+  async analyzeHolisticPerformance(
+    @Body() analyzeHolisticPerformanceDto: AnalyzeHolisticPerformanceDto,
+  ): Promise<AnalyzeHolisticPerformanceOutput> {
+    return this.aiService.analyzeHolisticPerformance(analyzeHolisticPerformanceDto);
   }
 }

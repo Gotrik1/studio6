@@ -36,6 +36,7 @@ import { generatePlaygroundLore, type GeneratePlaygroundLoreInput, type Generate
 import { analyzeMatchReport, type AnalyzeMatchReportInput, type AnalyzeMatchReportOutput } from '@/ai/flows/analyze-match-report-flow';
 import { generateMatchCommentary, type GenerateMatchCommentaryInput, type GenerateMatchCommentaryOutput } from '@/ai/flows/generate-match-commentary-flow';
 import { generateMatchInterview, type GenerateMatchInterviewInput, type GenerateMatchInterviewOutput } from '@/ai/flows/generate-match-interview-flow';
+import { analyzeHolisticPerformance, type AnalyzeHolisticPerformanceInput, type AnalyzeHolisticPerformanceOutput } from '@/ai/flows/analyze-holistic-performance-flow';
 
 
 @Injectable()
@@ -170,5 +171,9 @@ export class AiService {
 
   async generateMatchInterview(input: GenerateMatchInterviewInput): Promise<GenerateMatchInterviewOutput> {
     return generateMatchInterview(input);
+  }
+
+  async analyzeHolisticPerformance(input: AnalyzeHolisticPerformanceInput): Promise<AnalyzeHolisticPerformanceOutput> {
+    return analyzeHolisticPerformance(input);
   }
 }
