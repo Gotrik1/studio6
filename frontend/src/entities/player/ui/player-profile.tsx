@@ -19,7 +19,6 @@ import { useState } from 'react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import type { achievements as AchievementsArray, teams as TeamsArray, gallery as GalleryArray, careerHistory as CareerHistoryArray } from "@/shared/lib/mock-data/profiles";
-import type { playerActivity as PlayerActivityArray } from "@/shared/lib/mock-data/player-activity";
 import { ReportPlayerDialog } from '@/features/report-player-dialog';
 import Image from "next/image";
 import { format } from "date-fns";
@@ -27,7 +26,7 @@ import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
 import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
-import { PlayerActivityFeed } from '@/widgets/player-activity-feed';
+import { PlayerActivityFeed, type PlayerActivityItem } from '@/widgets/player-activity-feed';
 
 const CareerTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/career-tab').then(mod => mod.CareerTab), {
   loading: () => <Card><CardContent><Skeleton className="h-64 w-full mt-6" /></CardContent></Card>,
@@ -72,7 +71,7 @@ type PlayerProfileProps = {
   teams: typeof TeamsArray;
   gallery: typeof GalleryArray;
   careerHistory: typeof CareerHistoryArray;
-  playerActivity: typeof PlayerActivityArray;
+  playerActivity: PlayerActivityItem[];
 };
 
 export function PlayerProfile({ user, isCurrentUser, achievements, teams, gallery, careerHistory, playerActivity }: PlayerProfileProps) {
@@ -259,7 +258,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
                 </TabsList>
 
             <TabsContent value="activity" className="mt-4">
-                <PlayerActivityFeed activities={playerActivity} />
+                <OverviewTab playerActivity={playerActivity} />
             </TabsContent>
 
             <TabsContent value="stats" className="mt-4">

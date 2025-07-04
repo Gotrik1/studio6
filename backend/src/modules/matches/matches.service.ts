@@ -2,7 +2,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Match, MatchStatus } from '@prisma/client';
+import { Match, MatchStatus, ActivityType } from '@prisma/client';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -196,6 +196,7 @@ export class MatchesService {
     } = {};
 
     let winningTeamMembers: { id: string }[] = [];
+    const allMemberIds = [...match.team1.members, ...match.team2.members].map(m => m.id);
     const XP_FOR_WIN = 100; // Define XP reward
 
     if (score1 > score2) {
@@ -230,6 +231,29 @@ export class MatchesService {
           data: { xp: { increment: XP_FOR_WIN } },
         });
       }
+
+      // Create activity logs for all participants
+      const activitiesToCreate = allMemberIds.map(userId => {
+        const userTeam = match.team1.members.some(m => m.id === userId) ? match.team1 : match.team2;
+        const opponentTeam = userTeam.id === match.team1Id ? match.team2 : match.team1;
+        const userWon = winningTeamMembers.some(m => m.id === userId);
+        
+        return {
+          type: ActivityType.MATCH_PLAYED,
+          userId: userId,
+          metadata: {
+            team: userTeam.name,
+            opponent: opponentTeam.name,
+            score: `${score1}-${score2}`,
+            result: userWon ? 'Победа' : (score1 === score2 ? 'Ничья' : 'Поражение'),
+            teamHref: `/teams/${userTeam.slug}`,
+            matchHref: `/matches/${match.id}`,
+            icon: 'Trophy',
+          }
+        }
+      });
+      await tx.activity.createMany({ data: activitiesToCreate });
+
 
       // Update match details
       const updatedMatch = await tx.match.update({

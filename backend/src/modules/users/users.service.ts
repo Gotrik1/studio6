@@ -56,6 +56,14 @@ export class UsersService {
   async findOne(id: string): Promise<any | null> {
       const user = await this.prisma.user.findUnique({
         where: { id },
+        include: {
+          activities: {
+            orderBy: {
+              timestamp: 'desc'
+            },
+            take: 10
+          }
+        }
       });
 
       if (!user) {

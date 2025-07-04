@@ -11,121 +11,152 @@ datasource db {
 }
 
 model User {
-  id                String      @id @default(cuid())
-  email             String      @unique
-  name              String
-  passwordHash      String
-  role              String      @default("Игрок")
-  avatar            String?
-  status            String      @default("Активен")
-  xp                Int         @default(0)
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  teams             Team[]      @relation("TeamMembers")
-  captainedTeams    Team[]      @relation("TeamCaptain")
-  dateOfBirth       DateTime?
-  location          String?
-  mainSport         String?
-  isVerified        Boolean     @default(false)
-  preferredSports   String[]
-  telegram          String?
-  discord           String?
-  ownedPlaygrounds  Playground[]
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  passwordHash  String
+  role          String
+  avatar        String?
+  bannerImage   String?
+  dateOfBirth   DateTime?
+  location      String?
+  mainSport     String?
+  preferredSports String[]
+  telegram      String?
+  discord       String?
+  status        String
+  xp            Int       @default(0)
+
+  teams    Team[]     @relation("TeamMembers")
+  captaining Team[]   @relation("Captains")
+  playgrounds Playground[] @relation("PlaygroundCreators")
+  challengesCreated Challenge[] @relation("ChallengeCreators")
+  challengesOpponent Challenge[] @relation("ChallengeOpponents")
+  activities Activity[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Team {
-  id               String       @id @default(cuid())
-  name             String       @unique
-  slug             String       @unique
-  motto            String?
-  description      String?
-  logo             String?
-  dataAiHint       String?
-  game             String
-  rank             Int          @default(0)
-  wins             Int          @default(0)
-  losses           Int          @default(0)
-  draws            Int          @default(0)
-  captainId        String
-  captain          User         @relation("TeamCaptain", fields: [captainId], references: [id])
-  members          User[]       @relation("TeamMembers")
-  tournaments      Tournament[] @relation("TeamTournaments")
-  matchesAsTeam1   Match[]      @relation("Team1Matches")
-  matchesAsTeam2   Match[]      @relation("Team2Matches")
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  name      String
+  motto     String?
+  logo      String?
+  dataAiHint String?
+  game      String
+  rank      Int       @default(0)
+  wins      Int       @default(0)
+  losses    Int       @default(0)
+  draws     Int       @default(0)
+
+  captainId String
+  captain   User   @relation("Captains", fields: [captainId], references: [id])
+  members   User[] @relation("TeamMembers")
+
   homePlaygroundId String?
-  homePlayground   Playground?  @relation(fields: [homePlaygroundId], references: [id])
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  homePlayground   Playground? @relation(fields: [homePlaygroundId], references: [id])
+
+  tournaments Tournament[] @relation("TeamTournaments")
+  matches1    Match[]      @relation("Team1Matches")
+  matches2    Match[]      @relation("Team2Matches")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Tournament {
-  id              String      @id @default(cuid())
-  name            String
-  slug            String      @unique
-  game            String
-  format          String // "single_elimination", "round_robin"
-  prizePool       Float
-  startDate       DateTime
-  endDate         DateTime?
-  status          String // "REGISTRATION", "ONGOING", "FINISHED"
-  teams           Team[]      @relation("TeamTournaments")
-  matches         Match[]
-  bannerImage     String?
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  name      String
+  game      String
+  format    String // e.g., 'single_elimination'
+  prizePool Int
+  startDate DateTime
+  status    String // e.g., 'REGISTRATION', 'ONGOING', 'FINISHED'
+  
+  bannerImage String?
   bannerImageHint String?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  
+  teams   Team[]    @relation("TeamTournaments")
+  matches Match[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Match {
-  id           String      @id @default(cuid())
-  team1Id      String
-  team2Id      String
-  team1        Team        @relation("Team1Matches", fields: [team1Id], references: [id])
-  team2        Team        @relation("Team2Matches", fields: [team2Id], references: [id])
-  team1Score   Int?
-  team2Score   Int?
-  status       MatchStatus @default(PLANNED)
-  scheduledAt  DateTime
-  finishedAt   DateTime?
+  id          String      @id @default(cuid())
+  team1Id     String
+  team2Id     String
+  team1Score  Int?
+  team2Score  Int?
+  status      MatchStatus
+  scheduledAt DateTime
+  finishedAt  DateTime?
+  location    String?
+  refereeName String?
+
+  team1      Team        @relation("Team1Matches", fields: [team1Id], references: [id])
+  team2      Team        @relation("Team2Matches", fields: [team2Id], references: [id])
+  tournament Tournament? @relation(fields: [tournamentId], references: [id])
   tournamentId String?
-  tournament   Tournament? @relation(fields: [tournamentId], references: [id])
-  location     String?
-  refereeName  String?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Playground {
-  id           String   @id @default(cuid())
-  name         String
-  address      String
-  type         String
-  coverImage   String?
-  surface      String
-  features     String[]
-  rating       Float    @default(0)
-  checkIns     Int      @default(0)
-  status       String   @default("pending_moderation") // "approved", "pending_moderation"
-  creatorId    String
-  creator      User     @relation(fields: [creatorId], references: [id])
+  id          String      @id @default(cuid())
+  name        String
+  address     String
+  type        String
+  coverImage  String?
+  coverImageHint String?
+  surface     String
+  features    String[]
+  rating      Float
+  checkIns    Int
+  status      String // PENDING_MODERATION, APPROVED
+  
+  creatorId   String
+  creator     User @relation("PlaygroundCreators", fields: [creatorId], references: [id])
+  
   homeForTeams Team[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-model TrainingProgram {
-  id           String         @id @default(cuid())
-  name         String
-  description  String?
-  goal         String
-  daysPerWeek  Int
-  splitType    String
-  authorId     String
-  coverImage   String?
-  isAiGenerated Boolean       @default(false)
-  weeklySplit  Json
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+model Challenge {
+  id          String      @id @default(cuid())
+  title       String
+  description String
+  discipline  String
+  wager       Int
+  status      ChallengeStatus
+  result      String?
+  
+  creatorId   String
+  creator     User @relation("ChallengeCreators", fields: [creatorId], references: [id])
+  
+  opponentId  String?
+  opponent    User? @relation("ChallengeOpponents", fields: [opponentId], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Activity {
+  id        String      @id @default(cuid())
+  type      ActivityType
+  timestamp DateTime    @default(now())
+  metadata  Json
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, timestamp])
 }
 
 enum MatchStatus {
@@ -136,7 +167,17 @@ enum MatchStatus {
   CANCELLED
 }
 
-// @@index([game]) on Team
-// @@index([status]) on Tournament
-// @@index([status]) on Match
-// @@index([creatorId]) on Playground
+enum ChallengeStatus {
+    OPEN
+    IN_PROGRESS
+    COMPLETED
+    CANCELLED
+}
+
+enum ActivityType {
+  MATCH_PLAYED
+  ACHIEVEMENT_UNLOCKED
+  TEAM_JOINED
+  STATUS_UPDATE
+  WORKOUT_COMPLETED
+}

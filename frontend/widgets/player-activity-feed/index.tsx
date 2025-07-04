@@ -5,8 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/sha
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Trophy, Award, Dumbbell, Users, UserPlus } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { ru } from 'date-fns/locale';
 
 const iconMap: { [key: string]: LucideIcon } = {
     'Trophy': Trophy,
@@ -51,7 +49,7 @@ export function PlayerActivityFeed({ activities }: PlayerActivityFeedProps) {
                                     </div>
                                     <div className="flex-1 ml-10">
                                         <p className="text-sm" dangerouslySetInnerHTML={{ __html: activity.text }} />
-                                        <p className="text-xs text-muted-foreground mt-1">{formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true, locale: ru })}</p>
+                                        <p className="text-xs text-muted-foreground mt-1">{new Date(activity.timestamp).toLocaleString('ru-RU')}</p>
                                     </div>
                                 </div>
                             )})}

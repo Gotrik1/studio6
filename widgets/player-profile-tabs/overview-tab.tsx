@@ -1,4 +1,3 @@
-
 'use client';
 
 import { PlayerActivityFeed } from '@/widgets/player-activity-feed';
