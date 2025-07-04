@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -13,7 +14,7 @@ import {
 import { Button } from "@/shared/ui/button";
 import type { reportsQueue } from '@/shared/lib/mock-data/moderation';
 import { Separator } from "@/shared/ui/separator";
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, MessageCircle, Clock, Flag, UserX } from "lucide-react";
+import { Loader2, AlertCircle, Sparkles, MessageSquare, Clock, Flag, UserX } from "lucide-react";
 import { analyzeReport, type AnalyzeReportOutput } from '@/shared/api/genkit/flows/analyze-report-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
@@ -126,8 +127,12 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
              <div>
                 <div className="flex items-center justify-between mb-2">
                     <h4 className="font-semibold text-sm">Помощник модератора (AI)</h4>
+                    <Button variant="outline" size="sm" onClick={handleAnalyzeReport} disabled={isAnalyzing}>
+                        {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                        Проанализировать заново
+                    </Button>
                 </div>
-                 {isAnalyzing && (
+                {isAnalyzing && (
                     <div className="p-4 border border-dashed rounded-lg">
                         <div className="flex items-center justify-center h-20">
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>
