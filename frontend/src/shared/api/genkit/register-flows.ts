@@ -3,7 +3,7 @@
 // import './flows/analyze-content-generation'; // Moved to backend
 // import './flows/generate-content-flow'; // Moved to backend
 // import './flows/generate-team-avatar-flow'; // Now part of generate-team-concept on backend
-import './flows/analyze-security-flow';
+// import './flows/analyze-security-flow'; // Moved to backend
 // import './flows/create-team-flow'; // Now part of generate-team-concept on backend
 // import './flows/tts-flow'; // Moved to backend
 // import './flows/dialogue-generation-flow'; // Moved to backend

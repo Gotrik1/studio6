@@ -16,6 +16,7 @@ import { generateDialogue, type GenerateDialogueInput, type GenerateDialogueOutp
 import { multiSpeakerTts, type MultiSpeakerTtsInput, type MultiSpeakerTtsOutput } from '@/ai/flows/multi-speaker-tts-flow';
 import { analyzeDispute, type AnalyzeDisputeInput, type AnalyzeDisputeOutput } from '@/ai/flows/analyze-dispute-flow';
 import { textToSpeech, type TextToSpeechInput, type TextToSpeechOutput } from '@/ai/flows/tts-flow';
+import { analyzeSecurity, type AnalyzeSecurityInput, type AnalyzeSecurityOutput } from '@/ai/flows/analyze-security-flow';
 
 
 @Injectable()
@@ -70,5 +71,9 @@ export class AiService {
 
   async textToSpeech(text: TextToSpeechInput): Promise<TextToSpeechOutput> {
     return textToSpeech(text);
+  }
+
+  async analyzeSecurity(input: AnalyzeSecurityInput): Promise<AnalyzeSecurityOutput> {
+    return analyzeSecurity(input);
   }
 }

@@ -26,6 +26,8 @@ import type { GenerateDialogueOutput } from '@/ai/flows/schemas/dialogue-generat
 import type { MultiSpeakerTtsOutput } from '@/ai/flows/schemas/multi-speaker-tts-schema';
 import type { AnalyzeDisputeOutput } from '@/ai/flows/schemas/analyze-dispute-schema';
 import type { TextToSpeechOutput } from '@/ai/flows/schemas/tts-schema';
+import { AnalyzeSecurityDto } from './dto/analyze-security.dto';
+import type { AnalyzeSecurityOutput } from '@/ai/flows/schemas/analyze-security-schema';
 
 @Controller('ai')
 export class AiController {
@@ -131,5 +133,13 @@ export class AiController {
     @Body() textToSpeechDto: TextToSpeechDto,
   ): Promise<TextToSpeechOutput> {
     return this.aiService.textToSpeech(textToSpeechDto.text);
+  }
+
+  @Post('analyze-security')
+  @HttpCode(HttpStatus.OK)
+  async analyzeSecurity(
+    @Body() analyzeSecurityDto: AnalyzeSecurityDto,
+  ): Promise<AnalyzeSecurityOutput> {
+    return this.aiService.analyzeSecurity(analyzeSecurityDto);
   }
 }
