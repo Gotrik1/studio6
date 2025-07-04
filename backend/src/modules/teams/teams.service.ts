@@ -72,6 +72,13 @@ export class TeamsService {
   }
 
   async findBySlug(slug: string): Promise<any | null> {
+    const cacheKey = `team_slug_${slug}`;
+    const cachedTeam = await this.cacheManager.get<any>(cacheKey);
+
+    if (cachedTeam) {
+      return cachedTeam;
+    }
+
     const team = await this.prisma.team.findUnique({
       where: { slug },
       include: {
@@ -103,7 +110,7 @@ export class TeamsService {
       status: member.status,
     }));
 
-    return {
+    const result = {
       name: team.name,
       motto: team.motto || 'Девиз не указан',
       logo: team.logo || 'https://placehold.co/100x100.png',
@@ -116,6 +123,9 @@ export class TeamsService {
       homePlaygroundId: team.homePlaygroundId,
       roster,
     };
+
+    await this.cacheManager.set(cacheKey, result); // TTL is set globally in CacheModule
+    return result;
   }
   
   async getLeaderboard(): Promise<LeaderboardTeamDto[]> {
