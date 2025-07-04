@@ -113,6 +113,8 @@ import type { GenerateTournamentSummaryOutput } from '@/ai/flows/schemas/generat
 import type { GenerateTrainingProgramOutput } from '@/ai/flows/schemas/generate-training-program-schema';
 import type { OnboardingOutput } from '@/ai/flows/schemas/onboarding-assistant-schema';
 import type { PredictMatchOutcomeOutput } from '@/ai/flows/schemas/predict-match-outcome-schema';
+import { PlayerScoutDto } from './dto/player-scout.dto';
+import type { PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -554,5 +556,13 @@ export class AiController {
     @Body() predictMatchOutcomeDto: PredictMatchOutcomeDto,
   ): Promise<PredictMatchOutcomeOutput> {
     return this.aiService.predictMatchOutcome(predictMatchOutcomeDto);
+  }
+  
+  @Post('player-scout')
+  @HttpCode(HttpStatus.OK)
+  async playerScout(
+    @Body() playerScoutDto: PlayerScoutDto,
+  ): Promise<PlayerScoutOutput> {
+    return this.aiService.playerScout(playerScoutDto.input);
   }
 }

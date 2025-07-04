@@ -56,6 +56,7 @@ import { generateTournamentSummary, type GenerateTournamentSummaryInput, type Ge
 import { generateTrainingProgram, type GenerateTrainingProgramInput, type GenerateTrainingProgramOutput } from '@/ai/flows/generate-training-program-flow';
 import { getOnboardingSuggestions, type OnboardingInput, type OnboardingOutput } from '@/ai/flows/onboarding-assistant-flow';
 import { predictMatchOutcome, type PredictMatchOutcomeInput, type PredictMatchOutcomeOutput } from '@/ai/flows/predict-match-outcome-flow';
+import { playerScout, type PlayerScoutInput, type PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
 
 @Injectable()
 export class AiService {
@@ -281,5 +282,9 @@ export class AiService {
   
   async predictMatchOutcome(input: PredictMatchOutcomeInput): Promise<PredictMatchOutcomeOutput> {
     return predictMatchOutcome(input);
+  }
+
+  async playerScout(input: PlayerScoutInput): Promise<PlayerScoutOutput> {
+    return playerScout(input);
   }
 }
