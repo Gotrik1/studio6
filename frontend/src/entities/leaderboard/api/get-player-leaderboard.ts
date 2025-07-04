@@ -1,4 +1,3 @@
-
 'use server';
 
 import type { PlayerLeaderboardItem } from '@/entities/leaderboard/model/types';
