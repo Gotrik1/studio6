@@ -8,6 +8,11 @@ import type { NewsWithAudio } from '../../ai/flows/schemas/generate-platform-new
 import { analyzeJoinRequest, type AnalyzeJoinRequestInput, type AnalyzeJoinRequestOutput } from '@/ai/flows/analyze-join-request-flow';
 import { analyzeTeamPerformance, type AnalyzeTeamPerformanceInput, type AnalyzeTeamPerformanceOutput } from '@/ai/flows/analyze-team-performance-flow';
 import { analyzeEsportsPerformance, type AnalyzeEsportsPerformanceInput, type AnalyzeEsportsPerformanceOutput } from '@/ai/flows/analyze-esports-performance-flow';
+import { analyzeContent, type AnalyzeContentInput, type AnalyzeContentOutput } from '@/ai/flows/analyze-content-generation-flow';
+import { generateContent, type GenerateContentInput, type GenerateContentOutput } from '@/ai/flows/generate-content-flow';
+import { generateDialogue, type GenerateDialogueInput, type GenerateDialogueOutput } from '@/ai/flows/dialogue-generation-flow';
+import { multiSpeakerTts, type MultiSpeakerTtsInput, type MultiSpeakerTtsOutput } from '@/ai/flows/multi-speaker-tts-flow';
+import { analyzeDispute, type AnalyzeDisputeInput, type AnalyzeDisputeOutput } from '@/ai/flows/analyze-dispute-flow';
 
 
 @Injectable()
@@ -34,5 +39,25 @@ export class AiService {
 
   async analyzeEsportsPerformance(input: AnalyzeEsportsPerformanceInput): Promise<AnalyzeEsportsPerformanceOutput> {
     return analyzeEsportsPerformance(input);
+  }
+
+  async analyzeContent(input: AnalyzeContentInput): Promise<AnalyzeContentOutput> {
+    return analyzeContent(input);
+  }
+
+  async generateContent(input: GenerateContentInput): Promise<GenerateContentOutput> {
+    return generateContent(input);
+  }
+
+  async generateDialogue(topic: GenerateDialogueInput): Promise<GenerateDialogueOutput> {
+    return generateDialogue(topic);
+  }
+
+  async multiSpeakerTts(script: MultiSpeakerTtsInput): Promise<MultiSpeakerTtsOutput> {
+    return multiSpeakerTts(script);
+  }
+
+  async analyzeDispute(input: AnalyzeDisputeInput): Promise<AnalyzeDisputeOutput> {
+    return analyzeDispute(input);
   }
 }

@@ -236,7 +236,7 @@ function AudioTools() {
         setDialogueAudioResult(null);
         setDialogueAudioError(null);
         try {
-            const result = await generateDialogue(dialogueTopic);
+            const result = await generateDialogue({topic: dialogueTopic});
             setDialogueResult(result);
         } catch (e) {
             console.error(e);
@@ -252,7 +252,7 @@ function AudioTools() {
         setDialogueAudioError(null);
         setDialogueAudioResult(null);
         try {
-            const result = await multiSpeakerTts(dialogueResult.dialogue);
+            const result = await multiSpeakerTts({script: dialogueResult.dialogue});
             setDialogueAudioResult(result);
         } catch (e) {
             console.error(e);
