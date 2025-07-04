@@ -7,6 +7,7 @@ import { differenceInYears } from 'date-fns';
 import * as bcrypt from 'bcrypt';
 import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
 import { gallery } from '@/shared/lib/mock-data/gallery';
+import { careerHistory } from '@/shared/lib/mock-data/career-history';
 
 @Injectable()
 export class UsersService {
@@ -140,6 +141,12 @@ export class UsersService {
     // In a real app, this would query the database for the user's media.
     // For this prototype, we return mock data.
     return gallery;
+  }
+
+  async findUserCareer(userId: string): Promise<any[]> {
+    // In a real app, this would query a user's career history from the database.
+    // For this prototype, we return mock data, ignoring the userId for now.
+    return careerHistory;
   }
 
   async findByEmailWithPassword(email: string): Promise<User | null> {

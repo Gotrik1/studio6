@@ -16,8 +16,3 @@ export const teams = [
     { name: 'Дворовые Атлеты', role: 'Капитан', logo: 'https://placehold.co/100x100.png', dataAiHint: 'athletic team logo', slug: 'dvotovyie-atlety', rank: 1, game: 'Футбол'},
     { name: 'Соколы', role: 'Игрок', logo: 'https://placehold.co/100x100.png', dataAiHint: 'falcon logo', slug: 'sokoly', rank: 4, game: 'Баскетбол'},
 ];
-
-export const careerHistory = [
-    { teamName: 'Юность', period: '2022-2023', role: 'Запасной игрок', review: 'Показал большой потенциал во время тренировок.' },
-    { teamName: 'Дворовые Атлеты', period: '2023-н.в.', role: 'Капитан', review: 'Привел команду к победе в нескольких региональных турнирах.' },
-];

@@ -43,4 +43,9 @@ export class UsersController {
   findUserGallery(@Param('id') id: string) {
     return this.usersService.findUserGallery(id);
   }
+
+  @Get(':id/career')
+  findUserCareer(@Param('id') id: string) {
+    return this.usersService.findUserCareer(id);
+  }
 }

@@ -3,9 +3,7 @@
 
 import { Briefcase } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
-import type { careerHistory } from "@/shared/lib/mock-data/profiles";
-
-type CareerHistoryItem = (typeof careerHistory)[0];
+import type { CareerHistoryItem } from "@/entities/user/model/types";
 
 interface CareerTabProps {
     careerHistory: CareerHistoryItem[];
