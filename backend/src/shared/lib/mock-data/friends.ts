@@ -1,30 +1,5 @@
-
-export const friendsList = [
-    {
-        id: 'friend-1',
-        name: 'Echo',
-        avatar: 'https://placehold.co/100x100.png',
-        avatarHint: 'esports player',
-        status: 'Онлайн',
-    },
-    {
-        id: 'friend-2',
-        name: 'Viper',
-        avatar: 'https://placehold.co/100x100.png',
-        avatarHint: 'esports player female',
-        status: 'В игре',
-    },
-];
-
-export const pendingRequests = [
-    {
-        id: 'pending-1',
-        name: 'ShadowStriker',
-        avatar: 'https://placehold.co/100x100.png',
-        avatarHint: 'esports player',
-        mutualFriends: 3,
-    },
-];
+// This file's data for friendsList and pendingRequests is now served by the backend from a real database.
+// The data is kept here for 'findSuggestions' which is still a mock.
 
 export const suggestedFriends = [
     {
@@ -42,3 +17,6 @@ export const suggestedFriends = [
         reason: 'Общий турнир: Summer Kickoff',
     },
 ];
+
+export const friendsList = [];
+export const pendingRequests = [];

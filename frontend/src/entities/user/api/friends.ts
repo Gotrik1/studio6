@@ -68,6 +68,19 @@ export async function getFriendSuggestions(): Promise<FriendSuggestion[]> {
     return fetchWithAuth('/friends/suggestions');
 }
 
+export async function sendFriendRequest(toId: string) {
+    await fetchWithAuth(`/friends/requests`, {
+        method: 'POST',
+        body: JSON.stringify({ toId }),
+    });
+    revalidatePath('/friends');
+}
+
+export async function addSuggestedFriend(suggestionId: string) {
+    // The suggestionId is the userId of the suggested friend.
+    await sendFriendRequest(suggestionId);
+}
+
 export async function acceptFriendRequest(requestId: string) {
     await fetchWithAuth(`/friends/requests/${requestId}/accept`, { method: 'POST' });
     revalidatePath('/friends');
@@ -80,10 +93,5 @@ export async function declineFriendRequest(requestId: string) {
 
 export async function removeFriend(friendId: string) {
     await fetchWithAuth(`/friends/${friendId}`, { method: 'DELETE' });
-    revalidatePath('/friends');
-}
-
-export async function addSuggestedFriend(suggestionId: string) {
-    await fetchWithAuth(`/friends/suggestions/${suggestionId}`, { method: 'POST' });
     revalidatePath('/friends');
 }

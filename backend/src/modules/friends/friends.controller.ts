@@ -1,8 +1,9 @@
-
-import { Controller, Get, Post, Delete, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, UseGuards, Req, Body } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Request } from 'express';
+import { CreateFriendRequestDto } from './dto/create-friend-request.dto';
 
 @ApiTags('Friends')
 @Controller('friends')
@@ -13,44 +14,50 @@ export class FriendsController {
 
   @Get()
   @ApiOperation({ summary: 'Получить список друзей' })
-  findAll() {
-    return this.friendsService.findAll();
+  findAll(@Req() req: Request) {
+    const userId = (req.user as any).userId;
+    return this.friendsService.findAll(userId);
   }
 
   @Get('requests')
   @ApiOperation({ summary: 'Получить входящие запросы в друзья' })
-  findRequests() {
-      return this.friendsService.findRequests();
+  findRequests(@Req() req: Request) {
+      const userId = (req.user as any).userId;
+      return this.friendsService.findRequests(userId);
   }
 
   @Get('suggestions')
   @ApiOperation({ summary: 'Получить рекомендации друзей' })
   findSuggestions() {
+      // This can be enhanced later to provide real suggestions
       return this.friendsService.findSuggestions();
   }
+  
+  @Post('requests')
+  @ApiOperation({ summary: 'Отправить запрос в друзья' })
+  sendRequest(@Body() dto: CreateFriendRequestDto, @Req() req: Request) {
+    const fromId = (req.user as any).userId;
+    return this.friendsService.sendRequest(fromId, dto.toId);
+  }
 
-  // Mock endpoints for mutations
   @Post('requests/:id/accept')
-  @ApiOperation({ summary: 'Принять запрос в друзья (мок)' })
-  acceptRequest(@Param('id') id: string) {
-      return { message: `Request ${id} accepted.` };
+  @ApiOperation({ summary: 'Принять запрос в друзья' })
+  acceptRequest(@Param('id') requestId: string, @Req() req: Request) {
+    const userId = (req.user as any).userId;
+    return this.friendsService.acceptRequest(requestId, userId);
   }
 
   @Delete('requests/:id')
-  @ApiOperation({ summary: 'Отклонить запрос в друзья (мок)' })
-  declineRequest(@Param('id') id: string) {
-      return { message: `Request ${id} declined.` };
+  @ApiOperation({ summary: 'Отклонить запрос в друзья' })
+  declineRequest(@Param('id') requestId: string, @Req() req: Request) {
+      const userId = (req.user as any).userId;
+      return this.friendsService.declineRequest(requestId, userId);
   }
   
   @Delete(':id')
-  @ApiOperation({ summary: 'Удалить друга (мок)' })
-  removeFriend(@Param('id') id: string) {
-      return { message: `Friend ${id} removed.` };
-  }
-
-  @Post('suggestions/:id')
-  @ApiOperation({ summary: 'Отправить запрос другу из рекомендаций (мок)' })
-  addSuggestedFriend(@Param('id') id: string) {
-       return { message: `Friend request sent to suggested user ${id}.` };
+  @ApiOperation({ summary: 'Удалить друга' })
+  removeFriend(@Param('id') friendId: string, @Req() req: Request) {
+      const userId = (req.user as any).userId;
+      return this.friendsService.removeFriend(userId, friendId);
   }
 }
