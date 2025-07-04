@@ -8,47 +8,74 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
-import { ReportScoreDialog } from '@/features/report-score/ui/report-score-dialog';
 import { useToast } from '@/shared/hooks/use-toast';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Edit } from 'lucide-react';
 import { fetchMatches } from '@/entities/match/api/get-matches';
 import type { Match } from "@/entities/match/model/types";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { CrmMatchResultDialog, type MatchResult } from '@/widgets/crm-score-dialog';
+import { updateMatchScore } from '@/entities/match/api/update-match-score';
 
+// A type that is compatible with CrmMatchResultDialog
+type DialogMatch = {
+    id: number | string;
+    team1?: { name: string };
+    team2?: { name: string };
+    score?: string;
+};
 
 export function MatchesListPage() {
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
-  const [selectedMatch, setSelectedMatch] = useState<{ id: string, name: string } | null>(null);
+  const [isScoreDialogOpen, setIsScoreDialogOpen] = useState(false);
+  const [selectedMatch, setSelectedMatch] = useState<DialogMatch | null>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-      async function loadMatches() {
-          try {
-              const fetchedMatches = await fetchMatches();
-              setMatches(fetchedMatches);
-          } catch (error) {
-              console.error("Failed to fetch matches:", error);
-          } finally {
-              setLoading(false);
-          }
+  const loadMatches = async () => {
+      setLoading(true);
+      try {
+          const fetchedMatches = await fetchMatches();
+          setMatches(fetchedMatches);
+      } catch (error) {
+          console.error("Failed to fetch matches:", error);
+          toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить матчи.' });
+      } finally {
+          setLoading(false);
       }
+  };
+
+  useEffect(() => {
       loadMatches();
   }, []);
 
-  const handleOpenReportDialog = (matchId: string, team1Name: string, team2Name: string) => {
-    setSelectedMatch({ id: matchId, name: `${team1Name} vs ${team2Name}` });
-    setIsReportDialogOpen(true);
+  const handleOpenScoreDialog = (match: Match) => {
+    const dialogMatch: DialogMatch = {
+        id: match.id,
+        team1: { name: match.team1.name },
+        team2: { name: match.team2.name },
+        score: match.score,
+    };
+    setSelectedMatch(dialogMatch);
+    setIsScoreDialogOpen(true);
   };
 
-  const handleReportSubmit = () => {
-    toast({
-      title: "Отчет отправлен",
-      description: "Результат матча отправлен на проверку.",
-    });
+  const handleMatchUpdate = async (result: MatchResult) => {
+    const updateResult = await updateMatchScore(String(result.matchId), result.scoreA, result.scoreB, result.comment);
+    if (updateResult.success) {
+        toast({
+            title: "Результат обновлен",
+            description: "Счет матча был успешно сохранен.",
+        });
+        await loadMatches(); // Reload data
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Ошибка обновления',
+            description: updateResult.error,
+        });
+    }
   };
 
   const getStatusVariant = (status: string) => {
@@ -125,13 +152,14 @@ export function MatchesListPage() {
                     <TableCell className="hidden md:table-cell">{format(new Date(match.date), 'd MMMM yyyy', { locale: ru })}</TableCell>
                     <TableCell className="text-right space-x-2">
                       <Badge variant={getStatusVariant(match.status)}>{match.status}</Badge>
-                      {match.status === "Идет" && (
+                      {(match.status === "Идет" || match.status === "Предстоящий") && (
                           <Button 
                               variant="outline" 
                               size="sm"
-                              onClick={() => handleOpenReportDialog(match.id, match.team1.name, match.team2.name)}
+                              onClick={() => handleOpenScoreDialog(match)}
                           >
-                              Сообщить результат
+                              <Edit className="mr-2 h-3 w-3" />
+                              Ввести результат
                           </Button>
                       )}
                     </TableCell>
@@ -143,11 +171,12 @@ export function MatchesListPage() {
         </CardContent>
       </Card>
       
-       <ReportScoreDialog
-        isOpen={isReportDialogOpen}
-        onOpenChange={setIsReportDialogOpen}
-        matchName={selectedMatch?.name || ''}
-        onReportSubmit={handleReportSubmit}
+       <CrmMatchResultDialog
+        isOpen={isScoreDialogOpen}
+        onOpenChange={setIsScoreDialogOpen}
+        // This cast is a bit risky but should work as the dialog only uses common properties.
+        match={selectedMatch as any} 
+        onMatchUpdate={handleMatchUpdate}
       />
     </div>
   );
