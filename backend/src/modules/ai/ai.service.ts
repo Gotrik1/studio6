@@ -27,6 +27,7 @@ import { findSponsorsForTeam, type FindSponsorsForTeamInput, type FindSponsorsFo
 import { generatePostImage_Backend, type GeneratePostImageInput, type GeneratePostImageOutput } from '@/ai/flows/generate-post-image-flow';
 import { analyzePlaygroundDetails, type AnalyzePlaygroundDetailsInput, type AnalyzePlaygroundDetailsOutput } from '@/ai/flows/analyze-playground-details-flow';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportInput, type AnalyzePlaygroundReportOutput } from '@/ai/flows/analyze-playground-report-flow';
+import { smartSearch, type SmartSearchOutput } from '@/ai/flows/smart-search-flow';
 
 
 @Injectable()
@@ -125,5 +126,9 @@ export class AiService {
 
   async analyzePlaygroundReport(input: AnalyzePlaygroundReportInput): Promise<AnalyzePlaygroundReportOutput> {
     return analyzePlaygroundReport(input);
+  }
+
+  async smartSearch(query: string): Promise<SmartSearchOutput> {
+    return smartSearch(query);
   }
 }

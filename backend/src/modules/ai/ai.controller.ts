@@ -48,6 +48,8 @@ import { AnalyzePlaygroundDetailsDto } from './dto/analyze-playground-details.dt
 import { AnalyzePlaygroundReportDto } from './dto/analyze-playground-report.dto';
 import type { AnalyzePlaygroundDetailsOutput } from '@/ai/flows/schemas/analyze-playground-details-schema';
 import type { AnalyzePlaygroundReportOutput } from '@/ai/flows/schemas/analyze-playground-report-schema';
+import { SmartSearchDto } from './dto/smart-search.dto';
+import type { SmartSearchOutput } from '@/ai/flows/schemas/smart-search-schema';
 
 @Controller('ai')
 export class AiController {
@@ -241,5 +243,13 @@ export class AiController {
     @Body() analyzePlaygroundReportDto: AnalyzePlaygroundReportDto,
   ): Promise<AnalyzePlaygroundReportOutput> {
     return this.aiService.analyzePlaygroundReport(analyzePlaygroundReportDto);
+  }
+
+  @Post('smart-search')
+  @HttpCode(HttpStatus.OK)
+  async smartSearch(
+    @Body() smartSearchDto: SmartSearchDto,
+  ): Promise<SmartSearchOutput> {
+    return this.aiService.smartSearch(smartSearchDto.query);
   }
 }
