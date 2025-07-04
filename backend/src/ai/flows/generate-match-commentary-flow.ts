@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for generating a play-by-play commentary for a match.
@@ -11,31 +12,14 @@ import { ai } from '../genkit';
 import { z } from 'zod';
 import { GenerateMatchCommentaryInputSchema, GenerateMatchCommentaryOutputSchema } from './schemas/generate-match-commentary-schema';
 import type { GenerateMatchCommentaryInput, GenerateMatchCommentaryOutput } from './schemas/generate-match-commentary-schema';
-import { textToSpeech } from './tts-flow';
+import { generateDialogue } from './dialogue-generation-flow';
+import { multiSpeakerTts } from './multi-speaker-tts-flow';
 
 export type { GenerateMatchCommentaryInput, GenerateMatchCommentaryOutput };
 
 export async function generateMatchCommentary(input: GenerateMatchCommentaryInput): Promise<GenerateMatchCommentaryOutput & { audioDataUri: string }> {
   return generateMatchCommentaryFlow_Backend(input);
 }
-
-const prompt = ai.definePrompt({
-  name: 'generateMatchCommentaryPrompt_Backend',
-  input: { schema: GenerateMatchCommentaryInputSchema },
-  output: { schema: GenerateMatchCommentaryOutputSchema },
-  prompt: `You are an energetic and professional sports commentator. Your task is to create an exciting play-by-play commentary script based on the provided list of key match events.
-Make it sound like a real broadcast. Describe the tension and the highlights.
-
-Match: {{{team1Name}}} vs {{{team2Name}}}
-
-Key Events:
-{{#each events}}
-- {{time}}: {{event}} by {{player}} ({{team}})
-{{/each}}
-
-Generate the commentary script now. Be descriptive and engaging.
-`,
-});
 
 const generateMatchCommentaryFlow_Backend = ai.defineFlow(
   {
@@ -46,17 +30,23 @@ const generateMatchCommentaryFlow_Backend = ai.defineFlow(
         audioDataUri: z.string(),
     })
   },
-  async (input) => {
-    const { output } = await prompt(input);
-    if (!output) {
-      throw new Error("Failed to generate commentary script.");
-    }
-    const { commentaryScript } = output;
+  async ({ team1Name, team2Name, events }) => {
+    // 1. Create a detailed topic for the dialogue generation flow.
+    const eventsString = events.map(e => `- ${e.time}: ${e.event} by ${e.player} (${e.team})`).join('\n');
+    const dialogueTopic = `Generate an exciting, energetic play-by-play commentary script for a match between ${team1Name} and ${team2Name}. It should be a dialogue between two commentators, Speaker1 and Speaker2. Use these key events for context:\n${eventsString}`;
+    
+    // 2. Generate the dialogue script.
+    const { dialogue } = await generateDialogue(dialogueTopic);
 
-    const { audioDataUri } = await textToSpeech(commentaryScript);
+    if (!dialogue) {
+        throw new Error("Failed to generate commentary script.");
+    }
+    
+    // 3. Generate the multi-speaker audio from the script.
+    const { audioDataUri } = await multiSpeakerTts(dialogue);
     
     return {
-        commentaryScript,
+        commentaryScript: dialogue,
         audioDataUri,
     };
   }
