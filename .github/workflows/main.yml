@@ -3,7 +3,7 @@ name: Test secrets
 on:
   push:
     branches:
-      - main    # если у тебя главная ветка называется иначе (master), поменяй здесь
+      - master    # если у тебя главная ветка называется иначе (master), поменяй здесь
 
 jobs:
   check-secrets:
