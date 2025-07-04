@@ -29,6 +29,7 @@ import './flows/generate-match-interview-flow';
 import './flows/analyze-report-flow';
 // import './flows/generate-sponsorship-pitch'; // Moved to backend
 // import './flows/sponsorship-scout-flow'; // Moved to backend
+// import './flows/find-sponsors-for-team-flow'; // Moved to backend
 // import './flows/generate-platform-news-flow'; // Moved to backend
 // import './flows/analyze-team-performance-flow'; // Moved to backend
 import './flows/onboarding-assistant-flow';
