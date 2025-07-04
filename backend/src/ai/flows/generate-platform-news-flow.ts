@@ -59,7 +59,7 @@ const getRecentActivity = ai.defineTool(
         }
     }
     
-    const newHotTeam = await prisma.team.findFirst({ orderBy: { createdAt: 'desc' } });
+    const newHotTeam = await prisma.team.findFirst({ orderBy: { id: 'desc' } });
     
     // For match of the week, find a close match
     const recentFinishedMatches = await prisma.match.findMany({

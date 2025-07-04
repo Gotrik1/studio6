@@ -179,10 +179,10 @@ export class TournamentsService {
       status: tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен',
       image: tournament.bannerImage || 'https://placehold.co/2560x720.png',
       dataAiHint: tournament.bannerImageHint || 'esports tournament',
-      description: tournament.description || 'Описание турнира отсутствует.',
+      description: 'Описание турнира отсутствует.',
       prizePool: String(tournament.prizePool),
       teamsCount: tournament.teams.length,
-      organizer: { name: tournament.organizerName || 'ProDvor Events', logo: tournament.organizerLogo || 'https://placehold.co/40x40.png' },
+      organizer: { name: 'ProDvor Events', logo: 'https://placehold.co/40x40.png' },
       schedule: { // This is simplified, real data would come from match schedules
         registration: "15-30 Июня",
         groupStage: "1-3 Июля",
@@ -190,7 +190,7 @@ export class TournamentsService {
         finals: format(new Date(tournament.startDate), 'd MMMM yyyy', { locale: ru }),
       },
       teams: tournament.teams,
-      rules: tournament.rules || "Правила не указаны.",
+      rules: "Правила не указаны.",
       bracket: { rounds },
       media: [ // Keep media mocked for now
         { type: 'image', src: 'https://placehold.co/600x400.png', hint: 'esports action' },

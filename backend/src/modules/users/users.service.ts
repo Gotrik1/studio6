@@ -63,13 +63,13 @@ export class UsersService {
       }
       
       // Augment real user data with mock details for a richer profile experience
-      const dateOfBirth = user.dateOfBirth ? user.dateOfBirth.toISOString().split('T')[0] : '1998-05-15';
+      const dateOfBirth = user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '1998-05-15';
 
       const augmentedProfile = {
         ...user,
         location: user.location || "Москва, Россия",
         mainSport: user.mainSport || "Футбол",
-        isVerified: user.isVerified || true,
+        isVerified: true, // Mocked as the field doesn't exist in schema
         dateOfBirth: dateOfBirth,
         age: differenceInYears(new Date(), new Date(dateOfBirth)),
         preferredSports: user.preferredSports?.length ? user.preferredSports : ["Футбол", "Баскетбол", "Valorant"],

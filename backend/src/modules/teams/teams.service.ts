@@ -15,7 +15,7 @@ export class TeamsService {
   ) {}
 
   async create(createTeamDto: CreateTeamDto): Promise<Team> {
-    const { name, captainId, game, motto, description, logo, dataAiHint } = createTeamDto;
+    const { name, captainId, game, motto, logo, dataAiHint } = createTeamDto;
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
     return this.prisma.team.create({
@@ -24,7 +24,6 @@ export class TeamsService {
         slug,
         game,
         motto,
-        description,
         logo,
         dataAiHint,
         captain: {

@@ -50,7 +50,6 @@ const searchPlatformData_Backend = ai.defineTool(
              OR: [
                 { name: { contains: lowercasedQuery, mode: 'insensitive' } },
                 { game: { contains: lowercasedQuery, mode: 'insensitive' } },
-                { description: { contains: lowercasedQuery, mode: 'insensitive' } },
             ]
         },
         include: { _count: { select: { members: true } } },
@@ -71,7 +70,6 @@ const searchPlatformData_Backend = ai.defineTool(
              OR: [
                 { name: { contains: lowercasedQuery, mode: 'insensitive' } },
                 { game: { contains: lowercasedQuery, mode: 'insensitive' } },
-                { description: { contains: lowercasedQuery, mode: 'insensitive' } },
             ]
         },
         take: 10,
@@ -111,8 +109,8 @@ const smartSearchFlow_Backend = ai.defineFlow(
     outputSchema: SmartSearchOutputSchema,
   },
   async input => {
-    const { output } = await prompt(input);
-    return output!;
+    const response = await smartSearchPrompt_Backend(input);
+    return response.output!;
   }
 );
 

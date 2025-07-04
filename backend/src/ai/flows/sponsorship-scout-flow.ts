@@ -38,7 +38,7 @@ const findTeamsTool = ai.defineTool(
         !query || // Return all if query is empty
         team.name.toLowerCase().includes(lowercasedQuery) ||
         team.game.toLowerCase().includes(lowercasedQuery) ||
-        (team.description && team.description.toLowerCase().includes(lowercasedQuery))
+        (team.motto && team.motto.toLowerCase().includes(lowercasedQuery))
       )
       .slice(0, 10) // Return up to 10 for the LLM to reason over
       .map(team => ({
@@ -47,7 +47,7 @@ const findTeamsTool = ai.defineTool(
           logo: team.logo || '',
           logoHint: team.dataAiHint || 'team logo',
           game: team.game,
-          pitch: team.description || 'No description available.', // Using description as pitch
+          pitch: team.motto || 'No motto available.', // Using motto as pitch
           needs: 'Funding for travel and new equipment.' // Mock needs
       }));
   }
