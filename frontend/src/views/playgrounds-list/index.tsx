@@ -69,13 +69,13 @@ export function PlaygroundsListPage() {
                 </Button>
             </div>
             
-            <Card>
+            <Card className="opacity-0 animate-fade-in-up animation-delay-300">
                 <CardHeader className="flex flex-col gap-4 sm:flex-row">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input
-                            placeholder="Поиск по названию или адресу..."
-                            className="w-full pl-10"
+                        <Input 
+                            placeholder="Поиск по названию или адресу..." 
+                            className="w-full pl-10" 
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -101,7 +101,7 @@ export function PlaygroundsListPage() {
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-0 animate-fade-in-up animation-delay-600">
                     {filteredPlaygrounds.map(playground => {
                         const kingTeam = getKingOfTheCourt(playground.id);
                         const isLive = livePlaygrounds.has(playground.id);

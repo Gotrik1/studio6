@@ -5,18 +5,14 @@ import {
 } from '@nestjs/common';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Match, MatchStatus, ActivityType } from '@prisma/client';
+import { Match, MatchStatus } from '@prisma/client';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class MatchesService {
-  constructor(
-    private prisma: PrismaService,
-    private readonly amqpConnection: AmqpConnection,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async create(createMatchDto: CreateMatchDto): Promise<Match> {
     const { team1Id, team2Id, tournamentId, scheduledAt } = createMatchDto;
@@ -145,115 +141,28 @@ export class MatchesService {
     updateMatchDto: UpdateMatchDto,
   ): Promise<Match> {
     const { score1, score2 } = updateMatchDto;
+    // Basic validation
+    if (score1 === undefined || score2 === undefined) {
+      throw new BadRequestException('Необходимо указать счет обеих команд.');
+    }
 
     const match = await this.prisma.match.findUnique({
       where: { id },
-      include: {
-        team1: { include: { members: true, ...{select: { slug: true}} } },
-        team2: { include: { members: true, ...{select: { slug: true}} } },
-      },
     });
 
     if (!match) {
       throw new NotFoundException(`Матч с ID ${id} не найден`);
     }
 
-    const team1Update: {
-      wins?: { increment: 1 };
-      losses?: { increment: 1 };
-      draws?: { increment: 1 };
-    } = {};
-    const team2Update: {
-      wins?: { increment: 1 };
-      losses?: { increment: 1 };
-      draws?: { increment: 1 };
-    } = {};
-
-    let winningTeamMembers: { id: string }[] = [];
-    const allMemberIds = [...match.team1.members, ...match.team2.members].map(m => m.id);
-    const XP_FOR_WIN = 100; // Define XP reward
-
-    if (score1 > score2) {
-      team1Update.wins = { increment: 1 };
-      team2Update.losses = { increment: 1 };
-      winningTeamMembers = match.team1.members;
-    } else if (score2 > score1) {
-      team1Update.losses = { increment: 1 };
-      team2Update.wins = { increment: 1 };
-      winningTeamMembers = match.team2.members;
-    } else {
-      team1Update.draws = { increment: 1 };
-      team2Update.draws = { increment: 1 };
-    }
-
-    const updatedMatch = await this.prisma.$transaction(async (tx) => {
-      // Update team stats
-      await tx.team.update({
-        where: { id: match.team1Id },
-        data: team1Update,
-      });
-      await tx.team.update({
-        where: { id: match.team2Id },
-        data: team2Update,
-      });
-
-      // Award XP to winning team members
-      if (winningTeamMembers.length > 0) {
-        const memberIds = winningTeamMembers.map((member) => member.id);
-        await tx.user.updateMany({
-          where: { id: { in: memberIds } },
-          data: { xp: { increment: XP_FOR_WIN } },
-        });
-      }
-
-      // Create activity logs for all participants
-      const activitiesToCreate = allMemberIds.map(userId => {
-        const userTeam = match.team1.members.some(m => m.id === userId) ? match.team1 : match.team2;
-        const opponentTeam = userTeam.id === match.team1Id ? match.team2 : match.team1;
-        const userWon = winningTeamMembers.some(m => m.id === userId);
-        
-        return {
-          type: ActivityType.MATCH_PLAYED,
-          userId: userId,
-          metadata: {
-            team: userTeam.name,
-            opponent: opponentTeam.name,
-            score: `${score1}-${score2}`,
-            result: userWon ? 'Победа' : (score1 === score2 ? 'Ничья' : 'Поражение'),
-            teamHref: `/teams/${userTeam.slug}`,
-            matchHref: `/matches/${match.id}`,
-            icon: 'Trophy',
-          }
-        }
-      });
-      await tx.activity.createMany({ data: activitiesToCreate });
-
-
-      // Update match details
-      const matchAfterUpdate = await tx.match.update({
-        where: { id },
-        data: {
-          team1Score: score1,
-          team2Score: score2,
-          status: 'FINISHED',
-          finishedAt: new Date(),
-        },
-      });
-
-      return matchAfterUpdate;
+    return this.prisma.match.update({
+      where: { id },
+      data: {
+        team1Score: score1,
+        team2Score: score2,
+        status: 'FINISHED',
+        finishedAt: new Date(),
+      },
     });
-
-    // Publish event to RabbitMQ AFTER transaction is successful
-    this.amqpConnection.publish('prodvor_exchange', 'match.finished', {
-        matchId: updatedMatch.id,
-        team1Name: match.team1.name,
-        team2Name: match.team2.name,
-        score1,
-        score2,
-        participantIds: allMemberIds,
-    });
-
-    return updatedMatch;
   }
 
   async remove(id: string): Promise<Match> {
