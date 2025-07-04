@@ -3,7 +3,7 @@
  * @fileOverview An AI agent for generating a team tactic for a specific playground.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { GeneratePlaygroundTacticInputSchema, GeneratePlaygroundTacticOutputSchema } from './schemas/generate-playground-tactic-schema';
 import type { GeneratePlaygroundTacticInput, GeneratePlaygroundTacticOutput } from './schemas/generate-playground-tactic-schema';
 

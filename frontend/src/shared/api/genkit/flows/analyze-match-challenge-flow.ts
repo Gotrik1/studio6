@@ -8,7 +8,7 @@
  * - AnalyzeMatchChallengeOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { z } from 'zod';
 import { teams as allTeams } from '@/shared/lib/mock-data/teams';
 import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';

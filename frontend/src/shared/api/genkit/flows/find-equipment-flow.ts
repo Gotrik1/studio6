@@ -9,7 +9,7 @@
  * - FindEquipmentOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { z } from 'zod';
 import { storeItems } from '@/shared/lib/mock-data/store';
 import { FindEquipmentInputSchema, FindEquipmentOutputSchema, StoreItemSchema } from './schemas/find-equipment-schema';

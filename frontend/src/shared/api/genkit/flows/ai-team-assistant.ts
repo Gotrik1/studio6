@@ -8,7 +8,7 @@
  * - AiTeamAssistantOutput - The return type for the aiTeamAssistant function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { AiTeamAssistantInputSchema, AiTeamAssistantOutputSchema } from './schemas/ai-team-assistant-schema';
 import type { AiTeamAssistantInput, AiTeamAssistantOutput } from './schemas/ai-team-assistant-schema';
 

@@ -9,7 +9,7 @@
  * - GenerateTournamentImageOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { GenerateTournamentImageInputSchema, GenerateTournamentImageOutputSchema } from './schemas/generate-tournament-image-schema';
 import type { GenerateTournamentImageInput, GenerateTournamentImageOutput } from './schemas/generate-tournament-image-schema';
 

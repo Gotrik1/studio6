@@ -8,7 +8,7 @@
  * - GeneratePromotionImageOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { GeneratePromotionImageInputSchema, GeneratePromotionImageOutputSchema } from './schemas/generate-promotion-image-schema';
 import type { GeneratePromotionImageInput, GeneratePromotionImageOutput } from './schemas/generate-promotion-image-schema';
 

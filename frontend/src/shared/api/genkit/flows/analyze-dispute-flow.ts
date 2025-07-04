@@ -9,7 +9,7 @@
  * - AnalyzeDisputeOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { AnalyzeDisputeInputSchema, AnalyzeDisputeOutputSchema } from './schemas/analyze-dispute-schema';
 import type { AnalyzeDisputeInput, AnalyzeDisputeOutput } from './schemas/analyze-dispute-schema';
 

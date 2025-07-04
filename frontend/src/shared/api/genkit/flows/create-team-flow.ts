@@ -9,7 +9,7 @@
  * - CreateTeamOutput - The return type for the createTeam function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { CreateTeamInputSchema, CreateTeamOutputSchema } from './schemas/create-team-schema';
 import type { CreateTeamInput, CreateTeamOutput } from './schemas/create-team-schema';
 

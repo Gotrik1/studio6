@@ -9,7 +9,7 @@
  * - SuggestReplyOutput - The return type for the suggestReply function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import {z} from 'zod';
 import { SuggestReplyInputSchema, SuggestReplyOutputSchema } from './schemas/suggest-reply-schema';
 import type { SuggestReplyInput, SuggestReplyOutput } from './schemas/suggest-reply-schema';

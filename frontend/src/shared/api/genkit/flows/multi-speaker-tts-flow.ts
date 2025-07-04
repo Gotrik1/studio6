@@ -7,7 +7,7 @@
  * - MultiSpeakerTtsOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import wav from 'wav';
 import { googleAI } from '@genkit-ai/googleai';
 import { MultiSpeakerTtsInputSchema, MultiSpeakerTtsOutputSchema } from './schemas/multi-speaker-tts-schema';

@@ -7,7 +7,7 @@
  * - AnalyzeEsportsPerformanceOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { AnalyzeEsportsPerformanceInputSchema, AnalyzeEsportsPerformanceOutputSchema } from './schemas/analyze-esports-performance-schema';
 import type { AnalyzeEsportsPerformanceInput, AnalyzeEsportsPerformanceOutput } from './schemas/analyze-esports-performance-schema';
 

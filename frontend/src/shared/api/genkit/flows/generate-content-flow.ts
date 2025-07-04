@@ -9,7 +9,7 @@
  * - GenerateContentOutput - The return type for the generateContent function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { GenerateContentInputSchema, GenerateContentOutputSchema } from './schemas/generate-content-schema';
 import type { GenerateContentInput, GenerateContentOutput } from './schemas/generate-content-schema';
 

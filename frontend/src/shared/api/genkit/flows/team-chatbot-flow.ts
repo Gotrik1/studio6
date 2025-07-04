@@ -2,7 +2,7 @@
 /**
  * @fileOverview An AI chatbot for team chats that can answer questions about the team.
  */
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { z } from 'zod';
 import { getTeamData } from '@/shared/lib/mock-data/team-data';
 import { TeamChatbotInputSchema, TeamChatbotOutputSchema } from './schemas/team-chatbot-schema';

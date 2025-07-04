@@ -8,7 +8,7 @@
  * - AnalyzeContentOutput - The return type for the analyzeContent function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { AnalyzeContentInputSchema, AnalyzeContentOutputSchema } from './schemas/analyze-content-generation-schema';
 import type { AnalyzeContentInput, AnalyzeContentOutput } from './schemas/analyze-content-generation-schema';
 

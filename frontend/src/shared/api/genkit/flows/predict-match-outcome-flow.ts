@@ -8,7 +8,7 @@
  * - PredictMatchOutcomeOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { PredictMatchOutcomeInputSchema, PredictMatchOutcomeOutputSchema } from './schemas/predict-match-outcome-schema';
 import type { PredictMatchOutcomeInput, PredictMatchOutcomeOutput } from './schemas/predict-match-outcome-schema';
 

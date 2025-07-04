@@ -8,7 +8,7 @@
  * - AnalyzeHolisticPerformanceOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { AnalyzeHolisticPerformanceInputSchema, AnalyzeHolisticPerformanceOutputSchema } from './schemas/analyze-holistic-performance-schema';
 import type { AnalyzeHolisticPerformanceInput, AnalyzeHolisticPerformanceOutput } from './schemas/analyze-holistic-performance-schema';
 

@@ -1,6 +1,6 @@
 'use server';
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { z } from 'zod';
 import { teams } from '@/shared/lib/mock-data/teams';
 import { leaderboardData } from '@/shared/lib/mock-data/leaderboards';

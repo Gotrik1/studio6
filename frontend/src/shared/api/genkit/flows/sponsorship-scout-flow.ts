@@ -8,7 +8,7 @@
  * - SponsorshipScoutOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { z } from 'zod';
 import { teamsSeekingSponsorship as allTeams } from '@/shared/lib/mock-data/sponsorship';
 import { SponsorshipScoutInputSchema, SponsorshipScoutOutputSchema, TeamSchema } from './schemas/sponsorship-scout-schema';

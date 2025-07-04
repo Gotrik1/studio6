@@ -9,7 +9,7 @@
  * - GenerateTeamAvatarOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { GenerateTeamAvatarInputSchema, GenerateTeamAvatarOutputSchema } from './schemas/generate-team-avatar-schema';
 import type { GenerateTeamAvatarInput, GenerateTeamAvatarOutput } from './schemas/generate-team-avatar-schema';
 

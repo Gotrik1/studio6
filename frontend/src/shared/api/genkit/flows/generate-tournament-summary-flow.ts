@@ -7,7 +7,7 @@
  * - GenerateTournamentSummaryOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { GenerateTournamentSummaryInputSchema, GenerateTournamentSummaryOutputSchema } from './schemas/generate-tournament-summary-schema';
 import type { GenerateTournamentSummaryInput, GenerateTournamentSummaryOutput } from './schemas/generate-tournament-summary-schema';
 

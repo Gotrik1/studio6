@@ -7,7 +7,7 @@
  * - GeneratePlaygroundWorkoutOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { GeneratePlaygroundWorkoutInputSchema, GeneratePlaygroundWorkoutOutputSchema } from './schemas/generate-playground-workout-schema';
 import type { GeneratePlaygroundWorkoutInput, GeneratePlaygroundWorkoutOutput } from './schemas/generate-playground-workout-schema';
 

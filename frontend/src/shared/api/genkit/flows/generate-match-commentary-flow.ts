@@ -8,7 +8,7 @@
  * - GenerateMatchCommentaryOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { z } from 'zod';
 import { GenerateMatchCommentaryInputSchema, GenerateMatchCommentaryOutputSchema } from './schemas/generate-match-commentary-schema';
 import type { GenerateMatchCommentaryInput, GenerateMatchCommentaryOutput } from './schemas/generate-match-commentary-schema';

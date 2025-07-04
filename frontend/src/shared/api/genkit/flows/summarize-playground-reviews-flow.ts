@@ -8,7 +8,7 @@
  * - SummarizePlaygroundReviewsOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { SummarizePlaygroundReviewsInputSchema, SummarizePlaygroundReviewsOutputSchema } from './schemas/summarize-playground-reviews-schema';
 import type { SummarizePlaygroundReviewsInput, SummarizePlaygroundReviewsOutput } from './schemas/summarize-playground-reviews-schema';
 

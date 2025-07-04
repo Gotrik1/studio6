@@ -7,7 +7,7 @@
  * - GenerateDialogueOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { GenerateDialogueInputSchema, GenerateDialogueOutputSchema } from './schemas/dialogue-generation-schema';
 import type { GenerateDialogueInput, GenerateDialogueOutput } from './schemas/dialogue-generation-schema';
 

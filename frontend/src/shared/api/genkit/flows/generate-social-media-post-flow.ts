@@ -8,7 +8,7 @@
  * - GenerateSocialMediaPostOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { GenerateSocialMediaPostInputSchema, GenerateSocialMediaPostOutputSchema } from './schemas/generate-social-media-post-schema';
 import type { GenerateSocialMediaPostInput, GenerateSocialMediaPostOutput } from './schemas/generate-social-media-post-schema';
 

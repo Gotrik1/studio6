@@ -7,7 +7,7 @@
  * - TextToSpeechOutput - The return type for the textToSpeech function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import wav from 'wav';
 import { googleAI } from '@genkit-ai/googleai';
 import { TextToSpeechInputSchema, TextToSpeechOutputSchema } from './schemas/tts-schema';

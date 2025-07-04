@@ -8,7 +8,7 @@
  * - GenerateTrainingProgramOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { exercisesList } from '@/shared/lib/mock-data/exercises';
 import { GenerateTrainingProgramInputSchema, GenerateTrainingProgramOutputSchema } from './schemas/generate-training-program-schema';
 import type { GenerateTrainingProgramInput, GenerateTrainingProgramOutput } from './schemas/generate-training-program-schema';

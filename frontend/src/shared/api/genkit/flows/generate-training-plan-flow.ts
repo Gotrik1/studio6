@@ -8,7 +8,7 @@
  * - GenerateTrainingPlanOutput - The return type for the function.
  */
 
-import {ai} from '@/shared/api/genkit';
+import {ai} from '@genkit-ai/next';
 import { GenerateTrainingPlanInputSchema, GenerateTrainingPlanOutputSchema } from './schemas/generate-training-plan-schema';
 import type { GenerateTrainingPlanInput, GenerateTrainingPlanOutput } from './schemas/generate-training-plan-schema';
 

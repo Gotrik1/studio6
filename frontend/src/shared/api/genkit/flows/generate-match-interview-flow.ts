@@ -8,7 +8,7 @@
  * - GenerateMatchInterviewOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '@genkit-ai/next';
 import { generateDialogue } from './dialogue-generation-flow';
 import { multiSpeakerTts } from './multi-speaker-tts-flow';
 import { GenerateMatchInterviewInputSchema, GenerateMatchInterviewOutputSchema } from './schemas/generate-match-interview-schema';
