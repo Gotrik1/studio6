@@ -1,16 +1,16 @@
-
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Handshake, DollarSign, Megaphone, Users, UserSearch, Send } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
-
-import { promotionsList } from '@/shared/lib/mock-data/promotions';
-import { sponsoredTeams, teamsSeekingSponsorship } from '@/shared/lib/mock-data/sponsorship';
 import { useToast } from '@/shared/hooks/use-toast';
+import { getSponsorshipDashboardData } from '@/entities/sponsorship/api/sponsorship';
+import type { SponsorshipDashboardData } from '@/entities/sponsorship/model/types';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, icon: React.ElementType }) => (
     <Card>
@@ -26,17 +26,61 @@ const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, 
 
 export function SponsorshipDashboard() {
     const { toast } = useToast();
+    const [data, setData] = useState<SponsorshipDashboardData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadData = async () => {
+            setIsLoading(true);
+            try {
+                const dashboardData = await getSponsorshipDashboardData();
+                setData(dashboardData);
+            } catch (error) {
+                toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить данные дашборда.' });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadData();
+    }, [toast]);
+
+    const handleContact = (teamName: string) => {
+        toast({
+            title: "Предложение отправлено!",
+            description: `Команде ${teamName} отправлено ваше предложение.`
+        });
+    };
+
+    if (isLoading) {
+        return (
+             <div className="space-y-6">
+                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <Skeleton className="h-24" />
+                    <Skeleton className="h-24" />
+                    <Skeleton className="h-24" />
+                    <Skeleton className="h-24" />
+                </div>
+                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 space-y-6">
+                        <Skeleton className="h-64" />
+                    </div>
+                     <Skeleton className="h-48" />
+                </div>
+             </div>
+        );
+    }
+    
+    if (!data) {
+        return <p>Не удалось загрузить данные.</p>;
+    }
+
+    const { sponsoredTeams, teamsSeekingSponsorship } = data;
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
-            <div className="space-y-2">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Панель управления спонсора</h1>
-                <p className="text-muted-foreground">Анализируйте кампании, находите новые таланты и управляйте своими инвестициями.</p>
-            </div>
-            
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 <StatCard title="Общие инвестиции" value="$75,000" icon={DollarSign} />
-                <StatCard title="Спонсируемых команд" value="2" icon={Users} />
+                <StatCard title="Спонсируемых команд" value={String(sponsoredTeams.length)} icon={Users} />
                 <StatCard title="Активных кампаний" value="2" icon={Megaphone} />
                 <StatCard title="Охват аудитории" value="2.5M" icon={Handshake} />
             </div>
@@ -59,7 +103,7 @@ export function SponsorshipDashboard() {
                                                 <p className="text-sm text-muted-foreground">{team.game}</p>
                                             </div>
                                         </div>
-                                        <Button size="sm" onClick={() => toast({title: "Предложение отправлено!", description: `Команде ${team.name} отправлено ваше предложение.`})}><Send className="mr-2 h-4 w-4"/>Предложить</Button>
+                                        <Button size="sm" onClick={() => handleContact(team.name)}><Send className="mr-2 h-4 w-4"/>Предложить</Button>
                                     </div>
                                     <p className="text-sm text-muted-foreground mt-2 italic pl-2 border-l-2">
                                         &quot;{team.pitch}&quot;
@@ -68,24 +112,6 @@ export function SponsorshipDashboard() {
                             ))}
                         </CardContent>
                     </Card>
-
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Активные промо-кампании</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            {promotionsList.slice(0, 2).map(promo => (
-                                <div key={promo.id} className="flex items-center justify-between p-2 -mx-2 rounded-md hover:bg-muted">
-                                    <div>
-                                        <p className="font-semibold">{promo.title}</p>
-                                        <p className="text-sm text-muted-foreground">Приз: {promo.prize}</p>
-                                    </div>
-                                    <Button variant="outline" size="sm" asChild><Link href="/promotions">Управлять</Link></Button>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
-
                 </div>
                 
                 <Card>

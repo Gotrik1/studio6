@@ -14,6 +14,8 @@ import { CacheModule } from './modules/cache/cache.module';
 import { ChallengesModule } from './modules/challenges/challenges.module';
 import { PlaygroundsModule } from './modules/playgrounds/playgrounds.module';
 import { CoachesModule } from './modules/coaches/coaches.module';
+import { SponsorsModule } from './modules/sponsors/sponsors.module';
+import { SponsorshipModule } from './modules/sponsorship/sponsorship.module';
 
 @Module({
   imports: [
@@ -28,6 +30,8 @@ import { CoachesModule } from './modules/coaches/coaches.module';
     ChallengesModule,
     PlaygroundsModule,
     CoachesModule,
+    SponsorsModule,
+    SponsorshipModule,
   ],
   controllers: [AppController],
   providers: [

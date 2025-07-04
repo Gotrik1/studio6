@@ -1,38 +1,93 @@
-
 'use client';
 
-import { SponsorScout } from '@/widgets/sponsor-scout';
-import { SponsorshipDashboard } from '@/widgets/sponsorship-dashboard';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { UserSearch, LayoutDashboard } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Badge } from '@/shared/ui/badge';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
+import { getSponsors } from '@/entities/sponsor/api/sponsors';
+import type { Sponsor } from '@/entities/sponsor/model/types';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { useToast } from '@/shared/hooks/use-toast';
 
-export function SponsorsPage() {
+const SponsorCardSkeleton = () => (
+    <Card className="flex flex-col h-full">
+        <CardHeader className="flex-row items-center gap-4">
+            <Skeleton className="h-16 w-16 rounded-lg" />
+            <div className="space-y-2 flex-1">
+                <Skeleton className="h-6 w-3/4" />
+                <div className="flex flex-wrap gap-1">
+                    <Skeleton className="h-5 w-16" />
+                    <Skeleton className="h-5 w-20" />
+                </div>
+            </div>
+        </CardHeader>
+        <CardContent className="flex-1">
+             <Skeleton className="h-4 w-full" />
+             <Skeleton className="h-4 w-5/6 mt-2" />
+        </CardContent>
+    </Card>
+)
+
+export function PartnersPage() {
+    const { toast } = useToast();
+    const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadSponsors = async () => {
+            setIsLoading(true);
+            try {
+                const data = await getSponsors();
+                setSponsors(data);
+            } catch (error) {
+                toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список партнеров.' });
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadSponsors();
+    }, [toast]);
+    
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="space-y-2">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Центр спонсорства</h1>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Наши партнеры</h1>
                 <p className="text-muted-foreground">
-                    Находите команды для сотрудничества и управляйте своими кампаниями.
+                    Компании и организации, которые поддерживают развитие платформы ProDvor.
                 </p>
             </div>
-            <Tabs defaultValue="scout">
-                <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="scout">
-                        <UserSearch className="mr-2 h-4 w-4" />
-                        AI-Скаут Команд
-                    </TabsTrigger>
-                    <TabsTrigger value="dashboard">
-                        <LayoutDashboard className="mr-2 h-4 w-4" />
-                        Панель управления
-                    </TabsTrigger>
-                </TabsList>
-                <TabsContent value="scout" className="mt-4">
-                    <SponsorScout />
-                </TabsContent>
-                <TabsContent value="dashboard" className="mt-4">
-                     <SponsorshipDashboard />
-                </TabsContent>
-            </Tabs>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {isLoading ? (
+                    <>
+                        <SponsorCardSkeleton />
+                        <SponsorCardSkeleton />
+                        <SponsorCardSkeleton />
+                        <SponsorCardSkeleton />
+                    </>
+                ) : (
+                    sponsors.map(sponsor => (
+                         <Link key={sponsor.id} href={sponsor.profileUrl} className="block h-full">
+                            <Card className="flex flex-col h-full transition-all hover:shadow-2xl hover:border-primary cursor-pointer">
+                                <CardHeader className="flex flex-row items-center gap-4">
+                                    <Image src={sponsor.logo} alt={sponsor.name} width={64} height={64} className="rounded-lg border" data-ai-hint={sponsor.logoHint} />
+                                    <div>
+                                        <CardTitle>{sponsor.name}</CardTitle>
+                                        <div className="flex flex-wrap gap-1 mt-2">
+                                            {sponsor.interests.map(interest => (
+                                                <Badge key={interest} variant="secondary">{interest}</Badge>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </CardHeader>
+                                <CardContent className="flex-1">
+                                    <p className="text-sm text-muted-foreground">{sponsor.description}</p>
+                                </CardContent>
+                            </Card>
+                        </Link>
+                    ))
+                )}
+            </div>
         </div>
     );
 }

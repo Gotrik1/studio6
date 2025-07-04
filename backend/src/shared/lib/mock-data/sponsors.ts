@@ -36,3 +36,5 @@ export const sponsorsList = [
       interests: ['Спорт', 'Активный отдых']
     },
 ];
+
+export type Sponsor = (typeof sponsorsList)[0];
