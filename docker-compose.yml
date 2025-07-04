@@ -1,3 +1,4 @@
+
 version: '3.8'
 
 # This Docker Compose file sets up a complete development environment
@@ -29,12 +30,14 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./database_data/postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - prodvor-network
 
   pgadmin:
     image: dpage/pgadmin4
@@ -45,10 +48,12 @@ services:
     ports:
       - "5050:80"
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - ./database_data/pgadmin:/var/lib/pgadmin
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - prodvor-network
 
   redis:
     image: redis:latest
@@ -56,12 +61,14 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis_data:/data
+      - ./database_data/redis:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - prodvor-network
 
   # ---------------------------------------------------
   # Message Broker (Kafka)
@@ -71,6 +78,8 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - prodvor-network
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -84,6 +93,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    networks:
+      - prodvor-network
 
   # ---------------------------------------------------
   # Identity & API Gateway (Keycloak & Kong)
@@ -97,6 +108,8 @@ services:
     ports:
       - "8180:8080"
     restart: always
+    networks:
+      - prodvor-network
 
   kong-db:
     image: postgres:15.1-alpine
@@ -106,12 +119,14 @@ services:
       POSTGRES_PASSWORD: ${KONG_PG_PASSWORD}
       POSTGRES_DB: ${KONG_PG_DATABASE}
     volumes:
-      - kong_db_data:/var/lib/postgresql/data
+      - ./database_data/kong:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${KONG_PG_USER} -d ${KONG_PG_DATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - prodvor-network
 
   kong-migrations:
     image: kong:3.0.1-alpine
@@ -125,6 +140,8 @@ services:
       KONG_PG_USER: ${KONG_PG_USER}
       KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
     restart: on-failure
+    networks:
+      - prodvor-network
 
   kong:
     image: kong:3.0.1-alpine
@@ -150,6 +167,8 @@ services:
       - "8000:8000" # Proxy
       - "8443:8443" # SSL Proxy
       - "8001:8001" # Admin API
+    networks:
+      - prodvor-network
 
   # The King GUI service requires a Dockerfile in the project root.
   # If you have one, you can uncomment this section.
@@ -174,6 +193,8 @@ services:
         condition: service_healthy
     env_file:
       - ./.env
+    networks:
+      - prodvor-network
 
   backend:
     build:
@@ -191,6 +212,8 @@ services:
       kafka:
         condition: service_started
     command: npm run start:dev
+    networks:
+      - prodvor-network
 
   frontend:
     build:
@@ -202,9 +225,9 @@ services:
       - backend
       - kong
     command: npm run dev
+    networks:
+      - prodvor-network
 
-volumes:
-  postgres_data:
-  kong_db_data:
-  pgadmin_data:
-  redis_data:
+networks:
+  prodvor-network:
+    driver: bridge
