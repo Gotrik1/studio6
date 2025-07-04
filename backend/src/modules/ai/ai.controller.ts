@@ -49,7 +49,7 @@ import { AnalyzePlaygroundReportDto } from './dto/analyze-playground-report.dto'
 import type { AnalyzePlaygroundDetailsOutput } from '@/ai/flows/schemas/analyze-playground-details-schema';
 import type { AnalyzePlaygroundReportOutput } from '@/ai/flows/schemas/analyze-playground-report-schema';
 import { SmartSearchDto } from './dto/smart-search.dto';
-import type { SmartSearchOutput } from '@/ai/flows/schemas/smart-search-schema';
+import type { SmartSearchOutput } from '@/ai/flows/smart-search-flow';
 import { GenerateTrainingPlanDto } from './dto/generate-training-plan.dto';
 import { AnalyzePlayerPerformanceDto } from './dto/analyze-player-performance.dto';
 import type { GenerateTrainingPlanOutput } from '@/ai/flows/schemas/generate-training-plan-schema';
@@ -63,15 +63,15 @@ import type { GeneratePlaygroundLoreOutput } from '@/ai/flows/schemas/generate-p
 import { AnalyzeMatchReportDto } from './dto/analyze-match-report.dto';
 import type { AnalyzeMatchReportOutput } from '@/ai/flows/schemas/analyze-match-report-schema';
 import { GenerateMatchCommentaryDto } from './dto/generate-match-commentary.dto';
-import type { GenerateMatchCommentaryOutput } from '@/ai/flows/schemas/generate-match-commentary-schema';
 import { GenerateMatchInterviewDto } from './dto/generate-match-interview.dto';
 import type { GenerateMatchInterviewOutput } from '@/ai/flows/schemas/generate-match-interview-schema';
 import { AnalyzeHolisticPerformanceDto } from './dto/analyze-holistic-performance.dto';
 import type { AnalyzeHolisticPerformanceOutput } from '@/ai/flows/schemas/analyze-holistic-performance-schema';
 import { SuggestReplyDto } from './dto/suggest-reply.dto';
-import type { SuggestReplyOutput } from '@/ai/flows/schemas/suggest-reply-schema';
+import type { SuggestReplyOutput } from '@/ai/flows/suggest-reply-flow';
 import { SupportChatbotDto } from './dto/support-chatbot.dto';
-import type { SupportChatbotOutput } from '@/ai/flows/schemas/support-chatbot-schema';
+import type { SupportChatbotOutput } from '@/ai/flows/support-chatbot-flow';
+import type { GenerateMatchCommentaryOutput } from '@/ai/flows/generate-match-commentary-flow';
 
 @Controller('ai')
 export class AiController {
@@ -327,7 +327,7 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   async generateMatchCommentary(
     @Body() generateMatchCommentaryDto: GenerateMatchCommentaryDto,
-  ): Promise<GenerateMatchCommentaryOutput & { audioDataUri: string }> {
+  ): Promise<GenerateMatchCommentaryOutput> {
     return this.aiService.generateMatchCommentary(generateMatchCommentaryDto);
   }
 

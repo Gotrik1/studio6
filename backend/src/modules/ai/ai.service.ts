@@ -167,7 +167,7 @@ export class AiService {
     return analyzeMatchReport(input);
   }
 
-  async generateMatchCommentary(input: GenerateMatchCommentaryInput): Promise<GenerateMatchCommentaryOutput & { audioDataUri: string; }> {
+  async generateMatchCommentary(input: GenerateMatchCommentaryInput): Promise<GenerateMatchCommentaryOutput> {
     return generateMatchCommentary(input);
   }
 
