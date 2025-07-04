@@ -1,13 +1,18 @@
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Team } from '@prisma/client';
 import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class TeamsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   async create(createTeamDto: CreateTeamDto): Promise<Team> {
     const { name, captainId, game, motto, description, logo, dataAiHint } = createTeamDto;
@@ -114,8 +119,13 @@ export class TeamsService {
   }
   
   async getLeaderboard(): Promise<LeaderboardTeamDto[]> {
-    // Используем $queryRaw для сложных запросов, когда Prisma API недостаточно.
-    // Это безопасный способ выполнять сырые SQL-запросы.
+    const cacheKey = 'leaderboard_teams';
+    const cachedLeaderboard = await this.cacheManager.get<LeaderboardTeamDto[]>(cacheKey);
+
+    if (cachedLeaderboard) {
+      return cachedLeaderboard;
+    }
+
     const result: LeaderboardTeamDto[] = await this.prisma.$queryRaw`
         SELECT
             id,
@@ -132,6 +142,8 @@ export class TeamsService {
         ORDER BY wins DESC, losses ASC
         LIMIT 10
     `;
+    
+    await this.cacheManager.set(cacheKey, result); // TTL is set globally in CacheModule
     return result;
   }
 

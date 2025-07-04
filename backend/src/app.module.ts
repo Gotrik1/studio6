@@ -11,9 +11,11 @@ import { AiModule } from './modules/ai/ai.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { CacheModule } from './modules/cache/cache.module';
 
 @Module({
   imports: [
+    CacheModule,
     PrismaModule,
     UsersModule,
     TeamsModule,
