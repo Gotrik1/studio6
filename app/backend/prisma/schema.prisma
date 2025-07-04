@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String       @id @default(uuid())
+  email           String       @unique
+  name            String
+  passwordHash    String
+  role            String
+  avatar          String?
+  status          String       @default("Активен")
+  xp              Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  teams           Team[]       @relation("TeamMembers")
+  captainedTeams  Team[]       @relation("TeamCaptain")
+  MatchResult     MatchResult?
+  dateOfBirth     DateTime?
+  location        String?
+  mainSport       String?
+  isVerified      Boolean      @default(false)
+  preferredSports String[]
+  telegram        String?
+  discord         String?
+}
+
+model Team {
+  id              String       @id @default(uuid())
+  name            String       @unique
+  slug            String       @unique
+  motto           String?
+  description     String?
+  logo            String?
+  dataAiHint      String?
+  game            String
+  rank            Int          @default(0)
+  homePlaygroundId String?
+  captain         User         @relation("TeamCaptain", fields: [captainId], references: [id])
+  captainId       String
+  members         User[]       @relation("TeamMembers")
+  tournaments     Tournament[] @relation("TeamTournaments")
+  matchesAsTeam1  Match[]      @relation("Team1Matches")
+  matchesAsTeam2  Match[]      @relation("Team2Matches")
+  wins            Int          @default(0)
+  losses          Int          @default(0)
+  draws           Int          @default(0)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model Tournament {
+  id              String    @id @default(uuid())
+  name            String
+  slug            String    @unique
+  game            String
+  format          String // e.g., 'single_elimination', 'round_robin'
+  prizePool       Float
+  startDate       DateTime
+  status          TournamentStatus @default(REGISTRATION)
+  teams           Team[]    @relation("TeamTournaments")
+  matches         Match[]
+  bannerImage     String?
+  bannerImageHint String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Match {
+  id           String      @id @default(uuid())
+  team1        Team        @relation("Team1Matches", fields: [team1Id], references: [id])
+  team1Id      String
+  team2        Team        @relation("Team2Matches", fields: [team2Id], references: [id])
+  team2Id      String
+  team1Score   Int?
+  team2Score   Int?
+  status       MatchStatus
+  scheduledAt  DateTime
+  finishedAt   DateTime?
+  tournament   Tournament? @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
+  location     String?
+  refereeName  String?
+  results      MatchResult[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MatchResult {
+  id          String   @id @default(uuid())
+  match       Match    @relation(fields: [matchId], references: [id])
+  matchId     String
+  reportedBy  User     @relation(fields: [reportedById], references: [id])
+  reportedById String   @unique
+  team1Score  Int
+  team2Score  Int
+  evidence    String?
+  status      String   @default("pending") // pending, confirmed, disputed
+  createdAt   DateTime @default(now())
+}
+
+enum TournamentStatus {
+  REGISTRATION
+  ONGOING
+  FINISHED
+  CANCELLED
+}
+
+enum MatchStatus {
+  PLANNED
+  LIVE
+  FINISHED
+  DISPUTED
+  CANCELLED
+}
