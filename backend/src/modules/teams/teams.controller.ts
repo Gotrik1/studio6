@@ -4,7 +4,9 @@ import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { JoinTeamDto } from './dto/join-team.dto';
 import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Teams')
 @Controller('teams')
 export class TeamsController {
   constructor(private readonly teamsService: TeamsService) {}

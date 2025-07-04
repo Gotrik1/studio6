@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import * as path from 'path';
 import { JsonLogger } from './common/services/json-logger.service';
 import type { LogLevel } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 // Load environment variables from the root .env file
 config({ path: path.resolve(__dirname, '../../.env') });
@@ -13,9 +14,21 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: logger,
   });
+  
+  // Swagger Configuration
+  const config = new DocumentBuilder()
+    .setTitle('ProDvor API')
+    .setDescription('API documentation for the ProDvor platform')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api-docs', app, document);
+
 
   await app.listen(3001);
 
   logger.log(`Application is running on: ${await app.getUrl()}`, 'Bootstrap');
+  logger.log(`Swagger docs available at: ${await app.getUrl()}/api-docs`, 'Bootstrap');
 }
 bootstrap();

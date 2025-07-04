@@ -1,5 +1,6 @@
 
 import { Controller, Post, Body, HttpCode, HttpStatus, Get } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AiService } from './ai.service';
 import { GenerateTeamConceptDto } from './dto/generate-team-concept.dto';
 import type { GenerateTeamConceptOutput } from '../../ai/flows/schemas/generate-team-concept-schema';
@@ -63,6 +64,7 @@ import type { GeneratePlaygroundLoreOutput } from '@/ai/flows/schemas/generate-p
 import { AnalyzeMatchReportDto } from './dto/analyze-match-report.dto';
 import type { AnalyzeMatchReportOutput } from '@/ai/flows/schemas/analyze-match-report-schema';
 import { GenerateMatchCommentaryDto } from './dto/generate-match-commentary.dto';
+import type { GenerateMatchCommentaryOutput } from '@/ai/flows/generate-match-commentary-flow';
 import { GenerateMatchInterviewDto } from './dto/generate-match-interview.dto';
 import type { GenerateMatchInterviewOutput } from '@/ai/flows/schemas/generate-match-interview-schema';
 import { AnalyzeHolisticPerformanceDto } from './dto/analyze-holistic-performance.dto';
@@ -71,7 +73,6 @@ import { SuggestReplyDto } from './dto/suggest-reply.dto';
 import type { SuggestReplyOutput } from '@/ai/flows/suggest-reply-flow';
 import { SupportChatbotDto } from './dto/support-chatbot.dto';
 import type { SupportChatbotOutput } from '@/ai/flows/support-chatbot-flow';
-import type { GenerateMatchCommentaryOutput } from '@/ai/flows/generate-match-commentary-flow';
 import { CreateTeamDto } from './dto/create-team.dto';
 import type { CreateTeamOutput } from '@/ai/flows/schemas/create-team-schema';
 import { GenerateTeamAvatarDto } from './dto/generate-team-avatar.dto';
@@ -81,6 +82,7 @@ import type { GeneratePromotionDetailsOutput } from '@/ai/flows/schemas/generate
 import { GeneratePromotionImageDto } from './dto/generate-promotion-image.dto';
 import type { GeneratePromotionImageOutput } from '@/ai/flows/schemas/generate-promotion-image-schema';
 
+@ApiTags('AI')
 @Controller('ai')
 export class AiController {
   constructor(private readonly aiService: AiService) {}
@@ -118,6 +120,9 @@ export class AiController {
   }
 
   @Post('generate-user-avatar')
+  @ApiOperation({ summary: 'Generate a user avatar image' })
+  @ApiResponse({ status: 200, description: 'Successfully generated avatar.' })
+  @ApiBody({ type: GenerateUserAvatarDto })
   @HttpCode(HttpStatus.OK)
   async generateUserAvatar(
     @Body() generateUserAvatarDto: GenerateUserAvatarDto,
