@@ -1,4 +1,3 @@
-
 import { z } from 'zod';
 
 export const GenerateTeamAvatarInputSchema = z.object({

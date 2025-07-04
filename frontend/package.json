@@ -4,8 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "node ./start-next.js",
-    "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
-    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
+    "genkit:watch": "echo 'Genkit is now managed by the backend. Run it from the /backend directory.'",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
@@ -67,7 +66,6 @@
     "@types/wav": "^1.0.4",
     "eslint": "^9.30.0",
     "eslint-config-next": "15.3.4",
-    "genkit-cli": "^1.13.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
