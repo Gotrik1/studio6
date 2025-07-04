@@ -1,9 +1,8 @@
 
-import { Injectable, ConflictException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
 import { differenceInYears } from 'date-fns';
 
 @Injectable()
@@ -52,43 +51,33 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<any | null> {
-      // For demo purposes, we will return a rich profile for a specific ID,
-      // as if it were fetched from a fully populated database.
-      if (id === 'player-example-001') {
-          const mockUser = {
-              id: 'player-example-001',
-              name: 'Пример Игрока',
-              email: 'player.example@example.com',
-              role: 'Игрок',
-              avatar: 'https://placehold.co/100x100.png',
-              status: 'Активен',
-              xp: 1250,
-              location: "Москва, Россия",
-              mainSport: "Футбол",
-              isVerified: true, // mock
-              dateOfBirth: '1998-05-15',
-              preferredSports: ["Футбол", "Баскетбол", "Valorant"],
-              contacts: {
-                  telegram: '@player_example',
-                  discord: 'player#1234'
-              }
-          };
-          return {
-              ...mockUser,
-              age: differenceInYears(new Date(), new Date(mockUser.dateOfBirth)),
-          };
-      }
-    
       const user = await this.prisma.user.findUnique({
         where: { id },
       });
 
       if (!user) {
-        return null;
+        throw new NotFoundException(`Пользователь с ID ${id} не найден`);
       }
+      
+      // Augment real user data with mock details for a richer profile experience
+      const dateOfBirth = user.dateOfBirth ? user.dateOfBirth.toISOString().split('T')[0] : '1998-05-15';
+
+      const augmentedProfile = {
+        ...user,
+        location: user.location || "Москва, Россия",
+        mainSport: user.mainSport || "Футбол",
+        isVerified: user.isVerified || true,
+        dateOfBirth: dateOfBirth,
+        age: differenceInYears(new Date(), new Date(dateOfBirth)),
+        preferredSports: user.preferredSports?.length ? user.preferredSports : ["Футбол", "Баскетбол", "Valorant"],
+        contacts: {
+            telegram: user.telegram || '@player_example',
+            discord: user.discord || 'player#1234'
+        }
+      };
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { passwordHash, ...result } = user;
+      const { passwordHash, ...result } = augmentedProfile;
       return result;
   }
 
