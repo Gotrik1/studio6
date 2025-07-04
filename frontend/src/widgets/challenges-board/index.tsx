@@ -2,25 +2,19 @@
 
 import { useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
-import type { Challenge } from '@/shared/lib/mock-data/challenges';
+import type { Challenge } from '@/entities/challenge/model/types';
 import type { User } from '@/shared/lib/types';
 import { ChallengeCard } from '@/widgets/challenge-card';
 
 interface ChallengesBoardProps {
-    challenges: Challenge[];
+    openChallenges: Challenge[];
+    myChallenges: Challenge[];
+    history: Challenge[];
     onAccept: (challengeId: string) => void;
     currentUser: User | null;
 }
 
-export function ChallengesBoard({ challenges, onAccept, currentUser }: ChallengesBoardProps) {
-    const openChallenges = useMemo(() => challenges.filter(c => c.status === 'open'), [challenges]);
-    
-    const myChallenges = useMemo(() => challenges.filter(c => 
-        (c.creator.name === currentUser?.name) ||
-        (c.opponent && c.opponent.name === currentUser?.name)
-    ), [challenges, currentUser]);
-    
-    const history = useMemo(() => challenges.filter(c => c.status === 'completed'), [challenges]);
+export function ChallengesBoard({ openChallenges, myChallenges, history, onAccept, currentUser }: ChallengesBoardProps) {
 
     return (
         <Tabs defaultValue="open">
@@ -32,7 +26,7 @@ export function ChallengesBoard({ challenges, onAccept, currentUser }: Challenge
             <TabsContent value="open" className="mt-4">
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {openChallenges.length > 0 ? openChallenges.map(c => (
-                        <ChallengeCard key={c.id} challenge={c} onAccept={onAccept} isAcceptable={c.creator.name !== currentUser?.name} />
+                        <ChallengeCard key={c.id} challenge={c} onAccept={onAccept} isAcceptable={c.creator.id !== currentUser?.id} />
                     )) : <p className="col-span-full text-center text-muted-foreground py-8">Нет открытых вызовов. Создайте свой!</p>}
                 </div>
             </TabsContent>

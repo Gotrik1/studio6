@@ -1,46 +1,74 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/button';
 import { PlusCircle, Target } from 'lucide-react';
-import { challengesList as initialChallenges } from '@/shared/lib/mock-data/challenges';
 import { ChallengesBoard } from '@/widgets/challenges-board';
 import { ChallengeCreateDialog } from '@/widgets/challenge-create-dialog';
-import type { Challenge } from '@/shared/lib/mock-data/challenges';
+import type { Challenge } from '@/entities/challenge/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useSession } from '@/shared/lib/session/client';
+import { createChallenge, getChallenges, acceptChallenge } from '@/entities/challenge/api/challenges';
+import { Skeleton } from '@/shared/ui/skeleton';
+
+type FormValues = Omit<Challenge, 'id' | 'creator' | 'status' | 'opponent' | 'result'>;
 
 export function ChallengesPage() {
     const { user } = useSession();
     const { toast } = useToast();
-    const [challenges, setChallenges] = useState(initialChallenges);
+    
+    const [challenges, setChallenges] = useState<Challenge[]>([]);
+    const [myChallenges, setMyChallenges] = useState<Challenge[]>([]);
+    const [history, setHistory] = useState<Challenge[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
     const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-    const handleCreateChallenge = (data: Omit<Challenge, 'id' | 'creator' | 'status'>) => {
-        if (!user) return;
-        const newChallenge: Challenge = {
-            id: `challenge-${Date.now()}`,
-            creator: {
-                name: user.name,
-                avatar: user.avatar,
-                avatarHint: 'user avatar'
-            },
-            status: 'open',
-            ...data
-        };
-        setChallenges(prev => [newChallenge, ...prev]);
-        toast({ title: 'Вызов брошен!', description: 'Ваш вызов опубликован и виден другим игрокам.' });
+    const fetchAllChallenges = async () => {
+        setIsLoading(true);
+        try {
+            const [openData, myData, historyData] = await Promise.all([
+                getChallenges('open'),
+                getChallenges('my'),
+                getChallenges('history'),
+            ]);
+            setChallenges(openData);
+            setMyChallenges(myData);
+            setHistory(historyData);
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить вызовы.' });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
-    const handleAcceptChallenge = (challengeId: string) => {
+    useEffect(() => {
+        if(user) {
+            fetchAllChallenges();
+        }
+    }, [user]);
+
+    const handleCreateChallenge = async (data: FormValues) => {
+        try {
+            await createChallenge(data);
+            toast({ title: 'Вызов брошен!', description: 'Ваш вызов опубликован и виден другим игрокам.' });
+            fetchAllChallenges(); // Refresh all lists
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось создать вызов.' });
+        }
+    };
+
+    const handleAcceptChallenge = async (challengeId: string) => {
         if (!user) return;
-        setChallenges(prev => prev.map(c => 
-            c.id === challengeId 
-                ? { ...c, status: 'in_progress' as const, opponent: { name: user.name, avatar: user.avatar, avatarHint: 'user avatar' } } 
-                : c
-        ));
-        const challenge = challenges.find(c => c.id === challengeId);
-        toast({ title: 'Вызов принят!', description: `Вы приняли вызов от ${challenge?.creator.name}.` });
+        try {
+            await acceptChallenge(challengeId);
+            const challenge = challenges.find(c => c.id === challengeId);
+            toast({ title: 'Вызов принят!', description: `Вы приняли вызов от ${challenge?.creator.name}.` });
+            fetchAllChallenges(); // Refresh all lists
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось принять вызов.' });
+        }
     };
 
     return (
@@ -61,7 +89,21 @@ export function ChallengesPage() {
                         Бросить вызов
                     </Button>
                 </div>
-                <ChallengesBoard challenges={challenges} onAccept={handleAcceptChallenge} currentUser={user} />
+                {isLoading ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <Skeleton className="h-64 w-full" />
+                        <Skeleton className="h-64 w-full" />
+                        <Skeleton className="h-64 w-full" />
+                    </div>
+                ) : (
+                    <ChallengesBoard
+                        openChallenges={challenges}
+                        myChallenges={myChallenges}
+                        history={history}
+                        onAccept={handleAcceptChallenge}
+                        currentUser={user}
+                    />
+                )}
             </div>
             <ChallengeCreateDialog isOpen={isCreateOpen} onOpenChange={setIsCreateOpen} onCreate={handleCreateChallenge} />
         </>

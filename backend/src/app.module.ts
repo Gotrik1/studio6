@@ -11,6 +11,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { CacheModule } from './modules/cache/cache.module';
+import { ChallengesModule } from './modules/challenges/challenges.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { CacheModule } from './modules/cache/cache.module';
     MatchesModule,
     AiModule,
     AuthModule,
+    ChallengesModule,
   ],
   controllers: [AppController],
   providers: [

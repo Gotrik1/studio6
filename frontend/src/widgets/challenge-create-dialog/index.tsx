@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { sportsList } from '@/shared/lib/mock-data/sports';
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import type { Challenge } from '@/shared/lib/mock-data/challenges';
+import type { Challenge } from '@/entities/challenge/model/types';
 
 const challengeSchema = z.object({
   title: z.string().min(5, 'Название должно быть не менее 5 символов.').max(50, 'Название слишком длинное.'),
@@ -21,12 +21,12 @@ const challengeSchema = z.object({
   wager: z.coerce.number().min(0, "Ставка не может быть отрицательной.").max(10000, "Слишком большая ставка."),
 });
 
-type FormValues = Omit<Challenge, 'id' | 'creator' | 'status'>;
+type FormValues = Omit<Challenge, 'id' | 'creator' | 'status' | 'opponent' | 'result'>;
 
 interface ChallengeCreateDialogProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
-    onCreate: (data: FormValues) => void;
+    onCreate: (data: FormValues) => Promise<void>;
 }
 
 export function ChallengeCreateDialog({ isOpen, onOpenChange, onCreate }: ChallengeCreateDialogProps) {
@@ -35,18 +35,24 @@ export function ChallengeCreateDialog({ isOpen, onOpenChange, onCreate }: Challe
     const form = useForm<FormValues>({
         resolver: zodResolver(challengeSchema),
         defaultValues: {
-            wager: 0
+            wager: 0,
+            title: '',
+            description: '',
+            discipline: undefined,
         },
     });
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
-        setTimeout(() => {
-            onCreate(data);
-            setIsSubmitting(false);
+        try {
+            await onCreate(data);
             onOpenChange(false);
             form.reset({ wager: 0, title: '', description: '', discipline: '' });
-        }, 1000);
+        } catch (error) {
+            // Toast is handled in the parent component
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (

@@ -5,7 +5,7 @@ import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Coins, Swords, Check, User, Trophy } from 'lucide-react';
-import type { Challenge } from '@/shared/lib/mock-data/challenges';
+import type { Challenge } from '@/entities/challenge/model/types';
 import { cn } from '@/shared/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 
@@ -15,10 +15,11 @@ interface ChallengeCardProps {
     isAcceptable?: boolean;
 }
 
-const statusInfo = {
-    open: { label: 'Открыт', color: 'bg-green-500' },
-    in_progress: { label: 'Идёт', color: 'bg-blue-500' },
-    completed: { label: 'Завершен', color: 'bg-muted-foreground' }
+const statusInfo: Record<Challenge['status'], { label: string; color: string }> = {
+    OPEN: { label: 'Открыт', color: 'bg-green-500' },
+    IN_PROGRESS: { label: 'Идёт', color: 'bg-blue-500' },
+    COMPLETED: { label: 'Завершен', color: 'bg-muted-foreground' },
+    CANCELLED: { label: 'Отменен', color: 'bg-red-500' },
 };
 
 export function ChallengeCard({ challenge, onAccept, isAcceptable = false }: ChallengeCardProps) {
@@ -33,7 +34,7 @@ export function ChallengeCard({ challenge, onAccept, isAcceptable = false }: Cha
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Avatar className="h-6 w-6">
-                        <AvatarImage src={challenge.creator.avatar} data-ai-hint={challenge.creator.avatarHint} />
+                        <AvatarImage src={challenge.creator.avatar || ''} data-ai-hint={challenge.creator.avatarHint} />
                         <AvatarFallback>{challenge.creator.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <span>Автор: {challenge.creator.name}</span>
@@ -42,7 +43,7 @@ export function ChallengeCard({ challenge, onAccept, isAcceptable = false }: Cha
             <CardContent className="flex-1">
                 <p className="text-sm text-muted-foreground">{challenge.description}</p>
                 
-                {challenge.status === 'in_progress' && challenge.opponent && (
+                {challenge.status === 'IN_PROGRESS' && challenge.opponent && (
                     <div className="mt-4 p-2 bg-muted/50 rounded-md flex items-center justify-center gap-4 text-sm">
                         <div className="flex items-center gap-1.5 font-semibold">
                             <User className="h-4 w-4"/> {challenge.creator.name}
@@ -53,7 +54,7 @@ export function ChallengeCard({ challenge, onAccept, isAcceptable = false }: Cha
                         </div>
                     </div>
                 )}
-                 {challenge.status === 'completed' && challenge.result && (
+                 {challenge.status === 'COMPLETED' && challenge.result && (
                     <div className="mt-4 p-2 bg-muted/50 rounded-md flex items-center justify-center gap-2 text-sm font-semibold">
                          <Trophy className="h-4 w-4 text-amber-500"/> {challenge.result}
                     </div>
@@ -64,7 +65,7 @@ export function ChallengeCard({ challenge, onAccept, isAcceptable = false }: Cha
                     <Coins className="h-5 w-5 text-amber-400" />
                     <span>{challenge.wager} PD</span>
                 </div>
-                {challenge.status === 'open' ? (
+                {challenge.status === 'OPEN' ? (
                     isAcceptable ? (
                         <Button onClick={() => onAccept?.(challenge.id)}>
                             <Check className="mr-2 h-4 w-4" />
