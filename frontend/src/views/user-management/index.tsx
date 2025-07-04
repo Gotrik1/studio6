@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useTransition } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
@@ -22,7 +22,7 @@ import {
 import { Button, buttonVariants } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getUsers } from '@/entities/user/api/get-users';
+import { getUsers } from '@/entities/user/api/get-user';
 import type { User } from '@/shared/lib/types';
 
 
@@ -52,6 +52,7 @@ export function UserManagementPage() {
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const [userToAction, setUserToAction] = useState<User | null>(null);
     const [actionType, setActionType] = useState<'ban' | 'unban' | null>(null);
+    const [isActionPending, startTransition] = useTransition();
 
      const fetchUsers = useCallback(async () => {
         setLoading(true);
@@ -72,7 +73,8 @@ export function UserManagementPage() {
 
     const filteredUsers = useMemo(() => {
         return users.filter(user => {
-            const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) || user.email.toLowerCase().includes(searchQuery.toLowerCase());
+            if (!user) return false;
+            const matchesSearch = user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || user.email?.toLowerCase().includes(searchQuery.toLowerCase());
             const matchesRole = roleFilter === 'Все роли' || user.role === roleFilter;
             const matchesStatus = statusFilter === 'Все статусы' || user.status === statusFilter;
             return matchesSearch && matchesRole && matchesStatus;
@@ -100,19 +102,21 @@ export function UserManagementPage() {
     const handleConfirmAction = () => {
         if (!userToAction || !actionType) return;
 
-        const newStatus = actionType === 'ban' ? 'Забанен' : 'Активен';
-        setUsers(prev => prev.map(u => u.id === userToAction.id ? { ...u, status: newStatus } : u));
-        
-        // In a real app, we'd await an API call here.
-        // For now, optimistic update is shown.
-        toast({
-            title: `Статус пользователя ${userToAction.name} изменен на "${newStatus}".`,
-            variant: actionType === 'unban' ? 'default' : 'destructive'
+        startTransition(() => {
+            // In a real app, this would be an API call.
+            // For now, we optimistically update the state.
+            const newStatus = actionType === 'ban' ? 'Забанен' : 'Активен';
+            setUsers(prev => prev.map(u => u.id === userToAction.id ? { ...u, status: newStatus } : u));
+            
+            toast({
+                title: `Статус пользователя ${userToAction.name} изменен на "${newStatus}".`,
+                variant: actionType === 'unban' ? 'default' : 'destructive'
+            });
+            
+            setIsAlertOpen(false);
+            setUserToAction(null);
+            setActionType(null);
         });
-        
-        setIsAlertOpen(false);
-        setUserToAction(null);
-        setActionType(null);
     };
     
     const handleEditUser = (user: User) => {
@@ -121,6 +125,7 @@ export function UserManagementPage() {
     };
 
     const handleUserUpdate = (userId: string, newRole: string) => {
+        // Optimistic update
         setUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
         toast({ title: 'Пользователь обновлен', description: 'Роль пользователя была успешно изменена.' });
     };
@@ -251,7 +256,9 @@ export function UserManagementPage() {
                         className={cn(
                             actionType === 'ban' ? buttonVariants({ variant: 'destructive' }) : 'bg-green-600 hover:bg-green-700 text-primary-foreground'
                         )}
+                        disabled={isActionPending}
                     >
+                         {isActionPending && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                         {actionType === 'ban' ? 'Да, забанить' : 'Да, разбанить'}
                     </Button>
                     </AlertDialogFooter>

@@ -5,6 +5,7 @@ import type { User } from '@/shared/lib/types';
 import { achievements } from "@/shared/lib/mock-data/profiles";
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 import type { UserTeam, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
 // Define the rich user profile type that the frontend expects
 export type PlayerProfileData = User & {
@@ -80,4 +81,13 @@ export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | 
         console.error(`Error fetching user profile for ${id}:`, error);
         return null;
     }
+}
+
+export async function getUsers(): Promise<User[]> {
+    const result = await fetchWithAuth('/users');
+    if (result.success) {
+        return result.data;
+    }
+    console.error('Failed to fetch users:', result.error);
+    return [];
 }
