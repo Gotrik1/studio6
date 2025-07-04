@@ -23,6 +23,7 @@ export function AiCoachTip() {
         if (!user) return;
         setIsLoading(true);
         setError(null);
+        setTip(null);
         try {
             // Find the last completed workout
             const lastWorkout = [...trainingLogData]

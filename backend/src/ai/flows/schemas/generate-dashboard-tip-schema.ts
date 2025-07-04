@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const GenerateDashboardTipInputSchema = z.object({
-  userName: z.string().describe('The name of the user.'),
+  userName: z.string().describe('The name of the new user.'),
   lastActivity: z
     .string()
     .describe(

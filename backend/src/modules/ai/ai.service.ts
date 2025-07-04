@@ -40,6 +40,7 @@ import { createTeam, type CreateTeamInput, type CreateTeamOutput } from '@/ai/fl
 import { generateTeamAvatar, type GenerateTeamAvatarOutput } from '@/ai/flows/generate-team-avatar-flow';
 import { generatePromotionDetails, type GeneratePromotionDetailsInput, type GeneratePromotionDetailsOutput } from '@/ai/flows/generate-promotion-details-flow';
 import { generatePromotionImage, type GeneratePromotionImageOutput } from '@/ai/flows/generate-promotion-image-flow';
+import { generateDashboardTip, type GenerateDashboardTipInput, type GenerateDashboardTipOutput } from '@/ai/flows/generate-dashboard-tip-flow';
 
 
 @Injectable()
@@ -202,5 +203,9 @@ export class AiService {
 
   async askSupportChatbot(query: SupportChatbotInput): Promise<SupportChatbotOutput> {
     return askSupportChatbot(query);
+  }
+
+  async generateDashboardTip(input: GenerateDashboardTipInput): Promise<GenerateDashboardTipOutput> {
+    return generateDashboardTip(input);
   }
 }

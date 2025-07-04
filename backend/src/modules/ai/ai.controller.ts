@@ -81,6 +81,8 @@ import { GeneratePromotionDetailsDto } from './dto/generate-promotion-details.dt
 import type { GeneratePromotionDetailsOutput } from '@/ai/flows/schemas/generate-promotion-details-schema';
 import { GeneratePromotionImageDto } from './dto/generate-promotion-image.dto';
 import type { GeneratePromotionImageOutput } from '@/ai/flows/schemas/generate-promotion-image-schema';
+import { GenerateDashboardTipDto } from './dto/generate-dashboard-tip.dto';
+import type { GenerateDashboardTipOutput } from '@/ai/flows/schemas/generate-dashboard-tip-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -398,5 +400,13 @@ export class AiController {
     @Body() supportChatbotDto: SupportChatbotDto,
   ): Promise<SupportChatbotOutput> {
     return this.aiService.askSupportChatbot(supportChatbotDto.query);
+  }
+  
+  @Post('generate-dashboard-tip')
+  @HttpCode(HttpStatus.OK)
+  async generateDashboardTip(
+    @Body() generateDashboardTipDto: GenerateDashboardTipDto,
+  ): Promise<GenerateDashboardTipOutput> {
+    return this.aiService.generateDashboardTip(generateDashboardTipDto);
   }
 }

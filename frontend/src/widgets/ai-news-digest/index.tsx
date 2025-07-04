@@ -9,17 +9,7 @@ import { Bot, AlertCircle, RefreshCw, Volume2 } from 'lucide-react';
 import Link from 'next/link';
 import { Badge } from '@/shared/ui/badge';
 import { cn } from '@/shared/lib/utils';
-import type { NewsWithAudio } from '@/shared/api/genkit/flows/schemas/generate-platform-news-schema';
-
-async function fetchDashboardNews(): Promise<NewsWithAudio> {
-    const response = await fetch('/api/ai/dashboard-news', {
-        cache: 'no-store'
-    });
-    if (!response.ok) {
-        throw new Error('Failed to fetch dashboard news');
-    }
-    return response.json();
-}
+import { getDashboardNews, type NewsWithAudio } from '@/shared/api/genkit/flows/generate-platform-news-flow';
 
 
 export function AiNewsDigest() {
@@ -32,7 +22,7 @@ export function AiNewsDigest() {
         setError(null);
         setData(null);
         try {
-            const newsData = await fetchDashboardNews();
+            const newsData = await getDashboardNews();
             setData(newsData);
         } catch (e) {
             console.error('Failed to fetch AI news:', e);
