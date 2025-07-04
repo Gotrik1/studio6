@@ -5,7 +5,7 @@ import type { Tournament } from '@/entities/tournament/model/types';
 
 export async function fetchTournaments(): Promise<Tournament[]> {
   try {
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:3001'}/tournaments`, {
+    const response = await fetch(`/api/tournaments`, {
       cache: 'no-store', // Disable caching for development
     });
 

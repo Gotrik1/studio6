@@ -20,7 +20,7 @@ export async function generateTeamConcept(input: GenerateTeamConceptInput): Prom
     throw new Error('Invalid input for generating team concept.');
   }
 
-  const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:3001'}/ai/generate-team-concept`, {
+  const response = await fetch(`/api/ai/generate-team-concept`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

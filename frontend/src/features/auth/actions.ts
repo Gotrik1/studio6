@@ -18,7 +18,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
 
   let user;
   try {
-    const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:3001'}/auth/login`, {
+    const response = await fetch(`/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -58,7 +58,7 @@ export async function register(values: z.infer<typeof registerSchema>) {
     const { name, email, password, role } = validatedFields.data;
 
     try {
-        const response = await fetch(`${process.env.BACKEND_URL || 'http://localhost:3001'}/users`, {
+        const response = await fetch(`/api/users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

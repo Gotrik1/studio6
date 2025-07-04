@@ -28,7 +28,7 @@ export async function generateUserAvatar(
   }
 
   const response = await fetch(
-    `${process.env.BACKEND_URL || 'http://localhost:3001'}/ai/generate-user-avatar`,
+    `/api/ai/generate-user-avatar`,
     {
       method: 'POST',
       headers: {
