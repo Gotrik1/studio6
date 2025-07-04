@@ -21,6 +21,7 @@ import { generateSocialMediaPost, type GenerateSocialMediaPostInput, type Genera
 import { generateSponsorshipPitch, type GenerateSponsorshipPitchInput, type GenerateSponsorshipPitchOutput } from '@/ai/flows/generate-sponsorship-pitch';
 import { sponsorshipScout, type SponsorshipScoutOutput } from '@/ai/flows/sponsorship-scout-flow';
 import { generatePromotionWizard, type GeneratePromotionWizardInput, type GeneratePromotionWizardOutput } from '@/ai/flows/generate-promotion-wizard-flow';
+import { generateTournamentWizard, type GenerateTournamentWizardInput, type GenerateTournamentWizardOutput } from '@/ai/flows/generate-tournament-wizard-flow';
 import { aiTeamAssistant, type AiTeamAssistantInput, type AiTeamAssistantOutput } from '@/ai/flows/ai-team-assistant-flow';
 import { findSponsorsForTeam, type FindSponsorsForTeamInput, type FindSponsorsForTeamOutput } from '@/ai/flows/find-sponsors-for-team-flow';
 import { generatePostImage_Backend, type GeneratePostImageInput, type GeneratePostImageOutput } from '@/ai/flows/generate-post-image-flow';
@@ -98,6 +99,10 @@ export class AiService {
 
   async generatePromotionWizard(input: GeneratePromotionWizardInput): Promise<GeneratePromotionWizardOutput> {
     return generatePromotionWizard(input);
+  }
+
+  async generateTournamentWizard(input: GenerateTournamentWizardInput): Promise<GenerateTournamentWizardOutput> {
+    return generateTournamentWizard(input);
   }
 
   async aiTeamAssistant(input: AiTeamAssistantInput): Promise<AiTeamAssistantOutput> {

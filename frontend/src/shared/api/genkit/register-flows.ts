@@ -10,12 +10,11 @@
 // import './flows/multi-speaker-tts-flow'; // Moved to backend
 // import './flows/generate-post-image-flow'; // Moved to backend
 // import './flows/analyze-dispute-flow'; // Moved to backend
-import './flows/generate-tournament-details-flow';
-import './flows/generate-tournament-image-flow';
+// import './flows/generate-tournament-details-flow'; // Moved to backend
+// import './flows/generate-tournament-image-flow'; // Moved to backend
 import './flows/smart-search-flow';
 import './flows/suggest-reply-flow';
-// import './flows/analyze-join-request-flow'; // Moved to backend
-import './flows/generate-tournament-wizard-flow';
+// import './flows/generate-tournament-wizard-flow'; // Moved to backend
 import './flows/analyze-match-challenge-flow';
 import './flows/analyze-match-report-flow';
 import './flows/support-chatbot-flow';

@@ -8,19 +8,19 @@
  * - GenerateTournamentImageOutput - The return type for the function.
  */
 
-import { ai } from '@/shared/api/genkit';
+import { ai } from '../genkit';
 import { GenerateTournamentImageInputSchema, GenerateTournamentImageOutputSchema } from './schemas/generate-tournament-image-schema';
 import type { GenerateTournamentImageInput, GenerateTournamentImageOutput } from './schemas/generate-tournament-image-schema';
 
 export type { GenerateTournamentImageInput, GenerateTournamentImageOutput };
 
 export async function generateTournamentImage(prompt: GenerateTournamentImageInput): Promise<GenerateTournamentImageOutput> {
-  return generateTournamentImageFlow(prompt);
+  return generateTournamentImageFlow_Backend(prompt);
 }
 
-const generateTournamentImageFlow = ai.defineFlow(
+const generateTournamentImageFlow_Backend = ai.defineFlow(
   {
-    name: 'generateTournamentImageFlow',
+    name: 'generateTournamentImageFlow_Backend',
     inputSchema: GenerateTournamentImageInputSchema,
     outputSchema: GenerateTournamentImageOutputSchema,
   },

@@ -7,6 +7,6 @@ export type GenerateTournamentDetailsInput = z.infer<typeof GenerateTournamentDe
 
 export const GenerateTournamentDetailsOutputSchema = z.object({
   name: z.string().describe('A creative and exciting name for the tournament.'),
-  description: z.string().describe('A short, exciting description for the tournament announcement.'),
+  description: z.string().describe('A short, punchy description for the tournament announcement.'),
 });
 export type GenerateTournamentDetailsOutput = z.infer<typeof GenerateTournamentDetailsOutputSchema>;

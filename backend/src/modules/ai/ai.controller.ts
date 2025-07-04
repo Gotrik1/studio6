@@ -39,9 +39,11 @@ import type { GeneratePromotionWizardOutput } from '@/ai/flows/schemas/generate-
 import { AiTeamAssistantDto } from './dto/ai-team-assistant.dto';
 import { FindSponsorsForTeamDto } from './dto/find-sponsors-for-team.dto';
 import { GeneratePostImageDto } from './dto/generate-post-image.dto';
+import { GenerateTournamentWizardDto } from './dto/generate-tournament-wizard.dto';
 import type { AiTeamAssistantOutput } from '@/ai/flows/schemas/ai-team-assistant-schema';
 import type { FindSponsorsForTeamOutput } from '@/ai/flows/schemas/find-sponsors-for-team-schema';
 import type { GeneratePostImageOutput } from '@/ai/flows/schemas/generate-post-image-schema';
+import type { GenerateTournamentWizardOutput } from '@/ai/flows/schemas/generate-tournament-wizard-schema';
 
 @Controller('ai')
 export class AiController {
@@ -187,6 +189,14 @@ export class AiController {
     @Body() generatePromotionWizardDto: GeneratePromotionWizardDto,
   ): Promise<GeneratePromotionWizardOutput> {
     return this.aiService.generatePromotionWizard(generatePromotionWizardDto);
+  }
+
+  @Post('generate-tournament-wizard')
+  @HttpCode(HttpStatus.OK)
+  async generateTournamentWizard(
+    @Body() generateTournamentWizardDto: GenerateTournamentWizardDto,
+  ): Promise<GenerateTournamentWizardOutput> {
+    return this.aiService.generateTournamentWizard(generateTournamentWizardDto);
   }
 
   @Post('ai-team-assistant')
