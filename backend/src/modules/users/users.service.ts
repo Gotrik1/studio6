@@ -11,7 +11,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
-    const { name, email, role, password } = createUserDto;
+    const { name, email, role } = createUserDto;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -21,7 +21,9 @@ export class UsersService {
       throw new ConflictException('Пользователь с таким email уже существует');
     }
     
-    const passwordHash = await bcrypt.hash(password, 10);
+    // В реальной архитектуре с Keycloak пароль здесь не обрабатывается.
+    // Оставляем хэш пустым или null.
+    const passwordHash = '';
 
     const user = await this.prisma.user.create({
       data: {
