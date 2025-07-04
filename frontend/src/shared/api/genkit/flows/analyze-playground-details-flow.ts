@@ -1,8 +1,20 @@
 'use server';
 
-import type { AnalyzePlaygroundDetailsInput, AnalyzePlaygroundDetailsOutput } from './schemas/analyze-playground-details-schema';
+export type AnalyzePlaygroundDetailsInput = {
+  name: string;
+  type: string;
+  surface: string;
+  features: string[];
+  rating: number;
+};
 
-export type { AnalyzePlaygroundDetailsInput, AnalyzePlaygroundDetailsOutput };
+export type AnalyzePlaygroundDetailsOutput = {
+  title: string;
+  vibe: string;
+  pros: string[];
+  cons: string[];
+  bestFor: string;
+};
 
 export async function analyzePlaygroundDetails(input: AnalyzePlaygroundDetailsInput): Promise<AnalyzePlaygroundDetailsOutput> {
   const response = await fetch('/api/ai/analyze-playground-details', {

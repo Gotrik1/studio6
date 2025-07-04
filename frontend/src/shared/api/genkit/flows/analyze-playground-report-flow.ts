@@ -1,8 +1,16 @@
 'use server';
 
-import type { AnalyzePlaygroundReportInput, AnalyzePlaygroundReportOutput } from './schemas/analyze-playground-report-schema';
+export type AnalyzePlaygroundReportInput = {
+  playgroundName: string;
+  issueCategory: string;
+  userComment: string;
+};
 
-export type { AnalyzePlaygroundReportInput, AnalyzePlaygroundReportOutput };
+export type AnalyzePlaygroundReportOutput = {
+  severity: 'low' | 'medium' | 'high';
+  summary: string;
+  suggestedAction: string;
+};
 
 export async function analyzePlaygroundReport(input: AnalyzePlaygroundReportInput): Promise<AnalyzePlaygroundReportOutput> {
   const response = await fetch('/api/ai/analyze-playground-report', {
