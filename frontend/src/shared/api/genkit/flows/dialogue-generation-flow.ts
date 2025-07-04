@@ -7,13 +7,13 @@ export type GenerateDialogueInput = z.infer<typeof GenerateDialogueInputSchema>;
 export type GenerateDialogueOutput = z.infer<typeof GenerateDialogueOutputSchema>;
 
 
-export async function generateDialogue(input: {topic: string}): Promise<GenerateDialogueOutput> {
+export async function generateDialogue(topic: GenerateDialogueInput): Promise<GenerateDialogueOutput> {
   const response = await fetch('/api/ai/generate-dialogue', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(input),
+    body: JSON.stringify({ topic }),
     cache: 'no-store',
   });
 

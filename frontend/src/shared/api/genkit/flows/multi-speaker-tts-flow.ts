@@ -6,13 +6,13 @@ import type { MultiSpeakerTtsInputSchema, MultiSpeakerTtsOutputSchema } from './
 export type MultiSpeakerTtsInput = z.infer<typeof MultiSpeakerTtsInputSchema>;
 export type MultiSpeakerTtsOutput = z.infer<typeof MultiSpeakerTtsOutputSchema>;
 
-export async function multiSpeakerTts(input: { script: string }): Promise<MultiSpeakerTtsOutput> {
+export async function multiSpeakerTts(script: MultiSpeakerTtsInput): Promise<MultiSpeakerTtsOutput> {
   const response = await fetch('/api/ai/multi-speaker-tts', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(input),
+    body: JSON.stringify({ script }),
     cache: 'no-store',
   });
 

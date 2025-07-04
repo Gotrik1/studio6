@@ -1,11 +1,5 @@
 'use server';
-/**
- * @fileOverview An API client for analyzing individual player eSports performance via the backend.
- *
- * - analyzeEsportsPerformance - A function that calls the backend to handle the analysis.
- * - AnalyzeEsportsPerformanceInput - The input type for the function.
- * - AnalyzeEsportsPerformanceOutput - The return type for the function.
- */
+
 import type { AnalyzeEsportsPerformanceInput, AnalyzeEsportsPerformanceOutput } from './schemas/analyze-esports-performance-schema';
 export type { AnalyzeEsportsPerformanceInput, AnalyzeEsportsPerformanceOutput };
 

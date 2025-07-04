@@ -1,12 +1,5 @@
 'use server';
 
-/**
- * @fileOverview An API client for analyzing team performance via the backend.
- *
- * - analyzeTeamPerformance - A function that calls the backend to handle the analysis.
- * - AnalyzeTeamPerformanceInput - The input type for the function.
- * - AnalyzeTeamPerformanceOutput - The return type for the function.
- */
 import type { AnalyzeTeamPerformanceInput, AnalyzeTeamPerformanceOutput } from './schemas/analyze-team-performance-schema';
 export type { AnalyzeTeamPerformanceInput, AnalyzeTeamPerformanceOutput };
 
