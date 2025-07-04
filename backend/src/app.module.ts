@@ -23,6 +23,7 @@ import { RabbitMQModule } from './modules/rabbitmq/rabbitmq.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { StoreModule } from './modules/store/store.module';
 import { TrainingModule } from './modules/training/training.module';
+import { PromotionsModule } from './modules/promotions/promotions.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { TrainingModule } from './modules/training/training.module';
     NotificationsModule,
     StoreModule,
     TrainingModule,
+    PromotionsModule,
   ],
   controllers: [AppController],
   providers: [

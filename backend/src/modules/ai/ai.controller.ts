@@ -1,6 +1,6 @@
 
-import { Controller, Post, Body, HttpCode, HttpStatus, Get } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AiService } from './ai.service';
 import { GenerateTeamConceptDto } from './dto/generate-team-concept.dto';
 import type { GenerateTeamConceptOutput } from '../../ai/flows/schemas/generate-team-concept-schema';
@@ -115,9 +115,13 @@ import type { OnboardingOutput } from '@/ai/flows/schemas/onboarding-assistant-s
 import type { PredictMatchOutcomeOutput } from '@/ai/flows/schemas/predict-match-outcome-schema';
 import { PlayerScoutDto } from './dto/player-scout.dto';
 import type { PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Request } from 'express';
 
 @ApiTags('AI')
 @Controller('ai')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class AiController {
   constructor(private readonly aiService: AiService) {}
 
@@ -143,6 +147,13 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   async generatePromotionImage(@Body() generatePromotionImageDto: GeneratePromotionImageDto): Promise<GeneratePromotionImageOutput> {
       return this.aiService.generatePromotionImage(generatePromotionImageDto.prompt);
+  }
+
+  @Post('promotions/wizard')
+  @ApiOperation({ summary: 'Создает концепцию промо-акции и сразу сохраняет ее' })
+  async createPromotionFromWizard(@Body() dto: GeneratePromotionWizardDto, @Req() req: Request) {
+    const userId = (req.user as any).userId;
+    return this.aiService.createPromotionFromWizard(dto.prompt, userId);
   }
 
   @Post('generate-team-concept')

@@ -57,9 +57,23 @@ import { generateTrainingProgram, type GenerateTrainingProgramInput, type Genera
 import { getOnboardingSuggestions, type OnboardingInput, type OnboardingOutput } from '@/ai/flows/onboarding-assistant-flow';
 import { predictMatchOutcome, type PredictMatchOutcomeInput, type PredictMatchOutcomeOutput } from '@/ai/flows/predict-match-outcome-flow';
 import { playerScout, type PlayerScoutInput, type PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
+import { PromotionsService } from '../promotions/promotions.service';
+import type { Promotion } from '@prisma/client';
 
 @Injectable()
 export class AiService {
+  constructor(private readonly promotionsService: PromotionsService) {}
+
+  async createPromotionFromWizard(prompt: string, organizerId: string): Promise<Promotion> {
+    const wizardResult = await generatePromotionWizard({ prompt });
+    return this.promotionsService.create({
+      ...wizardResult,
+      organizerId,
+      imageHint: prompt, // Use prompt as image hint
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Mock end date
+    });
+  }
+
   async createTeam(input: CreateTeamInput): Promise<CreateTeamOutput> {
     return createTeam(input);
   }
