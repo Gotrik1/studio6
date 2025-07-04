@@ -1,5 +1,5 @@
 
-import { Injectable, ConflictException, BadRequestException } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
@@ -11,7 +11,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<Omit<User, 'passwordHash'>> {
-    const { name, email, role } = createUserDto;
+    const { name, email, role, password } = createUserDto;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -21,9 +21,7 @@ export class UsersService {
       throw new ConflictException('Пользователь с таким email уже существует');
     }
     
-    // In a real app with Keycloak, we wouldn't handle the password.
-    // This is a placeholder for the prototype's self-contained auth.
-    const passwordHash = await bcrypt.hash('password-placeholder', 10);
+    const passwordHash = await bcrypt.hash(password, 10);
 
     const user = await this.prisma.user.create({
       data: {
@@ -37,6 +35,7 @@ export class UsersService {
     });
 
     // Никогда не возвращаем хэш пароля клиенту
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _, ...result } = user;
     return result;
   }
@@ -44,6 +43,7 @@ export class UsersService {
   async findAll(): Promise<Omit<User, 'passwordHash'>[]> {
     const users = await this.prisma.user.findMany();
     return users.map(user => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash, ...result } = user;
       return result;
     });
