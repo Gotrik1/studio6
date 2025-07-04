@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useTraining } from "@/shared/context/training-provider";
+import { useState, useEffect } from 'react';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -13,6 +12,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
+import { useTraining } from '@/shared/context/training-provider';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 function ProgramCard({ program, isOwner, onSave, onDelete }: { program: TrainingProgram; isOwner: boolean; onSave: (p: TrainingProgram) => void; onDelete: (p: TrainingProgram) => void; }) {
     return (
@@ -84,9 +85,15 @@ function ProgramCard({ program, isOwner, onSave, onDelete }: { program: Training
     );
 }
 
+const ProgramGridSkeleton = () => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-96 w-full" />)}
+    </div>
+);
+
 
 export function TrainingProgramsPage() {
-    const { programs, addProgram, deleteProgram } = useTraining();
+    const { programs, addProgram, deleteProgram, isLoading } = useTraining();
     const { user } = useSession();
     const { toast } = useToast();
 
@@ -139,19 +146,22 @@ export function TrainingProgramsPage() {
                     <TabsTrigger value="community">Программы сообщества</TabsTrigger>
                 </TabsList>
                 <TabsContent value="my-programs" className="mt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {myPrograms.map((program: TrainingProgram) => (
-                           <ProgramCard key={program.id} program={program} isOwner={true} onDelete={handleDelete} onSave={handleSaveProgram} />
-                        ))}
-                    </div>
-                     {myPrograms.length === 0 && <p className="text-center text-muted-foreground py-16">У вас пока нет программ. Создайте первую или скопируйте из сообщества.</p>}
+                    {isLoading ? <ProgramGridSkeleton /> : myPrograms.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {myPrograms.map((program: TrainingProgram) => (
+                               <ProgramCard key={program.id} program={program} isOwner={true} onDelete={handleDelete} onSave={handleSaveProgram} />
+                            ))}
+                        </div>
+                    ) : <p className="text-center text-muted-foreground py-16">У вас пока нет программ. Создайте первую или скопируйте из сообщества.</p>}
                 </TabsContent>
                 <TabsContent value="community" className="mt-6">
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {communityPrograms.map((program: TrainingProgram) => (
-                           <ProgramCard key={program.id} program={program} isOwner={false} onDelete={handleDelete} onSave={handleSaveProgram} />
-                        ))}
-                    </div>
+                     {isLoading ? <ProgramGridSkeleton /> : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {communityPrograms.map((program: TrainingProgram) => (
+                               <ProgramCard key={program.id} program={program} isOwner={false} onDelete={handleDelete} onSave={handleSaveProgram} />
+                            ))}
+                        </div>
+                     )}
                 </TabsContent>
             </Tabs>
 

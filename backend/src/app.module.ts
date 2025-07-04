@@ -22,6 +22,7 @@ import { KafkaModule } from './modules/kafka/kafka.module';
 import { RabbitMQModule } from './modules/rabbitmq/rabbitmq.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { StoreModule } from './modules/store/store.module';
+import { TrainingModule } from './modules/training/training.module';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { StoreModule } from './modules/store/store.module';
     RabbitMQModule,
     NotificationsModule,
     StoreModule,
+    TrainingModule,
   ],
   controllers: [AppController],
   providers: [
