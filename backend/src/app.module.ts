@@ -30,6 +30,7 @@ import { LfgModule } from './modules/lfg/lfg.module';
 import { MeasurementsModule } from './modules/measurements/measurements.module';
 import { TrainingProposalsModule } from './modules/training-proposals/training-proposals.module';
 import { PollsModule } from './modules/polls/polls.module';
+import { QuestsModule } from './modules/quests/quests.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { PollsModule } from './modules/polls/polls.module';
     MeasurementsModule,
     TrainingProposalsModule,
     PollsModule,
+    QuestsModule,
   ],
   controllers: [AppController],
   providers: [

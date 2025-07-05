@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
@@ -9,17 +9,31 @@ import { Label } from '@/shared/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Award, PlusCircle, Trash2 } from 'lucide-react';
 import { RANKS } from '@/shared/config/ranks';
-import { quests as initialQuests } from '@/shared/lib/mock-data/gamification';
 import { cn } from '@/shared/lib/utils';
-
-type Quest = (typeof initialQuests)[0];
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { QuestType } from '@prisma/client';
+import type { Quest } from '@/entities/quest/model/types';
+import { createQuest, deleteQuest, getQuests } from '@/entities/quest/api/quests';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 export function GamificationAdminPage() {
     const { toast } = useToast();
-    const [quests, setQuests] = useState<Quest[]>(initialQuests);
-    const [newQuest, setNewQuest] = useState({ title: '', description: '', reward: 100, href: '/' });
+    const [quests, setQuests] = useState<Quest[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [newQuest, setNewQuest] = useState({ title: '', description: '', reward: 100, href: '/', type: QuestType.SPECIAL });
 
-    const handleAddQuest = () => {
+    const fetchQuests = async () => {
+        setIsLoading(true);
+        const data = await getQuests();
+        setQuests(data);
+        setIsLoading(false);
+    };
+
+    useEffect(() => {
+        fetchQuests();
+    }, []);
+
+    const handleAddQuest = async () => {
         if (!newQuest.title || !newQuest.description) {
             toast({
                 variant: 'destructive',
@@ -29,26 +43,64 @@ export function GamificationAdminPage() {
             return;
         }
 
-        const questToAdd: Quest = {
-            id: `q-${Date.now()}`,
-            ...newQuest,
-            isCompleted: false, // New quests are always not completed
-        };
+        const questToAdd = { ...newQuest, goal: 1 }; // Simple goal for now
+        const result = await createQuest(questToAdd);
 
-        setQuests(prev => [...prev, questToAdd]);
-        setNewQuest({ title: '', description: '', reward: 100, href: '/' });
-        toast({
-            title: 'Квест добавлен!',
-            description: `Новый квест "${newQuest.title}" был успешно добавлен.`,
-        });
+        if (result.success) {
+            await fetchQuests(); // Refetch
+            setNewQuest({ title: '', description: '', reward: 100, href: '/', type: QuestType.SPECIAL });
+            toast({
+                title: 'Квест добавлен!',
+                description: `Новый квест "${newQuest.title}" был успешно добавлен.`,
+            });
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: result.error,
+            });
+        }
     };
     
-    const handleDeleteQuest = (questId: string) => {
-        setQuests(prev => prev.filter(q => q.id !== questId));
-        toast({
-            title: 'Квест удален',
-        });
-    }
+    const handleDeleteQuest = async (questId: string) => {
+        const result = await deleteQuest(questId);
+         if (result.success) {
+            await fetchQuests(); // Refetch
+            toast({ title: 'Квест удален' });
+         } else {
+             toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
+         }
+    };
+    
+    const QuestTable = ({ title, quests }: { title: string, quests: Quest[] }) => (
+        <Card>
+            <CardHeader><CardTitle>{title}</CardTitle></CardHeader>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Название</TableHead>
+                            <TableHead>Награда (PD)</TableHead>
+                            <TableHead className="text-right">Действия</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {quests.map(quest => (
+                            <TableRow key={quest.id}>
+                                <TableCell className="font-medium">{quest.title}</TableCell>
+                                <TableCell>{quest.reward}</TableCell>
+                                <TableCell className="text-right">
+                                    <Button variant="ghost" size="icon" onClick={() => handleDeleteQuest(quest.id)}>
+                                        <Trash2 className="h-4 w-4 text-destructive" />
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </CardContent>
+        </Card>
+    );
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -67,28 +119,13 @@ export function GamificationAdminPage() {
                             <CardDescription>Добавляйте и удаляйте квесты для пользователей.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                             <Table>
-                                <TableHeader>
-                                    <TableRow>
-                                        <TableHead>Название</TableHead>
-                                        <TableHead>Награда (PD)</TableHead>
-                                        <TableHead className="text-right">Действия</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {quests.map(quest => (
-                                        <TableRow key={quest.id}>
-                                            <TableCell className="font-medium">{quest.title}</TableCell>
-                                            <TableCell>{quest.reward}</TableCell>
-                                            <TableCell className="text-right">
-                                                <Button variant="ghost" size="icon" onClick={() => handleDeleteQuest(quest.id)}>
-                                                    <Trash2 className="h-4 w-4 text-destructive" />
-                                                </Button>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
+                            {isLoading ? <Skeleton className="h-48 w-full" /> : (
+                                <div className="space-y-4">
+                                    <QuestTable title="Ежедневные" quests={quests.filter(q => q.type === 'DAILY')} />
+                                    <QuestTable title="Еженедельные" quests={quests.filter(q => q.type === 'WEEKLY')} />
+                                    <QuestTable title="Специальные" quests={quests.filter(q => q.type === 'SPECIAL')} />
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                     <Card>
@@ -96,14 +133,30 @@ export function GamificationAdminPage() {
                             <CardTitle>Добавить новый квест</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="quest-title">Название</Label>
-                                <Input 
-                                    id="quest-title" 
-                                    placeholder="Например, 'Душа компании'" 
-                                    value={newQuest.title}
-                                    onChange={(e) => setNewQuest(prev => ({ ...prev, title: e.target.value }))}
-                                />
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="quest-title">Название</Label>
+                                    <Input 
+                                        id="quest-title" 
+                                        placeholder="Например, 'Душа компании'" 
+                                        value={newQuest.title}
+                                        onChange={(e) => setNewQuest(prev => ({ ...prev, title: e.target.value }))}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="quest-type">Тип</Label>
+                                    <Select 
+                                        value={newQuest.type} 
+                                        onValueChange={(value: QuestType) => setNewQuest(prev => ({...prev, type: value}))}
+                                    >
+                                        <SelectTrigger><SelectValue /></SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value={QuestType.DAILY}>Ежедневный</SelectItem>
+                                            <SelectItem value={QuestType.WEEKLY}>Еженедельный</SelectItem>
+                                            <SelectItem value={QuestType.SPECIAL}>Специальный</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
                              <div className="space-y-2">
                                 <Label htmlFor="quest-desc">Описание</Label>
