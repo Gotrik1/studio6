@@ -1,5 +1,12 @@
-import { IsString, IsNotEmpty, IsInt, Min } from 'class-validator';
+import { IsString, IsNotEmpty, IsInt, Min, IsEnum } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+
+export enum MealType {
+    Breakfast = 'Завтрак',
+    Lunch = 'Обед',
+    Dinner = 'Ужин',
+    Snack = 'Перекус',
+}
 
 export class CreateFoodLogDto {
   @ApiProperty()
@@ -12,8 +19,11 @@ export class CreateFoodLogDto {
   @Min(1)
   readonly grams: number;
 
-  @ApiProperty()
-  @IsString()
-  @IsNotEmpty()
-  readonly meal: string;
+  @ApiProperty({
+    enum: MealType,
+    example: MealType.Snack,
+    description: 'Прием пищи, к которому относится запись.'
+  })
+  @IsEnum(MealType)
+  readonly meal: MealType;
 }
