@@ -9,9 +9,7 @@ export class TournamentJudgesService {
     const tournament = await this.prisma.tournament.findUnique({
       where: { id: tournamentId },
       include: {
-        judges: {
-          select: { id: true, name: true, avatar: true, role: true },
-        },
+        judges: true, // Fetch the full User object for each judge
       },
     });
 
