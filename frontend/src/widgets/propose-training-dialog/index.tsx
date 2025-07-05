@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -13,13 +12,12 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2, Send, Coins } from 'lucide-react';
+import { CalendarIcon, Loader2, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from '@/shared/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { useTrainingProposals } from '@/shared/context/training-proposal-provider';
-import { getFriends, type Friend } from '@/entities/user/api/friends';
 import { getSports, type Sport } from '@/entities/sport/api/sports';
 
 const trainingSchema = z.object({
@@ -39,14 +37,12 @@ interface ProposeTrainingDialogProps {
 
 export function ProposeTrainingDialog({ isOpen, onOpenChange }: ProposeTrainingDialogProps) {
     const { toast } = useToast();
-    const { addProposal } = useTrainingProposals();
+    const { addProposal, friends } = useTrainingProposals();
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [friends, setFriends] = useState<Friend[]>([]);
     const [sports, setSports] = useState<Sport[]>([]);
 
     useEffect(() => {
         if (isOpen) {
-            getFriends().then(setFriends);
             getSports().then(setSports);
         }
     }, [isOpen]);
@@ -60,24 +56,31 @@ export function ProposeTrainingDialog({ isOpen, onOpenChange }: ProposeTrainingD
         },
     });
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
         // Combine date and time
         const [hours, minutes] = data.time.split(':').map(Number);
         const combinedDate = new Date(data.date);
         combinedDate.setHours(hours, minutes, 0, 0);
 
-        setTimeout(() => {
+        const success = await addProposal(data.friendId, data.sport, combinedDate, data.comment || '');
+
+        if (success) {
             const friend = friends.find(f => f.id === data.friendId);
-            addProposal(data.friendId, data.sport, combinedDate, data.comment || '');
             toast({
                 title: "Предложение отправлено!",
                 description: `Ваше предложение о совместной тренировке отправлено игроку ${friend?.name}.`,
             });
-            setIsSubmitting(false);
             onOpenChange(false);
             form.reset();
-        }, 1000);
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: `Не удалось отправить предложение. Попробуйте еще раз.`,
+            });
+        }
+        setIsSubmitting(false);
     };
 
     return (

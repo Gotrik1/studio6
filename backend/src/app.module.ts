@@ -29,6 +29,7 @@ import { SportsModule } from './modules/sports/sports.module';
 import { LfgModule } from './modules/lfg/lfg.module';
 import { MeasurementsModule } from './modules/measurements/measurements.module';
 import { NutritionModule } from './modules/nutrition/nutrition.module';
+import { TrainingProposalsModule } from './modules/training-proposals/training-proposals.module';
 
 @Module({
   imports: [
@@ -58,6 +59,7 @@ import { NutritionModule } from './modules/nutrition/nutrition.module';
     LfgModule,
     MeasurementsModule,
     NutritionModule,
+    TrainingProposalsModule,
   ],
   controllers: [AppController],
   providers: [
