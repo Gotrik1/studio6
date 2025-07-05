@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/entities/playground/model/types';
@@ -15,8 +15,6 @@ import { useSession } from '@/shared/lib/session/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { useLfg } from '@/shared/context/lfg-provider';
 import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
-
-// Import Tab Widgets
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
 import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
@@ -26,6 +24,8 @@ import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from '@/widgets/report-playground-issue-dialog';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
 import type { PlayerActivityItem } from '@/widgets/player-activity-feed';
+import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
+
 
 export type PlaygroundReview = {
     id: string;
@@ -42,6 +42,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
     const { user } = useSession();
     const { toast } = useToast();
     const [activities, setActivities] = useState<PlayerActivityItem[]>([]);
+    const [isLoadingActivities, setIsLoadingActivities] = useState(true);
     const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
@@ -50,21 +51,51 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [initialDateTime, setInitialDateTime] = useState<{date: Date, time: string}>();
 
-    const handleCheckIn = (comment: string) => {
+    const loadActivities = useCallback(async () => {
+        setIsLoadingActivities(true);
+        try {
+            const activityData = await getPlaygroundActivity(playground.id);
+            const formattedActivities = activityData.map((act: any) => ({
+                id: act.id,
+                user: {
+                    name: act.user.name,
+                    avatar: act.user.avatar,
+                },
+                comment: act.metadata.comment || 'Отметился на площадке.',
+                photo: act.metadata.photo,
+                photoHint: 'playground check-in',
+                timestamp: act.timestamp,
+            }));
+            setActivities(formattedActivities);
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить ленту активности.' });
+        } finally {
+            setIsLoadingActivities(false);
+        }
+    }, [playground.id, toast]);
+
+    useEffect(() => {
+        loadActivities();
+    }, [loadActivities]);
+
+    const handleCheckIn = async (comment: string, photo?: string) => {
         if (!user) return;
-        const newActivity: PlayerActivityItem = {
-            id: `act-${Date.now()}`,
-            user: { name: user.name, avatar: user.avatar },
-            comment,
-            timestamp: 'Только что',
-            icon: 'CheckCircle',
-            type: 'check-in'
-        };
-        setActivities(prev => [newActivity, ...prev]);
-        toast({
-            title: "Вы отметились!",
-            description: `Вы получили 10 PD за чекин на площадке "${playground.name}".`
-        });
+        const result = await createCheckIn({ playgroundId: playground.id, comment, photo });
+        
+        if (result.success) {
+            toast({
+                title: "Вы отметились!",
+                description: `Вы получили 10 PD за чекин на площадке "${playground.name}".`
+            });
+            await loadActivities(); // Refresh data
+        } else {
+             toast({
+                variant: "destructive",
+                title: "Ошибка",
+                description: "Не удалось отметиться. Попробуйте снова."
+            });
+        }
     };
     
     const handleAddReview = (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => {
@@ -175,7 +206,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                         <PlaygroundReviewsTab reviews={reviews} onAddReview={handleAddReview} playgroundName={playground.name} />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-6">
-                        <PlaygroundActivityTab activities={activities} />
+                        <PlaygroundActivityTab activities={activities} isLoading={isLoadingActivities} />
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-6">
                         <PlaygroundLeaderboardTab playground={playground} />

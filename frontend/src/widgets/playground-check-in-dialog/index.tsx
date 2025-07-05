@@ -6,13 +6,14 @@ import { Button } from "@/shared/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
+import { useToast } from '@/shared/hooks/use-toast';
 import { Loader2, CheckCircle, Upload } from 'lucide-react';
 import Image from 'next/image';
 
 interface PlaygroundCheckInDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onCheckIn: (comment: string, photo?: File) => void;
+  onCheckIn: (comment: string, photo?: string) => void;
   playgroundName: string;
 }
 
@@ -35,8 +36,8 @@ export function PlaygroundCheckInDialog({ isOpen, onOpenChange, onCheckIn, playg
     const handleSubmit = async () => {
         setIsSubmitting(true);
         // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        onCheckIn(comment, photo || undefined);
+        await new Promise(resolve => setTimeout(resolve, 500));
+        onCheckIn(comment, preview || undefined);
         setIsSubmitting(false);
         onOpenChange(false);
     };

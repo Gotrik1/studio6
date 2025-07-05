@@ -4,9 +4,22 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import Image from 'next/image';
-import { type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
 import { MessageSquare } from 'lucide-react';
 import { ScrollArea } from '@/shared/ui/scroll-area';
+import { formatDistanceToNow } from 'date-fns';
+import { ru } from 'date-fns/locale';
+
+export type PlaygroundActivity = {
+    id: string;
+    user: {
+        name: string;
+        avatar: string | null;
+    };
+    comment: string;
+    photo?: string | null;
+    photoHint?: string;
+    timestamp: string;
+};
 
 interface PlaygroundActivityFeedProps {
     activities: PlaygroundActivity[];
@@ -28,13 +41,13 @@ export function PlaygroundActivityFeed({ activities }: PlaygroundActivityFeedPro
                         {activities.map(activity => (
                             <div key={activity.id} className="flex gap-4">
                                 <Avatar>
-                                    <AvatarImage src={activity.user.avatar} />
+                                    <AvatarImage src={activity.user.avatar || undefined} />
                                     <AvatarFallback>{activity.user.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 space-y-2">
                                     <div className="flex items-baseline justify-between">
                                         <p className="font-semibold text-sm">{activity.user.name}</p>
-                                        <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
+                                        <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true, locale: ru })}</p>
                                     </div>
                                     <p className="text-sm text-muted-foreground italic">&quot;{activity.comment}&quot;</p>
                                     {activity.photo && (
