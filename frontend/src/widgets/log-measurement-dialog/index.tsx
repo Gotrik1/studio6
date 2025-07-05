@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -12,12 +11,7 @@ import * as z from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { useToast } from '@/shared/hooks/use-toast';
 import type { Measurement } from '@/entities/user/model/types';
-import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
-import { Calendar } from '@/shared/ui/calendar';
-import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { Loader2 } from 'lucide-react';
 
 const measurementSchema = z.object({
     weight: z.coerce.number().min(30, "Слишком низкий вес").max(300, "Слишком большой вес"),
