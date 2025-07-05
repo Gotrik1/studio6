@@ -7,7 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { BrainCircuit, AlertCircle, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { summarizePlaygroundReviews, type SummarizePlaygroundReviewsOutput } from '@/shared/api/genkit/flows/summarize-playground-reviews-flow';
-import type { PlaygroundReview } from '@/shared/lib/mock-data/playground-reviews';
+import type { PlaygroundReview } from '@/entities/playground/model/types';
 
 interface PlaygroundReviewSummaryProps {
     reviews: PlaygroundReview[];

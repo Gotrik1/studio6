@@ -8,13 +8,13 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Loader2, Star, Send } from 'lucide-react';
-import type { PlaygroundReview } from '@/shared/lib/mock-data/playground-reviews';
+import type { PlaygroundReview } from '@/entities/playground/model/types';
 import { cn } from '@/shared/lib/utils';
 
 interface PlaygroundReviewDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onAddReview: (review: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => void;
+  onAddReview: (review: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => Promise<void>;
   playgroundName: string;
 }
 
@@ -45,15 +45,9 @@ export function PlaygroundReviewDialog({ isOpen, onOpenChange, onAddReview, play
         }
         
         setIsSubmitting(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        onAddReview({ rating, comment });
+        await onAddReview({ rating, comment });
         setIsSubmitting(false);
         handleOpenChange(false);
-         toast({
-            title: "Спасибо за ваш отзыв!",
-            description: `Ваш отзыв о площадке "${playgroundName}" был опубликован.`
-        });
     };
 
     return (

@@ -7,21 +7,12 @@ import { PlaygroundReviewsFeed } from '@/widgets/playground-reviews-feed';
 import { PlaygroundReviewSummary } from '@/widgets/playground-review-summary';
 import { PlaygroundReviewDialog } from '@/widgets/playground-review-dialog';
 import { Skeleton } from '@/shared/ui/skeleton';
+import type { PlaygroundReview } from '@/entities/playground/model/types';
 
-export type PlaygroundReview = {
-    id: string;
-    author: {
-        name: string;
-        avatar: string | null;
-    };
-    rating: number;
-    comment: string;
-    timestamp: string;
-};
 
 interface PlaygroundReviewsTabProps {
     reviews: PlaygroundReview[];
-    onAddReview: (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => void;
+    onAddReview: (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => Promise<void>;
     playgroundName: string;
     isLoading: boolean;
 }

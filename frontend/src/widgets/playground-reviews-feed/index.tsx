@@ -3,7 +3,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import type { PlaygroundReview } from '@/shared/lib/mock-data/playground-reviews';
+import type { PlaygroundReview } from '@/entities/playground/model/types';
 import { Star } from 'lucide-react';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { cn } from '@/shared/lib/utils';
@@ -56,7 +56,7 @@ export function PlaygroundReviewsFeed({ reviews, onAddReviewClick }: PlaygroundR
                         {reviews.map(review => (
                             <div key={review.id} className="flex gap-4">
                                 <Avatar>
-                                    <AvatarImage src={review.author.avatar} />
+                                    <AvatarImage src={review.author.avatar || ''} />
                                     <AvatarFallback>{review.author.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 space-y-1">
