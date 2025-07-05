@@ -1,14 +1,27 @@
 
+
 'use client';
 
 import { Card, CardContent, CardTitle } from '@/shared/ui/card';
-import { leagues } from '@/shared/lib/mock-data/leagues';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Badge } from '@/shared/ui/badge';
 import { Users, Gamepad2 } from 'lucide-react';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { useEffect, useState } from 'react';
+
+// Mock data, as backend doesn't support leagues yet.
+const leagues: any[] = []; 
 
 export function LeaguesListPage() {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <div className="space-y-6 opacity-0 animate-fade-in-up">
       <div className="space-y-2">
@@ -18,7 +31,10 @@ export function LeaguesListPage() {
         </p>
       </div>
       <div className="space-y-6">
-        {leagues.map((league) => (
+        {isLoading ? (
+          <Skeleton className="h-64 w-full" />
+        ) : leagues.length > 0 ? (
+          leagues.map((league) => (
           <Link key={league.id} href={`/leagues/${league.id}`} className="block">
             <Card className="overflow-hidden transition-all hover:shadow-lg hover:border-primary">
               <div className="relative h-48 w-full">
@@ -35,7 +51,12 @@ export function LeaguesListPage() {
               </CardContent>
             </Card>
           </Link>
-        ))}
+        ))
+        ) : (
+          <Card className="text-center p-12">
+            <p className="text-muted-foreground">На данный момент активных лиг нет.</p>
+          </Card>
+        )}
       </div>
     </div>
   );

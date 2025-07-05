@@ -39,5 +39,5 @@ export class CreatePromotionDto {
 
   @ApiProperty()
   @IsDateString()
-  readonly endDate: Date;
+  readonly endDate: string;
 }

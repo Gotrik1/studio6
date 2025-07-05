@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -34,7 +33,12 @@ const promotionSchema = z.object({
 
 type FormValues = z.infer<typeof promotionSchema>;
 
-export function ManualPromotionForm() {
+interface ManualPromotionFormProps {
+    isEditMode?: boolean; // to reuse this form for editing
+}
+
+
+export function ManualPromotionForm({ isEditMode }: ManualPromotionFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -60,11 +64,12 @@ export function ManualPromotionForm() {
     
     const promotionData = {
         ...data,
+        endDate: data.endDate.toISOString(), // Convert date to string for API
         imageDataUri: 'https://placehold.co/2560x720.png', // Mock image
         imageHint: 'promotion banner',
     };
 
-    const result = await createPromotion(promotionData as any); // Cast to handle the DTO differences for now
+    const result = await createPromotion(promotionData);
 
     if (result.success) {
         toast({
@@ -115,7 +120,15 @@ export function ManualPromotionForm() {
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                            <FormField control={form.control} name="endDate" render={({ field }) => (
+                             <FormField control={form.control} name="cost" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Стоимость участия (PD)</FormLabel>
+                                    <FormControl><Input type="number" {...field} /></FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )} />
+                        </div>
+                         <FormField control={form.control} name="endDate" render={({ field }) => (
                                 <FormItem className="flex flex-col">
                                     <FormLabel>Дата окончания</FormLabel>
                                     <Popover>
@@ -134,7 +147,6 @@ export function ManualPromotionForm() {
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                        </div>
                         <FormField control={form.control} name="sponsorId" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Спонсор (необязательно)</FormLabel>
@@ -162,7 +174,7 @@ export function ManualPromotionForm() {
                     <CardFooter>
                         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            Создать промо-акцию
+                            {isEditMode ? 'Сохранить изменения' : 'Создать промо-акцию'}
                         </Button>
                     </CardFooter>
                 </form>
