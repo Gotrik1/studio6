@@ -2,104 +2,37 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { PlusCircle, MapPin, Clock, Users, Gamepad2, UserPlus, Swords, Search, Loader2, Sparkles, Dumbbell } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Badge } from '@/shared/ui/badge';
-import { useToast } from '@/shared/hooks/use-toast';
+import { PlusCircle, Swords, Search, Loader2, Sparkles, Dumbbell } from 'lucide-react';
 import { LfgCreateDialog } from '@/widgets/lfg-create-dialog';
 import { Textarea } from '@/shared/ui/textarea';
 import { findLfgLobbies } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
 import type { LfgLobby as LfgLobbyType } from '@/entities/lfg/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
-import { fetchWithAuth } from '@/shared/lib/api-client';
-import { useSession } from '@/shared/lib/session/client';
+import { useLfg } from '@/shared/context/lfg-provider';
+import { LfgCard } from '@/widgets/lfg-card';
+import { useToast } from '@/shared/hooks/use-toast';
 
-
-function LfgCard({ lobby, onJoin }: { lobby: LfgLobbyType, onJoin: (lobbyId: string) => void }) {
-    const Icon = lobby.type === 'TRAINING' ? Dumbbell : Gamepad2;
-
-    return (
-        <Card className="flex flex-col h-full">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <Icon className="h-5 w-5 text-primary" />
-                        <CardTitle className="text-lg">{lobby.sport}</CardTitle>
-                    </div>
-                    <Badge variant={lobby.playersJoined >= lobby.playersNeeded ? 'destructive' : 'default'}>
-                        <Users className="mr-1.5 h-3 w-3" />
-                        {lobby.playersJoined}/{lobby.playersNeeded}
-                    </Badge>
-                </div>
-                <CardDescription className="flex items-center gap-1.5 pt-1 text-xs">
-                    <MapPin className="h-3 w-3" /> {lobby.location}
-                </CardDescription>
-                <CardDescription className="flex items-center gap-1.5 text-xs">
-                    <Clock className="h-3 w-3" /> {format(new Date(lobby.startTime), 'd MMMM, HH:mm', { locale: ru })}
-                </CardDescription>
-            </CardHeader>
-            <CardContent className="flex-1">
-                <p className="text-sm text-muted-foreground italic">&quot;{lobby.comment}&quot;</p>
-            </CardContent>
-            <CardFooter className="flex-col items-start gap-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Avatar className="h-6 w-6">
-                        <AvatarImage src={lobby.creator.avatar || ''} />
-                        <AvatarFallback>{lobby.creator.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span>Создал: {lobby.creator.name}</span>
-                </div>
-                <Button 
-                    className="w-full"
-                    onClick={() => onJoin(lobby.id)}
-                    disabled={lobby.playersJoined >= lobby.playersNeeded}
-                >
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    {lobby.playersJoined >= lobby.playersNeeded ? 'Лобби заполнено' : 'Присоединиться'}
-                </Button>
-            </CardFooter>
-        </Card>
-    );
-}
 
 export function LfgPage() {
     const { toast } = useToast();
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [prompt, setPrompt] = useState('Хочу поиграть в футбол вечером');
-    const [isLoading, setIsLoading] = useState(false);
+    const [isAiLoading, setIsAiLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [lobbies, setLobbies] = useState<LfgLobbyType[]>([]);
     const [filteredLobbies, setFilteredLobbies] = useState<LfgLobbyType[] | null>(null);
     const [typeFilter, setTypeFilter] = useState<'all' | 'GAME' | 'TRAINING'>('all');
-    const { user } = useSession();
-
-    const fetchLobbies = async () => {
-        setIsLoading(true);
-        const result = await fetchWithAuth('/lfg');
-        if (result.success) {
-            setLobbies(result.data);
-        } else {
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить лобби.' });
-        }
-        setIsLoading(false);
-    };
-
-    useEffect(() => {
-        fetchLobbies();
-    }, []);
+    const { lobbies, isLoading, addLobby, joinLobby } = useLfg();
 
     const handleSearch = async () => {
         if (!prompt) {
             setError('Пожалуйста, опишите, какую игру вы ищете.');
             return;
         }
-        setIsLoading(true);
+        setIsAiLoading(true);
         setError(null);
         setFilteredLobbies(null);
 
@@ -116,36 +49,18 @@ export function LfgPage() {
             console.error(e);
             setError('Не удалось выполнить поиск. Попробуйте еще раз.');
         } finally {
-            setIsLoading(false);
+            setIsAiLoading(false);
         }
     };
-
-    const handleJoin = async (lobbyId: string) => {
-        const result = await fetchWithAuth(`/lfg/${lobbyId}/join`, { method: 'POST' });
-        if (result.success) {
-            toast({
-                title: "Вы присоединились к лобби!",
-                description: `Вы успешно присоединились к активности.`,
-            });
-            fetchLobbies(); // Refresh data
-        } else {
-             toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
-        }
-    };
-
+    
     const handleCreateLobby = async (data: any) => {
-         const result = await fetchWithAuth('/lfg', {
-             method: 'POST',
-             body: JSON.stringify(data),
-         });
-         if (result.success) {
+        const success = await addLobby(data);
+        if (success) {
             toast({ title: "Лобби создано!", description: "Ваш запрос на игру опубликован." });
-            fetchLobbies();
-            return true;
-         } else {
-            toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
-            return false;
-         }
+            setIsCreateOpen(false);
+        } else {
+             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось создать лобби.' });
+        }
     };
     
     const lobbiesToDisplay = useMemo(() => {
@@ -185,7 +100,7 @@ export function LfgPage() {
                             placeholder="Например: 'Ищу с кем поиграть в баскетбол в Парке Горького сегодня вечером...'"
                             value={prompt}
                             onChange={(e) => setPrompt(e.target.value)}
-                            disabled={isLoading}
+                            disabled={isAiLoading}
                             className="min-h-[100px] text-base"
                         />
                          {error && (
@@ -196,9 +111,9 @@ export function LfgPage() {
                         )}
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={handleSearch} disabled={isLoading} size="lg" className="w-full">
-                            {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Search className="mr-2 h-5 w-5" />}
-                            {isLoading ? 'Идет поиск...' : 'Найти игры'}
+                        <Button onClick={handleSearch} disabled={isAiLoading} size="lg" className="w-full">
+                            {isAiLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Search className="mr-2 h-5 w-5" />}
+                            {isAiLoading ? 'Идет поиск...' : 'Найти игры'}
                         </Button>
                     </CardFooter>
                 </Card>
@@ -210,15 +125,15 @@ export function LfgPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {isLoading && Array.from({ length: 3 }).map((_, i) => (
+                    {(isLoading || isAiLoading) && Array.from({ length: 3 }).map((_, i) => (
                         <Card key={i}><Skeleton className="h-80 w-full" /></Card>
                     ))}
 
-                    {!isLoading && lobbiesToDisplay.map(lobby => (
-                        <LfgCard key={lobby.id} lobby={lobby} onJoin={handleJoin} />
+                    {!isLoading && !isAiLoading && lobbiesToDisplay.map(lobby => (
+                        <LfgCard key={lobby.id} lobby={lobby} onJoin={joinLobby} />
                     ))}
                 </div>
-                 {!isLoading && lobbiesToDisplay.length === 0 && (
+                 {!isLoading && !isAiLoading && lobbiesToDisplay.length === 0 && (
                     <div className="text-center py-16 text-muted-foreground">
                         <p>Активных лобби по вашему запросу не найдено.</p>
                         <p>Попробуйте изменить запрос или создайте свое лобби.</p>

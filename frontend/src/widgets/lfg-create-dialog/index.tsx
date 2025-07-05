@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,18 +16,18 @@ import { cn } from '@/shared/lib/utils';
 import { CalendarIcon, Loader2, Swords, Dumbbell } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { sportsList } from '@/shared/lib/mock-data/sports';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from '@/shared/ui/dialog';
-import type { LfgLobby } from '@/shared/context/lfg-provider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { RadioGroup, RadioGroupItem } from '@/shared/ui/radio-group';
+import { getSports, type Sport } from '@/entities/sport/api/sports';
 
 const lfgSchema = z.object({
-  type: z.enum(['game', 'training'], { required_error: "Выберите тип активности." }),
+  type: z.enum(['GAME', 'TRAINING'], { required_error: "Выберите тип активности." }),
   sport: z.string({ required_error: "Выберите дисциплину." }),
   location: z.string().min(5, 'Укажите более точное местоположение.'),
+  playgroundId: z.string().optional(),
   startTime: z.date({ required_error: "Выберите дату." }),
-  duration: z.coerce.number().min(30, "Минимальная длительность 30 минут").max(180, "Максимальная длительность 3 часа"),
+  duration: z.coerce.number().min(30, "Минимальная длительность 30 минут").max(240, "Максимальная длительность 4 часа"),
   playersNeeded: z.coerce.number().min(2, 'Нужно как минимум 2 игрока.').max(22, 'Слишком много игроков.'),
   comment: z.string().min(10, 'Добавьте комментарий, чтобы игрокам было понятнее.').max(200, 'Комментарий слишком длинный.'),
 });
@@ -36,30 +37,33 @@ type FormValues = z.infer<typeof lfgSchema>;
 interface LfgCreateDialogProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
-    onCreate: (data: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number }) => void;
+    onCreate: (data: FormValues) => Promise<boolean>;
 }
 
 export function LfgCreateDialog({ isOpen, onOpenChange, onCreate }: LfgCreateDialogProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [sports, setSports] = useState<Sport[]>([]);
+    
+    useEffect(() => {
+        if (isOpen) {
+            getSports().then(setSports);
+        }
+    }, [isOpen]);
 
     const form = useForm<FormValues>({
         resolver: zodResolver(lfgSchema),
         defaultValues: {
-            type: 'game',
+            type: 'GAME',
             duration: 60,
             playersNeeded: 4,
             startTime: new Date(),
         },
     });
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
-        setTimeout(() => {
-            onCreate(data);
-            setIsSubmitting(false);
-            onOpenChange(false);
-            form.reset();
-        }, 1000);
+        await onCreate(data);
+        setIsSubmitting(false);
     };
 
     return (
@@ -86,7 +90,7 @@ export function LfgCreateDialog({ isOpen, onOpenChange, onCreate }: LfgCreateDia
                                             >
                                                 <FormItem>
                                                     <FormControl>
-                                                        <RadioGroupItem value="game" id="type-game" className="peer sr-only" />
+                                                        <RadioGroupItem value="GAME" id="type-game" className="peer sr-only" />
                                                     </FormControl>
                                                     <FormLabel htmlFor="type-game" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
                                                         <Swords className="mb-3 h-6 w-6" />
@@ -95,7 +99,7 @@ export function LfgCreateDialog({ isOpen, onOpenChange, onCreate }: LfgCreateDia
                                                 </FormItem>
                                                 <FormItem>
                                                      <FormControl>
-                                                        <RadioGroupItem value="training" id="type-training" className="peer sr-only" />
+                                                        <RadioGroupItem value="TRAINING" id="type-training" className="peer sr-only" />
                                                     </FormControl>
                                                     <FormLabel htmlFor="type-training" className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
                                                         <Dumbbell className="mb-3 h-6 w-6" />
@@ -111,7 +115,7 @@ export function LfgCreateDialog({ isOpen, onOpenChange, onCreate }: LfgCreateDia
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <FormField control={form.control} name="sport" render={({ field }) => (
-                                    <FormItem><FormLabel>Вид спорта</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                    <FormItem><FormLabel>Вид спорта</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                                 )} />
                                 <FormField control={form.control} name="playersNeeded" render={({ field }) => (
                                     <FormItem><FormLabel>Сколько игроков нужно?</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
