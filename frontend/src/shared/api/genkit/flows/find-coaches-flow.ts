@@ -1,7 +1,28 @@
 'use server';
 
-import type { FindCoachesInput, FindCoachesOutput } from './schemas/find-coaches-schema';
-export type { FindCoachesInput, FindCoachesOutput };
+// Define types locally
+export type Coach = {
+    id: string;
+    name: string;
+    avatar: string | null;
+    avatarHint: string;
+    specialization: string;
+    description: string;
+    tags: string[];
+    rating: number;
+    price: string;
+    profileUrl: string;
+};
+
+export type FindCoachesInput = string;
+
+export type FindCoachesOutput = {
+    recommendations: {
+        coach: Coach;
+        reasoning: string;
+    }[];
+};
+
 
 export async function findCoaches(input: FindCoachesInput): Promise<FindCoachesOutput> {
   const response = await fetch('/api/ai/find-coaches', {
