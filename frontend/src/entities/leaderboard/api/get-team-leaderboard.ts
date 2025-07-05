@@ -4,7 +4,12 @@ import type { TeamLeaderboardItem } from '@/entities/leaderboard/model/types';
 export type { TeamLeaderboardItem };
 
 export async function getTeamLeaderboard(game?: string): Promise<TeamLeaderboardItem[]> {
-    const url = game ? `${process.env.BACKEND_URL}/teams/leaderboard?game=${encodeURIComponent(game)}` : `${process.env.BACKEND_URL}/teams/leaderboard`;
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!baseUrl) {
+        console.error('Backend URL not configured');
+        return [];
+    }
+    const url = game ? `${baseUrl}/teams/leaderboard?game=${encodeURIComponent(game)}` : `${baseUrl}/teams/leaderboard`;
     try {
         const response = await fetch(url, {
             cache: 'no-store',

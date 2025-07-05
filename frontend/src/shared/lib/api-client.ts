@@ -17,8 +17,15 @@ export async function fetchWithAuth<T = any>(url: string, options: RequestInit =
   if (!session?.access_token) {
     return { success: false, error: 'Unauthorized', status: 401, data: null };
   }
+  
+  const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  if (!baseUrl) {
+    const errorMsg = "Backend URL is not configured. Please set NEXT_PUBLIC_BACKEND_URL in your environment variables.";
+    console.error(errorMsg);
+    return { success: false, error: errorMsg, status: 500, data: null };
+  }
 
-  const response = await fetch(`${process.env.BACKEND_URL}${url}`, {
+  const response = await fetch(`${baseUrl}${url}`, {
     ...options,
     headers: {
       ...options.headers,

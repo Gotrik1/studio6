@@ -34,7 +34,12 @@ const adaptBackendTeamToFrontend = (backendData: any): TeamDetails => {
 
 export async function getTeamBySlug(slug: string): Promise<TeamDetails | null> {
     try {
-        const res = await fetch(`${process.env.BACKEND_URL}/teams/slug/${slug}`, {
+        const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        if (!baseUrl) {
+            console.error('Backend URL not configured');
+            return null;
+        }
+        const res = await fetch(`${baseUrl}/teams/slug/${slug}`, {
             cache: 'no-store',
         });
 

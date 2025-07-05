@@ -5,11 +5,28 @@ import type { Playground } from '@/entities/playground/model/types';
 import { revalidatePath, revalidateTag } from 'next/cache';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
-type CreatePlaygroundData = Omit<Playground, 'id' | 'rating' | 'checkIns' | 'status' | 'creator' | 'reviews'>;
+/**
+ * Explicit DTO for creating a playground.
+ * This ensures the contract with the backend API is clear and consistent.
+ */
+export type CreatePlaygroundData = {
+    name: string;
+    address: string;
+    type: string;
+    surface: string;
+    features: string[];
+    coverImage?: string;
+    coverImageHint?: string;
+};
 
 export async function getPlaygrounds(): Promise<Playground[]> {
   try {
-    const res = await fetch(`${process.env.BACKEND_URL}/playgrounds`, { cache: 'no-store' });
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+    if (!baseUrl) {
+        console.error('Backend URL not configured');
+        return [];
+    }
+    const res = await fetch(`${baseUrl}/playgrounds`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Failed to fetch playgrounds');
     const playgrounds = await res.json();
     // Adapter to convert numeric ID to string
