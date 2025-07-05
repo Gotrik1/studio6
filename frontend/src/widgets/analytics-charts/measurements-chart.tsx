@@ -1,10 +1,9 @@
-
 'use client';
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import type { Measurement } from '@/shared/lib/mock-data/measurements';
+import type { Measurement } from '@/entities/user/model/types';
 
 const metricLabels: Record<keyof Omit<Measurement, 'id' | 'date'>, string> = {
     weight: "Вес",
