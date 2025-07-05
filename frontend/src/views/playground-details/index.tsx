@@ -27,6 +27,8 @@ import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/
 import { createReview, getReviews } from '@/entities/playground/api/reviews';
 import { useRouter } from 'next/navigation';
 import type { PlaygroundConditionReport } from '@/entities/playground/api/condition';
+import type { LfgLobby } from '@/entities/lfg/model/types';
+import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
 
 
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
@@ -39,9 +41,12 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
     const [isLoadingReviews, setIsLoadingReviews] = useState(true);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
-    const { lobbies, addLobby } = useLfg();
+    const { addLobby } = useLfg();
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [initialDateTime, setInitialDateTime] = useState<{date: Date, time: string}>();
+    
+    const [schedule, setSchedule] = useState<LfgLobby[]>([]);
+    const [isLoadingSchedule, setIsLoadingSchedule] = useState(true);
 
     const loadActivities = useCallback(async () => {
         setIsLoadingActivities(true);
@@ -85,10 +90,24 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         }
     }, [playground.id, toast]);
 
+    const loadSchedule = useCallback(async () => {
+        setIsLoadingSchedule(true);
+        try {
+            const scheduleData = await getPlaygroundSchedule(playground.id);
+            setSchedule(scheduleData);
+        } catch (error) {
+            console.error('Failed to load schedule', error);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить расписание площадки.' });
+        } finally {
+            setIsLoadingSchedule(false);
+        }
+    }, [playground.id, toast]);
+
     useEffect(() => {
         loadActivities();
         loadReviews();
-    }, [loadActivities, loadReviews]);
+        loadSchedule();
+    }, [loadActivities, loadReviews, loadSchedule]);
 
     const handleCheckIn = async (comment: string, photo?: string) => {
         if (!user) return;
@@ -148,6 +167,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
                 title: "Игра запланирована!",
                 description: "Ваш план отобразится в расписании и разделе LFG.",
             });
+            await loadSchedule();
         } else {
              toast({
                 variant: "destructive",
@@ -196,7 +216,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
                         <PlaygroundInfoTab playground={playground} issueReport={initialConditionReport} />
                     </TabsContent>
                     <TabsContent value="schedule" className="mt-6">
-                        <PlaygroundScheduleTab schedule={lobbies.filter(l => l.playgroundId === playground.id)} onPlanClick={openPlanGameDialog} />
+                        <PlaygroundScheduleTab schedule={schedule} onPlanClick={openPlanGameDialog} isLoading={isLoadingSchedule} />
                     </TabsContent>
                     <TabsContent value="reviews" className="mt-6">
                         <PlaygroundReviewsTab 

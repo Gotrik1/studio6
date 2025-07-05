@@ -5,6 +5,7 @@ import { CreatePlaygroundDto } from './dto/create-playground.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { summarizePlaygroundReviews } from '@/ai/flows/summarize-playground-reviews-flow';
 import type { PlaygroundReviewSummaryDto } from './dto/playground-review-summary.dto';
+import { addMinutes } from 'date-fns';
 
 @Injectable()
 export class PlaygroundsService {
@@ -174,5 +175,39 @@ export class PlaygroundsService {
       ...summary,
       averageRating: parseFloat(averageRating.toFixed(1)),
     };
+  }
+  
+  async findSchedule(playgroundId: string): Promise<any[]> {
+    const now = new Date();
+    const lobbies = await this.prisma.lfgLobby.findMany({
+        where: {
+            playgroundId,
+            endTime: { gt: now },
+        },
+        include: {
+            creator: { select: { id: true, name: true, avatar: true } },
+            _count: { select: { players: true } },
+        },
+        orderBy: {
+            startTime: 'asc',
+        },
+    });
+
+    return lobbies.map(lobby => ({
+        id: lobby.id,
+        type: lobby.type,
+        sport: lobby.sport,
+        location: lobby.location,
+        playgroundId: lobby.playgroundId,
+        startTime: lobby.startTime,
+        endTime: lobby.endTime,
+        playersNeeded: lobby.playersNeeded,
+        playersJoined: lobby._count.players,
+        comment: lobby.comment,
+        creator: {
+            name: lobby.creator.name,
+            avatar: lobby.creator.avatar || 'https://placehold.co/100x100.png'
+        }
+    }));
   }
 }

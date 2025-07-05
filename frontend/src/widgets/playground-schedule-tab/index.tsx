@@ -5,19 +5,35 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/sha
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { addDays, format, getHours, getMinutes, isSameDay } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import type { LfgLobby } from '@/shared/context/lfg-provider';
+import type { LfgLobby } from '@/entities/lfg/model/types';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shared/ui/tooltip';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 interface PlaygroundScheduleTabProps {
     schedule: LfgLobby[];
     onPlanClick: (day: Date, hour: number) => void;
+    isLoading: boolean;
 }
 
 const hours = Array.from({ length: 15 }, (_, i) => i + 8); // 8 AM to 10 PM
 const days = Array.from({ length: 7 }, (_, i) => addDays(new Date(), i));
 
-export function PlaygroundScheduleTab({ schedule, onPlanClick }: PlaygroundScheduleTabProps) {
+export function PlaygroundScheduleTab({ schedule, onPlanClick, isLoading }: PlaygroundScheduleTabProps) {
+    if (isLoading) {
+        return (
+             <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-1/2" />
+                    <Skeleton className="h-4 w-3/4" />
+                </CardHeader>
+                <CardContent>
+                    <Skeleton className="h-[60vh] w-full" />
+                </CardContent>
+            </Card>
+        )
+    }
+    
     return (
         <Card>
             <CardHeader>
@@ -79,7 +95,7 @@ export function PlaygroundScheduleTab({ schedule, onPlanClick }: PlaygroundSched
                                                         </TooltipTrigger>
                                                         <TooltipContent>
                                                             <div className="flex items-center gap-2">
-                                                                <Avatar className="h-6 w-6"><AvatarImage src={booking.creator.avatar} /><AvatarFallback>{booking.creator.name.charAt(0)}</AvatarFallback></Avatar>
+                                                                <Avatar className="h-6 w-6"><AvatarImage src={booking.creator.avatar || ''} /><AvatarFallback>{booking.creator.name.charAt(0)}</AvatarFallback></Avatar>
                                                                 <p>{booking.creator.name}</p>
                                                             </div>
                                                             <p className="text-sm text-muted-foreground mt-1">{format(booking.startTime, 'HH:mm')} - {format(booking.endTime, 'HH:mm')}</p>

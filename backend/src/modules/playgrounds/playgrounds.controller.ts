@@ -36,6 +36,13 @@ export class PlaygroundsController {
   findOne(@Param('id') id: string) {
     return this.playgroundsService.findOne(id);
   }
+  
+  @Public()
+  @Get(':id/schedule')
+  @ApiOperation({ summary: 'Получить расписание для площадки' })
+  findSchedule(@Param('id') id: string) {
+    return this.playgroundsService.findSchedule(id);
+  }
 
   @Public()
   @Get(':id/king-of-the-court')
