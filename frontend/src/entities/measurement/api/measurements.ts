@@ -5,7 +5,9 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 
 export async function getMeasurements(): Promise<Measurement[]> {
-    const result = await fetchWithAuth('/measurements');
+    const result = await fetchWithAuth('/measurements', {
+        next: { tags: ['measurements'] }
+    });
     if (!result.success) {
         console.error('Failed to fetch measurements:', result.error);
         return [];
