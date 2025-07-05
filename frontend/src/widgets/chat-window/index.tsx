@@ -15,9 +15,9 @@ import { askTeamChatbot } from '@/shared/api/genkit/flows/team-chatbot-flow';
 import { io, type Socket } from 'socket.io-client';
 import { getChatHistory } from '@/entities/chat/api/get-chat-history';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { Contact } from '@/widgets/chat-contact-list';
+import type { ChatContact, ChatMessage } from '@/entities/chat/model/types';
 
-type Message = {
+type UIMessage = {
     sender: 'user' | 'ai' | 'other';
     name: string;
     avatar: string;
@@ -28,12 +28,12 @@ type Message = {
 const getAvatarFallback = (name: string) => name.split(' ').map(n => n[0]).join('');
 
 interface ChatWindowProps {
-    chat: Contact;
+    chat: ChatContact;
 }
 
 export function ChatWindow({ chat }: ChatWindowProps) {
     const { user } = useSession();
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<UIMessage[]>([]);
     const [input, setInput] = useState('');
     const [replySuggestions, setReplySuggestions] = useState<string[]>([]);
     const [isThinking, setIsThinking] = useState(false);
@@ -74,11 +74,11 @@ export function ChatWindow({ chat }: ChatWindowProps) {
                 setIsLoadingHistory(true);
                 setMessages([]);
                 try {
-                    const history = await getChatHistory(chat.id);
-                    const formattedHistory: Message[] = history.map((msg: any) => ({
+                    const history: ChatMessage[] = await getChatHistory(chat.id);
+                    const formattedHistory: UIMessage[] = history.map((msg: ChatMessage) => ({
                         sender: msg.author.id === user.id ? 'user' : 'other',
                         name: msg.author.name,
-                        avatar: msg.author.avatar,
+                        avatar: msg.author.avatar || '',
                         text: msg.text,
                     }));
                     setMessages(formattedHistory);
@@ -108,22 +108,22 @@ export function ChatWindow({ chat }: ChatWindowProps) {
         const isAiCommand = text.toLowerCase().startsWith('/ai') || text.toLowerCase().startsWith('@ai');
 
         if (isTeamChat && isAiCommand) {
-            const userMessage: Message = { sender: 'user', name: user.name, avatar: user.avatar, text };
+            const userMessage: UIMessage = { sender: 'user', name: user.name, avatar: user.avatar || '', text };
             setMessages(prev => [...prev, userMessage]);
             setInput('');
 
-            const thinkingMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Думаю...', isThinking: true };
+            const thinkingMessage: UIMessage = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Думаю...', isThinking: true };
             setMessages(prev => [...prev, thinkingMessage]);
             setIsThinking(true);
             const query = text.replace(/^\/ai\s*|^\@ai\s*/, '');
             
             try {
                 const aiResponseText = await askTeamChatbot({ teamId: chat.teamId, query });
-                const aiMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: aiResponseText };
+                const aiMessage: UIMessage = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: aiResponseText };
                 setMessages(prev => [...prev.filter(m => !m.isThinking), aiMessage]);
             } catch(e) {
                 console.error(e);
-                const errorMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Произошла ошибка при обработке вашего запроса.' };
+                const errorMessage: UIMessage = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Произошла ошибка при обработке вашего запроса.' };
                 setMessages(prev => [...prev.filter(m => !m.isThinking), errorMessage]);
             } finally {
                 setIsThinking(false);
@@ -230,7 +230,7 @@ export function ChatWindow({ chat }: ChatWindowProps) {
                                 </div>
                                 {message.sender === 'user' && user && (
                                     <Avatar className="h-8 w-8 border flex-shrink-0">
-                                        <AvatarImage src={user.avatar} data-ai-hint="user avatar"/>
+                                        <AvatarImage src={user.avatar || ''} data-ai-hint="user avatar"/>
                                         <AvatarFallback>{getAvatarFallback(user.name)}</AvatarFallback>
                                     </Avatar>
                                 )}

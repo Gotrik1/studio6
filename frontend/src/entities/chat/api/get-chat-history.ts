@@ -1,8 +1,9 @@
 'use server';
 
 import { fetchWithAuth } from "@/shared/lib/api-client";
+import type { ChatMessage } from '../model/types';
 
-export async function getChatHistory(chatId: string) {
+export async function getChatHistory(chatId: string): Promise<ChatMessage[]> {
   const result = await fetchWithAuth(`/chats/${chatId}/history`);
   
   if (!result.success) {
@@ -10,5 +11,5 @@ export async function getChatHistory(chatId: string) {
     return [];
   }
 
-  return result.data;
+  return result.data as ChatMessage[];
 }

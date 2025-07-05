@@ -9,28 +9,17 @@ import { cn } from '@/shared/lib/utils';
 import { getChats } from '@/entities/chat/api/chats';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Users } from 'lucide-react';
-
-export type Contact = {
-    id: string;
-    teamId: string;
-    name: string;
-    avatar: string;
-    avatarHint: string;
-    lastMessage: string;
-    timestamp: string;
-    isOnline: boolean;
-    type: 'team' | 'user';
-}
+import type { ChatContact } from '@/entities/chat/model/types';
 
 const getAvatarFallback = (name: string) => name.split(' ').map(n => n[0]).join('');
 
 interface ChatContactListProps {
     selectedChatId: string | null;
-    onSelectChat: (contact: Contact) => void;
+    onSelectChat: (contact: ChatContact) => void;
 }
 
 export function ChatContactList({ selectedChatId, onSelectChat }: ChatContactListProps) {
-    const [contacts, setContacts] = useState<Contact[]>([]);
+    const [contacts, setContacts] = useState<ChatContact[]>([]);
     const [isLoadingContacts, setIsLoadingContacts] = useState(true);
 
     const fetchContacts = useCallback(async () => {
