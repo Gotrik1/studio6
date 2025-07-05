@@ -2,9 +2,9 @@
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { FullUserProfile } from '@/entities/user/api/get-user';
-import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
-import type { CoachedPlayer } from '@/widgets/team-training-analytics';
+import type { FullUserProfile } from '@/entities/user/model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
+import type { CoachedPlayer } from '@/entities/user/model/types';
 
 const CoachProfile = dynamic(() => import('@/entities/user/ui/coach-profile').then(mod => mod.CoachProfile), {
   loading: () => <div className="space-y-6">
@@ -17,10 +17,10 @@ const CoachProfile = dynamic(() => import('@/entities/user/ui/coach-profile').th
 
 type CoachClientProps = {
   user: FullUserProfile;
-  achievements: typeof AchievementsArray;
+  achievements: Achievement[];
   players: CoachedPlayer[];
 };
 
 export default function CoachClient({ user, achievements, players }: CoachClientProps) {
-  return <CoachProfile user={user as any} achievements={achievements} players={players} />;
+  return <CoachProfile user={user} achievements={achievements} players={players} />;
 }

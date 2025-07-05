@@ -10,7 +10,6 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { AssignProgramDialog } from '@/widgets/assign-program-dialog';
@@ -18,8 +17,9 @@ import { Wand2, ImageIcon } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import Link from 'next/link';
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
-import type { FullUserProfile } from '../api/get-user';
+import type { FullUserProfile } from '../model/types';
 import type { CoachedPlayer } from '@/entities/user/model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
 
 const CoachStatsTab = dynamic(() => import('@/entities/user/ui/coach-profile-tabs/stats-tab').then(mod => mod.CoachStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -41,7 +41,7 @@ const MyProgramsTab = dynamic(() => import('@/entities/user/ui/coach-profile-tab
 
 type CoachProfileProps = {
   user: FullUserProfile;
-  achievements: typeof AchievementsArray;
+  achievements: Achievement[];
   players: CoachedPlayer[];
 };
 

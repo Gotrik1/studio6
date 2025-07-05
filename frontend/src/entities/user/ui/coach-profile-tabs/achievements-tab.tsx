@@ -2,7 +2,7 @@
 'use client';
 
 import { Card, CardContent } from "@/shared/ui/card";
-import type { coachAchievements as CoachAchievementsArray } from "@/shared/lib/mock-data/coach-profile";
+import type { Achievement } from "@/entities/achievement/model/types";
 import { ClipboardList, TrendingUp, Trophy, Users, Star, Award } from "lucide-react";
 
 const iconComponents = {
@@ -13,8 +13,6 @@ const iconComponents = {
     TrendingUp,
     Award,
 };
-
-type Achievement = (typeof CoachAchievementsArray)[0];
 
 interface CoachAchievementsTabProps {
     achievements: Achievement[];
