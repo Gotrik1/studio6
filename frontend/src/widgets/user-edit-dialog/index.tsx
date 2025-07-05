@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -22,7 +21,7 @@ interface UserEditDialogProps {
     onUserUpdate: (userId: string, newRole: string) => void;
 }
 
-const allRoles = [ "Администратор", "Модератор", "Капитан", "Игрок", "Судья", "Менеджер", "Организатор", "Спонсор", "Болельщик" ];
+const allRoles = [ "Администратор", "Модератор", "Капитан", "Игрок", "Судья", "Менеджер", "Организатор", "Спонсор", "Болельщик", "Тренер"];
 
 const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
     switch(confidence) {

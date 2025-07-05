@@ -1,8 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { initialLfgLobbies, type LfgLobby } from '@/shared/lib/mock-data/lfg';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import type { LfgLobby } from '@/entities/lfg/model/types';
 import { useSession } from '@/shared/lib/session/client';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
 export type { LfgLobby };
 
@@ -16,11 +17,17 @@ const LfgContext = createContext<LfgContextType | undefined>(undefined);
 
 export const LfgProvider = ({ children }: { children: ReactNode }) => {
     const { user } = useSession();
-    const [lobbies, setLobbies] = useState<LfgLobby[]>(initialLfgLobbies);
+    const [lobbies, setLobbies] = useState<LfgLobby[]>([]);
+
+    useEffect(() => {
+        // In a real app, you would fetch initial lobbies here.
+        // For now, it starts empty.
+    }, []);
 
     const addLobby = (data: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number }) => {
         if (!user) return;
         
+        // This is a client-side mock of adding a lobby. A real implementation would post to the backend.
         const endTime = new Date(data.startTime.getTime() + data.duration * 60000);
 
         const newLobby: LfgLobby = {
@@ -30,10 +37,11 @@ export const LfgProvider = ({ children }: { children: ReactNode }) => {
             creator: { name: user.name, avatar: user.avatar },
             playersJoined: 1,
         };
-        setLobbies(prev => [...prev, newLobby].sort((a,b) => a.startTime.getTime() - b.startTime.getTime()));
+        setLobbies(prev => [...prev, newLobby].sort((a,b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()));
     };
 
     const joinLobby = (lobbyId: string) => {
+        // Client-side mock of joining.
         setLobbies(prevLobbies => prevLobbies.map(lobby => {
             if (lobby.id === lobbyId && lobby.playersJoined < lobby.playersNeeded) {
                 return { ...lobby, playersJoined: lobby.playersJoined + 1 };

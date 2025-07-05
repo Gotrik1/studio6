@@ -1,9 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import type { User } from '@/shared/lib/types';
 import { useSession } from '@/shared/lib/session/client';
-import { friendsList } from '@/shared/lib/mock-data/friends';
+import { getFriends, type Friend } from '@/entities/user/api/friends';
 
 export type TrainingProposal = {
     id: string;
@@ -15,45 +15,14 @@ export type TrainingProposal = {
     status: 'pending' | 'accepted' | 'declined';
 };
 
-const otherUser1 = { name: friendsList[0].name, avatar: friendsList[0].avatar };
-const otherUser2 = { name: friendsList[1].name, avatar: friendsList[1].avatar };
-const currentUser = { name: 'Superuser', avatar: 'https://placehold.co/100x100.png' };
+const initialProposals: TrainingProposal[] = []; // In a real app, this would be fetched.
 
-
-const initialProposals: TrainingProposal[] = [
-    {
-        id: 'tp-1',
-        from: otherUser1,
-        to: currentUser,
-        sport: 'Баскетбол',
-        date: new Date(new Date().setDate(new Date().getDate() + 2)),
-        comment: 'Хочу отработать трехочковые, составишь компанию?',
-        status: 'pending',
-    },
-    {
-        id: 'tp-2',
-        from: currentUser,
-        to: otherUser2,
-        sport: 'Футбол',
-        date: new Date(new Date().setDate(new Date().getDate() + 3)),
-        comment: 'Давай 1 на 1, на \'Коробке за Пятерочкой\'.',
-        status: 'pending',
-    },
-    {
-        id: 'tp-3',
-        from: otherUser2,
-        to: currentUser,
-        sport: 'Теннис',
-        date: new Date(new Date().setDate(new Date().getDate() - 1)),
-        comment: 'Предложение по теннису',
-        status: 'accepted',
-    }
-];
 
 interface TrainingProposalContextType {
   proposals: TrainingProposal[];
   addProposal: (toUserId: string, sport: string, date: Date, comment: string) => void;
   updateProposalStatus: (proposalId: string, status: 'accepted' | 'declined') => void;
+  friends: Friend[];
 }
 
 const TrainingProposalContext = createContext<TrainingProposalContextType | undefined>(undefined);
@@ -61,10 +30,19 @@ const TrainingProposalContext = createContext<TrainingProposalContextType | unde
 export const TrainingProposalProvider = ({ children }: { children: ReactNode }) => {
     const { user: sessionUser } = useSession();
     const [proposals, setProposals] = useState<TrainingProposal[]>(initialProposals);
+    const [friends, setFriends] = useState<Friend[]>([]);
+
+    useEffect(() => {
+        if (sessionUser) {
+            getFriends().then(setFriends);
+            // Here you would also fetch existing proposals.
+        }
+    }, [sessionUser]);
+
 
     const addProposal = (toUserId: string, sport: string, date: Date, comment: string) => {
         if (!sessionUser) return;
-        const toUser = friendsList.find(f => f.id === toUserId);
+        const toUser = friends.find(f => f.id === toUserId);
         if (!toUser) return;
         
         const newProposal: TrainingProposal = {
@@ -76,15 +54,17 @@ export const TrainingProposalProvider = ({ children }: { children: ReactNode }) 
             comment,
             status: 'pending',
         };
+        // This is a client-side mock. In reality, you'd post to the backend.
         setProposals(prev => [newProposal, ...prev]);
     };
 
     const updateProposalStatus = (proposalId: string, status: 'accepted' | 'declined') => {
+        // Client-side mock.
         setProposals(prev => prev.map(p => p.id === proposalId ? { ...p, status } : p));
     };
 
     return (
-        <TrainingProposalContext.Provider value={{ proposals, addProposal, updateProposalStatus }}>
+        <TrainingProposalContext.Provider value={{ proposals, addProposal, updateProposalStatus, friends }}>
             {children}
         </TrainingProposalContext.Provider>
     );

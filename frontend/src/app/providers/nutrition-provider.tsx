@@ -1,9 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
-import type { FoodLogEntry } from '@/shared/lib/mock-data/nutrition-diary';
-import { nutritionDiaryData } from '@/shared/lib/mock-data/nutrition-diary';
-import type { FoodItem } from '@/shared/lib/mock-data/nutrition';
+import type { FoodLogEntry } from '@/entities/nutrition/model/types';
+import type { FoodItem } from '@/entities/nutrition/model/types';
 
 interface NutritionTargets {
     calories: number;
@@ -33,7 +32,7 @@ const defaultTargets: NutritionTargets = {
 
 
 export const NutritionProvider = ({ children }: { children: ReactNode }) => {
-  const [log, setLog] = useState<FoodLogEntry[]>(nutritionDiaryData);
+  const [log, setLog] = useState<FoodLogEntry[]>([]); // Initial log is empty, would be fetched
   const [targets, setTargets] = useState<NutritionTargets>(defaultTargets);
 
   const addFoodLog = (item: FoodItem, grams: number, meal: FoodLogEntry['meal']) => {

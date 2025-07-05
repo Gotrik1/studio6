@@ -7,9 +7,9 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Target, AlertCircle, Award } from 'lucide-react';
 import { generatePlaygroundChallenge, type GeneratePlaygroundChallengeOutput } from '@/shared/api/genkit/flows/generate-playground-challenge-flow';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
-import { playgroundLeaderboardData } from '@/shared/lib/mock-data/playground-leaderboard';
+import { getPlayerLeaderboard } from '@/entities/leaderboard/api/get-player-leaderboard';
 
 interface AiPlaygroundChallengeProps {
     playground: Playground;
@@ -29,12 +29,14 @@ export function AiPlaygroundChallenge({ playground }: AiPlaygroundChallengeProps
             setError(null);
             setIsAccepted(false);
             try {
-                const topPlayer = playgroundLeaderboardData[0];
+                // In a real app, this would be a more sophisticated query for the playground's top player.
+                const topPlayers = await getPlayerLeaderboard();
+                const topPlayer = topPlayers[0] || { name: 'Неизвестный', points: 0 };
                 const challengeData = await generatePlaygroundChallenge({
                     playgroundName: playground.name,
                     playgroundType: playground.type,
                     topPlayerName: topPlayer.name,
-                    topPlayerStat: `${topPlayer.checkIns} чекинов`
+                    topPlayerStat: `${topPlayer.points} очков`
                 });
                 setResult(challengeData);
             } catch (e) {

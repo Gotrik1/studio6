@@ -1,8 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { measurementsHistory as initialHistory } from '@/shared/lib/mock-data/measurements';
-import type { Measurement } from '@/shared/lib/mock-data/measurements';
+import type { Measurement } from '@/entities/user/model/types';
 
 interface MeasurementsContextType {
   history: Measurement[];
@@ -10,6 +9,8 @@ interface MeasurementsContextType {
 }
 
 const MeasurementsContext = createContext<MeasurementsContextType | undefined>(undefined);
+
+const initialHistory: Measurement[] = []; // In a real app, this would be fetched from the backend.
 
 export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
     const [history, setHistory] = useState<Measurement[]>(initialHistory);

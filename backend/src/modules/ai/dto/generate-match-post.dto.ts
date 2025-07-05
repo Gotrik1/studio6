@@ -1,5 +1,5 @@
 import type { z } from 'zod';
-import type { GenerateMatchPostInputSchema } from '@/ai/flows/schemas/generate-match-post-schema';
+import type { GenerateMatchPostInputSchema } from '../schemas/generate-match-post-schema';
 
 export class GenerateMatchPostDto implements z.infer<typeof GenerateMatchPostInputSchema> {
     readonly winningTeam: string;

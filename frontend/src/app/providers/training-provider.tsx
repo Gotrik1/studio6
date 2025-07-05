@@ -1,8 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import type { TrainingProgram } from '@/entities/training-program/model/types';
-import { trainingPrograms as initialTrainingPrograms } from '@/shared/lib/mock-data/training-programs';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import type { TrainingProgram, TrainingLogEntry } from '@/entities/training-program/model/types';
+import { getTrainingPrograms } from '@/entities/training-program/api/get-programs';
+import { useToast } from '@/shared/hooks/use-toast';
 
 interface TrainingContextType {
   programs: TrainingProgram[];
@@ -11,25 +12,54 @@ interface TrainingContextType {
   addProgram: (program: TrainingProgram) => void;
   updateProgram: (program: TrainingProgram) => void;
   deleteProgram: (programId: string) => void;
+  isLoading: boolean;
+  log: TrainingLogEntry[];
+  setLog: React.Dispatch<React.SetStateAction<TrainingLogEntry[]>>;
 }
 
 const TrainingContext = createContext<TrainingContextType | undefined>(undefined);
 
-const defaultProgram = initialTrainingPrograms.find(p => p.id === 'classic-split-3') || null;
-
 export const TrainingProvider = ({ children }: { children: ReactNode }) => {
-  const [programs, setPrograms] = useState<TrainingProgram[]>(initialTrainingPrograms);
-  const [currentProgram, setCurrentProgram] = useState<TrainingProgram | null>(defaultProgram);
+  const { toast } = useToast();
+  const [programs, setPrograms] = useState<TrainingProgram[]>([]);
+  const [currentProgram, setCurrentProgram] = useState<TrainingProgram | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [log, setLog] = useState<TrainingLogEntry[]>([]);
+
+  useEffect(() => {
+    const loadPrograms = async () => {
+      setIsLoading(true);
+      try {
+        const initialPrograms = await getTrainingPrograms();
+        setPrograms(initialPrograms);
+        const defaultProgram = initialPrograms.find(p => p.id === 'classic-split-3') || (initialPrograms.length > 0 ? initialPrograms[0] : null);
+        setCurrentProgram(defaultProgram);
+      } catch (error) {
+          toast({
+              variant: 'destructive',
+              title: 'Ошибка',
+              description: 'Не удалось загрузить тренировочные программы.'
+          });
+      } finally {
+          setIsLoading(false);
+      }
+    };
+    loadPrograms();
+    // Here you would also fetch the training log from the backend
+  }, [toast]);
+
 
   const selectProgram = (program: TrainingProgram) => {
     setCurrentProgram(program);
   };
 
   const addProgram = (program: TrainingProgram) => {
+    // In a real app, this would be an API call, and then we'd refetch or update state.
     setPrograms(prev => [program, ...prev]);
   };
   
   const updateProgram = (updatedProgram: TrainingProgram) => {
+    // API call here
     setPrograms(prev => prev.map(p => p.id === updatedProgram.id ? updatedProgram : p));
     if (currentProgram?.id === updatedProgram.id) {
         setCurrentProgram(updatedProgram);
@@ -37,14 +67,19 @@ export const TrainingProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const deleteProgram = (programId: string) => {
+    // API call here
     setPrograms(prev => prev.filter(p => p.id !== programId));
     if (currentProgram?.id === programId) {
-        setCurrentProgram(null);
+        // Select another program if the current one is deleted
+        const remainingPrograms = programs.filter(p => p.id !== programId);
+        setCurrentProgram(remainingPrograms.length > 0 ? remainingPrograms[0] : null);
     }
   };
 
+  const value = { programs, currentProgram, selectProgram, addProgram, updateProgram, deleteProgram, isLoading, log, setLog };
+
   return (
-    <TrainingContext.Provider value={{ programs, currentProgram, selectProgram, addProgram, updateProgram, deleteProgram }}>
+    <TrainingContext.Provider value={value}>
       {children}
     </TrainingContext.Provider>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useMemo } from 'react';
-import type { StoreItem } from '@/shared/lib/mock-data/store';
+import type { StoreItem } from '@/entities/store/model/types';
 
 export type CartItem = StoreItem & {
     quantity: number;

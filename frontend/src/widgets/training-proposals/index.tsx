@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useTrainingProposals } from '@/shared/context/training-proposal-provider';
@@ -37,7 +36,7 @@ export function TrainingProposalsWidget() {
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10">
-                        <AvatarImage src={type === 'incoming' ? proposal.from.avatar : proposal.to.avatar} />
+                        <AvatarImage src={(type === 'incoming' ? proposal.from.avatar : proposal.to.avatar) || ''} />
                         <AvatarFallback>{type === 'incoming' ? proposal.from.name.charAt(0) : proposal.to.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>

@@ -1,4 +1,3 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -27,7 +26,7 @@ import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
 import { PlayerActivityFeed, type PlayerActivityItem } from '@/widgets/player-activity-feed';
 import type { UserTeam, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
-import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import type { achievements as AchievementsArray } from '@/shared/lib/mock-data/profiles';
 
 
 const CareerTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/career-tab').then(mod => mod.CareerTab), {

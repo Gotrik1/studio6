@@ -1,8 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { inventory as initialInventory, type InventoryItem } from '@/shared/lib/mock-data/inventory';
-import type { StoreItem } from '@/shared/lib/mock-data/store';
+import type { InventoryItem } from '@/entities/inventory/model/types';
+import type { StoreItem } from '@/entities/store/model/types';
 import { format } from 'date-fns';
 
 interface InventoryContextType {
@@ -12,6 +12,10 @@ interface InventoryContextType {
 }
 
 const InventoryContext = createContext<InventoryContextType | undefined>(undefined);
+
+// In a real app, this would be fetched from the backend for the logged-in user.
+const initialInventory: InventoryItem[] = [];
+
 
 export const InventoryProvider = ({ children }: { children: ReactNode }) => {
     const [items, setItems] = useState<InventoryItem[]>(initialInventory);
@@ -34,8 +38,8 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
             type: item.name, // Use item name as type for simplicity
             purchaseDate: format(new Date(), 'yyyy-MM-dd'),
             lifespanMonths: 24, // Default lifespan for store items
-            image: item.image,
-            imageHint: item.imageHint,
+            image: item.image || 'https://placehold.co/600x400.png',
+            imageHint: item.imageHint || 'store item',
         };
         setItems(prev => [newInventoryItem, ...prev]);
     }, []);

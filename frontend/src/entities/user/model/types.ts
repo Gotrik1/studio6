@@ -1,5 +1,4 @@
 
-
 export type CareerHistoryItem = {
     id: string;
     teamName: string;
@@ -36,4 +35,16 @@ export type TournamentCrm = {
     startDate: string;
     organizer: string;
     rules: string;
+};
+
+export type Measurement = {
+    id: string;
+    date: string;
+    weight: number;
+    bodyFat?: number;
+    chest?: number;
+    waist?: number;
+    hips?: number;
+    biceps?: number;
+    thigh?: number;
 };

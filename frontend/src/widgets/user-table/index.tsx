@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { FC } from 'react';
@@ -9,7 +8,7 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
-import type { User } from '@/shared/lib/types';
+import type { User } from "@/shared/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { Users2 } from 'lucide-react';
 
@@ -67,7 +66,7 @@ export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onE
                             <TableRow key={user.id}>
                                 <TableCell>
                                     <Avatar>
-                                        <AvatarImage src={user.avatar} alt={user.name} />
+                                        <AvatarImage src={user.avatar || ''} alt={user.name} />
                                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 </TableCell>
