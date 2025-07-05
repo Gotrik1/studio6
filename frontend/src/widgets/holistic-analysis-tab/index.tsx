@@ -12,11 +12,17 @@ import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 import { AiFormCheckDialog } from '@/widgets/ai-form-check-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { useTraining } from '@/shared/context/training-provider';
-import { matchesList } from '@/shared/lib/mock-data/matches';
-import { winLossData } from '@/shared/lib/mock-data/player-stats';
+import type { PlayerStats } from '@/entities/user/model/types';
 
 
-export function HolisticAnalysisTab() {
+interface HolisticAnalysisTabProps {
+    stats: PlayerStats | null;
+}
+
+const mockFitnessGoal = 'Набор массы';
+
+
+export function HolisticAnalysisTab({ stats }: HolisticAnalysisTabProps) {
     const { log } = useTraining();
     // State for Holistic Analysis
     const [isHolisticLoading, setIsHolisticLoading] = useState(false);
@@ -45,17 +51,11 @@ export function HolisticAnalysisTab() {
                 Последняя тренировка: ${trainingMetrics.lastWorkout}.
             `;
 
-            const esportsStats = {
-                matches: winLossData.wins + winLossData.losses,
-                winrate: ((winLossData.wins / (winLossData.wins + winLossData.losses)) * 100).toFixed(1) + '%',
-                kda: '1.25',
-                winStreak: 5,
-            };
             const esportsSummary = `
-                Процент побед: ${esportsStats.winrate},
-                Всего матчей: ${esportsStats.matches},
-                Победная серия: ${esportsStats.winStreak},
-                Средний KDA: ${esportsStats.kda}.
+                Процент побед: ${stats?.summary.winrate}%,
+                Всего матчей: ${stats?.summary.matches},
+                Победная серия: ${stats?.summary.winStreak},
+                Средний KDA: ${stats?.summary.kda}.
             `;
 
             const analysis = await analyzeHolisticPerformance({
@@ -87,7 +87,7 @@ export function HolisticAnalysisTab() {
                                 <BrainCircuit className="h-12 w-12 text-muted-foreground mb-4" />
                                 <p className="font-semibold mb-2">Объедините два мира</p>
                                 <p className="text-sm text-muted-foreground mb-4">Нажмите кнопку, чтобы AI проанализировал ваши физические и игровые данные, выявил корреляции и дал уникальные рекомендации.</p>
-                                <Button onClick={handleGetHolisticAnalysis} disabled={isHolisticLoading}>
+                                <Button onClick={handleGetHolisticAnalysis} disabled={isHolisticLoading || !stats}>
                                     {isHolisticLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                                     Начать комплексный анализ
                                 </Button>
@@ -134,7 +134,7 @@ export function HolisticAnalysisTab() {
                                 </div>
                                 
                                 <div className="text-center pt-4 border-t">
-                                    <Button variant="outline" onClick={handleGetHolisticAnalysis} disabled={isHolisticLoading}>
+                                    <Button variant="outline" onClick={handleGetHolisticAnalysis} disabled={isHolisticLoading || !stats}>
                                         {isHolisticLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
                                         Проанализировать заново
                                     </Button>

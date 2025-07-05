@@ -272,7 +272,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
             </TabsContent>
 
             <TabsContent value="holistic-analysis" className="mt-4">
-                <HolisticAnalysisTab />
+                <HolisticAnalysisTab stats={stats} />
             </TabsContent>
 
             <TabsContent value="career" className="mt-4">

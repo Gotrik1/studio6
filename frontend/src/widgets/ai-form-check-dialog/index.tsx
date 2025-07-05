@@ -45,25 +45,30 @@ export function AiFormCheckDialog({ isOpen, onOpenChange, exerciseName }: AiForm
     setError(null);
     setAnalysisResult(null);
 
-    // In a real app, you would read the file as a data URI.
-    // For this prototype, we'll just use a mock data URI.
-    const mockVideoDataUri = 'data:video/mp4;base64,mock-video-data';
-
-    try {
-        const result = await analyzeExerciseForm({
-            videoDataUri: mockVideoDataUri,
-            exerciseName: exerciseName,
-        });
-        setAnalysisResult(result);
-    } catch (e) {
-        console.error(e);
-        setError("Не удалось выполнить анализ. Пожалуйста, попробуйте еще раз.");
-    } finally {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+        const videoDataUri = reader.result as string;
+        try {
+            const result = await analyzeExerciseForm({
+                videoDataUri,
+                exerciseName: exerciseName,
+            });
+            setAnalysisResult(result);
+        } catch (e) {
+            console.error(e);
+            setError("Не удалось выполнить анализ. Пожалуйста, попробуйте еще раз.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    reader.onerror = () => {
+        setError("Не удалось прочитать файл.");
         setIsLoading(false);
-    }
+    };
   };
   
-  const onOpenChangeHandler = (open: boolean) => {
+   const onOpenChangeHandler = (open: boolean) => {
     if (!open) {
       setFile(null);
       setAnalysisResult(null);
