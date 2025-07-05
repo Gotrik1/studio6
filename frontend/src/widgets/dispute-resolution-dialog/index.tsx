@@ -172,8 +172,9 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                 </div>
                 {isAnalyzing && (
                     <div className="space-y-2 p-4 border border-dashed rounded-lg">
-                        <div className="h-4 w-1/3" />
-                        <div className="h-8 w-full" />
+                        <div className="flex items-center justify-center h-20">
+                            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>
+                        </div>
                     </div>
                 )}
                  {aiError && (
@@ -187,7 +188,7 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                     <Alert>
                         <Sparkles className="h-4 w-4" />
                         <AlertTitle className="flex justify-between items-center">
-                            <span>Рекомендация: {getRecommendationText(aiResult.recommendation)}</span>
+                            <span>Рекомендация: {getRecommendationText(aiResult.recommendation as any)}</span>
                              <Badge variant="outline" className={cn(getConfidenceColor(aiResult.confidence))}>
                                 Уверенность: {aiResult.confidence}
                             </Badge>
