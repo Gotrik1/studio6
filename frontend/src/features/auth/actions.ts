@@ -39,8 +39,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
   }
   
   // If we got here, user is valid. Set cookie and redirect.
-  const cookieStore = cookies();
-  cookieStore.set('session', JSON.stringify(data), {
+  cookies().set('session', JSON.stringify(data), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 60 * 24 * 7, // One week
@@ -83,7 +82,6 @@ export async function register(values: z.infer<typeof registerSchema>) {
 
 
 export async function logout() {
-  const cookieStore = cookies();
-  cookieStore.delete('session');
+  cookies().delete('session');
   redirect('/auth');
 }

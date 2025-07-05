@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect, useTransition, ComponentType } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
 import { Button } from '@/shared/ui/button';
@@ -38,7 +39,7 @@ const FriendCardSkeleton = () => (
     </div>
 );
 
-const renderContent = (loading: boolean, data: any[], Component: React.ComponentType<{data: any[], onAction: any, onAction2?: any}>, onAction: any, onAction2?: any, emptyMessage: string = 'Пусто') => {
+const renderContent = (loading: boolean, data: any[], Component: ComponentType<{data: any[], onAction: any, onAction2?: any}>, onAction: any, onAction2?: any, emptyMessage: string = 'Пусто') => {
     if (loading) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

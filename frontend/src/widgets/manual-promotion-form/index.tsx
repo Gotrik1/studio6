@@ -19,10 +19,12 @@ import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { sponsorsList } from '@/shared/lib/mock-data/sponsors';
+import { createPromotion } from '@/entities/promotion/api/promotions';
+import type { Sponsor } from '@/entities/sponsor/model/types';
+import { getSponsors } from '@/entities/sponsor/api/sponsors';
 
 const promotionSchema = z.object({
-  title: z.string().min(5, 'Название должно содержать не менее 5 символов.'),
+  name: z.string().min(5, 'Название должно содержать не менее 5 символов.'),
   description: z.string().min(10, 'Описание должно содержать не менее 10 символов.'),
   prize: z.string().min(3, 'Укажите приз.'),
   sponsorId: z.string().optional(),
@@ -35,28 +37,53 @@ export function ManualPromotionForm() {
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
+
+  useState(() => {
+    getSponsors().then(setSponsors);
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(promotionSchema),
     defaultValues: {
-      title: '',
+      name: '',
       description: '',
       prize: '',
       endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
-    console.log('Promotion data:', data); // In a real app, send to backend
-    setTimeout(() => {
+    
+    const promotionData = {
+        name: data.name,
+        description: data.description,
+        prize: data.prize,
+        cost: '0', // Manual promotions are free to enter by default
+        imageDataUri: 'https://placehold.co/2560x720.png',
+        imageHint: 'promotion banner',
+        endDate: data.endDate,
+        sponsorId: data.sponsorId
+    };
+
+    const result = await createPromotion(promotionData as any); // Cast to handle the DTO differences for now
+
+    if (result.success) {
         toast({
             title: 'Промо-акция создана!',
-            description: `Акция "${data.title}" была успешно создана.`
+            description: `Акция "${data.name}" была успешно создана.`
         });
-        // In a real app, you would add the new promotion to a list and redirect.
         router.push('/promotions');
-    }, 1000);
+    } else {
+         toast({
+            variant: 'destructive',
+            title: 'Ошибка',
+            description: result.error,
+        });
+    }
+
+    setIsSubmitting(false);
   };
   
   return (
@@ -69,7 +96,7 @@ export function ManualPromotionForm() {
                         <CardDescription>Заполните все необходимые поля для создания новой акции или конкурса.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <FormField control={form.control} name="title" render={({ field }) => (
+                        <FormField control={form.control} name="name" render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Название акции</FormLabel>
                                 <FormControl><Input placeholder="Например, Конкурс на лучший игровой момент" {...field} /></FormControl>
@@ -119,7 +146,7 @@ export function ManualPromotionForm() {
                                         <SelectTrigger><SelectValue placeholder="Выберите спонсора из списка" /></SelectTrigger>
                                     </FormControl>
                                     <SelectContent>
-                                        {sponsorsList.map(sponsor => <SelectItem key={sponsor.id} value={sponsor.id}>{sponsor.name}</SelectItem>)}
+                                        {sponsors.map(sponsor => <SelectItem key={sponsor.id} value={sponsor.id}>{sponsor.name}</SelectItem>)}
                                     </SelectContent>
                                 </Select>
                                 <FormMessage />
@@ -128,7 +155,7 @@ export function ManualPromotionForm() {
                          <FormItem>
                             <FormLabel>Баннер акции</FormLabel>
                             <FormControl>
-                                <Button variant="outline" className="w-full">
+                                <Button type="button" variant="outline" className="w-full">
                                     <FileUp className="mr-2 h-4 w-4"/> Загрузить изображение
                                 </Button>
                             </FormControl>

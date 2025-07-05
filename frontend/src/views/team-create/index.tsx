@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
-import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import { Loader2, Sparkles, Upload, Wand2, Users } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -142,9 +143,12 @@ export function NewTeamPage() {
                         <CardDescription>Отредактируйте сгенерированные данные и создайте команду.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="flex items-center gap-4">
-                             <Image src={result.avatarDataUri} alt="Сгенерированный аватар" width={80} height={80} className="rounded-full border" />
-                             <Button variant="outline"><Upload className="mr-2 h-4 w-4" />Загрузить другой</Button>
+                        <div className="space-y-2">
+                             <Label>Логотип</Label>
+                            <div className="flex items-center gap-4">
+                                 <Image src={result.avatarDataUri} alt="Сгенерированный аватар" width={80} height={80} className="rounded-full border" />
+                                 <Button variant="outline"><Upload className="mr-2 h-4 w-4" />Загрузить другой</Button>
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="team-name">Название команды</Label>

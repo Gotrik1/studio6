@@ -5,24 +5,24 @@ import { getSession } from "@/features/auth/session";
 import { notFound } from "next/navigation";
 
 export default async function PlayerProfileRoute({ params }: { params: { id: string } }) {
-    const [profileData, sessionUser] = await Promise.all([
+    const [profileData, session] = await Promise.all([
         getPlayerProfile(params.id),
         getSession(),
     ]);
 
-    if (!profileData || !sessionUser) {
+    if (!profileData || !session?.user) {
         notFound();
     }
     
-    const isCurrentUser = sessionUser.id === profileData.user.id;
+    const isCurrentUser = session.user.id === profileData.user.id;
 
     return <PlayerClient 
         user={profileData.user} 
         isCurrentUser={isCurrentUser}
         achievements={profileData.achievements}
-        teams={profileData.teams}
-        gallery={profileData.gallery}
-        careerHistory={profileData.careerHistory}
-        playerActivity={profileData.playerActivity}
+        teams={profileData.user.teams}
+        gallery={profileData.user.gallery}
+        careerHistory={profileData.user.careerHistory}
+        playerActivity={profileData.user.activities}
     />;
 }

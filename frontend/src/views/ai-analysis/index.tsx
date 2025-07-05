@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -12,8 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Badge } from '@/shared/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-
-// Import Genkit flows
 import { analyzeContent, type AnalyzeContentOutput } from '@/shared/api/genkit/flows/analyze-content-generation';
 import { generateContent, type GenerateContentOutput } from '@/shared/api/genkit/flows/generate-content-flow';
 import { textToSpeech, type TextToSpeechOutput } from '@/shared/api/genkit/flows/tts-flow';
@@ -124,7 +123,7 @@ function TextTools() {
                             <div className="space-y-2">
                                 <p className="text-sm font-medium">Ключевые темы:</p>
                                 <div className="flex flex-wrap gap-2">
-                                    {analysisResult.keyTopics.map((topic, i) => <Badge key={i} variant="outline">{topic}</Badge>)}
+                                    {analysisResult.keyTopics.map((topic: string, i: number) => <Badge key={i} variant="outline">{topic}</Badge>)}
                                 </div>
                             </div>
                             <div>
@@ -449,9 +448,9 @@ function AnalysisTools() {
                     {playerAnalysisError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{playerAnalysisError}</AlertDescription></Alert>}
                     {playerAnalysisResult && (
                         <div className="space-y-4 pt-4 border-t">
-                            <div className="space-y-1"><h4 className="font-semibold text-sm flex items-center gap-1.5"><TrendingUp className="text-green-500" /> Сильные стороны</h4><ul className="list-disc list-inside text-sm text-muted-foreground">{playerAnalysisResult.strengths.map((s,i) => <li key={i}>{s}</li>)}</ul></div>
-                            <div className="space-y-1"><h4 className="font-semibold text-sm flex items-center gap-1.5"><TrendingDown className="text-yellow-500" /> Точки роста</h4><ul className="list-disc list-inside text-sm text-muted-foreground">{playerAnalysisResult.weaknesses.map((s,i) => <li key={i}>{s}</li>)}</ul></div>
-                            <div className="space-y-1"><h4 className="font-semibold text-sm flex items-center gap-1.5"><ClipboardList className="text-blue-500" /> Рекомендации</h4><ul className="list-disc list-inside text-sm text-muted-foreground">{playerAnalysisResult.recommendations.map((s,i) => <li key={i}>{s}</li>)}</ul></div>
+                            <div className="space-y-1"><h4 className="font-semibold text-sm flex items-center gap-1.5"><TrendingUp className="text-green-500" /> Сильные стороны</h4><ul className="list-disc list-inside text-sm text-muted-foreground">{playerAnalysisResult.strengths.map((s: string,i: number) => <li key={i}>{s}</li>)}</ul></div>
+                            <div className="space-y-1"><h4 className="font-semibold text-sm flex items-center gap-1.5"><TrendingDown className="text-yellow-500" /> Точки роста</h4><ul className="list-disc list-inside text-sm text-muted-foreground">{playerAnalysisResult.weaknesses.map((s: string,i: number) => <li key={i}>{s}</li>)}</ul></div>
+                            <div className="space-y-1"><h4 className="font-semibold text-sm flex items-center gap-1.5"><ClipboardList className="text-blue-500" /> Рекомендации</h4><ul className="list-disc list-inside text-sm text-muted-foreground">{playerAnalysisResult.recommendations.map((s: string,i: number) => <li key={i}>{s}</li>)}</ul></div>
                         </div>
                     )}
                 </CardContent>

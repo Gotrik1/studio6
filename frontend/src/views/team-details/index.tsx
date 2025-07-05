@@ -1,8 +1,8 @@
 
 'use client';
 
-import { useState, useTransition } from 'react';
-import { Card, CardHeader, CardContent, CardTitle } from "@/shared/ui/card";
+import { useState, useTransition, useEffect } from 'react';
+import { Card, CardHeader, CardContent, CardTitle, CardFooter } from "@/shared/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
@@ -12,7 +12,6 @@ import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, BarCha
 import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
-import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 import { challenges } from "@/shared/lib/mock-data/team-details";
 import { DonationDialog } from '@/features/donation-dialog/index';
 import { TeamChatInterface } from '@/widgets/team-chat-interface';
@@ -20,6 +19,9 @@ import { TeamStatsTab } from '@/widgets/team-stats-tab';
 import type { TeamDetails } from '@/entities/team/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
 import { joinTeamAction } from '@/entities/team/api/join-team';
+import type { Playground } from '@/entities/playground/model/types';
+import { getPlaygroundById } from '@/entities/playground/api/playgrounds';
+import { TeamOverviewDashboard } from '@/widgets/team-overview-dashboard';
 
 interface TeamDetailsPageProps {
   team: TeamDetails;
@@ -30,14 +32,20 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
     const { toast } = useToast();
     const [isPending, startTransition] = useTransition();
     const [isDonationOpen, setIsDonationOpen] = useState(false);
+    const [homePlayground, setHomePlayground] = useState<Playground | null>(null);
+
+    useEffect(() => {
+        if (team.homePlaygroundId) {
+            getPlaygroundById(team.homePlaygroundId).then(setHomePlayground);
+        }
+    }, [team.homePlaygroundId]);
 
     if (!team) {
         return <div>Команда не найдена.</div>;
     }
 
-    const isCaptain = currentUser?.name === team.captainName || currentUser?.role === 'Администратор';
+    const isCaptain = currentUser?.id === team.captainId;
     const isMember = team.roster.some(member => member.id === currentUser?.id);
-    const homePlayground = playgroundsList.find(p => p.id === team.homePlaygroundId);
 
     const handleJoinTeam = () => {
         startTransition(async () => {

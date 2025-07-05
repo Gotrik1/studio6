@@ -18,7 +18,7 @@ import { cn } from "@/shared/lib/utils";
 import { useState } from 'react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
-import type { achievements as AchievementsArray, teams as TeamsArray } from "@/shared/lib/mock-data/profiles";
+import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
 import { ReportPlayerDialog } from '@/features/report-player-dialog';
 import Image from "next/image";
 import { format } from "date-fns";
@@ -27,8 +27,7 @@ import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generato
 import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
 import { PlayerActivityFeed, type PlayerActivityItem } from '@/widgets/player-activity-feed';
-import type { UserTeam, CareerHistoryItem } from '@/entities/user/model/types';
-import type { gallery as GalleryArray } from "@/shared/lib/mock-data/gallery";
+import type { UserTeam, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
 
 
 const CareerTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/career-tab').then(mod => mod.CareerTab), {
@@ -72,7 +71,7 @@ type PlayerProfileProps = {
   isCurrentUser: boolean;
   achievements: typeof AchievementsArray;
   teams: UserTeam[];
-  gallery: typeof GalleryArray;
+  gallery: GalleryItem[];
   careerHistory: CareerHistoryItem[];
   playerActivity: PlayerActivityItem[];
 };

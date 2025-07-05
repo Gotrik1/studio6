@@ -1,6 +1,4 @@
 
-import type { matchesList } from "@/shared/lib/mock-data/matches";
-
 export type MatchDetails = {
     id: string;
     tournament: string;
@@ -24,5 +22,15 @@ export type MatchDetails = {
     media?: { type: string; src: string; hint: string; }[];
 };
 
-
-export type Match = (typeof matchesList)[0] & { playgroundId?: string | null };
+export type Match = {
+    id: string;
+    team1: { name: string; logo: string; logoHint: string; };
+    team2: { name: string; logo: string; logoHint: string; };
+    score: string;
+    tournament: string;
+    game: string;
+    date: string;
+    status: string;
+    href: string;
+    playgroundId?: string | null;
+};

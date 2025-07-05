@@ -7,11 +7,10 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
-import type { userList as UserListType } from '@/shared/lib/mock-data/users';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Coins } from 'lucide-react';
+import type { User } from '@/shared/lib/types';
 
-type User = (typeof UserListType)[0];
 
 interface UserPdDialogProps {
     user: User | null;

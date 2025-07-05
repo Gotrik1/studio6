@@ -80,7 +80,7 @@ export function CartDialog() {
                         ) : (
                             items.map(item => (
                                 <div key={item.id} className="flex items-center gap-4">
-                                    <Image src={item.image} alt={item.name} width={64} height={64} className="rounded-md border aspect-square object-cover" data-ai-hint={item.imageHint}/>
+                                    <Image src={item.image!} alt={item.name} width={64} height={64} className="rounded-md border aspect-square object-cover" data-ai-hint={item.imageHint || ''}/>
                                     <div className="flex-1">
                                         <p className="font-semibold">{item.name}</p>
                                         <div className="flex items-center gap-2 text-sm">

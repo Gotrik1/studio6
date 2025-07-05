@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -97,7 +98,7 @@ export function AITeamAssistantTab() {
                             </CardHeader>
                             <CardContent>
                                 <ul className="list-disc list-inside space-y-2 text-muted-foreground">
-                                    {result.suggestions.map((suggestion, i) => <li key={i}>{suggestion}</li>)}
+                                    {result.suggestions.map((suggestion: string, i: number) => <li key={i}>{suggestion}</li>)}
                                 </ul>
                             </CardContent>
                         </Card>

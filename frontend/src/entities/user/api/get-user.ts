@@ -11,7 +11,6 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 export type PlayerProfileData = User & {
     location: string;
     mainSport: string;
-    status: string;
     isVerified: boolean;
     xp: number;
     dateOfBirth: string;
@@ -62,7 +61,7 @@ export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | 
                 text: text,
                 timestamp: activity.timestamp,
             }
-        }).filter((item): item is PlayerActivityItem => item !== null);
+        }).filter((item: any): item is PlayerActivityItem => item !== null);
         
         // The backend now returns an augmented user object that includes teams, gallery, and careerHistory.
         // We just need to add the mocked achievements.

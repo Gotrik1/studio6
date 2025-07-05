@@ -12,10 +12,11 @@ import { TournamentBracket } from "@/widgets/tournament-bracket";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { ScheduleTab } from "@/widgets/match-details-tabs/ui/schedule-tab";
 import { MediaTab } from "@/widgets/match-details-tabs/ui/media-tab";
-import { useState, useTransition } from "react";
+import { AiAnalysisTab } from "@/widgets/match-details-tabs/ui/ai-analysis-tab";
+import { useTransition } from "react";
 import { useToast } from "@/shared/hooks/use-toast";
 import { registerTeamForTournamentAction } from "@/entities/tournament/api/register-team";
-import { useSession } from "@/shared/lib/session/client";
+import Link from 'next/link';
 
 interface TournamentDetailsPageProps {
   tournament: TournamentDetails;
@@ -23,7 +24,6 @@ interface TournamentDetailsPageProps {
 
 export function TournamentDetailsPage({ tournament }: { tournament: TournamentDetails }) {
     const { toast } = useToast();
-    const { user } = useSession();
     const [isPending, startTransition] = useTransition();
 
     const getStatusVariant = (status: string) => {

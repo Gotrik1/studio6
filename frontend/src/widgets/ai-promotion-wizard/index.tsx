@@ -2,10 +2,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
-import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import { Loader2, Sparkles, PartyPopper } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -13,9 +13,12 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generatePromotionWizard, type GeneratePromotionWizardOutput } from '@/shared/api/genkit/flows/generate-promotion-wizard-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { useRouter } from 'next/navigation';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
 export function AiPromotionWizard() {
     const { toast } = useToast();
+    const router = useRouter();
     const [prompt, setPrompt] = useState('Конкурс на лучший игровой момент по Valorant. Приз - игровая мышь.');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -43,20 +46,30 @@ export function AiPromotionWizard() {
         }
     };
 
-    const handleCreatePromotion = () => {
+    const handleCreatePromotion = async () => {
         if (!result) return;
         
         setIsCreating(true);
 
-        setTimeout(() => {
-            // In a real app, this would be an API call
-            console.log("Creating promotion:", result);
+        const apiResult = await fetchWithAuth('/ai/promotions/wizard', {
+            method: 'POST',
+            body: JSON.stringify({ prompt }),
+        });
+        
+        if (apiResult.success) {
             toast({
                 title: 'Промо-акция создана!',
                 description: `Акция "${result.name}" успешно запущена.`,
             });
-            setIsCreating(false);
-        }, 1000);
+            router.push('/promotions');
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: apiResult.error || 'Не удалось создать акцию.',
+            });
+        }
+        setIsCreating(false);
     };
     
      const handleFieldChange = (field: keyof GeneratePromotionWizardOutput, value: string) => {

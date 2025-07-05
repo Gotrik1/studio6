@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -69,7 +70,7 @@ export function AiNutritionist() {
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                     <CardContent className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <FormField control={form.control} name="goal" render={({ field }) => (<FormItem><FormLabel>Ваша цель</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Набор массы">Набор массы</SelectItem><SelectItem value="Снижение веса">Снижение веса</SelectItem><SelectItem value="Поддержание веса">Поддержание веса</SelectItem></SelectContent></Select></FormItem>)} />
+                            <FormField control={form.control} name="goal" render={({ field }) => (<FormItem><FormLabel>Ваша главная цель</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Набор массы">Набор массы</SelectItem><SelectItem value="Снижение веса">Снижение веса</SelectItem><SelectItem value="Поддержание веса">Поддержание веса</SelectItem></SelectContent></Select></FormItem>)} />
                             <FormField control={form.control} name="activityLevel" render={({ field }) => (<FormItem><FormLabel>Уровень активности</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl><SelectContent><SelectItem value="Низкий">Низкий (офисная работа)</SelectItem><SelectItem value="Средний">Средний (3-5 тренировок/нед)</SelectItem><SelectItem value="Высокий">Высокий (6+ тренировок/нед)</SelectItem></SelectContent></Select></FormItem>)} />
                             <FormField control={form.control} name="dietaryPreferences" render={({ field }) => (<FormItem><FormLabel>Предпочтения (необязательно)</FormLabel><FormControl><Input placeholder="Например, вегетарианство, без лактозы" {...field} /></FormControl></FormItem>)} />
                         </div>
@@ -115,7 +116,7 @@ export function AiNutritionist() {
                      <div className="w-full">
                          <h3 className="text-lg font-semibold mb-2">Примерное меню на день:</h3>
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {result.mealPlan.map(meal => (
+                            {result.mealPlan.map((meal: { mealName: string; calories: number; description: string }) => (
                                 <Card key={meal.mealName}>
                                     <CardHeader>
                                         <CardTitle className="text-base">{meal.mealName} (~{meal.calories} ккал)</CardTitle>
