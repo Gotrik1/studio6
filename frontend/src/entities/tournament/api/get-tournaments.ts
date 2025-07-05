@@ -2,25 +2,28 @@
 'use server';
 
 import type { Tournament } from '@/entities/tournament/model/types';
+import type { TournamentCrm } from '@/entities/user/model/types';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
 export async function fetchTournaments(game?: string): Promise<Tournament[]> {
-  const url = game ? `${process.env.BACKEND_URL}/tournaments?game=${encodeURIComponent(game)}` : `${process.env.BACKEND_URL}/tournaments`;
-  try {
-    const response = await fetch(url, {
-      cache: 'no-store', // Disable caching for development
-    });
+  const url = game ? `/tournaments?game=${encodeURIComponent(game)}` : '/tournaments';
+  const result = await fetchWithAuth(url);
 
-    if (!response.ok) {
-      console.error('Failed to fetch tournaments from backend:', response.statusText);
-      return []; // Return empty array on failure
-    }
-
-    const tournaments = await response.json();
-    return tournaments;
-  } catch (error) {
-    console.error('Error fetching tournaments:', error);
-    // In a real app, you might want to handle this more gracefully
-    // For now, returning an empty array to prevent crashes.
-    return [];
+  if (!result.success) {
+    console.error('Failed to fetch tournaments from backend:', result.error);
+    return []; // Return empty array on failure
   }
+
+  return result.data;
+}
+
+export async function fetchCrmTournaments(): Promise<TournamentCrm[]> {
+  const result = await fetchWithAuth('/tournaments/crm');
+
+  if (!result.success) {
+    console.error('Failed to fetch CRM tournaments from backend:', result.error);
+    return []; // Return empty array on failure
+  }
+
+  return result.data;
 }

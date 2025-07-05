@@ -1,21 +1,19 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { crmTournaments } from '@/shared/lib/mock-data/crm-tournaments';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
 import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants';
 import { TournamentBracket } from '@/widgets/tournament-bracket';
-import { summerKickoffTournament } from '@/shared/lib/mock-data/tournament-details';
 import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
 import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
 import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
 import { CrmTournamentAnnouncements } from '@/widgets/crm-tournament-announcements';
 import { CrmTournamentSettings } from '@/widgets/crm-tournament-settings';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Textarea } from '@/shared/ui/textarea';
 import { Button } from '@/shared/ui/button';
@@ -23,19 +21,36 @@ import { Save } from 'lucide-react';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { CrmTournamentMediaCenter } from '@/widgets/crm-tournament-media-center';
 import { CrmTournamentDisputes } from '@/widgets/crm-tournament-disputes';
+import { getTournamentById } from '@/entities/tournament/api/get-tournament';
+import type { TournamentDetails } from '@/entities/tournament/model/types';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
 }
 
 export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsPageProps) {
-    const tournament = crmTournaments.find(t => t.id === tournamentId);
-    const [rules, setRules] = useState(tournament?.rules || '');
+    const [tournament, setTournament] = useState<TournamentDetails | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [rules, setRules] = useState('');
     const { toast } = useToast();
+    const router = useRouter();
 
-    if (!tournament) {
-        return notFound();
-    }
+    useEffect(() => {
+        async function loadTournament() {
+            setLoading(true);
+            const data = await getTournamentById(tournamentId);
+            if (!data) {
+                notFound();
+                return;
+            }
+            setTournament(data);
+            setRules(data.rules || '');
+            setLoading(false);
+        }
+        loadTournament();
+    }, [tournamentId]);
+
     
     const handleSaveRules = () => {
         // In a real app, this would be an API call to update the tournament rules.
@@ -45,6 +60,16 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             description: "Правила турнира были успешно обновлены.",
         });
     };
+    
+    if (loading) {
+        return <div className="space-y-6">
+            <Skeleton className="h-10 w-1/2" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-96 w-full" />
+        </div>
+    }
+    
+    if (!tournament) return null;
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -74,7 +99,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </ScrollArea>
                 
                 <TabsContent value="overview" className="mt-4">
-                    <CrmTournamentOverview tournament={tournament} />
+                    <CrmTournamentOverview tournament={tournament as any} />
                 </TabsContent>
                 
                 <TabsContent value="participants" className="mt-4">
@@ -123,7 +148,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                             <CardDescription>Визуальное представление турнирной сетки. Функции редактирования будут добавлены в будущем.</CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <TournamentBracket rounds={summerKickoffTournament.bracket.rounds} />
+                            <TournamentBracket rounds={tournament.bracket.rounds} />
                         </CardContent>
                     </Card>
                 </TabsContent>
@@ -145,7 +170,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
                 
                 <TabsContent value="settings" className="mt-4">
-                    <CrmTournamentSettings tournament={tournament} />
+                    <CrmTournamentSettings tournament={tournament as any} />
                 </TabsContent>
             </Tabs>
         </div>

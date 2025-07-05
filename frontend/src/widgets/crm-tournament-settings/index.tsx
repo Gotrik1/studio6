@@ -18,11 +18,13 @@ import { sportsList } from '@/shared/lib/mock-data/sports';
 import { useToast } from '@/shared/hooks/use-toast';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import type { TournamentCrm } from '@/shared/lib/mock-data/crm-tournaments';
+import type { TournamentDetails } from '@/entities/tournament/model/types';
+import { updateTournament } from '@/entities/tournament/api/tournaments';
+import { useRouter } from 'next/navigation';
 
 const tournamentSchema = z.object({
-  name: z.string().min(3, 'Название должно содержать не менее 3 символов.'),
-  sport: z.string({ required_error: 'Выберите вид спорта.' }),
+  name: z.string().min(3, 'Название должно быть не менее 3 символов.'),
+  game: z.string({ required_error: 'Выберите вид спорта.' }),
   participantCount: z.coerce.number().min(4, 'Минимум 4 участника.').max(128, 'Максимум 128 участников.'),
   registrationStartDate: z.date({required_error: "Выберите дату."}),
   registrationEndDate: z.date({required_error: "Выберите дату."}),
@@ -48,35 +50,45 @@ const tournamentSchema = z.object({
 type FormValues = z.infer<typeof tournamentSchema>;
 
 interface CrmTournamentSettingsProps {
-    tournament: TournamentCrm;
+    tournament: TournamentDetails;
 }
 
 export function CrmTournamentSettings({ tournament }: CrmTournamentSettingsProps) {
   const { toast } = useToast();
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(tournamentSchema),
     defaultValues: {
       name: tournament.name,
-      sport: tournament.sport,
-      participantCount: tournament.maxParticipants,
-      registrationStartDate: new Date(tournament.startDate),
-      registrationEndDate: new Date(new Date(tournament.startDate).setDate(new Date(tournament.startDate).getDate() + 7)),
-      tournamentStartDate: new Date(new Date(tournament.startDate).setDate(new Date(tournament.startDate).getDate() + 14)),
+      game: tournament.game,
+      participantCount: tournament.teamsCount, // Assuming teamsCount is maxParticipants for now
+      registrationStartDate: new Date(tournament.schedule.registration.split('-')[0].trim()),
+      registrationEndDate: new Date(tournament.schedule.registration.split('-')[1].trim()),
+      tournamentStartDate: new Date(tournament.schedule.finals),
     },
   });
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
-    console.log('Updated tournament data:', data);
-    setTimeout(() => {
+    const result = await updateTournament(tournament.id, data);
+    
+    if (result.success) {
         toast({
             title: 'Настройки сохранены!',
             description: `Данные турнира "${data.name}" были успешно обновлены.`
         });
-        setIsSubmitting(false);
-    }, 1000);
+        router.refresh();
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Ошибка',
+            description: result.error || "Не удалось сохранить изменения.",
+        });
+    }
+
+    setIsSubmitting(false);
   };
   
   return (
@@ -90,7 +102,7 @@ export function CrmTournamentSettings({ tournament }: CrmTournamentSettingsProps
                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <FormField control={form.control} name="name" render={({ field }) => (<FormItem><FormLabel>Название турнира</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="sport" render={({ field }) => (<FormItem><FormLabel>Вид спорта</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                        <FormField control={form.control} name="game" render={({ field }) => (<FormItem><FormLabel>Вид спорта</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         <FormField control={form.control} name="registrationStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />

@@ -1,9 +1,11 @@
+
 import {
   Injectable,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
+import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Tournament, ActivityType, Prisma } from '@prisma/client';
 import { format } from 'date-fns';
@@ -28,6 +30,8 @@ export class TournamentsService {
       participantCount,
       registrationStartDate,
       registrationEndDate,
+      bannerImage,
+      bannerImageHint,
     } = createTournamentDto;
     const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
     
@@ -47,9 +51,24 @@ export class TournamentsService {
         participantCount,
         registrationStartDate,
         registrationEndDate,
+        bannerImage,
+        bannerImageHint,
         organizer: { connect: { id: organizerId } },
         status: 'REGISTRATION',
       },
+    });
+  }
+
+  async update(id: string, updateTournamentDto: UpdateTournamentDto): Promise<Tournament> {
+    const { name, ...rest } = updateTournamentDto;
+    const data: Prisma.TournamentUpdateInput = { ...rest };
+    if (name) {
+        data.name = name;
+        data.slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    }
+    return this.prisma.tournament.update({
+        where: { id },
+        data,
     });
   }
 
@@ -135,12 +154,56 @@ export class TournamentsService {
       };
     });
   }
-
-  async findOne(id: string): Promise<Tournament | null> {
-    return this.prisma.tournament.findUnique({
-      where: { id },
-      include: { teams: true, matches: true },
+  
+  async findAllForCrm(): Promise<any[]> {
+    const tournaments = await this.prisma.tournament.findMany({
+       include: {
+        _count: { select: { teams: true } },
+        organizer: { select: { name: true } },
+      },
+      orderBy: { tournamentStartDate: 'desc' },
     });
+
+    return tournaments.map(t => ({
+      id: t.id,
+      name: t.name,
+      sport: t.game,
+      status: t.status,
+      participants: t._count.teams,
+      maxParticipants: t.participantCount,
+      startDate: t.tournamentStartDate.toISOString(),
+      organizer: t.organizer.name,
+      rules: t.rules || '',
+    }));
+  }
+
+  async findOne(id: string): Promise<any> {
+    const tournament = await this.prisma.tournament.findUnique({
+      where: { id },
+      include: {
+        teams: {
+          select: { name: true, logo: true, dataAiHint: true, slug: true },
+        },
+        matches: {
+          include: {
+            team1: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+            team2: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+          },
+          orderBy: {
+            scheduledAt: 'asc',
+          },
+        },
+        organizer: {
+          select: { name: true, avatar: true },
+        },
+      },
+    });
+
+    if (!tournament) {
+      throw new NotFoundException(`Турнир с ID "${id}" не найден`);
+    }
+
+    return this._shapeTournamentDetails(tournament);
   }
 
   async findBySlug(slug: string): Promise<any> {
@@ -169,18 +232,19 @@ export class TournamentsService {
       throw new NotFoundException(`Турнир со слагом "${slug}" не найден`);
     }
 
+    return this._shapeTournamentDetails(tournament);
+  }
+
+  private _shapeTournamentDetails(tournament: any) {
     // --- Dynamic Bracket Generation Logic ---
-    // This is a simplified logic for demo purposes.
-    // A real implementation would need a 'round' field in the Match model.
     const rounds: { name: string; matches: any[] }[] = [];
-    const matches = tournament.matches.map(m => ({
+    const matches = tournament.matches.map((m: any) => ({
         ...m, 
         href: `/matches/${m.id}`,
         score: m.team1Score !== null ? `${m.team1Score}-${m.team2Score}` : 'VS'
     }));
     let champion: any = null;
 
-    // This logic assumes a simple 8-team single elimination bracket for demo
     if (matches.length >= 4) { // Quarterfinals
         rounds.push({ name: 'Четвертьфиналы', matches: matches.slice(0, 4) });
     }
@@ -203,7 +267,6 @@ export class TournamentsService {
     if (champion) {
         rounds.push({ name: 'Чемпион', matches: [champion] });
     }
-    // --- End Bracket Generation ---
     
     // --- Dynamic Schedule Generation ---
     const registrationEndDate = new Date(tournament.registrationEndDate);

@@ -1,12 +1,14 @@
 
-import { Controller, Get, Post, Body, Param, UseGuards, Req, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Query, UseGuards, Req } from '@nestjs/common';
 import { TournamentsService } from './tournaments.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
+import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { RegisterTeamDto } from './dto/register-team.dto';
 import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { Public } from '../auth/decorators/public.decorator';
+import { MatchStatus } from '@prisma/client';
 
 @ApiTags('Tournaments')
 @Controller('tournaments')
@@ -21,6 +23,14 @@ export class TournamentsController {
     return this.tournamentsService.create(createTournamentDto, organizerId);
   }
 
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  update(@Param('id') id: string, @Body() updateTournamentDto: UpdateTournamentDto) {
+    // In a real app, you'd check if the user is the organizer or an admin
+    return this.tournamentsService.update(id, updateTournamentDto);
+  }
+
   @Post(':id/start')
   start(@Param('id') id: string) {
     return this.tournamentsService.startTournament(id);
@@ -31,6 +41,13 @@ export class TournamentsController {
   @ApiQuery({ name: 'game', required: false, description: 'Фильтр по названию игры' })
   findAll(@Query('game') game?: string) {
     return this.tournamentsService.findAll({ game });
+  }
+  
+  @Get('crm')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  findAllForCrm() {
+    return this.tournamentsService.findAllForCrm();
   }
 
   @Public()

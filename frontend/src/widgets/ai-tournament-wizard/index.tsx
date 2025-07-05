@@ -12,7 +12,7 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateTournamentWizard, type GenerateTournamentWizardOutput } from '@/shared/api/genkit/flows/generate-tournament-wizard-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { createTournament } from '@/entities/tournament/api/create-tournament';
+import { createTournament } from '@/entities/tournament/api/tournaments';
 import { useRouter } from 'next/navigation';
 
 export function AiTournamentWizard() {

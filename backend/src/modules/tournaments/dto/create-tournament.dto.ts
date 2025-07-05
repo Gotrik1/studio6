@@ -53,4 +53,12 @@ export class CreateTournamentDto {
   @IsString()
   @IsOptional()
   readonly rules?: string;
+  
+  @IsString()
+  @IsOptional()
+  readonly bannerImage?: string;
+
+  @IsString()
+  @IsOptional()
+  readonly bannerImageHint?: string;
 }
