@@ -14,12 +14,6 @@ import { Public } from '../auth/decorators/public.decorator';
 export class ActivitiesController {
   constructor(private readonly activitiesService: ActivitiesService) {}
 
-  @Get('feed')
-  @ApiOperation({ summary: 'Получить ленту активности' })
-  getFeed() {
-    return this.activitiesService.getFeed();
-  }
-
   @Public() // For demo purposes, make it public to avoid auth issues if user is not logged in when viewing a playground
   @Get('playground/:playgroundId')
   @ApiOperation({ summary: 'Получить ленту активности для площадки' })

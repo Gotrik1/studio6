@@ -44,6 +44,8 @@ import { TournamentParticipantsModule } from './modules/tournament-participants/
 import { TournamentSponsorsModule } from './modules/tournament-sponsors/tournament-sponsors.module';
 import { TeamApplicationsModule } from './modules/team-applications/team-applications.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { FeedModule } from './modules/feed/feed.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
 
 @Module({
   imports: [
@@ -88,6 +90,8 @@ import { AdminModule } from './modules/admin/admin.module';
     AchievementsModule,
     TeamApplicationsModule,
     AdminModule,
+    ActivitiesModule,
+    FeedModule,
   ],
   controllers: [AppController],
   providers: [

@@ -6,24 +6,6 @@ import { CreateCheckInDto } from './dto/create-check-in.dto';
 @Injectable()
 export class ActivitiesService {
   constructor(private prisma: PrismaService) {}
-
-  async getFeed() {
-    return this.prisma.activity.findMany({
-      orderBy: {
-        timestamp: 'desc',
-      },
-      take: 20,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            avatar: true,
-          },
-        },
-      },
-    });
-  }
   
   async getPlaygroundFeed(playgroundId: string) {
     return this.prisma.activity.findMany({

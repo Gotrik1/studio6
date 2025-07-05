@@ -7,7 +7,7 @@ import { revalidateTag } from "next/cache";
 export type { Activity };
 
 export async function getFeed(): Promise<Activity[]> {
-    const result = await fetchWithAuth('/activities/feed', {
+    const result = await fetchWithAuth('/feed', {
         next: {
             tags: ['feed']
         }
