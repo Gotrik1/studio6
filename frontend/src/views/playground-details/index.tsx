@@ -73,11 +73,8 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         try {
             const reviewsResult = await getReviews(playground.id);
             if (reviewsResult.success) {
-                const formattedReviews = reviewsResult.data.map((r: any) => ({
-                    ...r,
-                    timestamp: r.createdAt
-                }));
-                setReviews(formattedReviews);
+                // The data is already formatted by the API client, so we can use it directly
+                setReviews(reviewsResult.data);
             } else {
                  toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить отзывы.' });
             }
