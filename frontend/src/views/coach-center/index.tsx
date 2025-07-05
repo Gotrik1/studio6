@@ -88,6 +88,8 @@ export function CoachCenterPage() {
         // Mock stats and history as the backend doesn't provide this level of detail yet
         stats: { kda: '1.2', winRate: '55%', favoriteMap: 'Ascent' },
         matchHistory: 'W 13-8, L 10-13, W 13-2',
+        adherence: Math.floor(Math.random() * (98 - 75 + 1) + 75),
+        progress: Math.floor(Math.random() * (25 - 5 + 1) + 5),
     }));
 
     const coachPrograms = programs.filter(p => p.author === coachData.name || p.isAiGenerated);
