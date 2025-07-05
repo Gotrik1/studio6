@@ -17,8 +17,8 @@ export async function getTeams(): Promise<Team[]> {
       id: String(team.id), // Ensure ID is always a string
       name: team.name,
       motto: team.motto,
-      logo: team.logo, // The backend provides a `logo` field
-      dataAiHint: team.dataAiHint,
+      logo: team.logo || 'https://placehold.co/100x100.png',
+      dataAiHint: team.dataAiHint || 'team logo',
       game: team.game,
       rank: team.rank,
       members: team.members,

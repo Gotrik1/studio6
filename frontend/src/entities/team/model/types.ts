@@ -4,8 +4,8 @@ export type Team = {
     id: string;
     name: string;
     motto: string;
-    logo: string | null;
-    dataAiHint: string | null;
+    logo: string;
+    dataAiHint: string;
     game: string;
     rank: number;
     members: number;
