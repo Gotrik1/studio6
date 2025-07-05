@@ -29,6 +29,8 @@ export type TournamentDetails = {
     slug: string;
     game: string;
     status: string;
+    participantCount: number;
+    tournamentStartDate: string;
     image: string;
     dataAiHint: string;
     description: string;

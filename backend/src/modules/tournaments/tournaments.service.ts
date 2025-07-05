@@ -286,6 +286,8 @@ export class TournamentsService {
       slug: tournament.slug,
       game: tournament.game,
       status: tournament.status,
+      participantCount: tournament.participantCount,
+      tournamentStartDate: tournament.tournamentStartDate.toISOString(),
       image: tournament.bannerImage || 'https://placehold.co/2560x720.png',
       dataAiHint: tournament.bannerImageHint || 'esports tournament',
       description: tournament.description || 'Описание турнира отсутствует.',
@@ -352,5 +354,3 @@ export class TournamentsService {
     return this.prisma.tournament.delete({ where: { id } });
   }
 }
-
-    
