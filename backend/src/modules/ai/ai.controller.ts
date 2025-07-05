@@ -3,12 +3,12 @@ import { Controller, Post, Body, HttpCode, HttpStatus, Get, UseGuards, Req } fro
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AiService } from './ai.service';
 import { GenerateTeamConceptDto } from './dto/generate-team-concept.dto';
-import type { GenerateTeamConceptOutput } from '../../ai/flows/schemas/generate-team-concept-schema';
+import type { GenerateTeamConceptOutput } from '@/ai/flows/schemas/generate-team-concept-schema';
 import { GenerateUserAvatarDto } from './dto/generate-user-avatar.dto';
-import type { GenerateUserAvatarOutput } from '../../ai/flows/schemas/generate-user-avatar-schema';
+import type { GenerateUserAvatarOutput } from '@/ai/flows/schemas/generate-user-avatar-schema';
 import { GenerateProfileBannerDto } from './dto/generate-profile-banner.dto';
-import type { GenerateProfileBannerOutput } from '../../ai/flows/schemas/generate-profile-banner-schema';
-import type { NewsWithAudio } from '../../ai/flows/schemas/generate-platform-news-schema';
+import type { GenerateProfileBannerOutput } from '@/ai/flows/schemas/generate-profile-banner-schema';
+import type { NewsWithAudio } from '@/ai/flows/schemas/generate-platform-news-schema';
 import { AnalyzeJoinRequestDto } from './dto/analyze-join-request.dto';
 import type { AnalyzeJoinRequestOutput } from '@/ai/flows/schemas/analyze-join-request-schema';
 import { AnalyzeTeamPerformanceDto } from './dto/analyze-team-performance.dto';
@@ -161,6 +161,9 @@ export class AiController {
 
   @Post('generate-team-concept')
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Сгенерировать полную концепцию команды (название, девиз, описание, аватар).' })
+  @ApiBody({ type: GenerateTeamConceptDto })
+  @ApiResponse({ status: 200, description: 'Концепция команды успешно сгенерирована.', type: GenerateTeamConceptDto })
   async generateTeamConcept(
     @Body() generateTeamConceptDto: GenerateTeamConceptDto,
   ): Promise<GenerateTeamConceptOutput> {
@@ -597,5 +600,3 @@ export class AiController {
     return this.aiService.playerScout(playerScoutDto.input);
   }
 }
-
-    
