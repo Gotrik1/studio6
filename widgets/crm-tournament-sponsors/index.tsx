@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -29,7 +28,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                 getAssignedSponsors(tournamentId),
                 getAvailableSponsors()
             ]);
-
+            
             if (assignedRes.success) setAssignedSponsors(assignedRes.data);
             else throw new Error(assignedRes.error);
 
@@ -49,7 +48,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
     useEffect(() => {
         fetchData();
     }, [fetchData]);
-
+    
     const handleAddSponsor = async (sponsor: Sponsor) => {
         const result = await assignSponsor(tournamentId, sponsor.id);
         if (result.success) {
@@ -78,7 +77,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                     <CardDescription>Партнеры, поддерживающие это событие.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                     {isLoading ? <Skeleton className="h-40 w-full" /> : (
                         <Table>
                             <TableHeader>
                                 <TableRow>
