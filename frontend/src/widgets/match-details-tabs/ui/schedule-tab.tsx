@@ -10,7 +10,8 @@ import Link from "next/link";
 import { Clock } from "lucide-react";
 
 type BracketMatch = TournamentDetails['bracket']['rounds'][0]['matches'][0];
-type PlayableMatch = Extract<BracketMatch, { team2: unknown; date: string; time: string; }>;
+// This type is now stricter, ensuring both teams exist for a playable match.
+type PlayableMatch = Extract<BracketMatch, { team1: object; team2: object; date: string; time: string; href?: string; }>;
 
 interface ScheduleTabProps {
     rounds: TournamentDetails['bracket']['rounds'];
@@ -23,7 +24,8 @@ type GroupedMatches = {
 export function ScheduleTab({ rounds }: ScheduleTabProps) {
     const allMatches = rounds
         .flatMap((round): BracketMatch[] => round.matches)
-        .filter((match): match is PlayableMatch => 'team2' in match && !!match.date && !!match.time);
+        // Stricter filtering to ensure both teams are present.
+        .filter((match): match is PlayableMatch => 'team1' in match && !!match.team1 && 'team2' in match && !!match.team2 && !!match.date && !!match.time);
 
     const groupedMatches = allMatches.reduce((acc, match) => {
         const date = match.date;
@@ -73,10 +75,10 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
                                                  </div>
                                                  <div className="flex-1 flex items-center justify-center gap-4">
                                                       <div className="flex items-center gap-2 font-medium">
-                                                          <span className="hidden sm:inline">{match.team1?.name}</span>
+                                                          <span className="hidden sm:inline">{match.team1.name}</span>
                                                           <Avatar className="h-8 w-8">
-                                                              <AvatarImage src={match.team1?.logo} data-ai-hint={match.team1?.dataAiHint} />
-                                                              <AvatarFallback>{match.team1?.name.charAt(0)}</AvatarFallback>
+                                                              <AvatarImage src={match.team1.logo} data-ai-hint={match.team1.dataAiHint} />
+                                                              <AvatarFallback>{match.team1.name.charAt(0)}</AvatarFallback>
                                                           </Avatar>
                                                       </div>
                                                       <div className="text-center">
@@ -84,10 +86,10 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
                                                       </div>
                                                        <div className="flex items-center gap-2 font-medium">
                                                            <Avatar className="h-8 w-8">
-                                                              <AvatarImage src={match.team2?.logo} data-ai-hint={match.team2?.dataAiHint} />
-                                                              <AvatarFallback>{match.team2?.name.charAt(0)}</AvatarFallback>
+                                                              <AvatarImage src={match.team2.logo} data-ai-hint={match.team2.dataAiHint} />
+                                                              <AvatarFallback>{match.team2.name.charAt(0)}</AvatarFallback>
                                                            </Avatar>
-                                                           <span className="hidden sm:inline">{match.team2?.name}</span>
+                                                           <span className="hidden sm:inline">{match.team2.name}</span>
                                                       </div>
                                                  </div>
                                             </div>
