@@ -2,13 +2,13 @@ export type FoodItem = {
     id: string;
     name: string;
     category: 'Продукты' | 'Спортивное питание';
-    image: string;
-    imageHint: string;
+    image: string | null;
+    imageHint: string | null;
     calories: number;
     protein: number;
     fat: number;
     carbs: number;
-    description?: string;
+    description?: string | null;
 };
 
 export type FoodLogEntry = {

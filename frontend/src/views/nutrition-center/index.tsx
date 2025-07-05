@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -10,7 +9,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { format, addDays, subDays } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import type { FoodLogEntry } from '@/shared/lib/mock-data/nutrition-diary';
+import type { FoodLogEntry, FoodItem } from '@/entities/nutrition/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useNutrition } from '@/shared/context/nutrition-provider';
 import { Progress } from '@/shared/ui/progress';
@@ -18,18 +17,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { AiNutritionist } from '@/widgets/ai-nutritionist';
 import { Input } from '@/shared/ui/input';
 import { Search } from 'lucide-react';
-import { nutritionItems, type FoodItem } from '@/shared/lib/mock-data/nutrition';
 import Image from 'next/image';
 import { AddFoodDialog } from '@/widgets/add-food-dialog';
+import { getFoodItems } from '@/entities/nutrition/api/nutrition';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 // Diary Tab Component
 function NutritionDiaryTab() {
     const { toast } = useToast();
     const [date, setDate] = useState<Date>(new Date());
-    const { log, totals, targets, deleteFoodLog } = useNutrition();
+    const { log, isLoading, totals, targets, deleteFoodLog } = useNutrition();
 
-    const handleDelete = (id: string, name: string) => {
-        deleteFoodLog(id);
+    const handleDelete = async (id: string, name: string) => {
+        await deleteFoodLog(id);
         toast({
             title: 'Запись удалена',
             description: `${name} был(а) удален(а) из вашего дневника.`,
@@ -100,44 +100,48 @@ function NutritionDiaryTab() {
             </Card>
 
             <div className="space-y-6">
-                {meals.map(meal => {
-                    const mealItems = log.filter(item => item.meal === meal);
-                    if (mealItems.length === 0) return null;
+                {isLoading ? (
+                    <Skeleton className="h-48 w-full" />
+                ) : (
+                    meals.map(meal => {
+                        const mealItems = log.filter(item => item.meal === meal);
+                        if (mealItems.length === 0) return null;
 
-                    return (
-                        <Card key={meal}>
-                            <CardHeader>
-                                <CardTitle>{meal}</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-0">
-                                <Table>
-                                    <TableHeader>
-                                        <TableRow>
-                                            <TableHead>Продукт</TableHead>
-                                            <TableHead className="text-center">Граммы</TableHead>
-                                            <TableHead className="text-center">Ккал</TableHead>
-                                            <TableHead className="text-right"></TableHead>
-                                        </TableRow>
-                                    </TableHeader>
-                                    <TableBody>
-                                        {mealItems.map(item => (
-                                            <TableRow key={item.id}>
-                                                <TableCell className="font-medium">{item.name}</TableCell>
-                                                <TableCell className="text-center">{item.grams}</TableCell>
-                                                <TableCell className="text-center">{item.calories}</TableCell>
-                                                <TableCell className="text-right">
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id, item.name)}>
-                                                        <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive"/>
-                                                    </Button>
-                                                </TableCell>
+                        return (
+                            <Card key={meal}>
+                                <CardHeader>
+                                    <CardTitle>{meal}</CardTitle>
+                                </CardHeader>
+                                <CardContent className="p-0">
+                                    <Table>
+                                        <TableHeader>
+                                            <TableRow>
+                                                <TableHead>Продукт</TableHead>
+                                                <TableHead className="text-center">Граммы</TableHead>
+                                                <TableHead className="text-center">Ккал</TableHead>
+                                                <TableHead className="text-right"></TableHead>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </CardContent>
-                        </Card>
-                    );
-                })}
+                                        </TableHeader>
+                                        <TableBody>
+                                            {mealItems.map(item => (
+                                                <TableRow key={item.id}>
+                                                    <TableCell className="font-medium">{item.name}</TableCell>
+                                                    <TableCell className="text-center">{item.grams}</TableCell>
+                                                    <TableCell className="text-center">{item.calories}</TableCell>
+                                                    <TableCell className="text-right">
+                                                        <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id, item.name)}>
+                                                            <Trash2 className="h-4 w-4 text-muted-foreground hover:text-destructive"/>
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </CardContent>
+                            </Card>
+                        );
+                    })
+                )}
             </div>
         </div>
     );
@@ -148,12 +152,24 @@ function ProductCatalogTab() {
     const [searchQuery, setSearchQuery] = useState('');
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
     const [selectedFoodItem, setSelectedFoodItem] = useState<FoodItem | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [foodItems, setFoodItems] = useState<FoodItem[]>([]);
+
+    useEffect(() => {
+        async function loadItems() {
+            setIsLoading(true);
+            const items = await getFoodItems();
+            setFoodItems(items);
+            setIsLoading(false);
+        }
+        loadItems();
+    }, []);
 
     const filteredItems = useMemo(() => {
-        return nutritionItems.filter(item => 
+        return foodItems.filter(item => 
             item.name.toLowerCase().includes(searchQuery.toLowerCase())
         );
-    }, [searchQuery]);
+    }, [foodItems, searchQuery]);
 
     const handleAddClick = (item: FoodItem) => {
         setSelectedFoodItem(item);
@@ -168,11 +184,11 @@ function ProductCatalogTab() {
             <Card className="flex flex-col">
                 <CardHeader className="p-0 relative h-40">
                     <Image
-                        src={item.image}
+                        src={item.image || 'https://placehold.co/600x400.png'}
                         alt={item.name}
                         fill
                         className="object-cover rounded-t-lg"
-                        data-ai-hint={item.imageHint}
+                        data-ai-hint={item.imageHint || 'food item'}
                     />
                 </CardHeader>
                 <CardContent className="p-4 flex-1">
@@ -191,6 +207,12 @@ function ProductCatalogTab() {
             </Card>
         );
     }
+
+    const CatalogSkeleton = () => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-80 w-full" />)}
+        </div>
+    );
 
     return (
         <>
@@ -213,12 +235,13 @@ function ProductCatalogTab() {
                             <TabsTrigger value="supplements">Спортивное питание</TabsTrigger>
                         </TabsList>
                         <TabsContent value="products" className="mt-6">
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {foodProducts.map(item => (
-                                    <NutritionCard key={item.id} item={item} onAdd={handleAddClick} />
-                                ))}
-                            </div>
-                             {foodProducts.length === 0 && (
+                            {isLoading ? <CatalogSkeleton /> : foodProducts.length > 0 ? (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {foodProducts.map(item => (
+                                        <NutritionCard key={item.id} item={item} onAdd={handleAddClick} />
+                                    ))}
+                                </div>
+                            ) : (
                                 <div className="col-span-full text-center py-16 text-muted-foreground">
                                     <UtensilsCrossed className="h-12 w-12 mx-auto mb-4" />
                                     <p>Ничего не найдено. Попробуйте другой запрос.</p>
@@ -226,12 +249,13 @@ function ProductCatalogTab() {
                             )}
                         </TabsContent>
                         <TabsContent value="supplements" className="mt-6">
-                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                                {supplements.map(item => (
-                                    <NutritionCard key={item.id} item={item} onAdd={handleAddClick} />
-                                ))}
-                            </div>
-                             {supplements.length === 0 && (
+                            {isLoading ? <CatalogSkeleton /> : supplements.length > 0 ? (
+                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {supplements.map(item => (
+                                        <NutritionCard key={item.id} item={item} onAdd={handleAddClick} />
+                                    ))}
+                                </div>
+                            ) : (
                                 <div className="col-span-full text-center py-16 text-muted-foreground">
                                      <UtensilsCrossed className="h-12 w-12 mx-auto mb-4" />
                                     <p>Ничего не найдено. Попробуйте другой запрос.</p>
