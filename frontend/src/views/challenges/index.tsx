@@ -8,10 +8,8 @@ import { ChallengeCreateDialog } from '@/widgets/challenge-create-dialog';
 import type { Challenge } from '@/entities/challenge/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useSession } from '@/shared/lib/session/client';
-import { createChallenge, getChallenges, acceptChallenge } from '@/entities/challenge/api/challenges';
+import { createChallenge, getChallenges, acceptChallenge, type CreateChallengeData } from '@/entities/challenge/api/challenges';
 import { Skeleton } from '@/shared/ui/skeleton';
-
-type FormValues = Omit<Challenge, 'id' | 'creator' | 'status' | 'opponent' | 'result'>;
 
 export function ChallengesPage() {
     const { user } = useSession();
@@ -49,7 +47,7 @@ export function ChallengesPage() {
         }
     }, [user]);
 
-    const handleCreateChallenge = async (data: FormValues) => {
+    const handleCreateChallenge = async (data: CreateChallengeData) => {
         try {
             await createChallenge(data);
             toast({ title: 'Вызов брошен!', description: 'Ваш вызов опубликован и виден другим игрокам.' });

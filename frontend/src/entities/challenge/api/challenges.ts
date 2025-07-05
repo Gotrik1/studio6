@@ -4,7 +4,13 @@ import type { Challenge } from '@/entities/challenge/model/types';
 import { revalidatePath } from 'next/cache';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
-type FormValues = Omit<Challenge, 'id' | 'creator' | 'status' | 'opponent' | 'result'>;
+// This DTO now accurately reflects the data sent to the backend.
+export type CreateChallengeData = {
+    title: string;
+    description: string;
+    discipline: string;
+    wager: number;
+};
 
 export async function getChallenges(filter: 'open' | 'my' | 'history'): Promise<Challenge[]> {
   const result = await fetchWithAuth(`/challenges?filter=${filter}`);
@@ -12,7 +18,7 @@ export async function getChallenges(filter: 'open' | 'my' | 'history'): Promise<
   return result.data;
 }
 
-export async function createChallenge(data: FormValues) {
+export async function createChallenge(data: CreateChallengeData) {
   const result = await fetchWithAuth('/challenges', {
     method: 'POST',
     body: JSON.stringify(data),
