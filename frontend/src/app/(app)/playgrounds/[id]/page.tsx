@@ -1,4 +1,3 @@
-
 import { getPlaygroundById } from '@/entities/playground/api/playgrounds';
 import PlaygroundDetailsPage from '@/views/playground-details';
 import { notFound } from 'next/navigation';

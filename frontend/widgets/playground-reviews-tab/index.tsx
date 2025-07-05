@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -6,7 +7,7 @@ import { PlaygroundReviewsFeed } from '@/widgets/playground-reviews-feed';
 import { PlaygroundReviewSummary } from '@/widgets/playground-review-summary';
 import { PlaygroundReviewDialog } from '@/widgets/playground-review-dialog';
 
-export type PlaygroundReview = {
+type PlaygroundReview = {
     id: string;
     author: {
         name: string;

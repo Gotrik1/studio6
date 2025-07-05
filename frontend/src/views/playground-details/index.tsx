@@ -1,17 +1,17 @@
 
+
 'use client';
 
 import { useState } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
 import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { useSession } from '@/shared/lib/session/client';
-import { mockPlaygroundReviews, type PlaygroundReview } from '@/shared/lib/mock-data/playground-reviews';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { useLfg } from '@/shared/context/lfg-provider';
 import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
@@ -19,20 +19,30 @@ import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets
 // Import Tab Widgets
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
-import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
 import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from '@/widgets/report-playground-issue-dialog';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
+import type { PlayerActivityItem } from '@/widgets/player-activity-feed';
 
+export type PlaygroundReview = {
+    id: string;
+    author: {
+        name: string;
+        avatar: string | null;
+    };
+    rating: number;
+    comment: string;
+    timestamp: string;
+};
 
 export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
-    const [reviews, setReviews] = useState<PlaygroundReview[]>(mockPlaygroundReviews);
+    const [activities, setActivities] = useState<PlayerActivityItem[]>([]);
+    const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [latestIssueReport, setLatestIssueReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
@@ -42,11 +52,13 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
 
     const handleCheckIn = (comment: string) => {
         if (!user) return;
-        const newActivity: PlaygroundActivity = {
+        const newActivity: PlayerActivityItem = {
             id: `act-${Date.now()}`,
             user: { name: user.name, avatar: user.avatar },
             comment,
             timestamp: 'Только что',
+            icon: 'CheckCircle',
+            type: 'check-in'
         };
         setActivities(prev => [newActivity, ...prev]);
         toast({
@@ -102,7 +114,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         combinedDate.setHours(hours, minutes, 0, 0);
 
         addLobby({
-            type: 'game',
+            type: 'GAME',
             sport: playground.type,
             location: playground.name,
             playgroundId: playground.id,
@@ -124,7 +136,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
             <div className="space-y-6">
                 <Card className="overflow-hidden">
                     <div className="relative h-64 w-full">
-                        <Image src={playground.coverImage} alt={playground.name} fill className="object-cover" data-ai-hint={playground.coverImageHint}/>
+                        <Image src={playground.coverImage!} alt={playground.name} fill className="object-cover" data-ai-hint={playground.coverImageHint!}/>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                         <div className="absolute bottom-6 left-6 text-white">
                             <Badge variant="secondary">{playground.type}</Badge>
@@ -166,7 +178,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                         <PlaygroundActivityTab activities={activities} />
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-6">
-                        <PlaygroundLeaderboardTab />
+                        <PlaygroundLeaderboardTab playground={playground} />
                     </TabsContent>
                     <TabsContent value="media" className="mt-6">
                         <PlaygroundMediaTab />

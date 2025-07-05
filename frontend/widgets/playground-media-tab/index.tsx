@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from "next/image";
@@ -13,6 +14,10 @@ type GalleryItem = {
     alt: string;
     dataAiHint: string;
 };
+
+interface PlaygroundMediaTabProps {
+    // Media is now fetched or managed within this component or its children
+}
 
 export function PlaygroundMediaTab() {
     const [gallery, setGallery] = useState<GalleryItem[]>([]);

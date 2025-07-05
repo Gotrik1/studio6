@@ -79,7 +79,7 @@ export class MatchesService {
       date: format(new Date(match.scheduledAt), 'yyyy-MM-dd'),
       status: statusMap[match.status],
       href: `/matches/${match.id}`,
-      playgroundId: null, // Assuming this is not in the DB model yet
+      playgroundId: match.playgroundId,
       disputeReason: match.disputeReason,
       timestamp: match.disputeOpenedAt?.toISOString() || match.createdAt.toISOString(),
       resolution: match.resolution,

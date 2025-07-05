@@ -38,3 +38,4 @@ export type Match = {
     timestamp?: string;
     resolution?: string;
 };
+

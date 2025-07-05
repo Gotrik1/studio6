@@ -6,17 +6,12 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { BookOpen, AlertCircle, Sparkles } from 'lucide-react';
 import { generatePlaygroundLore, type GeneratePlaygroundLoreOutput } from '@/shared/api/genkit/flows/generate-playground-lore';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
+import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
 
 interface AiPlaygroundLoreProps {
     playground: Playground;
 }
-
-// Mock data, in a real app this would be fetched
-const loreData = {
-    topPlayer: 'Superuser',
-    topTeam: 'Дворовые Атлеты',
-};
 
 export function AiPlaygroundLore({ playground }: AiPlaygroundLoreProps) {
     const [result, setResult] = useState<GeneratePlaygroundLoreOutput | null>(null);
@@ -29,10 +24,12 @@ export function AiPlaygroundLore({ playground }: AiPlaygroundLoreProps) {
             setIsLoading(true);
             setError(null);
             try {
+                const king = await getKingOfTheCourt(playground.id);
                 const loreResult = await generatePlaygroundLore({
                     playgroundName: playground.name,
                     checkIns: playground.checkIns,
-                    ...loreData
+                    topPlayer: king?.captain || 'Неизвестный герой',
+                    topTeam: king?.name || 'Одинокие волки',
                 });
                 setResult(loreResult);
             } catch (e) {
