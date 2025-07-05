@@ -1,7 +1,16 @@
 'use server';
 
-import type { AnalyzeEsportsPerformanceInput, AnalyzeEsportsPerformanceOutput } from './schemas/analyze-esports-performance-schema';
-export type { AnalyzeEsportsPerformanceInput, AnalyzeEsportsPerformanceOutput };
+// Define types here to decouple from backend Zod schemas
+export type AnalyzeEsportsPerformanceInput = {
+    playerStats: string;
+    matchHistory: string;
+};
+
+export type AnalyzeEsportsPerformanceOutput = {
+    strengths: string[];
+    weaknesses: string[];
+    recommendations: string[];
+};
 
 export async function analyzeEsportsPerformance(input: AnalyzeEsportsPerformanceInput): Promise<AnalyzeEsportsPerformanceOutput> {
   const response = await fetch(`/api/ai/analyze-esports-performance`, {
