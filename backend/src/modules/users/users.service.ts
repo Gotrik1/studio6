@@ -3,7 +3,7 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { User } from '@prisma/client';
+import { User, Prisma } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
 import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
 
@@ -24,7 +24,7 @@ export class UsersService {
   constructor(private prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const { name, email, role } = createUserDto;
+    const { name, email, role, password } = createUserDto;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -35,12 +35,13 @@ export class UsersService {
     }
     
     // NOTE: In a Keycloak architecture, the user would be created via Keycloak Admin API.
-    // Password is not handled here. This is a simplified version for the prototype.
+    // This is a simplified version for the prototype.
     const user = await this.prisma.user.create({
       data: {
         name,
         email,
-        role: role || 'Игрок', // default role
+        passwordHash: password || 'mock_hash', // In a real app, hash the password
+        role: role || 'Игрок',
         status: 'Активен',
         xp: 0,
       },
@@ -83,7 +84,7 @@ export class UsersService {
             },
             take: 10
           },
-          teams: {
+          teamsAsMember: {
             include: {
               _count: {
                 select: { members: true },
@@ -98,11 +99,15 @@ export class UsersService {
           }
         }
       });
+
+      if (!user) {
+        throw new NotFoundException(`Пользователь с ID ${id} не найден`);
+      }
       
-      const userTeams = user.teams.map((team) => ({
+      const userTeams = user.teamsAsMember.map((team) => ({
         id: team.id,
         name: team.name,
-        role: 'Участник', // Simplified. A real app might need a pivot table with roles.
+        role: user.id === team.captainId ? 'Капитан' : 'Участник',
         logo: team.logo,
         dataAiHint: team.dataAiHint,
         slug: team.slug,
@@ -125,7 +130,11 @@ export class UsersService {
         contacts: {
             telegram: user.telegram || '@player_example',
             discord: user.discord || 'player#1234'
-        }
+        },
+        // Frontend expects these fields, let's add them
+        activitySummary: 'Частые сообщения в чате, участие в 3 турнирах за последний месяц. Нет жалоб.',
+        statsSummary: `Играет в ${user.mainSport || 'неизвестно'}, роль - ${user.role}.`,
+        profileUrl: `/profiles/player/${user.id}`
       };
 
       return augmentedProfile;

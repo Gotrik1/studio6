@@ -6,16 +6,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import Link from 'next/link';
-
-// Mock data, in a real app this would be passed as a prop
-import { userList } from "@/shared/lib/mock-data/users";
-
-const managedPlayers = userList.slice(0, 3).map(u => ({
-    ...u,
-    game: 'Valorant', // Add mock game
-}));
+import { getUsers } from '@/entities/user/api/get-user';
+import { useEffect, useState } from 'react';
+import type { User } from '@/shared/lib/types';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 export function ManagedPlayersTab() {
+    const [players, setPlayers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getUsers().then(users => {
+            setPlayers(users.slice(0, 3).map(u => ({ ...u, mainSport: 'Valorant' }))); // Add mock game
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading) {
+        return <Skeleton className="h-64 w-full" />;
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -32,7 +42,7 @@ export function ManagedPlayersTab() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {managedPlayers.map((player) => (
+                        {players.map((player) => (
                             <TableRow key={player.id}>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
@@ -43,10 +53,10 @@ export function ManagedPlayersTab() {
                                         <span className="font-medium">{player.name}</span>
                                     </div>
                                 </TableCell>
-                                <TableCell className="hidden md:table-cell">{player.game}</TableCell>
+                                <TableCell className="hidden md:table-cell">{(player as any).mainSport}</TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="outline" size="sm">
-                                        <Link href={player.profileUrl}>Профиль</Link>
+                                        <Link href={`/profiles/player/${player.id}`}>Профиль</Link>
                                     </Button>
                                 </TableCell>
                             </TableRow>

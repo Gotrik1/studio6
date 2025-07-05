@@ -1,8 +1,16 @@
 
-import type { teams } from '@/shared/lib/mock-data/teams';
-import type { userList } from '@/shared/lib/mock-data/users';
-
-export type Team = (typeof teams)[0];
+export type Team = {
+    name: string;
+    motto: string;
+    logo: string;
+    dataAiHint: string;
+    game: string;
+    rank: number;
+    members: number;
+    captain: string;
+    slug: string;
+    homePlaygroundId: string | null;
+};
 
 export type TeamRosterMember = {
     id: string;
@@ -22,8 +30,19 @@ export type TeamDetails = {
     game: string;
     rank: number;
     membersCount: number;
-    captainName: string;
+    captainId: string; // Changed from captainName
     slug: string;
     homePlaygroundId: string | null;
     roster: TeamRosterMember[];
+};
+
+export type UserTeam = {
+  id: string;
+  name: string;
+  role: string;
+  logo: string | null;
+  dataAiHint: string | null;
+  slug: string;
+  rank: number | null;
+  game: string;
 };

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -59,7 +60,7 @@ export function ManualPromotionForm() {
     
     const promotionData = {
         ...data,
-        imageDataUri: 'https://placehold.co/2560x720.png',
+        imageDataUri: 'https://placehold.co/2560x720.png', // Mock image
         imageHint: 'promotion banner',
     };
 

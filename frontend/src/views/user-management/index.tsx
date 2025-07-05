@@ -22,7 +22,7 @@ import {
 import { Button, buttonVariants } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getUsers } from '@/entities/user/api/get-user';
+import { getUsers } from '@/entities/user/api/get-users';
 import type { User } from '@/shared/lib/types';
 
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -5,7 +6,7 @@ import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown, Link2, Award, History } from 'lucide-react';
-import type { TrainingLogEntry, ExerciseLog } from '@/shared/lib/mock-data/training-log';
+import type { TrainingLogEntry, ExerciseLog } from '@/entities/training-program/model/types';
 import type { ExerciseSession } from '@/shared/lib/get-training-analytics';
 import { cn } from '@/shared/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
@@ -20,10 +21,12 @@ import type { PersonalRecord } from '@/shared/lib/get-training-analytics';
 import { calculate1RM } from '@/shared/lib/calculate-1rm';
 import { Badge } from '@/shared/ui/badge';
 import Link from 'next/link';
-import { exercisesList } from '@/shared/lib/mock-data/exercises';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { getExercises } from '@/entities/exercise/api/get-exercises';
+import { useEffect, useState } from 'react';
+import type { Exercise } from '@/entities/exercise/model/types';
 
 interface TrainingDayCardProps {
     entry: TrainingLogEntry;
@@ -40,6 +43,7 @@ interface ExerciseRowProps {
     exercise: ExerciseLog;
     personalRecords: PersonalRecord[];
     exerciseHistory: ExerciseSession[];
+    allExercises: Exercise[];
 }
 
 interface SetRowProps {
@@ -63,11 +67,6 @@ const moodMap = {
     bad: { icon: Frown, color: 'text-red-500', label: 'Плохо' },
 };
 
-const getExerciseIdByName = (name: string): string => {
-    const exercise = exercisesList.find(ex => ex.name === name);
-    return exercise ? exercise.id : 'ex-not-found';
-};
-
 const SetRow = ({ control, exerciseIndex, setIndex, personalRecords, exercise }: SetRowProps) => {
     const watchedWeight = useWatch({ control, name: `exercises.${exerciseIndex}.sets.${setIndex}.loggedWeight` });
     const watchedReps = useWatch({ control, name: `exercises.${exerciseIndex}.sets.${setIndex}.loggedReps` });
@@ -86,7 +85,7 @@ const SetRow = ({ control, exerciseIndex, setIndex, personalRecords, exercise }:
             </TableCell>
             <TableCell>
                 <FormField control={control} name={`exercises.${exerciseIndex}.sets.${setIndex}.loggedWeight`} render={({ field }) => (
-                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedWeight.replace('кг','').trim()} /></FormControl></FormItem>
+                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedWeight?.replace('кг','').trim()} /></FormControl></FormItem>
                 )} />
             </TableCell>
             <TableCell>
@@ -112,20 +111,23 @@ const SetRow = ({ control, exerciseIndex, setIndex, personalRecords, exercise }:
 };
 
 
-const ExerciseRow = ({ control, exerciseIndex, exercise, personalRecords, exerciseHistory }: ExerciseRowProps) => {
+const ExerciseRow = ({ control, exerciseIndex, exercise, personalRecords, exerciseHistory, allExercises }: ExerciseRowProps) => {
     const { fields } = useFieldArray({
         control,
         name: `exercises.${exerciseIndex}.sets`
     });
 
     const isSuperset = exercise.isSupersetWithPrevious;
+    const exerciseDetails = allExercises.find(ex => ex.name === exercise.name);
+    const exerciseId = exerciseDetails?.id || 'ex-not-found';
+
 
     return (
         <div className={cn("mb-4", isSuperset && "pl-4 border-l-2 border-dashed border-primary/20 ml-2 pt-2")}>
             <div className="flex items-baseline gap-2 mb-2">
                 <h4 className="font-semibold flex items-center gap-2">
                     {isSuperset && <Link2 className="h-4 w-4 text-primary/50" />}
-                    <Link href={`/training/exercises/${getExerciseIdByName(exercise.name)}`} className="hover:underline hover:text-primary transition-colors">
+                    <Link href={`/training/exercises/${exerciseId}`} className="hover:underline hover:text-primary transition-colors">
                         {exercise.name}
                     </Link>
                 </h4>
@@ -198,6 +200,11 @@ export function TrainingDayCard({ entry, personalRecords, onDelete, onCopy, onUp
     const StatusIcon = statusMap[entry.status].icon;
     const statusColor = statusMap[entry.status].color;
     const MoodIcon = entry.mood ? moodMap[entry.mood].icon : null;
+    const [allExercises, setAllExercises] = useState<Exercise[]>([]);
+
+    useEffect(() => {
+        getExercises().then(setAllExercises);
+    }, []);
     
     const form = useForm<TrainingLogEntry>({
         defaultValues: JSON.parse(JSON.stringify(entry)),
@@ -263,6 +270,7 @@ export function TrainingDayCard({ entry, personalRecords, onDelete, onCopy, onUp
                                 exercise={entry.exercises[index]}
                                 personalRecords={personalRecords}
                                 exerciseHistory={fullExerciseHistory[entry.exercises[index]?.name] || []}
+                                allExercises={allExercises}
                            />
                         ))}
                         
@@ -296,7 +304,7 @@ export function TrainingDayCard({ entry, personalRecords, onDelete, onCopy, onUp
                                 />
                             </div>
                             <FormField control={form.control} name="mood" render={({ field }) => (
-                                 <FormItem><FormLabel>Самочувствие</FormLabel><FormControl><div className="flex gap-2">{Object.entries(moodMap).map(([key, value]) => (<Button key={key} type="button" variant={field.value === key ? 'default' : 'outline'} size="icon" onClick={() => field.onChange(key)}><value.icon /></Button>))}</div></FormControl></FormItem>
+                                 <FormItem><FormLabel>Самочувствие</FormLabel><FormControl><div className="flex gap-2">{Object.entries(moodMap).map(([key, value]) => (<Button key={key} type="button" variant={field.value === key ? 'default' : 'outline'} size="icon" onClick={() => field.onChange(key as TrainingLogEntry['mood'])}><value.icon /></Button>))}</div></FormControl></FormItem>
                             )} />
                         </div>
                         {entry.status === 'planned' && (

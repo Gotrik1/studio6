@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,7 +8,6 @@ import type { ProgramFormValues } from "@/widgets/training-program-form";
 import { useToast } from "@/shared/hooks/use-toast";
 import type { TrainingProgram } from "@/entities/training-program/model/types";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { getProgramById } from '@/entities/training-program/api/get-program';
 import { useTraining } from '@/shared/context/training-provider';
 
 interface TrainingProgramEditPageProps {
@@ -15,24 +15,14 @@ interface TrainingProgramEditPageProps {
 }
 
 export function TrainingProgramEditPage({ programId }: TrainingProgramEditPageProps) {
-    const { updateProgram } = useTraining();
+    const { programs, updateProgram } = useTraining();
     const router = useRouter();
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
-    const [initialData, setInitialData] = useState<TrainingProgram | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchProgram = async () => {
-            const program = await getProgramById(programId);
-            setInitialData(program);
-            setLoading(false);
-        }
-        fetchProgram();
-    }, [programId]);
     
+    const programToEdit = programs.find(p => p.id === programId);
 
-    if (loading) {
+    if (programs.length === 0) { // Loading state from provider
         return (
              <div className="space-y-6">
                  <Skeleton className="h-20 w-full" />
@@ -42,16 +32,14 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
         )
     }
     
-    if (!initialData) {
+    if (!programToEdit) {
         return <div>Программа не найдена.</div>
     }
 
     const handleSubmit = (data: ProgramFormValues) => {
-        if (!initialData) return;
-
         setIsSaving(true);
         const updatedProgram: TrainingProgram = {
-            ...initialData,
+            ...programToEdit,
             name: data.name,
             description: data.description || '',
             goal: data.goal,
@@ -87,7 +75,7 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
         <TrainingProgramForm 
             onSubmit={handleSubmit}
             isSaving={isSaving}
-            initialData={initialData}
+            initialData={programToEdit}
         />
     );
 }

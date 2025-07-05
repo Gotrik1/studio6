@@ -10,15 +10,16 @@ import { Loader2, Sparkles, AlertCircle, TrendingUp, TrendingDown, ClipboardList
 import { analyzePlayerPerformance, type AnalyzePlayerPerformanceOutput } from '@/shared/api/genkit/flows/analyze-player-performance-flow';
 import { generateTrainingPlan, type GenerateTrainingPlanOutput } from '@/shared/api/genkit/flows/generate-training-plan-flow';
 import Link from 'next/link';
+import { useTraining } from '@/shared/context/training-provider';
+import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
+import { winLossData } from '@/shared/lib/mock-data/player-stats';
 
-const mockPerformanceData = {
-    trainingSummary: "Monthly Volume: 120,000kg, Workout Streak: 5 days, Favorite Exercise: Bench Press",
-    recentWorkouts: "Bench Press: 4x8 @ 80kg; Squats: 5x5 @ 100kg"
-};
+
 const mockFitnessGoal = 'Набор массы';
 
 
 export function PlayerPerformanceCoach() {
+    const { log } = useTraining();
     const [isAnalyzing, setIsAnalyzing] = useState(false);
     const [analysisError, setAnalysisError] = useState<string | null>(null);
     const [analysisResult, setAnalysisResult] = useState<AnalyzePlayerPerformanceOutput | null>(null);
@@ -36,7 +37,19 @@ export function PlayerPerformanceCoach() {
         setPlanError(null);
 
         try {
-            const analysis = await analyzePlayerPerformance(mockPerformanceData);
+             // Generate summaries from mock data
+            const { trainingMetrics } = getTrainingAnalytics(log);
+            const physicalSummary = `
+                Всего тренировок: ${trainingMetrics.totalWorkouts},
+                Ежемесячный объем: ${trainingMetrics.monthlyVolume},
+                Тренировочный стрик: ${trainingMetrics.workoutStreak},
+                Любимое упражнение: ${trainingMetrics.favoriteExercise},
+                Последняя тренировка: ${trainingMetrics.lastWorkout}.
+            `;
+            const analysis = await analyzePlayerPerformance({ 
+                trainingSummary: physicalSummary,
+                recentWorkouts: JSON.stringify(log.filter(l => l.status === 'completed').slice(0, 2))
+             });
             setAnalysisResult(analysis);
         } catch (e) {
             console.error(e);

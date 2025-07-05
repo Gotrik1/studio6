@@ -6,8 +6,9 @@ import { VolumeChart } from '@/widgets/analytics-charts/volume-chart';
 import { MeasurementChart } from '@/widgets/analytics-charts/measurements-chart';
 import { Dumbbell, Flame, Star, Activity, BarChart3, LineChart } from 'lucide-react';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
-import { trainingLogData } from '@/shared/lib/mock-data/training-log';
-import { measurementsHistory } from '@/shared/lib/mock-data/measurements';
+import { useTraining } from '@/shared/context/training-provider';
+import { useMeasurements } from '@/shared/context/measurements-provider';
+
 
 const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, icon: React.ElementType }) => (
     <Card>
@@ -22,7 +23,9 @@ const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, 
 );
 
 export function TrainingAnalyticsPage() {
-    const { trainingMetrics, volumeByMuscleGroupData } = getTrainingAnalytics(trainingLogData);
+    const { log } = useTraining();
+    const { history: measurementsHistory } = useMeasurements();
+    const { trainingMetrics, volumeByMuscleGroupData } = getTrainingAnalytics(log);
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">

@@ -1,24 +1,18 @@
 
 'use client';
 
-import { useState } from 'react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { trainingLogData } from '@/shared/lib/mock-data/training-log';
-import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
-import { TrainingDayCard } from '@/widgets/training-day-card';
 import { PlusCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTraining } from '@/shared/context/training-provider';
-import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
+import type { TrainingLogEntry } from '@/entities/training-program/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
+import { TrainingLogList } from '@/widgets/training-log-list';
 
 export default function TrainingLogPage() {
     const { toast } = useToast();
     const router = useRouter();
-    const { currentProgram } = useTraining();
-    const [log, setLog] = useState<TrainingLogEntry[]>(trainingLogData);
-    const { personalRecords, fullExerciseHistory } = getTrainingAnalytics(log);
+    const { log, setLog, currentProgram } = useTraining();
 
     const handleCopy = (id: string) => {
         const entryToCopy = log.find(entry => entry.id === id);
@@ -29,7 +23,8 @@ export default function TrainingLogPage() {
                 date: new Date().toISOString().split('T')[0],
                 status: 'planned',
                 notes: '',
-                mood: undefined
+                mood: undefined,
+                coachNotes: undefined,
             };
             setLog(prev => [newEntry, ...prev]);
              toast({
@@ -70,25 +65,12 @@ export default function TrainingLogPage() {
                 </Button>
             </div>
             
-            <Card>
-                <CardHeader>
-                    <CardTitle>Предстоящие и прошедшие тренировки</CardTitle>
-                    <CardDescription>Записывайте результаты, чтобы отслеживать прогресс.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    {log.map(entry => (
-                        <TrainingDayCard
-                            key={entry.id}
-                            entry={entry}
-                            personalRecords={personalRecords}
-                            onDelete={handleDelete}
-                            onCopy={handleCopy}
-                            onUpdate={handleUpdate}
-                            fullExerciseHistory={fullExerciseHistory}
-                        />
-                    ))}
-                </CardContent>
-            </Card>
+            <TrainingLogList 
+                log={log}
+                onCopy={handleCopy}
+                onDelete={handleDelete}
+                onUpdate={handleUpdate}
+            />
         </div>
     );
 }

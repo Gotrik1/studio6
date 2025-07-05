@@ -1,9 +1,11 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import type { TrainingProgram } from '@/entities/training-program/model/types';
+import type { TrainingProgram, TrainingLogEntry } from '@/entities/training-program/model/types';
 import { getTrainingPrograms } from '@/entities/training-program/api/get-programs';
 import { useToast } from '@/shared/hooks/use-toast';
+import { trainingLogData as initialLog } from '@/shared/lib/mock-data/training-log';
 
 interface TrainingContextType {
   programs: TrainingProgram[];
@@ -13,6 +15,8 @@ interface TrainingContextType {
   updateProgram: (program: TrainingProgram) => void;
   deleteProgram: (programId: string) => void;
   isLoading: boolean;
+  log: TrainingLogEntry[];
+  setLog: React.Dispatch<React.SetStateAction<TrainingLogEntry[]>>;
 }
 
 const TrainingContext = createContext<TrainingContextType | undefined>(undefined);
@@ -22,6 +26,7 @@ export const TrainingProvider = ({ children }: { children: ReactNode }) => {
   const [programs, setPrograms] = useState<TrainingProgram[]>([]);
   const [currentProgram, setCurrentProgram] = useState<TrainingProgram | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [log, setLog] = useState<TrainingLogEntry[]>(initialLog);
 
   useEffect(() => {
     const loadPrograms = async () => {
@@ -72,8 +77,10 @@ export const TrainingProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const value = { programs, currentProgram, selectProgram, addProgram, updateProgram, deleteProgram, isLoading, log, setLog };
+
   return (
-    <TrainingContext.Provider value={{ programs, currentProgram, selectProgram, addProgram, updateProgram, deleteProgram, isLoading }}>
+    <TrainingContext.Provider value={value}>
       {children}
     </TrainingContext.Provider>
   );

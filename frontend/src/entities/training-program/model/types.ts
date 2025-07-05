@@ -1,4 +1,5 @@
 
+
 export type ExerciseDetail = {
     name: string;
     sets: string;
@@ -26,4 +27,32 @@ export type TrainingProgram = {
     coverImageHint: string;
     isAiGenerated?: boolean;
     weeklySplit: WorkoutDay[];
+};
+
+export type LoggedSet = {
+    plannedReps: string;
+    plannedWeight: string;
+    loggedReps?: number;
+    loggedWeight?: number;
+    rpe?: number;
+    isCompleted: boolean;
+};
+
+export type ExerciseLog = {
+    name: string;
+    notes?: string;
+    sets: LoggedSet[];
+    isSupersetWithPrevious?: boolean;
+    technique?: string;
+};
+
+export type TrainingLogEntry = {
+    id: string;
+    date: string;
+    workoutName: string;
+    status: 'completed' | 'planned' | 'skipped';
+    exercises: ExerciseLog[];
+    mood?: 'great' | 'good' | 'ok' | 'bad';
+    notes?: string;
+    coachNotes?: string;
 };

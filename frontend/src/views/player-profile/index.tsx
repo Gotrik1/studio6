@@ -3,6 +3,7 @@ import PlayerClient from "@/app/(app)/administration/player/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { getSession } from "@/features/auth/session";
 import { notFound } from "next/navigation";
+import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 
 // This file is now obsolete as profile pages are handled dynamically.
 // Kept for reference or potential future use.

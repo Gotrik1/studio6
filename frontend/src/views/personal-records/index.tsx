@@ -3,7 +3,6 @@
 
 import { useState, useMemo } from 'react';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
-import { trainingLogData } from '@/shared/lib/mock-data/training-log';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Award, LineChart, TrendingUp, Dumbbell } from 'lucide-react';
@@ -14,9 +13,11 @@ import type { PersonalRecord } from '@/shared/lib/get-training-analytics';
 import { cn } from '@/shared/lib/utils';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
+import { useTraining } from '@/shared/context/training-provider';
 
 export function PersonalRecordsPage() {
-    const { personalRecords, recordHistory, fullExerciseHistory } = useMemo(() => getTrainingAnalytics(trainingLogData), []);
+    const { log } = useTraining();
+    const { personalRecords, recordHistory, fullExerciseHistory } = useMemo(() => getTrainingAnalytics(log), [log]);
     const [selectedRecord, setSelectedRecord] = useState<PersonalRecord | null>(personalRecords[0] || null);
 
     const selected1RMHistory = selectedRecord ? recordHistory[selectedRecord.exercise] || [] : [];

@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -11,7 +11,8 @@ import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { useToast } from '@/shared/hooks/use-toast';
-import { storeItems as initialItems, type StoreItem } from '@/shared/lib/mock-data/store';
+import type { StoreItem } from '@/entities/store/model/types';
+import { getStoreItems } from '@/entities/store/api/store';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { Switch } from '@/shared/ui/switch';
 import { Textarea } from '@/shared/ui/textarea';
@@ -28,7 +29,11 @@ type FormValues = z.infer<typeof itemSchema>;
 
 export function StoreAdminPage() {
     const { toast } = useToast();
-    const [items, setItems] = useState<StoreItem[]>(initialItems);
+    const [items, setItems] = useState<StoreItem[]>([]);
+
+    useEffect(() => {
+        getStoreItems().then(setItems);
+    }, []);
 
     const form = useForm<FormValues>({
         resolver: zodResolver(itemSchema),

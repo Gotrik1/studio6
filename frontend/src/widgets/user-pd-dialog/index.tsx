@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from '@/shared/hooks/use-toast';
 import { Coins } from 'lucide-react';
 import type { User } from '@/shared/lib/types';
+import { usePDEconomy } from '@/shared/context/pd-provider';
 
 
 interface UserPdDialogProps {
@@ -24,6 +25,7 @@ const debitReasons = ["Штраф за нарушение", "Списание з
 
 export function UserPdDialog({ user, action, isOpen, onOpenChange }: UserPdDialogProps) {
     const { toast } = useToast();
+    const { addTransaction } = usePDEconomy();
     const [amount, setAmount] = useState('100');
     const [reason, setReason] = useState('');
 
@@ -46,6 +48,11 @@ export function UserPdDialog({ user, action, isOpen, onOpenChange }: UserPdDialo
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Выберите причину.' });
             return;
         }
+
+        const value = action === 'credit' ? numAmount : -numAmount;
+        const transactionReason = `${action === 'credit' ? 'Начисление' : 'Списание'}: ${reason}`;
+
+        addTransaction(transactionReason, value);
 
         const actionText = action === 'credit' ? 'начислено' : 'списано';
         toast({

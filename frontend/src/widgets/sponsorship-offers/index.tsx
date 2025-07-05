@@ -1,13 +1,47 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
-import { incomingSponsorshipOffers as initialOffers, type SponsorshipOffer } from '@/shared/lib/mock-data/sponsorship';
 import { Check, X } from 'lucide-react';
 import Image from 'next/image';
+
+// Assuming a type definition exists for sponsorship offers
+type SponsorshipOffer = {
+  id: string;
+  sponsor: {
+    name: string;
+    logo: string;
+    logoHint: string;
+  };
+  offer: string;
+  status: 'pending' | 'accepted' | 'declined';
+};
+
+const initialOffers: SponsorshipOffer[] = [
+    {
+        id: 'offer-1',
+        sponsor: {
+            name: 'G-Fuel',
+            logo: 'https://placehold.co/100x100.png',
+            logoHint: 'energy drink logo'
+        },
+        offer: 'Полное спонсорство на сезон 2024. Включает форму, оплату взносов и продукцию.',
+        status: 'pending',
+    },
+    {
+        id: 'offer-2',
+        sponsor: {
+            name: 'Razer',
+            logo: 'https://placehold.co/100x100.png',
+            logoHint: 'gaming peripherals logo'
+        },
+        offer: 'Предоставление топовой периферии для всей команды.',
+        status: 'pending',
+    }
+];
 
 export function SponsorshipOffers() {
     const [offers, setOffers] = useState<SponsorshipOffer[]>(initialOffers);
