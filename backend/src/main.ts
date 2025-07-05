@@ -4,6 +4,7 @@ import { config } from 'dotenv';
 import * as path from 'path';
 import { JsonLogger } from './common/services/json-logger.service';
 import type { LogLevel } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 
@@ -16,6 +17,7 @@ async function bootstrap() {
     logger: logger,
   });
 
+  app.useGlobalPipes(new ValidationPipe());
   app.useWebSocketAdapter(new IoAdapter(app));
   
   // Swagger Configuration
