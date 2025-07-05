@@ -5,6 +5,22 @@ import { trainingPrograms as mockPrograms } from './seed-data-programs';
 import type { Exercise } from '@prisma/client';
 import { AssignProgramDto } from './dto/assign-program.dto';
 
+// Define a type for the transformed exercise to ensure type safety
+type TransformedExercise = Omit<Exercise, 'techniqueTips' | 'commonMistakes' | 'alternatives'> & {
+    techniqueTips: string[];
+    commonMistakes: string[];
+    alternatives: string[];
+};
+
+const transformExercise = (exercise: Exercise): TransformedExercise => {
+    return {
+        ...exercise,
+        techniqueTips: Array.isArray(exercise.techniqueTips) ? exercise.techniqueTips as string[] : [],
+        commonMistakes: Array.isArray(exercise.commonMistakes) ? exercise.commonMistakes as string[] : [],
+        alternatives: Array.isArray(exercise.alternatives) ? exercise.alternatives as string[] : [],
+    };
+};
+
 @Injectable()
 export class TrainingService implements OnModuleInit {
     private readonly logger = new Logger(TrainingService.name);
@@ -118,16 +134,17 @@ export class TrainingService implements OnModuleInit {
          this.logger.log('Initial training logs seeded.');
     }
 
-    async findAllExercises() {
-        return this.prisma.exercise.findMany();
+    async findAllExercises(): Promise<TransformedExercise[]> {
+        const exercises = await this.prisma.exercise.findMany();
+        return exercises.map(transformExercise);
     }
 
-    async findOneExercise(id: string): Promise<Exercise> {
+    async findOneExercise(id: string): Promise<TransformedExercise> {
         const exercise = await this.prisma.exercise.findUnique({ where: { id } });
         if (!exercise) {
             throw new NotFoundException(`Exercise with ID ${id} not found.`);
         }
-        return exercise;
+        return transformExercise(exercise);
     }
 
     async findAllPrograms() {
