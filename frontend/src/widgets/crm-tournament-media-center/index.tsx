@@ -4,27 +4,25 @@
 import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
-import { Loader2, Sparkles, AlertCircle, Award, Share2, Copy, Download, Volume2, Mic } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { BrainCircuit, Loader2, AlertCircle, Sparkles, Award, Share2, Copy, Download, Volume2, Mic, Image as ImageIcon } from 'lucide-react';
+import { Skeleton } from '@/shared/ui/skeleton';
 import { generateTournamentSummary, type GenerateTournamentSummaryOutput } from '@/shared/api/genkit/flows/generate-tournament-summary-flow';
 import { generatePostImage, type GeneratePostImageOutput } from '@/shared/api/genkit/flows/generate-post-image-flow';
-import { Skeleton } from '@/shared/ui/skeleton';
 import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { generateMatchCommentary, type GenerateMatchCommentaryOutput } from "@/shared/api/genkit/flows/generate-match-commentary-flow";
 import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
 import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
+import { useRouter } from 'next/navigation';
+import { createTournamentMedia } from '@/entities/tournament/api/media';
+import type { TournamentDetails } from '@/entities/tournament/model/types';
 
 
 interface CrmTournamentMediaCenterProps {
-    tournament: {
-        id: string;
-        name: string;
-        sport: string;
-        status: string;
-    }
+    tournament: TournamentDetails;
 }
 
 const mockFinalMatch = {
@@ -37,6 +35,7 @@ const mockChampion = 'Дворовые Атлеты';
 
 export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCenterProps) {
     const { toast } = useToast();
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [summaryResult, setSummaryResult] = useState<GenerateTournamentSummaryOutput | null>(null);
@@ -63,7 +62,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
         try {
             const summaryData = await generateTournamentSummary({
                 tournamentName: tournament.name,
-                tournamentGame: tournament.sport,
+                tournamentGame: tournament.game,
                 champion: mockChampion,
                 finalMatch: mockFinalMatch,
             });
@@ -110,11 +109,15 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
         setPostResult(null);
     
         try {
+            const scoreParts = mockFinalMatch.score.split('-').map(s => parseInt(s, 10));
+            const winningTeam = scoreParts[0] > scoreParts[1] ? mockFinalMatch.team1 : mockFinalMatch.team2;
+            const losingTeam = scoreParts[0] > scoreParts[1] ? mockFinalMatch.team2 : mockFinalMatch.team1;
+
             const postData = await generateMatchPost({
-                winningTeam: mockChampion,
-                losingTeam: mockFinalMatch.team2,
+                winningTeam,
+                losingTeam,
                 score: mockFinalMatch.score,
-                matchSummary: summaryResult.summaryArticle,
+                matchSummary: result.summaryArticle,
             });
             setPostResult(postData);
         } catch (e) {
@@ -160,6 +163,16 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
         }
     };
 
+    const handleSaveMedia = async (data: { type: 'IMAGE' | 'VIDEO' | 'AUDIO', src: string, description: string, hint: string }) => {
+        const result = await createTournamentMedia(tournament.id, data);
+        if (result.success) {
+            toast({ title: "Медиа сохранено!", description: "Файл добавлен в галерею турнира." });
+            router.refresh();
+        } else {
+            toast({ variant: 'destructive', title: "Ошибка", description: "Не удалось сохранить медиа." });
+        }
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -167,11 +180,11 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                 <CardDescription>Сгенерируйте полный медиа-кит для вашего турнира в один клик.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                <Button onClick={handleGenerate} disabled={isLoading || tournament.status !== 'Завершён'}>
+                <Button onClick={handleGenerate} disabled={isLoading || tournament.status !== 'FINISHED'}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                     {isLoading ? 'Генерация...' : 'Сгенерировать медиа-кит'}
                 </Button>
-                 {tournament.status !== 'Завершён' && (
+                 {tournament.status !== 'FINISHED' && (
                     <Alert variant="destructive">
                         <AlertCircle className="h-4 w-4" />
                         <AlertTitle>Функция недоступна</AlertTitle>
@@ -243,16 +256,14 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                             <div className="space-y-2">
                                                 <Label>Изображение</Label>
                                                 <div className="relative aspect-video w-full overflow-hidden rounded-md border">
-                                                    <Image src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover"/>
+                                                    <NextImage src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover"/>
                                                 </div>
                                             </div>
                                         </div>
                                      <div className="flex gap-2">
                                         <Button onClick={() => handleCopyText(postResult.postText)}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
-                                        <Button variant="outline" asChild>
-                                            <a href={postResult.imageDataUri} download="match_post_image.png">
-                                                <Download className="mr-2 h-4 w-4"/> Скачать изображение
-                                            </a>
+                                        <Button variant="outline" onClick={() => handleSaveMedia({ type: 'IMAGE', src: postResult.imageDataUri, description: postResult.postText, hint: 'match victory post' })}>
+                                            <Download className="mr-2 h-4 w-4"/> Сохранить в галерею
                                         </Button>
                                     </div>
                                 </CardContent>
@@ -266,7 +277,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {images.map((img, index) => (
                                         <div key={index} className="relative aspect-square">
-                                            <Image src={img.imageDataUri} alt={`Сгенерированное изображение ${index + 1}`} fill className="object-cover rounded-md" />
+                                            <NextImage src={img.imageDataUri} alt={`Сгенерированное изображение ${index + 1}`} fill className="object-cover rounded-md" />
                                         </div>
                                     ))}
                                 </div>
@@ -275,6 +286,22 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                     </div>
                 )}
             </CardContent>
+
+             <CardFooter>
+                 <Card>
+                    <CardHeader><CardTitle>Галерея турнира</CardTitle></CardHeader>
+                    <CardContent>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                           {tournament.media?.map(media => (
+                               <div key={media.id} className="relative aspect-square">
+                                    <NextImage src={media.src} alt={media.description || 'media'} fill className="object-cover rounded-md" />
+                                </div>
+                           ))}
+                           {tournament.media?.length === 0 && <p className="text-sm text-muted-foreground col-span-full">В галерее пока пусто.</p>}
+                        </div>
+                    </CardContent>
+                 </Card>
+            </CardFooter>
         </Card>
     );
 }

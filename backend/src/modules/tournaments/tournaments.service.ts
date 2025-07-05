@@ -11,6 +11,7 @@ import { Tournament, ActivityType, Prisma } from '@prisma/client';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { TournamentCrmDto } from './dto/tournament-crm.dto';
+import { CreateTournamentMediaDto } from './dto/create-tournament-media.dto';
 
 @Injectable()
 export class TournamentsService {
@@ -197,6 +198,7 @@ export class TournamentsService {
         organizer: {
           select: { name: true, avatar: true },
         },
+        media: true,
       },
     });
 
@@ -226,6 +228,7 @@ export class TournamentsService {
         organizer: {
           select: { name: true, avatar: true },
         },
+        media: true,
       },
     });
 
@@ -304,10 +307,7 @@ export class TournamentsService {
       teams: tournament.teams,
       rules: tournament.rules || "Правила не указаны.",
       bracket: { rounds },
-      media: [ // Keep media mocked for now
-        { type: 'image', src: 'https://placehold.co/600x400.png', hint: 'esports action' },
-        { type: 'video', src: 'https://placehold.co/600x400.png', hint: 'esports trophy' },
-      ]
+      media: tournament.media.map((m: any) => ({ ...m, src: m.src }))
     };
   }
 
@@ -350,6 +350,15 @@ export class TournamentsService {
         },
       },
       include: { teams: true },
+    });
+  }
+  
+  async addMedia(tournamentId: string, createMediaDto: CreateTournamentMediaDto) {
+    return this.prisma.tournamentMedia.create({
+      data: {
+        tournamentId,
+        ...createMediaDto,
+      },
     });
   }
 

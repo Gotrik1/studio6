@@ -23,6 +23,15 @@ type BracketRound = {
   matches: BracketMatch[];
 };
 
+type MediaItem = {
+    id: string;
+    type: string;
+    src: string;
+    description: string | null;
+    hint: string | null;
+    createdAt: string;
+};
+
 export type TournamentDetails = {
     id: string;
     name: string;
@@ -50,7 +59,7 @@ export type TournamentDetails = {
     bracket: {
         rounds: BracketRound[];
     };
-    media: { type: string, src: string, hint: string }[];
+    media: MediaItem[];
 };
 
 export type Tournament = {

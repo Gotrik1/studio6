@@ -10,6 +10,7 @@ import { Request } from 'express';
 import { Public } from '../auth/decorators/public.decorator';
 import { MatchStatus } from '@prisma/client';
 import { TournamentCrmDto } from './dto/tournament-crm.dto';
+import { CreateTournamentMediaDto } from './dto/create-tournament-media.dto';
 
 @ApiTags('Tournaments')
 @Controller('tournaments')
@@ -73,5 +74,12 @@ export class TournamentsController {
       tournamentId,
       registerTeamDto.teamId,
     );
+  }
+  
+  @Post(':id/media')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  createMedia(@Param('id') tournamentId: string, @Body() createMediaDto: CreateTournamentMediaDto) {
+    return this.tournamentsService.addMedia(tournamentId, createMediaDto);
   }
 }
