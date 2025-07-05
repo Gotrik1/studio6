@@ -11,17 +11,17 @@ import { Button } from '@/shared/ui/button';
 import { Textarea } from '@/shared/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Loader2 } from 'lucide-react';
-import type { Challenge } from '@/entities/challenge/model/types';
 import { getSports, type Sport } from '@/entities/sport/api/sports';
+import type { CreateChallengeData } from '@/entities/challenge/api/challenges';
 
 const challengeSchema = z.object({
   title: z.string().min(5, 'Название должно быть не менее 5 символов.').max(50, 'Название слишком длинное.'),
   description: z.string().min(10, 'Описание должно быть не менее 10 символов.').max(200, 'Описание слишком длинное.'),
-  discipline: z.string({ required_error: "Выберите дисциплину." }),
+  disciplineId: z.string({ required_error: "Выберите дисциплину." }),
   wager: z.coerce.number().min(0, "Ставка не может быть отрицательной.").max(10000, "Слишком большая ставка."),
 });
 
-type FormValues = Omit<Challenge, 'id' | 'creator' | 'status' | 'opponent' | 'result'>;
+type FormValues = CreateChallengeData;
 
 interface ChallengeCreateDialogProps {
     isOpen: boolean;
@@ -45,7 +45,7 @@ export function ChallengeCreateDialog({ isOpen, onOpenChange, onCreate }: Challe
             wager: 0,
             title: '',
             description: '',
-            discipline: undefined,
+            disciplineId: undefined,
         },
     });
 
@@ -54,7 +54,7 @@ export function ChallengeCreateDialog({ isOpen, onOpenChange, onCreate }: Challe
         try {
             await onCreate(data);
             onOpenChange(false);
-            form.reset({ wager: 0, title: '', description: '', discipline: '' });
+            form.reset({ wager: 0, title: '', description: '', disciplineId: '' });
         } catch (error) {
             // Toast is handled in the parent component
         } finally {
@@ -75,8 +75,8 @@ export function ChallengeCreateDialog({ isOpen, onOpenChange, onCreate }: Challe
                              <FormField control={form.control} name="title" render={({ field }) => (
                                 <FormItem><FormLabel>Название вызова</FormLabel><FormControl><Input placeholder="Например, Дуэль 1 на 1" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
-                             <FormField control={form.control} name="discipline" render={({ field }) => (
-                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                             <FormField control={form.control} name="disciplineId" render={({ field }) => (
+                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.id}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                             )} />
                              <FormField control={form.control} name="wager" render={({ field }) => (
                                 <FormItem><FormLabel>Ставка (PD)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>

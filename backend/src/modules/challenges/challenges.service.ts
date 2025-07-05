@@ -8,9 +8,13 @@ export class ChallengesService {
   constructor(private prisma: PrismaService) {}
 
   async create(createChallengeDto: CreateChallengeDto, userId: string): Promise<Challenge> {
+    const { title, description, wager, disciplineId } = createChallengeDto;
     return this.prisma.challenge.create({
       data: {
-        ...createChallengeDto,
+        title,
+        description,
+        wager,
+        discipline: { connect: { id: disciplineId } },
         creatorId: userId,
         status: 'OPEN',
       },
@@ -22,6 +26,7 @@ export class ChallengesService {
     const include = {
         creator: { select: { id: true, name: true, avatar: true } },
         opponent: { select: { id: true, name: true, avatar: true } },
+        discipline: { select: { name: true } },
     };
 
     if (filter === 'open') {
@@ -50,7 +55,7 @@ export class ChallengesService {
         id: c.id,
         title: c.title,
         description: c.description,
-        discipline: c.discipline,
+        discipline: c.discipline.name,
         wager: c.wager,
         status: c.status,
         result: c.result,

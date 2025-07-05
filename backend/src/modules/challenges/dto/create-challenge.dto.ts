@@ -14,10 +14,10 @@ export class CreateChallengeDto {
   @MaxLength(200)
   readonly description: string;
   
-  @ApiProperty({ description: 'Дисциплина', example: 'CS:GO 2' })
+  @ApiProperty({ description: 'ID дисциплины', example: 'csgo' })
   @IsString()
   @IsNotEmpty()
-  readonly discipline: string;
+  readonly disciplineId: string;
 
   @ApiProperty({ description: 'Ставка в PD', example: 100 })
   @IsInt()

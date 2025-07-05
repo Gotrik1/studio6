@@ -8,7 +8,7 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 export type CreateChallengeData = {
     title: string;
     description: string;
-    discipline: string;
+    disciplineId: string;
     wager: number;
 };
 
