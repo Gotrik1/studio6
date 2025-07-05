@@ -38,6 +38,7 @@ import { TournamentAnnouncementsModule } from './modules/tournament-announcement
 import { TournamentJudgesModule } from './modules/tournament-judges/tournament-judges.module';
 import { MedicalPartnersModule } from './modules/medical-partners/medical-partners.module';
 import { TournamentMedicalModule } from './modules/tournament-medical/tournament-medical.module';
+import { TournamentParticipantsModule } from './modules/tournament-participants/tournament-participants.module';
 
 @Module({
   imports: [
@@ -76,6 +77,7 @@ import { TournamentMedicalModule } from './modules/tournament-medical/tournament
     TournamentJudgesModule,
     MedicalPartnersModule,
     TournamentMedicalModule,
+    TournamentParticipantsModule,
   ],
   controllers: [AppController],
   providers: [

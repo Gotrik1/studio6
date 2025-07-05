@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
@@ -103,7 +102,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
                 
                 <TabsContent value="participants" className="mt-4">
-                    <CrmTournamentParticipants />
+                    <CrmTournamentParticipants tournamentId={tournament.id} />
                 </TabsContent>
 
                 <TabsContent value="rules" className="mt-4">
@@ -130,7 +129,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
 
                 <TabsContent value="judges" className="mt-4">
-                    <CrmTournamentJudges />
+                    <CrmTournamentJudges tournamentId={tournament.id} />
                 </TabsContent>
 
                 <TabsContent value="matches" className="mt-4">
@@ -162,7 +161,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
 
                 <TabsContent value="medical" className="mt-4">
-                    <CrmTournamentMedical />
+                    <CrmTournamentMedical tournamentId={tournament.id} />
                 </TabsContent>
                 
                 <TabsContent value="announcements" className="mt-4">
