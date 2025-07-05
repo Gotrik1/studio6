@@ -32,8 +32,8 @@ export function CrmTournamentJudges({ tournamentId }: CrmTournamentJudgesProps) 
             ]);
             setAssignedJudges(assignedData);
             // Filter out already assigned judges from the available list
-            const assignedIds = new Set(assignedData.map(j => j.id));
-            setAvailableJudges(availableData.filter(j => !assignedIds.has(j.id)));
+            const assignedIds = new Set(assignedData.map((j: User) => j.id));
+            setAvailableJudges(availableData.filter((j: User) => !assignedIds.has(j.id)));
         } catch (error) {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить данные судей.' });
         } finally {

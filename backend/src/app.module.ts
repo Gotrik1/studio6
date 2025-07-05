@@ -36,11 +36,6 @@ import { NutritionModule } from './modules/nutrition/nutrition.module';
 import { FaqModule } from './modules/faq/faq.module';
 import { TournamentAnnouncementsModule } from './modules/tournament-announcements/tournament-announcements.module';
 import { TournamentJudgesModule } from './modules/tournament-judges/tournament-judges.module';
-import { MedicalPartnersModule } from './modules/medical-partners/medical-partners.module';
-import { TournamentMedicalModule } from './modules/tournament-medical/tournament-medical.module';
-import { TournamentParticipantsModule } from './modules/tournament-participants/tournament-participants.module';
-import { TournamentSponsorsModule } from './modules/tournament-sponsors/tournament-sponsors.module';
-import { ActivitiesModule } from './modules/activities/activities.module';
 
 @Module({
   imports: [
@@ -77,11 +72,6 @@ import { ActivitiesModule } from './modules/activities/activities.module';
     FaqModule,
     TournamentAnnouncementsModule,
     TournamentJudgesModule,
-    MedicalPartnersModule,
-    TournamentMedicalModule,
-    TournamentParticipantsModule,
-    TournamentSponsorsModule,
-    ActivitiesModule,
   ],
   controllers: [AppController],
   providers: [
