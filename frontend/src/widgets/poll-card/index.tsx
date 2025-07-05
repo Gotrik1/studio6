@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -8,32 +7,23 @@ import { RadioGroup, RadioGroupItem } from '@/shared/ui/radio-group';
 import { Label } from '@/shared/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Badge } from '@/shared/ui/badge';
-
-type PollOption = {
-    id: string;
-    text: string;
-    votes: number;
-};
+import type { Poll } from '@/entities/poll/model/types';
+import { Loader2 } from 'lucide-react';
 
 interface PollCardProps {
-    poll: {
-        id: string;
-        title: string;
-        question: string;
-        options: PollOption[];
-        totalVotes: number;
-    };
+    poll: Poll | null;
+    onVote: (pollId: string, optionId: string) => Promise<boolean>;
+    isVotedInitially?: boolean;
 }
 
-export function PollCard({ poll }: PollCardProps) {
+export function PollCard({ poll, onVote, isVotedInitially = false }: PollCardProps) {
     const { toast } = useToast();
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
-    const [voted, setVoted] = useState(false);
-    const [votes, setVotes] = useState(poll.options.map(opt => opt.votes));
-    const [totalVotes, setTotalVotes] = useState(poll.totalVotes);
+    const [isVoted, setIsVoted] = useState(isVotedInitially);
+    const [isLoading, setIsLoading] = useState(false);
 
-    const handleVote = () => {
-        if (!selectedOption) {
+    const handleVote = async () => {
+        if (!selectedOption || !poll) {
             toast({
                 variant: 'destructive',
                 title: "Ошибка",
@@ -41,21 +31,26 @@ export function PollCard({ poll }: PollCardProps) {
             });
             return;
         }
-        setVoted(true);
-        const selectedIndex = poll.options.findIndex(opt => opt.id === selectedOption);
-        if (selectedIndex !== -1) {
-            setVotes(currentVotes => {
-                const newVotes = [...currentVotes];
-                newVotes[selectedIndex]++;
-                return newVotes;
-            });
-            setTotalVotes(current => current + 1);
+        setIsLoading(true);
+        const success = await onVote(poll.id, selectedOption);
+        if (success) {
+            setIsVoted(true);
         }
-        toast({
-            title: "Голос учтён!",
-            description: "Спасибо за участие в опросе.",
-        });
+        setIsLoading(false);
     };
+
+    if (!poll) {
+        return (
+            <Card>
+                <CardHeader><CardTitle>Опрос</CardTitle></CardHeader>
+                <CardContent className="text-center text-muted-foreground">
+                    Активных опросов нет.
+                </CardContent>
+            </Card>
+        );
+    }
+    
+    const totalVotes = poll.totalVotes;
 
     return (
         <Card>
@@ -68,14 +63,14 @@ export function PollCard({ poll }: PollCardProps) {
                     value={selectedOption || undefined}
                     onValueChange={setSelectedOption}
                     className="space-y-2"
-                    disabled={voted}
+                    disabled={isVoted || isLoading}
                 >
-                    {poll.options.map((option, index) => {
-                        const percentage = voted ? (votes[index] / totalVotes) * 100 : 0;
+                    {poll.options.map((option) => {
+                        const percentage = isVoted && totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
                         return (
                             <div key={option.id}>
                                 <div className="relative flex items-center space-x-2 rounded-md border p-3">
-                                    {voted && (
+                                    {isVoted && (
                                         <div 
                                             className="absolute left-0 top-0 h-full rounded-l-md bg-primary/20 transition-all duration-500"
                                             style={{ width: `${percentage}%` }}
@@ -83,7 +78,7 @@ export function PollCard({ poll }: PollCardProps) {
                                     )}
                                     <RadioGroupItem value={option.id} id={option.id} className="z-10" />
                                     <Label htmlFor={option.id} className="flex-1 cursor-pointer z-10">{option.text}</Label>
-                                    {voted && <Badge variant="secondary" className="z-10">{percentage.toFixed(1)}%</Badge>}
+                                    {isVoted && <Badge variant="secondary" className="z-10">{percentage.toFixed(1)}%</Badge>}
                                 </div>
                             </div>
                         );
@@ -91,8 +86,9 @@ export function PollCard({ poll }: PollCardProps) {
                 </RadioGroup>
             </CardContent>
             <CardFooter>
-                <Button onClick={handleVote} disabled={!selectedOption || voted} className="w-full">
-                    {voted ? "Вы проголосовали" : "Голосовать"}
+                <Button onClick={handleVote} disabled={!selectedOption || isVoted || isLoading} className="w-full">
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
+                    {isVoted ? "Вы проголосовали" : isLoading ? "Голосование..." : "Голосовать"}
                 </Button>
             </CardFooter>
         </Card>

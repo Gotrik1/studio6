@@ -1,40 +1,63 @@
-
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
-import { mainPoll } from '@/shared/lib/mock-data/dashboard';
+import { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { PollCard } from '@/widgets/poll-card';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Flame, Megaphone } from 'lucide-react';
+import { Flame, Megaphone } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { MatchOfTheWeekWidget } from '@/widgets/match-of-the-week';
-import { useEffect, useState } from 'react';
-import { getTeams } from '@/entities/team/api/get-teams';
+import { getTeams } from '@/entities/team/api/teams';
 import { getPromotions } from '@/entities/promotion/api/promotions';
 import type { Team } from '@/entities/team/model/types';
 import type { Promotion } from '@/entities/promotion/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
-
+import { getLatestPoll, submitVote } from '@/entities/poll/api/polls';
+import type { Poll } from '@/entities/poll/model/types';
+import { useToast } from '@/shared/hooks/use-toast';
 
 export function FanZonePage() {
     const [popularTeams, setPopularTeams] = useState<Team[]>([]);
     const [fanPromotions, setFanPromotions] = useState<Promotion[]>([]);
+    const [poll, setPoll] = useState<Poll | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const { toast } = useToast();
 
-    useEffect(() => {
-        async function loadData() {
-            setIsLoading(true);
-            const [teamsData, promotionsData] = await Promise.all([
+    const loadData = useCallback(async () => {
+        setIsLoading(true);
+        try {
+             const [teamsData, promotionsData, pollData] = await Promise.all([
                 getTeams(),
-                getPromotions()
+                getPromotions(),
+                getLatestPoll()
             ]);
             setPopularTeams(teamsData.slice(0, 4));
             setFanPromotions(promotionsData.slice(0, 2));
+            setPoll(pollData);
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить данные для фан-зоны.'});
+        } finally {
             setIsLoading(false);
         }
+    }, [toast]);
+    
+    useEffect(() => {
         loadData();
-    }, []);
+    }, [loadData]);
+    
+     const handleVote = async (pollId: string, optionId: string) => {
+        const result = await submitVote(pollId, optionId);
+        if(result.success) {
+            toast({ title: 'Голос учтён!' });
+            loadData(); // Refetch to update poll results
+            return true;
+        } else {
+            toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
+            return false;
+        }
+    };
+
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -89,11 +112,10 @@ export function FanZonePage() {
                              popularTeams.map(team => (
                                 <Link key={team.slug} href={`/teams/${team.slug}`} className="block">
                                     <div className="flex items-center gap-4 p-2 rounded-md hover:bg-muted transition-colors">
-                                        <Image src={team.logo} alt={team.name} width={40} height={40} className="rounded-full border" data-ai-hint={team.dataAiHint} />
+                                        <Image src={team.logo || 'https://placehold.co/100x100.png'} alt={team.name} width={40} height={40} className="rounded-full border" data-ai-hint={team.dataAiHint || 'team logo'} />
                                         <div className="flex-1">
                                             <p className="font-semibold">{team.name}</p>
                                         </div>
-                                        <ArrowRight className="h-4 w-4 text-muted-foreground" />
                                     </div>
                                 </Link>
                             ))}
@@ -110,7 +132,7 @@ export function FanZonePage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
-                            <PollCard poll={mainPoll} />
+                             {isLoading ? <Skeleton className="h-64 w-full" /> : <PollCard poll={poll} onVote={handleVote} />}
                         </CardContent>
                     </Card>
                 </div>

@@ -21,7 +21,7 @@ import { ru } from 'date-fns/locale';
 import { sportsList } from '@/shared/lib/mock-data/sports';
 import { getPlaygrounds } from '@/entities/playground/api/playgrounds';
 import type { Playground } from '@/entities/playground/model/types';
-import { getTeams } from '@/entities/team/api/get-teams';
+import { getTeams } from '@/entities/team/api/teams';
 import type { Team } from '@/entities/team/model/types';
 
 

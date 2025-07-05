@@ -135,6 +135,34 @@ export class MatchesService {
       // The frontend will need to handle their absence.
     };
   }
+  
+  async findMatchOfTheWeek(): Promise<any> {
+    const recentFinishedMatches = await this.prisma.match.findMany({
+        where: {
+            status: 'FINISHED',
+            team1Score: { not: null },
+            team2Score: { not: null }
+        },
+        orderBy: { finishedAt: 'desc' },
+        take: 10,
+        include: {
+            team1: true,
+            team2: true,
+            tournament: true
+        }
+    });
+
+    if (recentFinishedMatches.length === 0) {
+        return null;
+    }
+
+    // Find the match with the closest score
+    const sortedByDiff = recentFinishedMatches.sort((a,b) => 
+        Math.abs((a.team1Score || 0) - (a.team2Score || 0)) - Math.abs((b.team1Score || 0) - (b.team2Score || 0))
+    );
+    
+    return sortedByDiff[0];
+  }
 
   async updateScore(
     id: string,

@@ -28,8 +28,8 @@ import { LeaguesModule } from './modules/leagues/leagues.module';
 import { SportsModule } from './modules/sports/sports.module';
 import { LfgModule } from './modules/lfg/lfg.module';
 import { MeasurementsModule } from './modules/measurements/measurements.module';
-import { NutritionModule } from './modules/nutrition/nutrition.module';
 import { TrainingProposalsModule } from './modules/training-proposals/training-proposals.module';
+import { PollsModule } from './modules/polls/polls.module';
 
 @Module({
   imports: [
@@ -58,8 +58,8 @@ import { TrainingProposalsModule } from './modules/training-proposals/training-p
     SportsModule,
     LfgModule,
     MeasurementsModule,
-    NutritionModule,
     TrainingProposalsModule,
+    PollsModule,
   ],
   controllers: [AppController],
   providers: [

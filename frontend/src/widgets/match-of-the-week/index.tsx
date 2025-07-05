@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,15 +7,14 @@ import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Bot, AlertCircle, Award } from 'lucide-react';
-import { generateTournamentSummary, type GenerateTournamentSummaryOutput } from '@/shared/api/genkit/flows/generate-tournament-summary-flow';
-import { generatePostImage, type GeneratePostImageOutput } from '@/shared/api/genkit/flows/generate-post-image-flow';
-import { summerKickoffTournament as mockTournament } from '@/shared/lib/mock-data/tournament-details';
+import { generateMatchPost, type GenerateMatchPostOutput } from '@/shared/api/genkit/flows/generate-match-post-flow';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getMatchOfTheWeek } from '@/entities/match/api/get-match';
 
 type ResultData = {
-    summary: GenerateTournamentSummaryOutput;
-    image: GeneratePostImageOutput;
+    matchPost: GenerateMatchPostOutput;
+    matchDetails: any;
 };
 
 export function MatchOfTheWeekWidget() {
@@ -27,24 +27,22 @@ export function MatchOfTheWeekWidget() {
             setIsLoading(true);
             setError(null);
             try {
-                const finalMatch = mockTournament.bracket.rounds.find(r => r.name === "Финал")?.matches[0];
-                if (!finalMatch || !('team2' in finalMatch)) throw new Error("Final match not found");
+                const matchData = await getMatchOfTheWeek();
+                if (!matchData) {
+                    throw new Error("No match of the week found.");
+                }
 
-                const summaryData = await generateTournamentSummary({
-                    tournamentName: mockTournament.name,
-                    tournamentGame: mockTournament.game,
-                    champion: mockTournament.teams.find(t => t.name === finalMatch.team1?.name) ? finalMatch.team1.name : "Unknown",
-                    finalMatch: {
-                        team1: finalMatch.team1?.name || "Team 1",
-                        team2: finalMatch.team2?.name || "Team 2",
-                        score: finalMatch.score || "N/A",
-                    },
+                const winningTeam = (matchData.team1Score || 0) > (matchData.team2Score || 0) ? matchData.team1 : matchData.team2;
+                const losingTeam = (matchData.team1Score || 0) > (matchData.team2Score || 0) ? matchData.team2 : matchData.team1;
+
+                const postData = await generateMatchPost({
+                    winningTeam: winningTeam.name,
+                    losingTeam: losingTeam.name,
+                    score: `${matchData.team1Score}-${matchData.team2Score}`,
+                    matchSummary: `A close match in the ${matchData.tournament?.name || 'friendly game'}.`
                 });
-
-                const imagePrompt = summaryData.imagePrompts[0] || `A heroic moment from the final of ${mockTournament.name}`;
-                const imageData = await generatePostImage(imagePrompt);
                 
-                setResult({ summary: summaryData, image: imageData });
+                setResult({ matchPost: postData, matchDetails: matchData });
             } catch (e) {
                 console.error('Failed to fetch match of the week:', e);
                 setError('Не удалось загрузить матч недели.');
@@ -84,29 +82,33 @@ export function MatchOfTheWeekWidget() {
     }
 
     if (!result) return null;
+    
+    const { matchPost, matchDetails } = result;
 
     return (
         <Card className="overflow-hidden">
             <div className="relative h-40">
-                <Image src={result.image.imageDataUri} alt="Матч недели" fill className="object-cover" />
+                <Image src={matchPost.imageDataUri} alt="Матч недели" fill className="object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <CardTitle className="absolute bottom-2 left-4 text-white font-headline text-xl shadow-lg">Матч недели</CardTitle>
             </div>
             <CardHeader>
-                <CardDescription>{mockTournament.name}</CardDescription>
-                 <p className="font-semibold">{result.summary.socialMediaPost}</p>
+                <CardDescription>{matchDetails.tournament?.name || 'Товарищеский матч'}</CardDescription>
+                 <p className="font-semibold">{matchPost.postText}</p>
             </CardHeader>
             <CardContent>
                 <div className="flex items-center gap-2 text-sm">
                     <Award className="h-5 w-5 text-amber-500"/>
                     <div>
-                        <span className="font-semibold">MVP:</span> {result.summary.mvp.name}
+                         <span className="font-semibold">{matchDetails.team1.name}</span>
+                         <span className="mx-2 font-bold">{matchDetails.team1Score}-{matchDetails.team2Score}</span>
+                         <span className="font-semibold">{matchDetails.team2.name}</span>
                     </div>
                 </div>
             </CardContent>
             <CardFooter>
                 <Button asChild variant="secondary" className="w-full">
-                    <Link href={`/tournaments/${mockTournament.slug}`}>Подробнее</Link>
+                    <Link href={`/matches/${matchDetails.id}`}>Подробнее</Link>
                 </Button>
             </CardFooter>
         </Card>

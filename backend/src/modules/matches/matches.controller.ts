@@ -21,6 +21,12 @@ export class MatchesController {
   findAll() {
     return this.matchesService.findAll();
   }
+  
+  @Public()
+  @Get('match-of-the-week')
+  findMatchOfTheWeek() {
+    return this.matchesService.findMatchOfTheWeek();
+  }
 
   @Public()
   @Get(':id')
