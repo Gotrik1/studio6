@@ -1,20 +1,19 @@
+
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Trophy, Shield, Target, Users } from 'lucide-react';
-import { teamRoster } from '@/shared/lib/mock-data/team-details';
 import Link from 'next/link';
 import type { Match } from "@/entities/match/model/types";
-import { useEffect, useState } from "react";
-import { fetchMatches } from "@/entities/match/api/get-matches";
+import type { TeamDetails, TeamRosterMember } from "@/entities/team/model/types";
 
-const teamStats = {
-    matches: 65,
-    winrate: 69.2,
-    tournamentsWon: 3,
-};
+interface TeamOverviewDashboardProps {
+    team: TeamDetails;
+    upcomingMatch: Match | null;
+    recentResults: Match[];
+}
 
 const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, icon: React.ElementType }) => (
     <Card>
@@ -28,28 +27,18 @@ const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, 
     </Card>
 );
 
-export function TeamOverviewDashboard() {
-    const [upcomingMatch, setUpcomingMatch] = useState<Match | null>(null);
-    const [recentResults, setRecentResults] = useState<Match[]>([]);
+export function TeamOverviewDashboard({ team, upcomingMatch, recentResults }: TeamOverviewDashboardProps) {
 
-    useEffect(() => {
-        async function loadMatches() {
-            const allMatches = await fetchMatches();
-            const upcoming = allMatches.find(m => m.status === 'Предстоящий' && (m.team1.name === 'Дворовые Атлеты' || m.team2.name === 'Дворовые Атлеты'));
-            const recent = allMatches.filter(m => m.status === 'Завершен' && (m.team1.name === 'Дворовые Атлеты' || m.team2.name === 'Дворовые Атлеты')).slice(0, 2);
-            setUpcomingMatch(upcoming || null);
-            setRecentResults(recent);
-        }
-        loadMatches();
-    }, []);
+    const totalMatches = team.wins + team.losses + team.draws;
+    const winrate = totalMatches > 0 ? ((team.wins / totalMatches) * 100).toFixed(1) : '0.0';
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    <StatCard title="Процент побед" value={`${teamStats.winrate}%`} icon={Trophy} />
-                    <StatCard title="Сыграно матчей" value={String(teamStats.matches)} icon={Shield} />
-                    <StatCard title="Выиграно турниров" value={String(teamStats.tournamentsWon)} icon={Target} />
+                    <StatCard title="Процент побед" value={`${winrate}%`} icon={Trophy} />
+                    <StatCard title="Сыграно матчей" value={String(totalMatches)} icon={Shield} />
+                    <StatCard title="Выиграно турниров" value={String(3)} icon={Target} />
                 </div>
                 {upcomingMatch && (
                     <Card>
@@ -109,10 +98,10 @@ export function TeamOverviewDashboard() {
                         <CardTitle>Состав команды</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        {teamRoster.map(player => (
+                        {team.roster.map((player: TeamRosterMember) => (
                             <div key={player.id} className="flex items-center gap-3">
                                 <Avatar className="h-9 w-9">
-                                    <AvatarImage src={player.avatar} />
+                                    <AvatarImage src={player.avatar || undefined} />
                                     <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div>

@@ -22,8 +22,13 @@ export class MatchesController {
   @Get()
   @ApiQuery({ name: 'status', enum: MatchStatus, required: false })
   @ApiQuery({ name: 'tournamentId', required: false, description: 'Фильтр по ID турнира' })
-  findAll(@Query('status') status?: MatchStatus, @Query('tournamentId') tournamentId?: string) {
-    return this.matchesService.findAll({ status, tournamentId });
+  @ApiQuery({ name: 'teamId', required: false, description: 'Фильтр по ID команды' })
+  findAll(
+    @Query('status') status?: MatchStatus, 
+    @Query('tournamentId') tournamentId?: string,
+    @Query('teamId') teamId?: string
+  ) {
+    return this.matchesService.findAll({ status, tournamentId, teamId });
   }
   
   @Public()

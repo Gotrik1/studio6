@@ -1,3 +1,4 @@
+
 import {
   Injectable,
   NotFoundException,
@@ -32,13 +33,19 @@ export class MatchesService {
     });
   }
 
-  async findAll(params?: { status?: MatchStatus; tournamentId?: string }): Promise<any[]> {
+  async findAll(params?: { status?: MatchStatus; tournamentId?: string; teamId?: string }): Promise<any[]> {
     const where: Prisma.MatchWhereInput = {};
     if (params?.status) {
       where.status = params.status;
     }
     if (params?.tournamentId) {
       where.tournamentId = params.tournamentId;
+    }
+    if (params?.teamId) {
+        where.OR = [
+            { team1Id: params.teamId },
+            { team2Id: params.teamId },
+        ];
     }
 
     const matches = await this.prisma.match.findMany({

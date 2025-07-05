@@ -1,4 +1,5 @@
 
+
 export type Team = {
     id: string;
     name: string;
@@ -30,6 +31,9 @@ export type TeamDetails = {
     dataAiHint: string | null;
     game: string;
     rank: number;
+    wins: number;
+    losses: number;
+    draws: number;
     membersCount: number;
     captainId: string; // Changed from captainName
     slug: string;

@@ -1,3 +1,4 @@
+
 import { Inject, Injectable, NotFoundException, BadRequestException, Logger, OnModuleInit, ForbiddenException } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -175,6 +176,9 @@ export class TeamsService implements OnModuleInit {
       dataAiHint: team.dataAiHint || 'team logo',
       game: team.game,
       rank: team.rank,
+      wins: team.wins,
+      losses: team.losses,
+      draws: team.draws,
       membersCount: team.members.length,
       captainId: team.captainId,
       slug: team.slug,

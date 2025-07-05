@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
-import { Card, CardHeader, CardContent, CardTitle, CardFooter } from "@/shared/ui/card";
+import { Card, CardHeader, CardContent } from "@/shared/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
@@ -21,6 +22,9 @@ import { joinTeamAction } from '@/entities/team/api/join-team';
 import type { Playground } from '@/entities/playground/model/types';
 import { getPlaygroundById } from '@/entities/playground/api/playgrounds';
 import { TeamOverviewDashboard } from '@/widgets/team-overview-dashboard';
+import type { Match } from '@/entities/match/model/types';
+import { fetchMatches } from '@/entities/match/api/get-matches';
+
 
 interface TeamDetailsPageProps {
   team: TeamDetails;
@@ -32,12 +36,20 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
     const [isPending, startTransition] = useTransition();
     const [isDonationOpen, setIsDonationOpen] = useState(false);
     const [homePlayground, setHomePlayground] = useState<Playground | null>(null);
+    const [upcomingMatch, setUpcomingMatch] = useState<Match | null>(null);
+    const [recentResults, setRecentResults] = useState<Match[]>([]);
 
     useEffect(() => {
         if (team.homePlaygroundId) {
             getPlaygroundById(team.homePlaygroundId).then(setHomePlayground);
         }
-    }, [team.homePlaygroundId]);
+        fetchMatches(undefined, undefined, team.id).then(allMatches => {
+            const upcoming = allMatches.find(m => m.status === 'Предстоящий');
+            const recent = allMatches.filter(m => m.status === 'Завершен').slice(0, 2);
+            setUpcomingMatch(upcoming || null);
+            setRecentResults(recent);
+        });
+    }, [team.homePlaygroundId, team.id]);
 
     if (!team) {
         return <div>Команда не найдена.</div>;
@@ -66,7 +78,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                         <div className="absolute bottom-6 left-6 flex items-end gap-4">
                             <Avatar className="h-24 w-24 border-4 border-background">
-                                <AvatarImage src={team.logo} alt={team.name} data-ai-hint={team.dataAiHint} />
+                                <AvatarImage src={team.logo || ''} alt={team.name} data-ai-hint={team.dataAiHint || ''} />
                                 <AvatarFallback className="text-3xl">{team.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div>
@@ -119,7 +131,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                     </TabsList>
 
                     <TabsContent value="overview" className="mt-4">
-                        <TeamOverviewDashboard />
+                        <TeamOverviewDashboard team={team} upcomingMatch={upcomingMatch} recentResults={recentResults} />
                     </TabsContent>
 
                     <TabsContent value="roster" className="mt-4">
@@ -141,10 +153,10 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                                     {team.roster.map(player => (
                                         <TableRow key={player.id}>
                                             <TableCell className="font-medium flex items-center gap-2">
-                                                <Avatar className="h-8 w-8"><AvatarImage src={player.avatar} /><AvatarFallback>{String(player.name).charAt(0)}</AvatarFallback></Avatar>
+                                                <Avatar className="h-8 w-8"><AvatarImage src={player.avatar || ''} /><AvatarFallback>{String(player.name).charAt(0)}</AvatarFallback></Avatar>
                                                 {player.name}
                                             </TableCell>
-                                            <TableCell>{player.role}</TableCell>
+                                            <TableCell>{player.id === team.captainId ? 'Капитан' : player.role}</TableCell>
                                             <TableCell className="hidden md:table-cell">{player.rating}</TableCell>
                                             <TableCell className="text-right"><Badge variant={player.status === 'Активен' ? 'default' : 'outline'}>{player.status}</Badge></TableCell>
                                         </TableRow>
@@ -156,7 +168,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                     </TabsContent>
 
                     <TabsContent value="stats" className="mt-4">
-                        <TeamStatsTab />
+                        <TeamStatsTab team={team} />
                     </TabsContent>
 
                     <TabsContent value="chat" className="mt-4">
