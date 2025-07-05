@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -17,6 +18,11 @@ import { resolveDispute } from '@/entities/match/api/resolve-dispute';
 type DisputedMatch = Match & {
     disputeReason: string;
     timestamp: string;
+};
+
+type ResolvedMatch = Match & {
+    resolution: string;
+    judge: string; // Mocked for now
 };
 
 interface CrmTournamentDisputesProps {
@@ -114,11 +120,7 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
                                         </TableCell>
                                     </TableRow>
                                 )) : (
-                                    <TableRow>
-                                        <TableCell colSpan={4} className="h-24 text-center">
-                                            В этом турнире нет активных споров.
-                                        </TableCell>
-                                    </TableRow>
+                                    <TableRow><TableCell colSpan={4} className="h-24 text-center">Активных споров нет.</TableCell></TableRow>
                                 )}
                             </TableBody>
                         </Table>

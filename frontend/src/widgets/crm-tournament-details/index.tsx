@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
@@ -98,11 +100,11 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </ScrollArea>
                 
                 <TabsContent value="overview" className="mt-4">
-                    <CrmTournamentOverview tournament={tournament as any} />
+                    <CrmTournamentOverview tournament={tournament} />
                 </TabsContent>
                 
                 <TabsContent value="participants" className="mt-4">
-                    <CrmTournamentParticipants />
+                    <CrmTournamentParticipants tournamentId={tournament.id} />
                 </TabsContent>
 
                 <TabsContent value="rules" className="mt-4">
@@ -157,7 +159,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
 
                 <TabsContent value="sponsors" className="mt-4">
-                    <CrmTournamentSponsors />
+                    <CrmTournamentSponsors tournamentId={tournament.id} />
                 </TabsContent>
 
                 <TabsContent value="medical" className="mt-4">
