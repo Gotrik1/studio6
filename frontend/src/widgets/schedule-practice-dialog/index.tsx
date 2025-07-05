@@ -1,10 +1,9 @@
-
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useToast } from '@/shared/hooks/use-toast';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
@@ -12,13 +11,14 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { sportsList } from '@/shared/lib/mock-data/sports';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from '@/shared/ui/dialog';
+import { getPlaygrounds } from '@/entities/playground/api/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
-import { useState } from 'react';
 import type { TeamPractice } from '@/shared/lib/mock-data/team-practices';
 
 const practiceSchema = z.object({
@@ -38,8 +38,14 @@ interface SchedulePracticeDialogProps {
 }
 
 export function SchedulePracticeDialog({ isOpen, onOpenChange, onSchedule }: SchedulePracticeDialogProps) {
-    const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [playgrounds, setPlaygrounds] = useState<Playground[]>([]);
+    
+    useEffect(() => {
+        if(isOpen) {
+            getPlaygrounds().then(setPlaygrounds);
+        }
+    }, [isOpen]);
 
     const form = useForm<FormValues>({
         resolver: zodResolver(practiceSchema),
@@ -56,19 +62,8 @@ export function SchedulePracticeDialog({ isOpen, onOpenChange, onSchedule }: Sch
         const combinedDate = new Date(data.date);
         combinedDate.setHours(hours, minutes, 0, 0);
 
-        const playground = playgroundsList.find(p => p.id === data.playgroundId);
-        if (!playground) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Выбранная площадка не найдена.' });
-            setIsSubmitting(false);
-            return;
-        }
-
         setTimeout(() => {
             onSchedule({ ...data, date: combinedDate });
-            toast({
-                title: "Тренировка запланирована!",
-                description: `Командная тренировка "${data.title}" добавлена в расписание.`
-            });
             setIsSubmitting(false);
             onOpenChange(false);
             form.reset();
@@ -93,7 +88,7 @@ export function SchedulePracticeDialog({ isOpen, onOpenChange, onSchedule }: Sch
                                 <FormField control={form.control} name="time" render={({ field }) => (<FormItem><FormLabel>Время</FormLabel><FormControl><Input type="time" {...field} /></FormControl><FormMessage /></FormItem>)} />
                             </div>
                             <FormField control={form.control} name="playgroundId" render={({ field }) => (
-                                <FormItem><FormLabel>Место проведения</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите площадку" /></SelectTrigger></FormControl><SelectContent>{playgroundsList.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Место проведения</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите площадку" /></SelectTrigger></FormControl><SelectContent>{playgrounds.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                             )} />
                              <FormField control={form.control} name="description" render={({ field }) => (
                                 <FormItem><FormLabel>Описание</FormLabel><FormControl><Textarea placeholder="Опишите цели и задачи тренировки..." {...field} /></FormControl><FormMessage /></FormItem>

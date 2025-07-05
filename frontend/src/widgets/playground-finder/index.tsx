@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -12,8 +11,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { PlaygroundCard } from '@/widgets/playground-card';
 import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
-import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
 
 export function PlaygroundFinder() {
     const { toast } = useToast();
@@ -39,10 +37,7 @@ export function PlaygroundFinder() {
             const searchResult = await findVenues({ query: prompt });
             setAiSummary(searchResult.summary);
             if (searchResult.suggestedVenues.length > 0) {
-                 const fullPlaygrounds = searchResult.suggestedVenues.map(p => 
-                    playgroundsList.find(fp => fp.id === p.id)
-                ).filter((p): p is Playground => !!p);
-                setSuggestedPlaygrounds(fullPlaygrounds);
+                 setSuggestedPlaygrounds(searchResult.suggestedVenues as Playground[]);
             } else {
                  setSuggestedPlaygrounds([]);
                  toast({
@@ -73,7 +68,7 @@ export function PlaygroundFinder() {
                         disabled={isLoading}
                         className="min-h-[80px]"
                     />
-                    {error && (
+                     {error && (
                         <Alert variant="destructive" className="mt-4">
                             <AlertTitle>Ошибка</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
@@ -109,9 +104,9 @@ export function PlaygroundFinder() {
                             const kingTeam = getKingOfTheCourt(playground.id);
                             const isLive = livePlaygrounds.has(playground.id);
                             return (
-                                <PlaygroundCard 
+                                 <PlaygroundCard 
                                     key={playground.id} 
-                                    playground={playground}
+                                    playground={playground as any} // Cast because of slight type differences
                                     kingTeam={kingTeam}
                                     isLive={isLive}
                                 />

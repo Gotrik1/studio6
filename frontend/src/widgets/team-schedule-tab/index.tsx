@@ -8,14 +8,21 @@ import { teamPractices as initialPractices, type TeamPractice } from '@/shared/l
 import { SchedulePracticeDialog } from '@/widgets/schedule-practice-dialog';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
+import { getPlaygrounds } from '@/entities/playground/api/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
+import { useEffect } from 'react';
 
 export function TeamScheduleTab() {
     const [practices, setPractices] = useState<TeamPractice[]>(initialPractices);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [playgrounds, setPlaygrounds] = useState<Playground[]>([]);
+    
+    useEffect(() => {
+        getPlaygrounds().then(setPlaygrounds);
+    }, []);
 
     const handleSchedule = (data: Omit<TeamPractice, 'id' | 'location' | 'date'> & { date: Date }) => {
-        const playground = playgroundsList.find(p => p.id === data.playgroundId);
+        const playground = playgrounds.find(p => p.id === data.playgroundId);
         const newPractice: TeamPractice = {
             id: `practice-${Date.now()}`,
             ...data,

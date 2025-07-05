@@ -12,7 +12,6 @@ import { Trophy, Users, Gamepad2, UserPlus, MessageCircle, Settings, Bot, BarCha
 import Image from "next/image";
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
-import { challenges } from "@/shared/lib/mock-data/team-details";
 import { DonationDialog } from '@/features/donation-dialog/index';
 import { TeamChatInterface } from '@/widgets/team-chat-interface';
 import { TeamStatsTab } from '@/widgets/team-stats-tab';
@@ -112,12 +111,11 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                 </Card>
 
                 <Tabs defaultValue="overview">
-                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
                         <TabsTrigger value="overview">Обзор</TabsTrigger>
                         <TabsTrigger value="roster">Состав</TabsTrigger>
                         <TabsTrigger value="stats"><BarChart3 className="mr-2 h-4 w-4"/>Статистика</TabsTrigger>
                         <TabsTrigger value="chat"><Bot className="mr-2 h-4 w-4" />Чат</TabsTrigger>
-                        <TabsTrigger value="challenges">Вызовы</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview" className="mt-4">
@@ -165,48 +163,6 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                         <TeamChatInterface teamId={team.slug} />
                     </TabsContent>
 
-                    <TabsContent value="challenges" className="mt-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Входящие вызовы</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                    {challenges.incoming.map(challenge => (
-                                        <Card key={challenge.id} className="p-3">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <Avatar className="h-8 w-8"><AvatarImage src={challenge.opponent.logo} data-ai-hint={challenge.opponent.logoHint} /></Avatar>
-                                                    <p className="font-semibold">{challenge.opponent.name}</p>
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <Button size="sm" variant="outline">Отклонить</Button>
-                                                    <Button size="sm">Принять</Button>
-                                                </div>
-                                            </div>
-                                            <p className="text-xs text-muted-foreground mt-2">{challenge.venue} @ {challenge.time}</p>
-                                        </Card>
-                                    ))}
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle>Отправленные вызовы</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                {challenges.outgoing.map(challenge => (
-                                    <div key={challenge.id} className="flex items-center justify-between rounded-md border p-3">
-                                        <div className="flex items-center gap-2">
-                                            <Avatar className="h-8 w-8"><AvatarImage src={challenge.opponent.logo} data-ai-hint={challenge.opponent.logoHint} /></Avatar>
-                                            <p className="font-semibold">{challenge.opponent.name}</p>
-                                        </div>
-                                        <Badge variant="secondary">{challenge.status}</Badge>
-                                    </div>
-                                ))}
-                            </CardContent>
-                            </Card>
-                        </div>
-                    </TabsContent>
                 </Tabs>
             </div>
             <DonationDialog

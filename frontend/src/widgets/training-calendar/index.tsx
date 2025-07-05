@@ -1,10 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Calendar } from '@/shared/ui/calendar';
 import { trainingLogData } from '@/shared/lib/mock-data/training-log';
-import { matchesList } from '@/shared/lib/mock-data/matches';
 import type { DayContentProps } from 'react-day-picker';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { cn } from '@/shared/lib/utils';
@@ -12,6 +11,9 @@ import { Badge } from '@/shared/ui/badge';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Trophy } from 'lucide-react';
+import { fetchMatches } from '@/entities/match/api/get-matches';
+import type { Match } from '@/entities/match/model/types';
+
 
 const statusMap = {
     completed: { color: 'bg-green-500', label: 'Выполнено' },
@@ -21,7 +23,12 @@ const statusMap = {
 
 export function TrainingCalendar() {
     const [date, setDate] = useState<Date | undefined>(new Date());
+    const [matches, setMatches] = useState<Match[]>([]);
     
+    useEffect(() => {
+        fetchMatches().then(setMatches);
+    }, []);
+
     const workoutsByDate = trainingLogData.reduce((acc, entry) => {
         const dateStr = format(new Date(entry.date), 'yyyy-MM-dd');
         if (!acc[dateStr]) {
@@ -31,14 +38,14 @@ export function TrainingCalendar() {
         return acc;
     }, {} as Record<string, typeof trainingLogData>);
 
-    const matchesByDate = matchesList.reduce((acc, entry) => {
+    const matchesByDate = matches.reduce((acc, entry) => {
         const dateStr = format(new Date(entry.date), 'yyyy-MM-dd');
         if (!acc[dateStr]) {
             acc[dateStr] = [];
         }
         acc[dateStr].push(entry);
         return acc;
-    }, {} as Record<string, typeof matchesList>);
+    }, {} as Record<string, typeof matches>);
 
 
     function CustomDay(props: DayContentProps) {

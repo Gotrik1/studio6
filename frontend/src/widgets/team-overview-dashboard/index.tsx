@@ -3,19 +3,18 @@
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
-import { Trophy, Shield, Target } from 'lucide-react';
-import { matchesList } from '@/shared/lib/mock-data/matches';
+import { Trophy, Shield, Target, Users } from 'lucide-react';
 import { teamRoster } from '@/shared/lib/mock-data/team-details';
 import Link from 'next/link';
+import type { Match } from "@/entities/match/model/types";
+import { useEffect, useState } from "react";
+import { fetchMatches } from "@/entities/match/api/get-matches";
 
 const teamStats = {
     matches: 65,
     winrate: 69.2,
     tournamentsWon: 3,
 };
-
-const upcomingMatch = matchesList.find(m => m.status === 'Предстоящий' && (m.team1.name === 'Дворовые Атлеты' || m.team2.name === 'Дворовые Атлеты'));
-const recentResults = matchesList.filter(m => m.status === 'Завершен' && (m.team1.name === 'Дворовые Атлеты' || m.team2.name === 'Дворовые Атлеты')).slice(0, 2);
 
 const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, icon: React.ElementType }) => (
     <Card>
@@ -30,6 +29,20 @@ const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, 
 );
 
 export function TeamOverviewDashboard() {
+    const [upcomingMatch, setUpcomingMatch] = useState<Match | null>(null);
+    const [recentResults, setRecentResults] = useState<Match[]>([]);
+
+    useEffect(() => {
+        async function loadMatches() {
+            const allMatches = await fetchMatches();
+            const upcoming = allMatches.find(m => m.status === 'Предстоящий' && (m.team1.name === 'Дворовые Атлеты' || m.team2.name === 'Дворовые Атлеты'));
+            const recent = allMatches.filter(m => m.status === 'Завершен' && (m.team1.name === 'Дворовые Атлеты' || m.team2.name === 'Дворовые Атлеты')).slice(0, 2);
+            setUpcomingMatch(upcoming || null);
+            setRecentResults(recent);
+        }
+        loadMatches();
+    }, []);
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
