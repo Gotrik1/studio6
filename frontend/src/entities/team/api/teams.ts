@@ -26,3 +26,16 @@ export async function setHomePlayground(teamId: string, playgroundId: string) {
 
     return result;
 }
+
+export async function removeMember(teamId: string, memberId: string) {
+    return fetchWithAuth(`/teams/${teamId}/members/${memberId}`, {
+        method: 'DELETE',
+    });
+}
+
+export async function setCaptain(teamId: string, newCaptainId: string) {
+    return fetchWithAuth(`/teams/${teamId}/captain`, {
+        method: 'PATCH',
+        body: JSON.stringify({ newCaptainId }),
+    });
+}

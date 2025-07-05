@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Body, Param, Query, Patch, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Patch, UseGuards, Req, Delete } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { JoinTeamDto } from './dto/join-team.dto';
@@ -9,6 +9,7 @@ import { Public } from '../auth/decorators/public.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { SetHomePlaygroundDto } from './dto/set-home-playground.dto';
+import { SetCaptainDto } from './dto/set-captain.dto';
 
 @ApiTags('Teams')
 @Controller('teams')
@@ -64,5 +65,29 @@ export class TeamsController {
       setHomePlaygroundDto.playgroundId,
       captainId,
     );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Delete(':teamId/members/:memberId')
+  removeMember(
+    @Param('teamId') teamId: string,
+    @Param('memberId') memberId: string,
+    @Req() req: Request,
+  ) {
+    const captainId = (req.user as any).userId;
+    return this.teamsService.removeMember(teamId, memberId, captainId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Patch(':teamId/captain')
+  setCaptain(
+    @Param('teamId') teamId: string,
+    @Body() dto: SetCaptainDto,
+    @Req() req: Request,
+  ) {
+    const currentCaptainId = (req.user as any).userId;
+    return this.teamsService.setCaptain(teamId, dto.newCaptainId, currentCaptainId);
   }
 }

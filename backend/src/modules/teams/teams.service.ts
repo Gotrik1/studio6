@@ -278,6 +278,82 @@ export class TeamsService implements OnModuleInit {
     return updatedTeam;
   }
 
+  async removeMember(teamId: string, memberIdToRemove: string, captainId: string): Promise<Team> {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Команда с ID ${teamId} не найдена.`);
+    }
+
+    if (team.captainId !== captainId) {
+      throw new ForbiddenException('Только капитан может удалять участников.');
+    }
+
+    if (memberIdToRemove === captainId) {
+        throw new BadRequestException('Капитан не может удалить самого себя.');
+    }
+
+    await this.cacheManager.del(`team_slug_${team.slug}`);
+
+    return this.prisma.team.update({
+      where: { id: teamId },
+      data: {
+        members: {
+          disconnect: { id: memberIdToRemove },
+        },
+      },
+    });
+  }
+
+  async setCaptain(teamId: string, newCaptainId: string, currentCaptainId: string): Promise<Team> {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: { members: true },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Команда с ID ${teamId} не найдена.`);
+    }
+
+    if (team.captainId !== currentCaptainId) {
+      throw new ForbiddenException('Только текущий капитан может передать полномочия.');
+    }
+    
+    if (newCaptainId === currentCaptainId) {
+        throw new BadRequestException('Этот пользователь уже является капитаном.');
+    }
+
+    const isMember = team.members.some(m => m.id === newCaptainId);
+    if (!isMember) {
+        throw new BadRequestException('Новый капитан должен быть участником команды.');
+    }
+
+    await this.prisma.$transaction([
+        // Update team captain
+        this.prisma.team.update({
+            where: { id: teamId },
+            data: { captainId: newCaptainId },
+        }),
+        // Update new captain's role
+        this.prisma.user.update({
+            where: { id: newCaptainId },
+            data: { role: 'Капитан' },
+        }),
+         // Update old captain's role
+        this.prisma.user.update({
+            where: { id: currentCaptainId },
+            data: { role: 'Игрок' },
+        })
+    ]);
+    
+    await this.cacheManager.del(`team_slug_${team.slug}`);
+    
+    // Return updated team
+    return this.prisma.team.findUnique({ where: { id: teamId } });
+  }
+
   async remove(id: string): Promise<Team> {
     return this.prisma.team.delete({ where: { id } });
   }
