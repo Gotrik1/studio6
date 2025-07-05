@@ -28,7 +28,7 @@ export function ExerciseHistoryTable({ sessions, limit }: ExerciseHistoryTablePr
             {sessionsToShow.map((session, index) => (
                 <div key={index}>
                     <p className="text-xs font-semibold text-muted-foreground mb-1">
-                        {format(new Date(session.date), 'd MMMM yyyy', { locale: ru })}
+                        {format(new Date(session.date), 'd MMMM yyyy', { locale: ru })} - <span className="italic">{session.workoutName}</span>
                     </p>
                     <Table className="bg-muted/50">
                         <TableHeader>
