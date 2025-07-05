@@ -9,8 +9,9 @@ import { Button } from '@/shared/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { assignSponsor, getAssignedSponsors, getAvailableSponsors, unassignSponsor } from '@/entities/tournament/api/sponsors';
+import { getAssignedSponsors, getAvailableSponsors, unassignSponsor } from '@/entities/tournament/api/sponsors';
 import type { Sponsor } from '@/entities/sponsor/model/types';
+import { AssignSponsorDialog } from '@/widgets/assign-sponsor-dialog';
 
 interface CrmTournamentSponsorsProps {
     tournamentId: string;
@@ -18,9 +19,11 @@ interface CrmTournamentSponsorsProps {
 
 export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsProps) {
     const { toast } = useToast();
-    const [assignedSponsors, setAssignedSponsors] = useState<Sponsor[]>([]);
+    const [assignedSponsors, setAssignedSponsors] = useState<(Sponsor & { amount?: number })[]>([]);
     const [availableSponsors, setAvailableSponsors] = useState<Sponsor[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
+    const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
 
     const fetchData = useCallback(async () => {
         setIsLoading(true);
@@ -50,14 +53,9 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
         fetchData();
     }, [fetchData]);
 
-    const handleAddSponsor = async (sponsor: Sponsor) => {
-        const result = await assignSponsor(tournamentId, sponsor.id);
-        if (result.success) {
-            toast({ title: "Спонсор добавлен", description: `Компания ${sponsor.name} теперь является спонсором турнира.` });
-            await fetchData();
-        } else {
-            toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
-        }
+    const handleOpenAssignDialog = (sponsor: Sponsor) => {
+        setSelectedSponsor(sponsor);
+        setIsAssignDialogOpen(true);
     };
     
     const handleRemoveSponsor = async (sponsor: Sponsor) => {
@@ -71,6 +69,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
     };
 
     return (
+        <>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
                 <CardHeader>
@@ -83,6 +82,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Спонсор</TableHead>
+                                    <TableHead>Взнос (PD)</TableHead>
                                     <TableHead className="text-right">Действия</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -95,6 +95,9 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                                                 <p className="font-semibold">{sponsor.name}</p>
                                             </div>
                                         </TableCell>
+                                        <TableCell className="font-semibold">
+                                            {sponsor.amount?.toLocaleString('ru-RU')}
+                                        </TableCell>
                                         <TableCell className="text-right">
                                              <Button variant="ghost" size="icon" onClick={() => handleRemoveSponsor(sponsor)}>
                                                 <Trash2 className="h-4 w-4 text-destructive" />
@@ -103,7 +106,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                                     </TableRow>
                                 )) : (
                                     <TableRow>
-                                        <TableCell colSpan={2} className="text-center h-24">Спонсоры не назначены</TableCell>
+                                        <TableCell colSpan={3} className="text-center h-24">Спонсоры не назначены</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
@@ -135,7 +138,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right">
-                                            <Button variant="outline" size="sm" onClick={() => handleAddSponsor(sponsor)}>
+                                            <Button variant="outline" size="sm" onClick={() => handleOpenAssignDialog(sponsor)}>
                                                 <PlusCircle className="mr-2 h-4 w-4" /> Назначить
                                             </Button>
                                         </TableCell>
@@ -151,5 +154,13 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                 </CardContent>
             </Card>
         </div>
+        <AssignSponsorDialog 
+            isOpen={isAssignDialogOpen}
+            onOpenChange={setIsAssignDialogOpen}
+            tournamentId={tournamentId}
+            sponsor={selectedSponsor}
+            onSuccess={fetchData}
+        />
+        </>
     );
 }

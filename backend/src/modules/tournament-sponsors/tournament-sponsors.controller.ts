@@ -18,7 +18,7 @@ export class TournamentSponsorsController {
 
   @Post()
   assignSponsor(@Param('tournamentId') tournamentId: string, @Body() dto: AssignSponsorDto) {
-    return this.service.assignSponsor(tournamentId, dto.sponsorId);
+    return this.service.assignSponsor(tournamentId, dto.sponsorId, dto.amount);
   }
 
   @Delete(':sponsorId')
