@@ -1,4 +1,5 @@
-import { getTeams } from '@/entities/team/api/get-teams';
+
+import { getTeams } from '@/entities/team/api/teams';
 import { TeamsListClient } from '@/widgets/teams-list';
 
 export async function TeamsListPage() {
