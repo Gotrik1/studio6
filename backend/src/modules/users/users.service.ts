@@ -1,11 +1,13 @@
 
 
+
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { User } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
 import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
+import { PlayerStatsDto } from './dto/player-stats.dto';
 
 @Injectable()
 export class UsersService {
@@ -142,6 +144,35 @@ export class UsersService {
       avatar: user.avatar || 'https://placehold.co/40x40.png',
       avatarHint: 'player avatar',
     }));
+  }
+  
+  async getStatsForUser(userId: string): Promise<PlayerStatsDto> {
+    // In a real app, this would be calculated from matches, etc.
+    // For now, we return mock data to fulfill the API contract.
+    return {
+        winLossData: { wins: 45, losses: 20 },
+        kdaByMonthData: [
+            { month: 'Янв', kda: 1.2 },
+            { month: 'Фев', kda: 1.3 },
+            { month: 'Мар', kda: 1.1 },
+            { month: 'Апр', kda: 1.4 },
+            { month: 'Май', kda: 1.5 },
+            { month: 'Июн', kda: 1.25 },
+        ],
+        winrateByMapData: [
+            { map: 'Ascent', winrate: 65 },
+            { map: 'Bind', winrate: 72 },
+            { map: 'Split', winrate: 58 },
+            { map: 'Haven', winrate: 81 },
+            { map: 'Icebox', winrate: 52 },
+        ],
+        summary: {
+            matches: 65,
+            winrate: 69.2,
+            winStreak: 5,
+            kda: 1.25,
+        }
+    };
   }
 
   async findByEmail(email: string): Promise<User | null> {

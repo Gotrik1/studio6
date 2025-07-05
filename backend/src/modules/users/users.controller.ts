@@ -4,7 +4,8 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiResponse } from '@nestjs/swagger';
+import { PlayerStatsDto } from './dto/player-stats.dto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -22,6 +23,13 @@ export class UsersController {
   @Get('leaderboard')
   getLeaderboard(): Promise<LeaderboardPlayerDto[]> {
     return this.usersService.getLeaderboard();
+  }
+
+  @Public()
+  @Get(':id/stats')
+  @ApiResponse({ status: 200, description: 'Статистика игрока.', type: PlayerStatsDto })
+  getStats(@Param('id') id: string) {
+    return this.usersService.getStatsForUser(id);
   }
 
   @Get()

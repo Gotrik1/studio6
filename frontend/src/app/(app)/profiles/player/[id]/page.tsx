@@ -1,12 +1,15 @@
 
+
 import PlayerClient from "@/app/(app)/administration/player/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
+import { getPlayerStats } from "@/entities/user/api/get-player-stats";
 import { getSession } from "@/features/auth/session";
 import { notFound } from "next/navigation";
 
 export default async function PlayerProfileRoute({ params }: { params: { id: string } }) {
-    const [profileData, session] = await Promise.all([
+    const [profileData, statsData, session] = await Promise.all([
         getPlayerProfile(params.id),
+        getPlayerStats(params.id),
         getSession(),
     ]);
 
@@ -24,5 +27,6 @@ export default async function PlayerProfileRoute({ params }: { params: { id: str
         gallery={profileData.user.gallery}
         careerHistory={profileData.user.careerHistory}
         playerActivity={profileData.user.activities}
+        stats={statsData}
     />;
 }

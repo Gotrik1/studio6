@@ -1,4 +1,5 @@
 
+
 export type CareerHistoryItem = {
     id: string;
     teamName: string;
@@ -47,4 +48,16 @@ export type Measurement = {
     hips?: number;
     biceps?: number;
     thigh?: number;
+};
+
+export type PlayerStats = {
+    winLossData: { wins: number, losses: number };
+    kdaByMonthData: { month: string, kda: number }[];
+    winrateByMapData: { map: string, winrate: number }[];
+    summary: {
+        matches: number;
+        winrate: number;
+        winStreak: number;
+        kda: number;
+    };
 };
