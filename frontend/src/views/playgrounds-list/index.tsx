@@ -51,7 +51,7 @@ export function PlaygroundsListPage() {
 
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between opacity-0 animate-fade-in-up">
                 <div className="space-y-2">
                     <h1 className="font-headline text-3xl font-bold tracking-tight flex items-center gap-3">
                         <Map className="h-8 w-8 text-primary"/>
@@ -108,7 +108,7 @@ export function PlaygroundsListPage() {
                         return (
                              <PlaygroundCard 
                                 key={playground.id} 
-                                playground={playground as any} // Cast to satisfy component, since backend and frontend types are slightly different
+                                playground={playground}
                                 kingTeam={kingTeam}
                                 isLive={isLive}
                             />

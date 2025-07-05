@@ -1,3 +1,5 @@
+'use server';
+
 import { fetchMatches } from '@/entities/match/api/get-matches';
 import { getTeams } from '@/entities/team/api/teams';
 import type { Team } from '@/entities/team/model/types';
@@ -7,7 +9,7 @@ type KingTeam = Team & { wins: number };
 
 export async function getKingOfTheCourt(playgroundId: string): Promise<KingTeam | null> {
     const [matchesList, teams] = await Promise.all([
-        fetchMatches('Завершен'),
+        fetchMatches('FINISHED'),
         getTeams()
     ]);
 

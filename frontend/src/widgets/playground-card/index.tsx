@@ -1,10 +1,9 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
 import { MapPin, Check, Star, AlertTriangle, Crown } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import type { Team } from '@/entities/team/model/types';
@@ -16,11 +15,11 @@ export function PlaygroundCard({ playground, kingTeam, isLive }: { playground: P
         <Link href={`/playgrounds/${playground.id}`} className="block h-full">
             <Card className="h-full overflow-hidden transition-all hover:shadow-lg hover:border-primary">
                 <div className="relative h-40 w-full">
-                    <Image src={playground.coverImage} alt={playground.name} fill className="object-cover" data-ai-hint={playground.coverImageHint}/>
+                    <Image src={playground.coverImage!} alt={playground.name} fill className="object-cover" data-ai-hint={playground.coverImageHint!}/>
                     {isLive && (
                         <Badge variant="destructive" className="absolute top-2 left-2 animate-pulse">LIVE</Badge>
                     )}
-                     {playground.status === 'pending_moderation' && (
+                     {playground.status === 'PENDING_MODERATION' && (
                         <Badge variant="destructive" className="absolute top-2 right-2 bg-yellow-500/90 hover:bg-yellow-600 text-white">
                             <AlertTriangle className="h-3 w-3 mr-1"/>
                             На модерации
@@ -33,7 +32,7 @@ export function PlaygroundCard({ playground, kingTeam, isLive }: { playground: P
                                     <TooltipTrigger asChild>
                                         <div className="relative">
                                             <Avatar className="h-10 w-10 border-2 border-amber-400">
-                                                <AvatarImage src={kingTeam.logo} alt={kingTeam.name} />
+                                                <AvatarImage src={kingTeam.logo!} alt={kingTeam.name} />
                                                 <AvatarFallback>{kingTeam.name.charAt(0)}</AvatarFallback>
                                             </Avatar>
                                             <div className="absolute -top-2 -left-2 rotate-[-30deg]">
