@@ -1,30 +1,6 @@
-import type { TrainingLogEntry } from '@/shared/lib/mock-data/training-log';
 import { calculate1RM } from './calculate-1rm';
+import type { TrainingLogEntry, PersonalRecord, RecordHistoryPoint, ExerciseSession } from '@/entities/training-program/model/types';
 
-export type PersonalRecord = {
-    exercise: string;
-    e1RM: number; // estimated 1 Rep Max
-    weight: number;
-    reps: number;
-    date: string;
-};
-
-export type RecordHistoryPoint = {
-    date: string;
-    e1RM: number;
-};
-
-export type ExerciseSessionSet = {
-    reps: number;
-    weight: number;
-    rpe?: number;
-}
-
-export type ExerciseSession = {
-    date: string;
-    workoutName: string;
-    sets: ExerciseSessionSet[];
-};
 
 // Helper function to get training metrics (for other widgets)
 const getMetrics = (completedWorkouts: TrainingLogEntry[]) => {

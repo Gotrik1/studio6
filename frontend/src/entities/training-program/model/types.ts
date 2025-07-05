@@ -56,3 +56,29 @@ export type TrainingLogEntry = {
     notes?: string;
     coachNotes?: string;
 };
+
+// --- Analytics Types ---
+export type PersonalRecord = {
+    exercise: string;
+    e1RM: number; // estimated 1 Rep Max
+    weight: number;
+    reps: number;
+    date: string;
+};
+
+export type RecordHistoryPoint = {
+    date: string;
+    e1RM: number;
+};
+
+export type ExerciseSessionSet = {
+    reps: number;
+    weight: number;
+    rpe?: number;
+}
+
+export type ExerciseSession = {
+    date: string;
+    workoutName: string;
+    sets: ExerciseSessionSet[];
+};
