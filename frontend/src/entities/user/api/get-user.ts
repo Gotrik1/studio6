@@ -70,8 +70,6 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
 
         return {
             user: augmentedProfile,
-            // Kept achievements mock as it's not in the backend yet
-            achievements: [], 
         } as unknown as PlayerProfileData;
 
     } catch(error) {

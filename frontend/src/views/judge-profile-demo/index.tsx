@@ -1,8 +1,7 @@
-
 import JudgeClient from "@/app/(app)/administration/judge/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";
-import { achievements } from "@/shared/lib/mock-data/profiles"; // Achievements remain mock for demo
+import { judgeAchievements } from "@/shared/lib/mock-data/judge-profile";
 
 const DEMO_JUDGE_ID = '4'; // Николай Васильев
 
@@ -13,5 +12,5 @@ export async function JudgeProfilePage() {
         notFound();
     }
 
-    return <JudgeClient user={profileData.user} achievements={achievements} />;
+    return <JudgeClient user={profileData.user} achievements={judgeAchievements} />;
 }

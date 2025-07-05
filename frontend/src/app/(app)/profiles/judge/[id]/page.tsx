@@ -2,7 +2,7 @@
 import JudgeClient from "@/app/(app)/administration/judge/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";
-import { achievements } from "@/shared/lib/mock-data/profiles";
+import { judgeAchievements } from "@/shared/lib/mock-data/judge-profile";
 
 export default async function JudgeProfileRoute({ params }: { params: { id: string } }) {
     const profileData = await getPlayerProfile(params.id);
@@ -15,7 +15,7 @@ export default async function JudgeProfileRoute({ params }: { params: { id: stri
     return (
         <JudgeClient 
             user={profileData.user} 
-            achievements={achievements} 
+            achievements={judgeAchievements} 
         />
     );
 }

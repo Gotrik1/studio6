@@ -22,12 +22,12 @@ export async function CoachProfilePage() {
         notFound();
     }
     
-    // In a real app, coachedPlayers would come from profileData.user.coaching
-    // For now, we are creating a mock structure that matches the CoachedPlayer type
+    // In a real app, coachedPlayers would be fetched with full stats.
+    // For now, we augment the basic user data from the backend with mock stats for UI compatibility.
     const coachedPlayers: CoachedPlayer[] = (profileData.user.coaching || []).map((player: any) => ({
         id: player.id,
         name: player.name,
-        avatar: player.avatar || '',
+        avatar: player.avatar || null,
         avatarHint: 'esports player portrait',
         role: player.role,
         // Mock stats and history as the backend doesn't provide this level of detail yet

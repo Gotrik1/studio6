@@ -25,7 +25,7 @@ const JudgeAchievementsTab = dynamic(() => import('@/entities/user/ui/judge-prof
   loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
   ssr: false,
 });
-const JudgedMatchesTab = dynamic(() => import('@/entities/user/ui/judge-profile-tabs/judged-matches-tab').then(mod => mod.JudgedMatchesTab), {
+const JudgedMatchesTab = dynamic(() => import('@/widgets/judge-profile-tabs/judged-matches-tab').then(mod => mod.JudgedMatchesTab), {
     loading: () => <Card><Skeleton className="h-64 w-full" /></Card>,
     ssr: false,
 });

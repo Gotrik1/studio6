@@ -38,7 +38,7 @@ export function MyPlayersTab({ players }: MyPlayersTabProps) {
                         <Card key={player.id} className="flex flex-col items-center justify-between gap-4 p-4 sm:flex-row">
                             <div className="flex items-center gap-4 self-start">
                                 <Avatar className="h-12 w-12">
-                                    <AvatarImage src={player.avatar} alt={player.name} data-ai-hint={player.avatarHint} />
+                                    <AvatarImage src={player.avatar || ''} alt={player.name} data-ai-hint={player.avatarHint} />
                                     <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <div>

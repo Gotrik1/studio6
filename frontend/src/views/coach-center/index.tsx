@@ -1,16 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
-import { coachedPlayers } from '@/shared/lib/mock-data/coach-players';
-import { trainingPrograms } from '@/shared/lib/mock-data/training-programs';
-import type { TrainingProgram } from '@/entities/training-program/model/types';
-import { AssignProgramDialog } from '@/widgets/assign-program-dialog';
+import { useState, useEffect } from 'react';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
+import { Button } from '@/shared/ui/button';
+import { ClipboardList, Users, TrendingUp, BookOpen, BarChart3 } from 'lucide-react';
+import { useToast } from '@/shared/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
+import { Skeleton } from '@/shared/ui/skeleton';
 import { MyPlayersTab } from '@/entities/user/ui/coach-profile-tabs/my-players-tab';
 import { MyProgramsTab } from '@/entities/user/ui/coach-profile-tabs/my-programs-tab';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import {ClipboardList, Users, TrendingUp, BookOpen, BarChart3} from 'lucide-react';
-import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
+import { TeamTrainingAnalytics, type CoachedPlayer } from '@/widgets/team-training-analytics';
+import { AssignProgramDialog } from '@/widgets/assign-program-dialog';
+import type { TrainingProgram } from '@/entities/training-program/model/types';
+import { useSession } from '@/shared/lib/session/client';
+import { getPlayerProfile, type FullUserProfile } from '@/entities/user/api/get-user';
+import { useTraining } from '@/shared/context/training-provider';
 
 const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, icon: React.ElementType }) => (
     <Card>
@@ -24,14 +28,66 @@ const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, 
     </Card>
 );
 
+const PageSkeleton = () => (
+    <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+            <Skeleton className="h-24" />
+        </div>
+        <Skeleton className="h-96 w-full" />
+    </div>
+);
+
+
 export function CoachCenterPage() {
+    const { user } = useSession();
+    const { toast } = useToast();
+    const { programs } = useTraining();
+    const [coachData, setCoachData] = useState<FullUserProfile | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
     const [isAssignProgramOpen, setIsAssignProgramOpen] = useState(false);
     const [selectedProgram, setSelectedProgram] = useState<TrainingProgram | null>(null);
+
+    useEffect(() => {
+        if(user) {
+            getPlayerProfile(user.id).then(data => {
+                if(data) {
+                    setCoachData(data.user);
+                }
+                setIsLoading(false);
+            })
+        }
+    }, [user]);
 
     const handleAssignProgram = (program: TrainingProgram) => {
         setSelectedProgram(program);
         setIsAssignProgramOpen(true);
     };
+    
+    if (isLoading) {
+        return <PageSkeleton />;
+    }
+    
+    if (!coachData) {
+        return <p>Не удалось загрузить данные тренера.</p>;
+    }
+    
+    // In a real app, coachedPlayers would be fetched with full stats.
+    // For now, we augment the basic user data from the backend with mock stats for UI compatibility.
+    const coachedPlayers: CoachedPlayer[] = (coachData.coaching || []).map((player: any) => ({
+        id: player.id,
+        name: player.name,
+        avatar: player.avatar || null,
+        avatarHint: 'esports player portrait',
+        role: player.role,
+        stats: { kda: '1.2', winRate: '55%', favoriteMap: 'Ascent' },
+        matchHistory: 'W 13-8, L 10-13, W 13-2',
+    }));
+
+    const coachPrograms = programs.filter(p => p.author === coachData.name || p.isAiGenerated);
 
     return (
         <>
@@ -46,7 +102,7 @@ export function CoachCenterPage() {
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                     <StatCard title="Активных учеников" value={String(coachedPlayers.length)} icon={Users} />
                     <StatCard title="Средний прогресс" value="+15%" icon={TrendingUp} />
-                    <StatCard title="Создано программ" value={String(trainingPrograms.filter(p => p.author === 'Coach Anna' || p.isAiGenerated).length)} icon={BookOpen} />
+                    <StatCard title="Создано программ" value={String(coachPrograms.length)} icon={BookOpen} />
                     <StatCard title="Назначено программ" value="8" icon={ClipboardList} />
                 </div>
                 
@@ -60,10 +116,10 @@ export function CoachCenterPage() {
                         <MyPlayersTab players={coachedPlayers} />
                     </TabsContent>
                     <TabsContent value="programs" className="mt-4">
-                         <MyProgramsTab programs={trainingPrograms} onAssignProgram={handleAssignProgram} />
+                         <MyProgramsTab onAssignProgram={handleAssignProgram} authorName={coachData.name} />
                     </TabsContent>
                     <TabsContent value="analytics" className="mt-4">
-                         <TeamTrainingAnalytics />
+                         <TeamTrainingAnalytics players={coachedPlayers} />
                     </TabsContent>
                 </Tabs>
             </div>

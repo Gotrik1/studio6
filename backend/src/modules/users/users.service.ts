@@ -80,7 +80,7 @@ export class UsersService {
               orderBy: { createdAt: 'asc' }
           },
           coaching: { // Fetch players this coach is coaching
-             select: { id: true, name: true, avatar: true, role: true }
+             select: { id: true, name: true, avatar: true, role: true, mainSport: true }
           },
           judgedMatches: {
               include: {
@@ -128,6 +128,13 @@ export class UsersService {
           timestamp: m.finishedAt?.toISOString(),
       }));
 
+      const coachedPlayers = user.coaching?.map(p => ({
+          ...p,
+          avatarHint: 'esports player portrait',
+          stats: { kda: '1.2', winRate: '55%', favoriteMap: 'Ascent' }, // Mocked stats
+          matchHistory: 'W 13-8, L 10-13, W 13-2', // Mocked history
+      }));
+
 
       const dateOfBirth = user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '1998-05-15';
 
@@ -136,6 +143,7 @@ export class UsersService {
         teams: userTeams,
         organizedTournaments,
         judgedMatches,
+        coaching: coachedPlayers,
         location: user.location || "Москва, Россия",
         mainSport: user.mainSport || "Футбол",
         isVerified: true,
