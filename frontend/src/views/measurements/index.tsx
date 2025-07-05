@@ -5,12 +5,13 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { PlusCircle, LineChart, History } from 'lucide-react';
-import type { Measurement } from '@/shared/lib/mock-data/measurements';
+import type { Measurement } from '@/entities/user/model/types';
 import { LogMeasurementDialog } from '@/widgets/log-measurement-dialog';
 import { MeasurementChart } from '@/widgets/analytics-charts/measurements-chart';
 import { MeasurementsHistoryTable } from '@/widgets/measurements-history-table';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/ui/select';
 import { useMeasurements } from '@/shared/context/measurements-provider';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 const metricOptions: { value: keyof Omit<Measurement, 'id' | 'date'>, label: string }[] = [
     { value: 'weight', label: 'Вес (кг)' },
@@ -29,8 +30,19 @@ const StatCard = ({ title, value, unit }: { title: string, value?: number, unit:
     </Card>
 );
 
+const StatCardSkeleton = () => (
+    <Card>
+        <CardHeader className="pb-2">
+            <Skeleton className="h-4 w-20" />
+        </CardHeader>
+        <CardContent>
+            <Skeleton className="h-8 w-16" />
+        </CardContent>
+    </Card>
+);
+
 export function MeasurementsPage() {
-    const { history, addMeasurement } = useMeasurements();
+    const { history, addMeasurement, isLoading } = useMeasurements();
     const [isLogDialogOpen, setIsLogDialogOpen] = useState(false);
     const [selectedMetric, setSelectedMetric] = useState<keyof Omit<Measurement, 'id' | 'date'>>('weight');
 
@@ -50,12 +62,21 @@ export function MeasurementsPage() {
                     </Button>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                     <StatCard title="Вес" value={latestMeasurement?.weight} unit="кг" />
-                     <StatCard title="Жир" value={latestMeasurement?.bodyFat} unit="%" />
-                     <StatCard title="Грудь" value={latestMeasurement?.chest} unit="см" />
-                     <StatCard title="Талия" value={latestMeasurement?.waist} unit="см" />
-                </div>
+                {isLoading ? (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <StatCardSkeleton />
+                        <StatCardSkeleton />
+                        <StatCardSkeleton />
+                        <StatCardSkeleton />
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                         <StatCard title="Вес" value={latestMeasurement?.weight} unit="кг" />
+                         <StatCard title="Жир" value={latestMeasurement?.bodyFat} unit="%" />
+                         <StatCard title="Грудь" value={latestMeasurement?.chest} unit="см" />
+                         <StatCard title="Талия" value={latestMeasurement?.waist} unit="см" />
+                    </div>
+                )}
                 
                 <Card>
                     <CardHeader>
@@ -75,7 +96,7 @@ export function MeasurementsPage() {
                         </div>
                     </CardHeader>
                     <CardContent>
-                        <MeasurementChart history={history} metric={selectedMetric} />
+                        {isLoading ? <Skeleton className="h-[300px] w-full" /> : <MeasurementChart history={history} metric={selectedMetric} />}
                     </CardContent>
                 </Card>
 
@@ -84,7 +105,15 @@ export function MeasurementsPage() {
                         <CardTitle className="flex items-center gap-2"><History/> История замеров</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <MeasurementsHistoryTable history={history} />
+                       {isLoading ? (
+                            <div className="space-y-2">
+                                <Skeleton className="h-10 w-full" />
+                                <Skeleton className="h-10 w-full" />
+                                <Skeleton className="h-10 w-full" />
+                            </div>
+                        ) : (
+                            <MeasurementsHistoryTable history={history} />
+                        )}
                     </CardContent>
                 </Card>
 
