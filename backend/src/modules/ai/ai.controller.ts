@@ -117,6 +117,10 @@ import { PlayerScoutDto } from './dto/player-scout.dto';
 import type { PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
+import { GeneratePlaygroundDrillDto } from './dto/generate-playground-drill.dto';
+import { GeneratePlaygroundSummaryDto } from './dto/generate-playground-summary.dto';
+import type { GeneratePlaygroundDrillOutput } from '@/ai/flows/schemas/generate-playground-drill-schema';
+import type { GeneratePlaygroundSummaryOutput } from '@/ai/flows/schemas/generate-playground-summary-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -391,6 +395,22 @@ export class AiController {
     @Body() generatePlaygroundLoreDto: GeneratePlaygroundLoreDto,
   ): Promise<GeneratePlaygroundLoreOutput> {
     return this.aiService.generatePlaygroundLore(generatePlaygroundLoreDto);
+  }
+
+  @Post('generate-playground-drill')
+  @HttpCode(HttpStatus.OK)
+  async generatePlaygroundDrill(
+    @Body() generatePlaygroundDrillDto: GeneratePlaygroundDrillDto,
+  ): Promise<GeneratePlaygroundDrillOutput> {
+    return this.aiService.generatePlaygroundDrill(generatePlaygroundDrillDto);
+  }
+
+  @Post('generate-playground-summary')
+  @HttpCode(HttpStatus.OK)
+  async generatePlaygroundSummary(
+    @Body() generatePlaygroundSummaryDto: GeneratePlaygroundSummaryDto,
+  ): Promise<GeneratePlaygroundSummaryOutput> {
+    return this.aiService.generatePlaygroundSummary(generatePlaygroundSummaryDto);
   }
 
   @Post('analyze-match-report')

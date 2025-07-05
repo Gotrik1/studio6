@@ -59,6 +59,8 @@ import { predictMatchOutcome, type PredictMatchOutcomeInput, type PredictMatchOu
 import { playerScout, type PlayerScoutInput, type PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
 import { PromotionsService } from '../promotions/promotions.service';
 import type { Promotion } from '@prisma/client';
+import { generatePlaygroundDrill, type GeneratePlaygroundDrillInput, type GeneratePlaygroundDrillOutput } from '@/ai/flows/generate-playground-drill-flow';
+import { generatePlaygroundSummary, type GeneratePlaygroundSummaryInput, type GeneratePlaygroundSummaryOutput } from '@/ai/flows/generate-playground-summary-flow';
 
 @Injectable()
 export class AiService {
@@ -210,6 +212,14 @@ export class AiService {
     return generatePlaygroundLore(input);
   }
   
+  async generatePlaygroundDrill(input: GeneratePlaygroundDrillInput): Promise<GeneratePlaygroundDrillOutput> {
+    return generatePlaygroundDrill(input);
+  }
+
+  async generatePlaygroundSummary(input: GeneratePlaygroundSummaryInput): Promise<GeneratePlaygroundSummaryOutput> {
+    return generatePlaygroundSummary(input);
+  }
+
   async analyzeMatchReport(input: AnalyzeMatchReportInput): Promise<AnalyzeMatchReportOutput> {
     return analyzeMatchReport(input);
   }
