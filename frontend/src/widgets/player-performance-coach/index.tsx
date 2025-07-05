@@ -12,7 +12,6 @@ import { generateTrainingPlan, type GenerateTrainingPlanOutput } from '@/shared/
 import Link from 'next/link';
 import { useTraining } from '@/shared/context/training-provider';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
-import { winLossData } from '@/shared/lib/mock-data/player-stats';
 
 
 const mockFitnessGoal = 'Набор массы';

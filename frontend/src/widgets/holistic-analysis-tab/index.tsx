@@ -9,19 +9,22 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { Loader2, Sparkles, BrainCircuit, AlertCircle, TrendingUp, Goal, Link as LinkIcon, HeartPulse } from "lucide-react";
 import { analyzeHolisticPerformance, type AnalyzeHolisticPerformanceOutput } from '@/shared/api/genkit/flows/analyze-holistic-performance-flow';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
-import { trainingLogData } from '@/shared/lib/mock-data/training-log';
-import { winLossData } from '@/shared/lib/mock-data/player-stats';
 import { AiFormCheckDialog } from '@/widgets/ai-form-check-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { useTraining } from '@/shared/context/training-provider';
+import { matchesList } from '@/shared/lib/mock-data/matches';
+import { winLossData } from '@/shared/lib/mock-data/player-stats';
+
 
 export function HolisticAnalysisTab() {
+    const { log } = useTraining();
     // State for Holistic Analysis
     const [isHolisticLoading, setIsHolisticLoading] = useState(false);
     const [holisticError, setHolisticError] = useState<string | null>(null);
     const [holisticResult, setHolisticResult] = useState<AnalyzeHolisticPerformanceOutput | null>(null);
 
     // State for Form Check
-    const { personalRecords } = getTrainingAnalytics(trainingLogData);
+    const { personalRecords } = getTrainingAnalytics(log);
     const uniqueExercisesWithRecords = [...new Set(personalRecords.map(pr => pr.exercise))];
     const [isFormCheckOpen, setIsFormCheckOpen] = useState(false);
     const [selectedExercise, setSelectedExercise] = useState(uniqueExercisesWithRecords[0] || '');
@@ -33,7 +36,7 @@ export function HolisticAnalysisTab() {
 
         try {
             // Generate summaries from mock data
-            const { trainingMetrics } = getTrainingAnalytics(trainingLogData);
+            const { trainingMetrics } = getTrainingAnalytics(log);
             const physicalSummary = `
                 Всего тренировок: ${trainingMetrics.totalWorkouts},
                 Ежемесячный объем: ${trainingMetrics.monthlyVolume},

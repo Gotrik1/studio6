@@ -1,7 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UseGuards, Req } from '@nestjs/common';
 import { TrainingService } from './training.service';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Request } from 'express';
 
 @ApiTags('Training')
 @Controller('training')
@@ -20,5 +22,14 @@ export class TrainingController {
   @ApiOperation({ summary: 'Получить список всех программ тренировок' })
   findAllPrograms() {
     return this.trainingService.findAllPrograms();
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('log')
+  @ApiOperation({ summary: 'Получить журнал тренировок для текущего пользователя' })
+  getTrainingLog(@Req() req: Request) {
+    const userId = (req.user as any).userId;
+    return this.trainingService.getLogsForUser(userId);
   }
 }
