@@ -6,7 +6,7 @@ import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Target, Award, CheckCircle } from 'lucide-react';
 import { generatePlaygroundDrill, type GeneratePlaygroundDrillOutput } from '@/shared/api/genkit/flows/generate-playground-drill-flow';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
 import { usePDEconomy } from '@/shared/context/pd-provider';
 
