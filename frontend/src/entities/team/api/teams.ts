@@ -8,9 +8,27 @@ export async function getTeams(): Promise<Team[]> {
   const result = await fetchWithAuth('/teams');
   if (!result.success) {
     console.error('Failed to fetch teams from backend:', result.error);
-    return []; // Return empty array on failure
+    return [];
   }
-  return result.data;
+  
+  // Adapter to ensure data conforms to the frontend Team type
+  if (Array.isArray(result.data)) {
+    return result.data.map((team: any) => ({
+      id: String(team.id),
+      name: team.name,
+      motto: team.motto,
+      logo: team.logo || team.logoUrl, // Handle both possible field names
+      dataAiHint: team.dataAiHint,
+      game: team.game,
+      rank: team.rank,
+      members: team.members,
+      captain: team.captain,
+      slug: team.slug,
+      homePlaygroundId: team.homePlaygroundId,
+    }));
+  }
+
+  return [];
 }
 
 export async function setHomePlayground(teamId: string, playgroundId: string) {
