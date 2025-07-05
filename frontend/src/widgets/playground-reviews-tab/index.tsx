@@ -12,7 +12,7 @@ import type { PlaygroundReview } from '@/entities/playground/model/types';
 
 interface PlaygroundReviewsTabProps {
     reviews: PlaygroundReview[];
-    onAddReview: (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => Promise<void>;
+    onAddReview: (reviewData: { rating: number, comment: string }) => Promise<void>;
     playgroundName: string;
     isLoading: boolean;
 }

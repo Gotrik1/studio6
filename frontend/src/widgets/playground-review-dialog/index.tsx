@@ -14,7 +14,7 @@ import { cn } from '@/shared/lib/utils';
 interface PlaygroundReviewDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onAddReview: (review: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => Promise<void>;
+  onAddReview: (review: { rating: number, comment: string }) => Promise<void>;
   playgroundName: string;
 }
 

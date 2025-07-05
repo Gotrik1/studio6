@@ -17,12 +17,12 @@ export type Playground = {
 };
 
 export type PlaygroundReview = {
-  id: string;
-  author: {
-    name: string;
-    avatar: string | null;
-  };
-  rating: number;
-  comment: string;
-  timestamp: string;
+    id: string;
+    author: {
+        name: string;
+        avatar: string | null;
+    };
+    rating: number;
+    comment: string;
+    timestamp: string;
 };

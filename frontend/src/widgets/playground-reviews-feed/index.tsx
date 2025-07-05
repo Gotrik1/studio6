@@ -69,6 +69,12 @@ export function PlaygroundReviewsFeed({ reviews, onAddReviewClick }: PlaygroundR
                                 </div>
                             </div>
                         ))}
+                         {reviews.length === 0 && (
+                            <div className="text-center py-16 text-muted-foreground">
+                                <p>На этой площадке еще не было активности.</p>
+                                <p className="text-sm">Станьте первым, кто отметится!</p>
+                            </div>
+                        )}
                     </div>
                 </ScrollArea>
             </CardContent>

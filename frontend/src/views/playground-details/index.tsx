@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
-import type { Playground, PlaygroundReview } from '@/entities/playground/model/types';
+import type { Playground } from '@/entities/playground/model/types';
 import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -26,6 +26,7 @@ import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/s
 import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
 import { getReviews, createReview } from '@/entities/playground/api/reviews';
+import type { PlaygroundReview } from '@/entities/playground/model/types';
 
 
 export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
@@ -69,16 +70,8 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
     const loadReviews = useCallback(async () => {
         setIsLoadingReviews(true);
         try {
-            const reviewsResult = await getReviews(playground.id);
-            if (reviewsResult.success) {
-                const formattedReviews = reviewsResult.data.map((r: any) => ({
-                    ...r,
-                    timestamp: r.createdAt
-                }));
-                setReviews(formattedReviews);
-            } else {
-                 toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить отзывы.' });
-            }
+            const reviewsData = await getReviews(playground.id);
+            setReviews(reviewsData);
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить отзывы.' });
@@ -111,7 +104,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         }
     };
     
-    const handleAddReview = async (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => {
+    const handleAddReview = async (reviewData: { rating: number, comment: string }) => {
         const result = await createReview(playground.id, reviewData);
         if (result.success) {
             toast({ title: 'Спасибо за ваш отзыв!', description: 'Ваш отзыв был опубликован.' });
