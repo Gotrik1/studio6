@@ -36,6 +36,12 @@ export class TeamsController {
   }
 
   @Public()
+  @Get(':id/dashboard')
+  getDashboardData(@Param('id') id: string) {
+    return this.teamsService.getDashboardData(id);
+  }
+
+  @Public()
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.teamsService.findOne(id);

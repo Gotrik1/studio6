@@ -7,6 +7,8 @@ import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CreatePracticeDto } from './dto/create-practice.dto';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 @Injectable()
 export class TeamsService implements OnModuleInit {
@@ -388,6 +390,67 @@ export class TeamsService implements OnModuleInit {
       },
     });
   }
+
+  async getDashboardData(teamId: string) {
+    const upcomingMatch = await this.prisma.match.findFirst({
+      where: {
+        status: 'PLANNED',
+        OR: [{ team1Id: teamId }, { team2Id: teamId }],
+      },
+      include: {
+        team1: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+        team2: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+      },
+      orderBy: { scheduledAt: 'asc' },
+    });
+
+    const recentResults = await this.prisma.match.findMany({
+      where: {
+        status: 'FINISHED',
+        OR: [{ team1Id: teamId }, { team2Id: teamId }],
+      },
+       include: {
+        team1: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+        team2: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+        tournament: { select: { name: true } },
+      },
+      orderBy: { finishedAt: 'desc' },
+      take: 2,
+    });
+
+    return {
+      upcomingMatch: this._shapeMatch(upcomingMatch),
+      recentResults: recentResults.map(match => this._shapeMatch(match)),
+    };
+  }
+
+  private _shapeMatch(match: any) {
+    if (!match) return null;
+    return {
+      id: String(match.id),
+      team1: {
+        id: match.team1.id,
+        name: match.team1.name,
+        logo: match.team1.logo || 'https://placehold.co/100x100.png',
+        logoHint: match.team1.dataAiHint || 'team logo',
+      },
+      team2: {
+        id: match.team2.id,
+        name: match.team2.name,
+        logo: match.team2.logo || 'https://placehold.co/100x100.png',
+        logoHint: match.team2.dataAiHint || 'team logo',
+      },
+      score:
+        match.team1Score !== null && match.team2Score !== null
+          ? `${match.team1Score}-${match.team2Score}`
+          : 'VS',
+      tournament: match.tournament?.name || 'Товарищеский матч',
+      date: format(new Date(match.scheduledAt), 'd MMMM yyyy', { locale: ru }),
+      href: `/matches/${match.id}`,
+      status: match.status,
+    }
+  }
+
 
   async remove(id: string): Promise<Team> {
     return this.prisma.team.delete({ where: { id } });

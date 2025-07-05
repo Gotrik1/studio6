@@ -23,7 +23,7 @@ import type { Playground } from '@/entities/playground/model/types';
 import { getPlaygroundById } from '@/entities/playground/api/playgrounds';
 import { TeamOverviewDashboard } from '@/widgets/team-overview-dashboard';
 import type { Match } from '@/entities/match/model/types';
-import { fetchMatches } from '@/entities/match/api/get-matches';
+import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
 
 
 interface TeamDetailsPageProps {
@@ -36,20 +36,14 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
     const [isPending, startTransition] = useTransition();
     const [isDonationOpen, setIsDonationOpen] = useState(false);
     const [homePlayground, setHomePlayground] = useState<Playground | null>(null);
-    const [upcomingMatch, setUpcomingMatch] = useState<Match | null>(null);
-    const [recentResults, setRecentResults] = useState<Match[]>([]);
+    const [dashboardData, setDashboardData] = useState<TeamDashboardData | null>(null);
 
     useEffect(() => {
         if (team.homePlaygroundId) {
             getPlaygroundById(team.homePlaygroundId).then(setHomePlayground);
         }
-        fetchMatches(undefined, undefined, team.id).then(allMatches => {
-            const upcoming = allMatches.find(m => m.status === 'Предстоящий');
-            const recent = allMatches.filter(m => m.status === 'Завершен').slice(0, 2);
-            setUpcomingMatch(upcoming || null);
-            setRecentResults(recent);
-        });
-    }, [team.homePlaygroundId, team.id]);
+        getTeamDashboardData(team.id).then(setDashboardData);
+    }, [team.id, team.homePlaygroundId]);
 
     if (!team) {
         return <div>Команда не найдена.</div>;
@@ -131,7 +125,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                     </TabsList>
 
                     <TabsContent value="overview" className="mt-4">
-                        <TeamOverviewDashboard team={team} upcomingMatch={upcomingMatch} recentResults={recentResults} />
+                        <TeamOverviewDashboard team={team} upcomingMatch={dashboardData?.upcomingMatch || null} recentResults={dashboardData?.recentResults || []} />
                     </TabsContent>
 
                     <TabsContent value="roster" className="mt-4">
