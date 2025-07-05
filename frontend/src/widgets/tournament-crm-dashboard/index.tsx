@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardHeader, CardContent, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
@@ -10,9 +11,12 @@ import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Progress } from '@/shared/ui/progress';
 import { PlusCircle, Search, Trophy, Users, DollarSign, ClipboardCheck } from 'lucide-react';
-import { crmTournaments, type TournamentCrm } from '@/shared/lib/mock-data/crm-tournaments';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { fetchCrmTournaments } from '@/entities/tournament/api/get-tournaments';
+import type { TournamentCrm } from '@/entities/user/model/types';
+import { useToast } from '@/shared/hooks/use-toast';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 const StatCard = ({ title, value, description, icon: Icon }: { title: string, value: string, description?: string, icon: React.ElementType }) => (
     <Card>
@@ -29,9 +33,29 @@ const StatCard = ({ title, value, description, icon: Icon }: { title: string, va
 
 
 export function TournamentCrmDashboard() {
-    const [tournaments] = useState<TournamentCrm[]>(crmTournaments);
+    const [tournaments, setTournaments] = useState<TournamentCrm[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('Все');
+    const [isLoading, setIsLoading] = useState(true);
+    const { toast } = useToast();
+
+    useEffect(() => {
+        async function loadData() {
+            setIsLoading(true);
+            const data = await fetchCrmTournaments();
+            if (data) {
+                setTournaments(data);
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: 'Ошибка',
+                    description: 'Не удалось загрузить список турниров.'
+                });
+            }
+            setIsLoading(false);
+        }
+        loadData();
+    }, [toast]);
 
     const filteredTournaments = useMemo(() => {
         return tournaments.filter(t => {
@@ -43,14 +67,22 @@ export function TournamentCrmDashboard() {
     
     const getStatusVariant = (status: TournamentCrm['status']) => {
         switch (status) {
-            case 'В процессе': return 'destructive';
-            case 'Открыт набор': return 'default';
-            case 'Завершён': return 'secondary';
+            case 'ONGOING': return 'destructive';
+            case 'REGISTRATION': return 'default';
+            case 'FINISHED': return 'secondary';
             default: return 'outline';
         }
     };
+     const getStatusText = (status: TournamentCrm['status']) => {
+        switch (status) {
+            case 'ONGOING': return 'В процессе';
+            case 'REGISTRATION': return 'Открыт набор';
+            case 'FINISHED': return 'Завершён';
+            default: return 'Архив';
+        }
+    }
 
-    const activeTournaments = tournaments.filter(t => t.status === 'В процессе' || t.status === 'Открыт набор').length;
+    const activeTournaments = tournaments.filter(t => t.status === 'ONGOING' || t.status === 'REGISTRATION').length;
     const totalParticipants = tournaments.reduce((sum, t) => sum + t.participants, 0);
 
     return (
@@ -95,55 +127,61 @@ export function TournamentCrmDashboard() {
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="Все">Все статусы</SelectItem>
-                                    <SelectItem value="Открыт набор">Открыт набор</SelectItem>
-                                    <SelectItem value="Отбор">Отбор</SelectItem>
-                                    <SelectItem value="В процессе">В процессе</SelectItem>
-                                    <SelectItem value="Завершён">Завершён</SelectItem>
-                                    <SelectItem value="Архив">Архив</SelectItem>
+                                    <SelectItem value="REGISTRATION">Открыт набор</SelectItem>
+                                    <SelectItem value="ONGOING">В процессе</SelectItem>
+                                    <SelectItem value="FINISHED">Завершён</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Название турнира</TableHead>
-                                <TableHead className="hidden md:table-cell">Статус</TableHead>
-                                <TableHead className="hidden lg:table-cell">Участники</TableHead>
-                                <TableHead className="hidden md:table-cell">Дата начала</TableHead>
-                                <TableHead className="text-right"></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredTournaments.map((tournament) => (
-                                <TableRow key={tournament.id}>
-                                    <TableCell>
-                                        <div className="font-medium">{tournament.name}</div>
-                                        <div className="text-sm text-muted-foreground">{tournament.sport}</div>
-                                    </TableCell>
-                                    <TableCell className="hidden md:table-cell">
-                                        <Badge variant={getStatusVariant(tournament.status)}>{tournament.status}</Badge>
-                                    </TableCell>
-                                    <TableCell className="hidden lg:table-cell">
-                                        <div className="flex flex-col">
-                                            <span>{tournament.participants} / {tournament.maxParticipants}</span>
-                                            <Progress value={(tournament.participants / tournament.maxParticipants) * 100} className="h-1.5 mt-1" />
-                                        </div>
-                                    </TableCell>
-                                    <TableCell className="hidden md:table-cell">
-                                        {format(new Date(tournament.startDate), 'd MMMM yyyy', { locale: ru })}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        <Button asChild variant="outline" size="sm">
-                                            <Link href={`/administration/tournament-crm/${tournament.id}`}>Управлять</Link>
-                                        </Button>
-                                    </TableCell>
+                    {isLoading ? (
+                        <div className="space-y-2">
+                            <Skeleton className="h-12 w-full" />
+                            <Skeleton className="h-12 w-full" />
+                            <Skeleton className="h-12 w-full" />
+                        </div>
+                    ) : (
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Название турнира</TableHead>
+                                    <TableHead className="hidden md:table-cell">Статус</TableHead>
+                                    <TableHead className="hidden lg:table-cell">Участники</TableHead>
+                                    <TableHead className="hidden md:table-cell">Дата начала</TableHead>
+                                    <TableHead className="text-right"></TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredTournaments.map((tournament) => (
+                                    <TableRow key={tournament.id}>
+                                        <TableCell>
+                                            <div className="font-medium">{tournament.name}</div>
+                                            <div className="text-sm text-muted-foreground">{tournament.sport}</div>
+                                        </TableCell>
+                                        <TableCell className="hidden md:table-cell">
+                                            <Badge variant={getStatusVariant(tournament.status as any)}>{getStatusText(tournament.status as any)}</Badge>
+                                        </TableCell>
+                                        <TableCell className="hidden lg:table-cell">
+                                            <div className="flex flex-col">
+                                                <span>{tournament.participants} / {tournament.maxParticipants}</span>
+                                                <Progress value={(tournament.participants / tournament.maxParticipants) * 100} className="h-1.5 mt-1" />
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="hidden md:table-cell">
+                                            {format(new Date(tournament.startDate), 'd MMMM yyyy', { locale: ru })}
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <Button asChild variant="outline" size="sm">
+                                                <Link href={`/administration/tournament-crm/${tournament.id}`}>Управлять</Link>
+                                            </Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    )}
                 </CardContent>
             </Card>
         </div>
