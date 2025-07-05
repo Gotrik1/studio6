@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -18,6 +19,7 @@ export async function resolveDispute(matchId: string, payload: ResolveDisputePay
 
   if (result.success) {
     revalidatePath('/judge-center');
+    revalidatePath(`/administration/tournament-crm/${result.data.tournamentId}`);
   }
 
   return result;

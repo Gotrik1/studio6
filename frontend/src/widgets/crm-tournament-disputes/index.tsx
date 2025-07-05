@@ -51,7 +51,7 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
         setSelectedMatch(match);
         setIsDialogOpen(true);
     };
-
+    
     const handleResolve = async (matchId: string, resolution: string) => {
         const matchToResolve = disputedMatches.find(m => m.id === matchId);
         if (!matchToResolve) return;
