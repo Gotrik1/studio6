@@ -2,8 +2,8 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 
 const seedMedics = [
-  { name: 'Бригада СМП "МедЭкспресс"', specialization: 'Скорая помощь', contact: '+7 (495) 123-45-67' },
-  { name: 'Доктор Айболит', specialization: 'Спортивная травматология', contact: 'doc@example.com' },
+  { name: 'Бригада СМП "МедЭкспресс"', specialization: 'Скорая помощь', contact: '+7 (495) 123-45-67', avatar: 'https://placehold.co/100x100.png', avatarHint: 'medical logo' },
+  { name: 'Доктор Айболит', specialization: 'Спортивная травматология', contact: 'doc@example.com', avatar: 'https://placehold.co/100x100.png', avatarHint: 'doctor portrait' },
 ];
 
 @Injectable()

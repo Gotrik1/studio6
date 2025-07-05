@@ -1,19 +1,23 @@
+
 'use client';
 
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
+import { Avatar, AvatarImage, AvatarFallback } from '@/shared/ui/avatar';
 import { Button } from '@/shared/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
-import { useState, useEffect, useCallback } from 'react';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getAssignedMedicalStaff, getAvailableMedicalPartners, assignMedicalPartner, unassignMedicalPartner } from '@/entities/tournament/api/medical';
+import { assignMedicalPartner, getAssignedMedicalStaff, getAvailableMedicalPartners, unassignMedicalPartner } from '@/entities/tournament/api/medical';
 
 type MedicalPartner = {
   id: string;
   name: string;
   specialization: string;
   contact: string;
+  avatar: string | null;
+  avatarHint: string | null;
 };
 
 interface CrmTournamentMedicalProps {
@@ -87,15 +91,23 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Организация / Врач</TableHead>
-                                    <TableHead className="text-right"></TableHead>
+                                    <TableHead className="text-right">Действия</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {assignedMedics.length > 0 ? assignedMedics.map(medic => (
                                     <TableRow key={medic.id}>
                                         <TableCell>
-                                            <p className="font-semibold">{medic.name}</p>
-                                            <p className="text-xs text-muted-foreground">{medic.specialization}</p>
+                                            <div className="flex items-center gap-3">
+                                                <Avatar className="h-9 w-9">
+                                                    <AvatarImage src={medic.avatar || ''} data-ai-hint={medic.avatarHint || 'medical logo'}/>
+                                                    <AvatarFallback>{medic.name.charAt(0)}</AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <p className="font-semibold">{medic.name}</p>
+                                                    <p className="text-xs text-muted-foreground">{medic.specialization}</p>
+                                                </div>
+                                            </div>
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <Button variant="ghost" size="icon" onClick={() => handleRemoveMedic(medic)}>
@@ -131,8 +143,16 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
                                 {availableMedics.length > 0 ? availableMedics.map(medic => (
                                     <TableRow key={medic.id}>
                                         <TableCell>
-                                            <p className="font-semibold">{medic.name}</p>
-                                            <p className="text-xs text-muted-foreground">{medic.specialization}</p>
+                                            <div className="flex items-center gap-3">
+                                                 <Avatar className="h-9 w-9">
+                                                    <AvatarImage src={medic.avatar || ''} data-ai-hint={medic.avatarHint || 'medical logo'}/>
+                                                    <AvatarFallback>{medic.name.charAt(0)}</AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <p className="font-semibold">{medic.name}</p>
+                                                    <p className="text-xs text-muted-foreground">{medic.specialization}</p>
+                                                </div>
+                                            </div>
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <Button variant="outline" size="sm" onClick={() => handleAddMedic(medic)}>
