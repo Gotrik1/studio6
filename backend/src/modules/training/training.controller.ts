@@ -1,9 +1,10 @@
-import { Controller, Get, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Req, Post, Body } from '@nestjs/common';
 import { TrainingService } from './training.service';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
+import { AssignProgramDto } from './dto/assign-program.dto';
 
 @ApiTags('Training')
 @Controller('training')
@@ -38,5 +39,13 @@ export class TrainingController {
   getTrainingLog(@Req() req: Request) {
     const userId = (req.user as any).userId;
     return this.trainingService.getLogsForUser(userId);
+  }
+  
+  @Post('programs/assign')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Назначить программу тренировок игрокам' })
+  assignProgram(@Body() assignProgramDto: AssignProgramDto) {
+    return this.trainingService.assignProgram(assignProgramDto);
   }
 }

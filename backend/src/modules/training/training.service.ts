@@ -3,6 +3,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { exercisesList } from './seed-data';
 import { trainingPrograms as mockPrograms } from './seed-data-programs';
 import type { Exercise } from '@prisma/client';
+import { AssignProgramDto } from './dto/assign-program.dto';
 
 @Injectable()
 export class TrainingService implements OnModuleInit {
@@ -157,5 +158,17 @@ export class TrainingService implements OnModuleInit {
                 date: 'desc'
             }
         });
+    }
+
+    async assignProgram(assignProgramDto: AssignProgramDto) {
+        this.logger.log(`Assigning program ${assignProgramDto.programId} to players: ${assignProgramDto.playerIds.join(', ')}`);
+        // In a real app, you would create associations in the database here.
+        // For example:
+        // const assignments = assignProgramDto.playerIds.map(playerId => ({
+        //     userId: playerId,
+        //     trainingProgramId: assignProgramDto.programId,
+        // }));
+        // await this.prisma.userTrainingProgram.createMany({ data: assignments, skipDuplicates: true });
+        return { success: true, message: 'Program assigned successfully' };
     }
 }

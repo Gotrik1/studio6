@@ -8,9 +8,11 @@ import { Checkbox } from '@/shared/ui/checkbox';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Share } from 'lucide-react';
+import { Share, Loader2 } from 'lucide-react';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import type { CoachedPlayer } from '@/entities/user/model/types';
+import { assignTrainingProgram } from '@/entities/training-program/api/assign-program';
+
 
 interface AssignProgramDialogProps {
     isOpen: boolean;
@@ -22,6 +24,7 @@ interface AssignProgramDialogProps {
 export function AssignProgramDialog({ isOpen, onOpenChange, program, players }: AssignProgramDialogProps) {
     const { toast } = useToast();
     const [selectedPlayerIds, setSelectedPlayerIds] = useState<Set<string>>(new Set());
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (!isOpen) {
@@ -51,18 +54,29 @@ export function AssignProgramDialog({ isOpen, onOpenChange, program, players }: 
         }
     }
 
-    const handleAssign = () => {
+    const handleAssign = async () => {
         if (selectedPlayerIds.size === 0) {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Выберите хотя бы одного игрока.' });
             return;
         }
 
-        // In a real app, this would be an API call
-        toast({
-            title: 'Программа назначена!',
-            description: `Программа "${program.name}" назначена ${selectedPlayerIds.size} игрокам.`,
-        });
-        onOpenChange(false);
+        setIsSubmitting(true);
+        const result = await assignTrainingProgram(program.id, Array.from(selectedPlayerIds));
+        
+        if (result.success) {
+            toast({
+                title: 'Программа назначена!',
+                description: `Программа "${program.name}" назначена ${selectedPlayerIds.size} игрокам.`,
+            });
+            onOpenChange(false);
+        } else {
+            toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: result.error || 'Не удалось назначить программу.',
+            });
+        }
+        setIsSubmitting(false);
     };
 
     return (
@@ -106,8 +120,9 @@ export function AssignProgramDialog({ isOpen, onOpenChange, program, players }: 
                     </ScrollArea>
                 </div>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>Отмена</Button>
-                    <Button onClick={handleAssign} disabled={selectedPlayerIds.size === 0}>
+                    <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSubmitting}>Отмена</Button>
+                    <Button onClick={handleAssign} disabled={selectedPlayerIds.size === 0 || isSubmitting}>
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin"/>}
                         <Share className="mr-2 h-4 w-4" /> Назначить ({selectedPlayerIds.size})
                     </Button>
                 </DialogFooter>
