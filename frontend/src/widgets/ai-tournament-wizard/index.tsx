@@ -13,8 +13,9 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generateTournamentWizard, type GenerateTournamentWizardOutput } from '@/shared/api/genkit/flows/generate-tournament-wizard-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { createTournament } from '@/entities/tournament/api/tournaments';
+import { createTournament, type CreateTournamentDto } from '@/entities/tournament/api/tournaments';
 import { useRouter } from 'next/navigation';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/ui/select';
 
 export function AiTournamentWizard() {
     const { toast } = useToast();
@@ -51,20 +52,18 @@ export function AiTournamentWizard() {
         
         setIsCreating(true);
 
-        const tournamentData = {
+        const tournamentData: CreateTournamentDto = {
             name: result.name,
             description: result.description,
             prizePool: result.prizePool,
             bannerImage: result.imageDataUri,
             bannerImageHint: prompt.slice(0, 50),
-            // Use AI-generated dates
             registrationEndDate: new Date(result.registrationEndDate),
             tournamentStartDate: new Date(result.tournamentStartDate),
-            // Fill in the rest with reasonable defaults
-            game: 'Valorant',
-            type: 'team' as const,
-            format: 'single_elimination' as const,
-            category: 'Киберспорт',
+            game: result.game,
+            type: result.type,
+            format: result.format,
+            category: 'Киберспорт', // This could also be inferred by AI in a future version
             location: 'Онлайн',
             participantCount: 16,
             registrationStartDate: new Date(),
@@ -89,7 +88,10 @@ export function AiTournamentWizard() {
         setIsCreating(false);
     };
     
-     const handleFieldChange = (field: keyof Omit<GenerateTournamentWizardOutput, 'imageDataUri' | 'registrationEndDate' | 'tournamentStartDate'>, value: string) => {
+     const handleFieldChange = (
+      field: keyof Omit<GenerateTournamentWizardOutput, 'imageDataUri' | 'registrationEndDate' | 'tournamentStartDate'>,
+      value: string
+    ) => {
         if (result) {
             setResult((prev: GenerateTournamentWizardOutput | null) => prev ? { ...prev, [field]: value } : null);
         }
@@ -153,6 +155,30 @@ export function AiTournamentWizard() {
                          <div className="space-y-2">
                             <Label htmlFor="promo-desc">Описание</Label>
                             <Textarea id="promo-desc" value={result.description} onChange={(e) => handleFieldChange('description', e.target.value)} />
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="promo-game">Игра/Спорт</Label>
+                                <Input id="promo-game" value={result.game} onChange={(e) => handleFieldChange('game', e.target.value)} />
+                            </div>
+                             <div className="space-y-2">
+                                <Label htmlFor="promo-type">Тип</Label>
+                                <Select value={result.type} onValueChange={(v) => handleFieldChange('type', v)}>
+                                    <SelectTrigger id="promo-type"><SelectValue/></SelectTrigger>
+                                    <SelectContent><SelectItem value="team">Командный</SelectItem><SelectItem value="individual">Индивидуальный</SelectItem></SelectContent>
+                                </Select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="promo-format">Формат</Label>
+                                <Select value={result.format} onValueChange={(v) => handleFieldChange('format', v)}>
+                                    <SelectTrigger id="promo-format"><SelectValue/></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="single_elimination">Single Elimination</SelectItem>
+                                        <SelectItem value="round_robin">Round Robin</SelectItem>
+                                        <SelectItem value="groups">Групповой этап + Плей-офф</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="promo-prize">Призовой фонд</Label>
