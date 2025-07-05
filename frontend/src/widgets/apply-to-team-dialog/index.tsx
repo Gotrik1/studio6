@@ -7,25 +7,22 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/shared/ui/label";
 import { Textarea } from '@/shared/ui/textarea';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Send } from 'lucide-react';
-import { useJoinRequests } from '@/shared/context/join-request-provider';
-import { useSession } from '@/shared/lib/session/client';
+import { Send, Loader2 } from 'lucide-react';
 import type { TeamDetails } from '@/entities/team/model/types';
+import { createTeamApplication } from '@/entities/team-application/api/applications';
 
 interface ApplyToTeamDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  team: Pick<TeamDetails, 'name' | 'slug'>;
+  team: Pick<TeamDetails, 'name' | 'slug' | 'id'>;
 }
 
 export function ApplyToTeamDialog({ isOpen, onOpenChange, team }: ApplyToTeamDialogProps) {
     const { toast } = useToast();
-    const { user } = useSession();
-    const { addRequest } = useJoinRequests();
     const [message, setMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!message.trim()) {
             toast({
                 variant: 'destructive',
@@ -34,27 +31,26 @@ export function ApplyToTeamDialog({ isOpen, onOpenChange, team }: ApplyToTeamDia
             });
             return;
         }
-        if (!user) {
-             toast({
-                variant: 'destructive',
-                title: 'Ошибка',
-                description: 'Не удалось определить пользователя.',
-            });
-            return;
-        }
 
         setIsSubmitting(true);
-        // Simulate API call
-        setTimeout(() => {
-            addRequest(team.slug, user, message);
+        const result = await createTeamApplication(team.id, message);
+
+        if (result.success) {
             toast({
                 title: 'Заявка отправлена!',
                 description: `Ваша заявка на вступление в команду "${team.name}" была успешно отправлена.`,
             });
-            setIsSubmitting(false);
-            onOpenChange(false);
-            setMessage('');
-        }, 500);
+             onOpenChange(false);
+             setMessage('');
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: result.error,
+            });
+        }
+       
+        setIsSubmitting(false);
     };
 
     return (
@@ -79,7 +75,7 @@ export function ApplyToTeamDialog({ isOpen, onOpenChange, team }: ApplyToTeamDia
                 <DialogFooter>
                     <Button variant="outline" onClick={() => onOpenChange(false)}>Отмена</Button>
                     <Button onClick={handleSubmit} disabled={isSubmitting}>
-                        <Send className="mr-2 h-4 w-4" />
+                        {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                         {isSubmitting ? 'Отправка...' : 'Отправить заявку'}
                     </Button>
                 </DialogFooter>
