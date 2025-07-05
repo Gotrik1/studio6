@@ -21,10 +21,12 @@ import { createTournament } from '@/entities/tournament/api/tournaments';
 import { useRouter } from 'next/navigation';
 import { getSports, type Sport } from '@/entities/sport/api/sports';
 import { Textarea } from '@/shared/ui/textarea';
+import { Separator } from '@/shared/ui/separator';
 
 const tournamentSchema = z.object({
   name: z.string().min(5, 'Название должно быть не менее 5 символов.'),
-  game: z.string({ required_error: 'Выберите дисциплину.' }),
+  description: z.string().optional(),
+  game: z.string({ required_error: 'Выберите вид спорта.' }),
   type: z.enum(['team', 'individual'], { required_error: 'Выберите тип турнира.' }),
   format: z.enum(['single_elimination', 'round_robin', 'groups'], { required_error: 'Выберите формат.' }),
   participantCount: z.coerce.number().min(4, 'Минимум 4 участника.').max(128, 'Максимум 128 участников.'),
@@ -33,7 +35,6 @@ const tournamentSchema = z.object({
   tournamentStartDate: z.date({required_error: "Выберите дату."}),
   category: z.string().min(3, "Укажите категорию"),
   location: z.string().min(3, "Укажите место проведения"),
-  description: z.string().optional(),
   prizePool: z.string().optional(),
   rules: z.string().optional(),
 }).refine(data => {
@@ -70,6 +71,7 @@ export function ManualTournamentForm() {
     resolver: zodResolver(tournamentSchema),
     defaultValues: {
       name: '',
+      description: '',
       type: 'team',
       format: 'single_elimination',
       participantCount: 16,
@@ -113,44 +115,51 @@ export function ManualTournamentForm() {
                         <CardDescription>Заполните все необходимые поля для создания нового турнира.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <FormField control={form.control} name="name" render={({ field }) => (
-                            <FormItem><FormLabel>Название турнира</FormLabel><FormControl><Input placeholder="Например, ProDvor Summer Cup" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="description" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Описание (необязательно)</FormLabel>
-                                <FormControl><Textarea placeholder="Кратко опишите ваш турнир: для кого он, какие цели преследует." {...field} /></FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )} />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField control={form.control} name="game" render={({ field }) => (
-                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                        <div className="space-y-6">
+                            <FormField control={form.control} name="name" render={({ field }) => (
+                                <FormItem><FormLabel>Название турнира</FormLabel><FormControl><Input placeholder="Например, ProDvor Summer Cup" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
-                            <FormField control={form.control} name="type" render={({ field }) => (
-                                <FormItem><FormLabel>Тип турнира</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Командный или индивидуальный" /></SelectTrigger></FormControl><SelectContent><SelectItem value="team">Командный</SelectItem><SelectItem value="individual">Индивидуальный</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                            <FormField control={form.control} name="description" render={({ field }) => (
+                                <FormItem><FormLabel>Краткое описание (необязательно)</FormLabel><FormControl><Textarea placeholder="Для кого этот турнир, какие его цели?" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField control={form.control} name="format" render={({ field }) => (
-                                <FormItem><FormLabel>Формат проведения</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите формат" /></SelectTrigger></FormControl><SelectContent><SelectItem value="single_elimination">Single Elimination</SelectItem><SelectItem value="round_robin">Round Robin</SelectItem><SelectItem value="groups">Групповой этап + Плей-офф</SelectItem></SelectContent></Select><FormMessage /></FormItem>
-                            )} />
-                             <FormField control={form.control} name="participantCount" render={({ field }) => (
-                                <FormItem><FormLabel>Кол-во участников</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
-                            )} />
+                        <Separator/>
+                         <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FormField control={form.control} name="game" render={({ field }) => (
+                                    <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                )} />
+                                <FormField control={form.control} name="type" render={({ field }) => (
+                                    <FormItem><FormLabel>Тип турнира</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Командный или индивидуальный" /></SelectTrigger></FormControl><SelectContent><SelectItem value="team">Командный</SelectItem><SelectItem value="individual">Индивидуальный</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                                )} />
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FormField control={form.control} name="format" render={({ field }) => (
+                                    <FormItem><FormLabel>Формат проведения</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите формат" /></SelectTrigger></FormControl><SelectContent><SelectItem value="single_elimination">Single Elimination</SelectItem><SelectItem value="round_robin">Round Robin</SelectItem><SelectItem value="groups">Групповой этап + Плей-офф</SelectItem></SelectContent></Select><FormMessage /></FormItem>
+                                )} />
+                                <FormField control={form.control} name="participantCount" render={({ field }) => (
+                                    <FormItem><FormLabel>Кол-во участников</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
+                                )} />
+                            </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <FormField control={form.control} name="registrationStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="registrationEndDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Конец регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                        <FormField control={form.control} name="tournamentStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало турнира</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                         <Separator/>
+                        <div className="space-y-6">
+                            <h4 className="font-medium text-sm">Ключевые даты</h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <FormField control={form.control} name="registrationStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="registrationEndDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Конец регистрации</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="tournamentStartDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Начало турнира</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                            </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField control={form.control} name="category" render={({ field }) => (<FormItem><FormLabel>Категория</FormLabel><FormControl><Input placeholder="Например, Любительский" {...field} /></FormControl></FormItem>)} />
-                            <FormField control={form.control} name="location" render={({ field }) => (<FormItem><FormLabel>Место проведения</FormLabel><FormControl><Input placeholder="Онлайн / Название площадки" {...field} /></FormControl></FormItem>)} />
+                         <Separator/>
+                         <div className="space-y-6">
+                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <FormField control={form.control} name="category" render={({ field }) => (<FormItem><FormLabel>Категория</FormLabel><FormControl><Input placeholder="Например, Любительский" {...field} /></FormControl></FormItem>)} />
+                                <FormField control={form.control} name="location" render={({ field }) => (<FormItem><FormLabel>Место проведения</FormLabel><FormControl><Input placeholder="Онлайн / Название площадки" {...field} /></FormControl></FormItem>)} />
+                            </div>
+                            <FormField control={form.control} name="prizePool" render={({ field }) => (<FormItem><FormLabel>Призовой фонд (необязательно)</FormLabel><FormControl><Input placeholder="Например, 50,000 PD + девайсы от спонсора" {...field} /></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="rules" render={({ field }) => (<FormItem><FormLabel>Правила (необязательно)</FormLabel><FormControl><Textarea placeholder="Опишите основные правила и регламент турнира..." {...field} /></FormControl></FormItem>)} />
                         </div>
-                        <FormField control={form.control} name="prizePool" render={({ field }) => (<FormItem><FormLabel>Призовой фонд (необязательно)</FormLabel><FormControl><Input placeholder="Например, 50,000 PD + девайсы от спонсора" {...field} /></FormControl></FormItem>)} />
-                        <FormField control={form.control} name="rules" render={({ field }) => (<FormItem><FormLabel>Правила (необязательно)</FormLabel><FormControl><Textarea placeholder="Опишите основные правила и регламент турнира..." {...field} /></FormControl></FormItem>)} />
-
                     </CardContent>
                     <CardFooter>
                         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
