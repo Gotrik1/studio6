@@ -2,7 +2,6 @@
 'use server';
 
 import type { User } from '@/shared/lib/types';
-import { achievements } from "@/shared/lib/mock-data/profiles";
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -12,7 +11,6 @@ export type FullUserProfile = User & {
     location: string;
     mainSport: string;
     isVerified: boolean;
-    xp: number;
     dateOfBirth: string;
     age: number;
     preferredSports: string[];
@@ -27,20 +25,19 @@ export type FullUserProfile = User & {
 // This is the type for the full page props
 export type PlayerProfileData = {
     user: FullUserProfile;
-    achievements: typeof achievements;
 };
 
 
 export async function getPlayerProfile(id: string): Promise<PlayerProfileData | null> {
     try {
-        const res = await fetch(`${process.env.BACKEND_URL}/users/${id}`, { cache: 'no-store' });
+        const result = await fetchWithAuth(`/users/${id}`);
         
-        if (!res.ok) {
-            console.error(`Failed to fetch user ${id}:`, res.statusText);
+        if (!result.success) {
+            console.error(`Failed to fetch user ${id}:`, result.error);
             return null;
         }
 
-        const profileData = await res.json();
+        const profileData = result.data;
         
         // Transform backend activities to frontend format
         const playerActivity: PlayerActivityItem[] = profileData.activities.map((activity: any) => {
@@ -65,7 +62,6 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
         }).filter((item: any): item is PlayerActivityItem => item !== null);
         
         // The backend now returns an augmented user object that includes teams, gallery, and careerHistory.
-        // We just need to add the mocked achievements.
         const augmentedProfile: FullUserProfile = {
             ...profileData,
             activities: playerActivity,
@@ -73,8 +69,6 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
 
         return {
             user: augmentedProfile,
-            // Achievements are still mocked on the frontend, as there's no backend system for them yet.
-            achievements,
         };
 
     } catch(error) {

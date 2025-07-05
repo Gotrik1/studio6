@@ -34,7 +34,7 @@ export function LeaguesListPage({ initialLeagues }: LeaguesListPageProps) {
           <Link key={league.id} href={`/leagues/${league.id}`} className="block">
             <Card className="overflow-hidden transition-all hover:shadow-lg hover:border-primary">
               <div className="relative h-48 w-full">
-                <Image src={league.image} alt={league.name} fill className="object-cover" data-ai-hint={league.imageHint} />
+                <Image src={league.image || 'https://placehold.co/2560x720.png'} alt={league.name} fill className="object-cover" data-ai-hint={league.imageHint || 'league banner'} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
                 <CardTitle className="absolute bottom-4 left-4 text-white font-headline text-2xl shadow-lg">{league.name}</CardTitle>
               </div>
