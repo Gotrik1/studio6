@@ -63,6 +63,7 @@ export function TeamManagementPage() {
         progress: Math.floor(Math.random() * (25 - 5 + 1) + 5),
     })) || [];
 
+
     const fetchData = useCallback(async () => {
         if (params.slug) {
             const teamData = await getTeamBySlug(params.slug as string);
@@ -77,7 +78,7 @@ export function TeamManagementPage() {
                     setJoinRequests(appsResult.data.map((app: any) => ({
                         id: app.id,
                         teamId: app.teamId,
-                        applicant: app.user,
+                        user: app.user,
                         message: app.message,
                         statsSummary: 'Mock summary for now'
                     })));
@@ -94,6 +95,7 @@ export function TeamManagementPage() {
         fetchData();
     }, [fetchData]);
 
+    const [isActionPending, startTransition] = useTransition();
 
     const handleAccept = (request: JoinRequest) => {
         startTransition(async () => {
@@ -205,8 +207,8 @@ export function TeamManagementPage() {
                                                 <TableCell>{request.applicant.role}</TableCell>
                                                 <TableCell className="text-right space-x-1">
                                                     <Button variant="outline" size="sm" onClick={() => handleAnalyze(request)}>AI-Анализ</Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDecline(request)}><X className="h-4 w-4 text-red-500" /></Button>
-                                                    <Button size="icon" onClick={() => handleAccept(request)}><Check className="h-4 w-4" /></Button>
+                                                    <Button variant="ghost" size="icon" onClick={() => handleDecline(request)} disabled={isActionPending}><X className="h-4 w-4 text-red-500" /></Button>
+                                                    <Button size="icon" onClick={() => handleAccept(request)} disabled={isActionPending}><Check className="h-4 w-4" /></Button>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -236,11 +238,11 @@ export function TeamManagementPage() {
                     </TabsContent>
                     
                     <TabsContent value="ai-coach" className="mt-4">
-                        <TeamCoachTab team={team} dashboardData={dashboardData}/>
+                        <TeamCoachTab team={team} />
                     </TabsContent>
 
                     <TabsContent value="ai-assistant" className="mt-4">
-                        <AITeamAssistantTab />
+                        <AITeamAssistantTab teamId={team.id} />
                     </TabsContent>
                 </Tabs>
             </div>

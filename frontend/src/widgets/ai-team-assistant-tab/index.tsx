@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -9,17 +10,11 @@ import { aiTeamAssistant, type AiTeamAssistantOutput } from '@/shared/api/genkit
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/shared/ui/alert';
 
-const mockTeamActivity = `
-- Echo: "Ребята, вчера отлично сыграли против Титанов, но на карте Split нам нужно лучше координировать выходы на B."
-- Viper: "Согласна. Я посмотрю пару демок от про-игроков по этой теме."
-- Superuser: "Хорошая идея. Давайте в субботу соберемся и разберем тактики."
-- Результат матча: Победа 13-10 против 'Стальные Титаны'.
-- Статистика игрока Echo за последнюю игру: KDA 1.8 (лучший в команде).
-`;
+interface AITeamAssistantTabProps {
+    teamId: string;
+}
 
-const mockTeamGoals = "Войти в топ-3 лиги в этом сезоне, улучшить коммуникацию во время матчей.";
-
-export function AITeamAssistantTab() {
+export function AITeamAssistantTab({ teamId }: AITeamAssistantTabProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<AiTeamAssistantOutput | null>(null);
@@ -30,11 +25,7 @@ export function AITeamAssistantTab() {
         setResult(null);
 
         try {
-            const analysisResult = await aiTeamAssistant({
-                teamActivity: mockTeamActivity,
-                teamGoals: mockTeamGoals,
-                relevantContent: "Статья о новых тактиках на карте Split."
-            });
+            const analysisResult = await aiTeamAssistant({ teamId });
             setResult(analysisResult);
         } catch (e) {
             console.error(e);

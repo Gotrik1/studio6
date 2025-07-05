@@ -2,9 +2,7 @@
 
 // Define types locally to decouple from backend schemas.
 export type AiTeamAssistantInput = {
-    teamActivity: string;
-    teamGoals: string;
-    relevantContent?: string;
+    teamId: string;
 };
 
 export type AiTeamAssistantOutput = {
