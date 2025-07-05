@@ -24,7 +24,7 @@ import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-dialog';
 import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
-import { createReview, getReviews, type CreateReviewData } from '@/entities/playground/api/reviews';
+import { createReview, getReviews } from '@/entities/playground/api/reviews';
 import { useRouter } from 'next/navigation';
 import type { PlaygroundConditionReport } from '@/entities/playground/api/condition';
 
@@ -109,7 +109,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         }
     };
     
-    const handleAddReview = async (reviewData: CreateReviewData) => {
+    const handleAddReview = async (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => {
         const result = await createReview(playground.id, reviewData);
         if (result.success) {
             toast({ title: 'Спасибо за ваш отзыв!', description: 'Ваш отзыв был опубликован.' });

@@ -10,6 +10,7 @@ import { AiPlaygroundLore } from "@/widgets/ai-playground-lore";
 import { PlaygroundConditionStatus } from "@/widgets/playground-condition-status";
 import type { PlaygroundConditionReport } from "@/entities/playground/api/condition";
 import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
+import { KingOfTheCourtWidget } from "@/widgets/playground-home-team";
 
 interface PlaygroundInfoTabProps {
     playground: Playground;
@@ -23,6 +24,7 @@ export function PlaygroundInfoTab({ playground, issueReport }: PlaygroundInfoTab
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
+                <KingOfTheCourtWidget homeTeamData={playground.kingOfTheCourt || null} isLoading={false} />
                 <AiPlaygroundAnalysis playground={playground} />
                 <AiPlaygroundSummary playground={playground} />
                 <AiPlaygroundLore playground={playground} />

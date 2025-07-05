@@ -21,19 +21,19 @@ export type CreatePlaygroundData = {
 
 export async function getPlaygrounds(): Promise<Playground[]> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-    if (!baseUrl) {
-        console.error('Backend URL not configured');
-        return [];
+    const result = await fetchWithAuth('/playgrounds');
+    if (!result.success) {
+      console.error('Failed to fetch playgrounds:', result.error);
+      return [];
     }
-    const res = await fetch(`${baseUrl}/playgrounds`, { cache: 'no-store' });
-    if (!res.ok) throw new Error('Failed to fetch playgrounds');
-    const playgrounds = await res.json();
+    const playgrounds = result.data;
+    
     // Adapter to convert numeric ID to string
     return playgrounds.map((p: any) => ({
       ...p,
       id: String(p.id),
       reviews: [], // Reviews aren't needed for the list view
+      kingOfTheCourt: p.kingOfTheCourt, // Pass through new data
     }));
   } catch (error) {
     console.error('getPlaygrounds error:', error);
@@ -56,6 +56,7 @@ export async function getPlaygroundById(id: string): Promise<Playground | null> 
         return {
             ...playground,
             id: String(playground.id),
+            kingOfTheCourt: playground.kingOfTheCourt, // Pass through new data
             reviews: (playground.reviews || []).map((review: any) => ({
                 id: String(review.id),
                 rating: review.rating,

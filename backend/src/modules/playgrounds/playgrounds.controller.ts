@@ -1,11 +1,12 @@
 import { Controller, Get, Post, Body, Param, UseGuards, Req, Patch, Delete } from '@nestjs/common';
 import { PlaygroundsService } from './playgrounds.service';
 import { CreatePlaygroundDto } from './dto/create-playground.dto';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { CreateReviewDto } from './dto/create-review.dto';
+import { KingOfTheCourtDto } from './dto/king-of-the-court.dto';
 
 @ApiTags('Playgrounds')
 @Controller('playgrounds')
@@ -33,6 +34,15 @@ export class PlaygroundsController {
   @ApiOperation({ summary: 'Получить площадку по ID' })
   findOne(@Param('id') id: string) {
     return this.playgroundsService.findOne(id);
+  }
+
+  @Public()
+  @Get(':id/king-of-the-court')
+  @ApiOperation({ summary: 'Получить "Короля площадки"' })
+  @ApiResponse({ status: 200, description: 'Команда с наибольшим количеством побед на этой площадке.', type: KingOfTheCourtDto })
+  @ApiResponse({ status: 404, description: 'Площадка не найдена или нет сыгранных матчей.' })
+  getKingOfTheCourt(@Param('id') id: string) {
+    return this.playgroundsService.getKingOfTheCourt(id);
   }
 
   @Public()

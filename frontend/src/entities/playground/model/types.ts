@@ -1,3 +1,14 @@
+export type KingTeam = {
+    id: string;
+    name: string;
+    logo: string;
+    dataAiHint: string;
+    game: string;
+    rank: number;
+    slug: string;
+    wins: number;
+};
+
 export type PlaygroundReview = {
     id: string;
     author: {
@@ -25,5 +36,6 @@ export type Playground = {
         name: string;
         avatar: string | null;
     };
+    kingOfTheCourt?: KingTeam | null;
     reviews: PlaygroundReview[];
 };

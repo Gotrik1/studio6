@@ -8,6 +8,45 @@ import { CreateReviewDto } from './dto/create-review.dto';
 export class PlaygroundsService {
   constructor(private prisma: PrismaService) {}
 
+  private async _getKingOfTheCourt(playgroundId: string): Promise<any | null> {
+    const matches = await this.prisma.match.findMany({
+        where: {
+            playgroundId,
+            status: 'FINISHED',
+            team1Score: { not: null },
+            team2Score: { not: null },
+        },
+    });
+
+    if (matches.length === 0) return null;
+
+    const winsCount = new Map<string, number>();
+
+    for (const match of matches) {
+        let winnerId: string | null = null;
+        if (match.team1Score! > match.team2Score!) {
+            winnerId = match.team1Id;
+        } else if (match.team2Score! > match.team1Score!) {
+            winnerId = match.team2Id;
+        }
+        if (winnerId) {
+            winsCount.set(winnerId, (winsCount.get(winnerId) || 0) + 1);
+        }
+    }
+
+    if (winsCount.size === 0) return null;
+    
+    const [topTeamId, topWins] = [...winsCount.entries()].reduce((a, b) => b[1] > a[1] ? b : a);
+
+    const teamInfo = await this.prisma.team.findUnique({
+        where: { id: topTeamId },
+    });
+
+    if (!teamInfo) return null;
+
+    return { ...teamInfo, wins: topWins };
+  }
+
   async create(createPlaygroundDto: CreatePlaygroundDto, creatorId: string): Promise<Playground> {
     return this.prisma.playground.create({
       data: {
@@ -20,11 +59,20 @@ export class PlaygroundsService {
     });
   }
 
-  async findAll(): Promise<Playground[]> {
-    return this.prisma.playground.findMany({
+  async findAll(): Promise<any[]> {
+    const playgrounds = await this.prisma.playground.findMany({
       where: { status: 'APPROVED' },
       include: { creator: { select: { name: true, avatar: true } } },
     });
+    
+    const playgroundsWithKings = await Promise.all(
+        playgrounds.map(async (p) => {
+            const king = await this._getKingOfTheCourt(p.id);
+            return { ...p, kingOfTheCourt: king };
+        })
+    );
+    
+    return playgroundsWithKings;
   }
 
   async findOne(id: string): Promise<any> {
@@ -50,7 +98,14 @@ export class PlaygroundsService {
     if (!playground) {
       throw new NotFoundException(`Playground with ID ${id} not found`);
     }
-    return playground;
+
+    const kingOfTheCourt = await this._getKingOfTheCourt(id);
+
+    return { ...playground, kingOfTheCourt };
+  }
+  
+  async getKingOfTheCourt(playgroundId: string): Promise<any | null> {
+    return this._getKingOfTheCourt(playgroundId);
   }
   
   async findAllForAdmin(): Promise<Playground[]> {

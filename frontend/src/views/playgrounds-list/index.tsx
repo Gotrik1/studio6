@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -7,9 +8,8 @@ import { PlaygroundCard } from '@/widgets/playground-card';
 import Link from 'next/link';
 import { Input } from '@/shared/ui/input';
 import { Card, CardHeader } from '@/shared/ui/card';
-import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
 import { getPlaygrounds } from '@/entities/playground/api/playgrounds';
-import type { Playground } from '@/entities/playground/model/types';
+import type { Playground, KingTeam } from '@/entities/playground/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useToast } from '@/shared/hooks/use-toast';
 
@@ -103,7 +103,7 @@ export function PlaygroundsListPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 opacity-0 animate-fade-in-up animation-delay-600">
                     {filteredPlaygrounds.map(playground => {
-                        const kingTeam = getKingOfTheCourt(playground.id);
+                        const kingTeam = playground.kingOfTheCourt;
                         const isLive = livePlaygrounds.has(playground.id);
                         return (
                              <PlaygroundCard 

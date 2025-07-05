@@ -1,23 +1,19 @@
 
-
 'use client';
 
-import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Button } from '@/shared/ui/button';
 import { Crown, Sword } from 'lucide-react';
 import Link from 'next/link';
-import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
-import type { Team } from '@/entities/team/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shared/ui/tooltip';
+import type { KingTeam } from '@/entities/playground/model/types';
 
 interface KingOfTheCourtWidgetProps {
-    playgroundId: string;
+    homeTeamData: KingTeam | null;
+    isLoading: boolean;
 }
-
-type KingTeam = Team & { wins: number };
 
 const getWinsText = (count: number): string => {
     const titles = ['победа', 'победы', 'побед'];
@@ -33,20 +29,7 @@ const getWinsText = (count: number): string => {
     return titles[cases[num % 10]];
 };
 
-export function KingOfTheCourtWidget({ playgroundId }: KingOfTheCourtWidgetProps) {
-    const [homeTeamData, setHomeTeamData] = useState<KingTeam | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchKing = async () => {
-            setIsLoading(true);
-            const king = await getKingOfTheCourt(playgroundId);
-            setHomeTeamData(king);
-            setIsLoading(false);
-        };
-        fetchKing();
-    }, [playgroundId]);
-
+export function KingOfTheCourtWidget({ homeTeamData, isLoading }: KingOfTheCourtWidgetProps) {
     if (isLoading) {
         return (
             <Card>
