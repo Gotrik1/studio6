@@ -48,7 +48,7 @@ export class LfgService {
         comment: lobby.comment,
         creator: {
             name: lobby.creator.name,
-            avatar: lobby.creator.avatar || 'https://placehold.co/100x100.png'
+            avatar: lobby.creator.avatar
         }
     }));
   }
