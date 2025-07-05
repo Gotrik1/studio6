@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,6 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
-import type { reportsQueue } from '@/shared/lib/mock-data/moderation';
 import { Separator } from "@/shared/ui/separator";
 import { Loader2, AlertCircle, Sparkles, MessageSquare, Clock, Flag, UserX } from "lucide-react";
 import { analyzeReport, type AnalyzeReportOutput } from '@/shared/api/genkit/flows/analyze-report-flow';
@@ -21,8 +20,8 @@ import { Badge } from '@/shared/ui/badge';
 import { cn } from '@/shared/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import type { Report } from '@/entities/report/model/types';
 
-type Report = (typeof reportsQueue)[0];
 
 interface ReportAnalysisDialogProps {
   isOpen: boolean;
@@ -88,10 +87,15 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
       }
   };
 
-  const onOpenChangeHandler = (open: boolean) => {
-    if (open && report) {
+  useEffect(() => {
+    if (isOpen && report) {
         handleAnalyzeReport();
-    } else {
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, report]);
+
+  const onOpenChangeHandler = (open: boolean) => {
+    if (!open) {
       setAiResult(null);
       setAiError(null);
     }
@@ -106,7 +110,7 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
         <DialogHeader>
           <DialogTitle>Разбор жалобы</DialogTitle>
           <DialogDescription>
-            Жалоба от <strong>{report.reportedBy.name}</strong> на <strong>{report.reportedUser.name}</strong>
+            Жалоба от <strong>{report.reporter.name}</strong> на <strong>{report.reportedUser.name}</strong>
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
@@ -117,7 +121,7 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
             <div className="space-y-1">
                 <h4 className="font-semibold text-sm flex items-center gap-2"><MessageSquare className="h-4 w-4"/>Контекст</h4>
                 <p className="text-sm p-2 bg-muted rounded-md whitespace-pre-wrap">{report.context}</p>
-                 <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" />{formatDistanceToNow(new Date(report.timestamp), { addSuffix: true, locale: ru })}</p>
+                 <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" />{formatDistanceToNow(new Date(report.createdAt), { addSuffix: true, locale: ru })}</p>
             </div>
             <div className="space-y-1">
                 <h4 className="font-semibold text-sm flex items-center gap-2"><UserX className="h-4 w-4"/>История нарушителя</h4>

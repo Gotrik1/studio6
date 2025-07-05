@@ -9,7 +9,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import { Users, Share2, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send, Image as ImageIcon, Sword, ListChecks } from "lucide-react";
+import { Users, Share2, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send, Image as ImageIcon, Sword, ListChecks, UserPlus } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -24,11 +24,11 @@ import Image from "next/image";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
-import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
 import { PlayerActivityFeed, type PlayerActivityItem } from '@/widgets/player-activity-feed';
 import type { UserTeam, CareerHistoryItem, GalleryItem, PlayerStats } from '@/entities/user/model/types';
 import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import { ProposeTrainingDialog } from '@/widgets/propose-training-dialog';
 
 
 const CareerTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/career-tab').then(mod => mod.CareerTab), {
@@ -85,7 +85,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
-  const [isProposeMatchDialogOpen, setIsProposeMatchDialogOpen] = useState(false);
+  const [isProposeTrainingOpen, setIsProposeTrainingOpen] = useState(false);
 
   return (
     <>
@@ -146,31 +146,34 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
                         </Link>
                         </div>
                     ) : (
-                        <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                            <MoreVertical className="h-5 w-5" />
-                            <span className="sr-only">Действия</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setIsProposeMatchDialogOpen(true)}>
-                                <Sword className="mr-2 h-4 w-4"/>
-                                Бросить вызов
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Share2 className="mr-2 h-4 w-4"/>
-                                Поделиться
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                                className="text-destructive"
-                                onClick={() => setIsReportDialogOpen(true)}
-                            >
-                                <Flag className="mr-2 h-4 w-4"/> Пожаловаться
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center gap-2">
+                            <Button><UserPlus className="mr-2 h-4 w-4"/> Добавить в друзья</Button>
+                             <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                    <MoreVertical className="h-5 w-5" />
+                                    <span className="sr-only">Действия</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => setIsProposeTrainingOpen(true)}>
+                                        <Sword className="mr-2 h-4 w-4"/>
+                                        Предложить тренировку
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Share2 className="mr-2 h-4 w-4"/>
+                                        Поделиться
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem 
+                                        className="text-destructive"
+                                        onClick={() => setIsReportDialogOpen(true)}
+                                    >
+                                        <Flag className="mr-2 h-4 w-4"/> Пожаловаться
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     )}
                 </div>
               </div>
@@ -309,12 +312,13 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
         <ReportPlayerDialog
             isOpen={isReportDialogOpen}
             onOpenChange={setIsReportDialogOpen}
+            reportedPlayerId={user.id}
             reportedPlayerName={user.name}
         />
-        <ProposeMatchDialog
-            isOpen={isProposeMatchDialogOpen}
-            onOpenChange={setIsProposeMatchDialogOpen}
-            challengedPlayerName={user.name}
+        <ProposeTrainingDialog
+            isOpen={isProposeTrainingOpen}
+            onOpenChange={setIsProposeTrainingOpen}
+            challengedPlayer={{id: user.id, name: user.name}}
         />
     </>
   );

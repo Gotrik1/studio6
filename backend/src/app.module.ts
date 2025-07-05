@@ -36,6 +36,7 @@ import { NutritionModule } from './modules/nutrition/nutrition.module';
 import { FaqModule } from './modules/faq/faq.module';
 import { TournamentAnnouncementsModule } from './modules/tournament-announcements/tournament-announcements.module';
 import { TournamentJudgesModule } from './modules/tournament-judges/tournament-judges.module';
+import { ReportsModule } from './modules/reports/reports.module';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { TournamentJudgesModule } from './modules/tournament-judges/tournament-j
     FaqModule,
     TournamentAnnouncementsModule,
     TournamentJudgesModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -16,11 +16,13 @@ import { Textarea } from '@/shared/ui/textarea';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Loader2, Flag } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
+import { createReport } from '@/entities/report/api/reports';
 
 interface ReportPlayerDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   reportedPlayerName: string;
+  reportedPlayerId: string;
 }
 
 const reportReasons = [
@@ -31,7 +33,7 @@ const reportReasons = [
     "Другое",
 ];
 
-export function ReportPlayerDialog({ isOpen, onOpenChange, reportedPlayerName }: ReportPlayerDialogProps) {
+export function ReportPlayerDialog({ isOpen, onOpenChange, reportedPlayerName, reportedPlayerId }: ReportPlayerDialogProps) {
   const { toast } = useToast();
   const [reason, setReason] = useState('');
   const [details, setDetails] = useState('');
@@ -48,19 +50,29 @@ export function ReportPlayerDialog({ isOpen, onOpenChange, reportedPlayerName }:
     }
 
     setIsSubmitting(true);
-    // Simulate API call to submit the report
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    toast({
-      title: 'Жалоба отправлена',
-      description: `Ваша жалоба на игрока ${reportedPlayerName} была отправлена на рассмотрение модераторам.`,
+    const result = await createReport({
+        reportedUserId: reportedPlayerId,
+        reason,
+        context: details,
     });
+    
+    if (result.success) {
+        toast({
+          title: 'Жалоба отправлена',
+          description: `Ваша жалоба на игрока ${reportedPlayerName} была отправлена на рассмотрение модераторам.`,
+        });
+        onOpenChange(false);
+        setReason('');
+        setDetails('');
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Ошибка',
+            description: result.error,
+        });
+    }
 
     setIsSubmitting(false);
-    onOpenChange(false);
-    // Reset state for next use
-    setReason('');
-    setDetails('');
   };
   
   const handleOpenChange = (open: boolean) => {

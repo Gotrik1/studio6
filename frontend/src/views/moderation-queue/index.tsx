@@ -1,38 +1,31 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { fetchMatches } from '@/entities/match/api/get-matches';
-import type { Match } from '@/entities/match/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { DisputeResolutionDialog } from '@/widgets/dispute-resolution-dialog';
-import { resolveDispute } from '@/entities/match/api/resolve-dispute';
-
-type DisputedMatch = Match & {
-    disputeReason: string;
-    timestamp: string;
-};
+import { ReportAnalysisDialog } from '@/widgets/report-analysis-dialog';
+import { getReports, resolveReport, type Report } from '@/entities/report/api/reports';
 
 export function ModerationQueuePage() {
     const { toast } = useToast();
-    const [disputedMatches, setDisputedMatches] = useState<DisputedMatch[]>([]);
+    const [reports, setReports] = useState<Report[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedMatch, setSelectedMatch] = useState<DisputedMatch | null>(null);
+    const [selectedReport, setSelectedReport] = useState<Report | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
-            const data = await fetchMatches('DISPUTED');
-            setDisputedMatches(data as DisputedMatch[]);
+            const data = await getReports('PENDING');
+            setReports(data);
         } catch (error) {
-            console.error('Failed to fetch disputed matches:', error);
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список споров.' });
+            console.error('Failed to fetch reports:', error);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список жалоб.' });
         } finally {
             setIsLoading(false);
         }
@@ -42,29 +35,26 @@ export function ModerationQueuePage() {
         fetchData();
     }, [fetchData]);
 
-    const handleReviewClick = (match: DisputedMatch) => {
-        setSelectedMatch(match);
+    const handleReviewClick = (report: Report) => {
+        setSelectedReport(report);
         setIsDialogOpen(true);
     };
 
-    const handleResolve = async (matchId: string, resolution: string) => {
-        const matchToResolve = disputedMatches.find(m => m.id === matchId);
-        if (!matchToResolve) return;
+    const handleResolve = async (reportId: string, action: string) => {
+        const reportToResolve = reports.find(r => r.id === reportId);
+        if (!reportToResolve) return;
 
-        // Simplified logic for winner/score for this implementation
-        const result = await resolveDispute(matchId, {
-            winnerId: matchToResolve.team1.id, // For demo, let's make team1 the winner
-            resolution,
-            score1: 1, // Mock score
-            score2: 0,
-        });
+        const status = action === 'Нет нарушений' ? 'DISMISSED' : 'RESOLVED';
+        const resolution = `Модератор принял решение: ${action}.`;
+        
+        const result = await resolveReport(reportId, resolution, status);
 
         if (result.success) {
             toast({
-                title: 'Спор разрешен!',
-                description: `Решение по матчу ${matchToResolve.team1.name} vs ${matchToResolve.team2.name} было принято.`
+                title: 'Жалоба рассмотрена!',
+                description: `Решение по жалобе на игрока ${reportToResolve.reportedUser.name} было принято.`
             });
-            fetchData();
+            await fetchData(); // Refetch data
             setIsDialogOpen(false);
         } else {
              toast({
@@ -74,25 +64,24 @@ export function ModerationQueuePage() {
             });
         }
     };
-
+    
     return (
         <>
             <div className="space-y-6 opacity-0 animate-fade-in-up">
                 <div className="space-y-2">
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">Очередь модерации споров</h1>
+                    <h1 className="font-headline text-3xl font-bold tracking-tight">Очередь модерации</h1>
                     <p className="text-muted-foreground">
-                        Спорные матчи, требующие вашего судейского решения.
+                        Жалобы от пользователей, требующие вашего внимания.
                     </p>
                 </div>
-
                 <Card>
                     <CardHeader>
-                        <CardTitle>Активные споры</CardTitle>
+                        <CardTitle>Активные жалобы</CardTitle>
                         <CardDescription>
                             {isLoading ? 'Загрузка...' : 
-                                disputedMatches.length > 0 
-                                ? `Всего споров в очереди: ${disputedMatches.length}` 
-                                : 'В очереди нет активных споров. Отличная работа!'}
+                                reports.length > 0 
+                                ? `Всего жалоб в очереди: ${reports.length}` 
+                                : 'В очереди нет активных жалоб. Отличная работа!'}
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -105,24 +94,26 @@ export function ModerationQueuePage() {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
-                                        <TableHead>Матч</TableHead>
-                                        <TableHead className="hidden md:table-cell">Причина спора</TableHead>
-                                        <TableHead className="hidden md:table-cell">Поступил</TableHead>
+                                        <TableHead>На кого</TableHead>
+                                        <TableHead>Кто</TableHead>
+                                        <TableHead className="hidden md:table-cell">Причина</TableHead>
+                                        <TableHead className="hidden md:table-cell">Поступила</TableHead>
                                         <TableHead className="text-right"></TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {disputedMatches.length > 0 ? disputedMatches.map(match => (
-                                        <TableRow key={match.id}>
-                                            <TableCell className="font-medium">{match.team1.name} vs {match.team2.name}</TableCell>
-                                            <TableCell className="hidden md:table-cell text-muted-foreground truncate max-w-sm">{match.disputeReason}</TableCell>
-                                            <TableCell className="hidden md:table-cell">{match.timestamp ? formatDistanceToNow(new Date(match.timestamp), { addSuffix: true, locale: ru }) : '-'}</TableCell>
+                                    {reports.length > 0 ? reports.map(report => (
+                                        <TableRow key={report.id}>
+                                            <TableCell className="font-medium">{report.reportedUser.name}</TableCell>
+                                            <TableCell className="text-muted-foreground">{report.reporter.name}</TableCell>
+                                            <TableCell className="hidden md:table-cell truncate max-w-sm">{report.reason}</TableCell>
+                                            <TableCell className="hidden md:table-cell">{formatDistanceToNow(new Date(report.createdAt), { addSuffix: true, locale: ru })}</TableCell>
                                             <TableCell className="text-right">
-                                                <Button size="sm" onClick={() => handleReviewClick(match)}>Рассмотреть</Button>
+                                                <Button size="sm" onClick={() => handleReviewClick(report)}>Рассмотреть</Button>
                                             </TableCell>
                                         </TableRow>
                                     )) : (
-                                        <TableRow><TableCell colSpan={4} className="h-24 text-center">Активных споров нет.</TableCell></TableRow>
+                                        <TableRow><TableCell colSpan={5} className="h-24 text-center">Активных жалоб нет.</TableCell></TableRow>
                                     )}
                                 </TableBody>
                             </Table>
@@ -131,10 +122,10 @@ export function ModerationQueuePage() {
                 </Card>
             </div>
 
-             <DisputeResolutionDialog 
+            <ReportAnalysisDialog 
                 isOpen={isDialogOpen}
                 onOpenChange={setIsDialogOpen}
-                match={selectedMatch}
+                report={selectedReport}
                 onResolve={handleResolve}
             />
         </>
