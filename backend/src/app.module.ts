@@ -40,6 +40,7 @@ import { MedicalPartnersModule } from './modules/medical-partners/medical-partne
 import { TournamentMedicalModule } from './modules/tournament-medical/tournament-medical.module';
 import { TournamentParticipantsModule } from './modules/tournament-participants/tournament-participants.module';
 import { TournamentSponsorsModule } from './modules/tournament-sponsors/tournament-sponsors.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
 
 @Module({
   imports: [
@@ -80,6 +81,7 @@ import { TournamentSponsorsModule } from './modules/tournament-sponsors/tourname
     TournamentMedicalModule,
     TournamentParticipantsModule,
     TournamentSponsorsModule,
+    ActivitiesModule,
   ],
   controllers: [AppController],
   providers: [

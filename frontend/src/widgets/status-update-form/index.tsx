@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -8,21 +7,36 @@ import { Textarea } from '@/shared/ui/textarea';
 import { useSession } from '@/shared/lib/session/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Send } from 'lucide-react';
+import { Send, Loader2 } from 'lucide-react';
+import { postStatus } from '@/entities/feed/api/feed';
 
 export function StatusUpdateForm() {
     const { user } = useSession();
     const { toast } = useToast();
     const [text, setText] = useState('');
+    const [isPosting, setIsPosting] = useState(false);
 
-    const handlePost = () => {
+    const handlePost = async () => {
         if (!text.trim()) return;
-        // In a real app, this would call an API
-        toast({
-            title: "Статус опубликован!",
-            description: "Ваш пост появится в ленте новостей.",
-        });
-        setText('');
+        setIsPosting(true);
+        
+        const result = await postStatus(text);
+
+        if (result.success) {
+            toast({
+                title: "Статус опубликован!",
+                description: "Ваш пост скоро появится в ленте новостей.",
+            });
+            setText('');
+        } else {
+             toast({
+                variant: 'destructive',
+                title: "Ошибка",
+                description: result.error || "Не удалось опубликовать статус.",
+            });
+        }
+
+        setIsPosting(false);
     };
 
     return (
@@ -38,10 +52,11 @@ export function StatusUpdateForm() {
                             placeholder="Что у вас нового?" 
                             value={text}
                             onChange={(e) => setText(e.target.value)}
+                            disabled={isPosting}
                         />
                         <div className="flex justify-end">
-                            <Button onClick={handlePost} size="sm">
-                                <Send className="mr-2 h-4 w-4" />
+                            <Button onClick={handlePost} size="sm" disabled={isPosting || !text.trim()}>
+                                {isPosting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                                 Опубликовать
                             </Button>
                         </div>
