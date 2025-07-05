@@ -1,31 +1,26 @@
+
 'use client';
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Progress } from '@/shared/ui/progress';
-import { PlusCircle, Backpack } from 'lucide-react';
-import { type InventoryItem } from '@/shared/lib/mock-data/inventory';
+import { PlusCircle, Backpack, Trash2 } from 'lucide-react';
+import { type InventoryItem } from '@/entities/inventory/model/types';
 import Image from 'next/image';
 import { differenceInMonths } from 'date-fns';
 import { AiEquipmentAdvisor } from '@/widgets/ai-equipment-advisor';
 import { AddItemDialog } from '@/widgets/add-item-dialog';
 import { useInventory } from '@/shared/context/inventory-provider';
+import { Skeleton } from '@/shared/ui/skeleton';
 
-const getWearPercentage = (purchaseDate: string, lifespanMonths: number) => {
-    const monthsUsed = differenceInMonths(new Date(), new Date(purchaseDate));
-    if (monthsUsed >= lifespanMonths) return 100;
-    if (monthsUsed <= 0) return 0;
-    return (monthsUsed / lifespanMonths) * 100;
-};
-
-function InventoryItemCard({ item }: { item: InventoryItem }) {
+function InventoryItemCard({ item, onDelete }: { item: InventoryItem; onDelete: (id: string) => void; }) {
     const wearPercentage = getWearPercentage(item.purchaseDate, item.lifespanMonths);
     
     return (
-        <Card>
+        <Card className="relative group">
             <CardHeader className="flex-row gap-4 items-start">
-                 <Image src={item.image} alt={item.name} width={64} height={64} className="rounded-lg border aspect-square object-cover" data-ai-hint={item.imageHint} />
+                 <Image src={item.image!} alt={item.name} width={64} height={64} className="rounded-lg border aspect-square object-cover" data-ai-hint={item.imageHint || ''} />
                  <div className="flex-1">
                     <CardTitle className="text-lg">{item.name}</CardTitle>
                     <CardDescription>{item.type}</CardDescription>
@@ -40,12 +35,27 @@ function InventoryItemCard({ item }: { item: InventoryItem }) {
                      <Progress value={wearPercentage} />
                 </div>
             </CardContent>
+             <Button 
+                variant="destructive" 
+                size="icon" 
+                className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={() => onDelete(item.id)}
+            >
+                <Trash2 className="h-4 w-4" />
+            </Button>
         </Card>
     );
 }
 
+const getWearPercentage = (purchaseDate: string, lifespanMonths: number) => {
+    const monthsUsed = differenceInMonths(new Date(), new Date(purchaseDate));
+    if (monthsUsed >= lifespanMonths) return 100;
+    if (monthsUsed <= 0) return 0;
+    return (monthsUsed / lifespanMonths) * 100;
+};
+
 export function InventoryPage() {
-    const { items, addManualItem } = useInventory();
+    const { items, addManualItem, deleteItem, isLoading } = useInventory();
     const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
     return (
@@ -69,10 +79,13 @@ export function InventoryPage() {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6 self-start">
-                         {items.length > 0 ? items.map(item => <InventoryItemCard key={item.id} item={item} />) : (
-                            <Card className="sm:col-span-2 flex items-center justify-center h-48">
-                                <p className="text-muted-foreground">Ваш инвентарь пуст. Добавьте первый предмет!</p>
-                            </Card>
+                        {isLoading && Array.from({length: 4}).map((_, i) => <Skeleton key={i} className="h-44 w-full" />)}
+                        {!isLoading && items.length > 0 ? items.map(item => <InventoryItemCard key={item.id} item={item} onDelete={deleteItem} />) : (
+                            !isLoading && (
+                                <Card className="sm:col-span-2 flex items-center justify-center h-48">
+                                    <p className="text-muted-foreground">Ваш инвентарь пуст. Добавьте первый предмет!</p>
+                                </Card>
+                            )
                         )}
                     </div>
                     <div className="lg:col-span-1">

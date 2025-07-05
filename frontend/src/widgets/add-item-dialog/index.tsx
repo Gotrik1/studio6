@@ -14,7 +14,7 @@ import { CalendarIcon, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from '@/shared/ui/dialog';
-import type { InventoryItem } from '@/shared/lib/mock-data/inventory';
+import type { InventoryItem } from '@/entities/inventory/model/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { useState } from 'react';
 
@@ -22,7 +22,7 @@ const itemSchema = z.object({
   name: z.string().min(3, 'Название должно быть не менее 3 символов.'),
   category: z.enum(['Обувь', 'Одежда', 'Аксессуары', 'Периферия']),
   type: z.string().min(3, 'Укажите тип предмета.'),
-  purchaseDate: z.date({ required_error: "Выберите дату покупки." }),
+  purchaseDate: z.date({ required_error: "Выберите дату." }),
   lifespanMonths: z.coerce.number().min(1, 'Срок службы должен быть не менее 1 месяца.'),
 });
 
@@ -31,7 +31,7 @@ type FormValues = z.infer<typeof itemSchema>;
 interface AddItemDialogProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
-    onAddItem: (data: Omit<InventoryItem, 'id' | 'image' | 'imageHint'>) => void;
+    onAddItem: (data: Omit<InventoryItem, 'id' | 'image' | 'imageHint' | 'purchaseDate'> & { purchaseDate: Date }) => Promise<void>;
 }
 
 export function AddItemDialog({ isOpen, onOpenChange, onAddItem }: AddItemDialogProps) {
@@ -46,19 +46,22 @@ export function AddItemDialog({ isOpen, onOpenChange, onAddItem }: AddItemDialog
         },
     });
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
-        // Simulate API call
-        setTimeout(() => {
-            onAddItem({ ...data, purchaseDate: format(data.purchaseDate, 'yyyy-MM-dd') });
+        try {
+            await onAddItem(data);
             toast({
                 title: "Предмет добавлен!",
                 description: `"${data.name}" был добавлен в ваш инвентарь.`,
             });
-            setIsSubmitting(false);
             onOpenChange(false);
             form.reset();
-        }, 1000);
+        } catch(e) {
+            console.error(e);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось добавить предмет.' });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (

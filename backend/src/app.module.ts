@@ -31,6 +31,8 @@ import { MeasurementsModule } from './modules/measurements/measurements.module';
 import { TrainingProposalsModule } from './modules/training-proposals/training-proposals.module';
 import { PollsModule } from './modules/polls/polls.module';
 import { QuestsModule } from './modules/quests/quests.module';
+import { InventoryModule } from './modules/inventory/inventory.module';
+import { NutritionModule } from './modules/nutrition/nutrition.module';
 
 @Module({
   imports: [
@@ -62,6 +64,8 @@ import { QuestsModule } from './modules/quests/quests.module';
     TrainingProposalsModule,
     PollsModule,
     QuestsModule,
+    InventoryModule,
+    NutritionModule,
   ],
   controllers: [AppController],
   providers: [
