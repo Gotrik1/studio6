@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Users, Trophy, Gavel, DollarSign } from 'lucide-react';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getUsers } from '@/entities/user/api/get-users';
-import { fetchTournaments } from '@/entities/tournament/api/get-tournaments';
-import { fetchMatches } from '@/entities/match/api/get-matches';
+import { getAdminDashboardStats } from '@/entities/admin/api/dashboard';
 
 
 const StatCard = ({ title, value, isLoading, icon: Icon }: { title: string; value: string; isLoading: boolean; icon: React.ElementType }) => (
@@ -26,31 +24,18 @@ export function AdminStatsCards() {
         totalUsers: 0,
         activeTournaments: 0,
         openTickets: 0,
-        monthlyRevenue: '$5,230' // Mock data
+        monthlyRevenue: '$0'
     });
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchStats = async () => {
             setIsLoading(true);
-            try {
-                const [users, tournaments, disputedMatches] = await Promise.all([
-                    getUsers(),
-                    fetchTournaments(),
-                    fetchMatches('DISPUTED')
-                ]);
-
-                const totalUsers = users.length;
-                const activeTournaments = tournaments.filter(t => t.status === 'Идет' || t.status === 'Регистрация').length;
-                const openTickets = disputedMatches.length;
-
-                setStats(prev => ({ ...prev, totalUsers, activeTournaments, openTickets }));
-
-            } catch (error) {
-                console.error("Failed to fetch admin stats:", error);
-            } finally {
-                setIsLoading(false);
+            const data = await getAdminDashboardStats();
+            if (data) {
+                setStats(data);
             }
+            setIsLoading(false);
         };
 
         fetchStats();
@@ -62,7 +47,7 @@ export function AdminStatsCards() {
             <StatCard title="Всего пользователей" value={String(stats.totalUsers)} isLoading={isLoading} icon={Users} />
             <StatCard title="Активные турниры" value={String(stats.activeTournaments)} isLoading={isLoading} icon={Trophy} />
             <StatCard title="Открытые жалобы" value={String(stats.openTickets)} isLoading={isLoading} icon={Gavel} />
-            <StatCard title="Доход (месяц)" value={stats.monthlyRevenue} isLoading={false} icon={DollarSign} />
+            <StatCard title="Доход (месяц)" value={stats.monthlyRevenue} isLoading={isLoading} icon={DollarSign} />
         </div>
     );
 }

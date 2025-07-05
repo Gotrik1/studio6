@@ -39,6 +39,10 @@ export class UsersService {
     return user;
   }
 
+  async count(): Promise<number> {
+    return this.prisma.user.count();
+  }
+
   async findAll(params?: { role?: string }): Promise<User[]> {
     const where: Prisma.UserWhereInput = {};
     if (params?.role) {

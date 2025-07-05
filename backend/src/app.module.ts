@@ -43,6 +43,7 @@ import { TournamentMedicalModule } from './modules/tournament-medical/tournament
 import { TournamentParticipantsModule } from './modules/tournament-participants/tournament-participants.module';
 import { TournamentSponsorsModule } from './modules/tournament-sponsors/tournament-sponsors.module';
 import { TeamApplicationsModule } from './modules/team-applications/team-applications.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { TeamApplicationsModule } from './modules/team-applications/team-applica
     ReportsModule,
     AchievementsModule,
     TeamApplicationsModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [
