@@ -1,7 +1,24 @@
 'use server';
 
-import type { PlayerScoutInput, PlayerScoutOutput } from './schemas/player-scout-schema';
-export type { PlayerScoutInput, PlayerScoutOutput };
+// Define types locally to decouple from the backend schema.
+// This establishes a clear API contract for the frontend.
+export type PlayerProfile = {
+  id: string;
+  name: string;
+  role: string;
+  avatar: string;
+  profileUrl: string;
+  statsSummary: string;
+};
+
+export type PlayerScoutInput = string;
+
+export type PlayerScoutOutput = {
+  recommendations: {
+    player: PlayerProfile;
+    reasoning: string;
+  }[];
+};
 
 export async function playerScout(input: PlayerScoutInput): Promise<PlayerScoutOutput> {
   const response = await fetch('/api/ai/player-scout', {
