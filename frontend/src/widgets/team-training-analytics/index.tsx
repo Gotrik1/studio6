@@ -27,35 +27,25 @@ interface TeamTrainingAnalyticsProps {
 }
 
 export function TeamTrainingAnalytics({ players }: TeamTrainingAnalyticsProps) {
-    // This data would be derived from the players' training logs in a real app
-    const teamTrainingAnalyticsData = players.map((p, index) => ({
-        playerId: p.id,
-        playerName: p.name,
-        avatar: p.avatar,
-        assignedProgram: index % 2 === 0 ? 'Классический 3-дневный сплит' : 'Женский сплит на ягодицы',
-        workoutsCompleted: Math.floor(Math.random() * 10) + 1,
-        workoutsTotal: 12,
-        adherence: Math.floor(Math.random() * 40) + 60, // 60-100%
-    }));
     
-    const overallAdherence = teamTrainingAnalyticsData.length > 0
-        ? teamTrainingAnalyticsData.reduce((acc, player) => acc + player.adherence, 0) / teamTrainingAnalyticsData.length
+    const overallAdherence = players.length > 0
+        ? players.reduce((acc, player) => acc + player.adherence, 0) / players.length
         : 0;
         
-    const mostDiligent = teamTrainingAnalyticsData.length > 0
-        ? teamTrainingAnalyticsData.reduce((prev, current) => (prev.adherence > current.adherence) ? prev : current)
+    const mostDiligent = players.length > 0
+        ? players.reduce((prev, current) => (prev.adherence > current.adherence) ? prev : current)
         : null;
 
-    const leastDiligent = teamTrainingAnalyticsData.length > 0
-        ? teamTrainingAnalyticsData.reduce((prev, current) => (prev.adherence < current.adherence) ? prev : current)
+    const leastDiligent = players.length > 0
+        ? players.reduce((prev, current) => (prev.adherence < current.adherence) ? prev : current)
         : null;
 
     return (
         <div className="space-y-6">
             <div className="grid gap-4 md:grid-cols-3">
                 <StatCard title="Общая посещаемость" value={`${overallAdherence.toFixed(0)}%`} icon={CheckCircle} description="Процент выполненых тренировок" />
-                <StatCard title="Самый усердный" value={mostDiligent?.playerName || '-'} icon={TrendingUp} description={mostDiligent ? `${mostDiligent.adherence}% посещаемости` : ''} />
-                <StatCard title="Нуждается во внимании" value={leastDiligent?.playerName || '-'} icon={TrendingDown} description={leastDiligent ? `${leastDiligent.adherence}% посещаемости` : ''} />
+                <StatCard title="Самый усердный" value={mostDiligent?.name || '-'} icon={TrendingUp} description={mostDiligent ? `${mostDiligent.adherence}% посещаемости` : ''} />
+                <StatCard title="Нуждается во внимании" value={leastDiligent?.name || '-'} icon={TrendingDown} description={leastDiligent ? `${leastDiligent.adherence}% посещаемости` : ''} />
             </div>
 
             <Card>
@@ -73,18 +63,18 @@ export function TeamTrainingAnalytics({ players }: TeamTrainingAnalyticsProps) {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {teamTrainingAnalyticsData.map(player => (
-                                <TableRow key={player.playerId}>
+                            {players.map(player => (
+                                <TableRow key={player.id}>
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <Avatar className="h-9 w-9">
-                                                <AvatarImage src={player.avatar || ''} alt={player.playerName} />
-                                                <AvatarFallback>{player.playerName.charAt(0)}</AvatarFallback>
+                                                <AvatarImage src={player.avatar || ''} alt={player.name} />
+                                                <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                                             </Avatar>
-                                            <span className="font-medium">{player.playerName}</span>
+                                            <span className="font-medium">{player.name}</span>
                                         </div>
                                     </TableCell>
-                                    <TableCell>{player.assignedProgram}</TableCell>
+                                    <TableCell>Классический 3-дневный сплит</TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2">
                                             <Progress value={player.adherence} className="w-24 h-2" />

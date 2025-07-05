@@ -68,6 +68,8 @@ export type CoachedPlayer = {
     role: string;
     stats: { kda: string; winRate: string; favoriteMap: string };
     matchHistory: string;
+    adherence: number;
+    progress: number;
 };
 
 export type JudgedMatch = {
