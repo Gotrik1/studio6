@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
-import type { Playground } from '@/entities/playground/model/types';
+import type { Playground, PlaygroundReview } from '@/entities/playground/model/types';
 import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -25,17 +25,16 @@ import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
 import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
-import { getReviews, createReview } from '@/entities/playground/api/reviews';
-import type { PlaygroundReview } from '@/entities/playground/model/types';
+import { createReview } from '@/entities/playground/api/reviews';
+import { useRouter } from 'next/navigation';
 
 
 export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
+    const router = useRouter();
     const [activities, setActivities] = useState<PlaygroundActivity[]>([]);
     const [isLoadingActivities, setIsLoadingActivities] = useState(true);
-    const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
-    const [isLoadingReviews, setIsLoadingReviews] = useState(true);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [latestIssueReport, setLatestIssueReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
@@ -67,23 +66,9 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         }
     }, [playground.id, toast]);
     
-    const loadReviews = useCallback(async () => {
-        setIsLoadingReviews(true);
-        try {
-            const reviewsData = await getReviews(playground.id);
-            setReviews(reviewsData);
-        } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить отзывы.' });
-        } finally {
-            setIsLoadingReviews(false);
-        }
-    }, [playground.id, toast]);
-
     useEffect(() => {
         loadActivities();
-        loadReviews();
-    }, [loadActivities, loadReviews]);
+    }, [loadActivities]);
 
     const handleCheckIn = async (comment: string, photo?: string) => {
         if (!user) return;
@@ -108,7 +93,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         const result = await createReview(playground.id, reviewData);
         if (result.success) {
             toast({ title: 'Спасибо за ваш отзыв!', description: 'Ваш отзыв был опубликован.' });
-            await loadReviews();
+            router.refresh();
         } else {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось опубликовать отзыв.' });
         }
@@ -216,7 +201,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                         <PlaygroundScheduleTab schedule={lobbies.filter(l => l.playgroundId === playground.id)} onPlanClick={openPlanGameDialog} />
                     </TabsContent>
                     <TabsContent value="reviews" className="mt-6">
-                        <PlaygroundReviewsTab reviews={reviews} onAddReview={handleAddReview} playgroundName={playground.name} isLoading={isLoadingReviews} />
+                        <PlaygroundReviewsTab reviews={playground.reviews} onAddReview={handleAddReview} playgroundName={playground.name} />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-6">
                         <PlaygroundActivityTab activities={activities} isLoading={isLoadingActivities} />

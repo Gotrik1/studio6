@@ -27,10 +27,25 @@ export class PlaygroundsService {
     });
   }
 
-  async findOne(id: string): Promise<Playground> {
+  async findOne(id: string): Promise<any> {
     const playground = await this.prisma.playground.findUnique({
       where: { id },
-      include: { creator: { select: { name: true, avatar: true } } },
+      include: { 
+          creator: { select: { name: true, avatar: true } },
+          reviews: {
+              include: {
+                  author: {
+                      select: {
+                          id: true,
+                          name: true,
+                          avatar: true,
+                      }
+                  }
+              },
+              orderBy: { createdAt: 'desc' },
+              take: 10,
+          }
+      },
     });
     if (!playground) {
       throw new NotFoundException(`Playground with ID ${id} not found`);
