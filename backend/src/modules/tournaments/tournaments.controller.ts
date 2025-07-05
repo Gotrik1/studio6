@@ -4,11 +4,12 @@ import { TournamentsService } from './tournaments.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { RegisterTeamDto } from './dto/register-team.dto';
-import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { Public } from '../auth/decorators/public.decorator';
 import { MatchStatus } from '@prisma/client';
+import { TournamentCrmDto } from './dto/tournament-crm.dto';
 
 @ApiTags('Tournaments')
 @Controller('tournaments')
@@ -46,7 +47,8 @@ export class TournamentsController {
   @Get('crm')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  findAllForCrm() {
+  @ApiResponse({ status: 200, description: 'Список турниров для CRM.', type: [TournamentCrmDto] })
+  findAllForCrm(): Promise<TournamentCrmDto[]> {
     return this.tournamentsService.findAllForCrm();
   }
 

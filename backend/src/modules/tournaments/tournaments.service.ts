@@ -10,6 +10,7 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Tournament, ActivityType, Prisma } from '@prisma/client';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { TournamentCrmDto } from './dto/tournament-crm.dto';
 
 @Injectable()
 export class TournamentsService {
@@ -155,7 +156,7 @@ export class TournamentsService {
     });
   }
   
-  async findAllForCrm(): Promise<any[]> {
+  async findAllForCrm(): Promise<TournamentCrmDto[]> {
     const tournaments = await this.prisma.tournament.findMany({
        include: {
         _count: { select: { teams: true } },
