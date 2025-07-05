@@ -323,12 +323,6 @@ export class AiController {
     return this.aiService.generatePostImage(generatePostImageDto.prompt);
   }
 
-  @Post('generate-match-post')
-  @HttpCode(HttpStatus.OK)
-  async generateMatchPost(@Body() generateMatchPostDto: GenerateMatchPostDto): Promise<GenerateMatchPostOutput> {
-    return this.aiService.generateMatchPost(generateMatchPostDto);
-  }
-
   @Post('generate-sport-summary')
   @HttpCode(HttpStatus.OK)
   async generateSportSummary(@Body() generateSportSummaryDto: GenerateSportSummaryDto): Promise<GenerateSportSummaryOutput> {
@@ -437,6 +431,12 @@ export class AiController {
     @Body() generateMatchInterviewDto: GenerateMatchInterviewDto,
   ): Promise<GenerateMatchInterviewOutput> {
     return this.aiService.generateMatchInterview(generateMatchInterviewDto);
+  }
+
+  @Post('generate-match-post')
+  @HttpCode(HttpStatus.OK)
+  async generateMatchPost(@Body() generateMatchPostDto: GenerateMatchPostDto): Promise<GenerateMatchPostOutput> {
+    return this.aiService.generateMatchPost(generateMatchPostDto);
   }
 
   @Post('analyze-holistic-performance')

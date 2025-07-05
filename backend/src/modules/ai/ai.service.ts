@@ -176,10 +176,6 @@ export class AiService {
     return generatePostImage_Backend(prompt);
   }
 
-  async generateMatchPost(input: GenerateMatchPostInput): Promise<GenerateMatchPostOutput> {
-    return generateMatchPost(input);
-  }
-
   async generateSportSummary(input: GenerateSportSummaryInput): Promise<GenerateSportSummaryOutput> {
     return generateSportSummary(input);
   }
@@ -234,6 +230,10 @@ export class AiService {
 
   async generateMatchInterview(input: GenerateMatchInterviewInput): Promise<GenerateMatchInterviewOutput> {
     return generateMatchInterview(input);
+  }
+
+  async generateMatchPost(input: GenerateMatchPostInput): Promise<GenerateMatchPostOutput> {
+    return generateMatchPost(input);
   }
 
   async analyzeHolisticPerformance(input: AnalyzeHolisticPerformanceInput): Promise<AnalyzeHolisticPerformanceOutput> {
