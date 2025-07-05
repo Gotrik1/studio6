@@ -3,28 +3,10 @@
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm, CoachedPlayer, JudgedMatch } from '@/entities/user/model/types';
+import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm, CoachedPlayer, JudgedMatch, FullUserProfile } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
-// Define the rich user profile type that the frontend expects
-export type FullUserProfile = User & {
-    location: string;
-    mainSport: string;
-    isVerified: boolean;
-    dateOfBirth: string;
-    age: number;
-    preferredSports: string[];
-    contacts: { telegram: string; discord: string };
-    activities: PlayerActivityItem[];
-    teams: UserTeam[];
-    gallery: GalleryItem[];
-    careerHistory: CareerHistoryItem[];
-    organizedTournaments?: TournamentCrm[];
-    coaching?: CoachedPlayer[]; // A coach has players they are coaching
-    judgedMatches?: JudgedMatch[];
-};
-
-// This is the type for the full page props
+// This is the type for the full page props, now simplified
 export type PlayerProfileData = {
     user: FullUserProfile;
 };
@@ -44,12 +26,11 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
         // Adapter for user data to ensure consistency between frontend and backend
         const profileData = {
             ...rawProfile,
-            id: String(rawProfile.id), // Ensure ID is a string
-            name: rawProfile.fullName || rawProfile.name, // Adapt name
-            avatar: rawProfile.avatarUrl || rawProfile.avatar, // Adapt avatar
+            id: String(rawProfile.id),
+            name: rawProfile.fullName || rawProfile.name,
+            avatar: rawProfile.avatarUrl || rawProfile.avatar,
         };
         
-        // Transform backend activities to frontend format
         const playerActivity: PlayerActivityItem[] = (profileData.activities || []).map((activity: any) => {
             const metadata = activity.metadata as any;
             let text = `Неизвестное событие`;
@@ -71,9 +52,35 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
             }
         }).filter((item: any): item is PlayerActivityItem => item !== null);
         
+        // Adapt nested coaching data
+        const coachedPlayers = (rawProfile.coaching || []).map((player: any) => ({
+            id: String(player.id),
+            name: player.fullName || player.name,
+            avatar: player.avatarUrl || player.avatar || null,
+            role: player.role,
+            mainSport: player.mainSport,
+        }));
+
         const augmentedProfile: FullUserProfile = {
             ...profileData,
             activities: playerActivity,
+            coaching: coachedPlayers, // Use adapted data
+            // Also adapt other nested arrays for consistency
+            teams: (rawProfile.teamsAsMember || []).map((team: any) => ({
+                ...team,
+                id: String(team.id),
+                logo: team.logoUrl || team.logo || null,
+            })),
+            judgedMatches: (rawProfile.judgedMatches || []).map((match: any) => ({
+                ...match,
+                id: String(match.id),
+                team1: { name: match.team1.name },
+                team2: { name: match.team2.name },
+            })),
+            organizedTournaments: (rawProfile.organizedTournaments || []).map((t: any) => ({
+                ...t,
+                id: String(t.id),
+            }))
         };
 
         return {
