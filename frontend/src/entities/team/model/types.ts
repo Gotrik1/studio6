@@ -2,8 +2,8 @@
 export type Team = {
     name: string;
     motto: string;
-    logo: string;
-    dataAiHint: string;
+    logo: string | null;
+    dataAiHint: string | null;
     game: string;
     rank: number;
     members: number;
@@ -15,7 +15,7 @@ export type Team = {
 export type TeamRosterMember = {
     id: string;
     name: string;
-    avatar: string;
+    avatar: string | null;
     role: string;
     rating: string;
     status: string;
@@ -25,8 +25,8 @@ export type TeamDetails = {
     id: string;
     name: string;
     motto: string;
-    logo: string;
-    dataAiHint: string;
+    logo: string | null;
+    dataAiHint: string | null;
     game: string;
     rank: number;
     membersCount: number;

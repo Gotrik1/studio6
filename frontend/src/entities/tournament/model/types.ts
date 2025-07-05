@@ -1,15 +1,14 @@
 
-import type { allTournaments } from '@/shared/lib/mock-data/tournaments';
 
 type Team = {
   name: string;
-  logo: string;
-  dataAiHint?: string;
+  logo: string | null;
+  dataAiHint?: string | null;
   slug?: string;
 };
 
 type BracketMatch = {
-  id: number;
+  id: number | string;
   team1?: Team;
   team2?: Team;
   score?: string;
@@ -25,6 +24,7 @@ type BracketRound = {
 };
 
 export type TournamentDetails = {
+    id: string;
     name: string;
     slug: string;
     game: string;
@@ -34,7 +34,7 @@ export type TournamentDetails = {
     description: string;
     prizePool: string;
     teamsCount: number;
-    organizer: { name: string, logo: string };
+    organizer: { name: string, logo: string | null };
     schedule: {
         registration: string;
         groupStage: string;
@@ -49,4 +49,14 @@ export type TournamentDetails = {
     media: { type: string, src: string, hint: string }[];
 };
 
-export type Tournament = (typeof allTournaments)[0];
+export type Tournament = {
+  id: string;
+  name: string;
+  game: string;
+  prize: string;
+  status: string;
+  date: string;
+  image: string;
+  dataAiHint: string;
+  slug: string;
+};

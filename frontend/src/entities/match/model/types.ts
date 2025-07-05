@@ -8,8 +8,8 @@ export type MatchDetails = {
     time: string;
     location: string;
     referee: { name: string };
-    team1: { name: string; logo: string; logoHint: string; };
-    team2: { name: string; logo: string; logoHint: string; };
+    team1: { name: string; logo: string | null; logoHint: string | null; };
+    team2: { name: string; logo: string | null; logoHint: string | null; };
     lineups: {
         team1: { name: string; role: string; avatar: string; avatarHint: string; }[];
         team2: { name:string; role: string; avatar: string; avatarHint: string; }[];
