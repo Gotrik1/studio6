@@ -138,7 +138,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
 
                 <TabsContent value="disputes" className="mt-4">
-                    <CrmTournamentDisputes />
+                    <CrmTournamentDisputes tournamentId={tournament.id} />
                 </TabsContent>
 
                 <TabsContent value="bracket" className="mt-4">

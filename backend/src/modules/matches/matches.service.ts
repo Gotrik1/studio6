@@ -30,10 +30,13 @@ export class MatchesService {
     });
   }
 
-  async findAll(params?: { status?: MatchStatus }): Promise<any[]> {
+  async findAll(params?: { status?: MatchStatus; tournamentId?: string }): Promise<any[]> {
     const where: Prisma.MatchWhereInput = {};
     if (params?.status) {
       where.status = params.status;
+    }
+    if (params?.tournamentId) {
+      where.tournamentId = params.tournamentId;
     }
 
     const matches = await this.prisma.match.findMany({
