@@ -1,8 +1,8 @@
 'use client';
 
-import { Card, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/shared/ui/card";
 import Link from "next/link";
-import { managementCards, profileCards, contentCards, systemCards } from '@/shared/lib/mock-data/admin-dashboard';
+import { managementCards, profileCards, contentCards, systemCards } from '@/widgets/file-tree';
 import { AdminStatsCards } from "@/widgets/admin-stats-cards";
 
 type AdminSectionCardProps = {
