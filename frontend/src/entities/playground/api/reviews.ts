@@ -1,8 +1,14 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 import type { PlaygroundReview } from '../model/types';
+
+export type CreateReviewData = {
+    rating: number;
+    comment: string;
+};
 
 export async function getReviews(playgroundId: string) {
   const result = await fetchWithAuth(`/playgrounds/${playgroundId}/reviews`, {
@@ -30,13 +36,14 @@ export async function getReviews(playgroundId: string) {
   return { success: true, data: formattedData };
 }
 
-export async function createReview(playgroundId: string, data: { rating: number, comment: string }) {
+export async function createReview(playgroundId: string, data: CreateReviewData) {
   const result = await fetchWithAuth(`/playgrounds/${playgroundId}/reviews`, {
     method: 'POST',
     body: JSON.stringify(data),
   });
   if (result.success) {
     revalidateTag(`playground-${playgroundId}`);
+    revalidateTag(`reviews-${playgroundId}`); // Also revalidate the reviews list
   }
   return result;
 }

@@ -8,13 +8,13 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Loader2, Star, Send } from 'lucide-react';
-import type { PlaygroundReview } from '@/entities/playground/model/types';
 import { cn } from '@/shared/lib/utils';
+import type { CreateReviewData } from '@/entities/playground/api/reviews';
 
 interface PlaygroundReviewDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onAddReview: (review: { rating: number, comment: string }) => Promise<void>;
+  onAddReview: (review: CreateReviewData) => Promise<void>;
   playgroundName: string;
 }
 
