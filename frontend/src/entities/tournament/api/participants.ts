@@ -1,12 +1,37 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 
+// Adapter to transform a raw team object from the backend
+const adaptParticipantTeam = (team: any) => {
+    if (!team) return null;
+    return {
+        ...team,
+        id: String(team.id),
+        captain: team.captain ? { ...team.captain, id: String(team.captain.id) } : null,
+        members: (team.members || []).map((member: any) => ({
+            ...member,
+            id: String(member.id),
+            avatar: member.avatar || null,
+        })),
+    };
+};
+
 export async function getTournamentApplications(tournamentId: string) {
     const result = await fetchWithAuth(`/tournaments/${tournamentId}/applications`, {
         next: { tags: [`applications-${tournamentId}`] }
     });
+    
+    if (result.success && Array.isArray(result.data)) {
+        result.data = result.data.map((app: any) => ({
+            ...app,
+            id: String(app.id),
+            team: adaptParticipantTeam(app.team),
+        }));
+    }
+
     return result;
 }
 
@@ -14,6 +39,11 @@ export async function getTournamentParticipants(tournamentId: string) {
     const result = await fetchWithAuth(`/tournaments/${tournamentId}/participants`, {
         next: { tags: [`participants-${tournamentId}`] }
     });
+
+    if (result.success && Array.isArray(result.data)) {
+        result.data = result.data.map(adaptParticipantTeam);
+    }
+    
     return result;
 }
 
@@ -41,13 +71,13 @@ export async function rejectApplication(tournamentId: string, applicationId: str
 }
 
 export async function removeParticipant(tournamentId: string, teamId: string) {
-    const result = await fetchWithAuth(`/tournaments/${tournamentId}/participants/${teamId}`, {
-        method: 'DELETE',
-    });
-    if (result.success) {
-        revalidateTag(`participants-${tournamentId}`);
-        // Optionally, revalidate applications if removing a team makes them eligible again
-        revalidateTag(`applications-${tournamentId}`);
-    }
-    return result;
+      const result = await fetchWithAuth(`/tournaments/${tournamentId}/participants/${teamId}`, {
+          method: 'DELETE',
+      });
+      if (result.success) {
+          revalidateTag(`participants-${tournamentId}`);
+          // Optionally, revalidate applications if removing a team makes them eligible again
+          revalidateTag(`applications-${tournamentId}`);
+      }
+      return result;
 }
