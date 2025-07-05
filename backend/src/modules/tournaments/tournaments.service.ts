@@ -297,7 +297,7 @@ export class TournamentsService {
       teamsCount: tournament.teams.length,
       organizer: { 
           name: tournament.organizer.name, 
-          logo: tournament.organizer.avatar || 'https://placehold.co/40x40.png' 
+          avatar: tournament.organizer.avatar || 'https://placehold.co/40x40.png' 
       },
       schedule,
       teams: tournament.teams,

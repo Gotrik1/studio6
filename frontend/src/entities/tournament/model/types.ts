@@ -38,7 +38,7 @@ export type TournamentDetails = {
     description: string;
     prizePool: string;
     teamsCount: number;
-    organizer: { name: string, logo: string | null };
+    organizer: { name: string, avatar: string | null };
     schedule: {
         registration: string;
         groupStage: string;

@@ -94,7 +94,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                             <Card>
                                 <CardHeader><CardTitle>Организатор</CardTitle></CardHeader>
                                 <CardContent className="flex items-center gap-3">
-                                    <Avatar><AvatarImage src={tournament.organizer.logo || ''} /></Avatar>
+                                    <Avatar><AvatarImage src={tournament.organizer.avatar || ''} /></Avatar>
                                     <p className="font-semibold">{tournament.organizer.name}</p>
                                 </CardContent>
                                 <CardContent><Button className="w-full">Связаться</Button></CardContent>
