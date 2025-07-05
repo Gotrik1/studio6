@@ -1,17 +1,22 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Button } from '@/shared/ui/button';
 import { Crown, Sword } from 'lucide-react';
 import Link from 'next/link';
 import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
+import type { Team } from '@/entities/team/model/types';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shared/ui/tooltip';
 
 interface KingOfTheCourtWidgetProps {
     playgroundId: string;
 }
+
+type KingTeam = Team & { wins: number };
 
 const getWinsText = (count: number): string => {
     const titles = ['победа', 'победы', 'побед'];
@@ -28,7 +33,38 @@ const getWinsText = (count: number): string => {
 };
 
 export function KingOfTheCourtWidget({ playgroundId }: KingOfTheCourtWidgetProps) {
-    const homeTeamData = useMemo(() => getKingOfTheCourt(playgroundId), [playgroundId]);
+    const [homeTeamData, setHomeTeamData] = useState<KingTeam | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchKing = async () => {
+            setIsLoading(true);
+            const king = await getKingOfTheCourt(playgroundId);
+            setHomeTeamData(king);
+            setIsLoading(false);
+        };
+        fetchKing();
+    }, [playgroundId]);
+
+    if (isLoading) {
+        return (
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-6 w-3/4" />
+                </CardHeader>
+                <CardContent className="flex flex-col items-center gap-4 text-center">
+                    <Skeleton className="h-20 w-20 rounded-full" />
+                    <div className="space-y-2">
+                        <Skeleton className="h-6 w-32" />
+                        <Skeleton className="h-4 w-24" />
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Skeleton className="h-10 w-full" />
+                </CardFooter>
+            </Card>
+        )
+    }
 
     if (!homeTeamData) {
         return (
@@ -55,10 +91,19 @@ export function KingOfTheCourtWidget({ playgroundId }: KingOfTheCourtWidgetProps
             </CardHeader>
             <CardContent className="flex flex-col items-center gap-4 text-center">
                  <Link href={`/teams/${homeTeamData.slug}`} className="block">
-                    <Avatar className="h-20 w-20 border-4 border-amber-400">
-                        <AvatarImage src={homeTeamData.logo} alt={homeTeamData.name} data-ai-hint={homeTeamData.dataAiHint} />
-                        <AvatarFallback className="text-2xl">{homeTeamData.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
+                    <TooltipProvider>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Avatar className="h-20 w-20 border-4 border-amber-400">
+                                    <AvatarImage src={homeTeamData.logo} alt={homeTeamData.name} data-ai-hint={homeTeamData.dataAiHint} />
+                                    <AvatarFallback className="text-2xl">{homeTeamData.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Перейти в профиль команды</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                  </Link>
                  <div>
                     <Link href={`/teams/${homeTeamData.slug}`} className="block">

@@ -1,4 +1,3 @@
-
 'use server';
 
 import type { Team } from '@/entities/team/model/types';
