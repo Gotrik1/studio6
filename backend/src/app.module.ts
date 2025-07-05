@@ -33,6 +33,7 @@ import { PollsModule } from './modules/polls/polls.module';
 import { QuestsModule } from './modules/quests/quests.module';
 import { InventoryModule } from './modules/inventory/inventory.module';
 import { NutritionModule } from './modules/nutrition/nutrition.module';
+import { FaqModule } from './modules/faq/faq.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { NutritionModule } from './modules/nutrition/nutrition.module';
     QuestsModule,
     InventoryModule,
     NutritionModule,
+    FaqModule,
   ],
   controllers: [AppController],
   providers: [
