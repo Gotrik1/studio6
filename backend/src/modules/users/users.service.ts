@@ -184,30 +184,77 @@ export class UsersService {
   }
   
   async getStatsForUser(userId: string): Promise<PlayerStatsDto> {
-    // In a real app, this would be calculated from matches, etc.
-    // For now, we return mock data to fulfill the API contract.
+    const userWithTeams = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { teamsAsMember: { select: { id: true } } },
+    });
+
+    if (!userWithTeams || userWithTeams.teamsAsMember.length === 0) {
+        // Return default/empty stats if user has no teams
+        return {
+            winLossData: { wins: 0, losses: 0 },
+            kdaByMonthData: [],
+            winrateByMapData: [],
+            summary: { matches: 0, winrate: 0, winStreak: 0, kda: 0 },
+        };
+    }
+
+    const teamIds = userWithTeams.teamsAsMember.map(t => t.id);
+
+    const matches = await this.prisma.match.findMany({
+        where: {
+            status: 'FINISHED',
+            OR: [
+                { team1Id: { in: teamIds } },
+                { team2Id: { in: teamIds } },
+            ]
+        },
+        orderBy: { finishedAt: 'desc' },
+    });
+
+    let wins = 0;
+    let losses = 0;
+    let winStreak = 0;
+    let streakBroken = false;
+
+    for (const match of matches) {
+        if (match.team1Score === null || match.team2Score === null) continue;
+        
+        const isTeam1 = teamIds.includes(match.team1Id);
+        
+        const userTeamScore = isTeam1 ? match.team1Score : match.team2Score;
+        const opponentScore = isTeam1 ? match.team2Score : match.team1Score;
+
+        if (userTeamScore > opponentScore) {
+            wins++;
+            if (!streakBroken) {
+                winStreak++;
+            }
+        } else if (userTeamScore < opponentScore) {
+            losses++;
+            streakBroken = true;
+        }
+    }
+    
+    const totalMatches = wins + losses;
+    const winrate = totalMatches > 0 ? (wins / totalMatches) * 100 : 0;
+
     return {
-        winLossData: { wins: 45, losses: 20 },
+        winLossData: { wins, losses },
+        // KDA and Map data remain mocked as we don't store that level of detail yet
         kdaByMonthData: [
-            { month: 'Янв', kda: 1.2 },
-            { month: 'Фев', kda: 1.3 },
-            { month: 'Мар', kda: 1.1 },
-            { month: 'Апр', kda: 1.4 },
-            { month: 'Май', kda: 1.5 },
-            { month: 'Июн', kda: 1.25 },
+            { month: 'Янв', kda: 1.2 }, { month: 'Фев', kda: 1.3 }, { month: 'Мар', kda: 1.1 },
+            { month: 'Апр', kda: 1.4 }, { month: 'Май', kda: 1.5 }, { month: 'Июн', kda: 1.25 },
         ],
         winrateByMapData: [
-            { map: 'Ascent', winrate: 65 },
-            { map: 'Bind', winrate: 72 },
-            { map: 'Split', winrate: 58 },
-            { map: 'Haven', winrate: 81 },
-            { map: 'Icebox', winrate: 52 },
+            { map: 'Ascent', winrate: 65 }, { map: 'Bind', winrate: 72 }, { map: 'Split', winrate: 58 },
+            { map: 'Haven', winrate: 81 }, { map: 'Icebox', winrate: 52 },
         ],
         summary: {
-            matches: 65,
-            winrate: 69.2,
-            winStreak: 5,
-            kda: 1.25,
+            matches: totalMatches,
+            winrate: parseFloat(winrate.toFixed(1)),
+            winStreak,
+            kda: 1.25, // Mock KDA
         }
     };
   }
