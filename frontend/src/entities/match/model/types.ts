@@ -1,4 +1,5 @@
 
+
 export type MatchDetails = {
     id: string;
     tournament: string;
@@ -24,8 +25,8 @@ export type MatchDetails = {
 
 export type Match = {
     id: string;
-    team1: { name: string; logo: string; logoHint: string; };
-    team2: { name: string; logo: string; logoHint: string; };
+    team1: { id: string; name: string; logo: string; logoHint: string; };
+    team2: { id: string; name: string; logo: string; logoHint: string; };
     score: string;
     tournament: string;
     game: string;
@@ -33,4 +34,7 @@ export type Match = {
     status: string;
     href: string;
     playgroundId?: string | null;
+    disputeReason?: string;
+    timestamp?: string;
+    resolution?: string;
 };

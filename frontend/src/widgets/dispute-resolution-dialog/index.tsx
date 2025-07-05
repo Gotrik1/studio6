@@ -12,14 +12,22 @@ import {
   DialogTitle,
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
-import type { disputedMatches } from "@/shared/lib/mock-data/judge-center";
-import { Avatar, AvatarImage } from "@/shared/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Separator } from "@/shared/ui/separator";
 import { ImageIcon, MessageSquare, Shield, BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { analyzeDispute, type AnalyzeDisputeOutput } from '@/shared/api/genkit/flows/analyze-dispute-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
+import { Badge } from '@/shared/ui/badge';
+import { cn } from '@/shared/lib/utils';
+import { formatDistanceToNow } from 'date-fns';
+import { ru } from 'date-fns/locale';
+import type { Match } from '@/entities/match/model/types';
 
-type DisputedMatch = (typeof disputedMatches)[0];
+
+type DisputedMatch = Match & {
+    disputeReason: string;
+    timestamp?: string;
+};
 
 interface DisputeResolutionDialogProps {
   isOpen: boolean;
@@ -27,6 +35,34 @@ interface DisputeResolutionDialogProps {
   match: DisputedMatch | null;
   onResolve: (matchId: string, resolution: string) => void;
 }
+
+const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
+    switch(confidence) {
+        case 'high': return 'text-green-500';
+        case 'medium': return 'text-yellow-500';
+        case 'low': return 'text-orange-500';
+    }
+};
+
+const getRecommendationText = (rec?: AnalyzeDisputeOutput['recommendation']) => {
+    switch (rec) {
+        case 'warning': return 'Выдать предупреждение';
+        case 'temp_ban': return 'Временный бан';
+        case 'perm_ban': return 'Постоянный бан';
+        case 'no_action': return 'Нет нарушений';
+        default: return rec || '...';
+    }
+};
+
+const getRecommendationVariant = (rec?: AnalyzeDisputeOutput['recommendation']): "destructive" | "secondary" | "default" | "outline" | null | undefined => {
+    switch (rec) {
+        case 'perm_ban': return 'destructive';
+        case 'temp_ban': return 'destructive';
+        case 'warning': return 'secondary';
+        default: return 'outline';
+    }
+};
+
 
 export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve }: DisputeResolutionDialogProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -49,7 +85,7 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
           const result = await analyzeDispute({
               team1Name: match.team1.name,
               team2Name: match.team2.name,
-              disputeReason: match.reason,
+              disputeReason: match.disputeReason,
               ...mockEvidence,
           });
           setAiResult(result);
@@ -90,7 +126,8 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
         <div className="py-4 space-y-6">
             <div>
                 <h4 className="font-semibold text-sm mb-2">Причина спора</h4>
-                <p className="text-sm p-3 bg-muted rounded-md">{match.reason}</p>
+                <p className="text-sm p-3 bg-muted rounded-md">{match.disputeReason}</p>
+                 {match.timestamp && <p className="text-xs text-muted-foreground pt-1">{formatDistanceToNow(new Date(match.timestamp), { addSuffix: true, locale: ru })}</p>}
             </div>
             <Separator />
              <div>
@@ -100,6 +137,7 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                         <div className="flex items-center gap-2 font-medium">
                             <Avatar className="h-6 w-6">
                                 <AvatarImage src={match.team1.logo} data-ai-hint={match.team1.logoHint} />
+                                <AvatarFallback>{match.team1.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <span>{match.team1.name}</span>
                         </div>
@@ -112,6 +150,7 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                         <div className="flex items-center gap-2 font-medium">
                              <Avatar className="h-6 w-6">
                                 <AvatarImage src={match.team2.logo} data-ai-hint={match.team2.logoHint} />
+                                <AvatarFallback>{match.team2.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <span>{match.team2.name}</span>
                         </div>
@@ -147,10 +186,14 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                 {aiResult && (
                     <Alert>
                         <Sparkles className="h-4 w-4" />
-                        <AlertTitle>Рекомендация ИИ (Уверенность: {aiResult.confidence})</AlertTitle>
-                        <AlertDescription className="space-y-2 mt-2">
-                           <p><strong>Вердикт:</strong> {aiResult.recommendation}</p>
-                           <p><strong>Обоснование:</strong> {aiResult.reasoning}</p>
+                        <AlertTitle className="flex justify-between items-center">
+                            <span>Рекомендация: {getRecommendationText(aiResult.recommendation)}</span>
+                             <Badge variant="outline" className={cn(getConfidenceColor(aiResult.confidence))}>
+                                Уверенность: {aiResult.confidence}
+                            </Badge>
+                        </AlertTitle>
+                        <AlertDescription className="mt-2">
+                           {aiResult.reasoning}
                         </AlertDescription>
                     </Alert>
                 )}
@@ -159,13 +202,13 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
             <div>
                 <h4 className="font-semibold text-sm mb-2">Вынести решение</h4>
                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button className="flex-1" onClick={() => onResolve(match.id, `победа присуждена ${match.team1.name}`)}>
+                    <Button className="flex-1" onClick={() => onResolve(String(match.id), `победа присуждена ${match.team1.name}`)}>
                         <Shield className="mr-2 h-4 w-4"/>Победа {match.team1.name}
                     </Button>
-                    <Button className="flex-1" onClick={() => onResolve(match.id, `победа присуждена ${match.team2.name}`)}>
+                    <Button className="flex-1" onClick={() => onResolve(String(match.id), `победа присуждена ${match.team2.name}`)}>
                         <Shield className="mr-2 h-4 w-4"/>Победа {match.team2.name}
                     </Button>
-                    <Button className="flex-1" variant="destructive" onClick={() => onResolve(match.id, 'назначена переигровка')}>
+                    <Button className="flex-1" variant="destructive" onClick={() => onResolve(String(match.id), 'назначена переигровка')}>
                         Переигровка
                     </Button>
                  </div>

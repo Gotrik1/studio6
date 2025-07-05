@@ -1,10 +1,12 @@
 
-import { Controller, Get, Post, Body, Param, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Query } from '@nestjs/common';
 import { MatchesService } from './matches.service';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { UpdateMatchDto } from './dto/update-match.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
+import { MatchStatus } from '@prisma/client';
+import { ResolveDisputeDto } from './dto/resolve-dispute.dto';
 
 @ApiTags('Matches')
 @Controller('matches')
@@ -18,8 +20,9 @@ export class MatchesController {
 
   @Public()
   @Get()
-  findAll() {
-    return this.matchesService.findAll();
+  @ApiQuery({ name: 'status', enum: MatchStatus, required: false })
+  findAll(@Query('status') status?: MatchStatus) {
+    return this.matchesService.findAll({ status });
   }
   
   @Public()
@@ -37,5 +40,10 @@ export class MatchesController {
   @Patch(':id/score')
   updateScore(@Param('id') id: string, @Body() updateMatchDto: UpdateMatchDto) {
     return this.matchesService.updateScore(id, updateMatchDto);
+  }
+
+  @Post(':id/resolve')
+  resolveDispute(@Param('id') id: string, @Body() resolveDisputeDto: ResolveDisputeDto) {
+      return this.matchesService.resolveDispute(id, resolveDisputeDto);
   }
 }

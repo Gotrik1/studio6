@@ -5,10 +5,11 @@ import {
 } from '@nestjs/common';
 import { CreateMatchDto } from './dto/create-match.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Match, MatchStatus } from '@prisma/client';
+import { Match, MatchStatus, Prisma } from '@prisma/client';
 import { UpdateMatchDto } from './dto/update-match.dto';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { ResolveDisputeDto } from './dto/resolve-dispute.dto';
 
 @Injectable()
 export class MatchesService {
@@ -29,11 +30,17 @@ export class MatchesService {
     });
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(params?: { status?: MatchStatus }): Promise<any[]> {
+    const where: Prisma.MatchWhereInput = {};
+    if (params?.status) {
+      where.status = params.status;
+    }
+
     const matches = await this.prisma.match.findMany({
+      where,
       include: {
-        team1: { select: { name: true, logo: true, dataAiHint: true, slug: true } },
-        team2: { select: { name: true, logo: true, dataAiHint: true, slug: true } },
+        team1: { select: { id: true, name: true, logo: true, dataAiHint: true, slug: true } },
+        team2: { select: { id: true, name: true, logo: true, dataAiHint: true, slug: true } },
         tournament: { select: { name: true, game: true } },
       },
       orderBy: {
@@ -52,11 +59,13 @@ export class MatchesService {
     return matches.map((match) => ({
       id: match.id,
       team1: {
+        id: match.team1.id,
         name: match.team1.name,
         logo: match.team1.logo || 'https://placehold.co/100x100.png',
         logoHint: match.team1.dataAiHint || 'team logo',
       },
       team2: {
+        id: match.team2.id,
         name: match.team2.name,
         logo: match.team2.logo || 'https://placehold.co/100x100.png',
         logoHint: match.team2.dataAiHint || 'team logo',
@@ -71,6 +80,9 @@ export class MatchesService {
       status: statusMap[match.status],
       href: `/matches/${match.id}`,
       playgroundId: null, // Assuming this is not in the DB model yet
+      disputeReason: match.disputeReason,
+      timestamp: match.disputeOpenedAt?.toISOString() || match.createdAt.toISOString(),
+      resolution: match.resolution,
     }));
   }
 
@@ -190,6 +202,55 @@ export class MatchesService {
         status: 'FINISHED',
         finishedAt: new Date(),
       },
+    });
+  }
+
+  async resolveDispute(matchId: string, dto: ResolveDisputeDto): Promise<Match> {
+    const match = await this.prisma.match.findUnique({
+        where: { id: matchId },
+        include: { team1: true, team2: true },
+    });
+
+    if (!match) {
+        throw new NotFoundException(`Матч с ID ${matchId} не найден.`);
+    }
+
+    if (match.status !== 'DISPUTED') {
+        throw new BadRequestException('Этот матч не является спорным.');
+    }
+    
+    if (dto.winnerId !== match.team1Id && dto.winnerId !== match.team2Id) {
+        throw new BadRequestException('Победитель должен быть одной из команд матча.');
+    }
+
+    const loserId = dto.winnerId === match.team1Id ? match.team2Id : match.team1Id;
+
+    return this.prisma.$transaction(async (tx) => {
+        // Update match
+        const updatedMatch = await tx.match.update({
+            where: { id: matchId },
+            data: {
+                status: 'FINISHED',
+                team1Score: dto.score1,
+                team2Score: dto.score2,
+                resolution: dto.resolution,
+                finishedAt: new Date(),
+            },
+        });
+        
+        // Update winner stats
+        await tx.team.update({
+            where: { id: dto.winnerId },
+            data: { wins: { increment: 1 } },
+        });
+
+        // Update loser stats
+        await tx.team.update({
+            where: { id: loserId },
+            data: { losses: { increment: 1 } },
+        });
+
+        return updatedMatch;
     });
   }
 
