@@ -5,6 +5,7 @@ import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm, CoachedPlayer, JudgedMatch } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
+import { achievements } from '@/shared/lib/mock-data/profiles';
 
 // Define the rich user profile type that the frontend expects
 export type FullUserProfile = User & {
@@ -27,6 +28,7 @@ export type FullUserProfile = User & {
 // This is the type for the full page props
 export type PlayerProfileData = {
     user: FullUserProfile;
+    achievements: typeof achievements;
 };
 
 
@@ -39,10 +41,18 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
             return null;
         }
 
-        const profileData = result.data;
+        const rawProfile = result.data;
+        
+        // Adapter for user data to ensure consistency between frontend and backend
+        const profileData = {
+            ...rawProfile,
+            id: String(rawProfile.id), // Ensure ID is a string
+            name: rawProfile.fullName || rawProfile.name, // Adapt name
+            avatar: rawProfile.avatarUrl || rawProfile.avatar, // Adapt avatar
+        };
         
         // Transform backend activities to frontend format
-        const playerActivity: PlayerActivityItem[] = profileData.activities.map((activity: any) => {
+        const playerActivity: PlayerActivityItem[] = (profileData.activities || []).map((activity: any) => {
             const metadata = activity.metadata as any;
             let text = `Неизвестное событие`;
             
@@ -55,7 +65,7 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
             }
             
             return {
-                id: activity.id,
+                id: String(activity.id),
                 type: activity.type,
                 icon: metadata.icon || 'HelpCircle',
                 text: text,
@@ -70,7 +80,8 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
 
         return {
             user: augmentedProfile,
-        } as unknown as PlayerProfileData;
+            achievements: achievements, // Add mock achievements as the component expects them
+        } as unknown as PlayerProfileData; // The cast is needed because of the complexity
 
     } catch(error) {
         console.error(`Error fetching user profile for ${id}:`, error);
