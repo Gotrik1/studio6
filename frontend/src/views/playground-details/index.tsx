@@ -21,7 +21,7 @@ import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
-import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from '@/widgets/report-playground-issue-dialog';
+import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-dialog';
 import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
 import { createReview, getReviews, type CreateReviewData } from '@/entities/playground/api/reviews';
