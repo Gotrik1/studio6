@@ -4,6 +4,17 @@ import type { LfgLobby } from '@/entities/lfg/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidatePath } from 'next/cache';
 
+export type CreateLobbyApiData = {
+    type: 'GAME' | 'TRAINING';
+    sport: string;
+    location: string;
+    playgroundId?: string;
+    startTime: Date;
+    duration: number;
+    playersNeeded: number;
+    comment: string;
+};
+
 export async function fetchLobbies(): Promise<LfgLobby[]> {
     const result = await fetchWithAuth('/lfg');
     if (!result.success) {
@@ -18,7 +29,7 @@ export async function fetchLobbies(): Promise<LfgLobby[]> {
     }));
 }
 
-export async function createLobby(data: any) {
+export async function createLobby(data: CreateLobbyApiData) {
     const result = await fetchWithAuth('/lfg', {
         method: 'POST',
         body: JSON.stringify(data),

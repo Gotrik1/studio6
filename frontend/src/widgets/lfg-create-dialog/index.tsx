@@ -26,13 +26,14 @@ const lfgSchema = z.object({
   sport: z.string({ required_error: "Выберите дисциплину." }),
   location: z.string().min(5, 'Укажите более точное местоположение.'),
   playgroundId: z.string().optional(),
-  startTime: z.date({ required_error: "Выберите дату." }),
+  date: z.date({ required_error: "Выберите дату." }),
+  time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Введите время в формате HH:MM."),
   duration: z.coerce.number().min(30, "Минимальная длительность 30 минут").max(240, "Максимальная длительность 4 часа"),
   playersNeeded: z.coerce.number().min(2, 'Нужно как минимум 2 игрока.').max(22, 'Слишком много игроков.'),
   comment: z.string().min(10, 'Добавьте комментарий, чтобы игрокам было понятнее.').max(200, 'Комментарий слишком длинный.'),
 });
 
-type FormValues = z.infer<typeof lfgSchema>;
+export type FormValues = z.infer<typeof lfgSchema>;
 
 interface LfgCreateDialogProps {
     isOpen: boolean;
@@ -56,7 +57,8 @@ export function LfgCreateDialog({ isOpen, onOpenChange, onCreate }: LfgCreateDia
             type: 'GAME',
             duration: 60,
             playersNeeded: 4,
-            startTime: new Date(),
+            date: new Date(),
+            time: '19:00',
         },
     });
 
@@ -69,7 +71,9 @@ export function LfgCreateDialog({ isOpen, onOpenChange, onCreate }: LfgCreateDia
                 type: 'GAME',
                 duration: 60,
                 playersNeeded: 4,
-                startTime: new Date(),
+                date: new Date(),
+                time: '19:00',
+                comment: '',
             });
         }
         setIsSubmitting(false);
@@ -134,9 +138,10 @@ export function LfgCreateDialog({ isOpen, onOpenChange, onCreate }: LfgCreateDia
                                 <FormItem><FormLabel>Место</FormLabel><FormControl><Input placeholder="Например, Парк Горького, площадка #2" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <FormField control={form.control} name="startTime" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Дата и время</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP HH:mm", {locale: ru})) : (<span>Выберите дату и время</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                                <FormField control={form.control} name="duration" render={({ field }) => (<FormItem><FormLabel>Длительность (мин)</FormLabel><FormControl><Input type="number" step="15" {...field} /></FormControl><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="date" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Дата</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                                <FormField control={form.control} name="time" render={({ field }) => (<FormItem><FormLabel>Время</FormLabel><FormControl><Input type="time" {...field} /></FormControl><FormMessage /></FormItem>)} />
                             </div>
+                            <FormField control={form.control} name="duration" render={({ field }) => (<FormItem><FormLabel>Длительность (мин)</FormLabel><FormControl><Input type="number" step="15" {...field} /></FormControl><FormMessage /></FormItem>)} />
                             <FormField control={form.control} name="comment" render={({ field }) => (
                                 <FormItem><FormLabel>Комментарий</FormLabel><FormControl><Textarea placeholder="Опишите детали игры: уровень игроков, цель (тренировка/развлечение) и т.д." {...field} /></FormControl><FormMessage /></FormItem>
                             )} />

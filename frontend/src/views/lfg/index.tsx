@@ -6,7 +6,7 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { PlusCircle, Swords, Search, Loader2, Sparkles, Dumbbell } from 'lucide-react';
-import { LfgCreateDialog } from '@/widgets/lfg-create-dialog';
+import { LfgCreateDialog, type FormValues as LfgFormValues } from '@/widgets/lfg-create-dialog';
 import { Textarea } from '@/shared/ui/textarea';
 import { findLfgLobbies } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
 import type { LfgLobby as LfgLobbyType } from '@/entities/lfg/model/types';
@@ -15,6 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { useLfg } from '@/app/providers/lfg-provider';
 import { LfgCard } from '@/widgets/lfg-card';
 import { useToast } from '@/shared/hooks/use-toast';
+import type { CreateLobbyApiData } from '@/entities/lfg/api/lfg';
 
 
 export function LfgPage() {
@@ -53,8 +54,23 @@ export function LfgPage() {
         }
     };
     
-    const handleCreateLobby = async (data: any) => {
-        const success = await addLobby(data);
+    const handleCreateLobby = async (data: LfgFormValues) => {
+        const [hours, minutes] = data.time.split(':').map(Number);
+        const combinedDate = new Date(data.date);
+        combinedDate.setHours(hours, minutes, 0, 0);
+
+        const payload: CreateLobbyApiData = {
+            type: data.type,
+            sport: data.sport,
+            location: data.location,
+            playgroundId: data.playgroundId,
+            startTime: combinedDate,
+            duration: data.duration,
+            playersNeeded: data.playersNeeded,
+            comment: data.comment,
+        };
+
+        const success = await addLobby(payload);
         if (success) {
             toast({ title: "Лобби создано!", description: "Ваш запрос на игру опубликован." });
             setIsCreateOpen(false);
