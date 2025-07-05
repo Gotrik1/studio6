@@ -5,6 +5,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
+import { CreateReviewDto } from './dto/create-review.dto';
 
 @ApiTags('Playgrounds')
 @Controller('playgrounds')
@@ -32,6 +33,22 @@ export class PlaygroundsController {
   @ApiOperation({ summary: 'Получить площадку по ID' })
   findOne(@Param('id') id: string) {
     return this.playgroundsService.findOne(id);
+  }
+
+  @Public()
+  @Get(':id/reviews')
+  @ApiOperation({ summary: 'Получить отзывы для площадки' })
+  findReviews(@Param('id') id: string) {
+      return this.playgroundsService.findReviews(id);
+  }
+
+  @Post(':id/reviews')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Оставить отзыв о площадке' })
+  createReview(@Param('id') id: string, @Body() dto: CreateReviewDto, @Req() req: Request) {
+      const userId = (req.user as any).userId;
+      return this.playgroundsService.addReview(id, userId, dto);
   }
 
   // --- Admin Routes ---

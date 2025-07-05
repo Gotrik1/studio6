@@ -12,7 +12,7 @@ import { findLfgLobbies } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow'
 import type { LfgLobby as LfgLobbyType } from '@/entities/lfg/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { useLfg } from '@/shared/context/lfg-provider';
+import { useLfg } from '@/app/providers/lfg-provider';
 import { LfgCard } from '@/widgets/lfg-card';
 import { useToast } from '@/shared/hooks/use-toast';
 

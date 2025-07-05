@@ -1,38 +1,40 @@
 
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
 import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { useSession } from '@/shared/lib/session/client';
-import { mockPlaygroundReviews, type PlaygroundReview } from '@/shared/lib/mock-data/playground-reviews';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { useLfg } from '@/app/providers/lfg-provider';
 import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
-
-// Import Tab Widgets
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
-import { mockPlaygroundActivity, type PlaygroundActivity } from '@/shared/lib/mock-data/playground-activity';
-import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
+import { PlaygroundReviewsTab, type PlaygroundReview } from '@/widgets/playground-reviews-tab';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from '@/widgets/report-playground-issue-dialog';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
+import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
+import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
+import { getReviews, createReview } from '@/entities/playground/api/reviews';
 
 
 export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const [activities, setActivities] = useState<PlaygroundActivity[]>(mockPlaygroundActivity);
-    const [reviews, setReviews] = useState<PlaygroundReview[]>(mockPlaygroundReviews);
+    const [activities, setActivities] = useState<PlaygroundActivity[]>([]);
+    const [isLoadingActivities, setIsLoadingActivities] = useState(true);
+    const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
+    const [isLoadingReviews, setIsLoadingReviews] = useState(true);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [latestIssueReport, setLatestIssueReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
@@ -40,30 +42,83 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [initialDateTime, setInitialDateTime] = useState<{date: Date, time: string}>();
 
-    const handleCheckIn = (comment: string) => {
+    const loadActivities = useCallback(async () => {
+        setIsLoadingActivities(true);
+        try {
+            const activityData = await getPlaygroundActivity(playground.id);
+            const formattedActivities: PlaygroundActivity[] = activityData.map((act: any) => ({
+                id: act.id,
+                user: {
+                    name: act.user.name,
+                    avatar: act.user.avatar,
+                },
+                comment: act.metadata.comment || 'Отметился на площадке.',
+                photo: act.metadata.photo,
+                photoHint: 'playground check-in',
+                timestamp: act.timestamp,
+            }));
+            setActivities(formattedActivities);
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить ленту активности.' });
+        } finally {
+            setIsLoadingActivities(false);
+        }
+    }, [playground.id, toast]);
+    
+    const loadReviews = useCallback(async () => {
+        setIsLoadingReviews(true);
+        try {
+            const reviewsResult = await getReviews(playground.id);
+            if (reviewsResult.success) {
+                const formattedReviews = reviewsResult.data.map((r: any) => ({
+                    ...r,
+                    timestamp: r.createdAt
+                }));
+                setReviews(formattedReviews);
+            } else {
+                 toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить отзывы.' });
+            }
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить отзывы.' });
+        } finally {
+            setIsLoadingReviews(false);
+        }
+    }, [playground.id, toast]);
+
+    useEffect(() => {
+        loadActivities();
+        loadReviews();
+    }, [loadActivities, loadReviews]);
+
+    const handleCheckIn = async (comment: string, photo?: string) => {
         if (!user) return;
-        const newActivity: PlaygroundActivity = {
-            id: `act-${Date.now()}`,
-            user: { name: user.name, avatar: user.avatar },
-            comment,
-            timestamp: 'Только что',
-        };
-        setActivities(prev => [newActivity, ...prev]);
-        toast({
-            title: "Вы отметились!",
-            description: `Вы получили 10 PD за чекин на площадке "${playground.name}".`
-        });
+        const result = await createCheckIn({ playgroundId: playground.id, comment, photo });
+        
+        if (result.success) {
+            toast({
+                title: "Вы отметились!",
+                description: `Вы получили 10 PD за чекин на площадке "${playground.name}".`
+            });
+            await loadActivities(); // Refresh data
+        } else {
+             toast({
+                variant: "destructive",
+                title: "Ошибка",
+                description: "Не удалось отметиться. Попробуйте снова."
+            });
+        }
     };
     
-    const handleAddReview = (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => {
-        if (!user) return;
-        const newReview: PlaygroundReview = {
-            id: `rev-${Date.now()}`,
-            author: { name: user.name, avatar: user.avatar },
-            timestamp: 'Только что',
-            ...reviewData
-        };
-        setReviews(prev => [newReview, ...prev]);
+    const handleAddReview = async (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => {
+        const result = await createReview(playground.id, reviewData);
+        if (result.success) {
+            toast({ title: 'Спасибо за ваш отзыв!', description: 'Ваш отзыв был опубликован.' });
+            await loadReviews();
+        } else {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось опубликовать отзыв.' });
+        }
     };
 
     const handleReportSubmit = async (data: ReportFormValues) => {
@@ -94,15 +149,15 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         setIsPlanGameOpen(true);
     };
 
-    const handlePlanGame = (data: PlanGameFormValues) => {
+    const handlePlanGame = async (data: PlanGameFormValues) => {
         if (!user) return;
 
         const [hours, minutes] = data.time.split(':').map(Number);
         const combinedDate = new Date(data.date);
         combinedDate.setHours(hours, minutes, 0, 0);
 
-        addLobby({
-            type: 'game',
+        const success = await addLobby({
+            type: 'GAME',
             sport: playground.type,
             location: playground.name,
             playgroundId: playground.id,
@@ -112,10 +167,18 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
             playersNeeded: 10,
         });
 
-        toast({
-            title: "Игра запланирована!",
-            description: "Ваш план отобразится в расписании и разделе LFG.",
-        });
+        if (success) {
+            toast({
+                title: "Игра запланирована!",
+                description: "Ваш план отобразится в расписании и разделе LFG.",
+            });
+        } else {
+             toast({
+                variant: "destructive",
+                title: "Ошибка",
+                description: "Не удалось запланировать игру.",
+            });
+        }
     };
 
 
@@ -124,7 +187,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
             <div className="space-y-6">
                 <Card className="overflow-hidden">
                     <div className="relative h-64 w-full">
-                        <Image src={playground.coverImage} alt={playground.name} fill className="object-cover" data-ai-hint={playground.coverImageHint}/>
+                        <Image src={playground.coverImage!} alt={playground.name} fill className="object-cover" data-ai-hint={playground.coverImageHint!}/>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                         <div className="absolute bottom-6 left-6 text-white">
                             <Badge variant="secondary">{playground.type}</Badge>
@@ -160,13 +223,13 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                         <PlaygroundScheduleTab schedule={lobbies.filter(l => l.playgroundId === playground.id)} onPlanClick={openPlanGameDialog} />
                     </TabsContent>
                     <TabsContent value="reviews" className="mt-6">
-                        <PlaygroundReviewsTab reviews={reviews} onAddReview={handleAddReview} playgroundName={playground.name} />
+                        <PlaygroundReviewsTab reviews={reviews} onAddReview={handleAddReview} playgroundName={playground.name} isLoading={isLoadingReviews} />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-6">
-                        <PlaygroundActivityTab activities={activities} />
+                        <PlaygroundActivityTab activities={activities} isLoading={isLoadingActivities} />
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-6">
-                        <PlaygroundLeaderboardTab />
+                        <PlaygroundLeaderboardTab playground={playground} />
                     </TabsContent>
                     <TabsContent value="media" className="mt-6">
                         <PlaygroundMediaTab />

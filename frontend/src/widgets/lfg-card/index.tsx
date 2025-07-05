@@ -15,7 +15,7 @@ interface LfgCardProps {
 }
 
 export function LfgCard({ lobby, onJoin }: LfgCardProps) {
-    const Icon = lobby.type === 'training' ? Dumbbell : Gamepad2;
+    const Icon = lobby.type === 'TRAINING' ? Dumbbell : Gamepad2;
 
     return (
         <Card className="flex flex-col h-full">
@@ -43,7 +43,7 @@ export function LfgCard({ lobby, onJoin }: LfgCardProps) {
             <CardFooter className="flex-col items-start gap-4">
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Avatar className="h-6 w-6">
-                        <AvatarImage src={lobby.creator.avatar} />
+                        <AvatarImage src={lobby.creator.avatar || ''} />
                         <AvatarFallback>{lobby.creator.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <span>Создал: {lobby.creator.name}</span>

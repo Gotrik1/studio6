@@ -1,57 +1,67 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import type { LfgLobby } from '@/entities/lfg/model/types';
-import { useSession } from '@/shared/lib/session/client';
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { fetchLobbies, createLobby, joinLobby as apiJoinLobby } from '@/entities/lfg/api/lfg';
+import { useToast } from '@/shared/hooks/use-toast';
 
 export type { LfgLobby };
 
 interface LfgContextType {
   lobbies: LfgLobby[];
-  addLobby: (data: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number }) => void;
+  isLoading: boolean;
+  addLobby: (data: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number }) => Promise<boolean>;
   joinLobby: (lobbyId: string) => void;
 }
 
 const LfgContext = createContext<LfgContextType | undefined>(undefined);
 
 export const LfgProvider = ({ children }: { children: ReactNode }) => {
-    const { user } = useSession();
     const [lobbies, setLobbies] = useState<LfgLobby[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const { toast } = useToast();
+
+    const loadLobbies = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const data = await fetchLobbies();
+            setLobbies(data);
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить лобби.' });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [toast]);
 
     useEffect(() => {
-        // In a real app, you would fetch initial lobbies here.
-        // For now, it starts empty.
-    }, []);
+        loadLobbies();
+    }, [loadLobbies]);
 
-    const addLobby = (data: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number }) => {
-        if (!user) return;
-        
-        // This is a client-side mock of adding a lobby. A real implementation would post to the backend.
-        const endTime = new Date(data.startTime.getTime() + data.duration * 60000);
-
-        const newLobby: LfgLobby = {
-            id: `lfg-${Date.now()}`,
-            ...data,
-            endTime,
-            creator: { name: user.name, avatar: user.avatar },
-            playersJoined: 1,
-        };
-        setLobbies(prev => [...prev, newLobby].sort((a,b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime()));
+    const addLobby = async (data: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number }) => {
+         const result = await createLobby(data);
+         if (result.success) {
+            await loadLobbies(); // Refresh data
+            return true;
+         } else {
+            return false;
+         }
     };
 
-    const joinLobby = (lobbyId: string) => {
-        // Client-side mock of joining.
-        setLobbies(prevLobbies => prevLobbies.map(lobby => {
-            if (lobby.id === lobbyId && lobby.playersJoined < lobby.playersNeeded) {
-                return { ...lobby, playersJoined: lobby.playersJoined + 1 };
-            }
-            return lobby;
-        }));
+    const joinLobby = async (lobbyId: string) => {
+        const result = await apiJoinLobby(lobbyId);
+        if (result.success) {
+            toast({
+                title: "Вы присоединились к лобби!",
+                description: `Вы успешно присоединились к активности.`,
+            });
+            await loadLobbies(); // Refresh data
+        } else {
+             toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
+        }
     };
 
     return (
-        <LfgContext.Provider value={{ lobbies, addLobby, joinLobby }}>
+        <LfgContext.Provider value={{ lobbies, isLoading, addLobby, joinLobby }}>
             {children}
         </LfgContext.Provider>
     );

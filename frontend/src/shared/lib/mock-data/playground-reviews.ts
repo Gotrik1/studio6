@@ -1,2 +1,2 @@
-// This file is obsolete. Data is fetched from the backend.
+// This file is now obsolete. Data is served from the backend.
 export {};

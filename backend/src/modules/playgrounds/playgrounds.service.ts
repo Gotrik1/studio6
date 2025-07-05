@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma, Playground } from '@prisma/client';
 import { CreatePlaygroundDto } from './dto/create-playground.dto';
+import { CreateReviewDto } from './dto/create-review.dto';
 
 @Injectable()
 export class PlaygroundsService {
@@ -52,5 +53,28 @@ export class PlaygroundsService {
   
   async remove(id: string): Promise<Playground> {
       return this.prisma.playground.delete({ where: { id } });
+  }
+
+  async addReview(playgroundId: string, userId: string, dto: CreateReviewDto) {
+    const playground = await this.prisma.playground.findUnique({ where: { id: playgroundId } });
+    if (!playground) {
+        throw new NotFoundException(`Playground with ID ${playgroundId} not found`);
+    }
+
+    return this.prisma.playgroundReview.create({
+        data: {
+            ...dto,
+            playground: { connect: { id: playgroundId } },
+            author: { connect: { id: userId } },
+        }
+    });
+  }
+
+  async findReviews(playgroundId: string) {
+    return this.prisma.playgroundReview.findMany({
+        where: { playgroundId },
+        include: { author: { select: { id: true, name: true, avatar: true } } },
+        orderBy: { createdAt: 'desc' },
+    });
   }
 }
