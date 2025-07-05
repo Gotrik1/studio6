@@ -59,6 +59,13 @@ export class UsersService {
               },
             },
           },
+          organizedTournaments: {
+            include: {
+              _count: {
+                select: { teams: true }
+              }
+            }
+          },
           gallery: {
               orderBy: { createdAt: 'desc' }
           },
@@ -83,11 +90,25 @@ export class UsersService {
         game: team.game,
       }));
 
+      const organizedTournaments = user.organizedTournaments.map(t => ({
+          id: t.id,
+          name: t.name,
+          sport: t.game,
+          status: t.status,
+          participants: t._count.teams,
+          maxParticipants: t.participantCount,
+          startDate: t.tournamentStartDate.toISOString(),
+          organizer: user.name,
+          rules: t.rules || '',
+      }));
+
+
       const dateOfBirth = user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '1998-05-15';
 
       const augmentedProfile = {
         ...user,
         teams: userTeams,
+        organizedTournaments,
         location: user.location || "Москва, Россия",
         mainSport: user.mainSport || "Футбол",
         isVerified: true,

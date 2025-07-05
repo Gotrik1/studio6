@@ -4,9 +4,9 @@
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
-import type { TournamentCrm } from "@/shared/lib/mock-data/crm-tournaments";
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
+import type { TournamentCrm } from '@/entities/user/model/types';
 
 interface ManagedTournamentsTabProps {
     tournaments: TournamentCrm[];
@@ -16,12 +16,22 @@ export function ManagedTournamentsTab({ tournaments }: ManagedTournamentsTabProp
     
     const getStatusVariant = (status: TournamentCrm['status']) => {
         switch (status) {
-            case 'В процессе': return 'destructive';
-            case 'Открыт набор': return 'default';
-            case 'Завершён': return 'secondary';
+            case 'ONGOING': return 'destructive';
+            case 'REGISTRATION': return 'default';
+            case 'FINISHED': return 'secondary';
             default: return 'outline';
         }
     };
+    
+    const getStatusText = (status: TournamentCrm['status']) => {
+        switch (status) {
+            case 'ONGOING': return 'В процессе';
+            case 'REGISTRATION': return 'Открыт набор';
+            case 'FINISHED': return 'Завершён';
+            default: return 'Архив';
+        }
+    }
+
 
     return (
         <Card>
@@ -45,7 +55,7 @@ export function ManagedTournamentsTab({ tournaments }: ManagedTournamentsTabProp
                                 <TableCell className="font-medium">{tournament.name}</TableCell>
                                 <TableCell className="hidden md:table-cell">{tournament.sport}</TableCell>
                                 <TableCell className="hidden md:table-cell">
-                                    <Badge variant={getStatusVariant(tournament.status)}>{tournament.status}</Badge>
+                                    <Badge variant={getStatusVariant(tournament.status as any)}>{getStatusText(tournament.status as any)}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="outline" size="sm">

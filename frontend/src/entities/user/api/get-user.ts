@@ -4,11 +4,11 @@
 import type { User } from '@/shared/lib/types';
 import { achievements } from "@/shared/lib/mock-data/profiles";
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { UserTeam, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
+import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
 // Define the rich user profile type that the frontend expects
-export type PlayerProfileData = User & {
+export type FullUserProfile = User & {
     location: string;
     mainSport: string;
     isVerified: boolean;
@@ -21,16 +21,17 @@ export type PlayerProfileData = User & {
     teams: UserTeam[];
     gallery: GalleryItem[];
     careerHistory: CareerHistoryItem[];
+    organizedTournaments?: TournamentCrm[];
 };
 
 // This is the type for the full page props
-export type FullPlayerProfile = {
-    user: PlayerProfileData;
+export type PlayerProfileData = {
+    user: FullUserProfile;
     achievements: typeof achievements;
 };
 
 
-export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | null> {
+export async function getPlayerProfile(id: string): Promise<PlayerProfileData | null> {
     try {
         const res = await fetch(`${process.env.BACKEND_URL}/users/${id}`, { cache: 'no-store' });
         
@@ -65,7 +66,7 @@ export async function getPlayerProfile(id: string): Promise<FullPlayerProfile | 
         
         // The backend now returns an augmented user object that includes teams, gallery, and careerHistory.
         // We just need to add the mocked achievements.
-        const augmentedProfile: PlayerProfileData = {
+        const augmentedProfile: FullUserProfile = {
             ...profileData,
             activities: playerActivity,
         };

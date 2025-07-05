@@ -1,14 +1,22 @@
-
-import { organizerUser, organizerAchievements } from "@/shared/lib/mock-data/organizer-profile";
-import { crmTournaments } from '@/shared/lib/mock-data/crm-tournaments';
 import OrganizerClient from "@/app/(app)/administration/organizer/client";
+import { getPlayerProfile } from "@/entities/user/api/get-user";
+import { notFound } from "next/navigation";
 
-export function OrganizerProfilePage() {
-    // In a real application, this data would be fetched from an API
-    const user = organizerUser;
-    const achievements = organizerAchievements;
-    // Filter tournaments organized by this user
-    const tournaments = crmTournaments.filter(t => t.organizer === user.name);
+// Use a known organizer ID from the seeded data.
+const DEMO_ORGANIZER_ID = '6'; // ID for 'Иван Смирнов'
 
-    return <OrganizerClient user={user} achievements={achievements} tournaments={tournaments} />;
+export async function OrganizerProfilePage() {
+    const profileData = await getPlayerProfile(DEMO_ORGANIZER_ID);
+
+    if (!profileData) {
+        notFound();
+    }
+    
+    return (
+        <OrganizerClient
+            user={profileData.user}
+            achievements={profileData.achievements} // achievements are still from mock inside getPlayerProfile
+            tournaments={profileData.user.organizedTournaments || []}
+        />
+    );
 }

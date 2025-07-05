@@ -25,3 +25,15 @@ export type UserTeam = {
   rank: number;
   game: string;
 };
+
+export type TournamentCrm = {
+    id: string;
+    name: string;
+    sport: string;
+    status: string;
+    participants: number;
+    maxParticipants: number;
+    startDate: string;
+    organizer: string;
+    rules: string;
+};

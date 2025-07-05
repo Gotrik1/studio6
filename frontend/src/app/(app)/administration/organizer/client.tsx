@@ -2,8 +2,10 @@
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { organizerUser, organizerAchievements } from "@/shared/lib/mock-data/organizer-profile";
-import type { TournamentCrm } from '@/shared/lib/mock-data/crm-tournaments';
+import type { FullUserProfile } from '@/entities/user/api/get-user';
+import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import type { TournamentCrm } from '@/entities/user/model/types';
+
 
 const OrganizerProfile = dynamic(() => import('@/entities/user/ui/organizer-profile').then(mod => mod.OrganizerProfile), {
   loading: () => <div className="space-y-6">
@@ -15,11 +17,11 @@ const OrganizerProfile = dynamic(() => import('@/entities/user/ui/organizer-prof
 });
 
 type OrganizerProfileProps = {
-  user: typeof organizerUser;
-  achievements: typeof organizerAchievements;
+  user: FullUserProfile;
+  achievements: typeof AchievementsArray;
   tournaments: TournamentCrm[];
 };
 
 export default function OrganizerClient({ user, achievements, tournaments }: OrganizerProfileProps) {
-  return <OrganizerProfile user={user} achievements={achievements} tournaments={tournaments} />;
+  return <OrganizerProfile user={user as any} achievements={achievements} tournaments={tournaments} />;
 }

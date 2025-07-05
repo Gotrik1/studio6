@@ -8,14 +8,15 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import type { organizerUser, organizerAchievements } from "@/shared/lib/mock-data/organizer-profile";
 import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
-import type { TournamentCrm } from '@/shared/lib/mock-data/crm-tournaments';
 import { useState } from 'react';
 import { Wand2, ImageIcon } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
+import type { FullUserProfile } from '@/entities/user/api/get-user';
+import type { achievements as AchievementsArray } from '@/shared/lib/mock-data/profiles';
+import type { TournamentCrm } from '@/entities/user/model/types';
 
 const OrganizerStatsTab = dynamic(() => import('@/entities/user/ui/organizer-profile-tabs/stats-tab').then(mod => mod.OrganizerStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -31,8 +32,8 @@ const ManagedTournamentsTab = dynamic(() => import('@/entities/user/ui/organizer
 });
 
 type OrganizerProfileProps = {
-  user: typeof organizerUser;
-  achievements: typeof organizerAchievements;
+  user: FullUserProfile;
+  achievements: typeof AchievementsArray;
   tournaments: TournamentCrm[];
 };
 
@@ -64,7 +65,7 @@ export function OrganizerProfile({ user, achievements, tournaments }: OrganizerP
             <div className="flex items-end gap-6 -mt-20">
                 <div className="relative shrink-0">
                     <Avatar className="h-32 w-32 border-4 border-background bg-background">
-                        <AvatarImage src={avatar} alt={user.name} data-ai-hint="event management logo" />
+                        <AvatarImage src={avatar || ''} alt={user.name} data-ai-hint="event management logo" />
                         <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
                     </Avatar>
                      <Button
