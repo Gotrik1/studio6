@@ -106,6 +106,7 @@ export class TeamsService implements OnModuleInit {
 
     // Map Prisma result to the shape expected by the frontend
     return teams.map(team => ({
+      id: team.id,
       name: team.name,
       motto: team.motto || 'Девиз не указан',
       logo: team.logo || 'https://placehold.co/100x100.png',
@@ -257,5 +258,3 @@ export class TeamsService implements OnModuleInit {
     return this.prisma.team.delete({ where: { id } });
   }
 }
-
-    

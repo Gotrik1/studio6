@@ -18,11 +18,13 @@ import { CalendarIcon, Loader2, Send } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { sportsList } from '@/shared/lib/mock-data/sports';
 import { getPlaygrounds } from '@/entities/playground/api/playgrounds';
 import type { Playground } from '@/entities/playground/model/types';
 import { getTeams } from '@/entities/team/api/teams';
 import type { Team } from '@/entities/team/model/types';
+import { createMatch } from '@/entities/match/api/create-match';
+import { getSports } from '@/entities/sport/api/sports';
+import type { Sport } from '@/entities/sport/model/types';
 
 
 const challengeSchema = z.object({
@@ -42,10 +44,12 @@ export function ManualMatchForm() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [playgrounds, setPlaygrounds] = useState<Playground[]>([]);
     const [teams, setTeams] = useState<Team[]>([]);
+    const [sports, setSports] = useState<Sport[]>([]);
 
     useEffect(() => {
         getPlaygrounds().then(setPlaygrounds);
         getTeams().then(setTeams);
+        getSports().then(setSports);
     }, []);
 
     const form = useForm<FormValues>({
@@ -56,19 +60,31 @@ export function ManualMatchForm() {
         },
     });
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
-        console.log(data); // In a real app, this would be sent to an API
+        const result = await createMatch({
+            opponentId: data.opponentId,
+            date: data.date,
+            time: data.time,
+            venueId: data.venueId
+        });
         
-        setTimeout(() => {
-            const opponent = teams.find(t => t.slug === data.opponentId);
+        if (result.success) {
+            const opponent = teams.find(t => t.id === data.opponentId);
             toast({
                 title: "Вызов отправлен!",
                 description: `Ваш вызов на матч отправлен команде "${opponent?.name}".`,
             });
-            setIsSubmitting(false);
             router.push('/matches');
-        }, 1000);
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: result.error,
+            });
+        }
+        
+        setIsSubmitting(false);
     };
 
     return (
@@ -82,10 +98,10 @@ export function ManualMatchForm() {
                     <CardContent className="space-y-6">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                              <FormField control={form.control} name="opponentId" render={({ field }) => (
-                                <FormItem><FormLabel>Команда-соперник</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите команду" /></SelectTrigger></FormControl><SelectContent>{teams.map(team => <SelectItem key={team.slug} value={team.slug}>{team.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Команда-соперник</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите команду" /></SelectTrigger></FormControl><SelectContent>{teams.map(team => <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name="sport" render={({ field }) => (
-                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                             )} />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

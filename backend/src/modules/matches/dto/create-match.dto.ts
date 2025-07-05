@@ -4,4 +4,6 @@ export class CreateMatchDto {
     readonly team2Id: string;
     readonly tournamentId?: string;
     readonly scheduledAt: Date;
+    readonly playgroundId?: string;
+    readonly location?: string;
 }

@@ -16,7 +16,7 @@ export class MatchesService {
   constructor(private prisma: PrismaService) {}
 
   async create(createMatchDto: CreateMatchDto): Promise<Match> {
-    const { team1Id, team2Id, tournamentId, scheduledAt } = createMatchDto;
+    const { team1Id, team2Id, tournamentId, scheduledAt, playgroundId, location } = createMatchDto;
     return this.prisma.match.create({
       data: {
         team1: { connect: { id: team1Id } },
@@ -26,6 +26,8 @@ export class MatchesService {
           : undefined,
         scheduledAt,
         status: 'PLANNED',
+        playgroundId,
+        location,
       },
     });
   }
