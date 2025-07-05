@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -21,6 +22,7 @@ import Image from 'next/image';
 import { AddFoodDialog } from '@/widgets/add-food-dialog';
 import { getFoodItems } from '@/entities/nutrition/api/nutrition';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { MealType } from '@/entities/nutrition/model/enums';
 
 // Diary Tab Component
 function NutritionDiaryTab() {
@@ -42,7 +44,7 @@ function NutritionDiaryTab() {
         }
     };
 
-    const meals: FoodLogEntry['meal'][] = ['Завтрак', 'Обед', 'Ужин', 'Перекус'];
+    const meals = Object.values(MealType);
 
     interface StatCardProps {
         title: string;

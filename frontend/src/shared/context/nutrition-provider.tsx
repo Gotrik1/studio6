@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, ReactNode, useMemo, useEffe
 import type { FoodLogEntry, FoodItem } from '@/entities/nutrition/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
 import { getFoodLog, addFoodLog as apiAddFoodLog, deleteFoodLog as apiDeleteFoodLog } from '@/entities/nutrition/api/nutrition';
+import type { MealType } from '@/entities/nutrition/model/enums';
 
 interface NutritionTargets {
     calories: number;
@@ -15,7 +16,7 @@ interface NutritionTargets {
 interface NutritionContextType {
   log: FoodLogEntry[];
   isLoading: boolean;
-  addFoodLog: (item: FoodItem, grams: number, meal: FoodLogEntry['meal']) => Promise<void>;
+  addFoodLog: (item: FoodItem, grams: number, meal: MealType) => Promise<void>;
   deleteFoodLog: (id: string) => Promise<void>;
   totals: NutritionTargets;
   targets: NutritionTargets;
@@ -24,6 +25,7 @@ interface NutritionContextType {
 
 const NutritionContext = createContext<NutritionContextType | undefined>(undefined);
 
+// Default targets for a user before they generate a plan
 const defaultTargets: NutritionTargets = {
     calories: 2500,
     protein: 180,
@@ -69,7 +71,7 @@ export const NutritionProvider = ({ children }: { children: ReactNode }) => {
     fetchLog();
   }, [fetchLog]);
 
-  const addFoodLog = async (item: FoodItem, grams: number, meal: FoodLogEntry['meal']) => {
+  const addFoodLog = async (item: FoodItem, grams: number, meal: MealType) => {
     const result = await apiAddFoodLog({ foodItemId: item.id, grams, meal });
     if (result.success) {
       await fetchLog(); // Refetch data

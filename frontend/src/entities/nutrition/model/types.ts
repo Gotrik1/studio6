@@ -1,3 +1,5 @@
+import { MealType } from './enums';
+
 export type FoodItem = {
     id: string;
     name: string;
@@ -13,7 +15,7 @@ export type FoodItem = {
 
 export type FoodLogEntry = {
     id: string;
-    meal: 'Завтрак' | 'Обед' | 'Ужин' | 'Перекус';
+    meal: MealType;
     name: string;
     grams: number;
     calories: number;

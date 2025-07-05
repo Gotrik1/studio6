@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -10,15 +11,14 @@ import { Input } from "@/shared/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import { PlusCircle, Loader2 } from "lucide-react";
-import type { FoodItem, FoodLogEntry } from '@/entities/nutrition/model/types';
+import type { FoodItem } from '@/entities/nutrition/model/types';
 import { useNutrition } from '@/shared/context/nutrition-provider';
 import { useToast } from '@/shared/hooks/use-toast';
-
-const meals: FoodLogEntry['meal'][] = ['Завтрак', 'Обед', 'Ужин', 'Перекус'];
+import { MealType } from '@/entities/nutrition/model/enums';
 
 const addFoodSchema = z.object({
   grams: z.coerce.number().min(1, 'Вес должен быть больше 0.'),
-  meal: z.enum(meals, { required_error: 'Выберите прием пищи.' }),
+  meal: z.nativeEnum(MealType, { required_error: 'Выберите прием пищи.' }),
 });
 
 type FormValues = z.infer<typeof addFoodSchema>;
@@ -33,18 +33,19 @@ interface AddFoodDialogProps {
 export function AddFoodDialog({ isOpen, onOpenChange, foodItem }: AddFoodDialogProps) {
     const { addFoodLog } = useNutrition();
     const { toast } = useToast();
+    const meals = Object.values(MealType);
     
     const form = useForm<FormValues>({
         resolver: zodResolver(addFoodSchema),
         defaultValues: {
             grams: 100,
-            meal: 'Перекус',
+            meal: MealType.Snack,
         },
     });
 
     useEffect(() => {
         if (!isOpen) {
-            form.reset({ grams: 100, meal: 'Перекус' });
+            form.reset({ grams: 100, meal: MealType.Snack });
         }
     }, [isOpen, form]);
     
