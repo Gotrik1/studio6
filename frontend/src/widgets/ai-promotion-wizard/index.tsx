@@ -14,7 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generatePromotionWizard, type GeneratePromotionWizardOutput } from '@/shared/api/genkit/flows/generate-promotion-wizard-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useRouter } from 'next/navigation';
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { createPromotion } from '@/entities/promotion/api/promotions';
 
 export function AiPromotionWizard() {
     const { toast } = useToast();
@@ -51,22 +51,29 @@ export function AiPromotionWizard() {
         
         setIsCreating(true);
 
-        const apiResult = await fetchWithAuth('/ai/promotions/wizard', {
-            method: 'POST',
-            body: JSON.stringify({ prompt }),
-        });
+        const promotionData = {
+            name: result.name,
+            description: result.description,
+            prize: result.prize,
+            cost: result.cost,
+            imageDataUri: result.imageDataUri,
+            imageHint: prompt.slice(0, 50),
+            endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        };
         
-        if (apiResult.success) {
+        const createResult = await createPromotion(promotionData);
+        
+        if (createResult.success) {
             toast({
                 title: 'Промо-акция создана!',
-                description: `Акция "${result.name}" успешно запущена.`,
+                description: `Акция "${result.name}" успешно создана.`,
             });
             router.push('/promotions');
         } else {
              toast({
                 variant: 'destructive',
                 title: 'Ошибка',
-                description: apiResult.error || 'Не удалось создать акцию.',
+                description: createResult.error || 'Не удалось создать акцию.',
             });
         }
         setIsCreating(false);
@@ -126,7 +133,7 @@ export function AiPromotionWizard() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
-                             <Label>Изображение</Label>
+                             <Label>Баннер</Label>
                              <Image src={result.imageDataUri} alt="Сгенерированное изображение" width={1200} height={675} className="rounded-lg border aspect-video object-cover" />
                         </div>
                         <div className="space-y-2">
