@@ -13,6 +13,8 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import Link from 'next/link';
 
+type Recommendation = PlayerScoutOutput['recommendations'][number];
+
 export function PlayerScout() {
     const { toast } = useToast();
     const [prompt, setPrompt] = useState('Ищем защитника для футбольной команды. Важна хорошая коммуникация и доступность по вечерам.');
@@ -67,7 +69,7 @@ export function PlayerScout() {
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         disabled={isLoading}
-                        className="min-h-[100px] text-base"
+                        className="min-h-[100px]"
                     />
                      {error && (
                         <Alert variant="destructive" className="mt-4">
@@ -89,7 +91,7 @@ export function PlayerScout() {
                     <Skeleton key={i} className="h-36 w-full" />
                 ))}
                 
-                {result?.recommendations.map(({player, reasoning}) => (
+                {result?.recommendations.map(({ player, reasoning }: Recommendation) => (
                     <Card key={player.id} className="animate-in fade-in-50">
                         <CardHeader className="flex-row gap-4 justify-between items-start">
                            <div className="flex gap-4">
@@ -123,7 +125,7 @@ export function PlayerScout() {
                 ))}
             </div>
              {!isLoading && result && result.recommendations.length === 0 && (
-                <div className="col-span-full text-center py-16 text-muted-foreground">
+                <div className="col-span-full text-center py-8 text-muted-foreground">
                     <p>Подходящих игроков не найдено. Попробуйте уточнить ваш запрос.</p>
                 </div>
             )}
