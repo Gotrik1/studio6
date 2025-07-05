@@ -17,11 +17,11 @@ import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from '@/shared/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { useTrainingProposals } from '@/shared/context/training-proposal-provider';
+import { useTrainingProposals } from '@/app/providers/training-proposal-provider';
 import { getSports, type Sport } from '@/entities/sport/api/sports';
 
 const trainingSchema = z.object({
-  friendId: z.string({ required_error: "Выберите друга." }),
+  friendId: z.string().optional(),
   sport: z.string({ required_error: "Выберите дисциплину." }),
   date: z.date({ required_error: "Выберите дату." }),
   time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Введите время в формате HH:MM."),
@@ -33,9 +33,10 @@ type FormValues = z.infer<typeof trainingSchema>;
 interface ProposeTrainingDialogProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
+    challengedPlayer?: { id: string; name: string; };
 }
 
-export function ProposeTrainingDialog({ isOpen, onOpenChange }: ProposeTrainingDialogProps) {
+export function ProposeTrainingDialog({ isOpen, onOpenChange, challengedPlayer }: ProposeTrainingDialogProps) {
     const { toast } = useToast();
     const { addProposal, friends } = useTrainingProposals();
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -55,24 +56,38 @@ export function ProposeTrainingDialog({ isOpen, onOpenChange }: ProposeTrainingD
             date: new Date(),
         },
     });
+    
+    useEffect(() => {
+        if (isOpen && challengedPlayer) {
+            form.setValue('friendId', challengedPlayer.id);
+        } else if (!isOpen) {
+            form.reset();
+        }
+    }, [isOpen, challengedPlayer, form]);
 
     const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
+        const toId = challengedPlayer?.id || data.friendId;
+        if (!toId) {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Необходимо выбрать игрока.' });
+            setIsSubmitting(false);
+            return;
+        }
+        
         // Combine date and time
         const [hours, minutes] = data.time.split(':').map(Number);
         const combinedDate = new Date(data.date);
         combinedDate.setHours(hours, minutes, 0, 0);
 
-        const success = await addProposal(data.friendId, data.sport, combinedDate, data.comment || '');
+        const success = await addProposal(toId, data.sport, combinedDate, data.comment || '');
 
         if (success) {
-            const friend = friends.find(f => f.id === data.friendId);
+            const friend = friends.find(f => f.id === toId) || challengedPlayer;
             toast({
                 title: "Предложение отправлено!",
                 description: `Ваше предложение о совместной тренировке отправлено игроку ${friend?.name}.`,
             });
             onOpenChange(false);
-            form.reset();
         } else {
              toast({
                 variant: 'destructive',
@@ -90,12 +105,16 @@ export function ProposeTrainingDialog({ isOpen, onOpenChange }: ProposeTrainingD
                     <form onSubmit={form.handleSubmit(onSubmit)}>
                         <DialogHeader>
                             <DialogTitle>Предложить совместную тренировку</DialogTitle>
-                            <DialogDescription>Выберите друга и детали тренировки. Отказ от этого предложения не несет штрафов.</DialogDescription>
+                            <DialogDescription>{challengedPlayer ? `Отправить предложение игроку ${challengedPlayer.name}` : 'Выберите друга и детали тренировки. Отказ от этого предложения не несет штрафов.'}</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
-                             <FormField control={form.control} name="friendId" render={({ field }) => (
-                                <FormItem><FormLabel>Друг</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите друга из списка" /></SelectTrigger></FormControl><SelectContent>{friends.map(friend => <SelectItem key={friend.id} value={friend.id}>{friend.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
-                            )} />
+                            {challengedPlayer ? (
+                                 <FormItem><FormLabel>Игрок</FormLabel><FormControl><Input value={challengedPlayer.name} disabled /></FormControl></FormItem>
+                            ) : (
+                                <FormField control={form.control} name="friendId" render={({ field }) => (
+                                    <FormItem><FormLabel>Друг</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите друга из списка" /></SelectTrigger></FormControl><SelectContent>{friends.map(friend => <SelectItem key={friend.id} value={friend.id}>{friend.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                )} />
+                            )}
                             <FormField control={form.control} name="sport" render={({ field }) => (
                                 <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                             )} />

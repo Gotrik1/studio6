@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -8,7 +9,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import { Users, Share2, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send, Image as ImageIcon, Sword, ListChecks } from "lucide-react";
+import { Users, Share2, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send, Image as ImageIcon, Sword, ListChecks, UserPlus } from "lucide-react";
 import Link from "next/link";
 import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -18,16 +19,16 @@ import { cn } from "@/shared/lib/utils";
 import { useState } from 'react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
-import type { achievements as AchievementsArray, teams as TeamsArray } from "@/shared/lib/mock-data/profiles";
 import { ReportPlayerDialog } from '@/features/report-player-dialog';
 import Image from "next/image";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
-import { ProposeMatchDialog } from '@/widgets/propose-match-dialog';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
 import { PlayerActivityFeed, type PlayerActivityItem } from '@/widgets/player-activity-feed';
-import type { UserTeam, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
+import type { UserTeam, CareerHistoryItem, GalleryItem, PlayerStats } from '@/entities/user/model/types';
+import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import { ProposeTrainingDialog } from '../propose-training-dialog';
 
 
 const CareerTab = dynamic(() => import('@/entities/player/ui/player-profile-tabs/career-tab').then(mod => mod.CareerTab), {
@@ -60,14 +61,11 @@ type PlayerProfileProps = {
   user: User & {
     location: string;
     mainSport: string;
-    status: string;
     isVerified: boolean;
-    xp: number;
     dateOfBirth: string;
     age: number;
     preferredSports: string[];
     contacts: { telegram: string; discord: string };
-    activities: PlayerActivityItem[];
   };
   isCurrentUser: boolean;
   achievements: typeof AchievementsArray;
@@ -75,18 +73,19 @@ type PlayerProfileProps = {
   gallery: GalleryItem[];
   careerHistory: CareerHistoryItem[];
   playerActivity: PlayerActivityItem[];
+  stats: PlayerStats | null;
 };
 
-export function PlayerProfile({ user, isCurrentUser, achievements, teams, gallery, careerHistory, playerActivity }: PlayerProfileProps) {
+export function PlayerProfile({ user, isCurrentUser, achievements, teams, gallery, careerHistory, playerActivity, stats }: PlayerProfileProps) {
   const [avatar, setAvatar] = useState(user.avatar);
   const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
   const initials = user.name.split(' ').map((n) => n[0]).join('');
-  const rank = getRankByPoints(user.xp);
-  const progressValue = rank.maxPoints === Infinity ? 100 : ((user.xp - rank.minPoints) / (rank.maxPoints - rank.minPoints)) * 100;
+  const rank = getRankByPoints(user.xp || 0);
+  const progressValue = rank.maxPoints === Infinity ? 100 : (((user.xp || 0) - rank.minPoints) / (rank.maxPoints - rank.minPoints)) * 100;
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
   const [isReportDialogOpen, setIsReportDialogOpen] = useState(false);
-  const [isProposeMatchDialogOpen, setIsProposeMatchDialogOpen] = useState(false);
+  const [isProposeTrainingOpen, setIsProposeTrainingOpen] = useState(false);
 
   return (
     <>
@@ -112,7 +111,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
           <div className="flex flex-col items-center gap-6 -mt-20 text-center sm:flex-row sm:items-end sm:text-left">
             <div className="relative shrink-0">
               <Avatar className="h-32 w-32 border-4 border-background bg-background shadow-lg">
-                <AvatarImage src={avatar} alt={user.name} data-ai-hint="esports player" />
+                <AvatarImage src={avatar || ''} alt={user.name} data-ai-hint="esports player" />
                 <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
               </Avatar>
               {isCurrentUser && (
@@ -147,31 +146,34 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
                         </Link>
                         </div>
                     ) : (
-                        <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                            <MoreVertical className="h-5 w-5" />
-                            <span className="sr-only">Действия</span>
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setIsProposeMatchDialogOpen(true)}>
-                                <Sword className="mr-2 h-4 w-4"/>
-                                Бросить вызов
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                                <Share2 className="mr-2 h-4 w-4"/>
-                                Поделиться
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                                className="text-destructive"
-                                onClick={() => setIsReportDialogOpen(true)}
-                            >
-                                <Flag className="mr-2 h-4 w-4"/> Пожаловаться
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                        </DropdownMenu>
+                        <div className="flex items-center gap-2">
+                            <Button><UserPlus className="mr-2 h-4 w-4"/> Добавить в друзья</Button>
+                             <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                    <MoreVertical className="h-5 w-5" />
+                                    <span className="sr-only">Действия</span>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <DropdownMenuItem onClick={() => setIsProposeTrainingOpen(true)}>
+                                        <Sword className="mr-2 h-4 w-4"/>
+                                        Предложить тренировку
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                        <Share2 className="mr-2 h-4 w-4"/>
+                                        Поделиться
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem 
+                                        className="text-destructive"
+                                        onClick={() => setIsReportDialogOpen(true)}
+                                    >
+                                        <Flag className="mr-2 h-4 w-4"/> Пожаловаться
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </div>
                     )}
                 </div>
               </div>
@@ -204,7 +206,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
             <div className="space-y-2">
             <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Прогресс</span>
-                <span>{user.xp.toLocaleString('ru-RU')} / {rank.maxPoints === Infinity ? '∞' : rank.maxPoints.toLocaleString('ru-RU')} XP</span>
+                <span>{(user.xp || 0).toLocaleString('ru-RU')} / {rank.maxPoints === Infinity ? '∞' : rank.maxPoints.toLocaleString('ru-RU')} XP</span>
             </div>
             <Progress value={progressValue} className="h-2" />
             </div>
@@ -265,7 +267,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
             </TabsContent>
 
             <TabsContent value="stats" className="mt-4">
-                <StatsTab />
+                <StatsTab stats={stats} />
             </TabsContent>
 
             <TabsContent value="physical-prep" className="mt-4">
@@ -273,7 +275,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
             </TabsContent>
 
             <TabsContent value="holistic-analysis" className="mt-4">
-                <HolisticAnalysisTab />
+                <HolisticAnalysisTab stats={stats} />
             </TabsContent>
 
             <TabsContent value="career" className="mt-4">
@@ -297,7 +299,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
         <UserAvatarGeneratorDialog
             isOpen={isAvatarDialogOpen}
             onOpenChange={setIsAvatarDialogOpen}
-            currentAvatar={avatar}
+            currentAvatar={avatar || ''}
             onAvatarSave={setAvatar}
         />
         <ProfileBannerGeneratorDialog
@@ -312,10 +314,10 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
             onOpenChange={setIsReportDialogOpen}
             reportedPlayerName={user.name}
         />
-        <ProposeMatchDialog
-            isOpen={isProposeMatchDialogOpen}
-            onOpenChange={setIsProposeMatchDialogOpen}
-            challengedPlayerName={user.name}
+        <ProposeTrainingDialog
+            isOpen={isProposeTrainingOpen}
+            onOpenChange={setIsProposeTrainingOpen}
+            challengedPlayer={{id: user.id, name: user.name}}
         />
     </>
   );

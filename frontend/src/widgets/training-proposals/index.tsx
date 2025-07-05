@@ -1,7 +1,8 @@
+
 'use client';
 
 import { useTransition } from 'react';
-import { useTrainingProposals, type TrainingProposal } from '@/shared/context/training-proposal-provider';
+import { useTrainingProposals, type TrainingProposal } from '@/app/providers/training-proposal-provider';
 import { useSession } from '@/shared/lib/session/client';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';

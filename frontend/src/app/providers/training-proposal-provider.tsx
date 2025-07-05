@@ -1,27 +1,26 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import type { User } from '@/shared/lib/types';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { useSession } from '@/shared/lib/session/client';
 import { getFriends, type Friend } from '@/entities/user/api/friends';
+import { getTrainingProposals, createTrainingProposal, updateTrainingProposalStatus } from '@/entities/training-proposal/api/training-proposals';
 
+// This type should align with the backend response
 export type TrainingProposal = {
     id: string;
-    from: Pick<User, 'name' | 'avatar'>;
-    to: Pick<User, 'name' | 'avatar'>;
+    from: Pick<Friend, 'id' | 'name' | 'avatar'>;
+    to: Pick<Friend, 'id' | 'name' | 'avatar'>;
     sport: string;
     date: Date;
-    comment: string;
-    status: 'pending' | 'accepted' | 'declined';
+    comment: string | null;
+    status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
 };
-
-const initialProposals: TrainingProposal[] = []; // In a real app, this would be fetched.
-
 
 interface TrainingProposalContextType {
   proposals: TrainingProposal[];
-  addProposal: (toUserId: string, sport: string, date: Date, comment: string) => void;
-  updateProposalStatus: (proposalId: string, status: 'accepted' | 'declined') => void;
+  isLoading: boolean;
+  addProposal: (toUserId: string, sport: string, date: Date, comment: string) => Promise<boolean>;
+  updateProposalStatus: (proposalId: string, status: 'ACCEPTED' | 'DECLINED') => Promise<boolean>;
   friends: Friend[];
 }
 
@@ -29,42 +28,66 @@ const TrainingProposalContext = createContext<TrainingProposalContextType | unde
 
 export const TrainingProposalProvider = ({ children }: { children: ReactNode }) => {
     const { user: sessionUser } = useSession();
-    const [proposals, setProposals] = useState<TrainingProposal[]>(initialProposals);
+    const [proposals, setProposals] = useState<TrainingProposal[]>([]);
     const [friends, setFriends] = useState<Friend[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const fetchAllData = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const [friendsData, proposalsResult] = await Promise.all([
+                getFriends(),
+                getTrainingProposals(),
+            ]);
+
+            setFriends(friendsData);
+
+            if (proposalsResult.success) {
+                // Convert date strings to Date objects
+                const formattedProposals = proposalsResult.data.map((p: any) => ({
+                    ...p,
+                    date: new Date(p.date),
+                }));
+                setProposals(formattedProposals);
+            } else {
+                console.error("Failed to fetch proposals", proposalsResult.error);
+                setProposals([]);
+            }
+
+        } catch (error) {
+            console.error("Error loading training proposal data", error);
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
     useEffect(() => {
         if (sessionUser) {
-            getFriends().then(setFriends);
-            // Here you would also fetch existing proposals.
+           fetchAllData();
         }
-    }, [sessionUser]);
+    }, [sessionUser, fetchAllData]);
 
 
-    const addProposal = (toUserId: string, sport: string, date: Date, comment: string) => {
-        if (!sessionUser) return;
-        const toUser = friends.find(f => f.id === toUserId);
-        if (!toUser) return;
-        
-        const newProposal: TrainingProposal = {
-            id: `tp-${Date.now()}`,
-            from: { name: sessionUser.name, avatar: sessionUser.avatar },
-            to: { name: toUser.name, avatar: toUser.avatar },
-            sport,
-            date,
-            comment,
-            status: 'pending',
-        };
-        // This is a client-side mock. In reality, you'd post to the backend.
-        setProposals(prev => [newProposal, ...prev]);
+    const addProposal = async (toId: string, sport: string, date: Date, comment: string) => {
+        const result = await createTrainingProposal({ toId, sport, date, comment });
+        if (result.success) {
+            await fetchAllData();
+            return true;
+        }
+        return false;
     };
 
-    const updateProposalStatus = (proposalId: string, status: 'accepted' | 'declined') => {
-        // Client-side mock.
-        setProposals(prev => prev.map(p => p.id === proposalId ? { ...p, status } : p));
+    const updateProposalStatus = async (proposalId: string, status: 'ACCEPTED' | 'DECLINED') => {
+        const result = await updateTrainingProposalStatus(proposalId, status);
+        if (result.success) {
+            await fetchAllData();
+            return true;
+        }
+        return false;
     };
 
     return (
-        <TrainingProposalContext.Provider value={{ proposals, addProposal, updateProposalStatus, friends }}>
+        <TrainingProposalContext.Provider value={{ proposals, isLoading, addProposal, updateProposalStatus, friends }}>
             {children}
         </TrainingProposalContext.Provider>
     );
