@@ -3,6 +3,8 @@ import { PrismaService } from '@/prisma/prisma.service';
 import { Prisma, Playground } from '@prisma/client';
 import { CreatePlaygroundDto } from './dto/create-playground.dto';
 import { CreateReviewDto } from './dto/create-review.dto';
+import { summarizePlaygroundReviews } from '@/ai/flows/summarize-playground-reviews-flow';
+import type { PlaygroundReviewSummaryDto } from './dto/playground-review-summary.dto';
 
 @Injectable()
 export class PlaygroundsService {
@@ -146,5 +148,31 @@ export class PlaygroundsService {
         include: { author: { select: { id: true, name: true, avatar: true } } },
         orderBy: { createdAt: 'desc' },
     });
+  }
+  
+  async getReviewSummary(playgroundId: string): Promise<PlaygroundReviewSummaryDto> {
+    const reviews = await this.prisma.playgroundReview.findMany({
+      where: { playgroundId },
+      select: { comment: true, rating: true },
+    });
+
+    if (reviews.length === 0) {
+      return {
+        pros: [],
+        cons: [],
+        averageRating: 0,
+      };
+    }
+    
+    const reviewTexts = reviews.map(r => r.comment);
+    const summary = await summarizePlaygroundReviews({ reviews: reviewTexts });
+    
+    const totalRating = reviews.reduce((sum, r) => sum + r.rating, 0);
+    const averageRating = totalRating / reviews.length;
+
+    return {
+      ...summary,
+      averageRating: parseFloat(averageRating.toFixed(1)),
+    };
   }
 }

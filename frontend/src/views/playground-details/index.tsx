@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
-import type { Playground, PlaygroundReview } from '@/entities/playground/model/types';
+import type { Playground } from '@/entities/playground/model/types';
 import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -17,7 +17,7 @@ import { useLfg } from '@/app/providers/lfg-provider';
 import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
-import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
+import { PlaygroundReviewsTab, type PlaygroundReview } from '@/widgets/playground-reviews-tab';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
@@ -199,7 +199,13 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
                         <PlaygroundScheduleTab schedule={lobbies.filter(l => l.playgroundId === playground.id)} onPlanClick={openPlanGameDialog} />
                     </TabsContent>
                     <TabsContent value="reviews" className="mt-6">
-                        <PlaygroundReviewsTab reviews={reviews} onAddReview={handleAddReview} playgroundName={playground.name} isLoading={isLoadingReviews} />
+                        <PlaygroundReviewsTab 
+                            playgroundId={playground.id}
+                            playgroundName={playground.name}
+                            reviews={reviews} 
+                            onAddReview={handleAddReview} 
+                            isLoading={isLoadingReviews} 
+                        />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-6">
                         <PlaygroundActivityTab activities={activities} isLoading={isLoadingActivities} />

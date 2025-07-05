@@ -8,6 +8,5 @@ export type SummarizePlaygroundReviewsInput = z.infer<typeof SummarizePlayground
 export const SummarizePlaygroundReviewsOutputSchema = z.object({
   pros: z.array(z.string()).describe("A list of 2-3 key positive points mentioned in the reviews."),
   cons: z.array(z.string()).describe("A list of 2-3 key negative points or drawbacks mentioned in the reviews."),
-  averageRating: z.number().describe("The calculated average rating from all reviews."),
 });
 export type SummarizePlaygroundReviewsOutput = z.infer<typeof SummarizePlaygroundReviewsOutputSchema>;

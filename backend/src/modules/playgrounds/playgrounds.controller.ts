@@ -7,6 +7,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { KingOfTheCourtDto } from './dto/king-of-the-court.dto';
+import { PlaygroundReviewSummaryDto } from './dto/playground-review-summary.dto';
 
 @ApiTags('Playgrounds')
 @Controller('playgrounds')
@@ -50,6 +51,14 @@ export class PlaygroundsController {
   @ApiOperation({ summary: 'Получить отзывы для площадки' })
   findReviews(@Param('id') id: string) {
       return this.playgroundsService.findReviews(id);
+  }
+
+  @Public()
+  @Get(':id/review-summary')
+  @ApiOperation({ summary: 'Получить AI-сводку по отзывам о площадке' })
+  @ApiResponse({ status: 200, description: 'Сводка по отзывам.', type: PlaygroundReviewSummaryDto })
+  getReviewSummary(@Param('id') id: string) {
+    return this.playgroundsService.getReviewSummary(id);
   }
 
   @Post(':id/reviews')

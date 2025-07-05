@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -6,18 +5,20 @@ import { PlaygroundReviewsFeed } from '@/widgets/playground-reviews-feed';
 import { PlaygroundReviewSummary } from '@/widgets/playground-review-summary';
 import { PlaygroundReviewDialog } from '@/widgets/playground-review-dialog';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { Card, CardHeader, CardContent } from '@/shared/ui/card';
 import type { PlaygroundReview } from '@/entities/playground/model/types';
 import type { CreateReviewData } from '@/entities/playground/api/reviews';
 
 
 interface PlaygroundReviewsTabProps {
+    playgroundId: string;
+    playgroundName: string;
     reviews: PlaygroundReview[];
     onAddReview: (reviewData: CreateReviewData) => Promise<void>;
-    playgroundName: string;
     isLoading: boolean;
 }
 
-export function PlaygroundReviewsTab({ reviews, onAddReview, playgroundName, isLoading }: PlaygroundReviewsTabProps) {
+export function PlaygroundReviewsTab({ playgroundId, playgroundName, reviews, onAddReview, isLoading }: PlaygroundReviewsTabProps) {
     const [isReviewDialogOpen, setIsReviewDialogOpen] = useState(false);
     
     return (
@@ -40,7 +41,7 @@ export function PlaygroundReviewsTab({ reviews, onAddReview, playgroundName, isL
                     )}
                 </div>
                 <div className="lg:col-span-1">
-                    <PlaygroundReviewSummary reviews={reviews} />
+                    <PlaygroundReviewSummary playgroundId={playgroundId} />
                 </div>
             </div>
             <PlaygroundReviewDialog 
