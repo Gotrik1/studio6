@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, BadRequestException, Logger, OnModuleInit } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Team, ActivityType } from '@prisma/client';
@@ -7,11 +7,65 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 
 @Injectable()
-export class TeamsService {
+export class TeamsService implements OnModuleInit {
+  private readonly logger = new Logger(TeamsService.name);
+
   constructor(
     private prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
+
+  async onModuleInit() {
+    await this.seedTeams();
+  }
+
+  async seedTeams() {
+    const teamCount = await this.prisma.team.count();
+    if (teamCount > 0) return;
+
+    this.logger.log('Seeding initial teams...');
+    
+    // Ensure a user exists to be a captain
+    let captain = await this.prisma.user.findFirst();
+    if (!captain) {
+        captain = await this.prisma.user.create({
+            data: {
+                email: 'captain@example.com',
+                name: 'Captain Seed',
+                passwordHash: 'seeded',
+                role: 'Капитан',
+            }
+        });
+    }
+
+    const teamsToCreate = [
+      { name: 'Дворовые Атлеты', game: 'Футбол', motto: 'Играем сердцем', slug: 'dvotovyie-atlety' },
+      { name: 'Соколы', game: 'Футбол', motto: 'Выше только небо', slug: 'sokoly' },
+      { name: 'Торпедо', game: 'Футбол', motto: 'Только вперед', slug: 'torpedo' },
+      { name: 'Вымпел', game: 'Футбол', motto: 'Сила в единстве', slug: 'vympel' },
+    ];
+
+    for (const teamData of teamsToCreate) {
+        // Need a unique captain for each team
+        const teamCaptain = await this.prisma.user.create({
+            data: {
+                email: `${teamData.slug}@example.com`,
+                name: `Captain ${teamData.name}`,
+                passwordHash: 'seeded',
+                role: 'Капитан',
+            }
+        });
+
+        await this.prisma.team.create({
+            data: {
+                ...teamData,
+                creatorId: teamCaptain.id,
+                captainId: teamCaptain.id,
+            }
+        });
+    }
+     this.logger.log('Initial teams seeded.');
+  }
 
   async create(createTeamDto: CreateTeamDto): Promise<Team> {
     const { name, captainId, game, motto, logo, dataAiHint } = createTeamDto;
@@ -120,7 +174,7 @@ export class TeamsService {
       game: team.game,
       rank: team.rank,
       membersCount: team.members.length,
-      captainName: team.captain.name,
+      captainId: team.captainId,
       slug: team.slug,
       homePlaygroundId: team.homePlaygroundId,
       roster,

@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { Card, CardContent, CardTitle } from '@/shared/ui/card';
@@ -8,19 +6,17 @@ import Image from 'next/image';
 import { Badge } from '@/shared/ui/badge';
 import { Users, Gamepad2 } from 'lucide-react';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import type { League } from '@/entities/league/model/types';
 
-// Mock data, as backend doesn't support leagues yet.
-const leagues: any[] = []; 
 
-export function LeaguesListPage() {
-  const [isLoading, setIsLoading] = useState(true);
+interface LeaguesListPageProps {
+  initialLeagues: League[];
+}
 
-  useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => setIsLoading(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
+export function LeaguesListPage({ initialLeagues }: LeaguesListPageProps) {
+  const [leagues] = useState(initialLeagues);
+  const [isLoading] = useState(false); // Can be set to true if fetching client-side
 
   return (
     <div className="space-y-6 opacity-0 animate-fade-in-up">
