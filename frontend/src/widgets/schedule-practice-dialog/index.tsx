@@ -12,19 +12,16 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2, Send } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from '@/shared/ui/dialog';
 import { getPlaygrounds } from '@/entities/playground/api/playgrounds';
 import type { Playground } from '@/entities/playground/model/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import type { TeamPractice } from '@/shared/lib/mock-data/team-practices';
-import { getSports } from '@/entities/sport/api/sports';
-import type { Sport } from '@/entities/sport/model/types';
 
 const practiceSchema = z.object({
-  title: z.string().min(5, 'Название должно содержать не менее 5 символов.'),
+  title: z.string().min(5, 'Название должно быть не менее 5 символов.'),
   date: z.date({ required_error: "Выберите дату." }),
   time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Введите время в формате HH:MM."),
   playgroundId: z.string({ required_error: "Выберите площадку." }),
@@ -36,7 +33,7 @@ type FormValues = z.infer<typeof practiceSchema>;
 interface SchedulePracticeDialogProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
-    onSchedule: (data: Omit<TeamPractice, 'id' | 'location' | 'date'> & { date: Date }) => void;
+    onSchedule: (data: FormValues) => Promise<boolean>;
 }
 
 export function SchedulePracticeDialog({ isOpen, onOpenChange, onSchedule }: SchedulePracticeDialogProps) {
@@ -57,19 +54,14 @@ export function SchedulePracticeDialog({ isOpen, onOpenChange, onSchedule }: Sch
         },
     });
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
-        // Combine date and time
-        const [hours, minutes] = data.time.split(':').map(Number);
-        const combinedDate = new Date(data.date);
-        combinedDate.setHours(hours, minutes, 0, 0);
-
-        setTimeout(() => {
-            onSchedule({ ...data, date: combinedDate });
-            setIsSubmitting(false);
+        const success = await onSchedule(data);
+        if (success) {
             onOpenChange(false);
-            form.reset();
-        }, 1000);
+            form.reset({ date: new Date(), time: '19:00', title: '', description: '', playgroundId: '' });
+        }
+        setIsSubmitting(false);
     };
     
     return (
@@ -82,7 +74,7 @@ export function SchedulePracticeDialog({ isOpen, onOpenChange, onSchedule }: Sch
                             <DialogDescription>Все участники команды получат уведомление.</DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
-                            <FormField control={form.control} name="title" render={({ field }) => (
+                             <FormField control={form.control} name="title" render={({ field }) => (
                                 <FormItem><FormLabel>Тема тренировки</FormLabel><FormControl><Input placeholder="Например, Отработка стандартных положений" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                              <div className="grid grid-cols-2 gap-4">

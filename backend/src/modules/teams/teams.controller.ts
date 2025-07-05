@@ -10,6 +10,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { SetHomePlaygroundDto } from './dto/set-home-playground.dto';
 import { SetCaptainDto } from './dto/set-captain.dto';
+import { CreatePracticeDto } from './dto/create-practice.dto';
 
 @ApiTags('Teams')
 @Controller('teams')
@@ -44,6 +45,25 @@ export class TeamsController {
   @Get('slug/:slug')
   findBySlug(@Param('slug') slug: string) {
     return this.teamsService.findBySlug(slug);
+  }
+
+  @Get(':teamId/practices')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  findPractices(@Param('teamId') teamId: string) {
+    return this.teamsService.findPracticesForTeam(teamId);
+  }
+
+  @Post(':teamId/practices')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  createPractice(
+    @Param('teamId') teamId: string,
+    @Body() createPracticeDto: CreatePracticeDto,
+    @Req() req: Request,
+  ) {
+    const captainId = (req.user as any).userId;
+    return this.teamsService.createPractice(teamId, captainId, createPracticeDto);
   }
 
   @Post(':id/join')

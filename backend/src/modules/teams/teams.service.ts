@@ -5,6 +5,7 @@ import { Team, ActivityType, Prisma } from '@prisma/client';
 import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { CreatePracticeDto } from './dto/create-practice.dto';
 
 @Injectable()
 export class TeamsService implements OnModuleInit {
@@ -352,6 +353,36 @@ export class TeamsService implements OnModuleInit {
     
     // Return updated team
     return this.prisma.team.findUnique({ where: { id: teamId } });
+  }
+
+  async findPracticesForTeam(teamId: string) {
+    return this.prisma.teamPractice.findMany({
+      where: { teamId },
+      include: { playground: { select: { name: true } } },
+      orderBy: { date: 'asc' },
+    });
+  }
+
+  async createPractice(teamId: string, captainId: string, dto: CreatePracticeDto) {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Команда с ID ${teamId} не найдена.`);
+    }
+
+    if (team.captainId !== captainId) {
+      throw new ForbiddenException('Только капитан может планировать тренировки.');
+    }
+
+    return this.prisma.teamPractice.create({
+      data: {
+        ...dto,
+        team: { connect: { id: teamId } },
+        playground: { connect: { id: dto.playgroundId } }
+      },
+    });
   }
 
   async remove(id: string): Promise<Team> {

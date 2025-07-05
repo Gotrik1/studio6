@@ -1,38 +1,84 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Calendar, PlusCircle, MapPin, Trash2 } from 'lucide-react';
-import { teamPractices as initialPractices, type TeamPractice } from '@/shared/lib/mock-data/team-practices';
 import { SchedulePracticeDialog } from '@/widgets/schedule-practice-dialog';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { getPlaygrounds } from '@/entities/playground/api/playgrounds';
-import type { Playground } from '@/entities/playground/model/types';
-import { useEffect } from 'react';
+import { getTeamPractices, createTeamPractice } from '@/entities/team/api/practices';
+import { useParams } from 'next/navigation';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { useToast } from '@/shared/hooks/use-toast';
+
+type TeamPractice = {
+    id: string;
+    title: string;
+    description: string;
+    date: Date;
+    location: string;
+    playgroundId: string;
+};
 
 export function TeamScheduleTab() {
-    const [practices, setPractices] = useState<TeamPractice[]>(initialPractices);
+    const params = useParams<{ slug: string }>();
+    const teamId = params.slug; // slug is used as id in this context
+    const { toast } = useToast();
+    const [practices, setPractices] = useState<TeamPractice[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [playgrounds, setPlaygrounds] = useState<Playground[]>([]);
-    
-    useEffect(() => {
-        getPlaygrounds().then(setPlaygrounds);
-    }, []);
 
-    const handleSchedule = (data: Omit<TeamPractice, 'id' | 'location' | 'date'> & { date: Date }) => {
-        const playground = playgrounds.find(p => p.id === data.playgroundId);
-        const newPractice: TeamPractice = {
-            id: `practice-${Date.now()}`,
+    const fetchPractices = useCallback(async () => {
+        setIsLoading(true);
+        const result = await getTeamPractices(teamId);
+        if (result.success) {
+            setPractices(result.data.map((p: any) => ({
+                id: p.id,
+                title: p.title,
+                description: p.description,
+                date: new Date(p.date),
+                location: p.playground?.name || 'Место не указано',
+                playgroundId: p.playgroundId,
+            })));
+        } else {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить расписание.' });
+        }
+        setIsLoading(false);
+    }, [teamId, toast]);
+
+    useEffect(() => {
+        if (teamId) {
+            fetchPractices();
+        }
+    }, [teamId, fetchPractices]);
+
+    const handleSchedule = async (data: Omit<TeamPractice, 'id' | 'location' | 'date'> & { date: Date }) => {
+        const [hours, minutes] = data.time.split(':').map(Number);
+        const combinedDate = new Date(data.date);
+        combinedDate.setHours(hours, minutes, 0, 0);
+
+        const payload = {
             ...data,
-            location: playground?.name || 'Неизвестная площадка',
+            date: combinedDate,
         };
-        setPractices(prev => [...prev, newPractice].sort((a,b) => a.date.getTime() - b.date.getTime()));
+        
+        const result = await createTeamPractice(teamId, payload);
+        if (result.success) {
+            toast({ title: 'Тренировка запланирована!', description: 'Новая тренировка добавлена в расписание.' });
+            await fetchPractices();
+            return true;
+        } else {
+            toast({ variant: 'destructive', title: 'Ошибка', description: result.error || 'Не удалось запланировать тренировку.' });
+            return false;
+        }
     };
 
     const handleDelete = (id: string) => {
+        // In real app, call API to delete
         setPractices(prev => prev.filter(p => p.id !== id));
+        toast({ title: 'Тренировка отменена' });
     };
 
     return (
@@ -49,7 +95,12 @@ export function TeamScheduleTab() {
                     </Button>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {practices.length > 0 ? (
+                    {isLoading ? (
+                         <div className="space-y-4">
+                            <Skeleton className="h-24 w-full" />
+                            <Skeleton className="h-24 w-full" />
+                        </div>
+                    ) : practices.length > 0 ? (
                         practices.map(practice => (
                             <Card key={practice.id} className="p-4">
                                 <div className="flex justify-between items-start">
@@ -75,7 +126,7 @@ export function TeamScheduleTab() {
             <SchedulePracticeDialog
                 isOpen={isDialogOpen}
                 onOpenChange={setIsDialogOpen}
-                onSchedule={handleSchedule}
+                onSchedule={handleSchedule as any}
             />
         </>
     );
