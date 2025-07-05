@@ -1,11 +1,14 @@
 
-import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query, Patch, UseGuards, Req } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { JoinTeamDto } from './dto/join-team.dto';
 import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
-import { ApiTags, ApiQuery } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Request } from 'express';
+import { SetHomePlaygroundDto } from './dto/set-home-playground.dto';
 
 @ApiTags('Teams')
 @Controller('teams')
@@ -45,5 +48,21 @@ export class TeamsController {
   @Post(':id/join')
   join(@Param('id') teamId: string, @Body() joinTeamDto: JoinTeamDto) {
     return this.teamsService.joinTeam(teamId, joinTeamDto.userId);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Patch(':teamId/home-playground')
+  setHomePlayground(
+    @Param('teamId') teamId: string,
+    @Body() setHomePlaygroundDto: SetHomePlaygroundDto,
+    @Req() req: Request,
+  ) {
+    const captainId = (req.user as any).userId;
+    return this.teamsService.setHomePlayground(
+      teamId,
+      setHomePlaygroundDto.playgroundId,
+      captainId,
+    );
   }
 }

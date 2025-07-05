@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, BadRequestException, Logger, OnModuleInit } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, BadRequestException, Logger, OnModuleInit, ForbiddenException } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { Team, ActivityType, Prisma } from '@prisma/client';
@@ -252,6 +252,30 @@ export class TeamsService implements OnModuleInit {
       },
       include: { members: true },
     });
+  }
+
+  async setHomePlayground(teamId: string, playgroundId: string, captainId: string): Promise<Team> {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Команда с ID ${teamId} не найдена.`);
+    }
+
+    if (team.captainId !== captainId) {
+      throw new ForbiddenException('Только капитан может изменить домашнюю площадку.');
+    }
+    
+    const updatedTeam = await this.prisma.team.update({
+        where: { id: teamId },
+        data: { homePlaygroundId: playgroundId },
+    });
+
+    // Invalidate cache
+    await this.cacheManager.del(`team_slug_${team.slug}`);
+
+    return updatedTeam;
   }
 
   async remove(id: string): Promise<Team> {
