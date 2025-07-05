@@ -23,7 +23,7 @@ import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from '@/widgets/report-playground-issue-dialog';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
-import type { PlayerActivityItem } from '@/widgets/player-activity-feed';
+import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
 
 
@@ -41,7 +41,7 @@ export type PlaygroundReview = {
 export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const [activities, setActivities] = useState<PlayerActivityItem[]>([]);
+    const [activities, setActivities] = useState<PlaygroundActivity[]>([]);
     const [isLoadingActivities, setIsLoadingActivities] = useState(true);
     const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
@@ -55,7 +55,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         setIsLoadingActivities(true);
         try {
             const activityData = await getPlaygroundActivity(playground.id);
-            const formattedActivities = activityData.map((act: any) => ({
+            const formattedActivities: PlaygroundActivity[] = activityData.map((act: any) => ({
                 id: act.id,
                 user: {
                     name: act.user.name,

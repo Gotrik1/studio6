@@ -5,11 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
 import { UserCheck } from 'lucide-react';
-import { userList } from '@/shared/lib/mock-data/users';
+import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 
-const currentPlayers = userList.slice(0, 5); // Mock data
+interface PlaygroundCurrentActivityProps {
+    activities: PlaygroundActivity[];
+}
 
-export function PlaygroundCurrentActivity() {
+export function PlaygroundCurrentActivity({ activities }: PlaygroundCurrentActivityProps) {
+    // Get unique players from recent activities
+    const uniquePlayers = Array.from(new Map(activities.map(a => [a.user.name, a.user])).values()).slice(0, 10); // Limit to 10 for display
+
     return (
         <Card>
             <CardHeader>
@@ -19,14 +24,14 @@ export function PlaygroundCurrentActivity() {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                {currentPlayers.length > 0 ? (
+                {uniquePlayers.length > 0 ? (
                     <div className="flex flex-wrap gap-3">
-                        {currentPlayers.map(player => (
-                            <TooltipProvider key={player.id}>
+                        {uniquePlayers.map(player => (
+                            <TooltipProvider key={player.name}>
                                 <Tooltip>
                                     <TooltipTrigger>
                                         <Avatar className="h-10 w-10 border-2 border-green-500">
-                                            <AvatarImage src={player.avatar} alt={player.name} />
+                                            <AvatarImage src={player.avatar || ''} alt={player.name} />
                                             <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                     </TooltipTrigger>

@@ -4,12 +4,12 @@
 
 import { PlaygroundActivityFeed } from '@/widgets/playground-activity-feed';
 import { PlaygroundCurrentActivity } from '@/widgets/playground-current-activity';
-import type { PlayerActivityItem } from '@/widgets/player-activity-feed';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Card, CardHeader, CardContent } from '@/shared/ui/card';
+import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 
 interface PlaygroundActivityTabProps {
-    activities: PlayerActivityItem[];
+    activities: PlaygroundActivity[];
     isLoading: boolean;
 }
 
@@ -47,7 +47,7 @@ export function PlaygroundActivityTab({ activities, isLoading }: PlaygroundActiv
                 )}
             </div>
             <div className="lg:col-span-1">
-                <PlaygroundCurrentActivity />
+                <PlaygroundCurrentActivity activities={activities} />
             </div>
         </div>
     );
