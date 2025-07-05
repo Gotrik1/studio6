@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { ClipboardList, Users, TrendingUp, BookOpen, BarChart3 } from 'lucide-react';
@@ -9,12 +10,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { MyPlayersTab } from '@/entities/user/ui/coach-profile-tabs/my-players-tab';
 import { MyProgramsTab } from '@/entities/user/ui/coach-profile-tabs/my-programs-tab';
-import { TeamTrainingAnalytics, type CoachedPlayer } from '@/widgets/team-training-analytics';
+import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { AssignProgramDialog } from '@/widgets/assign-program-dialog';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { useSession } from '@/shared/lib/session/client';
 import { getPlayerProfile, type FullUserProfile } from '@/entities/user/api/get-user';
 import { useTraining } from '@/shared/context/training-provider';
+import type { CoachedPlayer } from '@/entities/user/model/types';
 
 const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, icon: React.ElementType }) => (
     <Card>
@@ -83,6 +85,7 @@ export function CoachCenterPage() {
         avatar: player.avatar || null,
         avatarHint: 'esports player portrait',
         role: player.role,
+        // Mock stats and history as the backend doesn't provide this level of detail yet
         stats: { kda: '1.2', winRate: '55%', favoriteMap: 'Ascent' },
         matchHistory: 'W 13-8, L 10-13, W 13-2',
     }));
@@ -127,6 +130,7 @@ export function CoachCenterPage() {
                 isOpen={isAssignProgramOpen}
                 onOpenChange={setIsAssignProgramOpen}
                 program={selectedProgram}
+                players={coachedPlayers}
             />
         </>
     );

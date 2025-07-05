@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
@@ -5,16 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Progress } from '@/shared/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { TrendingUp, TrendingDown, CheckCircle } from 'lucide-react';
-
-export type CoachedPlayer = {
-    id: string;
-    name: string;
-    avatar: string | null;
-    avatarHint: string;
-    role: string;
-    stats: { kda: string; winRate: string; favoriteMap: string };
-    matchHistory: string;
-};
+import type { CoachedPlayer } from '@/entities/user/model/types';
 
 
 const StatCard = ({ title, value, icon: Icon, description }: { title: string, value: string, icon: React.ElementType, description: string }) => (

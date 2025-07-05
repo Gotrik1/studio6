@@ -19,7 +19,7 @@ import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import Link from 'next/link';
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
 import type { FullUserProfile } from '../api/get-user';
-import type { CoachedPlayer } from '@/widgets/team-training-analytics';
+import type { CoachedPlayer } from '@/entities/user/model/types';
 
 const CoachStatsTab = dynamic(() => import('@/entities/user/ui/coach-profile-tabs/stats-tab').then(mod => mod.CoachStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -140,6 +140,7 @@ export function CoachProfile({ user, achievements, players }: CoachProfileProps)
             isOpen={isAssignProgramOpen}
             onOpenChange={setIsAssignProgramOpen}
             program={selectedProgram}
+            players={players}
         />
         <UserAvatarGeneratorDialog
             isOpen={isAvatarDialogOpen}

@@ -10,15 +10,16 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Share } from 'lucide-react';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
-import { coachedPlayers } from '@/shared/lib/mock-data/coach-players';
+import type { CoachedPlayer } from '@/entities/user/model/types';
 
 interface AssignProgramDialogProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
     program: TrainingProgram | null;
+    players: CoachedPlayer[];
 }
 
-export function AssignProgramDialog({ isOpen, onOpenChange, program }: AssignProgramDialogProps) {
+export function AssignProgramDialog({ isOpen, onOpenChange, program, players }: AssignProgramDialogProps) {
     const { toast } = useToast();
     const [selectedPlayerIds, setSelectedPlayerIds] = useState<Set<string>>(new Set());
 
@@ -43,10 +44,10 @@ export function AssignProgramDialog({ isOpen, onOpenChange, program }: AssignPro
     };
     
     const handleSelectAll = () => {
-        if (selectedPlayerIds.size === coachedPlayers.length) {
+        if (selectedPlayerIds.size === players.length) {
             setSelectedPlayerIds(new Set());
         } else {
-            setSelectedPlayerIds(new Set(coachedPlayers.map(p => p.id)));
+            setSelectedPlayerIds(new Set(players.map(p => p.id)));
         }
     }
 
@@ -76,7 +77,7 @@ export function AssignProgramDialog({ isOpen, onOpenChange, program }: AssignPro
                         <div className="flex items-center space-x-2">
                             <Checkbox 
                                 id="select-all"
-                                checked={selectedPlayerIds.size === coachedPlayers.length && coachedPlayers.length > 0}
+                                checked={selectedPlayerIds.size === players.length && players.length > 0}
                                 onCheckedChange={handleSelectAll}
                             />
                             <label htmlFor="select-all" className="text-sm font-medium">Выбрать всех</label>
@@ -85,7 +86,7 @@ export function AssignProgramDialog({ isOpen, onOpenChange, program }: AssignPro
                     </div>
                     <ScrollArea className="h-64">
                         <div className="p-2 space-y-1">
-                            {coachedPlayers.map(player => (
+                            {players.map(player => (
                                 <div key={player.id} className="flex items-center space-x-3 p-2 rounded-md hover:bg-muted">
                                     <Checkbox
                                         id={`player-${player.id}`}
@@ -94,7 +95,7 @@ export function AssignProgramDialog({ isOpen, onOpenChange, program }: AssignPro
                                     />
                                     <label htmlFor={`player-${player.id}`} className="font-medium text-sm cursor-pointer flex-1 flex items-center gap-2">
                                         <Avatar className="h-8 w-8">
-                                            <AvatarImage src={player.avatar} alt={player.name} data-ai-hint={player.avatarHint} />
+                                            <AvatarImage src={player.avatar || ''} alt={player.name} data-ai-hint={player.avatarHint} />
                                             <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         {player.name}
