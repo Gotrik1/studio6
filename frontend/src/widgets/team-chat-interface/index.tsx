@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
@@ -10,9 +9,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Bot, Send, Loader2, Users, Sparkles } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useSession } from '@/shared/lib/session/client';
-import { contacts } from '@/shared/lib/mock-data/chats';
 import { suggestReply } from '@/shared/api/genkit/flows/suggest-reply-flow';
 import { askTeamChatbot } from '@/shared/api/genkit/flows/team-chatbot-flow';
+import { io, type Socket } from 'socket.io-client';
+import { getChatHistory } from '@/entities/chat/api/get-chat-history';
 
 type Message = {
     sender: 'user' | 'ai' | 'other';
@@ -31,34 +31,78 @@ export function TeamChatInterface({ teamId }: { teamId: string }) {
     const [replySuggestions, setReplySuggestions] = useState<string[]>([]);
     const [isThinking, setIsThinking] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const selectedChat = contacts.find(c => c.type === 'team' && c.teamId === teamId);
+    const [socket, setSocket] = useState<Socket | null>(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     useEffect(() => {
+        if (!user) return; 
+
+        const newSocket = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001');
+        setSocket(newSocket);
+        
+        newSocket.on('receiveMessage', (message: any) => {
+             // Only update if the message is for the current team chat
+            if (message.chatId === teamId) {
+                setMessages(prev => [...prev, {
+                    sender: message.sender.id === user.id ? 'user' : 'other',
+                    name: message.sender.name,
+                    avatar: message.sender.avatar,
+                    text: message.text,
+                }]);
+            }
+        });
+
+        return () => {
+            newSocket.disconnect();
+        };
+    }, [user, teamId]);
+
+    useEffect(() => {
+        const loadHistory = async () => {
+            if (teamId && user) {
+                setMessages([]);
+                try {
+                    const history = await getChatHistory(teamId);
+                    const formattedHistory: Message[] = history.map((msg: any) => ({
+                        sender: msg.author.id === user.id ? 'user' : 'other',
+                        name: msg.author.name,
+                        avatar: msg.author.avatar,
+                        text: msg.text,
+                    }));
+                    setMessages(formattedHistory);
+                } catch (error) {
+                    console.error("Failed to load team chat history:", error);
+                }
+            }
+        };
+        loadHistory();
+    }, [teamId, user]);
+
+    useEffect(() => {
         scrollToBottom();
     }, [messages]);
-
+    
     const handleSend = async () => {
-        if (!input.trim() || !selectedChat || !user) return;
+        if (!input.trim() || !teamId || !user || !socket) return;
         const text = input;
         setInput('');
         
-        const userMessage: Message = { sender: 'user', name: user.name, avatar: user.avatar, text };
-        setMessages(prev => [...prev, userMessage]);
-
         const isAiCommand = text.toLowerCase().startsWith('/ai') || text.toLowerCase().startsWith('@ai');
 
         if (isAiCommand) {
+            const userMessage: Message = { sender: 'user', name: user.name, avatar: user.avatar, text };
+            setMessages(prev => [...prev, userMessage]);
+            
             const thinkingMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: 'Думаю...', isThinking: true };
             setMessages(prev => [...prev, thinkingMessage]);
             setIsThinking(true);
             const query = text.replace(/^\/ai\s*|^\@ai\s*/, '');
             
             try {
-                const aiResponseText = await askTeamChatbot({ teamId, query });
+                const aiResponseText = await askTeamChatbot({ teamId: teamId, query });
                 const aiMessage: Message = { sender: 'ai', name: 'AI Ассистент', avatar: '', text: aiResponseText };
                 setMessages(prev => [...prev.filter(m => !m.isThinking), aiMessage]);
             } catch(e) {
@@ -68,6 +112,17 @@ export function TeamChatInterface({ teamId }: { teamId: string }) {
             } finally {
                 setIsThinking(false);
             }
+        } else {
+            const messageToSend = {
+                sender: {
+                    id: user.id,
+                    name: user.name,
+                    avatar: user.avatar,
+                },
+                chatId: teamId,
+                text
+            };
+            socket.emit('sendMessage', messageToSend);
         }
     };
 
@@ -113,7 +168,7 @@ export function TeamChatInterface({ teamId }: { teamId: string }) {
                         {messages.map((message, index) => (
                            <div key={index} className={cn("flex items-end gap-2", message.sender === 'user' ? 'justify-end' : 'justify-start')}>
                                {(message.sender === 'other' || message.sender === 'ai') && (
-                                   <Avatar className="h-8 w-8 border">
+                                   <Avatar className="h-8 w-8 border flex-shrink-0">
                                        {message.sender === 'ai' ? <AvatarFallback><Bot /></AvatarFallback> : <AvatarImage src={message.avatar} />}
                                        <AvatarFallback>{getAvatarFallback(message.name)}</AvatarFallback>
                                    </Avatar>
@@ -135,7 +190,7 @@ export function TeamChatInterface({ teamId }: { teamId: string }) {
                                    </div>
                                </div>
                                {message.sender === 'user' && user && (
-                                   <Avatar className="h-8 w-8 border">
+                                   <Avatar className="h-8 w-8 border flex-shrink-0">
                                        <AvatarImage src={message.avatar} />
                                        <AvatarFallback>{getAvatarFallback(message.name)}</AvatarFallback>
                                    </Avatar>
