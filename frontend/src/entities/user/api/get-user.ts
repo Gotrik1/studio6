@@ -4,16 +4,46 @@
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayerSummary, FullUserProfile } from '@/entities/user/model/types';
+import type { CoachedPlayerSummary, FullUserProfile, PlayerStats } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
+import { getPlayerStats } from "./get-player-stats";
+import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
+import type { Achievement } from '@/entities/achievement/model/types';
 
-// This is the type for the full page props, now simplified
-export type PlayerProfileData = {
+
+// This is the type for the full page props, combining multiple data sources
+export type PlayerProfilePageData = {
     user: FullUserProfile;
+    stats: PlayerStats | null;
+    achievements: Achievement[];
+    playerActivity: PlayerActivityItem[];
 };
 
 
-export async function getPlayerProfile(id: string): Promise<PlayerProfileData | null> {
+export async function getPlayerProfilePageData(id: string): Promise<PlayerProfilePageData | null> {
+    const [profileResult, statsResult, achievementsResult] = await Promise.all([
+        getPlayerProfile(id),
+        getPlayerStats(id),
+        getAchievementsForUser(id),
+    ]);
+    
+    if (!profileResult) {
+        return null;
+    }
+    
+    // The playerActivity is already part of the profileResult, so we just extract it.
+    const playerActivity = profileResult.user.activities as PlayerActivityItem[];
+
+    return {
+        user: profileResult.user,
+        stats: statsResult,
+        achievements: achievementsResult,
+        playerActivity,
+    };
+}
+
+
+export async function getPlayerProfile(id: string): Promise<{ user: FullUserProfile; } | null> {
     try {
         const result = await fetchWithAuth(`/users/${id}`);
         
@@ -53,7 +83,6 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
             }
         }).filter((item: any): item is PlayerActivityItem => item !== null);
         
-        // Adapt nested coaching data
         const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player: any) => ({
             id: String(player.id),
             name: player.name,
@@ -67,7 +96,6 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
             ...profileData,
             activities: playerActivity,
             coaching: coachedPlayers, // Use adapted data
-            // Also adapt other nested arrays for consistency
             teams: (rawProfile.teams || []).map((team: any) => ({
                 ...team,
                 id: String(team.id),
@@ -87,13 +115,14 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
 
         return {
             user: augmentedProfile,
-        } as unknown as PlayerProfileData; // The cast is needed because of the complexity
+        } as unknown as { user: FullUserProfile };
 
     } catch(error) {
         console.error(`Error fetching user profile for ${id}:`, error);
         return null;
     }
 }
+
 
 export async function getUsers(): Promise<User[]> {
     const result = await fetchWithAuth('/users');

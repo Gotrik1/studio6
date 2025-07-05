@@ -1,8 +1,6 @@
 
 import PlayerClient from "@/app/(app)/administration/player/client";
-import { getPlayerProfile } from "@/entities/user/api/get-user";
-import { getPlayerStats } from "@/entities/user/api/get-player-stats";
-import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
+import { getPlayerProfilePageData } from "@/entities/user/api/get-user";
 import { getSession } from "@/features/auth/session";
 import { notFound } from "next/navigation";
 
@@ -14,29 +12,26 @@ import { notFound } from "next/navigation";
 const DEMO_USER_ID = '1'; 
 
 export async function PlayerProfilePage() {
-    // This now fetches from the backend API
-    const [profileData, statsData, session, achievementsData] = await Promise.all([
-        getPlayerProfile(DEMO_USER_ID),
-        getPlayerStats(DEMO_USER_ID),
+    const [pageData, session] = await Promise.all([
+        getPlayerProfilePageData(DEMO_USER_ID),
         getSession(),
-        getAchievementsForUser(DEMO_USER_ID),
     ]);
 
-    if (!profileData || !session?.user) {
+    if (!pageData || !session?.user) {
         notFound();
     }
     
     // In a real app, you would also check if the session user is viewing their own profile.
-    const isCurrentUser = session.user.id === profileData.user.id; 
+    const isCurrentUser = session.user.id === pageData.user.id; 
 
     return <PlayerClient 
-        user={profileData.user} 
+        user={pageData.user} 
         isCurrentUser={isCurrentUser}
-        achievements={achievementsData}
-        teams={profileData.user.teams}
-        gallery={profileData.user.gallery}
-        careerHistory={profileData.user.careerHistory}
-        playerActivity={profileData.user.activities}
-        stats={statsData}
+        achievements={pageData.achievements}
+        teams={pageData.user.teams}
+        gallery={pageData.user.gallery}
+        careerHistory={pageData.user.careerHistory}
+        playerActivity={pageData.playerActivity}
+        stats={pageData.stats}
     />;
 }
