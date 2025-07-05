@@ -5,11 +5,17 @@ export const PlaygroundSchema = z.object({
   name: z.string(),
   address: z.string(),
   type: z.string(),
-  coverImage: z.string(),
-  coverImageHint: z.string(),
+  coverImage: z.string().nullable(),
+  coverImageHint: z.string().nullable(),
   surface: z.string(),
   features: z.array(z.string()),
   rating: z.number(),
+  status: z.enum(['APPROVED', 'PENDING_MODERATION']),
+  checkIns: z.number(),
+  creator: z.object({
+      name: z.string(),
+      avatar: z.string().nullable(),
+  })
 });
 
 export const FindVenuesInputSchema = z.object({

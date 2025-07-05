@@ -41,6 +41,7 @@ const findAvailableVenuesTool_Backend = ai.defineTool(
                 { type: { contains: lowercasedQuery, mode: 'insensitive' } }
             ]
         },
+        include: { creator: { select: { name: true, avatar: true } } },
         take: 10
     });
 

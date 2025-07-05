@@ -1,17 +1,6 @@
 'use server';
 
-// Define types locally to decouple from backend schemas.
-export type Playground = {
-  id: string;
-  name: string;
-  address: string;
-  type: string;
-  coverImage: string;
-  coverImageHint: string;
-  surface: string;
-  features: string[];
-  rating: number;
-};
+import type { Playground } from '@/entities/playground/model/types';
 
 export type FindVenuesInput = {
   query: string;
@@ -37,5 +26,9 @@ export async function findVenues(input: FindVenuesInput): Promise<FindVenuesOutp
     throw new Error(`Backend API responded with status: ${response.status}`);
   }
 
-  return response.json();
+  const result = await response.json();
+  return {
+      summary: result.summary,
+      suggestedVenues: result.suggestedVenues as Playground[],
+  };
 }
