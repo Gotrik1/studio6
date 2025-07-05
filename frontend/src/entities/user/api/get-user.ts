@@ -4,7 +4,7 @@
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm, CoachedPlayer, JudgedMatch, FullUserProfile } from '@/entities/user/model/types';
+import type { CoachedPlayerSummary, FullUserProfile } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
 // This is the type for the full page props, now simplified
@@ -54,12 +54,13 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
         }).filter((item: any): item is PlayerActivityItem => item !== null);
         
         // Adapt nested coaching data
-        const coachedPlayers = (rawProfile.coaching || []).map((player: any) => ({
+        const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player: any) => ({
             id: String(player.id),
-            name: player.fullName || player.name,
-            avatar: player.avatarUrl || player.avatar || null,
+            name: player.name,
+            avatar: player.avatar || null,
             role: player.role,
-            mainSport: player.mainSport,
+            mainSport: player.mainSport || 'не указан',
+            adherence: player.adherence,
         }));
 
         const augmentedProfile: FullUserProfile = {

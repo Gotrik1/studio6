@@ -21,9 +21,11 @@ import { TeamScheduleTab } from '@/widgets/team-schedule-tab';
 import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
-import { getPlayerProfile } from '@/entities/user/api/get-user';
 import { useParams } from 'next/navigation';
 import type { CoachedPlayer } from '@/entities/user/model/types';
+import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/get-team-by-slug';
+import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
@@ -33,21 +35,40 @@ export function TeamManagementPage() {
     const { requests: joinRequests, removeRequest } = useJoinRequests();
     const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
-    const [teamPlayers, setTeamPlayers] = useState<CoachedPlayer[]>([]);
+    
     const params = useParams<{ slug: string }>();
+    const [team, setTeam] = useState<TeamDetails | null>(null);
+    const [dashboardData, setDashboardData] = useState<TeamDashboardData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const teamPlayers: CoachedPlayer[] = team?.roster.map(p => ({
+        id: p.id,
+        name: p.name,
+        avatar: p.avatar,
+        avatarHint: 'player portrait',
+        role: p.role,
+        adherence: p.adherence,
+        // Mock the rest
+        stats: { kda: '1.2', winRate: '55%', favoriteMap: 'Ascent' },
+        matchHistory: 'W 13-8, L 10-13, W 13-2',
+        progress: Math.floor(Math.random() * (25 - 5 + 1) + 5),
+    })) || [];
+
 
     useEffect(() => {
-        async function fetchRoster() {
+        async function fetchData() {
             if (params.slug) {
-                // In a real app, we'd fetch the team details and its roster.
-                // For now, we'll mock the roster based on a full user profile fetch.
-                const profile = await getPlayerProfile('1'); // Assuming user '1' is in the team
-                if (profile?.user?.coaching) {
-                    setTeamPlayers(profile.user.coaching as CoachedPlayer[]);
+                setIsLoading(true);
+                const teamData = await getTeamBySlug(params.slug as string);
+                setTeam(teamData);
+                if (teamData) {
+                    const dashData = await getTeamDashboardData(teamData.id);
+                    setDashboardData(dashData);
                 }
+                setIsLoading(false);
             }
         }
-        fetchRoster();
+        fetchData();
     }, [params.slug]);
 
 
@@ -78,11 +99,26 @@ export function TeamManagementPage() {
         statsSummary: selectedRequest.statsSummary
     } : null;
 
+    if (isLoading) {
+        return (
+            <div className="space-y-6">
+                 <Skeleton className="h-10 w-1/3" />
+                 <Skeleton className="h-4 w-1/2" />
+                 <Skeleton className="h-12 w-full" />
+                 <Skeleton className="h-96 w-full" />
+            </div>
+        )
+    }
+
+    if (!team) {
+        return <div>Команда не найдена или у вас нет прав на управление.</div>;
+    }
+
     return (
          <>
             <div className="space-y-6 opacity-0 animate-fade-in-up">
                 <div className="space-y-2">
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">Управление командой</h1>
+                    <h1 className="font-headline text-3xl font-bold tracking-tight">Управление командой: {team.name}</h1>
                     <p className="text-muted-foreground">
                         Все инструменты для капитана в одном месте.
                     </p>
@@ -163,7 +199,7 @@ export function TeamManagementPage() {
                     </TabsContent>
                     
                     <TabsContent value="ai-coach" className="mt-4">
-                        <TeamCoachTab />
+                        <TeamCoachTab team={team} dashboardData={dashboardData}/>
                     </TabsContent>
 
                     <TabsContent value="ai-assistant" className="mt-4">

@@ -60,12 +60,17 @@ export type PlayerStats = {
     };
 };
 
-export type CoachedPlayer = {
+export type CoachedPlayerSummary = {
     id: string;
     name: string;
     avatar: string | null;
-    avatarHint: string;
     role: string;
+    mainSport?: string;
+    adherence?: number;
+};
+
+export type CoachedPlayer = CoachedPlayerSummary & {
+    avatarHint: string;
     stats: { kda: string; winRate: string; favoriteMap: string };
     matchHistory: string;
     adherence: number;
@@ -103,6 +108,6 @@ export type FullUserProfile = {
     gallery: GalleryItem[];
     careerHistory: CareerHistoryItem[];
     organizedTournaments?: TournamentCrm[];
-    coaching?: Partial<CoachedPlayer>[];
+    coaching?: CoachedPlayerSummary[];
     judgedMatches?: JudgedMatch[];
 };

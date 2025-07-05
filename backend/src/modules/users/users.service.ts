@@ -84,7 +84,18 @@ export class UsersService {
               orderBy: { createdAt: 'asc' }
           },
           coaching: { // Fetch players this coach is coaching
-             select: { id: true, name: true, avatar: true, role: true, mainSport: true }
+             select: { 
+                 id: true, 
+                 name: true, 
+                 avatar: true, 
+                 role: true, 
+                 mainSport: true,
+                 trainingLogs: {
+                     select: {
+                         status: true,
+                     }
+                 }
+            }
           },
           judgedMatches: {
               include: {
@@ -132,12 +143,21 @@ export class UsersService {
           timestamp: m.finishedAt?.toISOString(),
       }));
 
-      const coachedPlayers = user.coaching?.map(p => ({
-          ...p,
-          avatarHint: 'esports player portrait',
-          stats: { kda: '1.2', winRate: '55%', favoriteMap: 'Ascent' }, // Mocked stats
-          matchHistory: 'W 13-8, L 10-13, W 13-2', // Mocked history
-      }));
+      const coachedPlayers = (user.coaching || []).map((player: any) => {
+          const completed = player.trainingLogs.filter((log: any) => log.status === 'completed').length;
+          const skipped = player.trainingLogs.filter((log: any) => log.status === 'skipped').length;
+          const totalRelevant = completed + skipped;
+          const adherence = totalRelevant > 0 ? Math.round((completed / totalRelevant) * 100) : 100;
+
+          return {
+            id: String(player.id),
+            name: player.name,
+            avatar: player.avatar || null,
+            role: player.role,
+            mainSport: player.mainSport || 'не указан',
+            adherence,
+          };
+      });
 
 
       const dateOfBirth = user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '1998-05-15';

@@ -152,6 +152,11 @@ export class TeamsService implements OnModuleInit {
             avatar: true,
             role: true,
             status: true,
+            trainingLogs: {
+                select: {
+                    status: true
+                }
+            }
           },
         },
       },
@@ -161,14 +166,22 @@ export class TeamsService implements OnModuleInit {
       throw new NotFoundException(`Команда со слагом "${slug}" не найдена`);
     }
 
-    const roster = team.members.map((member) => ({
-      id: member.id,
-      name: member.name,
-      avatar: member.avatar || 'https://placehold.co/100x100.png',
-      role: member.role,
-      rating: 'Immortal', // This can stay as mock for now, as ELO/Rating is not in the schema yet.
-      status: member.status,
-    }));
+    const roster = team.members.map((member) => {
+      const completed = member.trainingLogs.filter(log => log.status === 'completed').length;
+      const skipped = member.trainingLogs.filter(log => log.status === 'skipped').length;
+      const totalRelevant = completed + skipped;
+      const adherence = totalRelevant > 0 ? Math.round((completed / totalRelevant) * 100) : 100;
+
+      return {
+        id: member.id,
+        name: member.name,
+        avatar: member.avatar || 'https://placehold.co/100x100.png',
+        role: member.role,
+        rating: 'Immortal', // This can stay as mock for now, as ELO/Rating is not in the schema yet.
+        status: member.status,
+        adherence,
+      };
+    });
 
     const result = {
       id: team.id,

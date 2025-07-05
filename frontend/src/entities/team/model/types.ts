@@ -21,6 +21,7 @@ export type TeamRosterMember = {
     role: string;
     rating: string;
     status: string;
+    adherence: number;
 };
 
 export type TeamDetails = {
