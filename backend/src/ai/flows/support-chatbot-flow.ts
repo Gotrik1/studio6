@@ -2,9 +2,11 @@
 
 import { ai } from '../genkit';
 import { z } from 'zod';
-import { faqCategories } from '@/shared/lib/mock-data/faq';
 import { SupportChatbotInputSchema, SupportChatbotOutputSchema } from './schemas/support-chatbot-schema';
 import type { SupportChatbotInput, SupportChatbotOutput } from './schemas/support-chatbot-schema';
+import { PrismaService } from '@/prisma/prisma.service';
+
+const prisma = new PrismaService();
 
 export type { SupportChatbotInput, SupportChatbotOutput };
 
@@ -24,20 +26,18 @@ const searchFaq_Backend = ai.defineTool(
     },
     async (query) => {
         const lowercasedQuery = query.toLowerCase();
-        const results: { question: string; answer: string }[] = [];
-
-        faqCategories.forEach(category => {
-            category.questions.forEach(faq => {
-                if (
-                    faq.q.toLowerCase().includes(lowercasedQuery) ||
-                    faq.a.toLowerCase().includes(lowercasedQuery)
-                ) {
-                    results.push({ question: faq.q, answer: faq.a });
-                }
-            });
+        
+        const faqItems = await prisma.faqItem.findMany({
+            where: {
+                OR: [
+                    { question: { contains: lowercasedQuery, mode: 'insensitive' } },
+                    { answer: { contains: lowercasedQuery, mode: 'insensitive' } },
+                ]
+            },
+            take: 3
         });
 
-        return results.slice(0, 3); // Return top 3 matches to the LLM
+        return faqItems.map(faq => ({ question: faq.question, answer: faq.answer }));
     }
 );
 

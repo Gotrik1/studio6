@@ -10,13 +10,15 @@
 
 import { ai } from '../genkit';
 import { z } from 'zod';
-import { coachesList } from '@/shared/lib/mock-data/coaches';
 import {
     FindCoachesInputSchema,
     FindCoachesOutputSchema,
     CoachSchema
 } from './schemas/find-coaches-schema';
 import type { FindCoachesInput, FindCoachesOutput } from './schemas/find-coaches-schema';
+import { PrismaService } from '@/prisma/prisma.service';
+
+const prisma = new PrismaService();
 
 export type { FindCoachesInput, FindCoachesOutput };
 
@@ -30,14 +32,37 @@ const findCoachesTool_Backend = ai.defineTool(
   },
   async (query) => {
     const lowercasedQuery = query.toLowerCase();
-    // Simple keyword filtering for demo
-    return coachesList
-      .filter(coach => 
-          coach.name.toLowerCase().includes(lowercasedQuery) ||
-          coach.specialization.toLowerCase().includes(lowercasedQuery) ||
-          coach.description.toLowerCase().includes(lowercasedQuery) ||
-          coach.tags.some(tag => tag.toLowerCase().includes(lowercasedQuery))
-      )
+    
+    const coachesWithProfiles = await prisma.user.findMany({
+      where: {
+        role: 'Тренер',
+        coachProfile: { isNot: null },
+        OR: [
+            { name: { contains: lowercasedQuery, mode: 'insensitive' } },
+            { coachProfile: { specialization: { contains: lowercasedQuery, mode: 'insensitive' } } },
+            { coachProfile: { description: { contains: lowercasedQuery, mode: 'insensitive' } } },
+            { coachProfile: { tags: { has: lowercasedQuery } } }
+        ]
+      },
+      include: {
+        coachProfile: true,
+      },
+      take: 10,
+    });
+
+    return coachesWithProfiles
+      .map(user => ({
+          id: user.coachProfile!.id,
+          name: user.name,
+          avatar: user.avatar || 'https://placehold.co/100x100.png',
+          avatarHint: 'sports coach portrait',
+          specialization: user.coachProfile!.specialization,
+          description: user.coachProfile!.description,
+          tags: user.coachProfile!.tags,
+          rating: user.coachProfile!.rating,
+          price: user.coachProfile!.price.toString(),
+          profileUrl: `/profiles/coach/${user.id}`,
+      }))
       .slice(0, 5); // Return up to 5 for the LLM to reason over
   }
 );

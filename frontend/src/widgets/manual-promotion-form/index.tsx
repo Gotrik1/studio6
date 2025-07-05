@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -29,6 +28,7 @@ const promotionSchema = z.object({
   prize: z.string().min(3, 'Укажите приз.'),
   sponsorId: z.string().optional(),
   endDate: z.date({ required_error: "Выберите дату окончания." }),
+  cost: z.coerce.string().min(0, "Стоимость не может быть отрицательной."),
 });
 
 type FormValues = z.infer<typeof promotionSchema>;
@@ -39,9 +39,9 @@ export function ManualPromotionForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
 
-  useState(() => {
+  useEffect(() => {
     getSponsors().then(setSponsors);
-  });
+  }, []);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(promotionSchema),
@@ -49,6 +49,7 @@ export function ManualPromotionForm() {
       name: '',
       description: '',
       prize: '',
+      cost: '0',
       endDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
     },
   });
@@ -57,14 +58,9 @@ export function ManualPromotionForm() {
     setIsSubmitting(true);
     
     const promotionData = {
-        name: data.name,
-        description: data.description,
-        prize: data.prize,
-        cost: '0', // Manual promotions are free to enter by default
+        ...data,
         imageDataUri: 'https://placehold.co/2560x720.png',
         imageHint: 'promotion banner',
-        endDate: data.endDate,
-        sponsorId: data.sponsorId
     };
 
     const result = await createPromotion(promotionData as any); // Cast to handle the DTO differences for now

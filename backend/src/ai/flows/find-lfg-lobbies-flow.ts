@@ -10,9 +10,11 @@
 
 import { ai } from '../genkit';
 import { z } from 'zod';
-import { initialLfgLobbies } from '@/shared/lib/mock-data/lfg';
 import { FindLfgLobbiesInputSchema, FindLfgLobbiesOutputSchema, LfgLobbySchema } from './schemas/find-lfg-lobbies-schema';
 import type { FindLfgLobbiesInput, FindLfgLobbiesOutput } from './schemas/find-lfg-lobbies-schema';
+import { PrismaService } from '@/prisma/prisma.service';
+
+const prisma = new PrismaService();
 
 export type { FindLfgLobbiesInput, FindLfgLobbiesOutput };
 
@@ -26,18 +28,37 @@ const findLobbiesTool_Backend = ai.defineTool(
   async (query) => {
     const lowercasedQuery = query.toLowerCase();
     const now = new Date();
+    
     // In a real app, this would be a more sophisticated search (e.g., semantic search).
-    return initialLfgLobbies
-      .filter(lobby =>
-          (
-            lobby.sport.toLowerCase().includes(lowercasedQuery) ||
-            lobby.location.toLowerCase().includes(lowercasedQuery) ||
-            lobby.comment.toLowerCase().includes(lowercasedQuery) ||
-            ((lowercasedQuery.includes('тренировк') || lowercasedQuery.includes('напарник')) && lobby.type === 'training') || 
-            (lowercasedQuery.includes('игр') && lobby.type === 'game')
-          ) && lobby.endTime > now
-      )
-      .slice(0, 10); // Return up to 10 for the LLM to reason over
+    const lobbies = await prisma.lfgLobby.findMany({
+        where: {
+             AND: [
+                { endTime: { gt: now } },
+                {
+                    OR: [
+                        { sport: { contains: lowercasedQuery, mode: 'insensitive' } },
+                        { location: { contains: lowercasedQuery, mode: 'insensitive' } },
+                        { comment: { contains: lowercasedQuery, mode: 'insensitive' } },
+                        ((lowercasedQuery.includes('тренировк') || lowercasedQuery.includes('напарник')) ? { type: 'TRAINING' } : {}),
+                        (lowercasedQuery.includes('игр') ? { type: 'GAME' } : {})
+                    ]
+                }
+             ]
+        },
+        include: {
+            creator: { select: { name: true, avatar: true } }
+        },
+        take: 10
+    });
+    
+    return lobbies.map(lobby => ({
+        ...lobby,
+        type: lobby.type.toLowerCase() as 'game' | 'training',
+        creator: {
+            name: lobby.creator.name,
+            avatar: lobby.creator.avatar || 'https://placehold.co/100x100.png'
+        }
+    }));
   }
 );
 

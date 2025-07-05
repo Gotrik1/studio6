@@ -8,7 +8,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { BrainCircuit, AlertCircle, Sparkles, Loader2 } from 'lucide-react';
 import { generatePlaygroundWorkout, type GeneratePlaygroundWorkoutOutput } from '@/shared/api/genkit/flows/generate-playground-workout-flow';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
 
 interface PlaygroundWorkoutGeneratorProps {
     playground: Playground;

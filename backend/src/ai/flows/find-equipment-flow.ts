@@ -10,9 +10,11 @@
 
 import { ai } from '../genkit';
 import { z } from 'zod';
-import { storeItems } from '@/shared/lib/mock-data/store';
 import { FindEquipmentInputSchema, FindEquipmentOutputSchema, StoreItemSchema } from './schemas/find-equipment-schema';
 import type { FindEquipmentInput, FindEquipmentOutput } from './schemas/find-equipment-schema';
+import { PrismaService } from '@/prisma/prisma.service';
+
+const prisma = new PrismaService();
 
 export type { FindEquipmentInput, FindEquipmentOutput };
 
@@ -25,13 +27,23 @@ const findItemsInStoreTool_Backend = ai.defineTool(
   },
   async (query) => {
     const lowercasedQuery = query.toLowerCase();
-    return storeItems
-      .filter(item =>
-          item.name.toLowerCase().includes(lowercasedQuery) ||
-          item.description.toLowerCase().includes(lowercasedQuery) ||
-          item.category.toLowerCase().includes(lowercasedQuery)
-      )
-      .slice(0, 5); // Return up to 5 for the LLM to reason over
+    
+    const items = await prisma.storeItem.findMany({
+        where: {
+             OR: [
+                { name: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { description: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { category: { contains: lowercasedQuery, mode: 'insensitive' } },
+            ]
+        },
+        take: 5
+    });
+
+    return items.map(item => ({
+        ...item,
+        image: item.image || 'https://placehold.co/600x400.png',
+        imageHint: item.imageHint || 'store item'
+    }));
   }
 );
 

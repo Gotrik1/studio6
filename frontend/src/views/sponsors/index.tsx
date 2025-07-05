@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -29,7 +29,7 @@ const SponsorCardSkeleton = () => (
     </Card>
 )
 
-export function PartnersPage() {
+export function SponsorsPage() {
     const { toast } = useToast();
     const [sponsors, setSponsors] = useState<Sponsor[]>([]);
     const [isLoading, setIsLoading] = useState(true);

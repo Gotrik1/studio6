@@ -8,9 +8,11 @@
 
 import { ai } from '../genkit';
 import { z } from 'zod';
-import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
 import { FindVenuesInputSchema, FindVenuesOutputSchema, PlaygroundSchema } from './schemas/find-venues-schema';
 import type { FindVenuesInput, FindVenuesOutput } from './schemas/find-venues-schema';
+import { PrismaService } from '@/prisma/prisma.service';
+
+const prisma = new PrismaService();
 
 export type { FindVenuesInput, FindVenuesOutput };
 
@@ -27,16 +29,26 @@ const findAvailableVenuesTool_Backend = ai.defineTool(
   async (input) => {
     // Simple keyword filtering for demo purposes.
     const lowercasedQuery = input.query.toLowerCase();
-    return playgroundsList
-      .filter(venue =>
-        venue.name.toLowerCase().includes(lowercasedQuery) ||
-        venue.address.toLowerCase().includes(lowercasedQuery) ||
-        venue.surface.toLowerCase().includes(lowercasedQuery) ||
-        venue.features.some(f => f.toLowerCase().includes(lowercasedQuery)) ||
-        (lowercasedQuery.includes('футбол') && venue.type.toLowerCase().includes('футбол')) ||
-        (lowercasedQuery.includes('баскетбол') && venue.type.toLowerCase().includes('баскетбол'))
-      )
-      .slice(0, 10); // Return top 10 matches to the LLM for reasoning
+    
+    const playgrounds = await prisma.playground.findMany({
+        where: {
+            status: 'APPROVED',
+            OR: [
+                { name: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { address: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { surface: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { features: { has: lowercasedQuery } },
+                { type: { contains: lowercasedQuery, mode: 'insensitive' } }
+            ]
+        },
+        take: 10
+    });
+
+    return playgrounds.map(p => ({
+        ...p,
+        coverImage: p.coverImage || 'https://placehold.co/600x400.png',
+        coverImageHint: p.coverImageHint || 'sports playground',
+    }));
   }
 );
 
