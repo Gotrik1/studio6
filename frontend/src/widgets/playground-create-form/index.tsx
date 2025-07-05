@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -58,7 +59,12 @@ export function PlaygroundCreateForm() {
     const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
         
-        const result = await createPlayground({ ...data, features: data.features || [] });
+        const result = await createPlayground({ 
+            ...data, 
+            features: data.features || [],
+            coverImage: 'https://placehold.co/600x400.png',
+            coverImageHint: data.name
+        });
 
         if (result.success) {
              let toastDescription = 'Место добавлено и отправлено на модерацию! Вы получили 1 месяц PRO-подписки!';
