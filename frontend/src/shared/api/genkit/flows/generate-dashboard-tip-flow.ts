@@ -9,11 +9,8 @@ export type GenerateDashboardTipOutput = {
     tip: string;
 };
 
-export async function generateDashboardTip(input: GenerateDashboardTipInput): Promise<GenerateDashboardTipOutput> {
-    const response = await fetch('/api/ai/generate-dashboard-tip', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(input),
+export async function generateDashboardTip(): Promise<GenerateDashboardTipOutput> {
+    const response = await fetch('/api/ai/dashboard-tip', {
         cache: 'no-store',
     });
     if (!response.ok) {
@@ -21,3 +18,5 @@ export async function generateDashboardTip(input: GenerateDashboardTipInput): Pr
     }
     return response.json();
 }
+
+    

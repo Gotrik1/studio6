@@ -77,7 +77,6 @@ import { GeneratePromotionDetailsDto } from './dto/generate-promotion-details.dt
 import type { GeneratePromotionDetailsOutput } from '@/ai/flows/schemas/generate-promotion-details-schema';
 import { GeneratePromotionImageDto } from './dto/generate-promotion-image.dto';
 import type { GeneratePromotionImageOutput } from '@/ai/flows/schemas/generate-promotion-image-schema';
-import { GenerateDashboardTipDto } from './dto/generate-dashboard-tip.dto';
 import type { GenerateDashboardTipOutput } from '@/ai/flows/schemas/generate-dashboard-tip-schema';
 import { AnalyzeMatchChallengeDto } from './dto/analyze-match-challenge.dto';
 import type { AnalyzeMatchChallengeOutput } from '@/ai/flows/schemas/analyze-match-challenge-schema';
@@ -461,12 +460,13 @@ export class AiController {
     return this.aiService.askSupportChatbot(supportChatbotDto.query);
   }
   
-  @Post('generate-dashboard-tip')
+  @Get('dashboard-tip')
   @HttpCode(HttpStatus.OK)
   async generateDashboardTip(
-    @Body() generateDashboardTipDto: GenerateDashboardTipDto,
+    @Req() req: Request,
   ): Promise<GenerateDashboardTipOutput> {
-    return this.aiService.generateDashboardTip(generateDashboardTipDto);
+    const user = req.user as any;
+    return this.aiService.generateDashboardTip(user.userId, user.name);
   }
   
   @Post('analyze-match-challenge')
@@ -597,3 +597,5 @@ export class AiController {
     return this.aiService.playerScout(playerScoutDto.input);
   }
 }
+
+    

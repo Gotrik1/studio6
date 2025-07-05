@@ -257,3 +257,5 @@ export class TeamsService implements OnModuleInit {
     return this.prisma.team.delete({ where: { id } });
   }
 }
+
+    

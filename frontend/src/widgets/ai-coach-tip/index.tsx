@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
@@ -9,8 +9,6 @@ import { BrainCircuit, AlertCircle, RefreshCw } from 'lucide-react';
 import { generateDashboardTip, type GenerateDashboardTipOutput } from '@/shared/api/genkit/flows/generate-dashboard-tip-flow';
 import { cn } from '@/shared/lib/utils';
 import { useSession } from '@/shared/lib/session/client';
-import { trainingLogData } from '@/shared/lib/mock-data/training-log';
-import { matchesList } from '@/shared/lib/mock-data/matches';
 
 
 export function AiCoachTip() {
@@ -19,40 +17,13 @@ export function AiCoachTip() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const handleFetchTip = async () => {
+    const handleFetchTip = useCallback(async () => {
         if (!user) return;
         setIsLoading(true);
         setError(null);
         setTip(null);
         try {
-            // Find the last completed workout
-            const lastWorkout = [...trainingLogData]
-                .filter(log => log.status === 'completed')
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-
-            // Find the last completed match for the user's team (mocked as 'Дворовые Атлеты')
-            const lastMatch = [...matchesList]
-                .filter(m => m.status === 'Завершен' && (m.team1.name === 'Дворовые Атлеты' || m.team2.name === 'Дворовые Атлеты'))
-                .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-
-            let lastActivityText = "Начал пользоваться платформой.";
-
-            if (lastWorkout && lastMatch) {
-                if (new Date(lastWorkout.date) > new Date(lastMatch.date)) {
-                    lastActivityText = `Завершил тренировку: "${lastWorkout.workoutName}".`;
-                } else {
-                    lastActivityText = `Сыграл матч за команду ${lastMatch.team1.name} против ${lastMatch.team2.name}, счет ${lastMatch.score}.`;
-                }
-            } else if (lastWorkout) {
-                lastActivityText = `Завершил тренировку: "${lastWorkout.workoutName}".`;
-            } else if (lastMatch) {
-                lastActivityText = `Сыграл матч за команду ${lastMatch.team1.name} против ${lastMatch.team2.name}, счет ${lastMatch.score}.`;
-            }
-
-            const tipData = await generateDashboardTip({
-                userName: user.name,
-                lastActivity: lastActivityText,
-            });
+            const tipData = await generateDashboardTip();
             setTip(tipData);
         } catch (e) {
             console.error('Failed to fetch AI Coach tip:', e);
@@ -60,14 +31,13 @@ export function AiCoachTip() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [user]);
 
     useEffect(() => {
         if (user) {
             handleFetchTip();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]);
+    }, [user, handleFetchTip]);
 
     if (!user) return null; // Don't render if there's no user
 
@@ -77,11 +47,21 @@ export function AiCoachTip() {
 
     if (error) {
         return (
-            <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Ошибка</AlertTitle>
-                <AlertDescription>{error}</AlertDescription>
-            </Alert>
+            <Card className="shadow-none">
+                <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-lg"><BrainCircuit /> Совет от AI-Тренера</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Ошибка</AlertTitle>
+                        <AlertDescription>{error}</AlertDescription>
+                        <div className="mt-4">
+                            <Button variant="outline" size="sm" onClick={handleFetchTip}>Попробовать снова</Button>
+                        </div>
+                    </Alert>
+                </CardContent>
+            </Card>
         );
     }
     
@@ -104,3 +84,5 @@ export function AiCoachTip() {
         </Card>
     );
 }
+
+    

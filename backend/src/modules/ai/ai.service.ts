@@ -61,10 +61,14 @@ import { PromotionsService } from '../promotions/promotions.service';
 import type { Promotion } from '@prisma/client';
 import { generatePlaygroundDrill, type GeneratePlaygroundDrillInput, type GeneratePlaygroundDrillOutput } from '@/ai/flows/generate-playground-drill-flow';
 import { generatePlaygroundSummary, type GeneratePlaygroundSummaryInput, type GeneratePlaygroundSummaryOutput } from '@/ai/flows/generate-playground-summary-flow';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class AiService {
-  constructor(private readonly promotionsService: PromotionsService) {}
+  constructor(
+      private readonly promotionsService: PromotionsService,
+      private readonly prisma: PrismaService,
+    ) {}
 
   async createPromotionFromWizard(prompt: string, organizerId: string): Promise<Promotion> {
     const wizardResult = await generatePromotionWizard({ prompt });
@@ -244,8 +248,32 @@ export class AiService {
     return askSupportChatbot(query);
   }
 
-  async generateDashboardTip(input: GenerateDashboardTipInput): Promise<GenerateDashboardTipOutput> {
-    return generateDashboardTip(input);
+  async generateDashboardTip(userId: string, userName: string): Promise<GenerateDashboardTipOutput> {
+    const lastActivity = await this.prisma.activity.findFirst({
+        where: { userId },
+        orderBy: { timestamp: 'desc' },
+    });
+
+    let lastActivityText = "Начал пользоваться платформой.";
+    if (lastActivity) {
+        const metadata = lastActivity.metadata as any;
+        switch(lastActivity.type) {
+            case 'MATCH_PLAYED':
+                lastActivityText = `Сыграл матч за команду ${metadata.team}. Результат: ${metadata.result} (${metadata.score}).`;
+                break;
+            case 'TEAM_JOINED':
+                lastActivityText = `Присоединился к команде "${metadata.teamName}".`;
+                break;
+            case 'TOURNAMENT_REGISTERED':
+                lastActivityText = `Зарегистрировал команду "${metadata.teamName}" на турнир "${metadata.tournamentName}".`;
+                break;
+        }
+    }
+    
+    return generateDashboardTip({
+        userName,
+        lastActivity: lastActivityText,
+    });
   }
 
   async analyzeMatchChallenge(input: AnalyzeMatchChallengeInput): Promise<AnalyzeMatchChallengeOutput> {
@@ -312,3 +340,5 @@ export class AiService {
     return playerScout(input);
   }
 }
+
+    

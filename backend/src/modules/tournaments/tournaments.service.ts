@@ -352,3 +352,5 @@ export class TournamentsService {
     return this.prisma.tournament.delete({ where: { id } });
   }
 }
+
+    
