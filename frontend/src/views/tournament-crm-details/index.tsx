@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { notFound, useRouter } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';

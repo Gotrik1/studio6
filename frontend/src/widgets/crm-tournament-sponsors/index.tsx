@@ -29,7 +29,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                 getAssignedSponsors(tournamentId),
                 getAvailableSponsors()
             ]);
-
+            
             if (assignedRes.success) setAssignedSponsors(assignedRes.data);
             else throw new Error(assignedRes.error);
 
@@ -91,7 +91,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                                     <TableRow key={sponsor.id}>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
-                                                <Avatar className="h-8 w-8"><AvatarImage src={sponsor.logo} data-ai-hint={sponsor.logoHint} /><AvatarFallback>{sponsor.name.charAt(0)}</AvatarFallback></Avatar>
+                                                <Avatar className="h-8 w-8"><AvatarImage src={sponsor.logo || ''} data-ai-hint={sponsor.logoHint} /><AvatarFallback>{sponsor.name.charAt(0)}</AvatarFallback></Avatar>
                                                 <p className="font-semibold">{sponsor.name}</p>
                                             </div>
                                         </TableCell>
@@ -130,7 +130,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                                     <TableRow key={sponsor.id}>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
-                                                <Avatar className="h-8 w-8"><AvatarImage src={sponsor.logo} data-ai-hint={sponsor.logoHint} /><AvatarFallback>{sponsor.name.charAt(0)}</AvatarFallback></Avatar>
+                                                <Avatar className="h-8 w-8"><AvatarImage src={sponsor.logo || ''} data-ai-hint={sponsor.logoHint} /><AvatarFallback>{sponsor.name.charAt(0)}</AvatarFallback></Avatar>
                                                 <p className="font-semibold">{sponsor.name}</p>
                                             </div>
                                         </TableCell>
