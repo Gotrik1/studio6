@@ -7,7 +7,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 
 interface MeasurementsContextType {
   history: Measurement[];
-  addMeasurement: (data: Omit<Measurement, 'id' | 'date'>) => Promise<{ success: boolean; error?: string | undefined; data: any; status: number; }>;
+  addMeasurement: (data: Omit<Measurement, 'id'>) => Promise<{ success: boolean; error?: string | undefined; data: any; status: number; }>;
   isLoading: boolean;
 }
 
@@ -34,12 +34,8 @@ export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
         loadMeasurements();
     }, [loadMeasurements]);
 
-    const addMeasurement = async (data: Omit<Measurement, 'id' | 'date'>) => {
-        const newMeasurementData = {
-            date: new Date().toISOString(),
-            ...data,
-        };
-        const result = await createMeasurement(newMeasurementData);
+    const addMeasurement = async (data: Omit<Measurement, 'id'>) => {
+        const result = await createMeasurement(data);
         if (result.success) {
             await loadMeasurements(); // Refetch to get the latest data
         }
