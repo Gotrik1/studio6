@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { exercisesList } from './seed-data';
+import { trainingPrograms as mockPrograms } from './seed-data-programs';
 
 @Injectable()
 export class TrainingService implements OnModuleInit {
@@ -10,6 +11,7 @@ export class TrainingService implements OnModuleInit {
 
     async onModuleInit() {
         await this.seedExercises();
+        await this.seedTrainingPrograms();
         await this.seedTrainingLogs();
     }
     
@@ -24,6 +26,47 @@ export class TrainingService implements OnModuleInit {
             this.logger.log('Exercises seeded successfully.');
         }
     }
+
+    async seedTrainingPrograms() {
+        const count = await this.prisma.trainingProgram.count();
+        if (count > 0) return;
+
+        this.logger.log('Seeding training programs...');
+        for (const program of mockPrograms) {
+            await this.prisma.trainingProgram.create({
+                data: {
+                    id: program.id, // Use mock ID for consistency
+                    name: program.name,
+                    description: program.description,
+                    goal: program.goal,
+                    daysPerWeek: program.daysPerWeek,
+                    splitType: program.splitType,
+                    author: program.author,
+                    coverImage: program.coverImage,
+                    coverImageHint: program.coverImageHint,
+                    isAiGenerated: program.isAiGenerated || false,
+                    weeklySplit: {
+                        create: program.weeklySplit.map(day => ({
+                            day: day.day,
+                            title: day.title,
+                            exercises: {
+                                create: day.exercises.map(ex => ({
+                                    name: ex.name,
+                                    sets: ex.sets,
+                                    reps: ex.reps,
+                                    plannedWeight: ex.plannedWeight,
+                                    isSupersetWithPrevious: ex.isSupersetWithPrevious,
+                                    technique: ex.technique,
+                                }))
+                            }
+                        }))
+                    }
+                }
+            });
+        }
+        this.logger.log('Training programs seeded successfully.');
+    }
+
 
     async seedTrainingLogs() {
         const logCount = await this.prisma.trainingLog.count();
@@ -78,8 +121,16 @@ export class TrainingService implements OnModuleInit {
     }
 
     async findAllPrograms() {
-        // This is a placeholder. In a real app, you would fetch programs from the database.
-        return [];
+        return this.prisma.trainingProgram.findMany({
+             include: {
+                weeklySplit: {
+                    orderBy: { day: 'asc' },
+                    include: {
+                        exercises: true,
+                    },
+                },
+            },
+        });
     }
 
     async getLogsForUser(userId: string) {

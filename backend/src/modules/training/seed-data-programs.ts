@@ -1,5 +1,3 @@
-
-
 export type ExerciseDetail = {
     name: string;
     sets: string;
@@ -44,7 +42,6 @@ export const trainingPrograms: TrainingProgram[] = [
             { day: 1, title: 'Грудь и Трицепс', exercises: [
                 { name: 'Жим лежа', sets: '4', reps: '8-10' },
                 { name: 'Разведение гантелей лежа', sets: '3', reps: '12-15' },
-                { name: 'Французский жим', sets: '3', reps: '10-12' },
             ]},
             { day: 2, title: 'Спина и Бицепс', exercises: [
                  { name: 'Подтягивания', sets: '4', reps: 'max' },

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -32,23 +33,19 @@ export const TrainingProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     async function loadInitialData() {
-      if (!user) {
-        setIsLoading(false);
-        return;
-      };
-      
       setIsLoading(true);
       try {
-        const [initialPrograms, initialLog] = await Promise.all([
-          getTrainingPrograms(),
-          getTrainingLog()
-        ]);
-        
+        const initialPrograms = await getTrainingPrograms();
         setPrograms(initialPrograms);
-        setLog(initialLog);
         
         const defaultProgram = initialPrograms.find(p => p.id === 'classic-split-3') || (initialPrograms.length > 0 ? initialPrograms[0] : null);
         setCurrentProgram(defaultProgram);
+
+        if (user) {
+            const initialLog = await getTrainingLog();
+            setLog(initialLog);
+        }
+
       } catch (error) {
           toast({
               variant: 'destructive',
