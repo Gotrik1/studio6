@@ -3,9 +3,9 @@
 import PlayerClient from "@/app/(app)/administration/player/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { getPlayerStats } from "@/entities/user/api/get-player-stats";
+import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
 import { getSession } from "@/features/auth/session";
 import { notFound } from "next/navigation";
-import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 
 // This file is now obsolete as profile pages are handled dynamically.
 // Kept for reference or potential future use.
@@ -16,10 +16,11 @@ const DEMO_USER_ID = '1';
 
 export async function PlayerProfilePage() {
     // This now fetches from the backend API
-    const [profileData, statsData, session] = await Promise.all([
+    const [profileData, statsData, session, achievementsData] = await Promise.all([
         getPlayerProfile(DEMO_USER_ID),
         getPlayerStats(DEMO_USER_ID),
         getSession(),
+        getAchievementsForUser(DEMO_USER_ID),
     ]);
 
     if (!profileData || !session?.user) {
@@ -32,7 +33,7 @@ export async function PlayerProfilePage() {
     return <PlayerClient 
         user={profileData.user} 
         isCurrentUser={isCurrentUser}
-        achievements={profileData.achievements}
+        achievements={achievementsData}
         teams={profileData.user.teams}
         gallery={profileData.user.gallery}
         careerHistory={profileData.user.careerHistory}

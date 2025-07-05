@@ -5,12 +5,14 @@ import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { getPlayerStats } from "@/entities/user/api/get-player-stats";
 import { getSession } from "@/features/auth/session";
 import { notFound } from "next/navigation";
+import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
 
 export default async function PlayerProfileRoute({ params }: { params: { id: string } }) {
-    const [profileData, statsData, session] = await Promise.all([
+    const [profileData, statsData, session, achievementsData] = await Promise.all([
         getPlayerProfile(params.id),
         getPlayerStats(params.id),
         getSession(),
+        getAchievementsForUser(params.id),
     ]);
 
     if (!profileData || !session?.user) {
@@ -22,7 +24,7 @@ export default async function PlayerProfileRoute({ params }: { params: { id: str
     return <PlayerClient 
         user={profileData.user} 
         isCurrentUser={isCurrentUser}
-        achievements={profileData.achievements}
+        achievements={achievementsData}
         teams={profileData.user.teams}
         gallery={profileData.user.gallery}
         careerHistory={profileData.user.careerHistory}

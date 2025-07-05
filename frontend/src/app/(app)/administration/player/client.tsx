@@ -4,9 +4,9 @@
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
 import type { User } from '@/shared/lib/types';
-import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
 import type { PlayerActivityItem } from '@/widgets/player-activity-feed';
 import type { UserTeam, CareerHistoryItem, GalleryItem, PlayerStats } from '@/entities/user/model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
 
 const PlayerProfile = dynamic(() => import('@/entities/player/ui/player-profile').then(mod => mod.PlayerProfile), {
     loading: () => <div className="space-y-6">
@@ -30,7 +30,7 @@ type PlayerClientProps = {
     contacts: { telegram: string; discord: string };
   };
   isCurrentUser: boolean;
-  achievements: typeof AchievementsArray;
+  achievements: Achievement[];
   teams: UserTeam[];
   gallery: GalleryItem[];
   careerHistory: CareerHistoryItem[];

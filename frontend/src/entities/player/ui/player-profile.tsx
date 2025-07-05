@@ -27,7 +27,7 @@ import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generato
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
 import { PlayerActivityFeed, type PlayerActivityItem } from '@/widgets/player-activity-feed';
 import type { UserTeam, CareerHistoryItem, GalleryItem, PlayerStats } from '@/entities/user/model/types';
-import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import type { Achievement } from '@/entities/achievement/model/types';
 import { ProposeTrainingDialog } from '@/widgets/propose-training-dialog';
 
 
@@ -68,7 +68,7 @@ type PlayerProfileProps = {
     contacts: { telegram: string; discord: string };
   };
   isCurrentUser: boolean;
-  achievements: typeof AchievementsArray;
+  achievements: Achievement[];
   teams: UserTeam[];
   gallery: GalleryItem[];
   careerHistory: CareerHistoryItem[];

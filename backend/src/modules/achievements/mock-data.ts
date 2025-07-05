@@ -1,4 +1,3 @@
-
 export const achievements = [
     { name: 'Первая победа', description: 'Выиграть первый матч', icon: 'Award', unlocked: true },
     { name: 'Командный игрок', description: 'Сыграть 10 матчей с командой', icon: 'Users', unlocked: true },
@@ -10,9 +9,4 @@ export const achievements = [
     { name: 'Ветеран', description: 'Сыграть 100 матчей', icon: 'Star', unlocked: false },
     { name: 'Персональный рекорд', description: 'Установить новый личный рекорд в упражнении', icon: 'TrendingUp', unlocked: false },
     { name: 'Дисциплина', description: 'Заполнить дневник 7 дней подряд', icon: 'ClipboardCheck', unlocked: false },
-];
-
-export const teams = [
-    { name: 'Дворовые Атлеты', role: 'Капитан', logo: 'https://placehold.co/100x100.png', dataAiHint: 'athletic team logo', slug: 'dvotovyie-atlety', rank: 1, game: 'Футбол'},
-    { name: 'Соколы', role: 'Игрок', logo: 'https://placehold.co/100x100.png', dataAiHint: 'falcon logo', slug: 'sokoly', rank: 4, game: 'Баскетбол'},
 ];

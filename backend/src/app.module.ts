@@ -37,6 +37,7 @@ import { FaqModule } from './modules/faq/faq.module';
 import { TournamentAnnouncementsModule } from './modules/tournament-announcements/tournament-announcements.module';
 import { TournamentJudgesModule } from './modules/tournament-judges/tournament-judges.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { AchievementsModule } from './modules/achievements/achievements.module';
 
 @Module({
   imports: [
@@ -74,6 +75,7 @@ import { ReportsModule } from './modules/reports/reports.module';
     TournamentAnnouncementsModule,
     TournamentJudgesModule,
     ReportsModule,
+    AchievementsModule,
   ],
   controllers: [AppController],
   providers: [

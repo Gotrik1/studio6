@@ -5,7 +5,6 @@ import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm, CoachedPlayer, JudgedMatch } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import { achievements } from '@/shared/lib/mock-data/profiles';
 
 // Define the rich user profile type that the frontend expects
 export type FullUserProfile = User & {
@@ -28,7 +27,6 @@ export type FullUserProfile = User & {
 // This is the type for the full page props
 export type PlayerProfileData = {
     user: FullUserProfile;
-    achievements: typeof achievements;
 };
 
 
@@ -80,7 +78,6 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
 
         return {
             user: augmentedProfile,
-            achievements: achievements, // Add mock achievements as the component expects them
         } as unknown as PlayerProfileData; // The cast is needed because of the complexity
 
     } catch(error) {
