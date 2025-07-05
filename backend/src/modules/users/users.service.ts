@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -72,6 +66,12 @@ export class UsersService {
                 select: { teams: true }
               }
             }
+          },
+          organizedPromotions: {
+            include: {
+                sponsor: { select: { name: true, logo: true } },
+            },
+            orderBy: { createdAt: 'desc' }
           },
           gallery: {
               orderBy: { createdAt: 'desc' }

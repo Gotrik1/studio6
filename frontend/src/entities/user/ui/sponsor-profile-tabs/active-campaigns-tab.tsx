@@ -1,14 +1,14 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 import Link from 'next/link';
 import Image from 'next/image';
-import type { Promotion } from '@/shared/lib/mock-data/promotions';
 import { Button } from "@/shared/ui/button";
 import { Megaphone, Calendar } from "lucide-react";
 import { format } from "date-fns";
 import { ru } from 'date-fns/locale';
+import type { Promotion } from '@/entities/promotion/model/types';
+
 
 interface ActiveCampaignsTabProps {
     campaigns: Promotion[];
@@ -25,10 +25,10 @@ export function ActiveCampaignsTab({ campaigns }: ActiveCampaignsTabProps) {
                 {campaigns.map((promo) => (
                     <Card key={promo.id} className="overflow-hidden flex flex-col">
                         <div className="relative h-32 w-full">
-                            <Image src={promo.image} alt={promo.title} fill className="object-cover" data-ai-hint={promo.imageHint} />
+                            <Image src={promo.imageDataUri} alt={promo.name} fill className="object-cover" data-ai-hint={promo.imageHint} />
                         </div>
                         <CardHeader>
-                            <CardTitle className="text-base">{promo.title}</CardTitle>
+                            <CardTitle className="text-base">{promo.name}</CardTitle>
                         </CardHeader>
                         <CardContent className="flex-1">
                              <p className="text-sm text-muted-foreground line-clamp-2">{promo.description}</p>

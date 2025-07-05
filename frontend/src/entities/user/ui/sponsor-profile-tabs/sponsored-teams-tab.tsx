@@ -1,4 +1,3 @@
-
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -8,10 +7,8 @@ import { Button } from "@/shared/ui/button";
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import type { SponsoredTeam } from '@/entities/sponsorship/model/types';
 
-// Assuming a type definition exists for sponsored teams
-import { sponsoredTeams as sponsoredTeamsData } from '@/shared/lib/mock-data/sponsorship';
-type SponsoredTeam = (typeof sponsoredTeamsData)[0];
 
 interface SponsoredTeamsTabProps {
     teams: SponsoredTeam[];

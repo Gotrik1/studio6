@@ -1,4 +1,3 @@
-
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -8,15 +7,16 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import type { sponsorUser, sponsorAchievements } from "@/shared/lib/mock-data/sponsor-profile";
-import { sponsoredTeams } from '@/shared/lib/mock-data/sponsorship';
-import { promotionsList } from '@/shared/lib/mock-data/promotions';
 import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Wand2, ImageIcon } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
+import type { FullUserProfile } from '../api/get-user';
+import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import type { SponsoredTeam } from '@/entities/sponsorship/model/types';
+import type { Promotion } from '@/entities/promotion/model/types';
 
 const SponsorStatsTab = dynamic(() => import('@/entities/user/ui/sponsor-profile-tabs/stats-tab').then(mod => mod.SponsorStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -37,11 +37,13 @@ const ActiveCampaignsTab = dynamic(() => import('@/entities/user/ui/sponsor-prof
 
 
 type SponsorProfileProps = {
-  user: typeof sponsorUser;
-  achievements: typeof sponsorAchievements;
+  user: FullUserProfile;
+  achievements: typeof AchievementsArray;
+  activeCampaigns: Promotion[];
+  sponsoredTeams: SponsoredTeam[];
 };
 
-export function SponsorProfile({ user, achievements }: SponsorProfileProps) {
+export function SponsorProfile({ user, achievements, activeCampaigns, sponsoredTeams }: SponsorProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   const [avatar, setAvatar] = useState(user.avatar);
   const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
@@ -69,7 +71,7 @@ export function SponsorProfile({ user, achievements }: SponsorProfileProps) {
             <div className="flex items-end gap-6 -mt-20">
                 <div className="relative shrink-0">
                     <Avatar className="h-32 w-32 border-4 border-background bg-background">
-                        <AvatarImage src={avatar} alt={user.name} data-ai-hint="corporate logo" />
+                        <AvatarImage src={avatar || ''} alt={user.name} data-ai-hint="corporate logo" />
                         <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
                     </Avatar>
                     <Button
@@ -115,7 +117,7 @@ export function SponsorProfile({ user, achievements }: SponsorProfileProps) {
                 <SponsoredTeamsTab teams={sponsoredTeams} />
             </TabsContent>
             <TabsContent value="campaigns" className="mt-4">
-                 <ActiveCampaignsTab campaigns={promotionsList.filter(p => p.sponsor.name === user.name)} />
+                 <ActiveCampaignsTab campaigns={activeCampaigns} />
             </TabsContent>
             <TabsContent value="achievements" className="mt-4">
               <SponsorAchievementsTab achievements={achievements} />
@@ -126,7 +128,7 @@ export function SponsorProfile({ user, achievements }: SponsorProfileProps) {
       <UserAvatarGeneratorDialog
             isOpen={isAvatarDialogOpen}
             onOpenChange={setIsAvatarDialogOpen}
-            currentAvatar={avatar}
+            currentAvatar={avatar || ''}
             onAvatarSave={setAvatar}
         />
         <ProfileBannerGeneratorDialog
