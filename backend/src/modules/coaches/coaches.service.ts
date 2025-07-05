@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
+import { CoachDto } from './dto/coach.dto';
 
 @Injectable()
 export class CoachesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll() {
+  async findAll(): Promise<CoachDto[]> {
     const coachesWithProfiles = await this.prisma.user.findMany({
       where: {
         role: 'Тренер',
@@ -25,7 +26,7 @@ export class CoachesService {
         description: user.coachProfile!.description,
         tags: user.coachProfile!.tags,
         rating: user.coachProfile!.rating,
-        price: user.coachProfile!.price,
+        price: user.coachProfile!.price.toString(),
         profileUrl: `/profiles/coach/${user.id}`,
     }));
   }
