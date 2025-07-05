@@ -1,35 +1,19 @@
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils";
 import { Trophy } from "lucide-react";
+import type { TournamentDetails } from "@/entities/tournament/model/types";
 
-type Team = {
-  name: string;
-  logo?: string;
-  dataAiHint?: string;
-};
-
-type Match = {
-  id: number;
-  team1?: Team;
-  team2?: Team;
-  score?: string;
-  winner?: boolean;
-  href?: string;
-};
-
-type Round = {
-  name: string;
-  matches: Match[];
-};
+type BracketMatch = TournamentDetails['bracket']['rounds'][0]['matches'][0];
 
 interface TournamentBracketProps {
-  rounds: Round[];
+  rounds: TournamentDetails['bracket']['rounds'];
 }
 
-const MatchCard = ({ match }: { match: Match }) => {
+const MatchCard = ({ match }: { match: BracketMatch }) => {
     const scores = match.score?.split('-').map(s => parseInt(s, 10));
     const score1 = scores?.[0] ?? 0;
     const score2 = scores?.[1] ?? 0;
@@ -43,7 +27,7 @@ const MatchCard = ({ match }: { match: Match }) => {
                     <Trophy className="h-5 w-5" />
                 </div>
                 <Avatar className="h-12 w-12">
-                    <AvatarImage src={match.team1.logo} alt={match.team1.name} data-ai-hint={match.team1.dataAiHint} />
+                    <AvatarImage src={match.team1.logo || ''} alt={match.team1.name} data-ai-hint={match.team1.dataAiHint || ''} />
                     <AvatarFallback>{match.team1.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className="text-center">
@@ -60,7 +44,7 @@ const MatchCard = ({ match }: { match: Match }) => {
                 <div className={cn("flex items-center justify-between transition-opacity", match.score && !team1Wins && "opacity-50")}>
                     <div className="flex items-center gap-2">
                         <Avatar className="h-5 w-5">
-                            <AvatarImage src={match.team1.logo} alt={match.team1.name} data-ai-hint={match.team1.dataAiHint}/>
+                            <AvatarImage src={match.team1.logo || ''} alt={match.team1.name} data-ai-hint={match.team1.dataAiHint || ''}/>
                             <AvatarFallback>{match.team1.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span className={cn("font-medium", team1Wins && "font-bold")}>{match.team1.name}</span>
@@ -75,7 +59,7 @@ const MatchCard = ({ match }: { match: Match }) => {
                  <div className={cn("flex items-center justify-between transition-opacity", match.score && !team2Wins && "opacity-50")}>
                     <div className="flex items-center gap-2">
                         <Avatar className="h-5 w-5">
-                            <AvatarImage src={match.team2.logo} alt={match.team2.name} data-ai-hint={match.team2.dataAiHint}/>
+                            <AvatarImage src={match.team2.logo || ''} alt={match.team2.name} data-ai-hint={match.team2.dataAiHint || ''}/>
                             <AvatarFallback>{match.team2.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span className={cn("font-medium", team2Wins && "font-bold")}>{match.team2.name}</span>

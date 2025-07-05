@@ -1,38 +1,37 @@
 
-
 'use client';
 
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
-import { summerKickoffTournament } from '@/shared/lib/mock-data/tournament-details';
 import { Edit, MessageSquare } from 'lucide-react';
 import { CrmMatchResultDialog, type MatchResult } from '@/widgets/crm-score-dialog';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Badge } from '@/shared/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
-
-type MatchUnion = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
-type Match = Extract<MatchUnion, { team2: unknown }>;
-type MatchStatus = 'pending' | 'played' | 'technical_defeat_t1' | 'technical_defeat_t2';
+import type { TournamentDetails } from '@/entities/tournament/model/types';
+import type { Match } from '@/entities/match/model/types';
 
 type MatchState = Match & {
     comment?: string;
-    status: MatchStatus;
+    status: 'pending' | 'played' | 'technical_defeat_t1' | 'technical_defeat_t2';
 };
 
-export function CrmTournamentMatches() {
-    const { toast } = useToast();
+interface CrmTournamentMatchesProps {
+    rounds: TournamentDetails['bracket']['rounds'];
+}
 
-    const allMatches: Match[] = useMemo(() => {
-        return summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
-            const playableMatches = round.matches.filter((match): match is Match => 'team2' in match);
-            return acc.concat(playableMatches);
-        }, [] as Match[]);
-    }, []);
+export function CrmTournamentMatches({ rounds }: CrmTournamentMatchesProps) {
+    const { toast } = useToast();
     
-    const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, score: m.score || '', status: (m.score && m.score !== 'VS') ? 'played' : 'pending' })));
+    const allMatches = useMemo(() => {
+        return rounds.flatMap(round => 
+            round.matches.filter((match): match is Match => 'team2' in match)
+        );
+    }, [rounds]);
+    
+    const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, status: (m.score && m.score !== 'VS') ? 'played' : 'pending' })));
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [isScoreDialogOpen, setIsScoreDialogOpen] = useState(false);
 
@@ -43,10 +42,10 @@ export function CrmTournamentMatches() {
 
     const handleMatchUpdate = (result: MatchResult) => {
         setMatches(prev => prev.map(match => {
-            if (match.id !== result.matchId) return match;
+            if (String(match.id) !== String(result.matchId)) return match;
             
             let newScore: string;
-            let newStatus: MatchStatus;
+            let newStatus: MatchState['status'];
 
             if (result.type === 'score') {
                 newScore = `${result.scoreA}-${result.scoreB}`;
@@ -78,15 +77,15 @@ export function CrmTournamentMatches() {
     }
 
     const matchIdToRoundName = useMemo(() => {
-        return summerKickoffTournament.bracket.rounds.reduce((acc, round) => {
+        return rounds.reduce((acc, round) => {
             round.matches.forEach(match => {
                 if ('team2' in match) {
-                    acc[match.id] = round.name;
+                    acc[String(match.id)] = round.name;
                 }
             });
             return acc;
-        }, {} as Record<number, string>);
-    }, []);
+        }, {} as Record<string, string>);
+    }, [rounds]);
 
     return (
         <>
@@ -108,7 +107,7 @@ export function CrmTournamentMatches() {
                         <TableBody>
                             {matches.map(currentMatchState => (
                                 <TableRow key={currentMatchState.id}>
-                                    <TableCell className="text-muted-foreground">{matchIdToRoundName[currentMatchState.id]}</TableCell>
+                                    <TableCell className="text-muted-foreground">{matchIdToRoundName[String(currentMatchState.id)]}</TableCell>
                                     <TableCell className="font-medium">{currentMatchState.team1?.name} vs {currentMatchState.team2?.name}</TableCell>
                                     <TableCell>
                                         <div className="flex items-center gap-2">
@@ -142,7 +141,7 @@ export function CrmTournamentMatches() {
             <CrmMatchResultDialog 
                 isOpen={isScoreDialogOpen}
                 onOpenChange={setIsScoreDialogOpen}
-                match={selectedMatch}
+                match={selectedMatch as any}
                 onMatchUpdate={handleMatchUpdate}
             />
         </>

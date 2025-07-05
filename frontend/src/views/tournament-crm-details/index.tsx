@@ -134,7 +134,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
 
                 <TabsContent value="matches" className="mt-4">
-                    <CrmTournamentMatches />
+                    <CrmTournamentMatches rounds={tournament.bracket.rounds} />
                 </TabsContent>
 
                 <TabsContent value="disputes" className="mt-4">
@@ -144,7 +144,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 <TabsContent value="bracket" className="mt-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>Сетка турнира</CardTitle>
+                            <CardTitle>Турнирная сетка</CardTitle>
                             <CardDescription>Визуальное представление турнирной сетки. Функции редактирования будут добавлены в будущем.</CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -154,7 +154,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
 
                 <TabsContent value="media-center" className="mt-4">
-                    <CrmTournamentMediaCenter tournament={tournament} />
+                    <CrmTournamentMediaCenter tournament={tournament as any} />
                 </TabsContent>
 
                 <TabsContent value="sponsors" className="mt-4">

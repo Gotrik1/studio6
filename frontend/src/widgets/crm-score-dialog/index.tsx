@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -16,16 +15,19 @@ import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { useToast } from '@/shared/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
-import type { summerKickoffTournament } from '@/shared/lib/mock-data/tournament-details';
 import { RadioGroup, RadioGroupItem } from '@/shared/ui/radio-group';
 import { Textarea } from '@/shared/ui/textarea';
 import { Separator } from '@/shared/ui/separator';
 
-type MatchUnion = (typeof summerKickoffTournament.bracket.rounds)[0]['matches'][0];
-type Match = Extract<MatchUnion, { team2: unknown }>;
+type DialogMatch = {
+    id: number | string;
+    team1?: { name: string };
+    team2?: { name: string };
+    score?: string;
+};
 
 export type MatchResult = {
-    matchId: number;
+    matchId: number | string;
     type: 'score' | 'technical_defeat_t1' | 'technical_defeat_t2';
     scoreA: number;
     scoreB: number;
@@ -35,7 +37,7 @@ export type MatchResult = {
 interface CrmMatchResultDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  match: Match | null;
+  match: DialogMatch | null;
   onMatchUpdate: (result: MatchResult) => void;
 }
 
