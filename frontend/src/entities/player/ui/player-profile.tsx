@@ -11,7 +11,6 @@ import { Progress } from "@/shared/ui/progress";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Users, Share2, GalleryHorizontal, Briefcase, BarChart3, Trophy, CheckCircle, Award, Wand2, MoreVertical, Flag, HeartPulse, BrainCircuit, Cake, Gamepad2, MapPin, Send, Image as ImageIcon, Sword, ListChecks, UserPlus } from "lucide-react";
 import Link from "next/link";
-import type { User } from "@/shared/lib/types";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getRankByPoints } from "@/shared/config/ranks";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/shared/ui/tooltip";
@@ -26,7 +25,7 @@ import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
 import { PlayerActivityFeed, type PlayerActivityItem } from '@/widgets/player-activity-feed';
-import type { UserTeam, CareerHistoryItem, GalleryItem, PlayerStats } from '@/entities/user/model/types';
+import type { FullUserProfile, UserTeam, CareerHistoryItem, GalleryItem, PlayerStats } from '@/entities/user/model/types';
 import type { Achievement } from '@/entities/achievement/model/types';
 import { ProposeTrainingDialog } from '@/widgets/propose-training-dialog';
 
@@ -58,15 +57,7 @@ const PhysicalPrepTab = dynamic(() => import('@/entities/player/ui/player-profil
 
 
 type PlayerProfileProps = {
-  user: User & {
-    location: string;
-    mainSport: string;
-    isVerified: boolean;
-    dateOfBirth: string;
-    age: number;
-    preferredSports: string[];
-    contacts: { telegram: string; discord: string };
-  };
+  user: FullUserProfile;
   isCurrentUser: boolean;
   achievements: Achievement[];
   teams: UserTeam[];

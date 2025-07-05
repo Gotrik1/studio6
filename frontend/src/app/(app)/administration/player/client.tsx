@@ -3,10 +3,9 @@
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { User } from '@/shared/lib/types';
-import type { PlayerActivityItem } from '@/widgets/player-activity-feed';
-import type { UserTeam, CareerHistoryItem, GalleryItem, PlayerStats } from '@/entities/user/model/types';
+import type { FullUserProfile, UserTeam, CareerHistoryItem, GalleryItem, PlayerStats } from '@/entities/user/model/types';
 import type { Achievement } from '@/entities/achievement/model/types';
+import type { PlayerActivityItem } from '@/widgets/player-activity-feed';
 
 const PlayerProfile = dynamic(() => import('@/entities/player/ui/player-profile').then(mod => mod.PlayerProfile), {
     loading: () => <div className="space-y-6">
@@ -18,17 +17,7 @@ const PlayerProfile = dynamic(() => import('@/entities/player/ui/player-profile'
 });
 
 type PlayerClientProps = {
-  user: User & {
-    location: string;
-    mainSport: string;
-    status: string;
-    isVerified: boolean;
-    xp: number;
-    dateOfBirth: string;
-    age: number;
-    preferredSports: string[];
-    contacts: { telegram: string; discord: string };
-  };
+  user: FullUserProfile;
   isCurrentUser: boolean;
   achievements: Achievement[];
   teams: UserTeam[];

@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import type { User } from '@/shared/lib/types';
@@ -66,7 +67,7 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
             activities: playerActivity,
             coaching: coachedPlayers, // Use adapted data
             // Also adapt other nested arrays for consistency
-            teams: (rawProfile.teamsAsMember || []).map((team: any) => ({
+            teams: (rawProfile.teams || []).map((team: any) => ({
                 ...team,
                 id: String(team.id),
                 logo: team.logoUrl || team.logo || null,

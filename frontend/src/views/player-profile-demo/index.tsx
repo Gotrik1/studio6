@@ -1,5 +1,4 @@
 
-
 import PlayerClient from "@/app/(app)/administration/player/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { getPlayerStats } from "@/entities/user/api/get-player-stats";

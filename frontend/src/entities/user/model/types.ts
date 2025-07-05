@@ -79,3 +79,30 @@ export type JudgedMatch = {
     resolution: string;
     timestamp: string | null;
 };
+
+
+export type FullUserProfile = {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string | null;
+    role: string;
+    status?: 'Активен' | 'Забанен';
+    xp?: number;
+    activitySummary?: string;
+    profileUrl?: string;
+    location: string;
+    mainSport: string;
+    isVerified: boolean;
+    dateOfBirth: string;
+    age: number;
+    preferredSports: string[];
+    contacts: { telegram: string; discord: string };
+    activities: any[]; // Use a more specific type if possible
+    teams: UserTeam[];
+    gallery: GalleryItem[];
+    careerHistory: CareerHistoryItem[];
+    organizedTournaments?: TournamentCrm[];
+    coaching?: Partial<CoachedPlayer>[];
+    judgedMatches?: JudgedMatch[];
+};
