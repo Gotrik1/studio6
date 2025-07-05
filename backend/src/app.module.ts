@@ -27,6 +27,7 @@ import { PromotionsModule } from './modules/promotions/promotions.module';
 import { LeaguesModule } from './modules/leagues/leagues.module';
 import { SportsModule } from './modules/sports/sports.module';
 import { LfgModule } from './modules/lfg/lfg.module';
+import { MeasurementsModule } from './modules/measurements/measurements.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { LfgModule } from './modules/lfg/lfg.module';
     LeaguesModule,
     SportsModule,
     LfgModule,
+    MeasurementsModule,
   ],
   controllers: [AppController],
   providers: [

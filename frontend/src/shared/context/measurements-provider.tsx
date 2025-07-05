@@ -1,29 +1,53 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { measurementsHistory as initialHistory } from '@/shared/lib/mock-data/measurements';
-import type { Measurement } from '@/shared/lib/mock-data/measurements';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import type { Measurement } from '@/entities/user/model/types';
+import { getMeasurements, createMeasurement } from '@/entities/measurement/api/measurements';
+import { useToast } from '@/shared/hooks/use-toast';
 
 interface MeasurementsContextType {
   history: Measurement[];
   addMeasurement: (data: Omit<Measurement, 'id' | 'date'>) => void;
+  isLoading: boolean;
 }
 
 const MeasurementsContext = createContext<MeasurementsContextType | undefined>(undefined);
 
 export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
-    const [history, setHistory] = useState<Measurement[]>(initialHistory);
+    const { toast } = useToast();
+    const [history, setHistory] = useState<Measurement[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    
+    const loadMeasurements = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            const data = await getMeasurements();
+            setHistory(data);
+        } catch (error) {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить замеры.' });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [toast]);
+    
+    useEffect(() => {
+        loadMeasurements();
+    }, [loadMeasurements]);
 
-    const addMeasurement = (data: Omit<Measurement, 'id' | 'date'>) => {
-        const newMeasurement: Measurement = {
-            id: `m-${Date.now()}`,
-            date: new Date().toISOString().split('T')[0],
+    const addMeasurement = async (data: Omit<Measurement, 'id' | 'date'>) => {
+        const newMeasurementData = {
+            date: new Date().toISOString(),
             ...data,
         };
-        setHistory(prev => [newMeasurement, ...prev].sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
+        const result = await createMeasurement(newMeasurementData);
+        if (result.success) {
+            await loadMeasurements(); // Refetch to get the latest data
+        } else {
+             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось сохранить замеры.' });
+        }
     };
 
-    const value = { history, addMeasurement };
+    const value = { history, addMeasurement, isLoading };
 
     return (
         <MeasurementsContext.Provider value={value}>
