@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 export class CreateTournamentDto {
   @IsString()
   @IsNotEmpty()
-  @Min(3, { message: 'Название должно быть не менее 3 символов.' })
+  @Min(5, { message: 'Название должно быть не менее 5 символов.' })
   readonly name: string;
 
   @IsString()

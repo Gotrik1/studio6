@@ -33,6 +33,7 @@ const tournamentSchema = z.object({
   tournamentStartDate: z.date({required_error: "Выберите дату."}),
   category: z.string().min(3, "Укажите категорию"),
   location: z.string().min(3, "Укажите место проведения"),
+  description: z.string().optional(),
   prizePool: z.string().optional(),
   rules: z.string().optional(),
 }).refine(data => {
@@ -114,6 +115,13 @@ export function ManualTournamentForm() {
                     <CardContent className="space-y-6">
                         <FormField control={form.control} name="name" render={({ field }) => (
                             <FormItem><FormLabel>Название турнира</FormLabel><FormControl><Input placeholder="Например, ProDvor Summer Cup" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="description" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Описание (необязательно)</FormLabel>
+                                <FormControl><Textarea placeholder="Кратко опишите ваш турнир: для кого он, какие цели преследует." {...field} /></FormControl>
+                                <FormMessage />
+                            </FormItem>
                         )} />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField control={form.control} name="game" render={({ field }) => (
