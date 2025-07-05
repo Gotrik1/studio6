@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -9,10 +10,9 @@ import { Input } from '@/shared/ui/input';
 import { Button } from '@/shared/ui/button';
 import { Textarea } from '@/shared/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { sportsList } from '@/shared/lib/mock-data/sports';
-import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import type { Challenge } from '@/entities/challenge/model/types';
+import { getSports, type Sport } from '@/entities/sport/api/sports';
 
 const challengeSchema = z.object({
   title: z.string().min(5, 'Название должно быть не менее 5 символов.').max(50, 'Название слишком длинное.'),
@@ -31,6 +31,13 @@ interface ChallengeCreateDialogProps {
 
 export function ChallengeCreateDialog({ isOpen, onOpenChange, onCreate }: ChallengeCreateDialogProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [sports, setSports] = useState<Sport[]>([]);
+
+    useEffect(() => {
+        if (isOpen) {
+            getSports().then(setSports);
+        }
+    }, [isOpen]);
 
     const form = useForm<FormValues>({
         resolver: zodResolver(challengeSchema),
@@ -69,7 +76,7 @@ export function ChallengeCreateDialog({ isOpen, onOpenChange, onCreate }: Challe
                                 <FormItem><FormLabel>Название вызова</FormLabel><FormControl><Input placeholder="Например, Дуэль 1 на 1" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                              <FormField control={form.control} name="discipline" render={({ field }) => (
-                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                             )} />
                              <FormField control={form.control} name="wager" render={({ field }) => (
                                 <FormItem><FormLabel>Ставка (PD)</FormLabel><FormControl><Input type="number" {...field} /></FormControl><FormMessage /></FormItem>
