@@ -1,9 +1,66 @@
 import type { User } from "@/shared/lib/types";
 
-export type Activity = {
+type BaseActivity = {
     id: string;
-    type: 'MATCH_PLAYED' | 'TEAM_JOINED' | 'TOURNAMENT_REGISTERED' | 'STATUS_POSTED' | 'ACHIEVEMENT_UNLOCKED';
     user: Pick<User, 'id' | 'name' | 'avatar'>;
-    metadata: any;
     timestamp: string;
+}
+
+// Specific metadata types
+export type StatusPostedMetadata = {
+    text: string;
 };
+export type MatchPlayedMetadata = {
+    team: string;
+    teamHref: string;
+    opponent: string;
+    result: 'Победа' | 'Поражение' | 'Ничья';
+    score: string;
+    icon: 'Trophy';
+};
+export type TeamJoinedMetadata = {
+    teamName: string;
+    teamHref: string;
+    icon: 'Users';
+};
+export type TournamentRegisteredMetadata = {
+    teamName: string;
+    tournamentName: string;
+    tournamentHref: string;
+    icon: 'Trophy';
+};
+export type AchievementUnlockedMetadata = {
+    title: string;
+    icon: 'Award';
+};
+
+
+// Discriminated union for activities
+export type StatusPostedActivity = BaseActivity & {
+    type: 'STATUS_POSTED';
+    metadata: StatusPostedMetadata;
+};
+export type MatchPlayedActivity = BaseActivity & {
+    type: 'MATCH_PLAYED';
+    metadata: MatchPlayedMetadata;
+};
+export type TeamJoinedActivity = BaseActivity & {
+    type: 'TEAM_JOINED';
+    metadata: TeamJoinedMetadata;
+};
+export type TournamentRegisteredActivity = BaseActivity & {
+    type: 'TOURNAMENT_REGISTERED';
+    metadata: TournamentRegisteredMetadata;
+};
+export type AchievementUnlockedActivity = BaseActivity & {
+    type: 'ACHIEVEMENT_UNLOCKED';
+    metadata: AchievementUnlockedMetadata;
+};
+
+// The final Activity type is a union of all specific activity types.
+export type Activity = 
+    | StatusPostedActivity
+    | MatchPlayedActivity
+    | TeamJoinedActivity
+    | TournamentRegisteredActivity
+    | AchievementUnlockedActivity;
