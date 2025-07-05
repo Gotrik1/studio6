@@ -9,6 +9,7 @@ import { AiPlaygroundTactic } from "@/widgets/ai-playground-tactic";
 import { AiPlaygroundLore } from "@/widgets/ai-playground-lore";
 import { PlaygroundConditionStatus } from "@/widgets/playground-condition-status";
 import type { AnalyzePlaygroundReportOutput } from "@/shared/api/genkit/flows/analyze-playground-report-flow";
+import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
 
 interface PlaygroundInfoTabProps {
     playground: Playground;
@@ -23,6 +24,7 @@ export function PlaygroundInfoTab({ playground, issueReport }: PlaygroundInfoTab
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
                 <AiPlaygroundAnalysis playground={playground} />
+                <AiPlaygroundSummary playground={playground} />
                 <AiPlaygroundLore playground={playground} />
             </div>
             <div className="lg:col-span-1 space-y-6">
