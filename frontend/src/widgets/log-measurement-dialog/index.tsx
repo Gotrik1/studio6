@@ -89,10 +89,10 @@ export function LogMeasurementDialog({ isOpen, onOpenChange, onLog, latestMeasur
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
                         <FormField control={form.control} name="weight" render={({ field }) => (
-                            <FormItem><Label>Вес (кг)</Label><FormControl><Input type="number" step="0.1" {...field} /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel>Вес (кг)</FormLabel><FormControl><Input type="number" step="0.1" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="bodyFat" render={({ field }) => (
-                             <FormItem><Label>Жир (%)</Label><FormControl><Input type="number" step="0.1" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
+                             <FormItem><FormLabel>Жир (%)</FormLabel><FormControl><Input type="number" step="0.1" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                         )} />
                         <div className="grid grid-cols-2 gap-4">
                             <FormField control={form.control} name="chest" render={({ field }) => (<FormItem><Label>Грудь (см)</Label><FormControl><Input type="number" step="0.5" {...field} value={field.value ?? ''}/></FormControl><FormMessage /></FormItem>)} />

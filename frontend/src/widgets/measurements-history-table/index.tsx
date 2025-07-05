@@ -1,7 +1,7 @@
 'use client';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
-import type { Measurement } from '@/shared/lib/mock-data/measurements';
+import type { Measurement } from '@/entities/user/model/types';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
