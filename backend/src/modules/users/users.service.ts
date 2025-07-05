@@ -2,6 +2,8 @@
 
 
 
+
+
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -9,6 +11,8 @@ import { User } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
 import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
 import { PlayerStatsDto } from './dto/player-stats.dto';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 @Injectable()
 export class UsersService {
@@ -77,6 +81,14 @@ export class UsersService {
           },
           coaching: { // Fetch players this coach is coaching
              select: { id: true, name: true, avatar: true, role: true }
+          },
+          judgedMatches: {
+              include: {
+                  team1: { select: { name: true } },
+                  team2: { select: { name: true } },
+              },
+              orderBy: { finishedAt: 'desc' },
+              take: 20,
           }
         }
       });
@@ -107,6 +119,14 @@ export class UsersService {
           organizer: user.name,
           rules: t.rules || '',
       }));
+      
+      const judgedMatches = user.judgedMatches.map(m => ({
+          id: m.id,
+          team1: { name: m.team1.name },
+          team2: { name: m.team2.name },
+          resolution: `Счет ${m.team1Score}-${m.team2Score}`,
+          timestamp: m.finishedAt?.toISOString(),
+      }));
 
 
       const dateOfBirth = user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '1998-05-15';
@@ -115,6 +135,7 @@ export class UsersService {
         ...user,
         teams: userTeams,
         organizedTournaments,
+        judgedMatches,
         location: user.location || "Москва, Россия",
         mainSport: user.mainSport || "Футбол",
         isVerified: true,

@@ -1,10 +1,17 @@
-import { judgeUser, judgeAchievements } from "@/shared/lib/mock-data/judge-profile";
+
 import JudgeClient from "@/app/(app)/administration/judge/client";
+import { getPlayerProfile } from "@/entities/user/api/get-user";
+import { notFound } from "next/navigation";
+import { achievements } from "@/shared/lib/mock-data/profiles"; // Achievements remain mock for demo
 
-export function JudgeProfilePage() {
-    // In a real application, this data would be fetched from an API
-    const user = judgeUser;
-    const achievements = judgeAchievements;
+const DEMO_JUDGE_ID = '4'; // Николай Васильев
 
-    return <JudgeClient user={user} achievements={achievements} />;
+export async function JudgeProfilePage() {
+    const profileData = await getPlayerProfile(DEMO_JUDGE_ID);
+    
+    if (!profileData) {
+        notFound();
+    }
+
+    return <JudgeClient user={profileData.user} achievements={achievements} />;
 }

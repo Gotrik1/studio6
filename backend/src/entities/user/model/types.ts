@@ -21,7 +21,7 @@ export type UserTeam = {
   logo: string | null;
   dataAiHint: string | null;
   slug: string;
-  rank: number;
+  rank: number | null;
   game: string;
 };
 
@@ -64,7 +64,7 @@ export type PlayerStats = {
 export type CoachedPlayer = {
     id: string;
     name: string;
-    avatar: string;
+    avatar: string | null;
     avatarHint: string;
     role: string;
     stats: { kda: string; winRate: string; favoriteMap: string };

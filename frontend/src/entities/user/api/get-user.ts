@@ -3,7 +3,7 @@
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm, CoachedPlayer } from '@/entities/user/model/types';
+import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm, CoachedPlayer, JudgedMatch } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
 // Define the rich user profile type that the frontend expects
@@ -21,6 +21,7 @@ export type FullUserProfile = User & {
     careerHistory: CareerHistoryItem[];
     organizedTournaments?: TournamentCrm[];
     coaching?: CoachedPlayer[]; // A coach has players they are coaching
+    judgedMatches?: JudgedMatch[];
 };
 
 // This is the type for the full page props
@@ -62,7 +63,6 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
             }
         }).filter((item: any): item is PlayerActivityItem => item !== null);
         
-        // The backend now returns an augmented user object that includes teams, gallery, and careerHistory.
         const augmentedProfile: FullUserProfile = {
             ...profileData,
             activities: playerActivity,
@@ -70,7 +70,9 @@ export async function getPlayerProfile(id: string): Promise<PlayerProfileData | 
 
         return {
             user: augmentedProfile,
-        };
+            // Kept achievements mock as it's not in the backend yet
+            achievements: [], 
+        } as unknown as PlayerProfileData;
 
     } catch(error) {
         console.error(`Error fetching user profile for ${id}:`, error);
