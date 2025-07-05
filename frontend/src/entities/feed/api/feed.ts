@@ -12,11 +12,16 @@ export async function getFeed(): Promise<Activity[]> {
             tags: ['feed']
         }
     });
-    if (!result.success) {
+    if (!result.success || !Array.isArray(result.data)) {
         console.error("Failed to fetch feed", result.error);
         return [];
     }
-    return result.data as Activity[];
+    
+    // Adapter to convert ID to string
+    return result.data.map((item: any) => ({
+        ...item,
+        id: String(item.id),
+    }));
 }
 
 export async function postStatus(text: string) {
