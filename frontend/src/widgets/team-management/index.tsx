@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -19,6 +19,11 @@ import { TeamScheduleTab } from '@/widgets/team-schedule-tab';
 import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
+import { useParams } from 'next/navigation';
+import type { CoachedPlayer } from '@/entities/user/model/types';
+import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/get-team-by-slug';
+import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
@@ -28,6 +33,42 @@ export function TeamManagementPage() {
     const { requests: joinRequests, removeRequest } = useJoinRequests();
     const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+    
+    const params = useParams<{ slug: string }>();
+    const [team, setTeam] = useState<TeamDetails | null>(null);
+    const [dashboardData, setDashboardData] = useState<TeamDashboardData | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+
+    const teamPlayers: CoachedPlayer[] = team?.roster.map(p => ({
+        id: p.id,
+        name: p.name,
+        avatar: p.avatar,
+        avatarHint: 'player portrait',
+        role: p.role,
+        // This is mock data as the backend does not provide per-player stats yet
+        stats: { kda: '1.2', winRate: '55%', favoriteMap: 'Ascent' },
+        matchHistory: 'W 13-8, L 10-13, W 13-2',
+        adherence: Math.floor(Math.random() * (98 - 75 + 1) + 75),
+        progress: Math.floor(Math.random() * (25 - 5 + 1) + 5),
+    })) || [];
+
+
+    useEffect(() => {
+        async function fetchData() {
+            if (params.slug) {
+                setIsLoading(true);
+                const teamData = await getTeamBySlug(params.slug as string);
+                setTeam(teamData);
+                if (teamData) {
+                    const dashData = await getTeamDashboardData(teamData.id);
+                    setDashboardData(dashData);
+                }
+                setIsLoading(false);
+            }
+        }
+        fetchData();
+    }, [params.slug]);
+
 
     const handleAccept = (request: JoinRequest) => {
         removeRequest(request.id);
@@ -56,11 +97,26 @@ export function TeamManagementPage() {
         statsSummary: selectedRequest.statsSummary
     } : null;
 
+    if (isLoading) {
+        return (
+            <div className="space-y-6">
+                 <Skeleton className="h-10 w-1/3" />
+                 <Skeleton className="h-4 w-1/2" />
+                 <Skeleton className="h-12 w-full" />
+                 <Skeleton className="h-96 w-full" />
+            </div>
+        )
+    }
+
+    if (!team) {
+        return <div>Команда не найдена или у вас нет прав на управление.</div>;
+    }
+
     return (
          <>
             <div className="space-y-6 opacity-0 animate-fade-in-up">
                 <div className="space-y-2">
-                    <h1 className="font-headline text-3xl font-bold tracking-tight">Управление командой</h1>
+                    <h1 className="font-headline text-3xl font-bold tracking-tight">Управление командой: {team.name}</h1>
                     <p className="text-muted-foreground">
                         Все инструменты для капитана в одном месте.
                     </p>
@@ -104,7 +160,7 @@ export function TeamManagementPage() {
                                         {joinRequests.map(request => (
                                             <TableRow key={request.id}>
                                                 <TableCell className="font-medium flex items-center gap-2">
-                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.applicant.avatar} data-ai-hint="player avatar" /><AvatarFallback>{request.applicant.name.charAt(0)}</AvatarFallback></Avatar>
+                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.applicant.avatar || ''} data-ai-hint="player avatar" /><AvatarFallback>{request.applicant.name.charAt(0)}</AvatarFallback></Avatar>
                                                     {request.applicant.name}
                                                 </TableCell>
                                                 <TableCell>{request.applicant.role}</TableCell>
@@ -137,11 +193,11 @@ export function TeamManagementPage() {
                     </TabsContent>
 
                     <TabsContent value="training-analytics" className="mt-4">
-                        <TeamTrainingAnalytics />
+                        <TeamTrainingAnalytics players={teamPlayers} />
                     </TabsContent>
                     
                     <TabsContent value="ai-coach" className="mt-4">
-                        <TeamCoachTab />
+                        <TeamCoachTab team={team} dashboardData={dashboardData}/>
                     </TabsContent>
 
                     <TabsContent value="ai-assistant" className="mt-4">

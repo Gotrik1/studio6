@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -8,31 +7,56 @@ import { Loader2, Sparkles, AlertCircle, TrendingUp, TrendingDown, UserCheck, Ac
 import { analyzeTeamPerformance, type AnalyzeTeamPerformanceOutput } from '@/shared/api/genkit/flows/analyze-team-performance-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/shared/ui/alert';
+import type { TeamDetails } from '@/entities/team/model/types';
+import type { TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
+import { useToast } from '@/shared/hooks/use-toast';
 
-const mockTeamData = {
-    teamName: "Кибер Орлы",
-    recentMatches: "Победа 13-5 против 'Стальные Титаны', Поражение 10-13 против 'Ледяные Волки'",
-    playerStats: [
-        { name: "Superuser", kda: "1.2", winRate: "65%", recentPerformanceTrend: 'stable' as const },
-        { name: "Echo", kda: "1.5", winRate: "68%", recentPerformanceTrend: 'up' as const },
-        { name: "Viper", kda: "1.1", winRate: "62%", recentPerformanceTrend: 'stable' as const },
-        { name: "Reaper", kda: "0.9", winRate: "59%", recentPerformanceTrend: 'down' as const },
-        { name: "Blaze", kda: "1.0", winRate: "60%", recentPerformanceTrend: 'stable' as const },
-    ]
-};
+interface TeamCoachTabProps {
+    team: TeamDetails | null;
+    dashboardData: TeamDashboardData | null;
+}
 
-export function TeamCoachTab() {
+export function TeamCoachTab({ team, dashboardData }: TeamCoachTabProps) {
+    const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<AnalyzeTeamPerformanceOutput | null>(null);
 
     const handleAnalyze = async () => {
+        if (!team) {
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Данные команды не загружены.' });
+            return;
+        }
+
         setIsLoading(true);
         setError(null);
         setResult(null);
 
+        // Construct input for the AI flow from real data
+        const recentMatchesSummary = dashboardData?.recentResults.map(match => {
+            const isTeam1 = match.team1.id === team.id;
+            const scoreParts = match.score.split('-').map(s => parseInt(s.trim()));
+            const userTeamScore = isTeam1 ? scoreParts[0] : scoreParts[1];
+            const opponentScore = isTeam1 ? scoreParts[1] : scoreParts[0];
+            const resultText = userTeamScore > opponentScore ? 'Победа' : userTeamScore < opponentScore ? 'Поражение' : 'Ничья';
+            const opponentName = isTeam1 ? match.team2.name : match.team1.name;
+            return `${resultText} ${match.score} против '${opponentName}'`;
+        }).join(', ') || 'Нет недавних матчей.';
+        
+        // Mock player stats as backend doesn't provide this detail yet
+        const playerStats = team.roster.map(player => ({
+            name: player.name,
+            kda: (Math.random() * (1.8 - 0.8) + 0.8).toFixed(1),
+            winRate: `${Math.floor(Math.random() * (75 - 50 + 1) + 50)}%`,
+            recentPerformanceTrend: ['up', 'down', 'stable'][Math.floor(Math.random() * 3)] as 'up' | 'down' | 'stable',
+        }));
+
         try {
-            const analysisResult = await analyzeTeamPerformance(mockTeamData);
+            const analysisResult = await analyzeTeamPerformance({
+                teamName: team.name,
+                recentMatches: recentMatchesSummary,
+                playerStats,
+            });
             setResult(analysisResult);
         } catch (e) {
             console.error(e);
@@ -50,7 +74,7 @@ export function TeamCoachTab() {
                         <CardTitle>Продвинутый AI-Коуч</CardTitle>
                         <CardDescription>Глубокий анализ производительности вашей команды.</CardDescription>
                     </div>
-                     <Button onClick={handleAnalyze} disabled={isLoading}>
+                     <Button onClick={handleAnalyze} disabled={isLoading || !team}>
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4" />}
                         {result ? 'Проанализировать заново' : 'Начать анализ'}
                     </Button>
