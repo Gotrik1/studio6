@@ -6,7 +6,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { BrainCircuit, AlertCircle, Sparkles } from 'lucide-react';
 import { generatePlaygroundSummary, type GeneratePlaygroundSummaryOutput } from '@/shared/api/genkit/flows/generate-playground-summary-flow';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
 
 interface AiPlaygroundSummaryProps {
     playground: Playground;

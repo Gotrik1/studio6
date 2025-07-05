@@ -6,7 +6,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Terminal, Lightbulb, ThumbsUp, ThumbsDown, Sparkles } from 'lucide-react';
 import { analyzePlaygroundDetails, type AnalyzePlaygroundDetailsOutput } from '@/shared/api/genkit/flows/analyze-playground-details-flow';
-import type { Playground } from '@/shared/lib/mock-data/playgrounds';
+import type { Playground } from '@/entities/playground/model/types';
 
 interface AiPlaygroundAnalysisProps {
   playground: Playground;
