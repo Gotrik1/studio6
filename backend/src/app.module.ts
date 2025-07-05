@@ -35,6 +35,7 @@ import { InventoryModule } from './modules/inventory/inventory.module';
 import { NutritionModule } from './modules/nutrition/nutrition.module';
 import { FaqModule } from './modules/faq/faq.module';
 import { TournamentAnnouncementsModule } from './modules/tournament-announcements/tournament-announcements.module';
+import { TournamentJudgesModule } from './modules/tournament-judges/tournament-judges.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { TournamentAnnouncementsModule } from './modules/tournament-announcement
     NutritionModule,
     FaqModule,
     TournamentAnnouncementsModule,
+    TournamentJudgesModule,
   ],
   controllers: [AppController],
   providers: [

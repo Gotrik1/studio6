@@ -1,10 +1,10 @@
 
-import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
-import { ApiTags, ApiResponse } from '@nestjs/swagger';
+import { ApiQuery, ApiTags, ApiResponse } from '@nestjs/swagger';
 import { PlayerStatsDto } from './dto/player-stats.dto';
 
 @ApiTags('Users')
@@ -32,9 +32,11 @@ export class UsersController {
     return this.usersService.getStatsForUser(id);
   }
 
+  @Public() // Make this public for scouting available judges without auth
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @ApiQuery({ name: 'role', required: false, description: 'Фильтр по роли пользователя' })
+  findAll(@Query('role') role?: string) {
+    return this.usersService.findAll({ role });
   }
 
   @Public()

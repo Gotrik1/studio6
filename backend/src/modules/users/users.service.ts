@@ -1,7 +1,7 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { User } from '@prisma/client';
+import { User, Prisma } from '@prisma/client';
 import { differenceInYears } from 'date-fns';
 import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
 import { PlayerStatsDto } from './dto/player-stats.dto';
@@ -39,8 +39,12 @@ export class UsersService {
     return user;
   }
 
-  async findAll(): Promise<User[]> {
-    return this.prisma.user.findMany();
+  async findAll(params?: { role?: string }): Promise<User[]> {
+    const where: Prisma.UserWhereInput = {};
+    if (params?.role) {
+        where.role = params.role;
+    }
+    return this.prisma.user.findMany({ where });
   }
 
   async findOne(id: string): Promise<any | null> {
