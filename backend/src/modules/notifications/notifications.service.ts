@@ -53,6 +53,32 @@ export class NotificationsService {
     });
   }
 
+  @RabbitSubscribe({
+    exchange: 'prodvor_exchange',
+    routingKey: 'tournament.announcement.created',
+    queue: 'notifications_queue',
+  })
+  public async handleTournamentAnnouncement(msg: {
+    tournamentSlug: string;
+    tournamentName: string;
+    subject: string;
+    participantIds: string[];
+  }) {
+    this.logger.log(`Received tournament announcement event: ${JSON.stringify(msg)}`);
+
+    const notificationsToCreate = msg.participantIds.map((userId) => ({
+      userId,
+      type: 'ANNOUNCEMENT' as const,
+      message: `Новое объявление в турнире "${msg.tournamentName}": ${msg.subject}`,
+      href: `/tournaments/${msg.tournamentSlug}`,
+    }));
+
+    await this.prisma.notification.createMany({
+      data: notificationsToCreate,
+      skipDuplicates: true, // In case a user is in multiple teams
+    });
+  }
+
   async getNotifications(userId: string) {
       return this.prisma.notification.findMany({
           where: { userId },

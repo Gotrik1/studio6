@@ -166,7 +166,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
                 
                 <TabsContent value="announcements" className="mt-4">
-                    <CrmTournamentAnnouncements />
+                    <CrmTournamentAnnouncements tournamentId={tournament.id} />
                 </TabsContent>
                 
                 <TabsContent value="settings" className="mt-4">
