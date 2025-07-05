@@ -38,6 +38,10 @@ import { TournamentAnnouncementsModule } from './modules/tournament-announcement
 import { TournamentJudgesModule } from './modules/tournament-judges/tournament-judges.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { AchievementsModule } from './modules/achievements/achievements.module';
+import { MedicalPartnersModule } from './modules/medical-partners/medical-partners.module';
+import { TournamentMedicalModule } from './modules/tournament-medical/tournament-medical.module';
+import { TournamentParticipantsModule } from './modules/tournament-participants/tournament-participants.module';
+import { TournamentSponsorsModule } from './modules/tournament-sponsors/tournament-sponsors.module';
 
 @Module({
   imports: [
@@ -74,6 +78,10 @@ import { AchievementsModule } from './modules/achievements/achievements.module';
     FaqModule,
     TournamentAnnouncementsModule,
     TournamentJudgesModule,
+    TournamentParticipantsModule,
+    TournamentSponsorsModule,
+    TournamentMedicalModule,
+    MedicalPartnersModule,
     ReportsModule,
     AchievementsModule,
   ],
