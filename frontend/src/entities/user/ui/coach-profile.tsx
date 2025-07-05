@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -9,16 +10,16 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import type { coachUser, coachAchievements } from "@/shared/lib/mock-data/coach-profile";
-import { trainingPrograms } from '@/shared/lib/mock-data/training-programs';
+import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { coachedPlayers } from "@/shared/lib/mock-data/coach-players";
 import { AssignProgramDialog } from '@/widgets/assign-program-dialog';
 import { Wand2, ImageIcon } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import Link from 'next/link';
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
+import type { FullUserProfile } from '../api/get-user';
+import type { CoachedPlayer } from '@/widgets/team-training-analytics';
 
 const CoachStatsTab = dynamic(() => import('@/entities/user/ui/coach-profile-tabs/stats-tab').then(mod => mod.CoachStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -39,11 +40,12 @@ const MyProgramsTab = dynamic(() => import('@/entities/user/ui/coach-profile-tab
 
 
 type CoachProfileProps = {
-  user: typeof coachUser;
-  achievements: typeof coachAchievements;
+  user: FullUserProfile;
+  achievements: typeof AchievementsArray;
+  players: CoachedPlayer[];
 };
 
-export function CoachProfile({ user, achievements }: CoachProfileProps) {
+export function CoachProfile({ user, achievements, players }: CoachProfileProps) {
   const initials = user.name.split(' ').map((n) => n[0]).join('');
   
   const [isAssignProgramOpen, setIsAssignProgramOpen] = useState(false);
@@ -80,7 +82,7 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
             <div className="flex items-end gap-6 -mt-20">
                 <div className="relative shrink-0">
                     <Avatar className="h-32 w-32 border-4 border-background bg-background">
-                        <AvatarImage src={avatar} alt={user.name} data-ai-hint="sports coach" />
+                        <AvatarImage src={avatar || ''} alt={user.name} data-ai-hint="sports coach" />
                         <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
                     </Avatar>
                      <Button
@@ -126,10 +128,10 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
                 <CoachAchievementsTab achievements={achievements} />
             </TabsContent>
             <TabsContent value="my-players" className="mt-4">
-                <MyPlayersTab players={coachedPlayers} />
+                <MyPlayersTab players={players} />
             </TabsContent>
             <TabsContent value="my-programs" className="mt-4">
-                <MyProgramsTab programs={trainingPrograms} onAssignProgram={handleAssignProgram} />
+                <MyProgramsTab onAssignProgram={handleAssignProgram} authorName={user.name} />
             </TabsContent>
             </Tabs>
         </div>
@@ -142,7 +144,7 @@ export function CoachProfile({ user, achievements }: CoachProfileProps) {
         <UserAvatarGeneratorDialog
             isOpen={isAvatarDialogOpen}
             onOpenChange={setIsAvatarDialogOpen}
-            currentAvatar={avatar}
+            currentAvatar={avatar || ''}
             onAvatarSave={setAvatar}
         />
         <ProfileBannerGeneratorDialog

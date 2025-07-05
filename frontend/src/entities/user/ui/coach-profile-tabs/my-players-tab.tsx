@@ -1,15 +1,17 @@
 
+
 'use client';
 
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
-import type { CoachedPlayer } from "@/shared/lib/mock-data/coach-players";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Eye, BrainCircuit } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import Link from "next/link";
 import { PlayerAnalysisDialog } from "@/entities/player/ui/player-analysis-dialog";
+import type { CoachedPlayer } from '@/widgets/team-training-analytics';
+
 
 interface MyPlayersTabProps {
     players: CoachedPlayer[];

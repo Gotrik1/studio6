@@ -1,5 +1,6 @@
 
 
+
 export type CareerHistoryItem = {
     id: string;
     teamName: string;
@@ -60,4 +61,14 @@ export type PlayerStats = {
         winStreak: number;
         kda: number;
     };
+};
+
+export type CoachedPlayer = {
+    id: string;
+    name: string;
+    avatar: string;
+    avatarHint: string;
+    role: string;
+    stats: { kda: string; winRate: string; favoriteMap: string };
+    matchHistory: string;
 };

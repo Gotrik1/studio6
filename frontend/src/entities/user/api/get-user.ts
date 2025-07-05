@@ -3,7 +3,7 @@
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm } from '@/entities/user/model/types';
+import type { UserTeam, CareerHistoryItem, GalleryItem, TournamentCrm, CoachedPlayer } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
 // Define the rich user profile type that the frontend expects
@@ -20,6 +20,7 @@ export type FullUserProfile = User & {
     gallery: GalleryItem[];
     careerHistory: CareerHistoryItem[];
     organizedTournaments?: TournamentCrm[];
+    coaching?: CoachedPlayer[]; // A coach has players they are coaching
 };
 
 // This is the type for the full page props

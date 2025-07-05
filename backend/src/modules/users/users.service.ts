@@ -1,6 +1,7 @@
 
 
 
+
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { PrismaService } from '@/prisma/prisma.service';
@@ -73,6 +74,9 @@ export class UsersService {
           },
           careerHistory: {
               orderBy: { createdAt: 'asc' }
+          },
+          coaching: { // Fetch players this coach is coaching
+             select: { id: true, name: true, avatar: true, role: true }
           }
         }
       });

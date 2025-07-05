@@ -15,7 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Loader2, Sparkles, AlertCircle, TrendingUp, TrendingDown, ClipboardList } from "lucide-react";
 import { analyzeEsportsPerformance, type AnalyzeEsportsPerformanceOutput } from '@/shared/api/genkit/flows/analyze-esports-performance-flow';
-import type { CoachedPlayer } from "@/shared/lib/mock-data/coach-players";
+import type { CoachedPlayer } from "@/widgets/team-training-analytics";
 
 interface PlayerAnalysisDialogProps {
     isOpen: boolean;

@@ -7,15 +7,18 @@ import Image from 'next/image';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Button } from "@/shared/ui/button";
 import { PlusCircle, Share } from "lucide-react";
+import { useTraining } from "@/shared/context/training-provider";
 
 interface MyProgramsTabProps {
-    programs: TrainingProgram[];
     onAssignProgram: (program: TrainingProgram) => void;
+    authorName: string;
 }
 
-export function MyProgramsTab({ programs, onAssignProgram }: MyProgramsTabProps) {
+export function MyProgramsTab({ onAssignProgram, authorName }: MyProgramsTabProps) {
+    const { programs, isLoading } = useTraining();
+    
     // In a real app, this would be filtered by the coach's ID
-    const coachPrograms = programs.filter(p => p.author === 'Coach Anna' || p.isAiGenerated);
+    const coachPrograms = programs.filter(p => p.author === authorName || p.author === 'ProDvor AI');
 
     return (
         <Card>

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
@@ -5,25 +6,43 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Progress } from '@/shared/ui/progress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { TrendingUp, TrendingDown, CheckCircle } from 'lucide-react';
-import { teamTrainingAnalyticsData } from '@/shared/lib/mock-data/team-training-analytics';
+import { coachedPlayers as initialCoachedPlayers } from '@/shared/lib/mock-data/coach-players';
+
+export type CoachedPlayer = {
+    id: string;
+    name: string;
+    avatar: string;
+    avatarHint: string;
+    role: string;
+    stats: { kda: string; winRate: string; favoriteMap: string };
+    matchHistory: string;
+};
 
 const StatCard = ({ title, value, icon: Icon, description }: { title: string, value: string, icon: React.ElementType, description: string }) => (
     <Card>
-        <CardHeader className="pb-2">
-            <CardDescription className="flex items-center justify-between">
-                <span>{title}</span>
-                <Icon className="h-4 w-4 text-muted-foreground" />
-            </CardDescription>
-            <CardTitle className="text-2xl font-bold">{value}</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{title}</CardTitle>
+            <Icon className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-             <p className="text-xs text-muted-foreground">{description}</p>
+            <div className="text-2xl font-bold">{value}</div>
+            {description && <p className="text-xs text-muted-foreground">{description}</p>}
         </CardContent>
     </Card>
 );
 
 
 export function TeamTrainingAnalytics() {
+    const teamTrainingAnalyticsData = initialCoachedPlayers.map(p => ({
+        playerId: p.id,
+        playerName: p.name,
+        avatar: p.avatar,
+        assignedProgram: p.id === 'p1' ? 'Классический 3-дневный сплит' : 'Женский сплит на ягодицы',
+        workoutsCompleted: p.id === 'p1' ? 8 : 9,
+        workoutsTotal: p.id === 'p1' ? 10 : 12,
+        adherence: p.id === 'p1' ? 80 : 75,
+    }));
+    
     const overallAdherence = teamTrainingAnalyticsData.reduce((acc, player) => acc + player.adherence, 0) / teamTrainingAnalyticsData.length;
     const mostDiligent = teamTrainingAnalyticsData.reduce((prev, current) => (prev.adherence > current.adherence) ? prev : current);
     const leastDiligent = teamTrainingAnalyticsData.reduce((prev, current) => (prev.adherence < current.adherence) ? prev : current);
