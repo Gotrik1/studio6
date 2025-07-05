@@ -1,9 +1,9 @@
 import { SportDetailsPage } from '@/views/sport-details';
-import { sportsList } from '@/shared/lib/mock-data/sports';
+import { getSportById } from '@/entities/sport/api/sports';
 import { notFound } from 'next/navigation';
 
-export default function SportDetailsRoute({ params }: { params: { id: string } }) {
-    const sport = sportsList.find(s => s.id === params.id);
+export default async function SportDetailsRoute({ params }: { params: { id: string } }) {
+    const sport = await getSportById(params.id);
     if (!sport) {
         notFound();
     }

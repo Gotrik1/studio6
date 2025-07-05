@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Tournament, ActivityType } from '@prisma/client';
+import { Tournament, ActivityType, Prisma } from '@prisma/client';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
@@ -104,9 +104,16 @@ export class TournamentsService {
     });
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(params?: { game?: string }): Promise<any[]> {
+    const where: Prisma.TournamentWhereInput = {};
+    if (params?.game) {
+      where.game = params.game;
+    }
+
     const tournaments = await this.prisma.tournament.findMany({
+      where,
       include: { _count: { select: { teams: true } } },
+      orderBy: { tournamentStartDate: 'desc' },
     });
 
     // Map to frontend shape

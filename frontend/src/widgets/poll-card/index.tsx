@@ -29,6 +29,8 @@ export function PollCard({ poll }: PollCardProps) {
     const { toast } = useToast();
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [voted, setVoted] = useState(false);
+    const [votes, setVotes] = useState(poll.options.map(opt => opt.votes));
+    const [totalVotes, setTotalVotes] = useState(poll.totalVotes);
 
     const handleVote = () => {
         if (!selectedOption) {
@@ -40,6 +42,15 @@ export function PollCard({ poll }: PollCardProps) {
             return;
         }
         setVoted(true);
+        const selectedIndex = poll.options.findIndex(opt => opt.id === selectedOption);
+        if (selectedIndex !== -1) {
+            setVotes(currentVotes => {
+                const newVotes = [...currentVotes];
+                newVotes[selectedIndex]++;
+                return newVotes;
+            });
+            setTotalVotes(current => current + 1);
+        }
         toast({
             title: "Голос учтён!",
             description: "Спасибо за участие в опросе.",
@@ -59,8 +70,8 @@ export function PollCard({ poll }: PollCardProps) {
                     className="space-y-2"
                     disabled={voted}
                 >
-                    {poll.options.map((option) => {
-                        const percentage = voted ? (option.votes / poll.totalVotes) * 100 : 0;
+                    {poll.options.map((option, index) => {
+                        const percentage = voted ? (votes[index] / totalVotes) * 100 : 0;
                         return (
                             <div key={option.id}>
                                 <div className="relative flex items-center space-x-2 rounded-md border p-3">

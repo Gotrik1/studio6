@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -21,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createPromotion } from '@/entities/promotion/api/promotions';
 import type { Sponsor } from '@/entities/sponsor/model/types';
 import { getSponsors } from '@/entities/sponsor/api/sponsors';
+import { useSession } from '@/shared/lib/session/client';
 
 const promotionSchema = z.object({
   name: z.string().min(5, 'Название должно содержать не менее 5 символов.'),
@@ -41,6 +43,7 @@ interface ManualPromotionFormProps {
 export function ManualPromotionForm({ isEditMode }: ManualPromotionFormProps) {
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useSession();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
 
@@ -60,16 +63,21 @@ export function ManualPromotionForm({ isEditMode }: ManualPromotionFormProps) {
   });
 
   const onSubmit = async (data: FormValues) => {
+    if (!user) {
+        toast({ variant: 'destructive', title: 'Ошибка', description: 'Необходимо авторизоваться.' });
+        return;
+    }
     setIsSubmitting(true);
     
     const promotionData = {
         ...data,
+        organizerId: user.id,
         endDate: data.endDate.toISOString(), // Convert date to string for API
         imageDataUri: 'https://placehold.co/2560x720.png', // Mock image
         imageHint: 'promotion banner',
     };
 
-    const result = await createPromotion(promotionData);
+    const result = await createPromotion(promotionData as any);
 
     if (result.success) {
         toast({

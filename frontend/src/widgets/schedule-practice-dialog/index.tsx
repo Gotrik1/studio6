@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,12 +15,13 @@ import { cn } from '@/shared/lib/utils';
 import { CalendarIcon, Loader2, Send } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { sportsList } from '@/shared/lib/mock-data/sports';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from '@/shared/ui/dialog';
 import { getPlaygrounds } from '@/entities/playground/api/playgrounds';
 import type { Playground } from '@/entities/playground/model/types';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import type { TeamPractice } from '@/shared/lib/mock-data/team-practices';
+import { getSports } from '@/entities/sport/api/sports';
+import type { Sport } from '@/entities/sport/model/types';
 
 const practiceSchema = z.object({
   title: z.string().min(5, 'Название должно содержать не менее 5 символов.'),

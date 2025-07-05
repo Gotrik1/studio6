@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Megaphone, PlusCircle } from 'lucide-react';
+import { Megaphone, PlusCircle, Coins } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { getPromotions } from '@/entities/promotion/api/promotions';
@@ -66,9 +66,10 @@ export function PromotionsPage() {
                 </Button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {isLoading ? (
                     <>
+                        <PromotionCardSkeleton />
                         <PromotionCardSkeleton />
                         <PromotionCardSkeleton />
                     </>
@@ -76,9 +77,9 @@ export function PromotionsPage() {
                     promotions.map(promo => (
                         <Card key={promo.id} className="flex flex-col overflow-hidden">
                             <div className="relative h-48 w-full">
-                                <Image src={promo.image} alt={promo.title} fill className="object-cover" data-ai-hint={promo.imageHint} />
+                                <Image src={promo.imageDataUri} alt={promo.name} fill className="object-cover" data-ai-hint={promo.imageHint} />
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-                                <CardTitle className="absolute bottom-4 left-4 text-white font-headline text-2xl shadow-lg">{promo.title}</CardTitle>
+                                <CardTitle className="absolute bottom-4 left-4 text-white font-headline text-2xl shadow-lg">{promo.name}</CardTitle>
                             </div>
                            {promo.sponsor && (
                                 <CardHeader>
@@ -98,7 +99,7 @@ export function PromotionsPage() {
                                 </div>
                                 <Button className="w-full">
                                     <Megaphone className="mr-2 h-4 w-4" />
-                                    Участвовать
+                                    Участвовать за <Coins className="h-4 w-4 mx-1.5 text-amber-300"/>{promo.cost}
                                 </Button>
                             </CardFooter>
                         </Card>

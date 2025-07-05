@@ -25,6 +25,7 @@ import { StoreModule } from './modules/store/store.module';
 import { TrainingModule } from './modules/training/training.module';
 import { PromotionsModule } from './modules/promotions/promotions.module';
 import { LeaguesModule } from './modules/leagues/leagues.module';
+import { SportsModule } from './modules/sports/sports.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { LeaguesModule } from './modules/leagues/leagues.module';
     TrainingModule,
     PromotionsModule,
     LeaguesModule,
+    SportsModule,
   ],
   controllers: [AppController],
   providers: [

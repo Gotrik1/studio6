@@ -3,9 +3,10 @@
 
 import type { Tournament } from '@/entities/tournament/model/types';
 
-export async function fetchTournaments(): Promise<Tournament[]> {
+export async function fetchTournaments(game?: string): Promise<Tournament[]> {
+  const url = game ? `${process.env.BACKEND_URL}/tournaments?game=${encodeURIComponent(game)}` : `${process.env.BACKEND_URL}/tournaments`;
   try {
-    const response = await fetch(`${process.env.BACKEND_URL}/tournaments`, {
+    const response = await fetch(url, {
       cache: 'no-store', // Disable caching for development
     });
 

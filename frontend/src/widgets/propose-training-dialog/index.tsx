@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -13,14 +13,14 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2, Send } from 'lucide-react';
+import { CalendarIcon, Loader2, Send, Coins } from 'lucide-react';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, DialogFooter } from '@/shared/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { sportsList } from '@/shared/lib/mock-data/sports';
-import { friendsList } from '@/shared/lib/mock-data/friends';
 import { useTrainingProposals } from '@/shared/context/training-proposal-provider';
+import { getFriends, type Friend } from '@/entities/user/api/friends';
+import { getSports, type Sport } from '@/entities/sport/api/sports';
 
 const trainingSchema = z.object({
   friendId: z.string({ required_error: "Выберите друга." }),
@@ -41,6 +41,15 @@ export function ProposeTrainingDialog({ isOpen, onOpenChange }: ProposeTrainingD
     const { toast } = useToast();
     const { addProposal } = useTrainingProposals();
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [friends, setFriends] = useState<Friend[]>([]);
+    const [sports, setSports] = useState<Sport[]>([]);
+
+    useEffect(() => {
+        if (isOpen) {
+            getFriends().then(setFriends);
+            getSports().then(setSports);
+        }
+    }, [isOpen]);
 
     const form = useForm<FormValues>({
         resolver: zodResolver(trainingSchema),
@@ -59,7 +68,7 @@ export function ProposeTrainingDialog({ isOpen, onOpenChange }: ProposeTrainingD
         combinedDate.setHours(hours, minutes, 0, 0);
 
         setTimeout(() => {
-            const friend = friendsList.find(f => f.id === data.friendId);
+            const friend = friends.find(f => f.id === data.friendId);
             addProposal(data.friendId, data.sport, combinedDate, data.comment || '');
             toast({
                 title: "Предложение отправлено!",
@@ -82,10 +91,10 @@ export function ProposeTrainingDialog({ isOpen, onOpenChange }: ProposeTrainingD
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
                              <FormField control={form.control} name="friendId" render={({ field }) => (
-                                <FormItem><FormLabel>Друг</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите друга из списка" /></SelectTrigger></FormControl><SelectContent>{friendsList.map(friend => <SelectItem key={friend.id} value={friend.id}>{friend.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Друг</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите друга из списка" /></SelectTrigger></FormControl><SelectContent>{friends.map(friend => <SelectItem key={friend.id} value={friend.id}>{friend.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name="sport" render={({ field }) => (
-                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                             )} />
                             <div className="grid grid-cols-2 gap-4">
                                 <FormField control={form.control} name="date" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Дата</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date()} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />

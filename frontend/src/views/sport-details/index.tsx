@@ -18,8 +18,8 @@ import { Star } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { useToast } from '@/shared/hooks/use-toast';
 import { getPlayerLeaderboard, type PlayerLeaderboardItem } from '@/entities/leaderboard/api/get-player-leaderboard';
-import { getTeamLeaderboard, type TeamLeaderboardItem } from '@/entities/leaderboard/api/get-team-leaderboard';
-import { getTournaments, type Tournament } from '@/entities/tournament/api/get-tournaments';
+import { getTeamLeaderboard, type TeamLeaderboardItem } from '@/entities/team/api/get-leaderboard';
+import { fetchTournaments, type Tournament } from '@/entities/tournament/api/get-tournaments';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 interface SportDetailsPageProps {
@@ -55,12 +55,12 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
         setIsLoading(true);
         try {
           const [allTournaments, allTeams, allPlayers] = await Promise.all([
-            getTournaments(),
-            getTeamLeaderboard(),
+            fetchTournaments(sport.name),
+            getTeamLeaderboard(sport.name),
             getPlayerLeaderboard()
           ]);
-          setSportTournaments(allTournaments.filter(t => t.game.toLowerCase() === sport.name.toLowerCase()).slice(0, 3));
-          setTopTeams(allTeams.filter(t => t.game === sport.name).slice(0, 5));
+          setSportTournaments(allTournaments.slice(0, 3));
+          setTopTeams(allTeams.slice(0, 5));
           setTopPlayers(allPlayers.slice(0, 10)); // Assuming a global player leaderboard for now
         } catch(e) {
             console.error(e);
@@ -72,7 +72,7 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
       loadData();
     }, [sport.name, toast]);
 
-    const sportLobbies = useMemo(() => lobbies.filter(l => l.sport.toLowerCase().includes(sport.name.toLowerCase())), [sport, lobbies]);
+    const sportLobbies = useMemo(() => lobbies.filter(l => l.sport.toLowerCase().includes(sport.name.toLowerCase())), [sport.name, lobbies]);
 
     const handleJoinLobby = (lobbyId: string) => {
         joinLfgLobby(lobbyId);

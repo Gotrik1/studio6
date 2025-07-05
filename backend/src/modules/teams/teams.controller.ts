@@ -1,10 +1,10 @@
 
-import { Controller, Get, Post, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Query } from '@nestjs/common';
 import { TeamsService } from './teams.service';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { JoinTeamDto } from './dto/join-team.dto';
 import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiQuery } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Teams')
@@ -19,8 +19,9 @@ export class TeamsController {
 
   @Public()
   @Get('leaderboard')
-  getLeaderboard(): Promise<LeaderboardTeamDto[]> {
-    return this.teamsService.getLeaderboard();
+  @ApiQuery({ name: 'game', required: false, description: 'Фильтр по названию игры' })
+  getLeaderboard(@Query('game') game?: string): Promise<LeaderboardTeamDto[]> {
+    return this.teamsService.getLeaderboard({ game });
   }
   
   @Public()

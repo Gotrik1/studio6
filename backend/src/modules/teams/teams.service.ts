@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException, BadRequestException, Logger, OnModuleInit } from '@nestjs/common';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { PrismaService } from '@/prisma/prisma.service';
-import { Team, ActivityType } from '@prisma/client';
+import { Team, ActivityType, Prisma } from '@prisma/client';
 import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
@@ -184,13 +184,15 @@ export class TeamsService implements OnModuleInit {
     return result;
   }
   
-  async getLeaderboard(): Promise<LeaderboardTeamDto[]> {
-    const cacheKey = 'leaderboard_teams';
+  async getLeaderboard(params?: { game?: string }): Promise<LeaderboardTeamDto[]> {
+    const cacheKey = `leaderboard_teams_${params?.game || 'all'}`;
     const cachedLeaderboard = await this.cacheManager.get<LeaderboardTeamDto[]>(cacheKey);
 
     if (cachedLeaderboard) {
       return cachedLeaderboard;
     }
+    
+    const whereClause = params?.game ? Prisma.sql`WHERE game = ${params.game}` : Prisma.empty;
 
     const result: LeaderboardTeamDto[] = await this.prisma.$queryRaw`
         SELECT
@@ -205,6 +207,7 @@ export class TeamsService implements OnModuleInit {
             draws,
             slug
         FROM "Team"
+        ${whereClause}
         ORDER BY wins DESC, losses ASC
         LIMIT 10
     `;

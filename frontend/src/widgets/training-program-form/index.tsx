@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, useFieldArray, Control, useFormContext } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -11,12 +11,13 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Loader2, PlusCircle, Trash2, GripVertical, Link2 } from 'lucide-react';
-import type { Exercise } from '@/shared/lib/mock-data/exercises';
+import type { Exercise } from '@/entities/exercise/model/types';
+import { getExercises } from '@/entities/exercise/api/get-exercises';
 import { ExercisePickerDialog } from '@/widgets/exercise-picker-dialog';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
-import { exercisesList } from '@/shared/lib/mock-data/exercises';
 import { Textarea } from '@/shared/ui/textarea';
 import { Checkbox } from '@/shared/ui/checkbox';
+import Link from 'next/link';
 
 const exerciseSchema = z.object({
   id: z.string(),
@@ -62,7 +63,7 @@ const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: DaySec
         control,
         name: `days.${dayIndex}.exercises`,
     });
-
+    
     return (
         <Card>
             <CardHeader className="flex flex-row items-center justify-between">
@@ -101,7 +102,7 @@ const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: DaySec
 
                         <div className="hidden sm:grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto] items-center gap-2">
                             <GripVertical className="h-5 w-5 text-muted-foreground cursor-move" />
-                            <span className="font-medium">{exField.name}</span>
+                             <Link href={`/training/exercises/${exField.id}`} className="font-medium hover:underline">{exField.name}</Link>
                             <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.sets`} render={({ field }) => (<FormItem><FormControl><Input placeholder="3-4" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
                             <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.reps`} render={({ field }) => (<FormItem><FormControl><Input placeholder="8-12" {...field} className="w-20 text-center" /></FormControl></FormItem>)} />
                             <FormField control={control} name={`days.${dayIndex}.exercises.${exIndex}.plannedWeight`} render={({ field }) => (<FormItem><FormControl><Input placeholder="100кг" {...field} value={field.value ?? ''} className="w-20 text-center" /></FormControl></FormItem>)} />
@@ -126,7 +127,12 @@ const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: DaySec
 export function TrainingProgramForm({ initialData, onSubmit, isSaving }: TrainingProgramFormProps) {
     const [isPickerOpen, setIsPickerOpen] = useState(false);
     const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
+    const [allExercises, setAllExercises] = useState<Exercise[]>([]);
     const isEditMode = !!initialData;
+
+     useEffect(() => {
+        getExercises().then(setAllExercises);
+    }, []);
 
     const form = useForm<ProgramFormValues>({
         resolver: zodResolver(programSchema),
@@ -138,7 +144,7 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
              days: initialData.weeklySplit.map(day => ({
                  title: day.title,
                  exercises: day.exercises.map(ex => {
-                     const fullExercise = exercisesList.find(e => e.name === ex.name);
+                     const fullExercise = allExercises.find(e => e.name === ex.name);
                      return {
                          id: fullExercise?.id || `temp-${Math.random()}`,
                          name: ex.name,
@@ -233,6 +239,7 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                 isOpen={isPickerOpen}
                 onOpenChange={setIsPickerOpen}
                 onSelectExercises={handleSelectExercises}
+                allExercises={allExercises}
             />
         </>
     );

@@ -1,13 +1,14 @@
 export type Promotion = {
     id: string;
-    title: string;
+    name: string;
     description: string;
     prize: string;
     sponsor: {
         name: string;
         logo: string;
     } | null;
-    image: string;
+    imageDataUri: string;
     imageHint: string;
     endDate: string;
+    cost: string;
 };

@@ -1,49 +1,50 @@
 
-
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { Button } from "@/shared/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { Input } from "@/shared/ui/input";
 import { Checkbox } from '@/shared/ui/checkbox';
 import { ScrollArea } from '@/shared/ui/scroll-area';
-import { exercisesList, type Exercise } from '@/shared/lib/mock-data/exercises';
 import { Search } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
+import type { Exercise } from '@/entities/exercise/model/types';
+
 
 interface ExercisePickerDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   onSelectExercises: (exercises: Exercise[]) => void;
+  allExercises: Exercise[];
 }
 
 const muscleGroups = ['Все', 'Грудь', 'Спина', 'Ноги', 'Плечи', 'Руки', 'Пресс', 'Баскетбол', 'Футбол', 'Valorant'];
 const equipmentTypes = ['Все', 'Штанга', 'Гантели', 'Тренажер', 'Собственный вес', 'Мяч', 'Компьютер'];
 
-export function ExercisePickerDialog({ isOpen, onOpenChange, onSelectExercises }: ExercisePickerDialogProps) {
+export function ExercisePickerDialog({ isOpen, onOpenChange, onSelectExercises, allExercises }: ExercisePickerDialogProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [muscleFilter, setMuscleFilter] = useState('Все');
   const [equipmentFilter, setEquipmentFilter] = useState('Все');
 
-  useEffect(() => {
+  useState(() => {
     if (!isOpen) {
       setSelectedIds(new Set());
       setSearchQuery('');
       setMuscleFilter('Все');
       setEquipmentFilter('Все');
     }
-  }, [isOpen]);
+  });
 
   const filteredExercises = useMemo(() => {
-    return exercisesList.filter(exercise => {
+    return allExercises.filter(exercise => {
       const matchesSearch = exercise.name.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesMuscle = muscleFilter === 'Все' || exercise.category === muscleFilter;
       const matchesEquipment = equipmentFilter === 'Все' || exercise.equipment === equipmentFilter;
       return matchesSearch && matchesMuscle && matchesEquipment;
     });
-  }, [searchQuery, muscleFilter, equipmentFilter]);
+  }, [allExercises, searchQuery, muscleFilter, equipmentFilter]);
 
   const handleSelect = (exerciseId: string) => {
     setSelectedIds(prev => {
@@ -58,7 +59,7 @@ export function ExercisePickerDialog({ isOpen, onOpenChange, onSelectExercises }
   };
 
   const handleAddExercises = () => {
-    const selected = exercisesList.filter(ex => selectedIds.has(ex.id));
+    const selected = allExercises.filter(ex => selectedIds.has(ex.id));
     onSelectExercises(selected);
     onOpenChange(false);
   };

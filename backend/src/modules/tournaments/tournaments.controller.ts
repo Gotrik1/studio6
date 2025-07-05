@@ -1,9 +1,9 @@
 
-import { Controller, Get, Post, Body, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards, Req, Query } from '@nestjs/common';
 import { TournamentsService } from './tournaments.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { RegisterTeamDto } from './dto/register-team.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { Public } from '../auth/decorators/public.decorator';
@@ -28,8 +28,9 @@ export class TournamentsController {
 
   @Public()
   @Get()
-  findAll() {
-    return this.tournamentsService.findAll();
+  @ApiQuery({ name: 'game', required: false, description: 'Фильтр по названию игры' })
+  findAll(@Query('game') game?: string) {
+    return this.tournamentsService.findAll({ game });
   }
 
   @Public()
