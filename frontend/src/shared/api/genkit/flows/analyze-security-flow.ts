@@ -1,10 +1,20 @@
 'use server';
 
-import type { z } from 'zod';
-import type { AnalyzeSecurityInputSchema, AnalyzeSecurityOutputSchema } from './schemas/analyze-security-schema';
+// Define types locally to decouple from backend schemas.
+export type AnalyzeSecurityInput = {
+  activityLog: string;
+};
 
-export type AnalyzeSecurityInput = z.infer<typeof AnalyzeSecurityInputSchema>;
-export type AnalyzeSecurityOutput = z.infer<typeof AnalyzeSecurityOutputSchema>;
+export type SecurityRecommendation = {
+  title: string;
+  description: string;
+  severity: 'low' | 'medium' | 'high';
+};
+
+export type AnalyzeSecurityOutput = {
+  recommendations: SecurityRecommendation[];
+};
+
 
 export async function analyzeSecurity(input: AnalyzeSecurityInput): Promise<AnalyzeSecurityOutput> {
   const response = await fetch('/api/ai/analyze-security', {
