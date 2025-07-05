@@ -12,7 +12,9 @@ export async function getMeasurements(): Promise<Measurement[]> {
         console.error('Failed to fetch measurements:', result.error);
         return [];
     }
-    return result.data.map((m: any) => ({ ...m, date: new Date(m.date).toISOString().split('T')[0] }));
+    // The backend returns dates as ISO strings. We just cast the type.
+    // This prevents timezone issues that arise from stripping time information.
+    return result.data as Measurement[];
 }
 
 
