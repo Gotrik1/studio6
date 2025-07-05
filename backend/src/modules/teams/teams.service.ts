@@ -9,6 +9,7 @@ import { Cache } from 'cache-manager';
 import { CreatePracticeDto } from './dto/create-practice.dto';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { analyzeTeamPerformance } from '@/ai/flows/analyze-team-performance-flow';
 
 @Injectable()
 export class TeamsService implements OnModuleInit {
@@ -464,6 +465,46 @@ export class TeamsService implements OnModuleInit {
       href: `/matches/${match.id}`,
       status: match.status,
     }
+  }
+
+  async getCoachSummary(teamId: string): Promise<any> {
+    const team = await this.prisma.team.findUnique({
+      where: { id: teamId },
+      include: { members: true },
+    });
+
+    if (!team) {
+      throw new NotFoundException(`Команда с ID ${teamId} не найдена.`);
+    }
+
+    const dashboardData = await this.getDashboardData(teamId);
+
+    const recentMatchesSummary = (dashboardData.recentResults || []).map((match: any) => {
+      const isTeam1 = match.team1.id === team.id;
+      const scoreParts = match.score.split('-').map((s: string) => parseInt(s, 10));
+      const userTeamScore = isTeam1 ? scoreParts[0] : scoreParts[1];
+      const opponentScore = isTeam1 ? scoreParts[1] : scoreParts[0];
+      let resultText = 'Ничья';
+      if (!isNaN(userTeamScore) && !isNaN(opponentScore)) {
+        if (userTeamScore > opponentScore) resultText = 'Победа';
+        if (userTeamScore < opponentScore) resultText = 'Поражение';
+      }
+      const opponentName = isTeam1 ? match.team2.name : match.team1.name;
+      return `${resultText} ${match.score} против '${opponentName}'`;
+    }).join(', ') || 'Нет недавних матчей.';
+
+    const playerStats = team.members.map(player => ({
+      name: player.name,
+      kda: (Math.random() * (1.8 - 0.8) + 0.8).toFixed(1), // Mock data
+      winRate: `${Math.floor(Math.random() * (75 - 50 + 1) + 50)}%`, // Mock data
+      recentPerformanceTrend: ['up', 'down', 'stable'][Math.floor(Math.random() * 3)] as 'up' | 'down' | 'stable',
+    }));
+
+    return analyzeTeamPerformance({
+      teamName: team.name,
+      recentMatches: recentMatchesSummary,
+      playerStats,
+    });
   }
 
 

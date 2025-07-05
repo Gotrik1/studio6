@@ -1,8 +1,10 @@
+
 'use server';
 
 import type { Team } from '@/entities/team/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidatePath } from 'next/cache';
+import type { AnalyzeTeamPerformanceOutput } from '@/shared/api/genkit/flows/analyze-team-performance-flow';
 
 export async function getTeams(): Promise<Team[]> {
   const result = await fetchWithAuth('/teams');
@@ -56,4 +58,13 @@ export async function setCaptain(teamId: string, newCaptainId: string) {
         method: 'PATCH',
         body: JSON.stringify({ newCaptainId }),
     });
+}
+
+export async function getTeamCoachSummary(teamId: string): Promise<AnalyzeTeamPerformanceOutput | null> {
+    const result = await fetchWithAuth(`/teams/${teamId}/coach-summary`);
+    if (!result.success) {
+        console.error('Failed to fetch team coach summary:', result.error);
+        return null;
+    }
+    return result.data as AnalyzeTeamPerformanceOutput;
 }

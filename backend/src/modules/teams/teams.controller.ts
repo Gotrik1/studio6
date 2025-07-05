@@ -11,6 +11,7 @@ import { Request } from 'express';
 import { SetHomePlaygroundDto } from './dto/set-home-playground.dto';
 import { SetCaptainDto } from './dto/set-captain.dto';
 import { CreatePracticeDto } from './dto/create-practice.dto';
+import type { AnalyzeTeamPerformanceOutput } from '@/ai/flows/analyze-team-performance-flow';
 
 @ApiTags('Teams')
 @Controller('teams')
@@ -39,6 +40,13 @@ export class TeamsController {
   @Get(':id/dashboard')
   getDashboardData(@Param('id') id: string) {
     return this.teamsService.getDashboardData(id);
+  }
+
+  @Get(':id/coach-summary')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  getCoachSummary(@Param('id') id: string): Promise<AnalyzeTeamPerformanceOutput> {
+    return this.teamsService.getCoachSummary(id);
   }
 
   @Public()

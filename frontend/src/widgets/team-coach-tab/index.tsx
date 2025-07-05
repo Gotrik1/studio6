@@ -1,22 +1,22 @@
+
 'use client';
 
 import { useState } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Loader2, Sparkles, AlertCircle, TrendingUp, TrendingDown, UserCheck, Activity, BrainCircuit } from 'lucide-react';
-import { analyzeTeamPerformance, type AnalyzeTeamPerformanceOutput } from '@/shared/api/genkit/flows/analyze-team-performance-flow';
+import type { AnalyzeTeamPerformanceOutput } from '@/shared/api/genkit/flows/analyze-team-performance-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertTitle, AlertDescription } from '@/shared/ui/alert';
 import type { TeamDetails } from '@/entities/team/model/types';
-import type { TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
 import { useToast } from '@/shared/hooks/use-toast';
+import { getTeamCoachSummary } from '@/entities/team/api/teams';
 
 interface TeamCoachTabProps {
     team: TeamDetails | null;
-    dashboardData: TeamDashboardData | null;
 }
 
-export function TeamCoachTab({ team, dashboardData }: TeamCoachTabProps) {
+export function TeamCoachTab({ team }: TeamCoachTabProps) {
     const { toast } = useToast();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -32,35 +32,16 @@ export function TeamCoachTab({ team, dashboardData }: TeamCoachTabProps) {
         setError(null);
         setResult(null);
 
-        // Construct input for the AI flow from real data
-        const recentMatchesSummary = dashboardData?.recentResults.map(match => {
-            const isTeam1 = match.team1.id === team.id;
-            const scoreParts = match.score.split('-').map(s => parseInt(s.trim()));
-            const userTeamScore = isTeam1 ? scoreParts[0] : scoreParts[1];
-            const opponentScore = isTeam1 ? scoreParts[1] : scoreParts[0];
-            const resultText = userTeamScore > opponentScore ? 'Победа' : userTeamScore < opponentScore ? 'Поражение' : 'Ничья';
-            const opponentName = isTeam1 ? match.team2.name : match.team1.name;
-            return `${resultText} ${match.score} против '${opponentName}'`;
-        }).join(', ') || 'Нет недавних матчей.';
-        
-        // Mock player stats as backend doesn't provide this detail yet
-        const playerStats = team.roster.map(player => ({
-            name: player.name,
-            kda: (Math.random() * (1.8 - 0.8) + 0.8).toFixed(1),
-            winRate: `${Math.floor(Math.random() * (75 - 50 + 1) + 50)}%`,
-            recentPerformanceTrend: ['up', 'down', 'stable'][Math.floor(Math.random() * 3)] as 'up' | 'down' | 'stable',
-        }));
-
         try {
-            const analysisResult = await analyzeTeamPerformance({
-                teamName: team.name,
-                recentMatches: recentMatchesSummary,
-                playerStats,
-            });
-            setResult(analysisResult);
-        } catch (e) {
+            const analysisResult = await getTeamCoachSummary(team.id);
+            if (analysisResult) {
+                 setResult(analysisResult);
+            } else {
+                throw new Error("Не удалось получить анализ.");
+            }
+        } catch (e: any) {
             console.error(e);
-            setError("Не удалось сгенерировать анализ. Пожалуйста, попробуйте еще раз.");
+            setError(e.message || "Не удалось сгенерировать анализ. Пожалуйста, попробуйте еще раз.");
         } finally {
             setIsLoading(false);
         }

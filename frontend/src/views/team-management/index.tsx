@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useTransition, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -16,7 +16,6 @@ import { AITeamAssistantTab } from '@/widgets/ai-team-assistant-tab';
 import { TeamCoachTab } from '@/widgets/team-coach-tab';
 import { RosterManagementTab } from '@/widgets/roster-management-tab';
 import { TeamSponsorScout } from '@/widgets/team-sponsor-scout';
-import { useJoinRequests, type JoinRequest } from '@/shared/context/join-request-provider';
 import { TeamScheduleTab } from '@/widgets/team-schedule-tab';
 import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
@@ -26,21 +25,31 @@ import type { CoachedPlayer } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/get-team-by-slug';
 import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
+import type { User } from '@/shared/lib/types';
 
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
+type JoinRequest = {
+    id: string;
+    teamId: string;
+    user: User;
+    message: string;
+    statsSummary: string; // For AI analysis
+};
+
 export function TeamManagementPage() {
     const { toast } = useToast();
-    const { requests: joinRequests, removeRequest } = useJoinRequests();
-    const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
-    const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
-    
     const params = useParams<{ slug: string }>();
     const [team, setTeam] = useState<TeamDetails | null>(null);
     const [dashboardData, setDashboardData] = useState<TeamDashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-
+    const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
+    
+    const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
+    const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+    
     const teamPlayers: CoachedPlayer[] = team?.roster.map(p => ({
         id: p.id,
         name: p.name,
@@ -55,34 +64,63 @@ export function TeamManagementPage() {
     })) || [];
 
 
-    useEffect(() => {
-        async function fetchData() {
-            if (params.slug) {
-                setIsLoading(true);
-                const teamData = await getTeamBySlug(params.slug as string);
-                setTeam(teamData);
-                if (teamData) {
-                    const dashData = await getTeamDashboardData(teamData.id);
-                    setDashboardData(dashData);
+    const fetchData = useCallback(async () => {
+        if (params.slug) {
+            const teamData = await getTeamBySlug(params.slug as string);
+            setTeam(teamData);
+            if (teamData) {
+                const [dashData, appsResult] = await Promise.all([
+                    getTeamDashboardData(teamData.id),
+                    getTeamApplications(teamData.id)
+                ]);
+                setDashboardData(dashData);
+                if (appsResult.success) {
+                    setJoinRequests(appsResult.data.map((app: any) => ({
+                        id: app.id,
+                        teamId: app.teamId,
+                        applicant: app.user,
+                        message: app.message,
+                        statsSummary: 'Mock summary for now'
+                    })));
+                } else {
+                    toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
                 }
-                setIsLoading(false);
             }
+            setIsLoading(false);
         }
+    }, [params.slug, toast]);
+
+
+    useEffect(() => {
         fetchData();
-    }, [params.slug]);
+    }, [fetchData]);
 
 
     const handleAccept = (request: JoinRequest) => {
-        removeRequest(request.id);
-        toast({ title: "Игрок принят!", description: `${request.applicant.name} теперь в вашей команде.` });
+        startTransition(async () => {
+            const result = await acceptTeamApplication(request.id);
+            if(result.success) {
+                toast({ title: "Игрок принят!", description: `${request.applicant.name} теперь в вашей команде.` });
+                await fetchData();
+            } else {
+                 toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
+            }
+        });
     };
 
     const handleDecline = (request: JoinRequest) => {
-        removeRequest(request.id);
-        toast({
-            variant: 'destructive',
-            title: 'Заявка отклонена',
-            description: `Заявка от ${request.applicant.name} была отклонена.`,
+        startTransition(async () => {
+             const result = await declineTeamApplication(request.id);
+             if(result.success) {
+                toast({
+                    variant: 'destructive',
+                    title: 'Заявка отклонена',
+                    description: `Заявка от ${request.applicant.name} была отклонена.`,
+                });
+                await fetchData();
+             } else {
+                  toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
+             }
         });
     };
     
@@ -94,7 +132,7 @@ export function TeamManagementPage() {
     const analysisDialogRequestProp = selectedRequest ? {
         name: selectedRequest.applicant.name,
         role: selectedRequest.applicant.role,
-        avatar: selectedRequest.applicant.avatar,
+        avatar: selectedRequest.applicant.avatar || '',
         avatarHint: 'sports player',
         statsSummary: selectedRequest.statsSummary
     } : null;
@@ -199,7 +237,7 @@ export function TeamManagementPage() {
                     </TabsContent>
                     
                     <TabsContent value="ai-coach" className="mt-4">
-                        <TeamCoachTab team={team} dashboardData={dashboardData}/>
+                        <TeamCoachTab team={team} />
                     </TabsContent>
 
                     <TabsContent value="ai-assistant" className="mt-4">
