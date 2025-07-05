@@ -20,12 +20,14 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogHeader, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { useTrainingProposals } from '@/app/providers/training-proposal-provider';
 import { getSports, type Sport } from '@/entities/sport/api/sports';
+import { useTraining } from '@/app/providers/training-provider';
 
 const trainingSchema = z.object({
   friendId: z.string().optional(),
   sport: z.string({ required_error: "Выберите дисциплину." }),
   date: z.date({ required_error: "Выберите дату." }),
   time: z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Введите время в формате HH:MM."),
+  programId: z.string().optional(),
   comment: z.string().max(200, 'Комментарий слишком длинный').optional(),
 });
 
@@ -40,6 +42,7 @@ interface ProposeTrainingDialogProps {
 export function ProposeTrainingDialog({ isOpen, onOpenChange, challengedPlayer }: ProposeTrainingDialogProps) {
     const { toast } = useToast();
     const { addProposal, friends } = useTrainingProposals();
+    const { programs: allPrograms } = useTraining();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [sports, setSports] = useState<Sport[]>([]);
 
@@ -80,7 +83,7 @@ export function ProposeTrainingDialog({ isOpen, onOpenChange, challengedPlayer }
         const combinedDate = new Date(data.date);
         combinedDate.setHours(hours, minutes, 0, 0);
 
-        const success = await addProposal(toId, data.sport, combinedDate, data.comment || '');
+        const success = await addProposal({ toUserId: toId, sport: data.sport, date: combinedDate, comment: data.comment || '', programId: data.programId });
 
         if (success) {
             const friend = friends.find(f => f.id === toId) || challengedPlayer;
@@ -118,6 +121,18 @@ export function ProposeTrainingDialog({ isOpen, onOpenChange, challengedPlayer }
                             )}
                             <FormField control={form.control} name="sport" render={({ field }) => (
                                 <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                            )} />
+                             <FormField control={form.control} name="programId" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Программа тренировок (необязательно)</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl><SelectTrigger><SelectValue placeholder="Выберите программу" /></SelectTrigger></FormControl>
+                                        <SelectContent>
+                                            {allPrograms.map(program => <SelectItem key={program.id} value={program.id}>{program.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
                             )} />
                             <div className="grid grid-cols-2 gap-4">
                                 <FormField control={form.control} name="date" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Дата</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date < new Date()} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />

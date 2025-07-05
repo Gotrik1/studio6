@@ -15,6 +15,9 @@ export class TrainingProposalsService {
         sport: createDto.sport,
         date: createDto.date,
         comment: createDto.comment,
+        program: createDto.programId
+          ? { connect: { id: createDto.programId } }
+          : undefined,
       },
     });
   }
@@ -27,6 +30,7 @@ export class TrainingProposalsService {
       include: {
         from: { select: { id: true, name: true, avatar: true } },
         to: { select: { id: true, name: true, avatar: true } },
+        program: { select: { id: true, name: true } },
       },
       orderBy: {
         createdAt: 'desc',

@@ -16,5 +16,9 @@ export class CreateTrainingProposalDto {
 
   @IsString()
   @IsOptional()
+  readonly programId?: string;
+
+  @IsString()
+  @IsOptional()
   readonly comment?: string;
 }

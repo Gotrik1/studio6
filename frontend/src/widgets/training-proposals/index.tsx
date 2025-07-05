@@ -67,6 +67,9 @@ export function TrainingProposalsWidget() {
                         <Badge variant="outline">Ожидает</Badge>
                     )}
                 </div>
+                {proposal.program && (
+                    <p className="text-xs text-muted-foreground mt-2 ml-12 pl-1 border-l-2">Программа: <span className="font-medium">{proposal.program.name}</span></p>
+                )}
                 {proposal.comment && <p className="text-xs text-muted-foreground italic mt-2 ml-12 pl-1 border-l-2">«{proposal.comment}»</p>}
             </Card>
         );

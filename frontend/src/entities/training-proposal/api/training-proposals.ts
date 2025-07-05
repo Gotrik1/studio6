@@ -7,7 +7,7 @@ export async function getTrainingProposals() {
     return await fetchWithAuth('/training-proposals', { next: { tags: ['training-proposals'] } });
 }
 
-export async function createTrainingProposal(data: { toId: string; sport: string; date: Date; comment?: string; }) {
+export async function createTrainingProposal(data: { toId: string; sport: string; date: Date; comment?: string; programId?: string }) {
     const result = await fetchWithAuth('/training-proposals', {
         method: 'POST',
         body: JSON.stringify(data),
