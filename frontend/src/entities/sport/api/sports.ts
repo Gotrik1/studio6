@@ -2,9 +2,10 @@
 
 import type { Sport } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
+import { revalidateTag } from 'next/cache';
 
 export async function getSports(): Promise<Sport[]> {
-    const result = await fetchWithAuth('/sports');
+    const result = await fetchWithAuth('/sports', { next: { tags: ['sports'] } });
     if (!result.success) {
         console.error("Failed to fetch sports:", result.error);
         return [];
@@ -19,4 +20,26 @@ export async function getSportById(id: string): Promise<Sport | null> {
         return null;
     }
     return result.data;
+}
+
+
+export async function createSport(data: Omit<Sport, 'id'>) {
+    const result = await fetchWithAuth('/sports', {
+        method: 'POST',
+        body: JSON.stringify(data),
+    });
+    if (result.success) {
+        revalidateTag('sports');
+    }
+    return result;
+}
+
+export async function deleteSport(id: string) {
+    const result = await fetchWithAuth(`/sports/${id}`, {
+        method: 'DELETE',
+    });
+    if (result.success) {
+        revalidateTag('sports');
+    }
+    return result;
 }
