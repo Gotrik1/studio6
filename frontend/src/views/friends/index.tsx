@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useTransition, ComponentType } from 'react';
@@ -39,7 +38,7 @@ const FriendCardSkeleton = () => (
     </div>
 );
 
-const renderContent = (loading: boolean, data: any[], Component: ComponentType<{data: any[], onAction: any, onAction2?: any}>, onAction: any, onAction2?: any, emptyMessage: string = 'Пусто') => {
+const renderContent = (loading: boolean, data: any[], Component: ComponentType<any>, onAction: any, onAction2?: any, emptyMessage: string = 'Пусто') => {
     if (loading) {
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -166,7 +165,7 @@ const FriendsList = ({data, onAction}: {data: Friend[], onAction: (friend: Frien
                     </Avatar>
                     <div>
                         <p className="font-semibold">{friend.name}</p>
-                        <Badge variant={friend.status === 'Онлайн' ? 'default' : 'outline'}>{friend.status}</Badge>
+                        <Badge variant={friend.status === 'Активен' ? 'default' : 'outline'}>{friend.status}</Badge>
                     </div>
                 </div>
                 <div className="flex gap-2">

@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
-import { suggestedFriends } from '@/shared/lib/mock-data/friends';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
@@ -64,8 +63,11 @@ export class FriendsService {
   }
   
   findSuggestions() {
-      // This remains mock for now.
-      return suggestedFriends;
+      // This is a placeholder for a real suggestion engine
+      return this.prisma.user.findMany({
+          take: 5,
+          orderBy: { xp: 'desc' }
+      });
   }
   
   async sendRequest(fromId: string, toId: string) {
