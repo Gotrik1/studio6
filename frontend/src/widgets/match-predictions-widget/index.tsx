@@ -1,8 +1,8 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
-import { matchesList } from '@/shared/lib/mock-data/matches';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Button } from '@/shared/ui/button';
 import Image from 'next/image';
@@ -13,6 +13,8 @@ import { predictMatchOutcome, type PredictMatchOutcomeOutput } from '@/shared/ap
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
+import type { Match } from '@/entities/match/model/types';
+import { fetchMatches } from '@/entities/match/api/get-matches';
 
 const getWinner = (score: string): 'team1' | 'team2' | null => {
     const scores = score.split('-').map(s => parseInt(s.trim(), 10));
@@ -26,16 +28,35 @@ const getWinner = (score: string): 'team1' | 'team2' | null => {
 
 export function MatchPredictionWidget() {
     const { toast } = useToast();
-    const upcomingMatches = matchesList.filter(m => m.status === 'Предстоящий').slice(0, 2);
-    const finishedMatches = matchesList.filter(m => m.status === 'Завершен').slice(0, 1);
+    const [upcomingMatches, setUpcomingMatches] = useState<Match[]>([]);
+    const [finishedMatches, setFinishedMatches] = useState<Match[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     
     // Pre-populate a correct prediction for the finished match for demonstration purposes
-    const [predictions, setPredictions] = useState<Record<string, 'team1' | 'team2'>>({
-        '1': 'team1'
-    });
+    const [predictions, setPredictions] = useState<Record<string, 'team1' | 'team2'>>({});
     
     const [aiPrediction, setAiPrediction] = useState<PredictMatchOutcomeOutput | null>(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+    useEffect(() => {
+        async function loadMatches() {
+            setIsLoading(true);
+            try {
+                const [upcoming, finished] = await Promise.all([
+                    fetchMatches('PLANNED'),
+                    fetchMatches('FINISHED')
+                ]);
+                setUpcomingMatches(upcoming.slice(0, 2));
+                setFinishedMatches(finished.slice(0, 1));
+            } catch (error) {
+                console.error("Failed to load matches for prediction widget:", error);
+                toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить матчи для прогнозов.' });
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        loadMatches();
+    }, [toast]);
 
     const handlePredict = (matchId: string, team: 'team1' | 'team2') => {
         setPredictions(prev => ({ ...prev, [matchId]: team }));
@@ -55,15 +76,21 @@ export function MatchPredictionWidget() {
     };
     
     const handleAiPrediction = async () => {
+        if (upcomingMatches.length === 0) {
+            toast({ variant: 'destructive', title: 'Нет матчей', description: 'Нет предстоящих матчей для анализа.' });
+            return;
+        }
+        
+        const matchToAnalyze = upcomingMatches[0];
+
         setIsAnalyzing(true);
         setAiPrediction(null);
         try {
-            // Mock data for the flow
+            // In a real app, you'd fetch real team stats. Here we use mock stats.
             const mockInput = {
-                team1: { name: 'Кибер Орлы', winRate: '68%', recentForm: 'WWLWW' },
-                team2: { name: 'Ледяные Волки', winRate: '75%', recentForm: 'LWWWL' },
-                matchContext: 'Полуфинал Летнего Кубка',
-                headToHead: 'Кибер Орлы ведут 2-1 в личных встречах.'
+                team1: { name: matchToAnalyze.team1.name, winRate: '68%', recentForm: 'WWLWW' },
+                team2: { name: matchToAnalyze.team2.name, winRate: '75%', recentForm: 'LWWWL' },
+                matchContext: `Матч в рамках турнира: ${matchToAnalyze.tournament}`,
             };
             const prediction = await predictMatchOutcome(mockInput);
             setAiPrediction(prediction);
@@ -74,6 +101,15 @@ export function MatchPredictionWidget() {
             setIsAnalyzing(false);
         }
     };
+    
+    if (isLoading) {
+        return (
+            <Card>
+                <CardHeader><Skeleton className="h-6 w-3/4" /></CardHeader>
+                <CardContent><Skeleton className="h-48 w-full" /></CardContent>
+            </Card>
+        )
+    }
 
     return (
         <Card>
@@ -83,7 +119,7 @@ export function MatchPredictionWidget() {
                         <CardTitle>Центр прогнозов</CardTitle>
                         <CardDescription>Сделайте прогноз и сравните с мнением AI-аналитика.</CardDescription>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleAiPrediction} disabled={isAnalyzing}>
+                    <Button variant="outline" size="sm" onClick={handleAiPrediction} disabled={isAnalyzing || upcomingMatches.length === 0}>
                         {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
                         Прогноз AI
                     </Button>
@@ -91,7 +127,7 @@ export function MatchPredictionWidget() {
             </CardHeader>
             <CardContent className="space-y-4">
                 {/* Upcoming Matches */}
-                {upcomingMatches.length > 0 && upcomingMatches.map(match => (
+                {upcomingMatches.length > 0 ? upcomingMatches.map(match => (
                     <div key={match.id} className="space-y-2 rounded-lg border p-4">
                         <p className="text-sm text-center text-muted-foreground">{match.tournament} - {match.date}</p>
                         <div className="flex items-center justify-between gap-2">
@@ -117,7 +153,9 @@ export function MatchPredictionWidget() {
                             </Button>
                         </div>
                     </div>
-                ))}
+                )) : (
+                     <p className="text-center text-muted-foreground py-4">Нет предстоящих матчей для прогноза.</p>
+                )}
                 
                 {isAnalyzing && (
                     <div className="p-4 border rounded-lg">
@@ -184,9 +222,6 @@ export function MatchPredictionWidget() {
                             );
                         })}
                     </div>
-                )}
-                 {upcomingMatches.length === 0 && finishedMatches.length === 0 && (
-                     <p className="text-center text-muted-foreground py-4">Нет матчей для прогноза.</p>
                 )}
             </CardContent>
         </Card>
