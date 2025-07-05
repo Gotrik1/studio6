@@ -2,7 +2,7 @@ export type User = {
     id: string;
     name: string;
     email: string;
-    avatar: string;
+    avatar: string | null;
     role: string;
     status?: 'Активен' | 'Забанен';
     xp?: number;

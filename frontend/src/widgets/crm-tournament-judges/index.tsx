@@ -34,8 +34,8 @@ export function CrmTournamentJudges({ tournamentId }: CrmTournamentJudgesProps) 
             // Filter out already assigned judges from the available list
             const assignedIds = new Set(assignedData.map((j: User) => j.id));
             setAvailableJudges(availableData.filter((j: User) => !assignedIds.has(j.id)));
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить данные судей.' });
+        } catch (error: any) {
+            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить данные: ${error.message}` });
         } finally {
             setIsLoading(false);
         }
@@ -90,7 +90,7 @@ export function CrmTournamentJudges({ tournamentId }: CrmTournamentJudgesProps) 
                                     <TableRow key={judge.id}>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
-                                                <Avatar className="h-8 w-8"><AvatarImage src={judge.avatar} /><AvatarFallback>{judge.name.charAt(0)}</AvatarFallback></Avatar>
+                                                <Avatar className="h-8 w-8"><AvatarImage src={judge.avatar || ''} /><AvatarFallback>{judge.name.charAt(0)}</AvatarFallback></Avatar>
                                                 <p className="font-semibold">{judge.name}</p>
                                             </div>
                                         </TableCell>
@@ -141,7 +141,7 @@ export function CrmTournamentJudges({ tournamentId }: CrmTournamentJudgesProps) 
                                     <TableRow key={judge.id}>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
-                                                <Avatar className="h-8 w-8"><AvatarImage src={judge.avatar} /><AvatarFallback>{judge.name.charAt(0)}</AvatarFallback></Avatar>
+                                                <Avatar className="h-8 w-8"><AvatarImage src={judge.avatar || ''} /><AvatarFallback>{judge.name.charAt(0)}</AvatarFallback></Avatar>
                                                 <p className="font-semibold">{judge.name}</p>
                                             </div>
                                         </TableCell>
