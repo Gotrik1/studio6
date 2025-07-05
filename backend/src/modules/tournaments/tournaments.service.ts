@@ -287,6 +287,8 @@ export class TournamentsService {
       game: tournament.game,
       status: tournament.status,
       participantCount: tournament.participantCount,
+      registrationStartDate: tournament.registrationStartDate.toISOString(),
+      registrationEndDate: tournament.registrationEndDate.toISOString(),
       tournamentStartDate: tournament.tournamentStartDate.toISOString(),
       image: tournament.bannerImage || 'https://placehold.co/2560x720.png',
       dataAiHint: tournament.bannerImageHint || 'esports tournament',

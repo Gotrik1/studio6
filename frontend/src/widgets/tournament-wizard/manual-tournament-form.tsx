@@ -14,12 +14,13 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
 import { CalendarIcon, Loader2, PlusCircle, Trophy } from 'lucide-react';
-import { sportsList } from '@/shared/lib/mock-data/sports';
 import { useToast } from '@/shared/hooks/use-toast';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { createTournament } from '@/entities/tournament/api/tournaments';
 import { useRouter } from 'next/navigation';
+import { getSports, type Sport } from '@/entities/sport/api/sports';
+import { Textarea } from '@/shared/ui/textarea';
 
 const tournamentSchema = z.object({
   name: z.string().min(5, 'Название должно быть не менее 5 символов.'),
@@ -58,6 +59,11 @@ export function ManualTournamentForm() {
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [sports, setSports] = useState<Sport[]>([]);
+
+  useEffect(() => {
+      getSports().then(setSports);
+  }, []);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(tournamentSchema),
@@ -111,7 +117,7 @@ export function ManualTournamentForm() {
                         )} />
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <FormField control={form.control} name="game" render={({ field }) => (
-                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sportsList.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Дисциплина</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Выберите дисциплину" /></SelectTrigger></FormControl><SelectContent>{sports.map(sport => <SelectItem key={sport.id} value={sport.name}>{sport.name}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name="type" render={({ field }) => (
                                 <FormItem><FormLabel>Тип турнира</FormLabel><Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Командный или индивидуальный" /></SelectTrigger></FormControl><SelectContent><SelectItem value="team">Командный</SelectItem><SelectItem value="individual">Индивидуальный</SelectItem></SelectContent></Select><FormMessage /></FormItem>

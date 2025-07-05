@@ -30,6 +30,8 @@ export type TournamentDetails = {
     game: string;
     status: string;
     participantCount: number;
+    registrationStartDate: string;
+    registrationEndDate: string;
     tournamentStartDate: string;
     image: string;
     dataAiHint: string;
