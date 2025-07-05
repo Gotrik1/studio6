@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Req } from '@nestjs/common';
 import { TrainingService } from './training.service';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
@@ -15,6 +15,13 @@ export class TrainingController {
   @ApiOperation({ summary: 'Получить список всех упражнений' })
   findAllExercises() {
     return this.trainingService.findAllExercises();
+  }
+
+  @Public()
+  @Get('exercises/:id')
+  @ApiOperation({ summary: 'Получить упражнение по ID' })
+  findOneExercise(@Param('id') id: string) {
+    return this.trainingService.findOneExercise(id);
   }
 
   @Public()

@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useMemo } from 'react';
@@ -6,20 +5,21 @@ import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import { AlertTriangle, CheckCircle, LineChart, Award, TrendingUp, Video } from 'lucide-react';
-import { trainingLogData } from '@/shared/lib/mock-data/training-log';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 import { PersonalRecordHistoryChart } from '@/widgets/analytics-charts/personal-record-chart';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import type { Exercise } from '@/shared/lib/mock-data/exercises';
+import type { Exercise } from '@/entities/exercise/model/types';
+import { useTraining } from '@/shared/context/training-provider';
 
 interface ExerciseDetailsPageProps {
     exercise: Exercise;
 }
 
 export function ExerciseDetailsPage({ exercise }: ExerciseDetailsPageProps) {
-    const { personalRecords, recordHistory, fullExerciseHistory } = useMemo(() => getTrainingAnalytics(trainingLogData), []);
+    const { log } = useTraining();
+    const { personalRecords, recordHistory, fullExerciseHistory } = useMemo(() => getTrainingAnalytics(log), [log]);
 
     const record = personalRecords.find(pr => pr.exercise === exercise.name);
     const history1RM = record ? recordHistory[record.exercise] || [] : [];
@@ -46,11 +46,11 @@ export function ExerciseDetailsPage({ exercise }: ExerciseDetailsPageProps) {
                         <CardHeader className="p-0">
                              <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center">
                                 <Image 
-                                    src={exercise.image} 
+                                    src={exercise.image || 'https://placehold.co/600x400.png'} 
                                     alt={exercise.name} 
                                     fill 
                                     className="object-cover"
-                                    data-ai-hint={exercise.imageHint}
+                                    data-ai-hint={exercise.imageHint || 'exercise image'}
                                 />
                                 <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
                                     <Video className="h-12 w-12 text-white/70" />
@@ -131,7 +131,15 @@ export function ExerciseDetailsPage({ exercise }: ExerciseDetailsPageProps) {
             </div>
             
             {fullHistory.length > 0 && (
-                <ExerciseHistoryTable sessions={fullHistory} />
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>История подходов</CardTitle>
+                        <CardDescription>Все записанные сеты для этого упражнения.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <ExerciseHistoryTable sessions={fullHistory} />
+                    </CardContent>
+                </Card>
             )}
 
         </div>

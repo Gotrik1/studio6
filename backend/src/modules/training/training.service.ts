@@ -1,7 +1,8 @@
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable, OnModuleInit, Logger, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '@/prisma/prisma.service';
 import { exercisesList } from './seed-data';
 import { trainingPrograms as mockPrograms } from './seed-data-programs';
+import type { Exercise } from '@prisma/client';
 
 @Injectable()
 export class TrainingService implements OnModuleInit {
@@ -118,6 +119,14 @@ export class TrainingService implements OnModuleInit {
 
     async findAllExercises() {
         return this.prisma.exercise.findMany();
+    }
+
+    async findOneExercise(id: string): Promise<Exercise> {
+        const exercise = await this.prisma.exercise.findUnique({ where: { id } });
+        if (!exercise) {
+            throw new NotFoundException(`Exercise with ID ${id} not found.`);
+        }
+        return exercise;
     }
 
     async findAllPrograms() {
