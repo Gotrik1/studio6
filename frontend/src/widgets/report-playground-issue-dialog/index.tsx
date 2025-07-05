@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -11,6 +10,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
 import { Loader2 } from 'lucide-react';
+import { useToast } from '@/shared/hooks/use-toast';
+import { reportPlaygroundIssue } from '@/entities/playground/api/report';
+
 
 const issueSchema = z.object({
   category: z.string({ required_error: "Выберите категорию проблемы." }),
@@ -30,11 +32,12 @@ const issueCategories = [
 interface ReportPlaygroundIssueDialogProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
+  playgroundId: string;
   playgroundName: string;
-  onReportSubmit: (data: FormValues) => void;
 }
 
-export function ReportPlaygroundIssueDialog({ isOpen, onOpenChange, playgroundName, onReportSubmit }: ReportPlaygroundIssueDialogProps) {
+export function ReportPlaygroundIssueDialog({ isOpen, onOpenChange, playgroundId, playgroundName }: ReportPlaygroundIssueDialogProps) {
+    const { toast } = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     
     const form = useForm<FormValues>({
@@ -44,15 +47,28 @@ export function ReportPlaygroundIssueDialog({ isOpen, onOpenChange, playgroundNa
         },
     });
 
-    const onSubmit = (data: FormValues) => {
+    const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
-        // Simulate API call
-        setTimeout(() => {
-            onReportSubmit(data);
-            setIsSubmitting(false);
+        const result = await reportPlaygroundIssue({
+            playgroundId,
+            ...data
+        });
+        
+        if (result.success) {
+            toast({
+                title: "Спасибо за ваше сообщение!",
+                description: "Информация о проблеме была передана модераторам."
+            });
             onOpenChange(false);
             form.reset();
-        }, 1000);
+        } else {
+             toast({
+                variant: "destructive",
+                title: "Ошибка",
+                description: result.error || "Не удалось отправить отчет. Пожалуйста, попробуйте еще раз."
+            });
+        }
+        setIsSubmitting(false);
     };
 
     return (

@@ -8,12 +8,12 @@ import { PlaygroundWorkoutGenerator } from "@/widgets/playground-workout-generat
 import { AiPlaygroundTactic } from "@/widgets/ai-playground-tactic";
 import { AiPlaygroundLore } from "@/widgets/ai-playground-lore";
 import { PlaygroundConditionStatus } from "@/widgets/playground-condition-status";
-import type { AnalyzePlaygroundReportOutput } from "@/shared/api/genkit/flows/analyze-playground-report-flow";
+import type { PlaygroundConditionReport } from "@/entities/playground/api/condition";
 import { AiPlaygroundSummary } from '@/widgets/ai-playground-summary';
 
 interface PlaygroundInfoTabProps {
     playground: Playground;
-    issueReport?: AnalyzePlaygroundReportOutput | null;
+    issueReport?: PlaygroundConditionReport | null;
 }
 
 export function PlaygroundInfoTab({ playground, issueReport }: PlaygroundInfoTabProps) {

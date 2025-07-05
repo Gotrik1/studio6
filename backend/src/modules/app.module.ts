@@ -42,6 +42,11 @@ import { MedicalPartnersModule } from './modules/medical-partners/medical-partne
 import { TournamentMedicalModule } from './modules/tournament-medical/tournament-medical.module';
 import { TournamentParticipantsModule } from './modules/tournament-participants/tournament-participants.module';
 import { TournamentSponsorsModule } from './modules/tournament-sponsors/tournament-sponsors.module';
+import { TeamApplicationsModule } from './modules/team-applications/team-applications.module';
+import { AdminModule } from './modules/admin/admin.module';
+import { FeedModule } from './modules/feed/feed.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
+import { PlaygroundReportsModule } from './modules/playground-reports/playground-reports.module';
 
 @Module({
   imports: [
@@ -84,6 +89,11 @@ import { TournamentSponsorsModule } from './modules/tournament-sponsors/tourname
     MedicalPartnersModule,
     ReportsModule,
     AchievementsModule,
+    TeamApplicationsModule,
+    AdminModule,
+    ActivitiesModule,
+    FeedModule,
+    PlaygroundReportsModule,
   ],
   controllers: [AppController],
   providers: [

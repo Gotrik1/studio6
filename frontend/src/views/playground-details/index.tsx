@@ -22,14 +22,14 @@ import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from '@/widgets/report-playground-issue-dialog';
-import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
 import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
 import { createReview, getReviews, type CreateReviewData } from '@/entities/playground/api/reviews';
 import { useRouter } from 'next/navigation';
+import type { PlaygroundConditionReport } from '@/entities/playground/api/condition';
 
 
-export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
+export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
     const { user } = useSession();
     const { toast } = useToast();
     const router = useRouter();
@@ -39,7 +39,6 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
     const [isLoadingReviews, setIsLoadingReviews] = useState(true);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
-    const [latestIssueReport, setLatestIssueReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
     const { lobbies, addLobby } = useLfg();
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [initialDateTime, setInitialDateTime] = useState<{date: Date, time: string}>();
@@ -119,28 +118,6 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось опубликовать отзыв.' });
         }
     };
-
-    const handleReportSubmit = async (data: ReportFormValues) => {
-        try {
-            const reportAnalysis = await analyzePlaygroundReport({
-                playgroundName: playground.name,
-                issueCategory: data.category,
-                userComment: data.comment,
-            });
-            setLatestIssueReport(reportAnalysis);
-            toast({
-                title: "Спасибо за ваше сообщение!",
-                description: "Информация о проблеме была передана модераторам."
-            });
-        } catch (e) {
-             console.error(e);
-            toast({
-                variant: 'destructive',
-                title: "Ошибка",
-                description: "Не удалось отправить отчет. Пожалуйста, попробуйте еще раз."
-            })
-        }
-    };
     
     const openPlanGameDialog = (day: Date, hour: number) => {
         const time = `${String(hour).padStart(2, '0')}:00`;
@@ -216,7 +193,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                         <TabsTrigger value="media"><BarChart className="mr-2 h-4 w-4" />Медиа</TabsTrigger>
                     </TabsList>
                     <TabsContent value="info" className="mt-6">
-                        <PlaygroundInfoTab playground={playground} issueReport={latestIssueReport} />
+                        <PlaygroundInfoTab playground={playground} issueReport={initialConditionReport} />
                     </TabsContent>
                     <TabsContent value="schedule" className="mt-6">
                         <PlaygroundScheduleTab schedule={lobbies.filter(l => l.playgroundId === playground.id)} onPlanClick={openPlanGameDialog} />
@@ -245,8 +222,8 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
             <ReportPlaygroundIssueDialog
                 isOpen={isReportIssueOpen}
                 onOpenChange={setIsReportIssueOpen}
+                playgroundId={playground.id}
                 playgroundName={playground.name}
-                onReportSubmit={handleReportSubmit}
             />
             <PlanGameDialog 
                 isOpen={isPlanGameOpen}
