@@ -10,12 +10,13 @@
 
 import { ai } from '../genkit';
 import { z } from 'zod';
-import { teams as allTeams } from '@/shared/lib/mock-data/teams';
-import { playgroundsList } from '@/shared/lib/mock-data/playgrounds';
+import { PrismaService } from '@/prisma/prisma.service';
 import { AnalyzeMatchChallengeInputSchema, AnalyzeMatchChallengeOutputSchema, TeamSchema, VenueSchema } from './schemas/analyze-match-challenge-schema';
 import type { AnalyzeMatchChallengeInput, AnalyzeMatchChallengeOutput } from './schemas/analyze-match-challenge-schema';
 
 export type { AnalyzeMatchChallengeInput, AnalyzeMatchChallengeOutput };
+
+const prisma = new PrismaService();
 
 
 // Mock data access tools for the AI
@@ -27,18 +28,34 @@ const findOpponentTeams_Backend = ai.defineTool(
     outputSchema: z.array(TeamSchema),
   },
   async (query) => {
-    // In a real app, this would be a semantic search against a database.
-    // For this demo, we'll do a simple keyword filter.
     const lowercasedQuery = query.toLowerCase();
-    return allTeams
-      .filter(team => 
-        team.name.toLowerCase().includes(lowercasedQuery) ||
-        team.game.toLowerCase().includes(lowercasedQuery) ||
-        (lowercasedQuery.includes('сильн') && team.rank <= 2) ||
-        (lowercasedQuery.includes('новичк') && team.rank > 3)
-      )
-      .slice(0, 5) // Return top 5 matches to the LLM for reasoning
-      .map(t => ({ name: t.name, motto: t.motto, logo: t.logo, dataAiHint: t.dataAiHint, rank: t.rank, slug: t.slug }));
+
+    const teamsFromDb = await prisma.team.findMany({
+      where: {
+        OR: [
+          { name: { contains: lowercasedQuery, mode: 'insensitive' } },
+          { game: { contains: lowercasedQuery, mode: 'insensitive' } },
+        ],
+      },
+      take: 20, // Fetch a bit more to filter down
+    });
+
+    const filteredTeams = teamsFromDb
+      .filter(team => {
+        if (lowercasedQuery.includes('сильн') && (team.rank || 5) > 2) return false;
+        if (lowercasedQuery.includes('новичк') && (team.rank || 0) <= 3) return false;
+        return true;
+      })
+      .slice(0, 5); // Return top 5 matches to the LLM for reasoning
+
+    return filteredTeams.map(t => ({ 
+        name: t.name, 
+        motto: t.motto || 'Девиз не указан', 
+        logo: t.logo || 'https://placehold.co/100x100.png', 
+        dataAiHint: t.dataAiHint || 'team logo', 
+        rank: t.rank || 5, 
+        slug: t.slug 
+    }));
   }
 );
 
@@ -50,16 +67,30 @@ const findAvailableVenues_Backend = ai.defineTool(
     outputSchema: z.array(VenueSchema),
   },
   async (query) => {
-    // Simple keyword filtering for demo purposes.
     const lowercasedQuery = query.toLowerCase();
-    return playgroundsList
-      .filter(venue =>
-        venue.name.toLowerCase().includes(lowercasedQuery) ||
-        venue.address.toLowerCase().includes(lowercasedQuery) ||
-        venue.surface.toLowerCase().includes(lowercasedQuery)
-      )
-      .slice(0, 5) // Return top 5 matches to the LLM
-      .map(v => ({ id: v.id, name: v.name, address: v.address, surfaceType: v.surface, price: 'Бесплатно', image: v.coverImage, imageHint: v.coverImageHint }));
+
+    const playgrounds = await prisma.playground.findMany({
+        where: {
+            status: 'APPROVED', // Only show approved playgrounds
+            OR: [
+                { name: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { address: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { surface: { contains: lowercasedQuery, mode: 'insensitive' } },
+                { type: { contains: lowercasedQuery, mode: 'insensitive' } },
+            ]
+        },
+        take: 5
+    });
+    
+    return playgrounds.map(v => ({ 
+        id: v.id, 
+        name: v.name, 
+        address: v.address, 
+        surfaceType: v.surface, 
+        price: 'Бесплатно', // Price is not in the schema, mock it for now.
+        image: v.coverImage || 'https://placehold.co/600x400.png', 
+        imageHint: v.coverImageHint || 'sports playground'
+    }));
   }
 );
 
