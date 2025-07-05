@@ -56,6 +56,56 @@ export class ChatService implements OnModuleInit {
     }
   }
 
+  async findUserChats(userId: string) {
+    const chats = await this.prisma.chat.findMany({
+      where: {
+        participants: {
+          some: {
+            id: userId
+          }
+        }
+      },
+      include: {
+        participants: {
+          where: {
+            id: {
+              not: userId
+            }
+          },
+          select: { id: true, name: true, avatar: true }
+        },
+        messages: {
+          orderBy: {
+            createdAt: 'desc'
+          },
+          take: 1,
+          include: {
+            author: {
+              select: { name: true }
+            }
+          }
+        }
+      }
+    });
+
+    return chats.map(chat => {
+      const lastMessage = chat.messages[0];
+      const otherParticipant = chat.participants[0];
+
+      return {
+        id: chat.id,
+        teamId: chat.type === 'GROUP' ? chat.id : '', // Assuming teamId is chat.id for group chats
+        name: chat.name || otherParticipant?.name || 'Unknown Chat',
+        avatar: chat.type === 'GROUP' ? 'https://placehold.co/100x100.png' : otherParticipant?.avatar || 'https://placehold.co/100x100.png',
+        avatarHint: chat.type === 'GROUP' ? 'team logo' : 'player avatar',
+        lastMessage: lastMessage ? `${lastMessage.author.name}: ${lastMessage.text}` : 'Нет сообщений',
+        timestamp: lastMessage ? lastMessage.createdAt.toISOString() : chat.createdAt.toISOString(),
+        isOnline: true, // Mocked for now
+        type: chat.type === 'GROUP' ? 'team' as const : 'user' as const,
+      }
+    });
+  }
+
   async getHistory(chatId: string) {
     this.logger.log(`Fetching history for chat ID: ${chatId}`);
     return this.prisma.message.findMany({

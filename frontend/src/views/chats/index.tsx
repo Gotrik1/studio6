@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useRef, useEffect, KeyboardEvent } from 'react';
+import { useState, useRef, useEffect, KeyboardEvent, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Input } from '@/shared/ui/input';
@@ -10,11 +9,11 @@ import { ScrollArea } from '@/shared/ui/scroll-area';
 import { Send, Bot, Sparkles, Loader2, Users } from 'lucide-react';
 import { cn } from '@/shared/lib/utils';
 import { useSession } from '@/shared/lib/session/client';
-import { contacts, type Contact } from '@/shared/lib/mock-data/chats';
 import { suggestReply } from '@/shared/api/genkit/flows/suggest-reply-flow';
 import { askTeamChatbot } from '@/shared/api/genkit/flows/team-chatbot-flow';
 import { io, type Socket } from 'socket.io-client';
 import { getChatHistory } from '@/entities/chat/api/get-chat-history';
+import { getChats } from '@/entities/chat/api/chats';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 
@@ -26,11 +25,25 @@ type Message = {
     isThinking?: boolean;
 };
 
+type Contact = {
+    id: string;
+    teamId: string;
+    name: string;
+    avatar: string;
+    avatarHint: string;
+    lastMessage: string;
+    timestamp: string;
+    isOnline: boolean;
+    type: 'team' | 'user';
+}
+
 const getAvatarFallback = (name: string) => name.split(' ').map(n => n[0]).join('');
 
 export function ChatsPage() {
     const { user } = useSession();
-    const [selectedChat, setSelectedChat] = useState<Contact | null>(contacts[0]);
+    const [contacts, setContacts] = useState<Contact[]>([]);
+    const [isLoadingContacts, setIsLoadingContacts] = useState(true);
+    const [selectedChat, setSelectedChat] = useState<Contact | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [replySuggestions, setReplySuggestions] = useState<string[]>([]);
@@ -43,22 +56,39 @@ export function ChatsPage() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
+    const fetchContacts = useCallback(async () => {
+        setIsLoadingContacts(true);
+        try {
+            const fetchedContacts = await getChats();
+            setContacts(fetchedContacts);
+            if (fetchedContacts.length > 0 && !selectedChat) {
+                setSelectedChat(fetchedContacts[0]);
+            }
+        } catch (error) {
+            console.error("Failed to fetch contacts", error);
+        } finally {
+            setIsLoadingContacts(false);
+        }
+    }, [selectedChat]);
+
+
+    useEffect(() => {
+        fetchContacts();
+    }, [fetchContacts]);
+
     useEffect(() => {
         if (!user) return; 
 
-        // NOTE: In a production environment with proper DNS, you can use a relative path.
-        // For Docker Compose setups, an absolute URL is often more reliable.
         const newSocket = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001');
         setSocket(newSocket);
         
         newSocket.on('receiveMessage', (message: any) => {
-            const newMessage: Message = {
+            setMessages(prev => [...prev, {
                 sender: message.sender.id === user.id ? 'user' : 'other',
                 name: message.sender.name,
                 avatar: message.sender.avatar,
                 text: message.text,
-            };
-            setMessages(prev => [...prev, newMessage]);
+            }]);
         });
 
         return () => {
@@ -181,29 +211,36 @@ export function ChatsPage() {
                 <CardContent className="p-0 flex-1 overflow-y-auto">
                     <ScrollArea className="h-full">
                         <div className="space-y-1">
-                            {contacts.map(contact => (
-                                <button
-                                    key={contact.id}
-                                    className={cn(
-                                        "flex items-center gap-3 p-3 w-full text-left transition-colors hover:bg-muted",
-                                        selectedChat?.id === contact.id && "bg-muted"
-                                    )}
-                                    onClick={() => handleSelectChat(contact)}
-                                >
-                                    <Avatar className="relative">
-                                        <AvatarImage src={contact.avatar} data-ai-hint={contact.avatarHint} />
-                                        <AvatarFallback>
-                                            {contact.type === 'team' ? <Users className="h-5 w-5"/> : getAvatarFallback(contact.name)}
-                                        </AvatarFallback>
-                                        {contact.isOnline && <div className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-green-500 ring-2 ring-background" />}
-                                    </Avatar>
-                                    <div className="flex-1 overflow-hidden">
-                                        <p className="font-semibold truncate">{contact.name}</p>
-                                        <p className="text-xs text-muted-foreground truncate">{contact.lastMessage}</p>
-                                    </div>
-                                    <p className="text-xs text-muted-foreground self-start">{contact.timestamp}</p>
-                                </button>
-                            ))}
+                             {isLoadingContacts ? (
+                                <div className="p-3 space-y-1">
+                                    <Skeleton className="h-12 w-full" />
+                                    <Skeleton className="h-12 w-full" />
+                                    <Skeleton className="h-12 w-full" />
+                                </div>
+                            ) : (
+                                contacts.map(contact => (
+                                    <button
+                                        key={contact.id}
+                                        className={cn(
+                                            "flex items-center gap-3 p-3 w-full text-left transition-colors hover:bg-muted",
+                                            selectedChat?.id === contact.id && "bg-muted"
+                                        )}
+                                        onClick={() => handleSelectChat(contact)}
+                                    >
+                                        <Avatar className="relative">
+                                            <AvatarImage src={contact.avatar} data-ai-hint={contact.avatarHint} />
+                                            <AvatarFallback>
+                                                {contact.type === 'team' ? <Users className="h-5 w-5"/> : getAvatarFallback(contact.name)}
+                                            </AvatarFallback>
+                                            {contact.isOnline && <div className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-green-500 ring-2 ring-background" />}
+                                        </Avatar>
+                                        <div className="flex-1 overflow-hidden">
+                                            <p className="font-semibold truncate">{contact.name}</p>
+                                            <p className="text-xs text-muted-foreground truncate">{contact.lastMessage}</p>
+                                        </div>
+                                    </button>
+                                ))
+                            )}
                         </div>
                     </ScrollArea>
                 </CardContent>

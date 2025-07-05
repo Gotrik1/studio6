@@ -1,8 +1,9 @@
 
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ChatService } from './chat.service';
+import { Request } from 'express';
 
 @ApiTags('Chat')
 @Controller('chats')
@@ -10,6 +11,13 @@ import { ChatService } from './chat.service';
 @ApiBearerAuth()
 export class ChatController {
   constructor(private readonly chatService: ChatService) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Получить список чатов для текущего пользователя' })
+  async getUserChats(@Req() req: Request) {
+    const userId = (req.user as any).userId;
+    return this.chatService.findUserChats(userId);
+  }
 
   @Get(':chatId/history')
   @ApiOperation({ summary: 'Получить историю сообщений для чата' })
