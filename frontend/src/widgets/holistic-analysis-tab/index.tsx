@@ -41,7 +41,6 @@ export function HolisticAnalysisTab({ stats }: HolisticAnalysisTabProps) {
         setHolisticResult(null);
 
         try {
-            // Generate summaries from mock data
             const { trainingMetrics } = getTrainingAnalytics(log);
             const physicalSummary = `
                 Всего тренировок: ${trainingMetrics.totalWorkouts},
