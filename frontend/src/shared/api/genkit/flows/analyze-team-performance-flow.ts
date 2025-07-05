@@ -1,7 +1,28 @@
 'use server';
 
-import type { AnalyzeTeamPerformanceInput, AnalyzeTeamPerformanceOutput } from './schemas/analyze-team-performance-schema';
-export type { AnalyzeTeamPerformanceInput, AnalyzeTeamPerformanceOutput };
+// Types are defined locally to decouple from backend schemas.
+export type AnalyzeTeamPerformanceInput = {
+    teamName: string;
+    recentMatches: string;
+    playerStats: {
+        name: string;
+        kda: string;
+        winRate: string;
+        recentPerformanceTrend: 'up' | 'down' | 'stable';
+    }[];
+};
+
+export type AnalyzeTeamPerformanceOutput = {
+    teamStrengths: string[];
+    teamWeaknesses: string[];
+    playerInFocus: {
+        name: string;
+        reason: string;
+        suggestion: string;
+    };
+    trainingFocus: string;
+};
+
 
 export async function analyzeTeamPerformance(input: AnalyzeTeamPerformanceInput): Promise<AnalyzeTeamPerformanceOutput> {
   const response = await fetch(`/api/ai/analyze-team-performance`, {
