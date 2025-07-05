@@ -340,5 +340,3 @@ export class AiService {
     return playerScout(input);
   }
 }
-
-    
