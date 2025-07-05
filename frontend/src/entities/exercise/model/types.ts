@@ -6,6 +6,7 @@ export type Exercise = {
     equipment: string;
     image: string | null;
     imageHint: string | null;
+    videoUrl?: string | null;
     techniqueTips: string[];
     commonMistakes: string[];
     alternatives: string[];

@@ -8,6 +8,7 @@ export type Exercise = {
     equipment: 'Штанга' | 'Гантели' | 'Тренажер' | 'Собственный вес' | 'Мяч' | 'Компьютер';
     image: string;
     imageHint: string;
+    videoUrl?: string;
     techniqueTips: string[];
     commonMistakes: string[];
     alternatives: string[];
@@ -22,6 +23,7 @@ export const exercisesList: Exercise[] = [
         equipment: 'Штанга',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'bench press',
+        videoUrl: 'https://www.youtube.com/embed/rT7gLzQAPjY',
         techniqueTips: [
             'Сводите лопатки и создавайте прогиб в спине (арку).',
             'Опускайте штангу на нижнюю часть груди.',
@@ -42,6 +44,7 @@ export const exercisesList: Exercise[] = [
         equipment: 'Штанга',
         image: 'https://placehold.co/600x400.png',
         imageHint: 'barbell squat',
+        videoUrl: 'https://www.youtube.com/embed/SW_C1A-rejs',
         techniqueTips: [
             'Держите спину прямой на протяжении всего движения.',
             'Взгляд направлен вперед.',

@@ -45,16 +45,23 @@ export function ExerciseDetailsPage({ exercise }: ExerciseDetailsPageProps) {
                      <Card>
                         <CardHeader className="p-0">
                              <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-muted flex items-center justify-center">
-                                <Image 
-                                    src={exercise.image || 'https://placehold.co/600x400.png'} 
-                                    alt={exercise.name} 
-                                    fill 
-                                    className="object-cover"
-                                    data-ai-hint={exercise.imageHint || 'exercise image'}
-                                />
-                                <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                    <Video className="h-12 w-12 text-white/70" />
-                                </div>
+                                {exercise.videoUrl ? (
+                                    <iframe
+                                        className="w-full h-full"
+                                        src={exercise.videoUrl}
+                                        title="YouTube video player"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                        allowFullScreen
+                                    ></iframe>
+                                ) : (
+                                    <Image 
+                                        src={exercise.image || 'https://placehold.co/600x400.png'} 
+                                        alt={exercise.name} 
+                                        fill 
+                                        className="object-cover"
+                                        data-ai-hint={exercise.imageHint || 'exercise image'}
+                                    />
+                                )}
                             </div>
                         </CardHeader>
                         <CardContent className="p-6">
