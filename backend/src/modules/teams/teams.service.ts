@@ -413,6 +413,7 @@ export class TeamsService implements OnModuleInit {
       include: {
         team1: { select: { id: true, name: true, logo: true, dataAiHint: true } },
         team2: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+        tournament: { select: { name: true, game: true } },
       },
       orderBy: { scheduledAt: 'asc' },
     });
@@ -425,7 +426,7 @@ export class TeamsService implements OnModuleInit {
        include: {
         team1: { select: { id: true, name: true, logo: true, dataAiHint: true } },
         team2: { select: { id: true, name: true, logo: true, dataAiHint: true } },
-        tournament: { select: { name: true } },
+        tournament: { select: { name: true, game: true } },
       },
       orderBy: { finishedAt: 'desc' },
       take: 2,
@@ -458,6 +459,7 @@ export class TeamsService implements OnModuleInit {
           ? `${match.team1Score}-${match.team2Score}`
           : 'VS',
       tournament: match.tournament?.name || 'Товарищеский матч',
+      game: match.tournament?.game || 'Неизвестно',
       date: format(new Date(match.scheduledAt), 'd MMMM yyyy', { locale: ru }),
       href: `/matches/${match.id}`,
       status: match.status,
