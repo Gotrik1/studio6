@@ -1,3 +1,2 @@
-
-// This file is now obsolete as data is served from the backend.
+// This file is now obsolete as data is served by the backend.
 export {};

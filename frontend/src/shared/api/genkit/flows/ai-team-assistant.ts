@@ -1,6 +1,7 @@
 'use server';
 
 import type { AiTeamAssistantInput, AiTeamAssistantOutput } from './schemas/ai-team-assistant-schema';
+export type { AiTeamAssistantInput, AiTeamAssistantOutput };
 
 export async function aiTeamAssistant(input: AiTeamAssistantInput): Promise<AiTeamAssistantOutput> {
     const response = await fetch('/api/ai/ai-team-assistant', {

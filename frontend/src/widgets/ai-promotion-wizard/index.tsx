@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -73,12 +74,12 @@ export function AiPromotionWizard() {
     
      const handleFieldChange = (field: keyof GeneratePromotionWizardOutput, value: string) => {
         if (result) {
-            setResult(prev => prev ? { ...prev, [field]: value } : null);
+            setResult((prev: GeneratePromotionWizardOutput | null) => prev ? { ...prev, [field]: value } : null);
         }
     };
 
     return (
-        <div className="space-y-6 mt-4">
+        <div className="space-y-6">
             <Card className="max-w-3xl mx-auto">
                 <CardHeader>
                     <CardTitle>Шаг 1: Идея</CardTitle>

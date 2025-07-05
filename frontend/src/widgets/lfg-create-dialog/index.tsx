@@ -62,7 +62,16 @@ export function LfgCreateDialog({ isOpen, onOpenChange, onCreate }: LfgCreateDia
 
     const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
-        await onCreate(data);
+        const success = await onCreate(data);
+        if (success) {
+            onOpenChange(false);
+            form.reset({
+                type: 'GAME',
+                duration: 60,
+                playersNeeded: 4,
+                startTime: new Date(),
+            });
+        }
         setIsSubmitting(false);
     };
 

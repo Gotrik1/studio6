@@ -6,8 +6,7 @@ import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { CheckCircle2, XCircle, Clock, MoreVertical, Edit, Copy, Trash2, Smile, Meh, Frown, MessageSquare, ChevronDown, Link2, Award, History } from 'lucide-react';
-import type { TrainingLogEntry, ExerciseLog } from '@/entities/training-program/model/types';
-import type { ExerciseSession } from '@/shared/lib/get-training-analytics';
+import type { TrainingLogEntry, ExerciseLog, PersonalRecord, ExerciseSession } from '@/entities/training-program/model/types';
 import { cn } from '@/shared/lib/utils';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 import { Separator } from '@/shared/ui/separator';
@@ -17,7 +16,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/f
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { RestTimer } from '@/widgets/rest-timer';
-import type { PersonalRecord } from '@/shared/lib/get-training-analytics';
 import { calculate1RM } from '@/shared/lib/calculate-1rm';
 import { Badge } from '@/shared/ui/badge';
 import Link from 'next/link';

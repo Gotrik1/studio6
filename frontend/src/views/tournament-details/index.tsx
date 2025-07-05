@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from "next/image";
@@ -84,7 +85,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                                <CardHeader><CardTitle>Информация о турнире</CardTitle></CardHeader>
                                <CardContent className="space-y-4 text-sm">
                                    <div className="flex items-center gap-4"><Calendar className="mr-2 h-4 w-4 text-muted-foreground" /> <p><strong>Даты проведения:</strong> {tournament.schedule.finals}</p></div>
-                                   <div className="flex items-center gap-4"><Trophy className="mr-2 h-4 w-4 text-muted-foreground" /><p><strong>Призовой фонд:</strong> ${tournament.prizePool}</p></div>
+                                   <div className="flex items-center gap-4"><Trophy className="mr-2 h-4 w-4 text-muted-foreground" /><p><strong>Призовой фонд:</strong> {tournament.prizePool}</p></div>
                                    <div className="flex items-center gap-4"><Users className="mr-2 h-4 w-4 text-muted-foreground" /><p><strong>Количество команд:</strong> {tournament.teamsCount}</p></div>
                                </CardContent>
                            </Card>
@@ -93,7 +94,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                             <Card>
                                 <CardHeader><CardTitle>Организатор</CardTitle></CardHeader>
                                 <CardContent className="flex items-center gap-3">
-                                    <Avatar><AvatarImage src={tournament.organizer.logo} /></Avatar>
+                                    <Avatar><AvatarImage src={tournament.organizer.logo || ''} /></Avatar>
                                     <p className="font-semibold">{tournament.organizer.name}</p>
                                 </CardContent>
                                 <CardContent><Button className="w-full">Связаться</Button></CardContent>
@@ -122,7 +123,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                             {tournament.teams.map(team => (
                                 <div key={team.name} className="flex flex-col items-center gap-2 text-center">
                                     <Avatar className="h-16 w-16">
-                                        <AvatarImage src={team.logo} data-ai-hint={team.dataAiHint} />
+                                        <AvatarImage src={team.logo || ''} data-ai-hint={team.dataAiHint || ''} />
                                         <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <p className="text-sm font-medium">{team.name}</p>

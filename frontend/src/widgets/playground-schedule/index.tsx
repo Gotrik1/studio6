@@ -40,7 +40,7 @@ export function PlaygroundSchedule({ schedule, onPlanClick }: PlaygroundSchedule
                                 </div>
                                 <div className="h-10 w-px bg-border" />
                                 <div className="flex items-center gap-2">
-                                    <Avatar className="h-8 w-8"><AvatarImage src={booking.creator.avatar} alt={booking.creator.name} data-ai-hint="user avatar" /><AvatarFallback>{booking.creator.name.charAt(0)}</AvatarFallback></Avatar>
+                                    <Avatar className="h-8 w-8"><AvatarImage src={booking.creator.avatar || ''} alt={booking.creator.name} data-ai-hint="user avatar" /><AvatarFallback>{booking.creator.name.charAt(0)}</AvatarFallback></Avatar>
                                     <p className="font-medium text-sm">{booking.creator.name}</p>
                                 </div>
                             </div>

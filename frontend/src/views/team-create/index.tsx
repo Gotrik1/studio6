@@ -85,7 +85,7 @@ export function NewTeamPage() {
     
      const handleFieldChange = (field: keyof GenerateTeamConceptOutput, value: string) => {
         if (result) {
-            setResult(prev => prev ? { ...prev, [field]: value } : null);
+            setResult((prev: GenerateTeamConceptOutput | null) => prev ? { ...prev, [field]: value } : null);
         }
     };
 

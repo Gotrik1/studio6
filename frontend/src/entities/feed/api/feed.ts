@@ -4,6 +4,8 @@ import { fetchWithAuth } from "@/shared/lib/api-client";
 import type { Activity } from "../model/types";
 import { revalidateTag } from "next/cache";
 
+export type { Activity };
+
 export async function getFeed(): Promise<Activity[]> {
     const result = await fetchWithAuth('/activities/feed', {
         next: {

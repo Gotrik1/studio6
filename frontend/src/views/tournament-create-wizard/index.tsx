@@ -1,7 +1,8 @@
+
 'use client';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { ManualTournamentForm } from '@/widgets/tournament-wizard';
+import { ManualTournamentForm } from '@/widgets/tournament-wizard/manual-tournament-form';
 import { AiTournamentWizard } from '@/widgets/ai-tournament-wizard';
 import { Wand2, Hand } from 'lucide-react';
 

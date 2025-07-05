@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -75,7 +76,7 @@ export function AiTournamentWizard() {
         if (createResult.success) {
             toast({
                 title: 'Турнир создан!',
-                description: `Турнир "${result.name}" успешно создан и скоро появится в списке.`,
+                description: `Турнир "${result.name}" успешно создан и скоро появится в списке.`
             });
              router.push(`/tournaments/${createResult.data.slug}`);
         } else {
@@ -90,7 +91,7 @@ export function AiTournamentWizard() {
     
      const handleFieldChange = (field: keyof GenerateTournamentWizardOutput, value: string) => {
         if (result) {
-            setResult(prev => prev ? { ...prev, [field]: value } : null);
+            setResult((prev: GenerateTournamentWizardOutput | null) => prev ? { ...prev, [field]: value } : null);
         }
     };
 

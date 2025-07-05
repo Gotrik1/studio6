@@ -3,7 +3,7 @@
 'use client';
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
-import type { ExerciseSession } from '@/shared/lib/get-training-analytics';
+import type { ExerciseSession } from '@/entities/training-program/model/types';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 

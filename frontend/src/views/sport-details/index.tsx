@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Badge } from '@/shared/ui/badge';
 import { LfgCard } from '@/widgets/lfg-card';
-import { useLfg } from '@/shared/context/lfg-provider';
+import { useLfg } from '@/app/providers/lfg-provider';
 import Link from 'next/link';
 import { cn } from '@/shared/lib/utils';
 import { AiSportSummary } from '@/widgets/ai-sport-summary';
@@ -182,7 +182,7 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
                                    <Link key={team.slug} href={`/teams/${team.slug}`} className="block">
                                         <Card className="p-4 flex items-center gap-3 hover:bg-muted transition-colors">
                                             <Avatar>
-                                                <AvatarImage src={team.logo} data-ai-hint={team.dataAiHint} />
+                                                <AvatarImage src={team.logo || ''} data-ai-hint={team.dataAiHint} />
                                                 <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
                                             </Avatar>
                                             <div>

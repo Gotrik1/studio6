@@ -39,6 +39,8 @@ const playgroundSchema = z.object({
   type: z.string({required_error: "Выберите тип"}),
   surface: z.string({required_error: "Выберите покрытие"}),
   features: z.array(z.string()).optional(),
+  coverImage: z.string().optional(),
+  coverImageHint: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof playgroundSchema>;

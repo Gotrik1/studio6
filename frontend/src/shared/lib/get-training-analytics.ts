@@ -1,6 +1,7 @@
 import { calculate1RM } from './calculate-1rm';
 import type { TrainingLogEntry, PersonalRecord, RecordHistoryPoint, ExerciseSession } from '@/entities/training-program/model/types';
 
+export type { PersonalRecord, RecordHistoryPoint, ExerciseSession };
 
 // Helper function to get training metrics (for other widgets)
 const getMetrics = (completedWorkouts: TrainingLogEntry[]) => {

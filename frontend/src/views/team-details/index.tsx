@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
-import { Card, CardHeader, CardContent } from "@/shared/ui/card";
+import { Card, CardHeader, CardContent, CardTitle } from "@/shared/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
@@ -172,7 +172,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                     </TabsContent>
 
                     <TabsContent value="chat" className="mt-4">
-                        <TeamChatInterface teamId={team.slug} />
+                        <TeamChatInterface teamId={team.id} />
                     </TabsContent>
 
                 </Tabs>

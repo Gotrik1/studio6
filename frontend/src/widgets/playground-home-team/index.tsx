@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -95,7 +96,7 @@ export function KingOfTheCourtWidget({ playgroundId }: KingOfTheCourtWidgetProps
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <Avatar className="h-20 w-20 border-4 border-amber-400">
-                                    <AvatarImage src={homeTeamData.logo} alt={homeTeamData.name} data-ai-hint={homeTeamData.dataAiHint} />
+                                    <AvatarImage src={homeTeamData.logo || ''} alt={homeTeamData.name} data-ai-hint={homeTeamData.dataAiHint || ''} />
                                     <AvatarFallback className="text-2xl">{homeTeamData.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                             </TooltipTrigger>

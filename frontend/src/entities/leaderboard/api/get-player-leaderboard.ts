@@ -1,6 +1,7 @@
 'use server';
 
 import type { PlayerLeaderboardItem } from '@/entities/leaderboard/model/types';
+export type { PlayerLeaderboardItem };
 
 export async function getPlayerLeaderboard(): Promise<PlayerLeaderboardItem[]> {
     try {

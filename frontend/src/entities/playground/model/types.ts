@@ -15,3 +15,14 @@ export type Playground = {
         avatar: string | null;
     };
 };
+
+export type PlaygroundReview = {
+  id: string;
+  author: {
+    name: string;
+    avatar: string | null;
+  };
+  rating: number;
+  comment: string;
+  timestamp: string;
+};

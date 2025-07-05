@@ -1,6 +1,7 @@
+
 'use client';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { notFound, useRouter } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
@@ -98,7 +99,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </ScrollArea>
                 
                 <TabsContent value="overview" className="mt-4">
-                    <CrmTournamentOverview tournament={tournament as any} />
+                    <CrmTournamentOverview tournament={tournament} />
                 </TabsContent>
                 
                 <TabsContent value="participants" className="mt-4">
@@ -157,7 +158,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
 
                 <TabsContent value="sponsors" className="mt-4">
-                    <CrmTournamentSponsors />
+                    <CrmTournamentSponsors tournamentId={tournament.id} />
                 </TabsContent>
 
                 <TabsContent value="medical" className="mt-4">

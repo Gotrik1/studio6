@@ -1,4 +1,5 @@
 
+
 import {
   Avatar,
   AvatarFallback,
@@ -57,7 +58,7 @@ export function UserNav({ user }: { user: User }) {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <form action={logout}>
-          <button type="submit" className="w-full">
+          <button type="submit" className="w-full text-left">
             <DropdownMenuItem>
               Выйти
             </DropdownMenuItem>

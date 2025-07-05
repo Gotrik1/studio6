@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -20,6 +21,9 @@ import { TeamScheduleTab } from '@/widgets/team-schedule-tab';
 import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
+import { getPlayerProfile } from '@/entities/user/api/get-user';
+import { useParams } from 'next/navigation';
+import type { CoachedPlayer } from '@/entities/user/model/types';
 
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
@@ -29,6 +33,23 @@ export function TeamManagementPage() {
     const { requests: joinRequests, removeRequest } = useJoinRequests();
     const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+    const [teamPlayers, setTeamPlayers] = useState<CoachedPlayer[]>([]);
+    const params = useParams<{ slug: string }>();
+
+    useEffect(() => {
+        async function fetchRoster() {
+            if (params.slug) {
+                // In a real app, we'd fetch the team details and its roster.
+                // For now, we'll mock the roster based on a full user profile fetch.
+                const profile = await getPlayerProfile('1'); // Assuming user '1' is in the team
+                if (profile?.user?.coaching) {
+                    setTeamPlayers(profile.user.coaching as CoachedPlayer[]);
+                }
+            }
+        }
+        fetchRoster();
+    }, [params.slug]);
+
 
     const handleAccept = (request: JoinRequest) => {
         removeRequest(request.id);
@@ -105,7 +126,7 @@ export function TeamManagementPage() {
                                         {joinRequests.map(request => (
                                             <TableRow key={request.id}>
                                                 <TableCell className="font-medium flex items-center gap-2">
-                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.applicant.avatar} data-ai-hint="player avatar" /><AvatarFallback>{request.applicant.name.charAt(0)}</AvatarFallback></Avatar>
+                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.applicant.avatar || ''} data-ai-hint="player avatar" /><AvatarFallback>{request.applicant.name.charAt(0)}</AvatarFallback></Avatar>
                                                     {request.applicant.name}
                                                 </TableCell>
                                                 <TableCell>{request.applicant.role}</TableCell>
@@ -138,7 +159,7 @@ export function TeamManagementPage() {
                     </TabsContent>
 
                     <TabsContent value="training-analytics" className="mt-4">
-                        <TeamTrainingAnalytics />
+                        <TeamTrainingAnalytics players={teamPlayers} />
                     </TabsContent>
                     
                     <TabsContent value="ai-coach" className="mt-4">

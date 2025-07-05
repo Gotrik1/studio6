@@ -1,10 +1,12 @@
 'use server';
 
 import type { TeamLeaderboardItem } from '@/entities/leaderboard/model/types';
+export type { TeamLeaderboardItem };
 
-export async function getTeamLeaderboard(): Promise<TeamLeaderboardItem[]> {
+export async function getTeamLeaderboard(game?: string): Promise<TeamLeaderboardItem[]> {
+    const url = game ? `${process.env.BACKEND_URL}/teams/leaderboard?game=${encodeURIComponent(game)}` : `${process.env.BACKEND_URL}/teams/leaderboard`;
     try {
-        const response = await fetch(`${process.env.BACKEND_URL}/teams/leaderboard`, {
+        const response = await fetch(url, {
             cache: 'no-store',
         });
         if (!response.ok) {

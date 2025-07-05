@@ -1,11 +1,12 @@
 
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useSession } from '@/shared/lib/session/client';
-import { getOnboardingSuggestions, type OnboardingOutput } from '@/shared/api/genkit/flows/onboarding-assistant-flow';
+import { getOnboardingSuggestions, type OnboardingOutput, type OnboardingSuggestion } from '@/shared/api/genkit/flows/onboarding-assistant-flow';
 import { ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
@@ -70,7 +71,7 @@ export function WelcomePage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <h3 className="font-semibold">Ваши первые квесты:</h3>
-                     {suggestions.suggestions.map((quest) => {
+                     {suggestions.suggestions.map((quest: OnboardingSuggestion) => {
                         const Icon = iconMap[quest.icon] || LucideIcons.HelpCircle;
                         return (
                              <Link href={quest.href} key={quest.title} className="block">

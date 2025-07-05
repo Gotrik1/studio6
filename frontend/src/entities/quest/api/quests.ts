@@ -4,6 +4,7 @@ import { fetchWithAuth } from "@/shared/lib/api-client";
 import type { Quest } from '../model/types';
 import { revalidateTag } from "next/cache";
 
+export type { Quest };
 type CreateQuestData = Omit<Quest, 'id' | 'progress'>;
 
 export async function getQuests(): Promise<Quest[]> {
@@ -35,7 +36,7 @@ export async function deleteQuest(id: string) {
      const result = await fetchWithAuth(`/quests/${id}`, {
         method: 'DELETE',
     });
-
+    
     if (result.success) {
         revalidateTag('quests');
     }

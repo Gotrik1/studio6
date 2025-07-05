@@ -5,6 +5,8 @@ import type { Tournament } from '@/entities/tournament/model/types';
 import type { TournamentCrm } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
+export type { Tournament };
+
 export async function fetchTournaments(game?: string): Promise<Tournament[]> {
   const url = game ? `/tournaments?game=${encodeURIComponent(game)}` : '/tournaments';
   const result = await fetchWithAuth(url);

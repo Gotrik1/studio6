@@ -4,6 +4,8 @@ import type { Sport } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 
+export type { Sport };
+
 export async function getSports(): Promise<Sport[]> {
     const result = await fetchWithAuth('/sports', { next: { tags: ['sports'] } });
     if (!result.success) {

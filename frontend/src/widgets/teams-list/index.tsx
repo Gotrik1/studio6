@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -75,12 +76,12 @@ export function TeamsListClient({ initialTeams }: { initialTeams: Team[] }) {
                         <Card className="flex flex-col overflow-hidden transition-all hover:shadow-2xl hover:border-primary h-full cursor-pointer">
                             <CardHeader className="flex flex-row items-center gap-4 p-4">
                                 <Image 
-                                  src={team.logo} 
+                                  src={team.logo || 'https://placehold.co/100x100.png'} 
                                   alt={`Логотип ${team.name}`} 
                                   width={64} 
                                   height={64} 
                                   className="rounded-full border"
-                                  data-ai-hint={team.dataAiHint}
+                                  data-ai-hint={team.dataAiHint || ''}
                                 />
                                 <div>
                                     <CardTitle className="font-headline">{team.name}</CardTitle>

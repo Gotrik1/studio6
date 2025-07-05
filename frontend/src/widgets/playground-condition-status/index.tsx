@@ -4,7 +4,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { ShieldAlert, ShieldCheck, Wrench, ShieldQuestion } from 'lucide-react';
-import type { AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/schemas/analyze-playground-report-schema';
+import type { AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
 
 interface PlaygroundConditionStatusProps {
     status: 'ok' | 'issue';
