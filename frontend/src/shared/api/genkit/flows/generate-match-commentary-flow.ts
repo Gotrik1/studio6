@@ -1,5 +1,7 @@
 'use server';
 
+import { fetchWithAuth } from '@/shared/lib/api-client';
+
 type Event = {
     time: string;
     event: string;
@@ -15,21 +17,20 @@ export type GenerateMatchCommentaryInput = {
 
 export type GenerateMatchCommentaryOutput = {
   commentaryScript: string;
+  audioDataUri: string;
 };
 
-export async function generateMatchCommentary(input: GenerateMatchCommentaryInput): Promise<GenerateMatchCommentaryOutput & { audioDataUri: string }> {
-  const response = await fetch('/api/ai/generate-match-commentary', {
+export async function generateMatchCommentary(input: GenerateMatchCommentaryInput): Promise<GenerateMatchCommentaryOutput> {
+  const result = await fetchWithAuth('/ai/generate-match-commentary', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
     cache: 'no-store',
   });
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    console.error("Backend API error:", errorBody);
-    throw new Error(`Backend API responded with status: ${response.status}`);
+  if (!result.success) {
+    console.error("Backend API error:", result.error);
+    throw new Error(`Backend API responded with status: ${result.status}`);
   }
 
-  return response.json();
+  return result.data;
 }
