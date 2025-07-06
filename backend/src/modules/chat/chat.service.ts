@@ -39,7 +39,7 @@ export class ChatService implements OnModuleInit {
           if (payload.text && payload.chatId && payload.sender?.id) {
             await this.prisma.message.create({
               data: {
-                text: payload.text,
+                content: payload.text,
                 chatId: payload.chatId,
                 authorId: payload.sender.id,
               },
@@ -104,7 +104,7 @@ export class ChatService implements OnModuleInit {
           : otherParticipant?.avatar || "https://placehold.co/100x100.png";
 
       const latestMessage = lastMessage
-        ? `${lastMessage.author.name}: ${lastMessage.text}`
+        ? `${lastMessage.author.name}: ${lastMessage.content}`
         : "Нет сообщений";
 
       const latestTimestamp = lastMessage
