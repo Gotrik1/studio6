@@ -47,6 +47,7 @@
         - [x] `CoachesService` — управление профилями тренеров.
         - [x] `SponsorsService` — управление профилями спонсоров.
         - [x] `SponsorshipService` — логика спонсорских контрактов.
+        - [x] `SponsorshipOffersService` — управление входящими предложениями от спонсоров.
         - [x] `MeasurementsService` — управление замерами тела.
         - [x] `TrainingProposalsService` — управление предложениями о тренировках.
         - [x] `FaqService` — управление базой знаний.

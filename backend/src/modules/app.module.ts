@@ -46,7 +46,7 @@ import { TeamApplicationsModule } from "./modules/team-applications/team-applica
 import { AdminModule } from "./modules/admin/admin.module";
 import { FeedModule } from "./modules/feed/feed.module";
 import { ActivitiesModule } from "./modules/activities/activities.module";
-import { PlaygroundReportsModule } from "./modules/playground-reports/playground-reports.module";
+import { SponsorshipOffersModule } from "./modules/sponsorship-offers/sponsorship-offers.module";
 
 @Module({
   imports: [
@@ -93,7 +93,7 @@ import { PlaygroundReportsModule } from "./modules/playground-reports/playground
     AdminModule,
     ActivitiesModule,
     FeedModule,
-    PlaygroundReportsModule,
+    SponsorshipOffersModule,
   ],
   controllers: [AppController],
   providers: [

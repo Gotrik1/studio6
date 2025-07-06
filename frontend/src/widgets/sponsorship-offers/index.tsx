@@ -1,72 +1,63 @@
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Check, X } from 'lucide-react';
+import { Check, X, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-
-// Assuming a type definition exists for sponsorship offers
-type SponsorshipOffer = {
-  id: string;
-  sponsor: {
-    name: string;
-    logo: string;
-    logoHint: string;
-  };
-  offer: string;
-  status: 'pending' | 'accepted' | 'declined';
-};
-
-const initialOffers: SponsorshipOffer[] = [
-    {
-        id: 'offer-1',
-        sponsor: {
-            name: 'G-Fuel',
-            logo: 'https://placehold.co/100x100.png',
-            logoHint: 'energy drink logo'
-        },
-        offer: 'Полное спонсорство на сезон 2024. Включает форму, оплату взносов и продукцию.',
-        status: 'pending',
-    },
-    {
-        id: 'offer-2',
-        sponsor: {
-            name: 'Razer',
-            logo: 'https://placehold.co/100x100.png',
-            logoHint: 'gaming peripherals logo'
-        },
-        offer: 'Предоставление топовой периферии для всей команды.',
-        status: 'pending',
-    }
-];
+import { getSponsorshipOffers, respondToSponsorshipOffer, type SponsorshipOffer } from '@/entities/sponsorship/api/offers';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { useSession } from '@/shared/lib/session/client';
+import { useParams } from 'next/navigation';
 
 export function SponsorshipOffers() {
-    const [offers, setOffers] = useState<SponsorshipOffer[]>(initialOffers);
     const { toast } = useToast();
+    const params = useParams<{ slug: string }>();
+    const teamId = params.slug as string; // Assuming slug is the team id for this page.
+    const [offers, setOffers] = useState<SponsorshipOffer[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    const handleResponse = (offerId: string, status: 'accepted' | 'declined') => {
+    const fetchOffers = useCallback(async () => {
+        setIsLoading(true);
+        const result = await getSponsorshipOffers(teamId);
+        if(result.success) {
+            setOffers(result.data);
+        } else {
+             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить спонсорские предложения.' });
+        }
+        setIsLoading(false);
+    }, [teamId, toast]);
+
+    useEffect(() => {
+        if(teamId) {
+             fetchOffers();
+        }
+    }, [teamId, fetchOffers]);
+
+
+    const handleResponse = async (offerId: string, status: 'ACCEPTED' | 'DECLINED') => {
         const offer = offers.find(o => o.id === offerId);
         if (!offer) return;
-
-        setOffers(prev => prev.map(o => o.id === offerId ? { ...o, status } : o));
         
-        if (status === 'accepted') {
+        const result = await respondToSponsorshipOffer(offerId, status);
+        
+        if (result.success) {
             toast({
-                title: 'Предложение принято!',
-                description: `Вы заключили партнерство с ${offer.sponsor.name}.`
+                title: status === 'ACCEPTED' ? 'Предложение принято!' : 'Предложение отклонено',
+                description: `Вы ответили на предложение от ${offer.sponsor.name}.`
             });
+            fetchOffers(); // Refetch data
         } else {
              toast({
                 variant: 'destructive',
-                title: 'Предложение отклонено',
+                title: 'Ошибка',
+                description: 'Не удалось обновить статус предложения.'
             });
         }
     };
 
-    const pendingOffers = offers.filter(o => o.status === 'pending');
+    const pendingOffers = offers.filter(o => o.status === 'PENDING');
 
     return (
         <Card>
@@ -75,7 +66,12 @@ export function SponsorshipOffers() {
                 <CardDescription>Предложения от компаний, заинтересованных в вашей команде.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                {pendingOffers.length > 0 ? (
+                 {isLoading ? (
+                    <div className="space-y-4">
+                        <Skeleton className="h-24 w-full" />
+                        <Skeleton className="h-24 w-full" />
+                    </div>
+                 ) : pendingOffers.length > 0 ? (
                     pendingOffers.map(offer => (
                         <Card key={offer.id} className="p-4">
                             <div className="flex justify-between items-start">
@@ -83,12 +79,12 @@ export function SponsorshipOffers() {
                                     <Image src={offer.sponsor.logo} alt={offer.sponsor.name} width={40} height={40} className="rounded-full border" data-ai-hint={offer.sponsor.logoHint} />
                                     <div>
                                         <p className="font-semibold">{offer.sponsor.name}</p>
-                                        <p className="text-sm text-muted-foreground">{offer.offer}</p>
+                                        <p className="text-sm text-muted-foreground">{offer.offerText}</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleResponse(offer.id, 'declined')}><X className="h-4 w-4" /></Button>
-                                    <Button size="icon" variant="ghost" className="text-green-500" onClick={() => handleResponse(offer.id, 'accepted')}><Check className="h-4 w-4" /></Button>
+                                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleResponse(offer.id, 'DECLINED')}><X className="h-4 w-4" /></Button>
+                                    <Button size="icon" variant="ghost" className="text-green-500" onClick={() => handleResponse(offer.id, 'ACCEPTED')}><Check className="h-4 w-4" /></Button>
                                 </div>
                             </div>
                         </Card>

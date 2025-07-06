@@ -22,3 +22,14 @@ export type SponsorshipDashboardData = {
     sponsoredTeams: SponsoredTeam[];
     teamsSeekingSponsorship: TeamSeekingSponsorship[];
 };
+
+export type SponsorshipOffer = {
+  id: string;
+  sponsor: {
+    name: string;
+    logo: string;
+    logoHint: string;
+  };
+  offerText: string;
+  status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+};

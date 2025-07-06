@@ -7,34 +7,7 @@ export class SponsorshipService implements OnModuleInit {
   constructor(private prisma: PrismaService) {}
 
   async onModuleInit() {
-    await this.seedSponsorships();
-  }
-
-  async seedSponsorships() {
-    const count = await this.prisma.sponsorship.count();
-    if (count > 0) return;
-
-    this.logger.log("Seeding initial sponsorships...");
-
-    const sponsor = await this.prisma.sponsor.findUnique({
-      where: { id: "gfuel" },
-    });
-    const team = await this.prisma.team.findUnique({
-      where: { slug: "dvotovyie-atlety" },
-    });
-
-    if (sponsor && team) {
-      await this.prisma.sponsorship.create({
-        data: {
-          sponsorId: sponsor.id,
-          teamId: team.id,
-          amount: 50000,
-        },
-      });
-      this.logger.log("Sponsorship seeded successfully.");
-    } else {
-      this.logger.warn("Could not find sponsor or team to seed sponsorship.");
-    }
+    // Seeding is now handled by SponsorshipOffersService when an offer is accepted
   }
 
   async getDashboardData() {
@@ -61,7 +34,7 @@ export class SponsorshipService implements OnModuleInit {
         name: s.team.name,
         logo: s.team.logo || "",
         logoHint: s.team.dataAiHint || "team logo",
-        investment: `${s.amount.toString()} PD`, // Now real data
+        investment: `${s.amount.toLocaleString('ru-RU')} PD`,
         since: s.signedAt.toISOString().split("T")[0],
       })),
       teamsSeekingSponsorship: teamsSeekingSponsorship.map((t) => ({
@@ -70,8 +43,7 @@ export class SponsorshipService implements OnModuleInit {
         logo: t.logo || "",
         logoHint: t.dataAiHint || "team logo",
         game: t.game,
-        pitch:
-          t.pitch || `Команда ${t.name} ищет поддержки для участия в турнирах.`,
+        pitch: t.pitch || `Команда ${t.name} ищет поддержки для участия в турнирах.`,
       })),
     };
   }
