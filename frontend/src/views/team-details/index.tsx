@@ -1,10 +1,11 @@
 
 
 
+
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Card, CardHeader, CardContent, CardTitle } from "@/shared/ui/card";
+import { Card, CardHeader, CardContent, CardTitle, CardFooter } from "@/shared/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
@@ -51,7 +52,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
     }
 
     const isCaptain = currentUser?.id === team.captainId;
-    const isMember = team.roster.some((member) => member.id === currentUser?.id);
+    const isMember = team.roster.some((member: TeamRosterMember) => member.id === currentUser?.id);
 
     const handleJoinTeam = () => {
         startTransition(async () => {

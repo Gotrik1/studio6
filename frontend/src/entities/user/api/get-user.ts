@@ -1,5 +1,6 @@
 
 
+
 'use server';
 
 import type { User } from '@/shared/lib/types';
@@ -54,7 +55,6 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
         return null;
     }
     
-    // The playerActivity is now part of the FullUserProfile type from the backend.
     const playerActivity: PlayerActivityItem[] = profileResult.user.activities.map(activity => {
         const metadata = activity.metadata as any; // Allow dynamic property access
         const IconName = metadata.icon as keyof typeof LucideIcons;

@@ -1,7 +1,10 @@
 
-import type { UserTeam } from '@/entities/team/model/types';
 
-export type { UserTeam };
+import type { Team } from '@/entities/team/model/types';
+
+export type UserTeam = Team & {
+    role: string;
+};
 
 export type CareerHistoryItem = {
     id: string;

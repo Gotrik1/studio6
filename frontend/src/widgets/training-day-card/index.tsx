@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -79,12 +80,12 @@ const SetRow = ({ control, exerciseIndex, setIndex, personalRecords, exercise }:
             <TableCell className="text-muted-foreground">{exercise.sets[setIndex]?.plannedReps} x {exercise.sets[setIndex]?.plannedWeight}</TableCell>
             <TableCell>
                 <FormField control={control} name={`exercises.${exerciseIndex}.sets.${setIndex}.loggedReps`} render={({ field }) => (
-                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedReps ?? ''} /></FormControl></FormItem>
+                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedReps || ''} /></FormControl></FormItem>
                 )} />
             </TableCell>
             <TableCell>
                 <FormField control={control} name={`exercises.${exerciseIndex}.sets.${setIndex}.loggedWeight`} render={({ field }) => (
-                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedWeight?.replace('кг','').trim() ?? ''} /></FormControl></FormItem>
+                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedWeight?.replace('кг','').trim() || ''} /></FormControl></FormItem>
                 )} />
             </TableCell>
             <TableCell>

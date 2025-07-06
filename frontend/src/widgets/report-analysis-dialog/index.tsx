@@ -1,6 +1,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,7 +15,7 @@ import {
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
 import { Separator } from "@/shared/ui/separator";
-import { Loader2, AlertCircle, Sparkles, MessageSquare, Clock, Flag, UserX, BrainCircuit } from "lucide-react";
+import { Loader2, AlertCircle, Sparkles, MessageSquare, Clock, Flag, UserX, BrainCircuit, Shield } from "lucide-react";
 import { analyzeReport, type AnalyzeReportOutput } from '@/shared/api/genkit/flows/analyze-report-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';

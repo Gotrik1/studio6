@@ -1,6 +1,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -101,57 +102,62 @@ export function ManualPromotionForm({ isEditMode }: ManualPromotionFormProps) {
                         <CardDescription>Заполните все необходимые поля для создания новой акции или конкурса.</CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-6">
-                        <FormField control={form.control} name="name" render={({ field }) => (
-                            <FormItem><FormLabel>Название акции</FormLabel><FormControl><Input placeholder="Например, Конкурс на лучший игровой момент" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="description" render={({ field }) => (
-                            <FormItem><FormLabel>Описание</FormLabel><FormControl><Textarea placeholder="Подробно опишите условия и правила участия" {...field} /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <FormField control={form.control} name="prize" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Приз</FormLabel>
-                                    <FormControl><Input placeholder="Например, 10,000 PD + игровая мышь" {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                        <div className="space-y-6">
+                            <FormField control={form.control} name="name" render={({ field }) => (
+                                <FormItem><FormLabel>Название акции</FormLabel><FormControl><Input placeholder="Например, Конкурс на лучший игровой момент" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
-                             <FormField control={form.control} name="cost" render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Стоимость участия (PD)</FormLabel>
-                                    <FormControl><Input type="number" {...field} /></FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                            <FormField control={form.control} name="description" render={({ field }) => (
+                                <FormItem><FormLabel>Описание</FormLabel><FormControl><Textarea placeholder="Подробно опишите условия и правила участия" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                         </div>
-                         <FormField control={form.control} name="endDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Дата окончания</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>
+                        <Separator/>
+                         <div className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <FormField control={form.control} name="prize" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Приз</FormLabel>
+                                        <FormControl><Input placeholder="Например, 10,000 PD + игровая мышь" {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                                 <FormField control={form.control} name="cost" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Стоимость участия (PD)</FormLabel>
+                                        <FormControl><Input type="number" {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                            </div>
+                             <FormField control={form.control} name="endDate" render={({ field }) => (<FormItem className="flex flex-col"><FormLabel>Дата окончания</FormLabel><Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", {locale: ru})) : (<span>Выберите дату</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>
+                                )} />
+                            <FormField control={form.control} name="sponsorId" render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Спонсор (необязательно)</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger><SelectValue placeholder="Выберите спонсора из списка" /></SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {sponsors.map(sponsor => <SelectItem key={sponsor.id} value={sponsor.id}>{sponsor.name}</SelectItem>)}
+                                        </SelectContent>
+                                    </Select>
+                                    <FormMessage />
+                                </FormItem>
                             )} />
-                        <FormField control={form.control} name="sponsorId" render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Спонсор (необязательно)</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                    <FormControl>
-                                        <SelectTrigger><SelectValue placeholder="Выберите спонсора из списка" /></SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                        {sponsors.map(sponsor => <SelectItem key={sponsor.id} value={sponsor.id}>{sponsor.name}</SelectItem>)}
-                                    </SelectContent>
-                                </Select>
-                                <FormMessage />
+                             <FormItem>
+                                <FormLabel>Баннер акции</FormLabel>
+                                <FormControl>
+                                    <label htmlFor="media-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-muted/80">
+                                        <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <UploadCloud className="w-8 h-8 mb-2 text-muted-foreground" />
+                                            <p className="mb-2 text-sm text-muted-foreground">Нажмите, чтобы загрузить фото</p>
+                                        </div>
+                                        <input id="media-upload" type="file" className="hidden" accept="image/png, image/jpeg" />
+                                    </label>
+                                </FormControl>
+                                 <FormDescription>Рекомендуемый размер 1200x400. Будет отображаться на странице акции.</FormDescription>
                             </FormItem>
-                        )} />
-                         <FormItem>
-                            <FormLabel>Баннер акции</FormLabel>
-                            <FormControl>
-                                <label htmlFor="media-upload" className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-muted/80">
-                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <UploadCloud className="w-8 h-8 mb-2 text-muted-foreground" />
-                                        <p className="mb-2 text-sm text-muted-foreground">Нажмите, чтобы загрузить фото</p>
-                                    </div>
-                                    <input id="media-upload" type="file" className="hidden" accept="image/png, image/jpeg" />
-                                </label>
-                            </FormControl>
-                             <FormDescription>Рекомендуемый размер 1200x400. Будет отображаться на странице акции.</FormDescription>
-                        </FormItem>
+                        </div>
                     </CardContent>
                     <CardFooter>
                         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>

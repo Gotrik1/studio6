@@ -1,6 +1,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -9,6 +10,8 @@ import { TrainingProgramForm, type ProgramFormValues } from '@/widgets/training-
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useTraining } from '@/shared/context/training-provider';
+import type { TrainingProgram } from '@/entities/training-program/model/types';
+
 
 interface TrainingProgramEditPageProps {
     programId: string;
@@ -35,7 +38,7 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
         return <div>Программа не найдена.</div>
     }
 
-    const handleSubmit = async (data: ProgramFormValues): Promise<void> => {
+    const handleSubmit = async (data: ProgramFormValues) => {
         const success = await updateProgram(programId, data);
         if (success) {
             toast({
