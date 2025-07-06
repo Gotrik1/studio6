@@ -22,11 +22,12 @@ import { findSponsorsForTeam, type FindSponsorsForTeamInput, type FindSponsorsFo
 import { generatePostImage_Backend, type GeneratePostImageInput, type GeneratePostImageOutput } from '@/ai/flows/generate-post-image-flow';
 import { analyzePlaygroundDetails, type AnalyzePlaygroundDetailsInput, type AnalyzePlaygroundDetailsOutput } from '@/ai/flows/analyze-playground-details-flow';
 import { analyzePlaygroundReport, type AnalyzePlaygroundReportInput, type AnalyzePlaygroundReportOutput } from '@/ai/flows/analyze-playground-report-flow';
+import { generatePlaygroundSummary, type GeneratePlaygroundSummaryInput, type GeneratePlaygroundSummaryOutput } from '@/ai/flows/generate-playground-summary-flow';
+import { generatePlaygroundTactic, type GeneratePlaygroundTacticInput, type GeneratePlaygroundTacticOutput } from '@/ai/flows/generate-playground-tactic-flow';
 import { smartSearch, type SmartSearchOutput } from '@/ai/flows/smart-search-flow';
 import { analyzePlayerPerformance, type AnalyzePlayerPerformanceInput, type AnalyzePlayerPerformanceOutput as AnalyzePlayerPerformanceOutput_1 } from '@/ai/flows/analyze-player-performance-flow';
 import { generateTrainingPlan, type GenerateTrainingPlanInput, type GenerateTrainingPlanOutput } from '@/ai/flows/generate-training-plan-flow';
 import { generatePlaygroundWorkout, type GeneratePlaygroundWorkoutInput, type GeneratePlaygroundWorkoutOutput } from '@/ai/flows/generate-playground-workout-flow';
-import { generatePlaygroundTactic, type GeneratePlaygroundTacticInput, type GeneratePlaygroundTacticOutput } from '@/ai/flows/generate-playground-tactic-flow';
 import { generatePlaygroundLore, type GeneratePlaygroundLoreInput, type GeneratePlaygroundLoreOutput } from '@/ai/flows/generate-playground-lore';
 import { generatePlaygroundDrill, type GeneratePlaygroundDrillInput, type GeneratePlaygroundDrillOutput } from '@/ai/flows/generate-playground-drill-flow';
 import { analyzeMatchReport, type AnalyzeMatchReportInput, type AnalyzeMatchReportOutput } from '@/ai/flows/analyze-match-report-flow';
@@ -36,7 +37,7 @@ import { analyzeHolisticPerformance, type AnalyzeHolisticPerformanceInput, type 
 import { suggestReply, type SuggestReplyInput, type SuggestReplyOutput } from '@/ai/flows/suggest-reply-flow';
 import { askSupportChatbot, type SupportChatbotInput, type SupportChatbotOutput } from '@/ai/flows/support-chatbot-flow';
 import { createTeam, type CreateTeamInput, type CreateTeamOutput } from '@/ai/flows/create-team-flow';
-import { generateTeamAvatar, type GenerateTeamAvatarOutput } from '@/ai/flows/generate-team-avatar-flow';
+import { generateTeamAvatar, type GenerateTeamAvatarOutput, type GenerateTeamAvatarInput } from '@/ai/flows/generate-team-avatar-flow';
 import { generatePromotionDetails, type GeneratePromotionDetailsInput, type GeneratePromotionDetailsOutput } from '@/ai/flows/generate-promotion-details-flow';
 import { generatePromotionImage, type GeneratePromotionImageOutput } from '@/ai/flows/generate-promotion-image-flow';
 import { generateDashboardTip, type GenerateDashboardTipOutput } from '@/ai/flows/generate-dashboard-tip-flow';
@@ -61,7 +62,6 @@ import { playerScout, type PlayerScoutInput, type PlayerScoutOutput } from '@/ai
 import { PromotionsService } from '../promotions/promotions.service';
 import type { Promotion } from '@prisma/client';
 import { generatePlaygroundChallenge, type GeneratePlaygroundChallengeInput, type GeneratePlaygroundChallengeOutput } from '@/ai/flows/generate-playground-challenge-flow';
-import { generatePlaygroundSummary, type GeneratePlaygroundSummaryInput, type GeneratePlaygroundSummaryOutput } from '@/ai/flows/generate-playground-summary-flow';
 import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
@@ -85,7 +85,7 @@ export class AiService {
     return createTeam(input);
   }
 
-  async generateTeamAvatar(input: { prompt: string }): Promise<GenerateTeamAvatarOutput> {
+  async generateTeamAvatar(input: GenerateTeamAvatarInput): Promise<GenerateTeamAvatarOutput> {
       return generateTeamAvatar(input);
   }
 
@@ -192,6 +192,10 @@ export class AiService {
   async generatePlaygroundTactic(input: GeneratePlaygroundTacticInput): Promise<GeneratePlaygroundTacticOutput> {
     return generatePlaygroundTactic(input);
   }
+  
+  async generatePlaygroundWorkout(input: GeneratePlaygroundWorkoutInput): Promise<GeneratePlaygroundWorkoutOutput> {
+    return generatePlaygroundWorkout(input);
+  }
 
   async generatePlaygroundLore(input: GeneratePlaygroundLoreInput): Promise<GeneratePlaygroundLoreOutput> {
     return generatePlaygroundLore(input);
@@ -215,10 +219,6 @@ export class AiService {
   
   async generateTrainingPlan(input: GenerateTrainingPlanInput): Promise<GenerateTrainingPlanOutput> {
     return generateTrainingPlan(input);
-  }
-
-  async generatePlaygroundWorkout(input: GeneratePlaygroundWorkoutInput): Promise<GeneratePlaygroundWorkoutOutput> {
-    return generatePlaygroundWorkout(input);
   }
 
   async analyzeMatchReport(input: AnalyzeMatchReportInput): Promise<AnalyzeMatchReportOutput> {
@@ -345,3 +345,5 @@ export class AiService {
     return playerScout(input);
   }
 }
+
+    

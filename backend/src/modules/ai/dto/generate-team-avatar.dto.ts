@@ -4,3 +4,5 @@ import type { GenerateTeamAvatarInputSchema } from '@/ai/flows/schemas/generate-
 export class GenerateTeamAvatarDto implements z.infer<typeof GenerateTeamAvatarInputSchema> {
     readonly prompt: string;
 }
+
+    

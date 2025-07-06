@@ -45,6 +45,7 @@ import { AnalyzePlaygroundDetailsDto } from './dto/analyze-playground-details.dt
 import { AnalyzePlaygroundReportDto } from './dto/analyze-playground-report.dto';
 import { GeneratePlaygroundSummaryDto } from './dto/generate-playground-summary.dto';
 import { GeneratePlaygroundTacticDto } from './dto/generate-playground-tactic.dto';
+import { GeneratePlaygroundWorkoutDto } from './dto/generate-playground-workout.dto';
 import type { AnalyzePlaygroundDetailsOutput } from '@/ai/flows/schemas/analyze-playground-details-schema';
 import type { AnalyzePlaygroundReportOutput } from '@/ai/flows/schemas/analyze-playground-report-schema';
 import { SmartSearchDto } from './dto/smart-search.dto';
@@ -53,8 +54,6 @@ import { GenerateTrainingPlanDto } from './dto/generate-training-plan.dto';
 import { AnalyzePlayerPerformanceDto } from './dto/analyze-player-performance.dto';
 import type { GenerateTrainingPlanOutput } from '@/ai/flows/schemas/generate-training-plan-schema';
 import type { AnalyzePlayerPerformanceOutput } from '@/ai/flows/schemas/analyze-player-performance-schema';
-import { GeneratePlaygroundWorkoutDto } from './dto/generate-playground-workout.dto';
-import type { GeneratePlaygroundWorkoutOutput } from '@/ai/flows/schemas/generate-playground-workout-schema';
 import { GeneratePlaygroundLoreDto } from './dto/generate-playground-lore.dto';
 import type { GeneratePlaygroundLoreOutput } from '@/ai/flows/schemas/generate-playground-lore-schema';
 import { GeneratePlaygroundDrillDto } from './dto/generate-playground-drill.dto';
@@ -73,8 +72,6 @@ import { SupportChatbotDto } from './dto/support-chatbot.dto';
 import type { SupportChatbotOutput } from '@/ai/flows/support-chatbot-flow';
 import { CreateTeamDto } from './dto/create-team.dto';
 import type { CreateTeamOutput } from '@/ai/flows/schemas/create-team-schema';
-import { GenerateTeamAvatarDto } from './dto/generate-team-avatar.dto';
-import type { GenerateTeamAvatarOutput } from '@/ai/flows/schemas/generate-team-avatar-schema';
 import { GeneratePromotionDetailsDto } from './dto/generate-promotion-details.dto';
 import type { GeneratePromotionDetailsOutput } from '@/ai/flows/schemas/generate-promotion-details-schema';
 import { GeneratePromotionImageDto } from './dto/generate-promotion-image.dto';
@@ -121,6 +118,8 @@ import { Request } from 'express';
 import { GeneratePlaygroundChallengeDto } from './dto/generate-playground-challenge.dto';
 import type { GeneratePlaygroundSummaryOutput } from '@/ai/flows/schemas/generate-playground-summary-schema';
 import type { GeneratePlaygroundChallengeOutput } from '@/ai/flows/schemas/generate-playground-challenge-schema';
+import { GenerateTeamAvatarDto } from './dto/generate-team-avatar.dto';
+import type { GenerateTeamAvatarOutput } from '@/ai/flows/schemas/generate-team-avatar-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -355,6 +354,14 @@ export class AiController {
   ): Promise<GeneratePlaygroundTacticOutput> {
     return this.aiService.generatePlaygroundTactic(generatePlaygroundTacticDto);
   }
+  
+  @Post('generate-playground-workout')
+  @HttpCode(HttpStatus.OK)
+  async generatePlaygroundWorkout(
+    @Body() generatePlaygroundWorkoutDto: GeneratePlaygroundWorkoutDto,
+  ): Promise<GeneratePlaygroundWorkoutOutput> {
+    return this.aiService.generatePlaygroundWorkout(generatePlaygroundWorkoutDto);
+  }
 
   @Post('smart-search')
   @HttpCode(HttpStatus.OK)
@@ -378,14 +385,6 @@ export class AiController {
     @Body() generateTrainingPlanDto: GenerateTrainingPlanDto,
   ): Promise<GenerateTrainingPlanOutput> {
     return this.aiService.generateTrainingPlan(generateTrainingPlanDto);
-  }
-
-  @Post('generate-playground-workout')
-  @HttpCode(HttpStatus.OK)
-  async generatePlaygroundWorkout(
-    @Body() generatePlaygroundWorkoutDto: GeneratePlaygroundWorkoutDto,
-  ): Promise<GeneratePlaygroundWorkoutOutput> {
-    return this.aiService.generatePlaygroundWorkout(generatePlaygroundWorkoutDto);
   }
 
   @Post('generate-playground-lore')
@@ -609,3 +608,5 @@ export class AiController {
     return this.aiService.playerScout(playerScoutDto.input);
   }
 }
+
+    
