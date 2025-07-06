@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { analyzeTeamPerformance } from "@/ai/flows/analyze-team-performance-flow";
 import { UsersService } from "../users/users.service";
+import { generateLeaderboardCacheKey, generateTeamCacheKey } from "../cache/cache.utils";
 
 @Injectable()
 export class TeamsService implements OnModuleInit {
@@ -129,10 +130,10 @@ export class TeamsService implements OnModuleInit {
       },
     });
 
-    await this.cacheManager.del("leaderboard_teams_all");
-    if(game) {
-       await this.cacheManager.del(`leaderboard_teams_${game}`);
-    }
+    const cacheKey = generateLeaderboardCacheKey();
+    const gameCacheKey = generateLeaderboardCacheKey(game);
+    await this.cacheManager.del(cacheKey);
+    await this.cacheManager.del(gameCacheKey);
 
     return team;
   }
@@ -173,7 +174,7 @@ export class TeamsService implements OnModuleInit {
   }
 
   async findBySlug(slug: string): Promise<any | null> {
-    const cacheKey = `team_slug_${slug}`;
+    const cacheKey = generateTeamCacheKey(slug);
     const cachedTeam = await this.cacheManager.get<any>(cacheKey);
 
     if (cachedTeam) {
@@ -249,14 +250,14 @@ export class TeamsService implements OnModuleInit {
       roster,
     };
 
-    await this.cacheManager.set(cacheKey, result); // TTL is set globally in CacheModule
+    await this.cacheManager.set(cacheKey, result);
     return result;
   }
 
   async getLeaderboard(params?: {
     game?: string;
   }): Promise<LeaderboardTeamDto[]> {
-    const cacheKey = `leaderboard_teams_${params?.game || "all"}`;
+    const cacheKey = generateLeaderboardCacheKey(params?.game);
     const cachedLeaderboard =
       await this.cacheManager.get<LeaderboardTeamDto[]>(cacheKey);
 
@@ -309,7 +310,7 @@ export class TeamsService implements OnModuleInit {
       );
     }
     
-    await this.cacheManager.del(`team_slug_${team.slug}`);
+    await this.cacheManager.del(generateTeamCacheKey(team.slug));
 
     await this.prisma.activity.create({
       data: {
@@ -359,7 +360,7 @@ export class TeamsService implements OnModuleInit {
     });
 
     // Invalidate cache
-    await this.cacheManager.del(`team_slug_${team.slug}`);
+    await this.cacheManager.del(generateTeamCacheKey(team.slug));
 
     return updatedTeam;
   }
@@ -385,7 +386,7 @@ export class TeamsService implements OnModuleInit {
       throw new BadRequestException("Капитан не может удалить самого себя.");
     }
 
-    await this.cacheManager.del(`team_slug_${team.slug}`);
+    await this.cacheManager.del(generateTeamCacheKey(team.slug));
 
     return this.prisma.team.update({
       where: { id: teamId },
@@ -431,26 +432,22 @@ export class TeamsService implements OnModuleInit {
     }
 
     await this.prisma.$transaction([
-      // Update team captain
       this.prisma.team.update({
         where: { id: teamId },
         data: { captainId: newCaptainId },
       }),
-      // Update new captain's role
       this.prisma.user.update({
         where: { id: newCaptainId },
         data: { role: "Капитан" },
       }),
-      // Update old captain's role
       this.prisma.user.update({
         where: { id: currentCaptainId },
         data: { role: "Игрок" },
       }),
     ]);
 
-    await this.cacheManager.del(`team_slug_${team.slug}`);
+    await this.cacheManager.del(generateTeamCacheKey(team.slug));
 
-    // Return updated team
     return this.prisma.team.findUnique({ where: { id: teamId } }) as Promise<Team>;
   }
 
@@ -597,10 +594,8 @@ export class TeamsService implements OnModuleInit {
             const stats = await this.usersService.getStatsForUser(player.id);
             return {
                 name: player.name,
-                // KDA is not tracked, so we still mock it for the demo prompt
                 kda: (Math.random() * (1.8 - 0.8) + 0.8).toFixed(1),
-                winRate: `${stats.summary.winrate}%`, // Using real win rate
-                // Trend is not tracked, so we mock it
+                winRate: `${stats.summary.winrate}%`,
                 recentPerformanceTrend: ["up", "down", "stable"][
                     Math.floor(Math.random() * 3)
                 ] as "up" | "down" | "stable",
@@ -618,9 +613,9 @@ export class TeamsService implements OnModuleInit {
   async remove(id: string): Promise<Team> {
     const team = await this.prisma.team.findUnique({ where: { id }});
     if (team) {
-       await this.cacheManager.del(`team_slug_${team.slug}`);
-       await this.cacheManager.del("leaderboard_teams_all");
-       await this.cacheManager.del(`leaderboard_teams_${team.game}`);
+       await this.cacheManager.del(generateTeamCacheKey(team.slug));
+       await this.cacheManager.del(generateLeaderboardCacheKey());
+       await this.cacheManager.del(generateLeaderboardCacheKey(team.game));
     }
     return this.prisma.team.delete({ where: { id } });
   }

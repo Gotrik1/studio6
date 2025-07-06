@@ -3,6 +3,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  Inject,
 } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { PrismaService } from "@/prisma/prisma.service";
@@ -17,10 +18,16 @@ import type {
   CoachedPlayer,
 } from "@/entities/user/model/types";
 import { ru } from "date-fns/locale";
+import { Cache } from "cache-manager";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { generateUserCacheKey } from "../cache/cache.utils";
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
     const { name, email, role, password } = createUserDto;
@@ -33,13 +40,11 @@ export class UsersService {
       throw new ConflictException("Пользователь с таким email уже существует");
     }
 
-    // NOTE: In a Keycloak architecture, the user would be created via Keycloak Admin API.
-    // This is a simplified version for the prototype.
     const user = await this.prisma.user.create({
       data: {
         name,
         email,
-        passwordHash: password || "mock_hash", // In a real app, hash the password
+        passwordHash: password || "mock_hash",
         role: role || "PLAYER",
         status: "Активен",
         xp: 0,
@@ -62,6 +67,12 @@ export class UsersService {
   }
 
   async findOne(id: string): Promise<any | null> {
+    const cacheKey = generateUserCacheKey(id);
+    const cachedUser = await this.cacheManager.get<any>(cacheKey);
+    if (cachedUser) {
+      return cachedUser;
+    }
+
     const user = await this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -95,7 +106,6 @@ export class UsersService {
           orderBy: { createdAt: "asc" },
         },
         coaching: {
-          // Fetch players this coach is coaching
           select: {
             id: true,
             name: true,
@@ -218,6 +228,7 @@ export class UsersService {
       profileUrl: `/profiles/player/${user.id}`,
     };
 
+    await this.cacheManager.set(cacheKey, augmentedProfile);
     return augmentedProfile;
   }
 
@@ -245,7 +256,6 @@ export class UsersService {
     });
 
     if (!userWithTeams || userWithTeams.teamsAsMember.length === 0) {
-      // Return default/empty stats if user has no teams
       return {
         winLossData: { wins: 0, losses: 0 },
         kdaByMonthData: [],
@@ -291,8 +301,6 @@ export class UsersService {
     const totalMatches = wins + losses;
     const winrate = totalMatches > 0 ? (wins / totalMatches) * 100 : 0;
 
-    // KDA and Map data are not in our schema, so we return empty arrays.
-    // The frontend should handle this gracefully.
     return {
       winLossData: { wins, losses },
       kdaByMonthData: [],
@@ -301,7 +309,7 @@ export class UsersService {
         matches: totalMatches,
         winrate: parseFloat(winrate.toFixed(1)),
         winStreak,
-        kda: 0, // KDA is not tracked
+        kda: 0,
       },
     };
   }
@@ -313,6 +321,8 @@ export class UsersService {
   }
 
   async remove(id: string) {
+    const cacheKey = generateUserCacheKey(id);
+    await this.cacheManager.del(cacheKey);
     return this.prisma.user.delete({ where: { id } });
   }
 
