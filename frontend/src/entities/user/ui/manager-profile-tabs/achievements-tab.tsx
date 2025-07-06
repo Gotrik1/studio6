@@ -2,10 +2,10 @@
 'use client';
 
 import { Card, CardContent } from "@/shared/ui/card";
-import type { managerAchievements as ManagerAchievementsArray } from "@/shared/lib/mock-data/manager-profile";
+import type { Achievement } from "@/entities/achievement/model/types";
 import { Briefcase, Handshake, Users, DollarSign, FileText, Award } from "lucide-react";
 
-const iconComponents = {
+const iconComponents: { [key: string]: React.ElementType } = {
     FileText,
     Handshake,
     Users,
@@ -13,8 +13,6 @@ const iconComponents = {
     Briefcase,
     Award
 };
-
-type Achievement = (typeof ManagerAchievementsArray)[0];
 
 interface ManagerAchievementsTabProps {
     achievements: Achievement[];

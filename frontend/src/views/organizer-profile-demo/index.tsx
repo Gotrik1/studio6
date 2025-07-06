@@ -1,7 +1,8 @@
+
 import OrganizerClient from "@/app/(app)/administration/organizer/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";
-import { achievements } from "@/shared/lib/mock-data/profiles";
+import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
 
 
 // Use a known organizer ID from the seeded data.
@@ -10,7 +11,10 @@ import { achievements } from "@/shared/lib/mock-data/profiles";
 const DEMO_ORGANIZER_ID = '6'; 
 
 export async function OrganizerProfilePage() {
-    const profileData = await getPlayerProfile(DEMO_ORGANIZER_ID);
+    const [profileData, achievements] = await Promise.all([
+        getPlayerProfile(DEMO_ORGANIZER_ID),
+        getAchievementsForUser(DEMO_ORGANIZER_ID)
+    ]);
 
     if (!profileData) {
         notFound();

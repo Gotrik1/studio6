@@ -2,10 +2,10 @@
 'use client';
 
 import { Card, CardContent } from "@/shared/ui/card";
-import type { moderatorAchievements as ModeratorAchievementsArray } from "@/shared/lib/mock-data/moderator-profile";
+import type { Achievement } from "@/entities/achievement/model/types";
 import { Gavel, Shield, MessageSquareX, UserX, UserCheck, Eye } from "lucide-react";
 
-const iconComponents = {
+const iconComponents: { [key: string]: React.ElementType } = {
     Gavel,
     Shield,
     MessageSquareX,
@@ -13,8 +13,6 @@ const iconComponents = {
     UserCheck,
     Eye,
 };
-
-type Achievement = (typeof ModeratorAchievementsArray)[0];
 
 interface ModeratorAchievementsTabProps {
     achievements: Achievement[];

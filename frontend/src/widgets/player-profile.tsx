@@ -70,7 +70,7 @@ type PlayerProfileProps = {
 export function PlayerProfile({ user, isCurrentUser, achievements, teams, gallery, careerHistory, playerActivity, stats }: PlayerProfileProps) {
   const [avatar, setAvatar] = useState(user.avatar);
   const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
-  const initials = user.name.split(' ').map((n: string) => n[0]).join('');
+  const initials = user.name.split(' ').map((n) => n[0]).join('');
   const rank = getRankByPoints(user.xp || 0);
   const progressValue = rank.maxPoints === Infinity ? 100 : (((user.xp || 0) - rank.minPoints) / (rank.maxPoints - rank.minPoints)) * 100;
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);

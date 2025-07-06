@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, Award, Share2, Copy, Download, Volume2, Mic, Image as ImageIcon } from 'lucide-react';
+import { BrainCircuit, Loader2, AlertCircle, Sparkles, Award, Share2, Copy, Download, Volume2, Mic, Image as ImageIcon, Trophy, Lightbulb } from 'lucide-react';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { generateTournamentSummary, type GenerateTournamentSummaryOutput } from '@/shared/api/genkit/flows/generate-tournament-summary-flow';
 import { generatePostImage, type GeneratePostImageOutput } from '@/shared/api/genkit/flows/generate-post-image-flow';
@@ -144,7 +144,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
             const commentaryData = await generateMatchCommentary({
                 team1Name: mockFinalMatch.team1,
                 team2Name: mockFinalMatch.team2,
-                events: tournament.events || mockEvents,
+                events: mockEvents,
             });
             setCommentaryResult(commentaryData);
         } catch (e) {
@@ -231,7 +231,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                     <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-green-500" /> Ключевой момент</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                     <p className="text-sm text-muted-foreground">{result.keyMoment}</p>
+                                     <p className="text-sm text-muted-foreground">{summaryResult.keyMoment}</p>
                                 </CardContent>
                             </Card>
                              <Card>
@@ -240,12 +240,12 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                 </CardHeader>
                                 <CardContent className="space-y-3">
                                      <div>
-                                        <p className="font-semibold text-sm">{match.team1.name}:</p>
-                                        <p className="text-xs text-muted-foreground">{result.team1Advice}</p>
+                                        <p className="font-semibold text-sm">{mockFinalMatch.team1}:</p>
+                                        <p className="text-xs text-muted-foreground">{summaryResult.team1Advice}</p>
                                      </div>
                                      <div>
-                                        <p className="font-semibold text-sm">{match.team2.name}:</p>
-                                        <p className="text-xs text-muted-foreground">{result.team2Advice}</p>
+                                        <p className="font-semibold text-sm">{mockFinalMatch.team2}:</p>
+                                        <p className="text-xs text-muted-foreground">{summaryResult.team2Advice}</p>
                                      </div>
                                 </CardContent>
                             </Card>

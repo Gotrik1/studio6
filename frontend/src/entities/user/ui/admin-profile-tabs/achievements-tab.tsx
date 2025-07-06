@@ -2,10 +2,10 @@
 'use client';
 
 import { Card, CardContent } from "@/shared/ui/card";
-import type { adminAchievements as AdminAchievementsArray } from "@/shared/lib/mock-data/admin-profile";
+import type { Achievement } from "@/entities/achievement/model/types";
 import { Shield, Server, BarChart3, Users, Gavel, ArrowUpCircle } from "lucide-react";
 
-const iconComponents = {
+const iconComponents: { [key: string]: React.ElementType } = {
     ArrowUpCircle,
     Shield,
     Users,
@@ -13,8 +13,6 @@ const iconComponents = {
     Server,
     BarChart3,
 };
-
-type Achievement = (typeof AdminAchievementsArray)[0];
 
 interface AdminAchievementsTabProps {
     achievements: Achievement[];

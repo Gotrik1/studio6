@@ -68,8 +68,8 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
                             </AccordionTrigger>
                             <AccordionContent>
                                 <div className="space-y-4 pl-4 border-l">
-                                    {groupedMatches[date].sort((a, b) => a.time.localeCompare(b.time)).map(match => (
-                                        <Link href={match.href || '#'} key={match.id} className="block">
+                                    {groupedMatches[date].sort((a: PlayableMatch, b: PlayableMatch) => a.time.localeCompare(b.time)).map((match: PlayableMatch) => (
+                                        <Link href={match.href || '#'} key={match.id as string} className="block">
                                             <div className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors">
                                                  <div className="flex flex-col items-center">
                                                     <Clock className="h-4 w-4 text-muted-foreground" />

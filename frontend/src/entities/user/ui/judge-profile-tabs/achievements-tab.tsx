@@ -2,10 +2,10 @@
 'use client';
 
 import { Card, CardContent } from "@/shared/ui/card";
-import type { judgeAchievements as JudgeAchievementsArray } from "@/shared/lib/mock-data/judge-profile";
+import type { Achievement } from "@/entities/achievement/model/types";
 import { Gavel, Trophy, CalendarDays, Shield, Scale, ClipboardCheck } from "lucide-react";
 
-const iconComponents = {
+const iconComponents: { [key: string]: React.ElementType } = {
     Gavel,
     Trophy,
     CalendarDays,
@@ -13,8 +13,6 @@ const iconComponents = {
     Scale,
     ClipboardCheck,
 };
-
-type Achievement = (typeof JudgeAchievementsArray)[0];
 
 interface JudgeAchievementsTabProps {
     achievements: Achievement[];
