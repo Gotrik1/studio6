@@ -1,8 +1,23 @@
+
 'use server';
 
-import type { SponsorshipScoutInput, SponsorshipScoutOutput } from './schemas/sponsorship-scout-schema';
+// Define types locally
+export type TeamSchema = {
+    slug: string;
+    name: string;
+    logo: string;
+    logoHint: string;
+    game: string;
+    pitch: string;
+    needs: string;
+};
 
-export type { SponsorshipScoutInput, SponsorshipScoutOutput };
+export type SponsorshipScoutInput = string;
+
+export type SponsorshipScoutOutput = {
+    recommendations: TeamSchema[];
+    reasoning: string;
+};
 
 export async function sponsorshipScout(prompt: SponsorshipScoutInput): Promise<SponsorshipScoutOutput> {
     const response = await fetch('/api/ai/sponsorship-scout', {

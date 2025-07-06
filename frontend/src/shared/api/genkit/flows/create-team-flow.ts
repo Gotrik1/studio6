@@ -1,6 +1,15 @@
+
 'use server';
 
-import type { CreateTeamInput, CreateTeamOutput } from './schemas/create-team-schema';
+// Define types locally
+export type CreateTeamInput = {
+  description: string;
+};
+
+export type CreateTeamOutput = {
+  name: string;
+  motto: string;
+};
 
 export async function createTeam(input: CreateTeamInput): Promise<CreateTeamOutput> {
   const response = await fetch('/api/ai/create-team', {

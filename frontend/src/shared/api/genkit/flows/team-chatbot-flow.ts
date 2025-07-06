@@ -1,7 +1,12 @@
+
 'use server';
 
-import type { TeamChatbotInput, TeamChatbotOutput } from './schemas/team-chatbot-schema';
-export type { TeamChatbotInput, TeamChatbotOutput };
+// Define types locally
+export type TeamChatbotInput = {
+  teamId: string;
+  query: string;
+};
+export type TeamChatbotOutput = string;
 
 export async function askTeamChatbot(input: TeamChatbotInput): Promise<TeamChatbotOutput> {
     const response = await fetch('/api/ai/team-chatbot', {

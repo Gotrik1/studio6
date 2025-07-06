@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -12,7 +13,6 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { PlaygroundCard } from '@/widgets/playground-card';
 import type { Playground, KingTeam } from '@/entities/playground/model/types';
-import type { Team } from '@/entities/team/model/types';
 
 export function PlaygroundFinder() {
     const { toast } = useToast();
@@ -38,7 +38,7 @@ export function PlaygroundFinder() {
             const searchResult = await findVenues({ query: prompt });
             setAiSummary(searchResult.summary);
             if (searchResult.suggestedVenues.length > 0) {
-                 setSuggestedPlaygrounds(searchResult.suggestedVenues as Playground[]);
+                 setSuggestedPlaygrounds(searchResult.suggestedVenues);
             } else {
                  setSuggestedPlaygrounds([]);
                  toast({
@@ -107,8 +107,8 @@ export function PlaygroundFinder() {
                             return (
                                  <PlaygroundCard 
                                     key={playground.id} 
-                                    playground={playground as any} // Cast because of slight type differences
-                                    kingTeam={kingTeam as KingTeam | null}
+                                    playground={playground}
+                                    kingTeam={kingTeam}
                                     isLive={isLive}
                                 />
                             )

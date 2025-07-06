@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -12,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Skeleton } from '@/shared/ui/skeleton';
+import type { TeamSchema as SponsorableTeam } from '@/shared/api/genkit/flows/sponsorship-scout-flow';
 
 export function SponsorScout() {
     const { toast } = useToast();
@@ -90,7 +92,7 @@ export function SponsorScout() {
                             <AlertTitle>Обоснование выбора от AI</AlertTitle>
                             <AlertDescription>{result.reasoning}</AlertDescription>
                         </Alert>
-                        {result.recommendations.map((team) => (
+                        {result.recommendations.map((team: SponsorableTeam) => (
                             <Card key={team.slug}>
                                 <CardHeader className="flex-row gap-4 justify-between items-start">
                                 <div className="flex gap-4">

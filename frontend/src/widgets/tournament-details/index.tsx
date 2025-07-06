@@ -93,7 +93,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                             <Card>
                                 <CardHeader><CardTitle>Организатор</CardTitle></CardHeader>
                                 <CardContent className="flex items-center gap-3">
-                                    <Avatar><AvatarImage src={tournament.organizer.avatar || ''} /></Avatar>
+                                    <Avatar><AvatarImage src={tournament.organizer.avatar || undefined} /></Avatar>
                                     <p className="font-semibold">{tournament.organizer.name}</p>
                                 </CardContent>
                                 <CardContent><Button className="w-full">Связаться</Button></CardContent>
@@ -122,7 +122,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                             {tournament.teams.map(team => (
                                 <div key={team.name} className="flex flex-col items-center gap-2 text-center">
                                     <Avatar className="h-16 w-16">
-                                        <AvatarImage src={team.logo || ''} data-ai-hint={team.dataAiHint || ''} />
+                                        <AvatarImage src={team.logo || undefined} data-ai-hint={team.dataAiHint || ''} />
                                         <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <p className="text-sm font-medium">{team.name}</p>
@@ -147,7 +147,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                  </TabsContent>
 
                  <TabsContent value="media" className="mt-4">
-                    <MediaTab media={tournament.media.map(m => ({ ...m, hint: m.hint || ''})) || []} />
+                    <MediaTab media={tournament.media.map(m => ({ ...m, hint: m.hint || ''}))} />
                 </TabsContent>
             </Tabs>
         </div>

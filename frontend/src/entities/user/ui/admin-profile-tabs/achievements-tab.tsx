@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Card, CardContent } from "@/shared/ui/card";
@@ -40,3 +41,4 @@ export function AdminAchievementsTab({ achievements }: AdminAchievementsTabProps
         </Card>
     );
 }
+

@@ -53,7 +53,7 @@ export function WelcomePage({ initialSuggestions }: WelcomePageProps) {
                 <CardContent className="space-y-4">
                     <h3 className="font-semibold">Ваши первые квесты:</h3>
                      {suggestions.map((quest: OnboardingSuggestion) => {
-                        const Icon = iconMap[quest.icon] || LucideIcons.HelpCircle;
+                        const Icon = iconMap[quest.icon as keyof typeof iconMap] || LucideIcons.HelpCircle;
                         return (
                              <Link href={quest.href} key={quest.title} className="block">
                                 <Card className="hover:bg-muted/50 transition-colors">

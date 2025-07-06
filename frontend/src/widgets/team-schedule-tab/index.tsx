@@ -6,7 +6,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Calendar, PlusCircle, MapPin, Trash2 } from 'lucide-react';
-import { SchedulePracticeDialog, type FormValues } from '@/widgets/schedule-practice-dialog';
+import { SchedulePracticeDialog } from '@/widgets/schedule-practice-dialog';
+import type { FormValues as SchedulePracticeFormValues } from '@/widgets/schedule-practice-dialog';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { getTeamPractices, createTeamPractice } from '@/entities/team/api/practices';
@@ -56,7 +57,7 @@ export function TeamScheduleTab() {
         }
     }, [teamId, fetchPractices]);
 
-    const handleSchedule = async (data: FormValues) => {
+    const handleSchedule = async (data: SchedulePracticeFormValues) => {
         const [hours, minutes] = data.time.split(':').map(Number);
         const combinedDate = new Date(data.date);
         combinedDate.setHours(hours, minutes, 0, 0);

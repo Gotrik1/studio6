@@ -1,10 +1,11 @@
+
 'use server';
 
-import type { z } from 'zod';
-import type { TextToSpeechInputSchema, TextToSpeechOutputSchema } from './schemas/tts-schema';
-
-export type TextToSpeechInput = z.infer<typeof TextToSpeechInputSchema>;
-export type TextToSpeechOutput = z.infer<typeof TextToSpeechOutputSchema>;
+// Define types locally
+export type TextToSpeechInput = string;
+export type TextToSpeechOutput = {
+    audioDataUri: string;
+};
 
 export async function textToSpeech(text: TextToSpeechInput): Promise<TextToSpeechOutput> {
   const response = await fetch('/api/ai/text-to-speech', {

@@ -1,10 +1,12 @@
+
 'use server';
 
-import type { z } from 'zod';
-import type { MultiSpeakerTtsInputSchema, MultiSpeakerTtsOutputSchema } from './schemas/multi-speaker-tts-schema';
+// Define types locally
+export type MultiSpeakerTtsInput = string;
 
-export type MultiSpeakerTtsInput = z.infer<typeof MultiSpeakerTtsInputSchema>;
-export type MultiSpeakerTtsOutput = z.infer<typeof MultiSpeakerTtsOutputSchema>;
+export type MultiSpeakerTtsOutput = {
+    audioDataUri: string;
+};
 
 export async function multiSpeakerTts(script: MultiSpeakerTtsInput): Promise<MultiSpeakerTtsOutput> {
   const response = await fetch('/api/ai/multi-speaker-tts', {

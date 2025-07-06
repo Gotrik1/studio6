@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -9,7 +10,7 @@ import type { FetchResult } from '@/shared/lib/api-client';
 
 interface MeasurementsContextType {
   history: Measurement[];
-  addMeasurement: (data: Omit<Measurement, 'id'>) => Promise<FetchResult<any>>;
+  addMeasurement: (data: Omit<Measurement, 'id' | 'date'> & { date: string }) => Promise<FetchResult<any>>;
   isLoading: boolean;
 }
 
@@ -36,7 +37,7 @@ export const MeasurementsProvider = ({ children }: { children: React.ReactNode }
         loadMeasurements();
     }, [loadMeasurements]);
 
-    const addMeasurement = async (data: Omit<Measurement, 'id'>) => {
+    const addMeasurement = async (data: Omit<Measurement, 'id' | 'date'> & { date: string }) => {
         const result = await createMeasurement(data);
         if (result.success) {
             await loadMeasurements(); // Refetch to get the latest data
@@ -60,3 +61,4 @@ export const useMeasurements = () => {
     }
     return context;
 };
+

@@ -1,9 +1,20 @@
+
 'use server';
 
-import type { GenerateMatchPostInput, GenerateMatchPostOutput } from './schemas/generate-match-post-schema';
-export type { GenerateMatchPostInput, GenerateMatchPostOutput };
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
+// Define types locally
+export type GenerateMatchPostInput = {
+    winningTeam: string;
+    losingTeam: string;
+    score: string;
+    matchSummary: string;
+};
+
+export type GenerateMatchPostOutput = {
+  postText: string;
+  imageDataUri: string;
+};
 
 export async function generateMatchPost(input: GenerateMatchPostInput): Promise<GenerateMatchPostOutput> {
   const result = await fetchWithAuth('/ai/generate-match-post', {

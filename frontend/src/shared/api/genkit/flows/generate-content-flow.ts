@@ -1,10 +1,16 @@
+
 'use server';
 
-import type { z } from 'zod';
-import type { GenerateContentInputSchema, GenerateContentOutputSchema } from './schemas/generate-content-schema';
+// Define types locally
+export type GenerateContentInput = {
+  topic: string;
+  tone: string;
+  contentType: string;
+};
 
-export type GenerateContentInput = z.infer<typeof GenerateContentInputSchema>;
-export type GenerateContentOutput = z.infer<typeof GenerateContentOutputSchema>;
+export type GenerateContentOutput = {
+  generatedText: string;
+};
 
 export async function generateContent(input: GenerateContentInput): Promise<GenerateContentOutput> {
   const response = await fetch('/api/ai/generate-content', {

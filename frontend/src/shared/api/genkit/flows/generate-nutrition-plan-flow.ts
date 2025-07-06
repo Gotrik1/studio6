@@ -1,9 +1,30 @@
+
 'use server';
 
-import type { GenerateNutritionPlanInput, GenerateNutritionPlanOutput } from './schemas/generate-nutrition-plan-schema';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
-export type { GenerateNutritionPlanInput, GenerateNutritionPlanOutput };
+// Define types locally
+export type GenerateNutritionPlanInput = {
+  goal: 'Набор массы' | 'Снижение веса' | 'Поддержание веса';
+  activityLevel: 'Низкий' | 'Средний' | 'Высокий';
+  dietaryPreferences?: string;
+};
+
+export type Meal = {
+  mealName: string;
+  description: string;
+  calories: number;
+};
+
+export type GenerateNutritionPlanOutput = {
+  dailyCalories: number;
+  macronutrients: {
+    protein: number;
+    fat: number;
+    carbs: number;
+  };
+  mealPlan: Meal[];
+};
 
 export async function generateNutritionPlan(input: GenerateNutritionPlanInput): Promise<GenerateNutritionPlanOutput> {
   const result = await fetchWithAuth('/ai/generate-nutrition-plan', {

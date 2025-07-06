@@ -1,8 +1,25 @@
+
 'use server';
 
-import type { PredictMatchOutcomeInput, PredictMatchOutcomeOutput } from './schemas/predict-match-outcome-schema';
+// Define types locally
+export type TeamStats = {
+  name: string;
+  winRate: string;
+  recentForm: string;
+};
 
-export type { PredictMatchOutcomeInput, PredictMatchOutcomeOutput };
+export type PredictMatchOutcomeInput = {
+  team1: TeamStats;
+  team2: TeamStats;
+  headToHead?: string;
+  matchContext?: string;
+};
+
+export type PredictMatchOutcomeOutput = {
+  predictedWinner: string;
+  confidence: 'high' | 'medium' | 'low';
+  reasoning: string;
+};
 
 export async function predictMatchOutcome(input: PredictMatchOutcomeInput): Promise<PredictMatchOutcomeOutput> {
   const response = await fetch('/api/ai/predict-match-outcome', {

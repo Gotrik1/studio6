@@ -1,7 +1,11 @@
+
 'use server';
 
-import type { SupportChatbotInput, SupportChatbotOutput } from './schemas/support-chatbot-schema';
-export type { SupportChatbotInput, SupportChatbotOutput };
+// Define types locally
+export type SupportChatbotInput = string;
+export type SupportChatbotOutput = {
+  answer: string;
+};
 
 export async function askSupportChatbot(query: SupportChatbotInput): Promise<SupportChatbotOutput> {
     const response = await fetch('/api/ai/support-chatbot', {

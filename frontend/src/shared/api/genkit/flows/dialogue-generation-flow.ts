@@ -1,10 +1,12 @@
+
 'use server';
 
-import type { z } from 'zod';
-import type { GenerateDialogueInputSchema, GenerateDialogueOutputSchema } from './schemas/dialogue-generation-schema';
+// Define types locally
+export type GenerateDialogueInput = string;
 
-export type GenerateDialogueInput = z.infer<typeof GenerateDialogueInputSchema>;
-export type GenerateDialogueOutput = z.infer<typeof GenerateDialogueOutputSchema>;
+export type GenerateDialogueOutput = {
+  dialogue: string;
+};
 
 
 export async function generateDialogue(topic: GenerateDialogueInput): Promise<GenerateDialogueOutput> {

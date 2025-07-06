@@ -1,10 +1,20 @@
+
 'use server';
 
-import type { z } from 'zod';
-import type { AnalyzeDisputeInputSchema, AnalyzeDisputeOutputSchema } from './schemas/analyze-dispute-schema';
+// Define types locally
+export type AnalyzeDisputeInput = {
+  team1Name: string;
+  team2Name: string;
+  disputeReason: string;
+  team1Evidence: string;
+  team2Evidence: string;
+};
 
-export type AnalyzeDisputeInput = z.infer<typeof AnalyzeDisputeInputSchema>;
-export type AnalyzeDisputeOutput = z.infer<typeof AnalyzeDisputeOutputSchema>;
+export type AnalyzeDisputeOutput = {
+  recommendation: string;
+  confidence: 'high' | 'medium' | 'low';
+  reasoning: string;
+};
 
 export async function analyzeDispute(input: AnalyzeDisputeInput): Promise<AnalyzeDisputeOutput> {
     const response = await fetch('/api/ai/analyze-dispute', {

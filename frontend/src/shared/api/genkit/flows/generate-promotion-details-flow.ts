@@ -1,6 +1,16 @@
+
 'use server';
 
-import type { GeneratePromotionDetailsInput, GeneratePromotionDetailsOutput } from './schemas/generate-promotion-details-schema';
+// Define types locally
+export type GeneratePromotionDetailsInput = {
+  prompt: string;
+};
+
+export type GeneratePromotionDetailsOutput = {
+  name: string;
+  description: string;
+  prize: string;
+};
 
 export async function generatePromotionDetails(input: GeneratePromotionDetailsInput): Promise<GeneratePromotionDetailsOutput> {
   const response = await fetch('/api/ai/generate-promotion-details', {

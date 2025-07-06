@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, Award, Share2, Copy, Download, Volume2, Mic, Image as ImageIcon, Trophy, Lightbulb } from 'lucide-react';
+import { BrainCircuit, Loader2, AlertCircle, Sparkles, Award, Share2, Copy, Download, Volume2, Mic, Image as ImageIcon, Lightbulb, Trophy } from 'lucide-react';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { generateTournamentSummary, type GenerateTournamentSummaryOutput } from '@/shared/api/genkit/flows/generate-tournament-summary-flow';
 import { generatePostImage, type GeneratePostImageOutput } from '@/shared/api/genkit/flows/generate-post-image-flow';
@@ -216,46 +216,20 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                 <Button variant="ghost" size="sm" onClick={() => handleCopyText(summaryResult.summaryArticle)} className="mt-2"><Copy className="mr-2 h-4 w-4"/>Копировать</Button>
                             </CardContent>
                         </Card>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><Award className="text-amber-500" /> MVP Турнира</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-2">
-                                     <p className="font-bold text-lg">{summaryResult.mvp.name}</p>
-                                     <p className="text-sm text-muted-foreground">{summaryResult.mvp.reason}</p>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-green-500" /> Ключевой момент</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                     <p className="text-sm text-muted-foreground">{summaryResult.keyMoment}</p>
-                                </CardContent>
-                            </Card>
-                             <Card>
-                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><Lightbulb className="h-5 w-5 text-blue-500" /> Советы командам</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                     <div>
-                                        <p className="font-semibold text-sm">{mockFinalMatch.team1}:</p>
-                                        <p className="text-xs text-muted-foreground">{summaryResult.team1Advice}</p>
-                                     </div>
-                                     <div>
-                                        <p className="font-semibold text-sm">{mockFinalMatch.team2}:</p>
-                                        <p className="text-xs text-muted-foreground">{summaryResult.team2Advice}</p>
-                                     </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                        <div className="text-center">
-                            <Button variant="outline" onClick={handleGenerate}>
-                                <Sparkles className="mr-2 h-4 w-4" />
-                                Сгенерировать заново
-                            </Button>
-                        </div>
+                         <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><ImageIcon className="h-5 w-5 text-green-500" /> Изображения</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {images.map((img, index) => (
+                                        <div key={index} className="relative aspect-square">
+                                            <NextImage src={img.imageDataUri} alt={`Сгенерированное изображение ${index + 1}`} fill className="object-cover rounded-md" />
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
                         
                         <Card className="bg-background">
                             <CardHeader>
@@ -347,38 +321,9 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                 )}
                             </CardContent>
                         </Card>
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Сгенерированные изображения</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {images.map((img, index) => (
-                                        <div key={index} className="relative aspect-square">
-                                            <NextImage src={img.imageDataUri} alt={`Сгенерированное изображение ${index + 1}`} fill className="object-cover rounded-md" />
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
                     </div>
                 )}
             </CardContent>
-            <CardFooter>
-                 <Card className="w-full">
-                    <CardHeader><CardTitle>Галерея турнира</CardTitle></CardHeader>
-                    <CardContent>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                           {tournament.media?.map(media => (
-                               <div key={media.id} className="relative aspect-square">
-                                    <NextImage src={media.src} alt={media.description || 'media'} fill className="object-cover rounded-md" />
-                                </div>
-                           ))}
-                           {tournament.media?.length === 0 && <p className="text-sm text-muted-foreground col-span-full">В галерее пока пусто.</p>}
-                        </div>
-                    </CardContent>
-                 </Card>
-            </CardFooter>
         </Card>
     );
 }

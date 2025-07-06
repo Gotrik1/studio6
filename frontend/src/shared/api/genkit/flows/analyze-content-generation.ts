@@ -1,10 +1,17 @@
+
 'use server';
 
-import type { z } from 'zod';
-import type { AnalyzeContentInputSchema, AnalyzeContentOutputSchema } from './schemas/analyze-content-generation-schema';
+// Define types locally to decouple from backend schemas.
+export type AnalyzeContentInput = {
+  content: string;
+  contentType: string;
+};
 
-export type AnalyzeContentInput = z.infer<typeof AnalyzeContentInputSchema>;
-export type AnalyzeContentOutput = z.infer<typeof AnalyzeContentOutputSchema>;
+export type AnalyzeContentOutput = {
+  sentiment: string;
+  keyTopics: string[];
+  suggestedImprovements: string;
+};
 
 export async function analyzeContent(input: AnalyzeContentInput): Promise<AnalyzeContentOutput> {
   const response = await fetch('/api/ai/analyze-content', {
