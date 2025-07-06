@@ -20,6 +20,8 @@ export async function generatePlaygroundLore(input: GeneratePlaygroundLoreInput)
   });
   
   if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`Backend API error on generatePlaygroundLore: ${errorText}`);
     throw new Error(`Backend API responded with status: ${response.status}`);
   }
   
