@@ -10,13 +10,13 @@
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id` | `String` | `string` | `string` | ✔ | Везде строка. |
-| `email` | `String` | `string` | `string` | ✔ |  |
-| `name` | `String` | `string` | `string` | ✔ |  |
+| `email` | `String` | `string` | `string` | ✔ | |
+| `name` | `String` | `string` | `string` | ✔ | |
 | `passwordHash` | `String` | — | — | ✔ | Не передается на фронтенд. |
-| `avatar` | `String?` | `string \| null` | `string \| null` | ✔ |  |
-| `xp` | `Int` | `number` | `number` | ✔ |  |
-| `role` | `String` | `string` | `string` | ✔ |  |
-| `status` | `String` | `string` | `string` | ✔ |  |
+| `avatar` | `String?` | `string \| null` | `string \| null` | ✔ | |
+| `xp` | `Int` | `number` | `number` | ✔ | |
+| `role` | `String` | `string` | `string` | ✔ | |
+| `status` | `String` | `string` | `string` | ✔ | |
 | `...relations` | `Model[]` | `LiteModel[]` | `LiteModel[]` | ⚠ | **Правильное расхождение.** Бэкенд формирует DTO, отдавая только нужные данные. |
 
 ---
@@ -34,7 +34,9 @@
 ---
 
 ## 3. Gallery
-*Эта модель не существует в Prisma. Это фронтенд-тип для демо-данных. В реальном приложении это была бы модель `MediaItem` со связью с `User`.*
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| - | — | — | `GalleryItem` | ⚠ | *Эта модель не существует в Prisma. Это фронтенд-тип для демо-данных. В реальном приложении это была бы модель `MediaItem` со связью с `User`.* |
 
 ---
 
@@ -64,19 +66,19 @@
 ## 6. Team
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id`, `name`, `slug`, `game` | `String` | `string` | `string` | ✔ |  |
+| `id`, `name`, `slug`, `game` | `String` | `string` | `string` | ✔ | |
 | `logo`, `motto`, `description` | `String?` | `string` | `string` | ✔ | На фронтенде и DTO пустые значения заменяются на дефолтные. |
 | `captain` | `User` | `string` (captainId) | `string` (captainId) | ✔ | Передается только ID, а не полный объект. |
 | `members` | `User[]` | `number` или `TeamRosterMember[]` | `TeamRosterMember[]` | ⚠ | **Правильное расхождение.** Для списка команд отдается `_count`, для деталей - `TeamRosterMember[]`. |
-| `wins`, `losses`, `draws` | `Int` | `number` | `number` | ✔ |  |
+| `wins`, `losses`, `draws` | `Int` | `number` | `number` | ✔ | |
 
 ---
 
 ## 7. TeamPractice
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id`, `title`, `description` | `String` | `string` | `string` | ✔ |  |
-| `date` | `DateTime` | `Date` (или `string`) | `Date` | ✔ |  |
+| `id`, `title`, `description` | `String` | `string` | `string` | ✔ | |
+| `date` | `DateTime` | `Date` (или `string`) | `Date` | ✔ | |
 | `team`, `playground` | `Team`, `Playground` | `lite-объект` | `string` (в `location`) | ⚠ | На фронте отображается только имя площадки, а не полный объект. |
 
 ---
@@ -84,21 +86,21 @@
 ## 8. Tournament
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id`, `name`, `slug`, `game` | `String` | `string` | `string` | ✔ |  |
-| `status`, `format`, `type` | `enum` | `string` | `string` | ✔ |  |
-| `prizePool` | `String?` | `string` | `string` | ✔ |  |
+| `id`, `name`, `slug`, `game` | `String` | `string` | `string` | ✔ | |
+| `status`, `format`, `type` | `enum` | `string` | `string` | ✔ | |
+| `prizePool` | `String?` | `string` | `string` | ✔ | |
 | `teams` | `Team[]` | `LiteTeam[]` | `LiteTeam[]` | ✔ | DTO с облегченными данными о командах. |
-| `matches` | `Match[]` | `LiteMatch[]` | `BracketMatch[]` | ✔ |  |
-| `organizer` | `User` | `LiteUser` | `LiteUser` | ✔ |  |
-| `media` | `TournamentMedia[]` | `MediaItem[]` | `MediaItem[]` | ✔ |  |
+| `matches` | `Match[]` | `LiteMatch[]` | `BracketMatch[]` | ✔ | |
+| `organizer` | `User` | `LiteUser` | `LiteUser` | ✔ | |
+| `media` | `TournamentMedia[]` | `MediaItem[]` | `MediaItem[]` | ✔ | |
 
 ---
 
 ## 9. TournamentMedia
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id`, `src`, `description`, `hint`| `String` | `string` | `string` | ✔ |  |
-| `type` | `MediaType` (enum)| `string` | `string` | ✔ |  |
+| `id`, `src`, `description`, `hint`| `String` | `string` | `string` | ✔ | |
+| `type` | `MediaType` (enum)| `string` | `string` | ✔ | |
 | `tournament` | `Tournament` | - | - | ✔ | Связь, не передается на фронт. |
 
 ---
@@ -125,29 +127,40 @@
 
 ---
 
-## 12. Chat & Message
-| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `Chat.id`| `String` | `string` | `string` | ✔ | |
-| `Chat.participants` | `User[]` | `LiteUser[]` | `ChatContact` | ⚠ | Бэкенд отдает lite-объект другого участника. |
-| `Message.id`| `String` | `string` | `string` | ✔ | |
-| `Message.author`| `User` | `LiteUser` | `ChatMessage['author']` | ✔ | |
-| `Message.content`| `String` | `string` | `text` | ⚠ | Поле переименовано на фронте. |
-
----
-
-## 13. Notification
+## 12. Chat
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id`| `String` | `string` | `string` | ✔ | |
-| `user` | `User` | - | - | ✔ | Связь, не отдается. |
+| `participants` | `User[]` | `LiteUser[]` | `ChatContact` | ⚠ | DTO агрегируется в тип `ChatContact`. |
+| `messages` | `Message[]`| `LiteMessage` (last one) | `lastMessage: string`| ⚠| На фронт передается только последнее сообщение в виде строки.|
+| `name`| `String?`| `string?` | `name: string`| ✔ | |
+| `type`| `ChatType`| `string`| `string`| ✔ | `enum` на бэке. |
+
+---
+
+## 13. Message
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `String` | `string` | `string` | ✔ | |
+| `author` | `User` | `LiteUser` | `ChatMessage['author']` | ✔ | DTO с lite-объектом пользователя. |
+| `chat` | `Chat` | - | - | ✔ | Связь, не отдается на фронт. |
+| `content` | `String` | `string` | `text` | ⚠ | На фронте поле называется `text` для универсальности. |
+| `createdAt`| `DateTime` | `Date` (или `string`) | `string`| ✔ | |
+
+---
+
+## 14. Notification
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`| `String` | `string` | `string` | ✔ | |
+| `user` | `User` | — | — | ✔ | Связь, не отдается. |
 | `type` | `NotificationType` (enum) | `string` | `string` | ✔ | |
 | `message`, `href` | `String` | `string` | `string` | ✔ | |
 | `isRead`| `Boolean`| `boolean`| `boolean` | ✔ | |
 
 ---
 
-## 14. Promotion
+## 15. Promotion
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id`, `name`, `description`, `prize`, `cost`| `String` | `string` | `string` | ✔ | |
@@ -156,7 +169,7 @@
 
 ---
 
-## 15. Sponsor
+## 16. Sponsor
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id`, `name`, `description`, `profileUrl` | `String` | `string` | `string` | ✔ | |
@@ -165,16 +178,41 @@
 
 ---
 
-## 16. Playground & PlaygroundReview & PlaygroundReport
+## 17. Playground
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `Playground` | `Playground` | `Playground` | `Playground` | ✔ | Полная модель с lite-связями. |
-| `PlaygroundReview` | `PlaygroundReview` | `LiteReview` | `PlaygroundReview` | ✔ | DTO с облегченными данными. |
-| `PlaygroundReport` | `PlaygroundReport`| `PlaygroundReport`| `PlaygroundConditionReport`| ⚠ | На фронт отдается только сводка. |
+| `id` | `String` | `string` | `string` | ✔ | |
+| `name`, `address`| `String` | `string` | `string` | ✔ | |
+| `type`, `surface`| `String` | `string` | `string` | ✔ | |
+| `features` | `String[]` | `string[]` | `string[]` | ✔ | |
+| `status` | `PlaygroundStatus`| `string` | `string` | ✔ | |
+| `creator`| `User` | `LiteUser` | `LiteUser` | ✔ | DTO с lite-объектом пользователя. |
 
 ---
 
-## 17. Report
+## 18. PlaygroundReview
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `String` | `string` | `string` | ✔ | |
+| `author` | `User` | `LiteUser` | `LiteUser` | ✔ | |
+| `playground` | `Playground` | — | — | ✔ | Связь, не отдается на фронт. |
+| `rating` | `Int` | `number` | `number` | ✔ | |
+| `comment` | `String`| `string` | `string` | ✔ | |
+
+---
+
+## 19. PlaygroundReport
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`| `String` | `string` | `string` | ✔ | |
+| `playground`| `Playground`| — | — | ✔ | Связь, не отдается. |
+| `reporter`| `User` | — | — | ✔ | Связь, не отдается. |
+| `category`, `comment`, `summary` | `String` | `string` | `string` | ✔ | |
+| `severity`, `status`| `String` | `string` | `string` | ✔ | |
+
+---
+
+## 20. Report
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `reporter`, `reportedUser`, `resolver` | `User` | `LiteUser` | `LiteUser` | ✔ | DTO с облегченными данными. |
@@ -183,24 +221,43 @@
 
 ---
 
-## 18. TeamApplication
+## 21. TeamApplication
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `team`, `user` | `Team`, `User` | `LiteTeam`, `LiteUser` | `JoinRequest` | ⚠ | DTO агрегируется в тип `JoinRequest`. |
+| `team`, `user` | `Team`, `User` | `LiteTeam`, `LiteUser` | `JoinRequest` | ⚠ | DTO агрегируется в тип `JoinRequest`, поле `user` становится `applicant`. |
 | `status` | `TeamApplicationStatus` (enum) | `string` | `string` | ✔ | |
+| `message`| `String?`| `string?` | `string` | ✔ | |
 
 ---
 
-## 19. Challenge & Sport & MedicalPartner
+## 22. Challenge
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `Challenge` | `Challenge` | `Challenge` | `Challenge` | ✔ | Все поля, включая lite-связи `creator`, `opponent`, совпадают. |
-| `Sport` | `Sport` | `Sport` | `Sport` | ✔ | Простая консистентная модель. |
-| `MedicalPartner` | `MedicalPartner` | `MedicalPartner` | `MedicalPartner` | ✔ | Простая консистентная модель. |
+| `id`, `title`, `description` | `String` | `string` | `string` | ✔ | |
+| `creator`, `opponent` | `User` | `ChallengeCreator` | `ChallengeCreator` | ✔ | DTO с lite-объектом пользователя. |
+| `discipline` | `Sport` | `string` | `string` | ⚠ | На фронт передается только название дисциплины. |
+| `status` | `ChallengeStatus`| `string` | `string` | ✔ | |
+| `wager` | `Int`| `number`| `number`| ✔ | |
 
 ---
 
-## 20. LfgLobby
+## 23. Sport
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`, `name`, `icon` | `String` | `string` | `string` | ✔ | |
+| `category` | `String` | `string` | `string` | ✔ | |
+
+---
+
+## 24. MedicalPartner
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`, `name`, `specialization`, `contact` | `String` | `string` | `string` | ✔ | |
+| `avatar`, `avatarHint`| `String?` | `string?` | `string?` | ✔ | |
+
+---
+
+## 25. LfgLobby
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `creator` | `User` | `LiteUser` | `LiteUser` | ✔ | |
@@ -209,25 +266,69 @@
 
 ---
 
-## 21. TrainingProgram & WorkoutDay & WorkoutExercise
+## 26. TrainingProgram
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `TrainingProgram`| `TrainingProgram` | `TrainingProgram` | `TrainingProgram` | ✔ | Полностью совпадает. Структура в основном контентная. |
-| `WorkoutDay`| `WorkoutDay` | `WorkoutDay` | `WorkoutDay` | ✔ | |
-| `WorkoutExercise`| `WorkoutExercise` | `ExerciseDetail` | `ExerciseDetail` | ✔ | |
+| `id`, `name`, `description` | `String` | `string` | `string` | ✔ | |
+| `goal`, `splitType`| `String` | `string` | `string` | ✔ | В будущем можно заменить на `enum`. |
+| `daysPerWeek`| `Int` | `number` | `number` | ✔ | |
+| `weeklySplit` | `WorkoutDay[]`| `WorkoutDay[]` | `WorkoutDay[]` | ✔ | Полная вложенная структура передается как есть. |
 
 ---
 
-## 22. TrainingLog & LoggedExercise & LoggedSet
+## 27. WorkoutDay
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `TrainingLog` | `TrainingLog` | `TrainingLog` | `TrainingLogEntry` | ✔ | Структура полностью нормализована и консистентна. |
-| `LoggedExercise` | `LoggedExercise` | `LoggedExercise` | `ExerciseLog` | ✔ | |
-| `LoggedSet` | `LoggedSet` | `LoggedSet` | `LoggedSet` | ✔ | |
+| `id`, `day`, `title` | `String`/`Int`| `string`/`number` | `string`/`number` | ✔ | |
+| `exercises`| `WorkoutExercise[]`|`ExerciseDetail[]`|`ExerciseDetail[]`| ⚠ | Название типа отличается, но структура совпадает. |
+| `program` | `TrainingProgram`| — | — | ✔ | Связь не передается. |
 
 ---
 
-## 23. Exercise
+## 28. WorkoutExercise
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`, `name`, `sets`, `reps`| `String` | `string` | `string` | ✔ | |
+| `plannedWeight`, `technique` | `String?` | `string?` | `string?` | ✔ | |
+| `isSupersetWithPrevious`| `Boolean` | `boolean` | `boolean` | ✔ | |
+
+---
+
+## 29. TrainingLog
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `String` | `string` | `string` | ✔ | |
+| `user` | `User` | — | — | ✔ | Связь не передается. |
+| `date` | `DateTime` | `Date` | `string` | ✔ | |
+| `status`| `TrainingLogStatus` | `string` | `string` | ✔ | |
+| `mood`| `Mood?` | `string?` | `string?` | ✔ | |
+| `notes`| `String?` | `string?` | `string?` | ✔ | |
+
+---
+
+## 30. LoggedExercise
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id` | `String` | `string` | `string` | ✔ | |
+| `trainingLog`| `TrainingLog`| — | — | ✔ | Связь не передается. |
+| `exercise`| `Exercise` | `Exercise` | `Exercise` | ✔ | Полный объект упражнения. |
+| `sets` | `LoggedSet[]` | `LoggedSet[]` | `LoggedSet[]` | ✔ | |
+
+---
+
+## 31. LoggedSet
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`| `String` | `string` | `string` | ✔ | |
+| `loggedExercise`| `LoggedExercise`| — | — | ✔ | Связь не передается. |
+| `plannedReps`| `String?` | `string?`| `string?`| ✔ | |
+| `plannedWeight`|`String?` | `string?`| `string?`| ✔ | |
+| `loggedReps`, `loggedWeight`, `rpe` | `Int?` | `number?`| `number?`| ✔ | |
+| `isCompleted` | `Boolean` | `boolean`| `boolean`| ✔ | |
+
+---
+
+## 32. Exercise
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id`, `name`, `description`, `category`, `equipment`| `String` | `string` | `string` | ✔ | |
@@ -235,55 +336,146 @@
 
 ---
 
-## 24. InventoryItem & StoreItem & FaqItem
+## 33. InventoryItem
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `InventoryItem` | `InventoryItem` | `InventoryItem` | `InventoryItem` | ✔ | Консистентная модель. |
-| `StoreItem` | `StoreItem` | `StoreItem` | `StoreItem` | ✔ | Консистентная модель. |
-| `FaqItem` | `FaqItem` | `FaqQuestion` | `FaqQuestion` | ⚠ | Бэкенд агрегирует в `FaqCategory`. |
+| `id`, `name`, `category`, `type`| `String` | `string`| `string` | ✔ | |
+| `purchaseDate` | `DateTime` | `Date`| `string`| ✔ | |
+| `lifespanMonths` | `Int` | `number`| `number`| ✔ | |
 
 ---
 
-## 25. FoodItem & FoodLogEntry & Measurement
+## 34. StoreItem
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `FoodItem` | `FoodItem` | `FoodItem` | `FoodItem` | ✔ | Консистентная модель. |
-| `FoodLogEntry` | `FoodLogEntry` | `FoodLogEntry` | `FoodLogEntry` | ✔ | |
-| `Measurement` | `Measurement` | `Measurement` | `Measurement` | ✔ | |
+| `id`, `name`, `description`| `String`| `string`| `string`| ✔ | |
+| `price` | `Float` | `number` | `number` | ✔ | |
+| `category` | `String`| `string`| `string`| ✔ | |
+| `isRealMoney` | `Boolean`| `boolean`| `boolean`| ✔ | |
 
 ---
 
-## 26. TrainingProposal & Quest
+## 35. FaqItem
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `TrainingProposal` | `TrainingProposal` | `TrainingProposal` | `TrainingProposal` | ✔ | Lite-связи `from`, `to`, `program`. |
-| `Quest` | `Quest` | `Quest` | `Quest` | ✔ | `type` - enum. На фронт добавляется моковое поле `progress`. |
+| `id`, `category`, `question`, `answer` | `String` | `string` | `string` | ⚠ | На фронтенде DTO агрегируется в `FaqCategory`. |
 
 ---
 
-## 27. Poll & PollOption & PollVote
+## 36. FoodItem
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `Poll` | `Poll` | `Poll` | `Poll` | ✔ | DTO агрегирует `_count` для голосов. |
-| `PollOption` | `PollOption` | `PollOption` | `PollOption` | ✔ | |
-| `PollVote` | `PollVote` | — | — | ✔ | Сущность голосования скрыта от фронтенда. |
+| `id`, `name`, `category` | `String` | `string` | `string` | ✔ | |
+| `calories`, `protein`, `fat`, `carbs` | `Float`| `number` | `number` | ✔ | |
+| `description` | `String?`| `string?` | `string?` | ✔ | |
+
+---
+
+## 37. FoodLogEntry
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`| `String` | `string` | `string` | ✔ | |
+| `foodItem` | `FoodItem` | `FoodItem` | `FoodItem` | ✔ | Полная информация о продукте. |
+| `user` | `User` | — | — | ✔ | Связь, не отдается. |
+| `grams`| `Int`| `number`| `number`| ✔ | |
+| `meal` | `String`| `string`| `MealType` (enum)| ✔ | На фронте есть `enum` для удобства. |
+
+---
+
+## 38. Measurement
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`| `String` | `string` | `string` | ✔ | |
+| `user`| `User` | — | — | ✔ | Связь не отдается. |
+| `date`| `DateTime` | `Date` | `string` | ✔ | |
+| `weight`| `Float`| `number` | `number` | ✔ | |
+| `bodyFat`, `chest`, `waist`, `hips`, `biceps`, `thigh` | `Float?` | `number?`| `number?`| ✔ | |
+
+---
+
+## 39. TrainingProposal
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`, `sport`, `comment` | `String`| `string` | `string` | ✔ | |
+| `from`, `to`| `User` | `LiteUser` | `LiteUser` | ✔ | DTO с lite-объектом пользователя. |
+| `program` | `TrainingProgram?`| `LiteProgram?` | `LiteProgram?` | ✔ | |
+| `status` | `TrainingProposalStatus` (enum) | `string` | `string` | ✔ | |
+
+---
+
+## 40. Quest
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`, `title`, `description` | `String` | `string` | `string` | ✔ | |
+| `reward`, `goal` | `Int` | `number` | `number` | ✔ | |
+| `href` | `String` | `string` | `string` | ✔ | |
+| `type` | `QuestType` (enum) | `string` | `QuestType` (enum) | ✔ | |
+| `progress`| — | — | `number` | ⚠ | Поле `progress` — это мок-данные, генерируемые на фронтенде для демонстрации. |
+
+---
+
+## 41. Poll
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`, `title`, `question`| `String`| `string` | `string` | ✔ | |
+| `options`| `PollOption[]`| `PollOption[]`| `PollOption[]`| ✔ | DTO включает `_count` для голосов. |
+| `votes`| `PollVote[]`| `_count` | `totalVotes: number` | ⚠ | Бэкенд отдает агрегированное количество голосов. |
+| `author`| `User?` | `LiteUser?` | `LiteUser?` | ✔ | |
+| `isActive` | `Boolean` | `boolean` | `boolean` | ✔ | |
+
+---
+
+## 42. PollOption
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`, `text`| `String` | `string` | `string` | ✔ | |
+| `poll` | `Poll` | — | — | ✔ | Связь, не отдается. |
+| `votes`| `PollVote[]`|`_count` | `votes: number` | ⚠ | DTO отдает агрегированное количество голосов. |
+
+---
+
+## 43. PollVote
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `user`, `poll`, `pollOption`| `User`, `Poll`, `PollOption`| — | — | ✔ | Сущность-связь, не передается на фронт напрямую. |
 | `@@unique` | `[userId, pollId]` | — | — | ✔ | Уникальность голоса обеспечивается на уровне БД. |
 
 ---
 
-## 28. TournamentAnnouncement & Activity
+## 44. TournamentAnnouncement
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `TournamentAnnouncement`| `TournamentAnnouncement`|`Announcement`|`Announcement`| ✔ | Lite-связь `sender`. |
-| `Activity`| `Activity`|`Activity`|`Activity`| ✔ | Lite-связь `user`. `metadata` - JSON. |
+| `id`, `subject`, `message`| `String` | `string` | `string` | ✔ | |
+| `tournament`, `sender`| `Tournament`, `User`| `LiteUser` | `Announcement` | ⚠ | На фронте агрегируется в тип `Announcement`. |
+| `sentTo`| `Int`| `number` | `number` | ✔ | |
 
 ---
 
-## 29. League & LeagueTeam
+## 45. Activity
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `League`| `League` | `League` | `League` | ✔ | |
-| `LeagueTeam` | `LeagueTeam` | `LeagueTeam` | `LeagueTeam` | ✔ | Промежуточная модель со статистикой. |
+| `id`| `String` | `string` | `string` | ✔ | |
+| `type`| `ActivityType` (enum)| `string`| `string`| ✔ | |
+| `user`, `playground`| `User`, `Playground?`| `LiteUser` | `LiteUser`| ✔ | |
+| `metadata` | `Json` | `object` | `object` | ✔ | |
+
+---
+
+## 46. League
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `id`, `name`, `description`, `game`| `String` | `string` | `string` | ✔ | |
+| `image`, `imageHint`| `String?` | `string?` | `string?` | ✔ | |
+| `teams` | `LeagueTeam[]`|`LeagueTeam[]`|`LeagueTeam[]`| ✔ | |
+| `matches` | `Match[]`| `LiteMatch[]`| `LeagueMatch[]`| ✔ | |
+
+---
+
+## 47. LeagueTeam
+| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| `league`, `team`| `League`, `Team` | `LiteTeam` | `LeagueTeam` | ⚠ | Промежуточная модель. На фронте агрегируется в `LeagueTeam`. |
+| `played`, `wins`, `losses`, `draws`, `points` | `Int`| `number` | `number` | ✔ | |
 
 ---
 
