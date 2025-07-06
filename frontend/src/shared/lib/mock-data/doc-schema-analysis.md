@@ -55,11 +55,11 @@
 ---
 
 ## 5. FriendRequest
-| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `id` | `String` | `string` | `string` | ✔ | |
-| `from`, `to` | `User` | `lite-User` | `FriendRequest` (UI) | ⚠ | DTO отдает `from` как `lite-User`, на фронте это часть `FriendRequest`. |
-| `status` | `FriendRequestStatus` | `string` | `string` | ✔ | Enum на бэкенде становится строкой. |
+| Поле         | Prisma                | Backend DTO/entity | Frontend Type        | Совпадает | Комментарий                                                             |
+| :---         | :---                  | :---               | :---                 | :---      | :---                                                                    |
+| `id`         | `String`              | `string`           | `string`             | ✔         |                                                                         |
+| `from`, `to` | `User`                | `lite-User`        | `FriendRequest` (UI) | ⚠         | DTO отдает `from` как `lite-User`, на фронте это часть `FriendRequest`. |
+| `status`     | `FriendRequestStatus` | `string`           | `string`             | ✔         | Enum на бэкенде становится строкой.                                     |
 
 ---
 
@@ -128,13 +128,13 @@
 ---
 
 ## 12. Chat
-| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `id`| `String` | `string` | `string` | ✔ | |
-| `participants` | `User[]` | `LiteUser[]` | `ChatContact` | ⚠ | DTO агрегируется в тип `ChatContact`. |
-| `messages` | `Message[]`| `LiteMessage` (last one) | `lastMessage: string`| ⚠| На фронт передается только последнее сообщение в виде строки.|
-| `name`| `String?`| `string?` | `name: string`| ✔ | |
-| `type`| `ChatType`| `string`| `string`| ✔ | `enum` на бэке. |
+| Поле           | Prisma     | Backend DTO/entity       | Frontend Type        | Совпадает | Комментарий                                                  |
+| :---           | :---       | :---                     | :---                 | :---      | :---                                                         |
+| `id`           | `String`   | `string`                 | `string`             | ✔         |                                                              |
+| `participants` | `User[]`   | `LiteUser[]`             | `ChatContact`        | ⚠         | DTO агрегируется в тип `ChatContact`.                        |
+| `messages`     | `Message[]`| `LiteMessage` (last one) | `lastMessage: string`| ⚠         | На фронт передается только последнее сообщение в виде строки.|
+| `name`         | `String?`  | `string?`                | `name: string`       | ✔         |                                                              |
+| `type`         | `ChatType` | `string`                 | `string`             | ✔         | `enum` на бэке.                                              |
 
 ---
 
@@ -222,11 +222,11 @@
 ---
 
 ## 21. TeamApplication
-| Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `team`, `user` | `Team`, `User` | `LiteTeam`, `LiteUser` | `JoinRequest` | ⚠ | DTO агрегируется в тип `JoinRequest`, поле `user` становится `applicant`. |
-| `status` | `TeamApplicationStatus` (enum) | `string` | `string` | ✔ | |
-| `message`| `String?`| `string?` | `string` | ✔ | |
+| Поле           | Prisma                         | Backend DTO/entity     | Frontend Type | Совпадает   | Комментарий                                                               |
+| :---           | :---                           | :---                   | :---          | :---        | :---                                                                      |
+| `team`, `user` | `Team`, `User`                 | `LiteTeam`, `LiteUser` | `JoinRequest` | ⚠           | DTO агрегируется в тип `JoinRequest`, поле `user` становится `applicant`. |
+| `status`       | `TeamApplicationStatus` (enum) | `string`               | `string`      | ✔           |                                                                           |
+| `message`      | `String?`                      | `string?`              | `string`      | ✔           |                                                                           |
 
 ---
 
