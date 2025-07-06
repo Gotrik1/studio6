@@ -31,7 +31,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
         return null;
     }
     
-    // The playerActivity is already part of the profileResult, so we just extract it.
+    // The playerActivity is already part of the profileResult, so we extract it.
     const playerActivity = profileResult.user.activities as PlayerActivityItem[];
 
     return {

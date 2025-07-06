@@ -14,11 +14,11 @@ export async function getPlaygroundCondition(playgroundId: string): Promise<Play
         next: { tags: [`playground-condition-${playgroundId}`] }
     });
 
-    if (result.success && result.data) {
+    if (result.success) {
         return result.data;
     }
 
-    if (!result.success && result.status !== 404) {
+    if (result.status !== 404) {
          console.error(`Failed to fetch playground condition for ${playgroundId}:`, result.error);
     }
 

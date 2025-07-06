@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -17,14 +16,15 @@ import { useLfg } from '@/app/providers/lfg-provider';
 import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
-import { PlaygroundReviewsTab, type PlaygroundReview } from '@/widgets/playground-reviews-tab';
+import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
+import type { PlaygroundReview } from '@/entities/playground/model/types';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-dialog';
 import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
-import { createReview, getReviews } from '@/entities/playground/api/reviews';
+import { createReview, getReviews, type CreateReviewData } from '@/entities/playground/api/reviews';
 import { useRouter } from 'next/navigation';
 import type { PlaygroundConditionReport } from '@/entities/playground/api/condition';
 import type { LfgLobby } from '@/entities/lfg/model/types';
@@ -76,7 +76,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         setIsLoadingReviews(true);
         try {
             const reviewsResult = await getReviews(playground.id);
-            if (reviewsResult.success) {
+            if (reviewsResult.success && reviewsResult.data) {
                 // The data is already formatted by the API client, so we can use it directly
                 setReviews(reviewsResult.data);
             } else {
@@ -128,7 +128,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         }
     };
     
-    const handleAddReview = async (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => {
+    const handleAddReview = async (reviewData: CreateReviewData) => {
         const result = await createReview(playground.id, reviewData);
         if (result.success) {
             toast({ title: 'Спасибо за ваш отзыв!', description: 'Ваш отзыв был опубликован.' });

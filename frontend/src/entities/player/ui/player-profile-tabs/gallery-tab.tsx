@@ -19,7 +19,7 @@ export function GalleryTab({ gallery: initialGallery, isCurrentUser }: GalleryTa
     const [gallery, setGallery] = useState<GalleryItem[]>(initialGallery);
     const [isUploadOpen, setIsUploadOpen] = useState(false);
 
-    const handleAddMedia = (item: GalleryItem) => {
+    const handleAddMedia = (item: Omit<GalleryItem, 'id'>) => {
         setGallery(prev => [{ ...item, id: `gallery-item-${Date.now()}` }, ...prev]);
     };
 

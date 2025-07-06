@@ -1,11 +1,20 @@
 
-import { managerUser, managerAchievements } from "@/shared/lib/mock-data/manager-profile";
+import { getPlayerProfile } from "@/entities/user/api/get-user";
 import ManagerClient from "@/app/(app)/administration/manager/client";
+import { notFound } from "next/navigation";
+import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
 
-export function ManagerProfilePage() {
-    // In a real application, this data would be fetched from an API
-    const user = managerUser;
-    const achievements = managerAchievements;
+const DEMO_MANAGER_ID = '5'; // Иван Сидоров
 
-    return <ManagerClient user={user} achievements={achievements} />;
+export async function ManagerProfilePage() {
+    const [userData, achievements] = await Promise.all([
+        getPlayerProfile(DEMO_MANAGER_ID),
+        getAchievementsForUser(DEMO_MANAGER_ID)
+    ]);
+    
+    if (!userData) {
+        notFound();
+    }
+
+    return <ManagerClient user={userData.user} achievements={achievements} />;
 }

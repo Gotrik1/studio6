@@ -1,28 +1,29 @@
 
 import PlayerClient from "@/app/(app)/administration/player/client";
-import { getPlayerProfile } from "@/entities/user/api/get-user";
+import { getPlayerProfilePageData } from "@/entities/user/api/get-user";
 import { getSession } from "@/features/auth/session";
 import { notFound } from "next/navigation";
 
 export default async function PlayerProfileRoute({ params }: { params: { id: string } }) {
-    const [profileData, session] = await Promise.all([
-        getPlayerProfile(params.id),
+    const [pageData, session] = await Promise.all([
+        getPlayerProfilePageData(params.id),
         getSession(),
     ]);
 
-    if (!profileData || !session?.user) {
+    if (!pageData || !session?.user) {
         notFound();
     }
     
-    const isCurrentUser = session.user.id === profileData.user.id;
+    const isCurrentUser = session.user.id === pageData.user.id;
 
     return <PlayerClient 
-        user={profileData.user} 
+        user={pageData.user} 
         isCurrentUser={isCurrentUser}
-        achievements={profileData.achievements}
-        teams={profileData.user.teams}
-        gallery={profileData.user.gallery}
-        careerHistory={profileData.user.careerHistory}
-        playerActivity={profileData.user.activities}
+        achievements={pageData.achievements}
+        teams={pageData.user.teams}
+        gallery={pageData.user.gallery}
+        careerHistory={pageData.user.careerHistory}
+        playerActivity={pageData.playerActivity}
+        stats={pageData.stats}
     />;
 }

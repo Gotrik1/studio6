@@ -13,18 +13,20 @@ export async function getFeed(): Promise<Activity[]> {
             tags: ['feed']
         }
     });
-    if (!result.success || !Array.isArray(result.data)) {
-        if (!result.success) {
-            console.error("Failed to fetch feed", result.error);
-        }
+    if (!result.success) {
+        console.error("Failed to fetch feed", result.error);
         return [];
     }
+
+    if (Array.isArray(result.data)) {
+         // Adapter to convert ID to string
+        return result.data.map((item: any) => ({
+            ...item,
+            id: String(item.id),
+        }));
+    }
     
-    // Adapter to convert ID to string
-    return result.data.map((item: any) => ({
-        ...item,
-        id: String(item.id),
-    }));
+    return [];
 }
 
 export async function postStatus(text: string) {

@@ -15,11 +15,13 @@ export async function getReviews(playgroundId: string): Promise<FetchResult<Play
     next: { tags: [`reviews-${playgroundId}`] }
   });
   
-  if (!result.success || !Array.isArray(result.data)) {
-      if(!result.success) {
+  if (!result.success) {
         console.error('Failed to fetch reviews:', result.error);
-      }
-      return { success: false, error: result.success ? 'Invalid data format' : result.error, status: result.success ? 500 : result.status, data: [] };
+      return { success: false, error: result.error, status: result.status, data: null };
+  }
+  
+  if (!Array.isArray(result.data)) {
+      return { success: false, error: 'Invalid data format', status: 500, data: null };
   }
 
   // Adapter to map backend data to frontend type

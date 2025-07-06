@@ -1,7 +1,29 @@
+
 'use server';
 
-import type { OnboardingInput, OnboardingOutput, OnboardingSuggestion } from './schemas/onboarding-assistant-schema';
-export type { OnboardingInput, OnboardingOutput, OnboardingSuggestion };
+// These types are defined locally to decouple from backend schemas.
+// In a real project, these could be in a shared types package.
+import type { LucideIcon } from 'lucide-react';
+
+export type OnboardingSuggestion = {
+    icon: keyof typeof LucideIcon;
+    title: string;
+    description: string;
+    href: string;
+    reward?: string;
+};
+
+export type OnboardingInput = {
+    userName: string;
+    userRole: string;
+};
+
+export type OnboardingOutput = {
+  greeting: string;
+  mainSuggestion: string;
+  suggestions: OnboardingSuggestion[];
+};
+
 
 export async function getOnboardingSuggestions(input: OnboardingInput): Promise<OnboardingOutput> {
   const response = await fetch('/api/ai/onboarding-assistant', {

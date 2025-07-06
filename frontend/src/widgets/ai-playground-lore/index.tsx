@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,7 +8,6 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { BookOpen, AlertCircle, Sparkles } from 'lucide-react';
 import { generatePlaygroundLore, type GeneratePlaygroundLoreOutput } from '@/shared/api/genkit/flows/generate-playground-lore';
 import type { Playground } from '@/entities/playground/model/types';
-import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
 
 interface AiPlaygroundLoreProps {
     playground: Playground;
@@ -24,11 +24,11 @@ export function AiPlaygroundLore({ playground }: AiPlaygroundLoreProps) {
             setIsLoading(true);
             setError(null);
             try {
-                const king = await getKingOfTheCourt(playground.id);
+                const king = playground.kingOfTheCourt;
                 const loreResult = await generatePlaygroundLore({
                     playgroundName: playground.name,
                     checkIns: playground.checkIns,
-                    topPlayer: king?.captain || 'Неизвестный герой',
+                    topPlayer: king?.name || 'Неизвестный герой',
                     topTeam: king?.name || 'Одинокие волки',
                 });
                 setResult(loreResult);

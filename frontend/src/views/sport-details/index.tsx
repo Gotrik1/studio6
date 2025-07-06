@@ -77,10 +77,6 @@ export function SportDetailsPage({ sport }: SportDetailsPageProps) {
 
     const handleJoinLobby = (lobbyId: string) => {
         joinLfgLobby(lobbyId);
-        toast({
-            title: "Вы присоединились к лобби!",
-            description: "Вы успешно присоединились к активности.",
-        });
     };
 
     return (

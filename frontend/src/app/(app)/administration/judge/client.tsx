@@ -1,9 +1,11 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { FullUserProfile, PlayerProfileData } from '@/entities/user/api/get-user';
-import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import type { FullUserProfile } from '@/entities/user/model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
+
 
 const JudgeProfile = dynamic(() => import('@/entities/user/ui/judge-profile').then(mod => mod.JudgeProfile), {
   loading: () => <div className="space-y-6">
@@ -16,7 +18,7 @@ const JudgeProfile = dynamic(() => import('@/entities/user/ui/judge-profile').th
 
 type JudgeProfileProps = {
   user: FullUserProfile;
-  achievements: typeof AchievementsArray;
+  achievements: Achievement[];
 };
 
 export default function JudgeClient({ user, achievements }: JudgeProfileProps) {

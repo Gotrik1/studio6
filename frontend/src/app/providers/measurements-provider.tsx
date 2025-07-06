@@ -5,17 +5,17 @@ import React, { createContext, useContext, useState, ReactNode, useEffect, useCa
 import type { Measurement } from '@/entities/user/model/types';
 import { getMeasurements, createMeasurement } from '@/entities/measurement/api/measurements';
 import { useToast } from '@/shared/hooks/use-toast';
-import type { FetchResult } from '../lib/api-client';
+import type { FetchResult } from '@/shared/lib/api-client';
 
 interface MeasurementsContextType {
   history: Measurement[];
-  addMeasurement: (data: Omit<Measurement, 'id' | 'date'>) => Promise<FetchResult<any>>;
+  addMeasurement: (data: Omit<Measurement, 'id'>) => Promise<FetchResult<any>>;
   isLoading: boolean;
 }
 
 const MeasurementsContext = createContext<MeasurementsContextType | undefined>(undefined);
 
-export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
+export const MeasurementsProvider = ({ children }: { children: React.ReactNode }) => {
     const { toast } = useToast();
     const [history, setHistory] = useState<Measurement[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -36,12 +36,8 @@ export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
         loadMeasurements();
     }, [loadMeasurements]);
 
-    const addMeasurement = async (data: Omit<Measurement, 'id' | 'date'>) => {
-        const newMeasurementData = {
-            date: new Date().toISOString(),
-            ...data,
-        };
-        const result = await createMeasurement(newMeasurementData);
+    const addMeasurement = async (data: Omit<Measurement, 'id'>) => {
+        const result = await createMeasurement(data);
         if (result.success) {
             await loadMeasurements(); // Refetch to get the latest data
         }
