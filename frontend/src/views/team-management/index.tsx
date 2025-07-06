@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Check, X, Handshake, Calendar, BarChart3, Share2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { JoinRequestAnalysisDialog } from '@/widgets/join-request-analysis-dialog';
 import { SponsorshipPitchGenerator } from '@/widgets/sponsorship-pitch-generator';
 import { AITeamAssistantTab } from '@/widgets/ai-team-assistant-tab';
@@ -51,7 +51,7 @@ export function TeamManagementPage() {
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
     const [isActionPending, startTransition] = useTransition();
     
-    const teamPlayers: CoachedPlayer[] = team?.roster.map((p) => ({
+    const teamPlayers: CoachedPlayer[] = team?.roster.map((p: any) => ({
         id: p.id,
         name: p.name,
         avatar: p.avatar,

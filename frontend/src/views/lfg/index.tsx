@@ -12,7 +12,7 @@ import { findLfgLobbies, type FindLfgLobbiesOutput } from '@/shared/api/genkit/f
 import type { LfgLobby as LfgLobbyType } from '@/entities/lfg/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { useLfg } from '@/app/providers/lfg-provider';
+import { useLfg } from '@/shared/context/lfg-provider';
 import { LfgCard } from '@/widgets/lfg-card';
 import { useToast } from '@/shared/hooks/use-toast';
 import type { CreateLobbyApiData } from '@/entities/lfg/api/lfg';
@@ -54,7 +54,7 @@ export function LfgPage() {
         }
     };
     
-    const handleCreateLobby = async (data: LfgFormValues): Promise<boolean> => {
+    const handleCreateLobby = async (data: LfgFormValues) => {
         const [hours, minutes] = data.time.split(':').map(Number);
         const combinedDate = new Date(data.date);
         combinedDate.setHours(hours, minutes, 0, 0);
