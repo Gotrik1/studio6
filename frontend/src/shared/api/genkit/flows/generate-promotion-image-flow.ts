@@ -1,23 +1,23 @@
 'use server';
 
-import type { GeneratePromotionImageInput, GeneratePromotionImageOutput } from './schemas/generate-promotion-image-schema';
+import { fetchWithAuth } from '@/shared/lib/api-client';
+
+export type GeneratePromotionImageInput = string;
+
+export type GeneratePromotionImageOutput = {
+  imageDataUri: string;
+};
 
 export async function generatePromotionImage(prompt: GeneratePromotionImageInput): Promise<GeneratePromotionImageOutput> {
-  const response = await fetch('/api/ai/generate-promotion-image', {
+  const result = await fetchWithAuth('/ai/generate-promotion-image', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
     body: JSON.stringify({ prompt }),
-    cache: 'no-store',
   });
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    console.error("Backend API error:", errorBody);
-    throw new Error(`Backend API responded with status: ${response.status}`);
+  if (!result.success) {
+    console.error("Backend API error:", result.error);
+    throw new Error(`Backend API responded with status: ${result.status}`);
   }
 
-  const result = await response.json();
-  return result;
+  return result.data;
 }

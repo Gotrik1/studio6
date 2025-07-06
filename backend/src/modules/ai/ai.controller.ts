@@ -378,7 +378,7 @@ export class AiController {
   ): Promise<AnalyzePlayerPerformanceOutput> {
     return this.aiService.analyzePlayerPerformance(analyzePlayerPerformanceDto);
   }
-
+  
   @Post('generate-training-plan')
   @HttpCode(HttpStatus.OK)
   async generateTrainingPlan(
