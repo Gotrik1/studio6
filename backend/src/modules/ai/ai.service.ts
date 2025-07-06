@@ -25,7 +25,7 @@ import { analyzePlaygroundReport, type AnalyzePlaygroundReportInput, type Analyz
 import { generatePlaygroundSummary, type GeneratePlaygroundSummaryInput, type GeneratePlaygroundSummaryOutput } from '@/ai/flows/generate-playground-summary-flow';
 import { generatePlaygroundTactic, type GeneratePlaygroundTacticInput, type GeneratePlaygroundTacticOutput } from '@/ai/flows/generate-playground-tactic-flow';
 import { smartSearch, type SmartSearchOutput } from '@/ai/flows/smart-search-flow';
-import { analyzePlayerPerformance, type AnalyzePlayerPerformanceInput, type AnalyzePlayerPerformanceOutput as AnalyzePlayerPerformanceOutput_1 } from '@/ai/flows/analyze-player-performance-flow';
+import { analyzePlayerPerformance, type AnalyzePlayerPerformanceInput, type AnalyzePlayerPerformanceOutput } from '@/ai/flows/analyze-player-performance-flow';
 import { generateTrainingPlan, type GenerateTrainingPlanInput, type GenerateTrainingPlanOutput } from '@/ai/flows/generate-training-plan-flow';
 import { generatePlaygroundWorkout, type GeneratePlaygroundWorkoutInput, type GeneratePlaygroundWorkoutOutput } from '@/ai/flows/generate-playground-workout-flow';
 import { generatePlaygroundLore, type GeneratePlaygroundLoreInput, type GeneratePlaygroundLoreOutput } from '@/ai/flows/generate-playground-lore';
@@ -213,7 +213,7 @@ export class AiService {
     return smartSearch(query);
   }
   
-  async analyzePlayerPerformance(input: AnalyzePlayerPerformanceInput): Promise<AnalyzePlayerPerformanceOutput_1> {
+  async analyzePlayerPerformance(input: AnalyzePlayerPerformanceInput): Promise<AnalyzePlayerPerformanceOutput> {
     return analyzePlayerPerformance(input);
   }
   

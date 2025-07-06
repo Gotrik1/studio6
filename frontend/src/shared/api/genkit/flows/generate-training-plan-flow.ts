@@ -1,5 +1,6 @@
 'use server';
 
+import { fetchWithAuth } from '@/shared/lib/api-client';
 import type { AnalyzePlayerPerformanceOutput } from './analyze-player-performance-flow';
 
 // Define types locally
@@ -23,18 +24,16 @@ export type GenerateTrainingPlanOutput = {
 };
 
 export async function generateTrainingPlan(input: GenerateTrainingPlanInput): Promise<GenerateTrainingPlanOutput> {
-  const response = await fetch('/api/ai/generate-training-plan', {
+  const result = await fetchWithAuth('/ai/generate-training-plan', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
     cache: 'no-store',
   });
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    console.error("Backend API error:", errorBody);
-    throw new Error(`Backend API responded with status: ${response.status}`);
+  if (!result.success) {
+    console.error("Backend API error:", result.error);
+    throw new Error(`Backend API responded with status: ${result.status}`);
   }
 
-  return response.json();
+  return result.data;
 }
