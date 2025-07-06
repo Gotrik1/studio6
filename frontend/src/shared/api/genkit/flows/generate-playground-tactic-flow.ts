@@ -1,5 +1,7 @@
 'use server';
 
+import { fetchWithAuth } from '@/shared/lib/api-client';
+
 export type GeneratePlaygroundTacticInput = {
   playgroundType: string;
   playgroundFeatures: string[];
@@ -13,16 +15,15 @@ export type GeneratePlaygroundTacticOutput = {
 };
 
 export async function generatePlaygroundTactic(input: GeneratePlaygroundTacticInput): Promise<GeneratePlaygroundTacticOutput> {
-  const response = await fetch('/api/ai/generate-playground-tactic', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(input),
-    cache: 'no-store',
-  });
+    const result = await fetchWithAuth('/ai/generate-playground-tactic', {
+        method: 'POST',
+        body: JSON.stringify(input),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Backend API responded with status: ${response.status}`);
-  }
-
-  return response.json();
+    if (!result.success) {
+        console.error("Backend API error:", result.error);
+        throw new Error(result.error || 'Failed to generate tactic.');
+    }
+  
+    return result.data;
 }

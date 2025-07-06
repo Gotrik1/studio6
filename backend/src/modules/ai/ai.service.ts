@@ -39,7 +39,7 @@ import { createTeam, type CreateTeamInput, type CreateTeamOutput } from '@/ai/fl
 import { generateTeamAvatar, type GenerateTeamAvatarOutput } from '@/ai/flows/generate-team-avatar-flow';
 import { generatePromotionDetails, type GeneratePromotionDetailsInput, type GeneratePromotionDetailsOutput } from '@/ai/flows/generate-promotion-details-flow';
 import { generatePromotionImage, type GeneratePromotionImageOutput } from '@/ai/flows/generate-promotion-image-flow';
-import { generateDashboardTip, type GenerateDashboardTipInput, type GenerateDashboardTipOutput } from '@/ai/flows/generate-dashboard-tip-flow';
+import { generateDashboardTip, type GenerateDashboardTipOutput } from '@/ai/flows/generate-dashboard-tip-flow';
 import { analyzeMatchChallenge, type AnalyzeMatchChallengeInput, type AnalyzeMatchChallengeOutput } from '@/ai/flows/analyze-match-challenge-flow';
 import { analyzeExerciseForm, type AnalyzeExerciseFormInput, type AnalyzeExerciseFormOutput } from '@/ai/flows/analyze-exercise-form-flow';
 import { analyzeReport, type AnalyzeReportInput, type AnalyzeReportOutput } from '@/ai/flows/analyze-report-flow';
