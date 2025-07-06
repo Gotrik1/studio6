@@ -22,7 +22,8 @@ import {
     HeartPulse,
     Server,
     Map,
-    FileSignature
+    FileSignature,
+    ClipboardCheck as SchemaCheck,
 } from 'lucide-react';
 
 export const managementCards = [
@@ -59,8 +60,9 @@ export const contentCards = [
 export const systemCards = [
     { title: "Инструменты AI", description: "Демонстрация работы AI-агентов.", href: "/ai-analysis", icon: BrainCircuit },
     { title: "Readme проекта", description: "Обзор проекта, стек, возможности.", href: "/documents/project-readme", icon: FileText },
-    { title: "Документация (Frontend)", description: "Подробная техническая документация фронтенда, включая стек, структуру, ADR и гайдлайны.", href: "/documents/architecture", icon: FolderKanban },
-    { title: "Документация (Backend)", description: "Обзор архитектуры бэкенда.", href: "/documents/backend-documentation", icon: Server },
+    { title: "Анализ схемы данных", description: "Полное сравнение моделей данных (Prisma, DTO, Frontend).", href: "/documents/schema-analysis", icon: SchemaCheck },
+    { title: "Архитектура (Frontend)", description: "Подробная тех. документация фронтенда.", href: "/documents/architecture", icon: FolderKanban },
+    { title: "Архитектура (Backend)", description: "Обзор архитектуры бэкенда.", href: "/documents/backend-documentation", icon: Server },
     { title: "ADR: Выбор брокера", description: "Почему был выбран Kafka, а не RabbitMQ/NATS.", href: "/documents/adr/ADR-001-Message-Broker-Choice", icon: FileSignature },
     { title: "Демо темы", description: "Просмотр всех UI компонентов.", href: "/theme-demo", icon: Palette },
     { title: "Карта сайта", description: "Обзор всех страниц приложения.", href: "/administration/sitemap", icon: MapIcon },
