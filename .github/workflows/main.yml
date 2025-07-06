@@ -69,6 +69,12 @@ jobs:
       - name: Run backend tests
         run: docker-compose exec backend npm test
 
+      - name: Lint backend
+        run: docker-compose exec backend npm run lint
+
+      - name: Typecheck backend
+        run: docker-compose exec backend npm run typecheck
+
       - name: Show backend logs on failure
         if: failure()
         run: docker-compose logs backend
