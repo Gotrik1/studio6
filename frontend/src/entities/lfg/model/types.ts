@@ -13,4 +13,5 @@ export type LfgLobby = {
         name: string;
         avatar: string | null;
     };
+    status: 'OPEN' | 'FULL' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED';
 };

@@ -67,6 +67,13 @@ export class PollsService implements OnModuleInit {
         _count: {
           select: { votes: true },
         },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
       },
     });
 
@@ -85,6 +92,7 @@ export class PollsService implements OnModuleInit {
         text: opt.text,
         votes: opt._count.votes,
       })),
+      author: poll.author,
     };
   }
 

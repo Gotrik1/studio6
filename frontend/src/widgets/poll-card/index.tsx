@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { RadioGroup, RadioGroupItem } from '@/shared/ui/radio-group';
 import { Label } from '@/shared/ui/label';
@@ -9,6 +9,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Badge } from '@/shared/ui/badge';
 import type { Poll } from '@/entities/poll/model/types';
 import { Loader2 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 
 interface PollCardProps {
     poll: Poll | null;
@@ -51,12 +52,26 @@ export function PollCard({ poll, onVote, isVotedInitially = false }: PollCardPro
     }
     
     const totalVotes = poll.totalVotes;
+    const author = poll.author;
 
     return (
         <Card>
             <CardHeader>
-                <CardTitle>{poll.title}</CardTitle>
-                <CardDescription>{poll.question}</CardDescription>
+                <div className="flex justify-between items-start">
+                    <div>
+                        <CardTitle>{poll.title}</CardTitle>
+                        <CardDescription>{poll.question}</CardDescription>
+                    </div>
+                    {author && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground flex-shrink-0 ml-4">
+                            <Avatar className="h-5 w-5">
+                                <AvatarImage src={author.avatar || ''} />
+                                <AvatarFallback>{author.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <span className="hidden sm:inline">{author.name}</span>
+                        </div>
+                    )}
+                </div>
             </CardHeader>
             <CardContent>
                 <RadioGroup
