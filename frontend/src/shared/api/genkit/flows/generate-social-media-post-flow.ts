@@ -1,5 +1,9 @@
+
 'use server';
 
+import { fetchWithAuth } from '@/shared/lib/api-client';
+
+// Types are defined locally to decouple from backend schemas.
 export type GenerateSocialMediaPostInput = {
     teamName: string;
     postType: 'match_announcement' | 'player_highlight' | 'general_update';
@@ -13,7 +17,7 @@ export type GenerateSocialMediaPostOutput = {
 };
 
 export async function generateSocialMediaPost(input: GenerateSocialMediaPostInput): Promise<GenerateSocialMediaPostOutput> {
-    const response = await fetch('/api/ai/generate-social-media-post', {
+    const response = await fetchWithAuth('/ai/generate-social-media-post', {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json',
@@ -22,12 +26,10 @@ export async function generateSocialMediaPost(input: GenerateSocialMediaPostInpu
         cache: 'no-store',
     });
 
-    if (!response.ok) {
-        const errorBody = await response.text();
-        console.error("Backend API error:", errorBody);
-        throw new Error(`Backend API responded with status: ${response.status}`);
+    if (!response.success) {
+        console.error("Backend API error:", response.error);
+        throw new Error(response.error || `Backend API responded with status: ${response.status}`);
     }
 
-    const result = await response.json();
-    return result;
+    return response.data;
 }
