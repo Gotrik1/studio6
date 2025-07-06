@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
@@ -33,7 +34,7 @@ export function MatchesListPage() {
   const [selectedMatch, setSelectedMatch] = useState<DialogMatch | null>(null);
   const { toast } = useToast();
 
-  const loadMatches = async () => {
+  const loadMatches = useCallback(async () => {
       setLoading(true);
       try {
           const fetchedMatches = await fetchMatches();
@@ -44,11 +45,11 @@ export function MatchesListPage() {
       } finally {
           setLoading(false);
       }
-  };
+  }, [toast]);
 
   useEffect(() => {
       loadMatches();
-  }, []);
+  }, [loadMatches]);
 
   const handleOpenScoreDialog = (match: Match) => {
     const dialogMatch: DialogMatch = {
@@ -174,7 +175,6 @@ export function MatchesListPage() {
        <CrmMatchResultDialog
         isOpen={isScoreDialogOpen}
         onOpenChange={setIsScoreDialogOpen}
-        // This cast is a bit risky but should work as the dialog only uses common properties.
         match={selectedMatch as any} 
         onMatchUpdate={handleMatchUpdate}
       />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/shared/ui/button';
 import { PlusCircle, Target } from 'lucide-react';
 import { ChallengesBoard } from '@/widgets/challenges-board';
@@ -22,7 +22,7 @@ export function ChallengesPage() {
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-    const fetchAllChallenges = async () => {
+    const fetchAllChallenges = useCallback(async () => {
         setIsLoading(true);
         try {
             const [openData, myData, historyData] = await Promise.all([
@@ -33,19 +33,19 @@ export function ChallengesPage() {
             setChallenges(openData);
             setMyChallenges(myData);
             setHistory(historyData);
-        } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить вызовы.' });
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить вызовы.';
+            toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [toast]);
 
     useEffect(() => {
         if(user) {
             fetchAllChallenges();
         }
-    }, [user]);
+    }, [user, fetchAllChallenges]);
 
     const handleCreateChallenge = async (data: CreateChallengeData) => {
         try {

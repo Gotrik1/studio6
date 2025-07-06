@@ -63,7 +63,7 @@ export function ReportPlaygroundIssueDialog({ isOpen, onOpenChange, playgroundNa
                             <DialogTitle>Сообщить о проблеме на &quot;{playgroundName}&quot;</DialogTitle>
                             <DialogDescription>Ваше сообщение поможет нам и другим игрокам. Спасибо за участие!</DialogDescription>
                         </DialogHeader>
-                        <div className="py-4 space-y-4">
+                        <div className="grid gap-4 py-4">
                             <FormField control={form.control} name="category" render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Категория проблемы</FormLabel>

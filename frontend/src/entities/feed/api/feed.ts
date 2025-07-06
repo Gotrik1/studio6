@@ -20,7 +20,7 @@ export async function getFeed(): Promise<Activity[]> {
 
     if (Array.isArray(result.data)) {
          // Adapter to convert ID to string
-        return result.data.map((item: any) => ({
+        return result.data.map((item: Activity) => ({
             ...item,
             id: String(item.id),
         }));

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -10,7 +11,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { format, addDays, subDays } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import type { FoodLogEntry, FoodItem } from '@/entities/nutrition/model/types';
+import type { FoodItem } from '@/entities/nutrition/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useNutrition } from '@/shared/context/nutrition-provider';
 import { Progress } from '@/shared/ui/progress';

@@ -7,8 +7,8 @@ import { PlaygroundReviewSummary } from '@/widgets/playground-review-summary';
 import { PlaygroundReviewDialog } from '@/widgets/playground-review-dialog';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Card, CardHeader, CardContent } from '@/shared/ui/card';
-import type { PlaygroundReview } from '@/entities/playground/model/types';
 import type { CreateReviewData } from '@/entities/playground/api/reviews';
+import type { PlaygroundReview } from '@/entities/playground/model/types';
 
 
 interface PlaygroundReviewsTabProps {

@@ -18,7 +18,7 @@ export async function getTeams(): Promise<Team[]> {
   
   // Adapter to ensure data conforms to the frontend Team type
   if (Array.isArray(result.data)) {
-    return result.data.map((team: any) => ({
+    return result.data.map((team: Team) => ({
       id: String(team.id), // Ensure ID is always a string
       name: team.name,
       motto: team.motto,

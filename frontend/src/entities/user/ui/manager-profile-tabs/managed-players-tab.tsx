@@ -6,18 +6,22 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import Link from 'next/link';
-import { getUsers } from '@/entities/user/api/get-user';
+import { getUsers } from '@/entities/user/api/get-users';
 import { useEffect, useState } from 'react';
 import type { User } from '@/shared/lib/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 
+interface PlayerWithSport extends User {
+    mainSport: string;
+}
+
 export function ManagedPlayersTab() {
-    const [players, setPlayers] = useState<User[]>([]);
+    const [players, setPlayers] = useState<PlayerWithSport[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getUsers().then(users => {
-            setPlayers(users.slice(0, 3).map(u => ({ ...u, mainSport: 'Valorant' } as any))); // Add mock game
+            setPlayers(users.slice(0, 3).map((u: User) => ({ ...u, mainSport: 'Valorant' }))); // Add mock game
             setLoading(false);
         });
     }, []);
@@ -47,13 +51,13 @@ export function ManagedPlayersTab() {
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-9 w-9">
-                                            <AvatarImage src={player.avatar || ''} alt={player.name} />
+                                            <AvatarImage src={player.avatar || undefined} alt={player.name} />
                                             <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <span className="font-medium">{player.name}</span>
                                     </div>
                                 </TableCell>
-                                <TableCell className="hidden md:table-cell">{(player as any).mainSport}</TableCell>
+                                <TableCell className="hidden md:table-cell">{player.mainSport}</TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="outline" size="sm">
                                         <Link href={`/profiles/player/${player.id}`}>Профиль</Link>

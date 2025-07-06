@@ -1,8 +1,8 @@
 
 
 import SponsorClient from "@/app/(app)/administration/sponsor/client";
-import { getPromotions, type Promotion } from "@/entities/promotion/api/promotions";
-import { getSponsorshipDashboardData, type SponsoredTeam } from "@/entities/sponsorship/api/sponsorship";
+import { getPromotions } from "@/entities/promotion/api/promotions";
+import { getSponsorshipDashboardData } from "@/entities/sponsorship/api/sponsorship";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";
 import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
@@ -27,7 +27,7 @@ export async function SponsorProfilePage() {
     // Filter data relevant to this specific sponsor for the demo
     // In a real app, you might have a dedicated endpoint for this
     const activeCampaigns = promotionsData.filter(
-        (p: Promotion) => p.sponsor?.name === profileData.user.name
+        (p) => p.sponsor?.name === profileData.user.name
     );
     
     const sponsoredTeams = sponsorshipData?.sponsoredTeams || [];

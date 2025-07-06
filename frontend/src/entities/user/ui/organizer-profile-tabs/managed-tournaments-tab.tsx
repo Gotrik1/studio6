@@ -55,7 +55,7 @@ export function ManagedTournamentsTab({ tournaments }: ManagedTournamentsTabProp
                                 <TableCell className="font-medium">{tournament.name}</TableCell>
                                 <TableCell className="hidden md:table-cell">{tournament.sport}</TableCell>
                                 <TableCell className="hidden md:table-cell">
-                                    <Badge variant={getStatusVariant(tournament.status as any)}>{getStatusText(tournament.status as any)}</Badge>
+                                    <Badge variant={getStatusVariant(tournament.status as 'ONGOING' | 'REGISTRATION' | 'FINISHED')}>{getStatusText(tournament.status as 'ONGOING' | 'REGISTRATION' | 'FINISHED')}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <Button asChild variant="outline" size="sm">

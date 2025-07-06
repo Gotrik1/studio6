@@ -1,7 +1,7 @@
 
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,8 +22,9 @@ export function PartnersPage() {
             try {
                 const data = await getSponsors();
                 setSponsors(data);
-            } catch (error) {
-                toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список партнеров.' });
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить список партнеров.';
+                toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
             } finally {
                 setIsLoading(false);
             }

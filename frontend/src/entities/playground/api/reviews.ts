@@ -25,7 +25,7 @@ export async function getReviews(playgroundId: string): Promise<FetchResult<Play
   }
 
   // Adapter to map backend data to frontend type
-  const formattedData = result.data.map((review: any) => ({
+  const formattedData: PlaygroundReview[] = result.data.map((review: PlaygroundReview) => ({
       id: String(review.id),
       rating: review.rating,
       comment: review.comment,

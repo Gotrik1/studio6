@@ -50,7 +50,7 @@ export const TrainingProvider = ({ children }: { children: ReactNode }) => {
           toast({
               variant: 'destructive',
               title: 'Ошибка загрузки данных',
-              description: 'Не удалось загрузить тренировочные программы или журнал.'
+              description: error instanceof Error ? error.message : 'Не удалось загрузить тренировочные программы или журнал.'
           });
       } finally {
           setIsLoading(false);

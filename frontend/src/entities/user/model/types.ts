@@ -1,4 +1,5 @@
 
+
 export type CareerHistoryItem = {
     id: string;
     teamName: string;
@@ -86,6 +87,19 @@ export type JudgedMatch = {
     timestamp: string | null;
 };
 
+export type Activity = {
+    id: string;
+    type: string;
+    timestamp: string;
+    metadata: {
+        [key: string]: string;
+    };
+    user: {
+        id: string;
+        name: string;
+        avatar: string | null;
+    }
+}
 
 export type FullUserProfile = {
     id: string;
@@ -104,7 +118,7 @@ export type FullUserProfile = {
     age: number;
     preferredSports: string[];
     contacts: { telegram: string; discord: string };
-    activities: any[]; // Use a more specific type if possible
+    activities: Activity[]; 
     teams: UserTeam[];
     gallery: GalleryItem[];
     careerHistory: CareerHistoryItem[];

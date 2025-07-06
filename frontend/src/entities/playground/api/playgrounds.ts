@@ -2,7 +2,7 @@
 'use server';
 
 import type { Playground } from '@/entities/playground/model/types';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath } from 'next/cache';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
 /**
@@ -29,7 +29,7 @@ export async function getPlaygrounds(): Promise<Playground[]> {
     const playgrounds = result.data;
     
     // Adapter to convert numeric ID to string
-    return playgrounds.map((p: any) => ({
+    return playgrounds.map((p: Playground) => ({
       ...p,
       id: String(p.id),
       reviews: [], // Reviews aren't needed for the list view
@@ -57,7 +57,7 @@ export async function getPlaygroundById(id: string): Promise<Playground | null> 
             ...playground,
             id: String(playground.id),
             kingOfTheCourt: playground.kingOfTheCourt, // Pass through new data
-            reviews: (playground.reviews || []).map((review: any) => ({
+            reviews: (playground.reviews || []).map((review: { id: string; rating: number; comment: string; createdAt: string; author: { id: string; name: string; avatar: string | null; }; }) => ({
                 id: String(review.id),
                 rating: review.rating,
                 comment: review.comment,

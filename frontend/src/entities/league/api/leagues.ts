@@ -1,6 +1,6 @@
 'use server';
 
-import type { League, LeagueDetails } from '../model/types';
+import type { League, LeagueDetails, LeagueMatch, LeagueTeam } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
 export async function getLeagues(): Promise<League[]> {
@@ -28,21 +28,21 @@ export async function getLeagueById(id: string): Promise<LeagueDetails | null> {
         game: rawData.game,
         image: rawData.image,
         imageHint: rawData.imageHint,
-        teams: rawData.teams.map((lt: any) => ({
+        teams: rawData.teams.map((lt: { team: { id: string, name: string, logo: string | null, dataAiHint: string | null }, played: number, wins: number, draws: number, losses: number, points: number }) => ({
             id: lt.team.id,
             name: lt.team.name,
-            logo: lt.team.logo,
-            logoHint: lt.team.dataAiHint,
+            logo: lt.team.logo || 'https://placehold.co/100x100.png',
+            logoHint: lt.team.dataAiHint || 'team logo',
             played: lt.played,
             wins: lt.wins,
             draws: lt.draws,
             losses: lt.losses,
             points: lt.points,
         })),
-        matches: rawData.matches.map((m: any) => ({
+        matches: rawData.matches.map((m: { id: string, team1: { name: string, logo: string | null, dataAiHint: string | null }, team2: { name: string, logo: string | null, dataAiHint: string | null }, team1Score: number | null, team2Score: number | null, scheduledAt: string }) => ({
             id: m.id,
-            team1: m.team1,
-            team2: m.team2,
+            team1: { name: m.team1.name, logo: m.team1.logo || 'https://placehold.co/100x100.png', logoHint: m.team1.dataAiHint || 'team logo' },
+            team2: { name: m.team2.name, logo: m.team2.logo || 'https://placehold.co/100x100.png', logoHint: m.team2.dataAiHint || 'team logo' },
             score: `${m.team1Score}-${m.team2Score}`,
             date: m.scheduledAt,
         }))

@@ -1,6 +1,6 @@
 import SponsorClient from "@/app/(app)/administration/sponsor/client";
-import { getPromotions, type Promotion } from "@/entities/promotion/api/promotions";
-import { getSponsorshipDashboardData, type SponsoredTeam } from "@/entities/sponsorship/api/sponsorship";
+import { getPromotions } from "@/entities/promotion/api/promotions";
+import { getSponsorshipDashboardData } from "@/entities/sponsorship/api/sponsorship";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";
 import { getAchievementsForUser } from "@/entities/achievement/api/achievements";

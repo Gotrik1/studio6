@@ -12,7 +12,7 @@ export async function getInventory(): Promise<InventoryItem[]> {
         console.error('Failed to fetch inventory:', result.error);
         return [];
     }
-    return result.data.map((item: any) => ({
+    return result.data.map((item: InventoryItem) => ({
         ...item,
         purchaseDate: new Date(item.purchaseDate).toISOString().split('T')[0],
     }));

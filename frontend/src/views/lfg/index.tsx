@@ -5,10 +5,10 @@
 import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { PlusCircle, Swords, Search, Loader2, Sparkles, Dumbbell } from 'lucide-react';
+import { PlusCircle, Swords, Search, Loader2, Sparkles } from 'lucide-react';
 import { LfgCreateDialog, type FormValues as LfgFormValues } from '@/widgets/lfg-create-dialog';
 import { Textarea } from '@/shared/ui/textarea';
-import { findLfgLobbies, type FindLfgLobbiesOutput } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
+import { findLfgLobbies } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
 import type { LfgLobby as LfgLobbyType } from '@/entities/lfg/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
@@ -39,7 +39,7 @@ export function LfgPage() {
 
         try {
             const searchResult = await findLfgLobbies(prompt);
-            setFilteredLobbies(searchResult.recommendations.map(l => ({...l, type: l.type.toUpperCase() as 'GAME' | 'TRAINING', startTime: new Date(l.startTime), endTime: new Date(l.endTime) })));
+            setFilteredLobbies(searchResult.recommendations.map((l: any) => ({...l, type: l.type.toUpperCase() as 'GAME' | 'TRAINING', startTime: new Date(l.startTime), endTime: new Date(l.endTime) })));
             if (searchResult.recommendations.length === 0) {
                  toast({
                     title: "Ничего не найдено",

@@ -14,7 +14,7 @@ export async function getPlaygroundSchedule(playgroundId: string): Promise<LfgLo
     }
     
     // Convert date strings to Date objects
-    return result.data.map((lobby: any) => ({
+    return result.data.map((lobby: LfgLobby) => ({
         ...lobby,
         startTime: new Date(lobby.startTime),
         endTime: new Date(lobby.endTime),

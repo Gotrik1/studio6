@@ -15,7 +15,7 @@ interface MyProgramsTabProps {
 }
 
 export function MyProgramsTab({ onAssignProgram, authorName }: MyProgramsTabProps) {
-    const { programs, isLoading } = useTraining();
+    const { programs } = useTraining();
     
     // In a real app, this would be filtered by the coach's ID
     const coachPrograms = programs.filter(p => p.author === authorName || p.isAiGenerated);

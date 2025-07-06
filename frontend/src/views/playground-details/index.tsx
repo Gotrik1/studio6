@@ -2,10 +2,10 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, type Dispatch, type SetStateAction } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
-import type { Playground, PlaygroundReview } from '@/entities/playground/model/types';
+import type { Playground } from '@/entities/playground/model/types';
 import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -17,7 +17,7 @@ import { useLfg } from '@/app/providers/lfg-provider';
 import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
-import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
+import { PlaygroundReviewsTab, type PlaygroundReview } from '@/widgets/playground-reviews-tab';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
@@ -25,7 +25,6 @@ import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-d
 import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
 import { createReview, getReviews, type CreateReviewData } from '@/entities/playground/api/reviews';
-import { useRouter } from 'next/navigation';
 import type { PlaygroundConditionReport } from '@/entities/playground/api/condition';
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
@@ -35,7 +34,6 @@ import { reportPlaygroundIssue } from '@/entities/playground/api/report';
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const router = useRouter();
     const [activities, setActivities] = useState<PlaygroundActivity[]>([]);
     const [isLoadingActivities, setIsLoadingActivities] = useState(true);
     const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
@@ -43,7 +41,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [latestIssueReport, setLatestIssueReport] = useState<PlaygroundConditionReport | null>(initialConditionReport);
-    const { addLobby, lobbies } = useLfg();
+    const { addLobby } = useLfg();
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [initialDateTime, setInitialDateTime] = useState<{date: Date, time: string}>();
     
@@ -54,7 +52,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         setIsLoadingActivities(true);
         try {
             const activityData = await getPlaygroundActivity(playground.id);
-            const formattedActivities: PlaygroundActivity[] = activityData.map((act: any) => ({
+            const formattedActivities: PlaygroundActivity[] = activityData.map((act: { id: string; user: { name: string; avatar: string | null; }; metadata: { comment: string; photo: string | null; }; timestamp: string; }) => ({
                 id: act.id,
                 user: {
                     name: act.user.name,
@@ -140,7 +138,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         }
     };
     
-    const handleReportSubmit = async (data: { category: string; comment: string }) => {
+    const handleReportSubmit = async (data: { category: string; comment: string; }) => {
         const result = await reportPlaygroundIssue({
             playgroundId: playground.id,
             ...data
@@ -153,7 +151,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
             });
         } else {
              toast({
-                variant: 'destructive',
+                variant: "destructive",
                 title: "Ошибка",
                 description: "Не удалось отправить отчет. Пожалуйста, попробуйте еще раз."
             })

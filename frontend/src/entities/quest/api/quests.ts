@@ -9,10 +9,10 @@ type CreateQuestData = Omit<Quest, 'id' | 'progress'>;
 
 export async function getQuests(): Promise<Quest[]> {
     const result = await fetchWithAuth('/quests', { next: { tags: ['quests'] } });
-    if (result.success) {
+    if (result.success && result.data) {
         // Here we add a mock progress for demonstration on the frontend.
         // In a real app, progress would come from a user-specific endpoint.
-        return result.data.map((q: any) => ({ ...q, progress: Math.floor(Math.random() * q.goal) }));
+        return result.data.map((q: Quest) => ({ ...q, progress: Math.floor(Math.random() * q.goal) }));
     }
     console.error("Failed to fetch quests:", result.error);
     return [];

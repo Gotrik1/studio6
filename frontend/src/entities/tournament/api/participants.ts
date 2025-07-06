@@ -3,15 +3,18 @@
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
+import type { User } from '@/shared/lib/types';
+import type { TeamRosterMember } from '@/entities/team/model/types';
+
 
 // Adapter to transform a raw team object from the backend
-const adaptParticipantTeam = (team: any) => {
+const adaptParticipantTeam = (team: { id: string; captain: { id: string; name: string; }; members: User[]; }) => {
     if (!team) return null;
     return {
         ...team,
         id: String(team.id),
         captain: team.captain ? { ...team.captain, id: String(team.captain.id) } : null,
-        members: (team.members || []).map((member: any) => ({
+        members: (team.members || []).map((member: User) => ({
             ...member,
             id: String(member.id),
             avatar: member.avatar || null,
@@ -25,7 +28,7 @@ export async function getTournamentApplications(tournamentId: string) {
     });
     
     if (result.success && Array.isArray(result.data)) {
-        result.data = result.data.map((app: any) => ({
+        result.data = result.data.map((app: { id: string; team: { id: string; captain: { id: string; name: string; }; members: User[]; }; }) => ({
             ...app,
             id: String(app.id),
             team: adaptParticipantTeam(app.team),

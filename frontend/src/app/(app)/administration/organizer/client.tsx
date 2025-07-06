@@ -24,5 +24,5 @@ type OrganizerProfileProps = {
 };
 
 export default function OrganizerClient({ user, achievements, tournaments }: OrganizerProfileProps) {
-  return <OrganizerProfile user={user as any} achievements={achievements} tournaments={tournaments} />;
+  return <OrganizerProfile user={user} achievements={achievements} tournaments={tournaments} />;
 }

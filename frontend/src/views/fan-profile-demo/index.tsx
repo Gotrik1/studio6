@@ -1,5 +1,4 @@
 import FanClient from "@/app/(app)/administration/fan/client";
-import { useSession } from "@/shared/lib/session/client";
 import { getPlayerProfile } from '@/entities/user/api/get-user';
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
 import { getTeams } from '@/entities/team/api/teams';
@@ -21,5 +20,5 @@ export async function FanProfilePage() {
     // For demo, favorite teams are the first 2 teams
     const favoriteTeams = allTeams.slice(0, 2);
 
-    return <FanClient user={pageData.user as any} achievements={achievements} favoriteTeams={favoriteTeams} isCurrentUser={false} />;
+    return <FanClient user={pageData.user} achievements={achievements} favoriteTeams={favoriteTeams} isCurrentUser={false} />;
 }

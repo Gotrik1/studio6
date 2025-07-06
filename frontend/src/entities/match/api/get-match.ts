@@ -17,7 +17,7 @@ export async function getMatchById(id: string): Promise<MatchDetails | null> {
 }
 
 
-export async function getMatchOfTheWeek(): Promise<any> {
+export async function getMatchOfTheWeek(): Promise<MatchDetails | null> {
      const result = await fetchWithAuth(`/matches/match-of-the-week`);
      if (!result.success) {
         console.error('Failed to fetch match of the week:', result.error);

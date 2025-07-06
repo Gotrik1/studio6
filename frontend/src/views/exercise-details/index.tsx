@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
-import { AlertTriangle, CheckCircle, LineChart, Award, TrendingUp, Video } from 'lucide-react';
+import { AlertTriangle, CheckCircle, LineChart, Award, TrendingUp, HeartPulse } from 'lucide-react';
 import { getTrainingAnalytics } from '@/shared/lib/get-training-analytics';
 import { PersonalRecordHistoryChart } from '@/widgets/analytics-charts/personal-record-chart';
 import { ExerciseHistoryTable } from '@/widgets/exercise-history-table';

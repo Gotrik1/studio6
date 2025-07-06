@@ -4,11 +4,12 @@
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayerSummary, FullUserProfile, PlayerStats } from '@/entities/user/model/types';
+import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, UserTeam } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
 import type { Achievement } from '@/entities/achievement/model/types';
+import type { TournamentCrm, JudgedMatch } from '@/entities/user/model/types';
 
 export type { FullUserProfile, PlayerStats };
 
@@ -56,14 +57,14 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
         const rawProfile = result.data;
         
         // Adapter for user data to ensure consistency between frontend and backend
-        const profileData = {
+        const profileData: FullUserProfile = {
             ...rawProfile,
             id: String(rawProfile.id),
             name: rawProfile.fullName || rawProfile.name,
             avatar: rawProfile.avatarUrl || rawProfile.avatar,
         };
         
-        const playerActivity: PlayerActivityItem[] = (profileData.activities || []).map((activity: any) => {
+        const playerActivity: PlayerActivityItem[] = (profileData.activities || []).map((activity: Activity) => {
             const metadata = activity.metadata as any;
             let text = `Неизвестное событие`;
             
@@ -82,9 +83,9 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
                 text: text,
                 timestamp: activity.timestamp,
             }
-        }).filter((item: any): item is PlayerActivityItem => item !== null);
+        }).filter((item: PlayerActivityItem | null): item is PlayerActivityItem => item !== null);
         
-        const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player: any) => ({
+        const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player: CoachedPlayerSummary) => ({
             id: String(player.id),
             name: player.name,
             avatar: player.avatar || null,
@@ -97,18 +98,18 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
             ...profileData,
             activities: playerActivity,
             coaching: coachedPlayers, // Use adapted data
-            teams: (rawProfile.teams || []).map((team: any) => ({
+            teams: (rawProfile.teams || []).map((team: UserTeam) => ({
                 ...team,
                 id: String(team.id),
-                logo: team.logoUrl || team.logo || null,
+                logo: team.logo || null,
             })),
-            judgedMatches: (rawProfile.judgedMatches || []).map((match: any) => ({
+            judgedMatches: (rawProfile.judgedMatches || []).map((match: JudgedMatch) => ({
                 ...match,
                 id: String(match.id),
                 team1: { name: match.team1.name },
                 team2: { name: match.team2.name },
             })),
-            organizedTournaments: (rawProfile.organizedTournaments || []).map((t: any) => ({
+            organizedTournaments: (rawProfile.organizedTournaments || []).map((t: TournamentCrm) => ({
                 ...t,
                 id: String(t.id),
             }))
@@ -116,7 +117,7 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
 
         return {
             user: augmentedProfile,
-        } as unknown as { user: FullUserProfile };
+        };
 
     } catch(error) {
         console.error(`Error fetching user profile for ${id}:`, error);

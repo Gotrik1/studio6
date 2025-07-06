@@ -33,8 +33,8 @@ const defaultTargets: NutritionTargets = {
     carbs: 300,
 };
 
-function transformRawLog(rawLog: any[]): FoodLogEntry[] {
-    return rawLog.map(entry => {
+function transformRawLog(rawLog: FoodLogEntry[]): FoodLogEntry[] {
+    return rawLog.map((entry: any) => {
         const ratio = entry.grams / 100;
         return {
             id: entry.id,
@@ -60,8 +60,9 @@ export const NutritionProvider = ({ children }: { children: ReactNode }) => {
     try {
         const rawLog = await getFoodLog();
         setLog(transformRawLog(rawLog));
-    } catch (error) {
-        toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить дневник питания.' });
+    } catch (error: unknown) {
+        const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить дневник питания.';
+        toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
     } finally {
         setIsLoading(false);
     }

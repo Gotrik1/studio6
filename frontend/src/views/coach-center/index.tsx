@@ -1,9 +1,8 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
+import { useState, useEffect } from 'react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { ClipboardList, Users, TrendingUp, BookOpen, BarChart3 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
@@ -16,7 +15,7 @@ import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { useSession } from '@/shared/lib/session/client';
 import { getPlayerProfile, type FullUserProfile } from '@/entities/user/api/get-user';
 import { useTraining } from '@/shared/context/training-provider';
-import type { CoachedPlayer } from '@/entities/user/model/types';
+import type { CoachedPlayer, CoachedPlayerSummary } from '@/entities/user/model/types';
 
 const StatCard = ({ title, value, icon: Icon }: { title: string, value: string, icon: React.ElementType }) => (
     <Card>
@@ -79,16 +78,17 @@ export function CoachCenterPage() {
     
     // In a real app, coachedPlayers would be fetched with full stats.
     // For now, we augment the basic user data from the backend with mock stats for UI compatibility.
-    const coachedPlayers: CoachedPlayer[] = (coachData.coaching || []).map((player: any) => ({
+    const coachedPlayers: CoachedPlayer[] = (coachData.coaching || []).map((player: CoachedPlayerSummary) => ({
         id: player.id,
         name: player.name,
         avatar: player.avatar || null,
         avatarHint: 'esports player portrait',
         role: player.role,
+        mainSport: player.mainSport,
         // Mock stats and history as the backend doesn't provide this level of detail yet
         stats: { kda: '1.2', winRate: '55%', favoriteMap: 'Ascent' },
         matchHistory: 'W 13-8, L 10-13, W 13-2',
-        adherence: Math.floor(Math.random() * (98 - 75 + 1) + 75),
+        adherence: player.adherence ?? Math.floor(Math.random() * (98 - 75 + 1) + 75),
         progress: Math.floor(Math.random() * (25 - 5 + 1) + 5),
     }));
 

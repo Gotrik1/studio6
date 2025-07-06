@@ -27,8 +27,9 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await getInventory();
             setItems(data);
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить инвентарь.' });
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить инвентарь.';
+            toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
         } finally {
             setIsLoading(false);
         }
@@ -57,9 +58,9 @@ export const InventoryProvider = ({ children }: { children: ReactNode }) => {
          const newInventoryItemData = {
             name: item.name,
             category: item.category as InventoryItem['category'],
-            type: item.name,
+            type: item.name, // Use item name as type for simplicity
             purchaseDate: format(new Date(), 'yyyy-MM-dd'),
-            lifespanMonths: 24,
+            lifespanMonths: 24, // Default lifespan for store items
             image: item.image || 'https://placehold.co/600x400.png',
             imageHint: item.imageHint || 'store item',
         };

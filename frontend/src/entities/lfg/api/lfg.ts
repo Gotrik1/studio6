@@ -22,7 +22,7 @@ export async function fetchLobbies(): Promise<LfgLobby[]> {
         return [];
     }
     // Prisma returns Date objects as strings, need to convert them back
-    return result.data.map((lobby: any) => ({
+    return result.data.map((lobby: LfgLobby) => ({
         ...lobby,
         startTime: new Date(lobby.startTime),
         endTime: new Date(lobby.endTime),

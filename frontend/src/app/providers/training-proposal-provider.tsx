@@ -43,9 +43,9 @@ export const TrainingProposalProvider = ({ children }: { children: ReactNode }) 
 
             setFriends(friendsData);
 
-            if (proposalsResult.success) {
+            if (proposalsResult.success && proposalsResult.data) {
                 // Convert date strings to Date objects
-                const formattedProposals = proposalsResult.data.map((p: any) => ({
+                const formattedProposals = proposalsResult.data.map((p: TrainingProposal) => ({
                     ...p,
                     date: new Date(p.date),
                 }));
