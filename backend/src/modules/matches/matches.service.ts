@@ -165,6 +165,51 @@ export class MatchesService {
       team: event.team?.name || "N/A",
     }));
 
+    const teamStats: {
+      [key: string]: { label: string; team1: number; team2: number };
+    } = {
+      shots: { label: "Удары по воротам", team1: 0, team2: 0 },
+      shotsOnTarget: { label: "Удары в створ", team1: 0, team2: 0 },
+      corners: { label: "Угловые", team1: 0, team2: 0 },
+      fouls: { label: "Нарушения", team1: 0, team2: 0 },
+      yellowCards: { label: "Желтые карточки", team1: 0, team2: 0 },
+      redCards: { label: "Красные карточки", team1: 0, team2: 0 },
+    };
+
+    // In a real application, possession would be derived from a more complex event stream.
+    // For this demo, we can mock it to ensure the UI looks complete.
+    teamStats["possession"] = {
+      label: "Владение мячом",
+      team1: 55,
+      team2: 45,
+    };
+
+    for (const event of match.events) {
+      const teamKey = event.teamId === match.team1Id ? "team1" : "team2";
+      switch (event.type) {
+        case "SHOT":
+          teamStats.shots[teamKey]++;
+          break;
+        case "SHOT_ON_TARGET":
+          // A shot on target is also a shot
+          teamStats.shots[teamKey]++;
+          teamStats.shotsOnTarget[teamKey]++;
+          break;
+        case "CORNER":
+          teamStats.corners[teamKey]++;
+          break;
+        case "FOUL":
+          teamStats.fouls[teamKey]++;
+          break;
+        case "YELLOW_CARD":
+          teamStats.yellowCards[teamKey]++;
+          break;
+        case "RED_CARD":
+          teamStats.redCards[teamKey]++;
+          break;
+      }
+    }
+
     // Map Prisma result to the frontend's MatchDetails shape
     return {
       id: match.id,
@@ -208,6 +253,7 @@ export class MatchesService {
         })),
       },
       events: shapedEvents,
+      teamStats,
     };
   }
 
