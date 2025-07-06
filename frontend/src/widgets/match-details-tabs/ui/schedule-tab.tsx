@@ -19,9 +19,7 @@ interface ScheduleTabProps {
     rounds: TournamentDetails['bracket']['rounds'];
 }
 
-type GroupedMatches = {
-    [date: string]: PlayableMatch[];
-};
+type GroupedMatches = Record<string, PlayableMatch[]>;
 
 export function ScheduleTab({ rounds }: ScheduleTabProps) {
     const allMatches = rounds
@@ -29,7 +27,7 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
         // Stricter filtering to ensure both teams are present.
         .filter((match): match is PlayableMatch => 'team1' in match && !!match.team1 && 'team2' in match && !!match.team2 && !!match.date && !!match.time);
 
-    const groupedMatches = allMatches.reduce((acc, match) => {
+    const groupedMatches = allMatches.reduce((acc: GroupedMatches, match: PlayableMatch) => {
         const dateStr = format(new Date(match.date), 'yyyy-MM-dd');
         if (!acc[dateStr]) {
             acc[dateStr] = [];
