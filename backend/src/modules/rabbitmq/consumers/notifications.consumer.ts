@@ -6,7 +6,7 @@ import { PRODVOR_EXCHANGE } from "../rabbitmq.config";
 import type { FriendRequestCreatedPayload } from "../models/friend-request-created.payload";
 import type { MatchFinishedPayload } from "../models/match-finished.payload";
 import type { TournamentAnnouncementCreatedPayload } from "../models/tournament-announcement-created.payload";
-import { EventsGateway } from "@/modules/websockets/events.gateway";
+import { EventsGateway } from "@/modules/websockets";
 import { SocketEvents } from "@/modules/websockets/events.enum";
 import type { Notification } from "@prisma/client";
 

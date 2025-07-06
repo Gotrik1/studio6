@@ -1,7 +1,7 @@
 
 import { Injectable, OnModuleInit, Logger } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
-import { EventsGateway } from "@/modules/websockets/events.gateway";
+import { EventsGateway } from "@/modules/websockets";
 import { kafka } from "../kafka.config";
 import type { ChatMessagePayload } from "../models/chat-message.payload";
 
