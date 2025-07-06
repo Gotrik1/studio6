@@ -2,6 +2,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -21,6 +22,7 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
     const { programs, updateProgram, isLoading } = useTraining();
     const router = useRouter();
     const { toast } = useToast();
+    const [isSaving, setIsSaving] = useState(false);
     
     const programToEdit = programs.find(p => p.id === programId);
 
@@ -39,6 +41,7 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
     }
 
     const handleSubmit = async (data: ProgramFormValues) => {
+        setIsSaving(true);
         const success = await updateProgram(programId, data);
         if (success) {
             toast({
@@ -47,11 +50,13 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
             });
             router.push('/training/programs');
         }
+        setIsSaving(false);
     };
 
     return (
         <TrainingProgramForm 
             onSubmit={handleSubmit}
+            isSaving={isSaving}
             initialData={programToEdit}
         />
     );

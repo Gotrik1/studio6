@@ -2,8 +2,10 @@
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import type { SponsorshipOffer } from '../model/types';
+import type { SponsorshipOffer as SponsorshipOfferType } from '../model/types';
 import { revalidateTag } from 'next/cache';
+
+export type SponsorshipOffer = SponsorshipOfferType;
 
 export async function getSponsorshipOffers(teamId: string) {
     // This assumes an endpoint like GET /teams/{teamId}/sponsorship-offers exists

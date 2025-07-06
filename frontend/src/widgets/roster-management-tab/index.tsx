@@ -2,6 +2,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect, useTransition, useCallback } from 'react';
@@ -106,7 +107,7 @@ export function RosterManagementTab() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {roster.map((player: TeamRosterMember) => (
+                        {roster.map((player) => (
                             <TableRow key={player.id}>
                                 <TableCell className="font-medium flex items-center gap-2">
                                     <Avatar className="h-8 w-8"><AvatarImage src={player.avatar || ''} /><AvatarFallback>{player.name.charAt(0)}</AvatarFallback></Avatar>

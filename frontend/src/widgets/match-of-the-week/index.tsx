@@ -2,6 +2,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -14,7 +15,7 @@ import { generateMatchPost, type GenerateMatchPostOutput } from '@/shared/api/ge
 import Link from 'next/link';
 import Image from 'next/image';
 import { getMatchOfTheWeek } from '@/entities/match/api/get-match';
-import type { Match } from '@/entities/match/model/types';
+import type { Match, MatchDetails } from '@/entities/match/model/types';
 
 type ResultData = {
     matchPost: GenerateMatchPostOutput;
@@ -41,17 +42,30 @@ export function MatchOfTheWeekWidget() {
                     throw new Error("Invalid score format for match of the week.");
                 }
 
-                const winningTeam = scoreParts[0] > scoreParts[1] ? matchData.team1 : matchData.team2;
-                const losingTeam = scoreParts[0] > scoreParts[1] ? matchData.team2 : matchData.team1;
+                const winningTeam = scoreParts[0] > scoreParts[1] ? matchData.team1.name : matchData.team2.name;
+                const losingTeam = scoreParts[0] > scoreParts[1] ? matchData.team2.name : matchData.team1.name;
 
                 const postData = await generateMatchPost({
-                    winningTeam: winningTeam.name,
-                    losingTeam: losingTeam.name,
+                    winningTeam,
+                    losingTeam,
                     score: matchData.score,
                     matchSummary: `A close match in the ${matchData.tournament || 'friendly game'}.`
                 });
                 
-                setResult({ matchPost: postData, matchDetails: matchData });
+                // Adapt MatchDetails to Match
+                const adaptedMatchDetails: Match = {
+                    id: matchData.id,
+                    team1: matchData.team1,
+                    team2: matchData.team2,
+                    score: matchData.score,
+                    tournament: matchData.tournament,
+                    game: 'Unknown', // game property is missing on MatchDetails
+                    date: matchData.date,
+                    status: matchData.status,
+                    href: `/matches/${matchData.id}`,
+                };
+                
+                setResult({ matchPost: postData, matchDetails: adaptedMatchDetails });
             } catch (e) {
                 console.error('Failed to fetch match of the week:', e);
                 setError('Не удалось загрузить матч недели.');
