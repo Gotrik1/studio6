@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  /**
+   * Rewrites are used as a development proxy to avoid CORS issues.
+   * This is the Next.js equivalent of using a `proxy.conf.js` in frameworks like Angular.
+   * It tells the Next.js development server to proxy any requests starting with `/api`
+   * to our backend service (in this case, the Kong API Gateway).
+   * This configuration only applies to development and is not used in production.
+   */
   async rewrites() {
     return [
       {
