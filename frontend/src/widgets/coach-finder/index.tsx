@@ -29,7 +29,7 @@ function AiRecommendedCoachCard({ coach, reasoning }: { coach: Coach, reasoning:
         <Card className="bg-muted/30 shadow-none">
             <CardHeader className="flex-row items-center gap-4">
                 <Avatar className="h-16 w-16 border">
-                    <AvatarImage src={coach.avatar} alt={coach.name} data-ai-hint={coach.avatarHint}/>
+                    <AvatarImage src={coach.avatar || undefined} alt={coach.name} data-ai-hint={coach.avatarHint}/>
                     <AvatarFallback>{coach.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
@@ -90,7 +90,7 @@ export function CoachFinder() {
             setIsLoading(false);
         }
     };
-
+    
     return (
         <div className="space-y-6">
             <Card>
@@ -106,7 +106,7 @@ export function CoachFinder() {
                         disabled={isLoading}
                         className="min-h-[100px]"
                     />
-                    {error && (
+                     {error && (
                         <Alert variant="destructive" className="mt-4">
                             <AlertTitle>Ошибка</AlertTitle>
                             <AlertDescription>{error}</AlertDescription>
@@ -114,30 +114,32 @@ export function CoachFinder() {
                     )}
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={handleSearch} disabled={isLoading}>
+                     <Button onClick={handleSearch} disabled={isLoading}>
                         {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                         {isLoading ? 'Идет поиск...' : 'Подобрать тренера'}
                     </Button>
                 </CardFooter>
             </Card>
 
-            {isLoading && (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-72 w-full" />)}
-                </div>
-            )}
-            
-            {aiResult && aiResult.recommendations.length > 0 && (
-                 <div className="space-y-4 animate-in fade-in-50">
-                    <h3 className="text-xl font-bold">Рекомендации от AI:</h3>
+            <div className="space-y-4">
+                {isLoading && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {aiResult.recommendations.map(({ coach, reasoning }) => (
-                            <AiRecommendedCoachCard key={coach.id} coach={coach} reasoning={reasoning} />
-                        ))}
+                        {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-72 w-full" />)}
                     </div>
-                    <Separator/>
-                 </div>
-            )}
+                )}
+                
+                {aiResult && aiResult.recommendations.length > 0 && (
+                     <div className="space-y-4 animate-in fade-in-50">
+                        <h3 className="text-xl font-bold">Рекомендации от AI:</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {aiResult.recommendations.map(({ coach, reasoning }) => (
+                                <AiRecommendedCoachCard key={coach.id} coach={coach} reasoning={reasoning} />
+                            ))}
+                        </div>
+                        <Separator/>
+                     </div>
+                )}
+            </div>
         </div>
     );
 }

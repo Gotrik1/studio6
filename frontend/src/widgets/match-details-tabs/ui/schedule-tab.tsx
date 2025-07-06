@@ -30,11 +30,11 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
         .filter((match): match is PlayableMatch => 'team1' in match && !!match.team1 && 'team2' in match && !!match.team2 && !!match.date && !!match.time);
 
     const groupedMatches = allMatches.reduce((acc, match) => {
-        const date = match.date;
-        if (!acc[date]) {
-            acc[date] = [];
+        const dateStr = format(new Date(match.date), 'yyyy-MM-dd');
+        if (!acc[dateStr]) {
+            acc[dateStr] = [];
         }
-        acc[date].push(match);
+        acc[dateStr].push(match);
         return acc;
     }, {} as GroupedMatches);
 

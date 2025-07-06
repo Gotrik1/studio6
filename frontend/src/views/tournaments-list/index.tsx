@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -65,7 +66,7 @@ export function TournamentsListPage() {
                         Найдите подходящий турнир и примите участие в битве за славу и призы.
                     </p>
                 </div>
-                <Button asChild>
+                 <Button asChild>
                     <Link href="/tournaments/new">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Создать турнир
@@ -85,7 +86,7 @@ export function TournamentsListPage() {
                         />
                     </div>
                     <div className="flex flex-wrap gap-2">
-                        {uniqueGames.map(game => (
+                        {uniqueGames.map((game: string) => (
                             <Button 
                                 key={game} 
                                 variant={gameFilter === game ? "default" : "outline"}

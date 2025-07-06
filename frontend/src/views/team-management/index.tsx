@@ -51,7 +51,7 @@ export function TeamManagementPage() {
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
     const [isActionPending, startTransition] = useTransition();
     
-    const teamPlayers: CoachedPlayer[] = team?.roster.map((p: any) => ({
+    const teamPlayers: CoachedPlayer[] = team?.roster.map((p) => ({
         id: p.id,
         name: p.name,
         avatar: p.avatar,

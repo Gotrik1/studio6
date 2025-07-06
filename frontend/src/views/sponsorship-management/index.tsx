@@ -8,4 +8,3 @@ import { getSponsorshipDashboardData } from '@/entities/sponsorship/api/sponsors
 export default function SponsorshipManagementPage() {
     return <p>This page is deprecated. Please use the sponsor's profile page.</p>;
 }
-

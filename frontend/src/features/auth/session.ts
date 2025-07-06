@@ -1,5 +1,3 @@
-
-
 'use server';
 import 'server-only';
 import { cookies } from 'next/headers';
@@ -8,7 +6,7 @@ import type { User } from '@/shared/lib/types';
 export type SessionData = {
   user: User;
   access_token: string;
-}
+};
 
 export async function getSession(): Promise<SessionData | null> {
   const cookieStore = cookies();
@@ -23,4 +21,3 @@ export async function getSession(): Promise<SessionData | null> {
     return null;
   }
 }
-

@@ -27,7 +27,7 @@ export async function SponsorProfilePage() {
     // Filter data relevant to this specific sponsor for the demo
     // In a real app, you might have a dedicated endpoint for this
     const activeCampaigns = promotionsData.filter(
-        p => p.sponsor?.name === profileData.user.name
+        (p: Promotion) => p.sponsor?.name === profileData.user.name
     );
     
     const sponsoredTeams = sponsorshipData?.sponsoredTeams || [];

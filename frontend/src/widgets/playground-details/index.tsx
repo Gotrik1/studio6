@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
-import type { Playground } from '@/entities/playground/model/types';
+import type { Playground, PlaygroundReview } from '@/entities/playground/model/types';
 import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -17,30 +17,38 @@ import { useLfg } from '@/app/providers/lfg-provider';
 import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
-import { PlaygroundReviewsTab, type PlaygroundReview } from '@/widgets/playground-reviews-tab';
+import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
-import { ReportPlaygroundIssueDialog, type FormValues as ReportFormValues } from '@/widgets/report-playground-issue-dialog';
-import { analyzePlaygroundReport, type AnalyzePlaygroundReportOutput } from '@/shared/api/genkit/flows/analyze-playground-report-flow';
+import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-dialog';
 import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
-import { getReviews, createReview } from '@/entities/playground/api/reviews';
+import { createReview, getReviews, type CreateReviewData } from '@/entities/playground/api/reviews';
+import { useRouter } from 'next/navigation';
+import type { PlaygroundConditionReport } from '@/entities/playground/api/condition';
+import type { LfgLobby } from '@/entities/lfg/model/types';
+import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
+import { reportPlaygroundIssue } from '@/entities/playground/api/report';
 
 
-export default function PlaygroundDetailsPage({ playground }: { playground: Playground }) {
+export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
     const { user } = useSession();
     const { toast } = useToast();
+    const router = useRouter();
     const [activities, setActivities] = useState<PlaygroundActivity[]>([]);
     const [isLoadingActivities, setIsLoadingActivities] = useState(true);
     const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
     const [isLoadingReviews, setIsLoadingReviews] = useState(true);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
-    const [latestIssueReport, setLatestIssueReport] = useState<AnalyzePlaygroundReportOutput | null>(null);
-    const { lobbies, addLobby } = useLfg();
+    const [latestIssueReport, setLatestIssueReport] = useState<PlaygroundConditionReport | null>(initialConditionReport);
+    const { addLobby } = useLfg();
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [initialDateTime, setInitialDateTime] = useState<{date: Date, time: string}>();
+    
+    const [schedule, setSchedule] = useState<LfgLobby[]>([]);
+    const [isLoadingSchedule, setIsLoadingSchedule] = useState(true);
 
     const loadActivities = useCallback(async () => {
         setIsLoadingActivities(true);
@@ -66,16 +74,13 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         }
     }, [playground.id, toast]);
     
-    const loadReviews = useCallback(async () => {
+     const loadReviews = useCallback(async () => {
         setIsLoadingReviews(true);
         try {
             const reviewsResult = await getReviews(playground.id);
-            if (reviewsResult.success) {
-                const formattedReviews = reviewsResult.data.map((r: any) => ({
-                    ...r,
-                    timestamp: r.createdAt
-                }));
-                setReviews(formattedReviews);
+            if (reviewsResult.success && reviewsResult.data) {
+                // The data is already formatted by the API client, so we can use it directly
+                setReviews(reviewsResult.data);
             } else {
                  toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить отзывы.' });
             }
@@ -87,10 +92,24 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         }
     }, [playground.id, toast]);
 
+    const loadSchedule = useCallback(async () => {
+        setIsLoadingSchedule(true);
+        try {
+            const scheduleData = await getPlaygroundSchedule(playground.id);
+            setSchedule(scheduleData);
+        } catch (error) {
+            console.error('Failed to load schedule', error);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить расписание площадки.' });
+        } finally {
+            setIsLoadingSchedule(false);
+        }
+    }, [playground.id, toast]);
+
     useEffect(() => {
         loadActivities();
         loadReviews();
-    }, [loadActivities, loadReviews]);
+        loadSchedule();
+    }, [loadActivities, loadReviews, loadSchedule]);
 
     const handleCheckIn = async (comment: string, photo?: string) => {
         if (!user) return;
@@ -111,7 +130,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
         }
     };
     
-    const handleAddReview = async (reviewData: Omit<PlaygroundReview, 'id' | 'author' | 'timestamp'>) => {
+    const handleAddReview = async (reviewData: CreateReviewData) => {
         const result = await createReview(playground.id, reviewData);
         if (result.success) {
             toast({ title: 'Спасибо за ваш отзыв!', description: 'Ваш отзыв был опубликован.' });
@@ -120,27 +139,26 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось опубликовать отзыв.' });
         }
     };
-
-    const handleReportSubmit = async (data: ReportFormValues) => {
-        try {
-            const reportAnalysis = await analyzePlaygroundReport({
-                playgroundName: playground.name,
-                issueCategory: data.category,
-                userComment: data.comment,
-            });
-            setLatestIssueReport(reportAnalysis);
-            toast({
+    
+    const handleReportSubmit = async (data: { category: string; comment: string }) => {
+        const result = await reportPlaygroundIssue({
+            playgroundId: playground.id,
+            ...data
+        });
+        if (result.success && result.data) {
+             setLatestIssueReport(result.data);
+              toast({
                 title: "Спасибо за ваше сообщение!",
                 description: "Информация о проблеме была передана модераторам."
             });
-        } catch (e) {
-             console.error(e);
-            toast({
+        } else {
+             toast({
                 variant: 'destructive',
                 title: "Ошибка",
                 description: "Не удалось отправить отчет. Пожалуйста, попробуйте еще раз."
             })
         }
+       
     };
     
     const openPlanGameDialog = (day: Date, hour: number) => {
@@ -172,6 +190,7 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                 title: "Игра запланирована!",
                 description: "Ваш план отобразится в расписании и разделе LFG.",
             });
+            await loadSchedule();
         } else {
              toast({
                 variant: "destructive",
@@ -220,10 +239,16 @@ export default function PlaygroundDetailsPage({ playground }: { playground: Play
                         <PlaygroundInfoTab playground={playground} issueReport={latestIssueReport} />
                     </TabsContent>
                     <TabsContent value="schedule" className="mt-6">
-                        <PlaygroundScheduleTab schedule={lobbies.filter(l => l.playgroundId === playground.id)} onPlanClick={openPlanGameDialog} />
+                        <PlaygroundScheduleTab schedule={schedule} onPlanClick={openPlanGameDialog} isLoading={isLoadingSchedule} />
                     </TabsContent>
                     <TabsContent value="reviews" className="mt-6">
-                        <PlaygroundReviewsTab reviews={reviews} onAddReview={handleAddReview} playgroundName={playground.name} isLoading={isLoadingReviews} />
+                        <PlaygroundReviewsTab 
+                            playgroundId={playground.id}
+                            playgroundName={playground.name}
+                            reviews={reviews} 
+                            onAddReview={handleAddReview} 
+                            isLoading={isLoadingReviews} 
+                        />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-6">
                         <PlaygroundActivityTab activities={activities} isLoading={isLoadingActivities} />

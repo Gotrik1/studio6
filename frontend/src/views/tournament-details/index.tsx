@@ -50,11 +50,10 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
             <Card className="overflow-hidden">
                  <div className="relative h-48 sm:h-64">
                     <Image src={tournament.image} alt={`${tournament.name} banner`} fill className="object-cover" data-ai-hint={tournament.dataAiHint} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
-                        <div>
-                            <Badge variant={getStatusVariant(tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен')}>{tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен'}</Badge>
-                            <h1 className="font-headline text-2xl sm:text-4xl font-bold text-white shadow-lg mt-2">{tournament.name}</h1>
-                        </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                    <div className="absolute bottom-6 left-6 text-white">
+                        <Badge variant={getStatusVariant(tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен')}>{tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен'}</Badge>
+                        <h1 className="font-headline text-2xl sm:text-4xl font-bold text-white shadow-lg mt-2">{tournament.name}</h1>
                     </div>
                      <div className="absolute top-4 right-4">
                         {canRegister && (
@@ -93,7 +92,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                             <Card>
                                 <CardHeader><CardTitle>Организатор</CardTitle></CardHeader>
                                 <CardContent className="flex items-center gap-3">
-                                    <Avatar><AvatarImage src={tournament.organizer.avatar || ''} /></Avatar>
+                                    <Avatar><AvatarImage src={tournament.organizer.avatar || undefined} /></Avatar>
                                     <p className="font-semibold">{tournament.organizer.name}</p>
                                 </CardContent>
                                 <CardContent><Button className="w-full">Связаться</Button></CardContent>
@@ -122,7 +121,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                             {tournament.teams.map(team => (
                                 <div key={team.name} className="flex flex-col items-center gap-2 text-center">
                                     <Avatar className="h-16 w-16">
-                                        <AvatarImage src={team.logo || ''} data-ai-hint={team.dataAiHint || ''} />
+                                        <AvatarImage src={team.logo || undefined} data-ai-hint={team.dataAiHint || ''} />
                                         <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <p className="text-sm font-medium">{team.name}</p>
@@ -147,7 +146,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                  </TabsContent>
 
                  <TabsContent value="media" className="mt-4">
-                    <MediaTab media={tournament.media.map(m => ({ ...m, hint: m.hint || ''}))} />
+                    <MediaTab media={tournament.media || []} />
                 </TabsContent>
             </Tabs>
         </div>

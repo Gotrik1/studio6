@@ -1,24 +1,6 @@
 
-import FanClient from "@/app/(app)/administration/fan/client";
-import { getPlayerProfile } from "@/entities/user/api/get-user";
-import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
-import { getTeams } from "@/entities/team/api/teams";
-import { notFound } from "next/navigation";
+import { FanProfilePage as FanProfileDemoPage } from '@/views/fan-profile-demo';
 
-const FAN_USER_ID = '10'; // Fan user from seed
-
-export async function FanProfilePage() {
-    const [pageData, achievements, allTeams] = await Promise.all([
-        getPlayerProfile(FAN_USER_ID),
-        getAchievementsForUser(FAN_USER_ID),
-        getTeams(),
-    ]);
-
-    if (!pageData) {
-        notFound();
-    }
-    
-    const favoriteTeams = allTeams.slice(0, 2);
-
-    return <FanClient user={pageData.user as any} achievements={achievements} favoriteTeams={favoriteTeams} isCurrentUser={true} />;
+export function FanProfilePage() {
+    return <FanProfileDemoPage />;
 }

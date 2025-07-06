@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import type { LfgLobby } from '@/entities/lfg/model/types';
-import { fetchLobbies, createLobby, joinLobby as apiJoinLobby } from '@/entities/lfg/api/lfg';
+import { fetchLobbies, createLobby, joinLobby as apiJoinLobby, type CreateLobbyApiData } from '@/entities/lfg/api/lfg';
 import { useToast } from '@/shared/hooks/use-toast';
 
 export type { LfgLobby };
@@ -10,7 +10,7 @@ export type { LfgLobby };
 interface LfgContextType {
   lobbies: LfgLobby[];
   isLoading: boolean;
-  addLobby: (data: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number }) => Promise<boolean>;
+  addLobby: (data: CreateLobbyApiData) => Promise<boolean>;
   joinLobby: (lobbyId: string) => void;
 }
 
@@ -37,7 +37,7 @@ export const LfgProvider = ({ children }: { children: ReactNode }) => {
         loadLobbies();
     }, [loadLobbies]);
 
-    const addLobby = async (data: Omit<LfgLobby, 'id' | 'creator' | 'playersJoined' | 'endTime'> & { duration: number }) => {
+    const addLobby = async (data: CreateLobbyApiData) => {
          const result = await createLobby(data);
          if (result.success) {
             await loadLobbies(); // Refresh data

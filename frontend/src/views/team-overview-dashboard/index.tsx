@@ -50,7 +50,7 @@ export function TeamOverviewDashboard({ team, upcomingMatch, recentResults }: Te
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                      <Avatar>
-                                        <AvatarImage src={upcomingMatch.team1.logo || undefined} data-ai-hint={upcomingMatch.team1.logoHint} />
+                                        <AvatarImage src={upcomingMatch.team1.logo} data-ai-hint={upcomingMatch.team1.logoHint} />
                                         <AvatarFallback>{upcomingMatch.team1.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     <p className="font-semibold">{upcomingMatch.team1.name}</p>
@@ -62,7 +62,7 @@ export function TeamOverviewDashboard({ team, upcomingMatch, recentResults }: Te
                                 <div className="flex items-center gap-4">
                                      <p className="font-semibold">{upcomingMatch.team2.name}</p>
                                      <Avatar>
-                                        <AvatarImage src={upcomingMatch.team2.logo || undefined} data-ai-hint={upcomingMatch.team2.logoHint} />
+                                        <AvatarImage src={upcomingMatch.team2.logo} data-ai-hint={upcomingMatch.team2.logoHint} />
                                         <AvatarFallback>{upcomingMatch.team2.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 </div>
