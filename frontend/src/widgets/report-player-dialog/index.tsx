@@ -69,7 +69,7 @@ export function ReportPlayerDialog({ isOpen, onOpenChange, reportedPlayerName, r
         toast({
             variant: 'destructive',
             title: 'Ошибка',
-            description: result.error,
+            description: result.error || 'Не удалось отправить жалобу.',
         });
     }
 

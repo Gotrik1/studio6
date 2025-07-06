@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { UserMinus, ShieldQuestion, Loader2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useParams } from 'next/navigation';
-import { getTeamBySlug, type TeamDetails, type TeamRosterMember } from '@/entities/team/model/types';
+import { getTeamBySlug, type TeamDetails, type TeamRosterMember } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { removeMember, setCaptain } from '@/entities/team/api/teams';
 import { useSession } from '@/shared/lib/session/client';

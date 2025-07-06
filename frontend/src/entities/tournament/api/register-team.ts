@@ -18,7 +18,7 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
         // A real implementation might need a `GET /users/me/teams` or similar.
         const profileResult = await fetchWithAuth(`/users/${session.user.id}`);
         
-        if(!profileResult.success || !profileResult.data?.teams) {
+        if(!profileResult.success) {
              return { success: false, error: profileResult.error || "Не удалось получить список ваших команд." };
         }
         

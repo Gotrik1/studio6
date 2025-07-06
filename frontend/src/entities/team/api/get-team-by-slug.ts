@@ -28,7 +28,6 @@ const adaptBackendTeamToFrontend = (backendData: any): TeamDetails => {
       name: member.name || member.fullName, // Handle both possible field names
       avatar: member.avatar || member.avatarUrl || null,
       role: member.role,
-      rating: member.rating,
       status: member.status,
       adherence: member.adherence ?? 0,
     })),

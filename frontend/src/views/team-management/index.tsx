@@ -67,6 +67,7 @@ export function TeamManagementPage() {
 
     const fetchData = useCallback(async () => {
         if (params.slug) {
+            setIsLoading(true);
             const teamData = await getTeamBySlug(params.slug as string);
             setTeam(teamData);
             if (teamData) {
@@ -79,9 +80,9 @@ export function TeamManagementPage() {
                     setJoinRequests(appsResult.data.map((app: any) => ({
                         id: app.id,
                         teamId: app.teamId,
-                        user: app.user,
+                        applicant: app.user,
                         message: app.message,
-                        statsSummary: 'Mock summary for now'
+                        statsSummary: app.statsSummary || 'Статистика отсутствует',
                     })));
                 } else {
                     toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
@@ -100,7 +101,7 @@ export function TeamManagementPage() {
         startTransition(async () => {
             const result = await acceptTeamApplication(request.id);
             if(result.success) {
-                toast({ title: "Игрок принят!", description: `${request.user.name} теперь в вашей команде.` });
+                toast({ title: "Игрок принят!", description: `${request.applicant.name} теперь в вашей команде.` });
                 await fetchData();
             } else {
                  toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
@@ -115,7 +116,7 @@ export function TeamManagementPage() {
                 toast({
                     variant: 'destructive',
                     title: 'Заявка отклонена',
-                    description: `Заявка от ${request.user.name} была отклонена.`,
+                    description: `Заявка от ${request.applicant.name} была отклонена.`,
                 });
                 await fetchData();
              } else {
@@ -128,14 +129,6 @@ export function TeamManagementPage() {
         setSelectedRequest(request);
         setIsAnalysisOpen(true);
     };
-    
-    const analysisDialogRequestProp = selectedRequest ? {
-        name: selectedRequest.user.name,
-        role: selectedRequest.user.role,
-        avatar: selectedRequest.user.avatar || '',
-        avatarHint: 'sports player',
-        statsSummary: selectedRequest.statsSummary
-    } : null;
 
     if (isLoading) {
         return (
@@ -200,10 +193,10 @@ export function TeamManagementPage() {
                                         {joinRequests.map(request => (
                                             <TableRow key={request.id}>
                                                 <TableCell className="font-medium flex items-center gap-2">
-                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.user.avatar || undefined} data-ai-hint="player avatar" /><AvatarFallback>{request.user.name.charAt(0)}</AvatarFallback></Avatar>
-                                                    {request.user.name}
+                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.applicant.avatar || undefined} data-ai-hint="player avatar" /><AvatarFallback>{request.applicant.name.charAt(0)}</AvatarFallback></Avatar>
+                                                    {request.applicant.name}
                                                 </TableCell>
-                                                <TableCell>{request.user.role}</TableCell>
+                                                <TableCell>{request.applicant.role}</TableCell>
                                                 <TableCell className="text-right space-x-1">
                                                     <Button variant="outline" size="sm" onClick={() => handleAnalyze(request)}>AI-Анализ</Button>
                                                     <Button variant="ghost" size="icon" onClick={() => handleDecline(request)} disabled={isActionPending}><X className="h-4 w-4 text-red-500" /></Button>
@@ -248,7 +241,7 @@ export function TeamManagementPage() {
             <JoinRequestAnalysisDialog 
                 isOpen={isAnalysisOpen}
                 onOpenChange={setIsAnalysisOpen}
-                request={analysisDialogRequestProp}
+                request={selectedRequest}
                 teamNeeds={teamNeeds}
             />
         </>

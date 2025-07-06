@@ -4,7 +4,8 @@
 
 import { fetchWithAuth, type FetchResult } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { PlaygroundReview } from '../model/types';
+import type { PlaygroundReview as PlaygroundReviewType } from '../model/types';
+export type PlaygroundReview = PlaygroundReviewType;
 
 export type CreateReviewData = {
     rating: number;

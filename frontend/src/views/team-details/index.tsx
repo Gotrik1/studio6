@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useTransition, useEffect } from 'react';
+import { useState, useTransition } from 'react';
 import { Card, CardHeader, CardContent, CardTitle } from "@/shared/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
@@ -15,14 +16,14 @@ import { useSession } from '@/shared/lib/session/client';
 import { DonationDialog } from '@/features/donation-dialog/index';
 import { TeamChatInterface } from '@/widgets/team-chat-interface';
 import { TeamStatsTab } from '@/widgets/team-stats-tab';
-import type { TeamDetails } from '@/entities/team/model/types';
+import type { TeamDetails, TeamRosterMember } from '@/entities/team/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
 import { joinTeamAction } from '@/entities/team/api/join-team';
 import type { Playground } from '@/entities/playground/model/types';
 import { getPlaygroundById } from '@/entities/playground/api/playgrounds';
 import { TeamOverviewDashboard } from '@/widgets/team-overview-dashboard';
-import type { Match } from '@/entities/match/model/types';
 import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
+import { useEffect } from 'react';
 
 
 interface TeamDetailsPageProps {
@@ -49,7 +50,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
     }
 
     const isCaptain = currentUser?.id === team.captainId;
-    const isMember = team.roster.some(member => member.id === currentUser?.id);
+    const isMember = team.roster.some((member: TeamRosterMember) => member.id === currentUser?.id);
 
     const handleJoinTeam = () => {
         startTransition(async () => {
@@ -138,19 +139,17 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                                     <TableRow>
                                         <TableHead>Игрок</TableHead>
                                         <TableHead>Роль</TableHead>
-                                        <TableHead className="hidden md:table-cell">Рейтинг</TableHead>
                                         <TableHead className="text-right">Статус</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {team.roster.map(player => (
+                                    {team.roster.map((player: TeamRosterMember) => (
                                         <TableRow key={player.id}>
                                             <TableCell className="font-medium flex items-center gap-2">
                                                 <Avatar className="h-8 w-8"><AvatarImage src={player.avatar || ''} /><AvatarFallback>{String(player.name).charAt(0)}</AvatarFallback></Avatar>
                                                 {player.name}
                                             </TableCell>
                                             <TableCell>{player.id === team.captainId ? 'Капитан' : player.role}</TableCell>
-                                            <TableCell className="hidden md:table-cell">{player.rating}</TableCell>
                                             <TableCell className="text-right"><Badge variant={player.status === 'Активен' ? 'default' : 'outline'}>{player.status}</Badge></TableCell>
                                         </TableRow>
                                     ))}

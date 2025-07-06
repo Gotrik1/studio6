@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -69,7 +70,7 @@ const SetRow = ({ control, exerciseIndex, setIndex, personalRecords, exercise }:
     const watchedWeight = useWatch({ control, name: `exercises.${exerciseIndex}.sets.${setIndex}.loggedWeight` });
     const watchedReps = useWatch({ control, name: `exercises.${exerciseIndex}.sets.${setIndex}.loggedReps` });
     const currentE1RM = calculate1RM(watchedWeight || 0, watchedReps || 0);
-    const exercisePR = personalRecords.find(pr => pr.exercise === exercise.name);
+    const exercisePR = personalRecords.find(pr => pr.exercise === exercise.exercise.name);
     const isNewPR = currentE1RM > (exercisePR?.e1RM || 0);
 
     return (
@@ -78,12 +79,12 @@ const SetRow = ({ control, exerciseIndex, setIndex, personalRecords, exercise }:
             <TableCell className="text-muted-foreground">{exercise.sets[setIndex]?.plannedReps} x {exercise.sets[setIndex]?.plannedWeight}</TableCell>
             <TableCell>
                 <FormField control={control} name={`exercises.${exerciseIndex}.sets.${setIndex}.loggedReps`} render={({ field }) => (
-                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedReps} /></FormControl></FormItem>
+                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedReps ?? ''} /></FormControl></FormItem>
                 )} />
             </TableCell>
             <TableCell>
                 <FormField control={control} name={`exercises.${exerciseIndex}.sets.${setIndex}.loggedWeight`} render={({ field }) => (
-                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedWeight?.replace('кг','').trim()} /></FormControl></FormItem>
+                    <FormItem><FormControl><Input type="number" {...field} onChange={e => field.onChange(e.target.value === '' ? undefined : parseInt(e.target.value, 10))} value={field.value ?? ''} className="w-20" placeholder={exercise.sets[setIndex]?.plannedWeight?.replace('кг','').trim() ?? ''} /></FormControl></FormItem>
                 )} />
             </TableCell>
             <TableCell>
@@ -116,7 +117,7 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, personalRecords, exerci
     });
 
     const isSuperset = exercise.isSupersetWithPrevious;
-    const exerciseDetails = allExercises.find(ex => ex.name === exercise.name);
+    const exerciseDetails = allExercises.find(ex => ex.name === exercise.exercise.name);
     const exerciseId = exerciseDetails?.id || 'ex-not-found';
 
 
@@ -126,7 +127,7 @@ const ExerciseRow = ({ control, exerciseIndex, exercise, personalRecords, exerci
                 <h4 className="font-semibold flex items-center gap-2">
                     {isSuperset && <Link2 className="h-4 w-4 text-primary/50" />}
                     <Link href={`/training/exercises/${exerciseId}`} className="hover:underline hover:text-primary transition-colors">
-                        {exercise.name}
+                        {exercise.exercise.name}
                     </Link>
                 </h4>
             </div>
@@ -267,7 +268,7 @@ export function TrainingDayCard({ entry, personalRecords, onDelete, onCopy, onUp
                                 exerciseIndex={index}
                                 exercise={entry.exercises[index]}
                                 personalRecords={personalRecords}
-                                exerciseHistory={fullExerciseHistory[entry.exercises[index]?.name] || []}
+                                exerciseHistory={fullExerciseHistory[entry.exercises[index]?.exercise.name] || []}
                                 allExercises={allExercises}
                            />
                         ))}
