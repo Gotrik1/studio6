@@ -39,8 +39,8 @@ export class UsersService {
         name,
         email,
         passwordHash: password || "mock_hash", // In a real app, hash the password
-        role: role || "Игрок",
-        status: "Активен",
+        role: role || "PLAYER",
+        status: "ACTIVE",
         xp: 0,
       },
     });
@@ -55,7 +55,7 @@ export class UsersService {
   async findAll(params?: { role?: string }): Promise<User[]> {
     const where: Prisma.UserWhereInput = {};
     if (params?.role) {
-      where.role = params.role;
+      where.role = params.role as any;
     }
     return this.prisma.user.findMany({ where });
   }
@@ -66,7 +66,7 @@ export class UsersService {
       include: {
         activities: {
           orderBy: {
-            timestamp: "desc",
+            createdAt: "desc",
           },
           take: 10,
         },
@@ -88,9 +88,6 @@ export class UsersService {
           include: {
             sponsor: { select: { name: true, logo: true } },
           },
-          orderBy: { createdAt: "desc" },
-        },
-        gallery: {
           orderBy: { createdAt: "desc" },
         },
         careerHistory: {
