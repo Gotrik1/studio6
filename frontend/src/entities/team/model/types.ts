@@ -1,54 +1,7 @@
+import type { z } from 'zod';
+import type { TeamSchema, TeamDetailsSchema, TeamRosterMemberSchema, UserTeamSchema } from '@/backend/src/ai/flows/schemas/team.schema';
 
-
-export type Team = {
-    id: string;
-    name: string;
-    motto: string;
-    logo: string;
-    dataAiHint: string;
-    game: string;
-    rank: number;
-    members: number;
-    captain: string;
-    slug: string;
-    homePlaygroundId: string | null;
-};
-
-export type TeamRosterMember = {
-    id: string;
-    name: string;
-    avatar: string | null;
-    role: string;
-    rating: string;
-    status: string;
-    adherence: number;
-};
-
-export type TeamDetails = {
-    id: string;
-    name: string;
-    motto: string;
-    logo: string | null;
-    dataAiHint: string | null;
-    game: string;
-    rank: number;
-    wins: number;
-    losses: number;
-    draws: number;
-    membersCount: number;
-    captainId: string; // Changed from captainName
-    slug: string;
-    homePlaygroundId: string | null;
-    roster: TeamRosterMember[];
-};
-
-export type UserTeam = {
-  id: string;
-  name: string;
-  role: string;
-  logo: string | null;
-  dataAiHint: string | null;
-  slug: string;
-  rank: number;
-  game: string;
-};
+export type Team = z.infer<typeof TeamSchema>;
+export type TeamDetails = z.infer<typeof TeamDetailsSchema>;
+export type TeamRosterMember = z.infer<typeof TeamRosterMemberSchema>;
+export type UserTeam = z.infer<typeof UserTeamSchema>;

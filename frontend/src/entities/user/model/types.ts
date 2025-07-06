@@ -1,4 +1,5 @@
 
+import type { UserTeam } from '@/entities/team/model/types';
 
 export type CareerHistoryItem = {
     id: string;
@@ -13,17 +14,6 @@ export type GalleryItem = {
     src: string;
     alt: string;
     dataAiHint: string;
-};
-
-export type UserTeam = {
-  id: string;
-  name: string;
-  role: string;
-  logo: string | null;
-  dataAiHint: string | null;
-  slug: string;
-  rank: number;
-  game: string;
 };
 
 export type TournamentCrm = {

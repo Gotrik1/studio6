@@ -1,13 +1,15 @@
 import { z } from "zod";
+import { TeamSchema as TeamDataSchema } from './team.schema'; // Renamed to avoid conflict
 
-export const TeamSchema = z.object({
-  name: z.string(),
-  motto: z.string(),
-  logo: z.string(),
-  dataAiHint: z.string(),
-  rank: z.number(),
-  slug: z.string(),
+export const TeamSchema = TeamDataSchema.pick({
+  name: true,
+  motto: true,
+  logo: true,
+  dataAiHint: true,
+  rank: true,
+  slug: true,
 });
+
 
 export const VenueSchema = z.object({
   id: z.string(),
