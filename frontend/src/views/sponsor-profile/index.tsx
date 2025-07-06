@@ -1,10 +1,6 @@
-import { sponsorUser, sponsorAchievements } from "@/shared/lib/mock-data/sponsor-profile";
-import SponsorClient from "@/app/(app)/administration/sponsor/client";
+import { SponsorProfilePage as SponsorProfileDemoPage } from '@/views/sponsor-profile-demo';
+
 
 export function SponsorProfilePage() {
-    // In a real application, this data would be fetched from an API
-    const user = sponsorUser;
-    const achievements = sponsorAchievements;
-
-    return <SponsorClient user={user} achievements={achievements} />;
+    return <SponsorProfileDemoPage />;
 }

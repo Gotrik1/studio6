@@ -6,6 +6,8 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 import type { Report } from '../model/types';
 
+export type { Report };
+
 export async function getReports(status: 'PENDING' | 'RESOLVED' | 'DISMISSED'): Promise<Report[]> {
   const result = await fetchWithAuth(`/reports?status=${status}`, { next: { tags: ['reports'] } });
   if (!result.success) {

@@ -1,6 +1,13 @@
+
+export enum QuestType {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  SPECIAL = 'SPECIAL',
+}
+
 export type Quest = {
   id: string;
-  type: 'DAILY' | 'WEEKLY' | 'SPECIAL';
+  type: QuestType;
   title: string;
   description: string;
   reward: number;

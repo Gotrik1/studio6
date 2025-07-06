@@ -21,7 +21,7 @@ export type UserTeam = {
   logo: string | null;
   dataAiHint: string | null;
   slug: string;
-  rank: number | null;
+  rank: number;
   game: string;
 };
 

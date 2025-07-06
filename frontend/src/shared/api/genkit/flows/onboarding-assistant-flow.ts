@@ -1,7 +1,7 @@
 'use server';
 
-import type { OnboardingInput, OnboardingOutput } from './schemas/onboarding-assistant-schema';
-export type { OnboardingInput, OnboardingOutput };
+import type { OnboardingInput, OnboardingOutput, OnboardingSuggestion } from './schemas/onboarding-assistant-schema';
+export type { OnboardingInput, OnboardingOutput, OnboardingSuggestion };
 
 export async function getOnboardingSuggestions(input: OnboardingInput): Promise<OnboardingOutput> {
   const response = await fetch('/api/ai/onboarding-assistant', {

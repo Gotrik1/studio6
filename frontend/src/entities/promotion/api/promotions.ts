@@ -4,6 +4,8 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 import type { Promotion } from '../model/types';
 import { revalidatePath } from 'next/cache';
 
+export type { Promotion };
+
 export async function getPromotions(): Promise<Promotion[]> {
     const result = await fetchWithAuth('/promotions');
     if (!result.success) {

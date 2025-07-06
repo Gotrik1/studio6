@@ -1,13 +1,24 @@
 
-import { fanUser, fanAchievements } from "@/shared/lib/mock-data/fan-profile";
-import { teams as mockTeams } from "@/shared/lib/mock-data/teams";
 import FanClient from "@/app/(app)/administration/fan/client";
+import { getPlayerProfile } from "@/entities/user/api/get-user";
+import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
+import { getTeams } from "@/entities/team/api/teams";
+import { notFound } from "next/navigation";
 
-export function FanProfilePage() {
-    // In a real application, this data would be fetched from an API
-    const user = fanUser;
-    const achievements = fanAchievements;
-    const favoriteTeams = mockTeams.slice(0, 2);
+const FAN_USER_ID = '10'; // Fan user from seed
 
-    return <FanClient user={user} achievements={achievements} favoriteTeams={favoriteTeams} isCurrentUser={true} />;
+export async function FanProfilePage() {
+    const [pageData, achievements, allTeams] = await Promise.all([
+        getPlayerProfile(FAN_USER_ID),
+        getAchievementsForUser(FAN_USER_ID),
+        getTeams(),
+    ]);
+
+    if (!pageData) {
+        notFound();
+    }
+    
+    const favoriteTeams = allTeams.slice(0, 2);
+
+    return <FanClient user={pageData.user as any} achievements={achievements} favoriteTeams={favoriteTeams} isCurrentUser={true} />;
 }

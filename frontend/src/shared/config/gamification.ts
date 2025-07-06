@@ -1,3 +1,5 @@
+import type { Quest } from '@/entities/quest/model/types';
+
 export type PdRule = {
     id: string;
     description: string;

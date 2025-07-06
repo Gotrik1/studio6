@@ -49,6 +49,7 @@ export function TeamManagementPage() {
     
     const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+    const [isActionPending, startTransition] = useTransition();
     
     const teamPlayers: CoachedPlayer[] = team?.roster.map(p => ({
         id: p.id,
@@ -78,7 +79,7 @@ export function TeamManagementPage() {
                     setJoinRequests(appsResult.data.map((app: any) => ({
                         id: app.id,
                         teamId: app.teamId,
-                        applicant: app.user,
+                        user: app.user,
                         message: app.message,
                         statsSummary: 'Mock summary for now'
                     })));
@@ -100,7 +101,7 @@ export function TeamManagementPage() {
         startTransition(async () => {
             const result = await acceptTeamApplication(request.id);
             if(result.success) {
-                toast({ title: "Игрок принят!", description: `${request.applicant.name} теперь в вашей команде.` });
+                toast({ title: "Игрок принят!", description: `${request.user.name} теперь в вашей команде.` });
                 await fetchData();
             } else {
                  toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
@@ -115,7 +116,7 @@ export function TeamManagementPage() {
                 toast({
                     variant: 'destructive',
                     title: 'Заявка отклонена',
-                    description: `Заявка от ${request.applicant.name} была отклонена.`,
+                    description: `Заявка от ${request.user.name} была отклонена.`,
                 });
                 await fetchData();
              } else {
@@ -130,9 +131,9 @@ export function TeamManagementPage() {
     };
     
     const analysisDialogRequestProp = selectedRequest ? {
-        name: selectedRequest.applicant.name,
-        role: selectedRequest.applicant.role,
-        avatar: selectedRequest.applicant.avatar || '',
+        name: selectedRequest.user.name,
+        role: selectedRequest.user.role,
+        avatar: selectedRequest.user.avatar || '',
         avatarHint: 'sports player',
         statsSummary: selectedRequest.statsSummary
     } : null;
@@ -200,14 +201,14 @@ export function TeamManagementPage() {
                                         {joinRequests.map(request => (
                                             <TableRow key={request.id}>
                                                 <TableCell className="font-medium flex items-center gap-2">
-                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.applicant.avatar || ''} data-ai-hint="player avatar" /><AvatarFallback>{request.applicant.name.charAt(0)}</AvatarFallback></Avatar>
-                                                    {request.applicant.name}
+                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.user.avatar || ''} data-ai-hint="player avatar" /><AvatarFallback>{request.user.name.charAt(0)}</AvatarFallback></Avatar>
+                                                    {request.user.name}
                                                 </TableCell>
-                                                <TableCell>{request.applicant.role}</TableCell>
+                                                <TableCell>{request.user.role}</TableCell>
                                                 <TableCell className="text-right space-x-1">
                                                     <Button variant="outline" size="sm" onClick={() => handleAnalyze(request)}>AI-Анализ</Button>
-                                                    <Button variant="ghost" size="icon" onClick={() => handleDecline(request)}><X className="h-4 w-4 text-red-500" /></Button>
-                                                    <Button size="icon" onClick={() => handleAccept(request)}><Check className="h-4 w-4" /></Button>
+                                                    <Button variant="ghost" size="icon" onClick={() => handleDecline(request)} disabled={isActionPending}><X className="h-4 w-4 text-red-500" /></Button>
+                                                    <Button size="icon" onClick={() => handleAccept(request)} disabled={isActionPending}><Check className="h-4 w-4" /></Button>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -241,7 +242,7 @@ export function TeamManagementPage() {
                     </TabsContent>
 
                     <TabsContent value="ai-assistant" className="mt-4">
-                        <AITeamAssistantTab />
+                        <AITeamAssistantTab teamId={team.id} />
                     </TabsContent>
                 </Tabs>
             </div>

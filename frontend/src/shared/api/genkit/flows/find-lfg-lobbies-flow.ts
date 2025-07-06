@@ -1,9 +1,10 @@
+
 'use server';
 
 // Define types locally to decouple from backend schemas.
 export type LfgLobby = {
   id: string;
-  type: 'game' | 'training';
+  type: 'GAME' | 'TRAINING';
   sport: string;
   location: string;
   playgroundId?: string;

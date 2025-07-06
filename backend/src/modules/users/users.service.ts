@@ -7,6 +7,8 @@ import { LeaderboardPlayerDto } from './dto/leaderboard-player.dto';
 import { PlayerStatsDto } from './dto/player-stats.dto';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import type { UserTeam, TournamentCrm, JudgedMatch, CoachedPlayer } from '@/entities/user/model/types';
+
 
 @Injectable()
 export class UsersService {
@@ -96,7 +98,7 @@ export class UsersService {
                  mainSport: true,
                  trainingLogs: {
                      select: {
-                         status: true,
+                         status: true
                      }
                  }
             }
@@ -116,7 +118,7 @@ export class UsersService {
         throw new NotFoundException(`Пользователь с ID ${id} не найден`);
       }
       
-      const userTeams = user.teamsAsMember.map((team) => ({
+      const userTeams: UserTeam[] = user.teamsAsMember.map((team) => ({
         id: team.id,
         name: team.name,
         role: user.id === team.captainId ? 'Капитан' : 'Участник',
@@ -127,7 +129,7 @@ export class UsersService {
         game: team.game,
       }));
 
-      const organizedTournaments = user.organizedTournaments.map(t => ({
+      const organizedTournaments: TournamentCrm[] = user.organizedTournaments.map(t => ({
           id: t.id,
           name: t.name,
           sport: t.game,
@@ -139,15 +141,15 @@ export class UsersService {
           rules: t.rules || '',
       }));
       
-      const judgedMatches = user.judgedMatches.map(m => ({
+      const judgedMatches: JudgedMatch[] = user.judgedMatches.map(m => ({
           id: m.id,
           team1: { name: m.team1.name },
           team2: { name: m.team2.name },
           resolution: `Счет ${m.team1Score}-${m.team2Score}`,
-          timestamp: m.finishedAt?.toISOString(),
+          timestamp: m.finishedAt?.toISOString() || null,
       }));
 
-      const coachedPlayers = (user.coaching || []).map((player: any) => {
+      const coachedPlayers: CoachedPlayer[] = (user.coaching || []).map((player: any) => {
           const completed = player.trainingLogs.filter((log: any) => log.status === 'completed').length;
           const skipped = player.trainingLogs.filter((log: any) => log.status === 'skipped').length;
           const totalRelevant = completed + skipped;

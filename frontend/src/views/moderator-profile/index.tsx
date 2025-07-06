@@ -1,10 +1,5 @@
-import { moderatorUser, moderatorAchievements } from "@/shared/lib/mock-data/moderator-profile";
-import ModeratorClient from "@/app/(app)/administration/moderator/client";
+import { ModeratorProfilePage as ModeratorProfileDemoPage } from '@/views/moderator-profile-demo';
 
 export function ModeratorProfilePage() {
-    // In a real application, this data would be fetched from an API
-    const user = moderatorUser;
-    const achievements = moderatorAchievements;
-
-    return <ModeratorClient user={user} achievements={achievements} />;
+    return <ModeratorProfileDemoPage />;
 }

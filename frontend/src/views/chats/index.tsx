@@ -3,12 +3,14 @@
 
 import { useState } from 'react';
 import { Bot } from 'lucide-react';
-import { ChatContactList, type Contact } from '@/widgets/chat-contact-list';
+import { ChatContactList } from '@/widgets/chat-contact-list';
 import { ChatWindow } from '@/widgets/chat-window';
 import { Card, CardContent } from '@/shared/ui/card';
+import type { ChatContact } from '@/entities/chat/model/types';
+
 
 export function ChatsPage() {
-    const [selectedChat, setSelectedChat] = useState<Contact | null>(null);
+    const [selectedChat, setSelectedChat] = useState<ChatContact | null>(null);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[calc(100vh-10rem)] opacity-0 animate-fade-in-up">

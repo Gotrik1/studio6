@@ -1,7 +1,7 @@
+
 'use server';
 
 import type { TeamLeaderboardItem } from '@/entities/leaderboard/model/types';
-export type { TeamLeaderboardItem };
 
 export async function getTeamLeaderboard(game?: string): Promise<TeamLeaderboardItem[]> {
     const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;

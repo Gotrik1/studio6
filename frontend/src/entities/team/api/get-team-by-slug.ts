@@ -3,6 +3,8 @@
 
 import type { TeamDetails, TeamRosterMember } from '@/entities/team/model/types';
 
+export type { TeamDetails };
+
 // Adapter function to map backend data to frontend TeamDetails type
 const adaptBackendTeamToFrontend = (backendData: any): TeamDetails => {
   return {

@@ -11,10 +11,10 @@ import { Award, PlusCircle, Trash2 } from 'lucide-react';
 import { RANKS } from '@/shared/config/ranks';
 import { cn } from '@/shared/lib/utils';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
-import { QuestType } from '@prisma/client';
-import type { Quest } from '@/entities/quest/model/types';
-import { createQuest, deleteQuest, getQuests } from '@/entities/quest/api/quests';
+import { createQuest, deleteQuest, getQuests, type Quest } from '@/entities/quest/api/quests';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { QuestType } from '@/entities/quest/model/types';
+
 
 export function GamificationAdminPage() {
     const { toast } = useToast();
