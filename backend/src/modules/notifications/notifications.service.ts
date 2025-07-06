@@ -1,6 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
 import { PrismaService } from "@/prisma/prisma.service";
+import { NotificationType } from "@prisma/client";
 
 @Injectable()
 export class NotificationsService {
@@ -23,7 +24,7 @@ export class NotificationsService {
     await this.prisma.notification.create({
       data: {
         userId: msg.toUserId,
-        type: "FRIEND_REQUEST",
+        type: NotificationType.FRIEND_REQUEST,
         message: `Игрок ${msg.fromUserName} хочет добавить вас в друзья.`,
         href: "/friends",
       },
@@ -47,7 +48,7 @@ export class NotificationsService {
 
     const notificationsToCreate = msg.participantIds.map((userId) => ({
       userId,
-      type: "MATCH_RESULT" as const,
+      type: NotificationType.MATCH_RESULT,
       message: `Матч ${msg.team1Name} vs ${msg.team2Name} завершился со счетом ${msg.score1}-${msg.score2}.`,
       href: `/matches/${msg.matchId}`,
     }));
@@ -74,7 +75,7 @@ export class NotificationsService {
 
     const notificationsToCreate = msg.participantIds.map((userId) => ({
       userId,
-      type: "ANNOUNCEMENT" as const,
+      type: NotificationType.ANNOUNCEMENT,
       message: `Новое объявление в турнире "${msg.tournamentName}": ${msg.subject}`,
       href: `/tournaments/${msg.tournamentSlug}`,
     }));
