@@ -189,6 +189,10 @@ export class AiService {
     return analyzePlaygroundReport(input);
   }
 
+  async generatePlaygroundSummary(input: GeneratePlaygroundSummaryInput): Promise<GeneratePlaygroundSummaryOutput> {
+    return generatePlaygroundSummary(input);
+  }
+
   async smartSearch(query: string): Promise<SmartSearchOutput> {
     return smartSearch(query);
   }
@@ -219,10 +223,6 @@ export class AiService {
   
   async generatePlaygroundChallenge(input: GeneratePlaygroundChallengeInput): Promise<GeneratePlaygroundChallengeOutput> {
     return generatePlaygroundChallenge(input);
-  }
-
-  async generatePlaygroundSummary(input: GeneratePlaygroundSummaryInput): Promise<GeneratePlaygroundSummaryOutput> {
-    return generatePlaygroundSummary(input);
   }
 
   async analyzeMatchReport(input: AnalyzeMatchReportInput): Promise<AnalyzeMatchReportOutput> {
