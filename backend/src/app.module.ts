@@ -49,6 +49,7 @@ import { ActivitiesModule } from "./modules/activities/activities.module";
 import { SponsorshipOffersModule } from "./modules/sponsorship-offers/sponsorship-offers.module";
 import { WebsocketsModule } from "./modules/websockets/websockets.module";
 import { StorageModule } from "./modules/storage/storage.module";
+import { MonitoringModule } from "./modules/monitoring/monitoring.module";
 
 @Module({
   imports: [
@@ -98,6 +99,7 @@ import { StorageModule } from "./modules/storage/storage.module";
     SponsorshipOffersModule,
     WebsocketsModule,
     StorageModule,
+    MonitoringModule,
   ],
   controllers: [AppController],
   providers: [

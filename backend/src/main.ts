@@ -1,12 +1,14 @@
-import { NestFactory } from "@nestjs/core";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { config } from "dotenv";
 import * as path from "path";
-import { JsonLogger } from "./common/services/json-logger.service";
+import { JsonLogger } from "./modules/monitoring/json-logger.service";
 import type { LogLevel } from "@nestjs/common";
 import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { IoAdapter } from "@nestjs/platform-socket.io";
+import { HttpLoggingInterceptor } from "./modules/monitoring/interceptors/http-logging.interceptor";
+import { HttpExceptionFilter } from "./modules/monitoring/filters/http-exception.filter";
 
 // Load environment variables from the root .env file
 config({ path: path.resolve(__dirname, "../../.env") });
@@ -19,6 +21,12 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe());
   app.useWebSocketAdapter(new IoAdapter(app));
+
+  // Global interceptors and filters for observability
+  app.useGlobalInterceptors(new HttpLoggingInterceptor(logger));
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter, logger));
+
 
   // Swagger Configuration
   const config = new DocumentBuilder()
