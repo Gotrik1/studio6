@@ -31,23 +31,22 @@
         - [x] `TournamentsService` — создание, управление и проведение турниров.
         - [x] `MatchesService` — управление матчами, результатами и спорами.
         - [x] `PlaygroundsService` — управление площадками, отзывами, чекинами.
-        - [x] `AdminService` — агрегация данных для панели администратора.
-        - [x] `ActivitiesService` — управление лентой активности.
-        - [x] `LfgService` — управление лобби для поиска игр.
-        - [x] `TeamApplicationsService` — обработка заявок на вступление в команды.
-        - [x] `TournamentParticipantsService` — управление участниками турниров.
+        - [ ] `AdminService` — агрегация данных для панели администратора.
+        - [ ] `ActivitiesService` — управление лентой активности.
+        - [ ] `LfgService` — управление лобби для поиска игр.
+        - [ ] `TeamApplicationsService` — обработка заявок на вступление в команды.
         - [ ] `ReportsService` — обработка жалоб пользователей.
         - [ ] `ChallengesService` — управление личными вызовами.
-        - [x] `TrainingService` — управление программами тренировок и упражнениями.
+        - [ ] `TrainingService` — управление программами тренировок и упражнениями.
         - [x] `StoreService` — управление товарами в магазине.
-        - [x] `LeaguesService` — управление лигами и сезонами.
+        - [ ] `LeaguesService` — управление лигами и сезонами.
         - [x] `PollsService` — управление опросами.
         - [x] `QuestsService` — управление квестами и наградами.
         - [x] `InventoryService` — управление инвентарем пользователя.
         - [x] `NutritionService` — управление базой продуктов и дневником питания.
         - [x] `CoachesService` — управление профилями тренеров.
         - [x] `SponsorsService` — управление профилями спонсоров.
-        - [x] `SponsorshipService` — логика спонсорских контрактов.
+        - [ ] `SponsorshipService` — логика спонсорских контрактов.
         - [x] `MeasurementsService` — управление замерами тела.
         - [x] `TrainingProposalsService` — управление предложениями о тренировках.
         - [x] `FaqService` — управление базой знаний.

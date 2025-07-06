@@ -43,16 +43,32 @@ export class ActivitiesService {
   }
 
   async createCheckInActivity(userId: string, data: CreateCheckInDto) {
-    return this.prisma.activity.create({
-      data: {
-        type: ActivityType.PLAYGROUND_CHECK_IN,
-        userId,
-        playgroundId: data.playgroundId,
-        metadata: {
-          comment: data.comment,
-          photo: data.photo, // This would be a URL in a real app after upload
+    // Use a transaction to ensure both the activity is created and the check-in count is updated
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Create the activity
+      const activity = await tx.activity.create({
+        data: {
+          type: ActivityType.PLAYGROUND_CHECK_IN,
+          userId,
+          playgroundId: data.playgroundId,
+          metadata: {
+            comment: data.comment,
+            photo: data.photo, // This would be a URL in a real app after upload
+          },
         },
-      },
+      });
+
+      // 2. Update the playground's check-in count
+      await tx.playground.update({
+        where: { id: data.playgroundId },
+        data: {
+          checkIns: {
+            increment: 1,
+          },
+        },
+      });
+
+      return activity;
     });
   }
 }
