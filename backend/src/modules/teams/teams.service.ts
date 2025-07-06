@@ -109,7 +109,7 @@ export class TeamsService implements OnModuleInit {
       .replace(/\s+/g, "-")
       .replace(/[^a-z0-9-]/g, "");
 
-    return this.prisma.team.create({
+    const team = await this.prisma.team.create({
       data: {
         name,
         slug,
@@ -128,6 +128,13 @@ export class TeamsService implements OnModuleInit {
         },
       },
     });
+
+    await this.cacheManager.del("leaderboard_teams_all");
+    if(game) {
+       await this.cacheManager.del(`leaderboard_teams_${game}`);
+    }
+
+    return team;
   }
 
   async findAll(): Promise<any[]> {
@@ -170,8 +177,10 @@ export class TeamsService implements OnModuleInit {
     const cachedTeam = await this.cacheManager.get<any>(cacheKey);
 
     if (cachedTeam) {
+      this.logger.log(`Cache hit for team slug: ${slug}`);
       return cachedTeam;
     }
+     this.logger.log(`Cache miss for team slug: ${slug}`);
 
     const team = await this.prisma.team.findUnique({
       where: { slug },
@@ -252,8 +261,11 @@ export class TeamsService implements OnModuleInit {
       await this.cacheManager.get<LeaderboardTeamDto[]>(cacheKey);
 
     if (cachedLeaderboard) {
+      this.logger.log(`Cache hit for leaderboard: ${cacheKey}`);
       return cachedLeaderboard;
     }
+    this.logger.log(`Cache miss for leaderboard: ${cacheKey}`);
+
 
     const whereClause = params?.game
       ? Prisma.sql`WHERE game = ${params.game}`
@@ -277,7 +289,7 @@ export class TeamsService implements OnModuleInit {
         LIMIT 10
     `;
 
-    await this.cacheManager.set(cacheKey, result); // TTL is set globally in CacheModule
+    await this.cacheManager.set(cacheKey, result);
     return result;
   }
 
@@ -296,6 +308,8 @@ export class TeamsService implements OnModuleInit {
         "Вы уже являетесь участником этой команды.",
       );
     }
+    
+    await this.cacheManager.del(`team_slug_${team.slug}`);
 
     await this.prisma.activity.create({
       data: {
@@ -602,6 +616,12 @@ export class TeamsService implements OnModuleInit {
   }
 
   async remove(id: string): Promise<Team> {
+    const team = await this.prisma.team.findUnique({ where: { id }});
+    if (team) {
+       await this.cacheManager.del(`team_slug_${team.slug}`);
+       await this.cacheManager.del("leaderboard_teams_all");
+       await this.cacheManager.del(`leaderboard_teams_${team.game}`);
+    }
     return this.prisma.team.delete({ where: { id } });
   }
 }
