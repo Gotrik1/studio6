@@ -608,5 +608,3 @@ export class AiController {
     return this.aiService.playerScout(playerScoutDto.input);
   }
 }
-
-    

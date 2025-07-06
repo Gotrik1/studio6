@@ -1,26 +1,40 @@
 'use server';
 
-import type { GenerateTournamentWizardInput, GenerateTournamentWizardOutput } from './schemas/generate-tournament-wizard-schema';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
-export type { GenerateTournamentWizardInput, GenerateTournamentWizardOutput };
+// Define types locally to decouple from backend schemas.
+export type GenerateTournamentWizardInput = {
+  prompt: string;
+};
+
+export type GenerateTournamentWizardOutput = {
+  name: string;
+  description: string;
+  game: string;
+  type: 'team' | 'individual';
+  format: 'single_elimination' | 'round_robin' | 'groups';
+  imageDataUri: string;
+  prizePool: string;
+  registrationEndDate: string;
+  tournamentStartDate: string;
+};
 
 
 export async function generateTournamentWizard(input: GenerateTournamentWizardInput): Promise<GenerateTournamentWizardOutput> {
-    const response = await fetch('/api/ai/generate-tournament-wizard', {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(input),
-        cache: 'no-store',
-    });
+  const result = await fetchWithAuth('/ai/generate-tournament-wizard', {
+    method: 'POST',
+    body: JSON.stringify(input),
+    cache: 'no-store',
+  });
+  
+  if (!result.success) {
+    console.error("Backend API error:", result.error);
+    throw new Error(result.error || `Backend API responded with status: ${result.status}`);
+  }
 
-    if (!response.ok) {
-        const errorBody = await response.text();
-        console.error("Backend API error:", errorBody);
-        throw new Error(`Backend API responded with status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    return result;
+  if (!result.data) {
+    throw new Error("No data received from backend.");
+  }
+  
+  return result.data;
 }
