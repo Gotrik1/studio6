@@ -46,6 +46,9 @@ import { TeamApplicationsModule } from "./modules/team-applications/team-applica
 import { AdminModule } from "./modules/admin/admin.module";
 import { FeedModule } from "./modules/feed/feed.module";
 import { ActivitiesModule } from "./modules/activities/activities.module";
+import { SponsorshipOffersModule } from "./modules/sponsorship-offers/sponsorship-offers.module";
+import { WebsocketsModule } from "./modules/websockets/websockets.module";
+import { StorageModule } from "./modules/storage/storage.module";
 
 @Module({
   imports: [
@@ -92,6 +95,9 @@ import { ActivitiesModule } from "./modules/activities/activities.module";
     AdminModule,
     ActivitiesModule,
     FeedModule,
+    SponsorshipOffersModule,
+    WebsocketsModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [
