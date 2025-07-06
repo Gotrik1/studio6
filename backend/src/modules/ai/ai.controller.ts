@@ -347,6 +347,14 @@ export class AiController {
     return this.aiService.analyzePlaygroundReport(analyzePlaygroundReportDto);
   }
 
+  @Post('generate-playground-summary')
+  @HttpCode(HttpStatus.OK)
+  async generatePlaygroundSummary(
+    @Body() generatePlaygroundSummaryDto: GeneratePlaygroundSummaryDto,
+  ): Promise<GeneratePlaygroundSummaryOutput> {
+    return this.aiService.generatePlaygroundSummary(generatePlaygroundSummaryDto);
+  }
+
   @Post('smart-search')
   @HttpCode(HttpStatus.OK)
   async smartSearch(
@@ -409,14 +417,6 @@ export class AiController {
     @Body() generatePlaygroundChallengeDto: GeneratePlaygroundChallengeDto,
   ): Promise<GeneratePlaygroundChallengeOutput> {
     return this.aiService.generatePlaygroundChallenge(generatePlaygroundChallengeDto);
-  }
-
-  @Post('generate-playground-summary')
-  @HttpCode(HttpStatus.OK)
-  async generatePlaygroundSummary(
-    @Body() generatePlaygroundSummaryDto: GeneratePlaygroundSummaryDto,
-  ): Promise<GeneratePlaygroundSummaryOutput> {
-    return this.aiService.generatePlaygroundSummary(generatePlaygroundSummaryDto);
   }
 
   @Post('analyze-match-report')
