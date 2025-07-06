@@ -71,7 +71,7 @@ export class TeamApplicationsService {
     return this.prisma.teamApplication.update({
       where: { id: applicationId },
       data: { status: "APPROVED" },
-      include: { team: true },
+      include: { team: { select: { id: true, slug: true } } },
     });
   }
 
@@ -93,7 +93,7 @@ export class TeamApplicationsService {
     return this.prisma.teamApplication.update({
       where: { id: applicationId },
       data: { status: "DECLINED" },
-      include: { team: true },
+      include: { team: { select: { id: true, slug: true } } },
     });
   }
 }

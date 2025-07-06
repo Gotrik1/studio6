@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -14,14 +15,9 @@ import { BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { analyzeJoinRequest, type AnalyzeJoinRequestOutput } from '@/shared/api/genkit/flows/analyze-join-request-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
+import { cn } from '@/shared/lib/utils';
+import type { JoinRequest } from '@/entities/team-application/model/types';
 
-type JoinRequest = {
-    name: string;
-    role: string;
-    avatar: string;
-    avatarHint: string;
-    statsSummary: string;
-};
 
 interface JoinRequestAnalysisDialogProps {
   isOpen: boolean;
@@ -51,8 +47,8 @@ export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamN
       setAiError(null);
 
       const playerProfile = `
-        Player: ${request.name}
-        Role: ${request.role}
+        Player: ${request.applicant.name}
+        Role: ${request.applicant.role}
         Profile Summary: ${request.statsSummary}
       `;
 
@@ -88,7 +84,7 @@ export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamN
         <DialogHeader>
           <DialogTitle>AI-анализ заявки</DialogTitle>
           <DialogDescription>
-            Анализ кандидата {request.name} для команды.
+            Анализ кандидата {request.applicant.name} для команды.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
