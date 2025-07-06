@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { CreateTeamDto } from "./dto/create-team.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Team, ActivityType, Prisma, TrainingLogStatus, Match } from "@prisma/client";
+import { Team, ActivityType, Prisma, TrainingLogStatus, Match as PrismaMatch } from "@prisma/client";
 import { LeaderboardTeamDto } from "./dto/leaderboard-team.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
@@ -20,6 +20,27 @@ import { ru } from "date-fns/locale";
 import { analyzeTeamPerformance } from "@/ai/flows/analyze-team-performance-flow";
 import { UsersService } from "../users/users.service";
 import { generateLeaderboardCacheKey, generateTeamCacheKey } from "../cache/cache.utils";
+
+// Define a precise type for the match object with its relations
+type MatchWithRelations = PrismaMatch & {
+  team1: {
+    id: string;
+    name: string;
+    logo: string | null;
+    dataAiHint: string | null;
+  };
+  team2: {
+    id: string;
+    name: string;
+    logo: string | null;
+    dataAiHint: string | null;
+  };
+  tournament: {
+    name: string;
+    game: string;
+  } | null;
+};
+
 
 @Injectable()
 export class TeamsService implements OnModuleInit {
@@ -529,28 +550,28 @@ export class TeamsService implements OnModuleInit {
     };
   }
 
-  private _shapeMatch(match: Match | null) {
+  private _shapeMatch(match: MatchWithRelations | null) {
     if (!match) return null;
     return {
       id: String(match.id),
       team1: {
-        id: (match as any).team1.id,
-        name: (match as any).team1.name,
-        logo: (match as any).team1.logo || "https://placehold.co/100x100.png",
-        logoHint: (match as any).team1.dataAiHint || "team logo",
+        id: match.team1.id,
+        name: match.team1.name,
+        logo: match.team1.logo || "https://placehold.co/100x100.png",
+        logoHint: match.team1.dataAiHint || "team logo",
       },
       team2: {
-        id: (match as any).team2.id,
-        name: (match as any).team2.name,
-        logo: (match as any).team2.logo || "https://placehold.co/100x100.png",
-        logoHint: (match as any).team2.dataAiHint || "team logo",
+        id: match.team2.id,
+        name: match.team2.name,
+        logo: match.team2.logo || "https://placehold.co/100x100.png",
+        logoHint: match.team2.dataAiHint || "team logo",
       },
       score:
         match.team1Score !== null && match.team2Score !== null
           ? `${match.team1Score}-${match.team2Score}`
           : "VS",
-      tournament: (match as any).tournament?.name || "Товарищеский матч",
-      game: (match as any).tournament?.game || "Неизвестно",
+      tournament: match.tournament?.name || "Товарищеский матч",
+      game: match.tournament?.game || "Неизвестно",
       date: format(new Date(match.scheduledAt), "d MMMM yyyy", { locale: ru }),
       href: `/matches/${match.id}`,
       status: match.status,
