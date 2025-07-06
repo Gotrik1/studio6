@@ -90,7 +90,7 @@ export type JudgedMatch = {
 export type Activity = {
     id: string;
     type: string;
-    timestamp: string;
+    createdAt: string;
     metadata: {
         [key: string]: string;
     };

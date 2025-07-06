@@ -14,7 +14,7 @@ export class ActivitiesService {
         type: "PLAYGROUND_CHECK_IN",
       },
       orderBy: {
-        timestamp: "desc",
+        createdAt: "desc",
       },
       take: 20,
       include: {

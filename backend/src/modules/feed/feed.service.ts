@@ -8,7 +8,7 @@ export class FeedService {
   async getFeed() {
     return this.prisma.activity.findMany({
       orderBy: {
-        timestamp: "desc",
+        createdAt: "desc",
       },
       take: 20,
       include: {

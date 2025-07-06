@@ -4,7 +4,7 @@
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, UserTeam } from '@/entities/user/model/types';
+import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, UserTeam, Activity } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
@@ -81,7 +81,7 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
                 type: activity.type,
                 icon: metadata.icon || 'HelpCircle',
                 text: text,
-                timestamp: activity.timestamp,
+                createdAt: activity.createdAt,
             }
         }).filter((item: PlayerActivityItem | null): item is PlayerActivityItem => item !== null);
         

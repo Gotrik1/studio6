@@ -21,7 +21,7 @@ export type PlayerActivityItem = {
     type: string;
     icon: string; // Name of the Lucide icon
     text: string;
-    timestamp: string;
+    createdAt: string;
 };
 
 interface PlayerActivityFeedProps {
@@ -51,7 +51,7 @@ export function PlayerActivityFeed({ activities }: PlayerActivityFeedProps) {
                                     </div>
                                     <div className="flex-1 ml-10">
                                         <p className="text-sm" dangerouslySetInnerHTML={{ __html: activity.text }} />
-                                        <p className="text-xs text-muted-foreground mt-1">{formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true, locale: ru })}</p>
+                                        <p className="text-xs text-muted-foreground mt-1">{formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true, locale: ru })}</p>
                                     </div>
                                 </div>
                             )})}
