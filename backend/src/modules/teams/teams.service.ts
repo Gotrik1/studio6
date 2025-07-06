@@ -18,6 +18,7 @@ import { CreatePracticeDto } from "./dto/create-practice.dto";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { analyzeTeamPerformance } from "@/ai/flows/analyze-team-performance-flow";
+import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class TeamsService implements OnModuleInit {
@@ -26,6 +27,7 @@ export class TeamsService implements OnModuleInit {
   constructor(
     private prisma: PrismaService,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly usersService: UsersService,
   ) {}
 
   async onModuleInit() {
@@ -575,15 +577,23 @@ export class TeamsService implements OnModuleInit {
         })
         .join(", ") || "Нет недавних матчей.";
 
-    const playerStats = team.members.map((player) => ({
-      name: player.name,
-      kda: (Math.random() * (1.8 - 0.8) + 0.8).toFixed(1), // Mock data
-      winRate: `${Math.floor(Math.random() * (75 - 50 + 1) + 50)}%`, // Mock data
-      recentPerformanceTrend: ["up", "down", "stable"][
-        Math.floor(Math.random() * 3)
-      ] as "up" | "down" | "stable",
-    }));
-
+    // Fetch real stats for each player
+    const playerStats = await Promise.all(
+        team.members.map(async (player) => {
+            const stats = await this.usersService.getStatsForUser(player.id);
+            return {
+                name: player.name,
+                // KDA is not tracked, so we still mock it for the demo prompt
+                kda: (Math.random() * (1.8 - 0.8) + 0.8).toFixed(1),
+                winRate: `${stats.summary.winrate}%`, // Using real win rate
+                // Trend is not tracked, so we mock it
+                recentPerformanceTrend: ["up", "down", "stable"][
+                    Math.floor(Math.random() * 3)
+                ] as "up" | "down" | "stable",
+            };
+        })
+    );
+    
     return analyzeTeamPerformance({
       teamName: team.name,
       recentMatches: recentMatchesSummary,
