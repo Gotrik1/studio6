@@ -451,7 +451,7 @@ export class TeamsService implements OnModuleInit {
     await this.cacheManager.del(`team_slug_${team.slug}`);
 
     // Return updated team
-    return this.prisma.team.findUnique({ where: { id: teamId } });
+    return this.prisma.team.findUnique({ where: { id: teamId } }) as Promise<Team>;
   }
 
   async findPracticesForTeam(teamId: string) {
