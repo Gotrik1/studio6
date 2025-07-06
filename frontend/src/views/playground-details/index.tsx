@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback, type Dispatch, type SetStateAction } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
 import type { Playground } from '@/entities/playground/model/types';
@@ -17,14 +17,14 @@ import { useLfg } from '@/app/providers/lfg-provider';
 import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
-import { PlaygroundReviewsTab, type PlaygroundReview } from '@/widgets/playground-reviews-tab';
+import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-dialog';
 import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
-import { createReview, getReviews, type CreateReviewData } from '@/entities/playground/api/reviews';
+import { createReview, getReviews, type CreateReviewData, type PlaygroundReview } from '@/entities/playground/api/reviews';
 import type { PlaygroundConditionReport } from '@/entities/playground/api/condition';
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';

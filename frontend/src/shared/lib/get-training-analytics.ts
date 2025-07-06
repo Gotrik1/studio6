@@ -1,3 +1,4 @@
+
 import { calculate1RM } from './calculate-1rm';
 import type { TrainingLogEntry, PersonalRecord, RecordHistoryPoint, ExerciseSession } from '@/entities/training-program/model/types';
 
@@ -27,7 +28,7 @@ const getMetrics = (completedWorkouts: TrainingLogEntry[]) => {
     const sortedExercises = [...exerciseCounts.entries()].sort((a, b) => b[1] - a[1]);
     const favoriteExercise = sortedExercises.length > 0 ? sortedExercises[0][0] : 'Нет';
 
-    const lastWorkout = completedWorkouts.length > 0 ? [...completedWorkouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0].workoutName : 'Нет';
+    const lastWorkout = completedWorkouts.length > 0 ? [...completedWorkouts].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0].workoutName || 'Тренировка' : 'Нет';
     
     return { totalWorkouts, monthlyVolume, workoutStreak, favoriteExercise, lastWorkout };
 };
@@ -55,7 +56,7 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
         entry.exercises.forEach(exercise => {
              const session: ExerciseSession = {
                 date: entry.date,
-                workoutName: entry.workoutName,
+                workoutName: entry.workoutName || null,
                 sets: []
             };
 

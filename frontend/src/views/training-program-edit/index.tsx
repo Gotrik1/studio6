@@ -1,11 +1,11 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { TrainingProgramForm } from "@/widgets/training-program-form";
-import type { ProgramFormValues } from "@/entities/training-program/api/programs";
-import { useToast } from "@/shared/hooks/use-toast";
-import { Skeleton } from "@/shared/ui/skeleton";
-import { useTraining } from '@/app/providers/training-provider';
+import { TrainingProgramForm, type ProgramFormValues } from '@/widgets/training-program-form';
+import { useToast } from '@/shared/hooks/use-toast';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { useTraining } from '@/shared/context/training-provider';
 
 interface TrainingProgramEditPageProps {
     programId: string;
@@ -32,7 +32,7 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
         return <div>Программа не найдена.</div>
     }
 
-    const handleSubmit = async (data: ProgramFormValues) => {
+    const handleSubmit = async (data: ProgramFormValues): Promise<void> => {
         const success = await updateProgram(programId, data);
         if (success) {
             toast({

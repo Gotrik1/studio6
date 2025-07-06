@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useMemo } from 'react';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { useToast } from '@/shared/hooks/use-toast';
 import { Bot, CalendarDays, Dumbbell, Edit, MoreVertical, PlusCircle, Save, Target, Trash2 } from 'lucide-react';
@@ -14,7 +15,7 @@ import { useSession } from '@/shared/lib/session/client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
 import { useTraining } from '@/app/providers/training-provider';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { ProgramFormValues } from '@/entities/training-program/api/programs';
+import type { ProgramFormValues } from '@/widgets/training-program-form';
 
 function ProgramCard({ program, isOwner, onSave, onDelete }: { program: TrainingProgram; isOwner: boolean; onSave: (p: TrainingProgram) => Promise<boolean>; onDelete: (p: TrainingProgram) => Promise<boolean>; }) {
     return (
@@ -27,7 +28,7 @@ function ProgramCard({ program, isOwner, onSave, onDelete }: { program: Training
                             alt={program.name}
                             fill
                             className="object-cover"
-                            data-ai-hint={program.coverImageHint}
+                            data-ai-hint={program.coverImageHint} 
                         />
                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     </div>
@@ -106,7 +107,7 @@ export function TrainingProgramsPage() {
         return programs.filter(p => p.author !== user?.name && p.author !== 'Вы' && p.author !== 'ProDvor AI');
     }, [programs, user]);
     
-    const handleDelete = async (program: TrainingProgram) => {
+    const handleDelete = async (program: TrainingProgram): Promise<boolean> => {
         const success = await deleteProgram(program.id);
         if (success) {
             toast({
@@ -114,10 +115,11 @@ export function TrainingProgramsPage() {
                 description: `Программа "${program.name}" была успешно удалена.`,
             });
         }
+        return success;
     };
 
-    const handleSaveProgram = async (programToClone: TrainingProgram) => {
-        if (!user) return;
+    const handleSaveProgram = async (programToClone: TrainingProgram): Promise<boolean> => {
+        if (!user) return false;
         
         const programData: ProgramFormValues = {
             name: `${programToClone.name} (Копия)`,
@@ -137,6 +139,7 @@ export function TrainingProgramsPage() {
                 description: `Программа "${programToClone.name}" была добавлена в 'Мои программы'.`,
             });
         }
+        return success;
     };
 
     return (

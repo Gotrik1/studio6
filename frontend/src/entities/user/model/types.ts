@@ -1,6 +1,8 @@
 
 import type { UserTeam } from '@/entities/team/model/types';
 
+export type { UserTeam };
+
 export type CareerHistoryItem = {
     id: string;
     teamName: string;

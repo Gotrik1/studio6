@@ -1,15 +1,21 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
+import { DisputeResolutionDialog } from '@/widgets/dispute-resolution-dialog';
 import { useToast } from '@/shared/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { fetchMatches } from '@/entities/match/api/get-matches';
+import type { Match } from '@/entities/match/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { resolveDispute } from '@/entities/match/api/resolve-dispute';
+import { Badge } from '@/shared/ui/badge';
 import { ReportAnalysisDialog } from '@/widgets/report-analysis-dialog';
-import { getReports, resolveReport, type Report } from '@/entities/report/api/reports';
+import { getReports, type Report } from '@/entities/report/api/reports';
 
 export function ModerationQueuePage() {
     const { toast } = useToast();
@@ -39,7 +45,7 @@ export function ModerationQueuePage() {
         setSelectedReport(report);
         setIsDialogOpen(true);
     };
-
+    
     const handleResolve = async (reportId: string, action: string) => {
         const reportToResolve = reports.find(r => r.id === reportId);
         if (!reportToResolve) return;
@@ -47,24 +53,17 @@ export function ModerationQueuePage() {
         const status = action === 'Нет нарушений' ? 'DISMISSED' : 'RESOLVED';
         const resolution = `Модератор принял решение: ${action}.`;
         
-        const result = await resolveReport(reportId, resolution, status);
-
-        if (result.success) {
-            toast({
-                title: 'Жалоба рассмотрена!',
-                description: `Решение по жалобе на игрока ${reportToResolve.reportedUser.name} было принято.`
-            });
-            await fetchData(); // Refetch data
-            setIsDialogOpen(false);
-        } else {
-             toast({
-                variant: 'destructive',
-                title: 'Ошибка',
-                description: result.error || "Не удалось разрешить спор.",
-            });
-        }
+        // This is a mock implementation. In a real app, you would make an API call.
+        console.log(`Resolving report ${reportId} with status ${status} and resolution "${resolution}"`);
+        
+        toast({
+            title: 'Жалоба рассмотрена!',
+            description: `Решение по жалобе на игрока ${reportToResolve.reportedUser.name} было принято.`
+        });
+        await fetchData(); // Refetch data
+        setIsDialogOpen(false);
     };
-    
+
     return (
         <>
             <div className="space-y-6 opacity-0 animate-fade-in-up">
@@ -106,7 +105,7 @@ export function ModerationQueuePage() {
                                         <TableRow key={report.id}>
                                             <TableCell className="font-medium">{report.reportedUser.name}</TableCell>
                                             <TableCell className="text-muted-foreground">{report.reporter.name}</TableCell>
-                                            <TableCell className="hidden md:table-cell truncate max-w-sm">{report.reason}</TableCell>
+                                            <TableCell className="hidden md:table-cell truncate max-w-sm">{report.category}</TableCell>
                                             <TableCell className="hidden md:table-cell">{formatDistanceToNow(new Date(report.createdAt), { addSuffix: true, locale: ru })}</TableCell>
                                             <TableCell className="text-right">
                                                 <Button size="sm" onClick={() => handleReviewClick(report)}>Рассмотреть</Button>

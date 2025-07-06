@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import type { UserTeam } from '@/entities/user/model/types';
+import type { UserTeam } from '@/entities/team/model/types';
 
 interface TeamsTabProps {
     teams: UserTeam[];

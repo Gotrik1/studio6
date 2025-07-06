@@ -53,8 +53,8 @@ export function ReportPlayerDialog({ isOpen, onOpenChange, reportedPlayerName, r
     setIsSubmitting(true);
     const result = await createReport({
         reportedUserId: reportedPlayerId,
-        reason,
-        context: details,
+        category: reason,
+        description: details,
     });
     
     if (result.success) {

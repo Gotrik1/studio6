@@ -4,12 +4,14 @@
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, UserTeam, Activity } from '@/entities/user/model/types';
+import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, Activity } from '@/entities/user/model/types';
+import type { UserTeam } from '@/entities/team/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
 import type { Achievement } from '@/entities/achievement/model/types';
 import type { TournamentCrm, JudgedMatch } from '@/entities/user/model/types';
+import * as LucideIcons from 'lucide-react';
 
 export type { FullUserProfile, PlayerStats };
 
@@ -20,6 +22,25 @@ export type PlayerProfilePageData = {
     achievements: Achievement[];
     playerActivity: PlayerActivityItem[];
 };
+
+
+const formatActivityText = (activity: Activity): string => {
+    const metadata = activity.metadata as any; // Cast to any to access dynamic properties
+    switch(activity.type) {
+        case 'STATUS_POSTED':
+            return metadata.text;
+        case 'MATCH_PLAYED':
+            return `Сыграл матч за <a href="${metadata.teamHref}" class="font-bold hover:underline">${metadata.team}</a> против <a href="#" class="font-bold hover:underline">${metadata.opponent}</a>. <span class="${metadata.result === 'Победа' ? 'text-green-500' : 'text-red-500'} font-bold">${metadata.result} ${metadata.score}</span>.`;
+        case 'TEAM_JOINED':
+            return `Присоединился к команде <a href="${metadata.teamHref}" class="font-bold hover:underline">${metadata.teamName}</a>.`;
+        case 'TOURNAMENT_REGISTERED':
+             return `Зарегистрировал команду <a href="#" class="font-bold hover:underline">${metadata.teamName}</a> на турнир <a href="${metadata.tournamentHref}" class="font-bold hover:underline">${metadata.tournamentName}</a>.`;
+        case 'ACHIEVEMENT_UNLOCKED':
+             return `Разблокировано достижение: <span class="font-bold">${metadata.title}</span>`;
+        default:
+            return 'Совершил(а) новое действие.';
+    }
+}
 
 
 export async function getPlayerProfilePageData(id: string): Promise<PlayerProfilePageData | null> {
@@ -33,8 +54,18 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
         return null;
     }
     
-    // The playerActivity is already part of the profileResult, so we extract it.
-    const playerActivity = profileResult.user.activities as PlayerActivityItem[];
+    // The playerActivity is now part of the FullUserProfile type from the backend.
+    const playerActivity: PlayerActivityItem[] = profileResult.user.activities.map(activity => {
+        const metadata = activity.metadata as any; // Allow dynamic property access
+        const IconName = metadata.icon as keyof typeof LucideIcons;
+        return {
+            id: activity.id,
+            type: activity.type,
+            icon: IconName || 'HelpCircle',
+            text: formatActivityText(activity),
+            createdAt: activity.createdAt,
+        };
+    });
 
     return {
         user: profileResult.user,
@@ -64,27 +95,6 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
             avatar: rawProfile.avatarUrl || rawProfile.avatar,
         };
         
-        const playerActivity: PlayerActivityItem[] = (profileData.activities || []).map((activity: Activity) => {
-            const metadata = activity.metadata as any;
-            let text = `Неизвестное событие`;
-            
-            if (activity.type === 'MATCH_PLAYED') {
-                 text = `Сыграл матч за <a href="${metadata.teamHref}" class="font-bold hover:underline">${metadata.team}</a> против <a href="#" class="font-bold hover:underline">${metadata.opponent}</a>. <span class="${metadata.result === 'Победа' ? 'text-green-500' : 'text-red-500'} font-bold">${metadata.result} ${metadata.score}</span>.`;
-            } else if (activity.type === 'TEAM_JOINED') {
-                text = `Присоединился к команде <a href="${metadata.teamHref}" class="font-bold hover:underline">${metadata.teamName}</a>.`;
-            } else if (activity.type === 'TOURNAMENT_REGISTERED') {
-                 text = `Зарегистрировал команду <a href="#" class="font-bold hover:underline">${metadata.teamName}</a> на турнир <a href="${metadata.tournamentHref}" class="font-bold hover:underline">${metadata.tournamentName}</a>.`;
-            }
-            
-            return {
-                id: String(activity.id),
-                type: activity.type,
-                icon: metadata.icon || 'HelpCircle',
-                text: text,
-                createdAt: activity.createdAt,
-            }
-        }).filter((item: PlayerActivityItem | null): item is PlayerActivityItem => item !== null);
-        
         const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player: CoachedPlayerSummary) => ({
             id: String(player.id),
             name: player.name,
@@ -96,7 +106,7 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
 
         const augmentedProfile: FullUserProfile = {
             ...profileData,
-            activities: playerActivity,
+            activities: (profileData.activities || []).map(act => ({...act, id: String(act.id)})),
             coaching: coachedPlayers, // Use adapted data
             teams: (rawProfile.teams || []).map((team: UserTeam) => ({
                 ...team,

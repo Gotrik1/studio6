@@ -1,0 +1,32 @@
+
+'use server';
+
+import { fetchWithAuth } from '@/shared/lib/api-client';
+import type { SponsorshipOffer } from '../model/types';
+import { revalidateTag } from 'next/cache';
+
+export async function getSponsorshipOffers(teamId: string) {
+    // This assumes an endpoint like GET /teams/{teamId}/sponsorship-offers exists
+    const result = await fetchWithAuth(`/sponsorship-offers?teamId=${teamId}`, {
+        next: { tags: [`sponsorship-offers-${teamId}`] }
+    });
+    if (!result.success) {
+        console.error('Failed to fetch sponsorship offers:', result.error);
+        // Silently fail for now
+    }
+    return result;
+}
+
+
+export async function respondToSponsorshipOffer(offerId: string, status: 'ACCEPTED' | 'DECLINED') {
+    const result = await fetchWithAuth(`/sponsorship-offers/${offerId}/respond`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+    });
+
+    if (result.success) {
+        revalidateTag(`sponsorship-offers-${result.data.teamId}`);
+    }
+
+    return result;
+}

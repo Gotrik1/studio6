@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,10 +12,11 @@ import { generateMatchPost, type GenerateMatchPostOutput } from '@/shared/api/ge
 import Link from 'next/link';
 import Image from 'next/image';
 import { getMatchOfTheWeek } from '@/entities/match/api/get-match';
+import type { Match } from '@/entities/match/model/types';
 
 type ResultData = {
     matchPost: GenerateMatchPostOutput;
-    matchDetails: any;
+    matchDetails: Match;
 };
 
 export function MatchOfTheWeekWidget() {
@@ -32,14 +34,19 @@ export function MatchOfTheWeekWidget() {
                     throw new Error("No match of the week found.");
                 }
 
-                const winningTeam = (matchData.team1Score || 0) > (matchData.team2Score || 0) ? matchData.team1 : matchData.team2;
-                const losingTeam = (matchData.team1Score || 0) > (matchData.team2Score || 0) ? matchData.team2 : matchData.team1;
+                const scoreParts = matchData.score.split('-').map(s => parseInt(s.trim(), 10));
+                if (scoreParts.length < 2 || isNaN(scoreParts[0]) || isNaN(scoreParts[1])) {
+                    throw new Error("Invalid score format for match of the week.");
+                }
+
+                const winningTeam = scoreParts[0] > scoreParts[1] ? matchData.team1 : matchData.team2;
+                const losingTeam = scoreParts[0] > scoreParts[1] ? matchData.team2 : matchData.team1;
 
                 const postData = await generateMatchPost({
                     winningTeam: winningTeam.name,
                     losingTeam: losingTeam.name,
-                    score: `${matchData.team1Score}-${matchData.team2Score}`,
-                    matchSummary: `A close match in the ${matchData.tournament?.name || 'friendly game'}.`
+                    score: matchData.score,
+                    matchSummary: `A close match in the ${matchData.tournament || 'friendly game'}.`
                 });
                 
                 setResult({ matchPost: postData, matchDetails: matchData });
@@ -93,7 +100,7 @@ export function MatchOfTheWeekWidget() {
                 <CardTitle className="absolute bottom-2 left-4 text-white font-headline text-xl shadow-lg">Матч недели</CardTitle>
             </div>
             <CardHeader>
-                <CardDescription>{matchDetails.tournament?.name || 'Товарищеский матч'}</CardDescription>
+                <CardDescription>{matchDetails.tournament || 'Товарищеский матч'}</CardDescription>
                  <p className="font-semibold">{matchPost.postText}</p>
             </CardHeader>
             <CardContent>
@@ -101,7 +108,7 @@ export function MatchOfTheWeekWidget() {
                     <Award className="h-5 w-5 text-amber-500"/>
                     <div>
                          <span className="font-semibold">{matchDetails.team1.name}</span>
-                         <span className="mx-2 font-bold">{matchDetails.team1Score}-{matchDetails.team2Score}</span>
+                         <span className="mx-2 font-bold">{matchDetails.score}</span>
                          <span className="font-semibold">{matchDetails.team2.name}</span>
                     </div>
                 </div>

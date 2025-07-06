@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -50,7 +51,7 @@ export const TrainingProposalProvider = ({ children }: { children: ReactNode }) 
                     date: new Date(p.date),
                 }));
                 setProposals(formattedProposals);
-            } else {
+            } else if (!proposalsResult.success) {
                 console.error("Failed to fetch proposals", proposalsResult.error);
                 setProposals([]);
             }

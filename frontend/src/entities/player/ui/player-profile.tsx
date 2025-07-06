@@ -25,7 +25,8 @@ import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
 import { HolisticAnalysisTab } from '@/widgets/holistic-analysis-tab';
 import { PlayerActivityFeed, type PlayerActivityItem } from '@/widgets/player-activity-feed';
-import type { FullUserProfile, UserTeam, CareerHistoryItem, GalleryItem, PlayerStats } from '@/entities/user/model/types';
+import type { FullUserProfile, CareerHistoryItem, GalleryItem, PlayerStats } from '@/entities/user/model/types';
+import type { UserTeam } from '@/entities/team/model/types';
 import type { Achievement } from '@/entities/achievement/model/types';
 import { ProposeTrainingDialog } from '@/widgets/propose-training-dialog';
 

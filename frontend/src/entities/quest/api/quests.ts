@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from "@/shared/lib/api-client";
@@ -14,7 +15,9 @@ export async function getQuests(): Promise<Quest[]> {
         // In a real app, progress would come from a user-specific endpoint.
         return result.data.map((q: Quest) => ({ ...q, progress: Math.floor(Math.random() * q.goal) }));
     }
-    console.error("Failed to fetch quests:", result.error);
+    if (!result.success) {
+        console.error("Failed to fetch quests:", result.error);
+    }
     return [];
 }
 

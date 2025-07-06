@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -8,7 +9,6 @@ import { Check, X, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { getSponsorshipOffers, respondToSponsorshipOffer, type SponsorshipOffer } from '@/entities/sponsorship/api/offers';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { useSession } from '@/shared/lib/session/client';
 import { useParams } from 'next/navigation';
 
 export function SponsorshipOffers() {
@@ -21,7 +21,7 @@ export function SponsorshipOffers() {
     const fetchOffers = useCallback(async () => {
         setIsLoading(true);
         const result = await getSponsorshipOffers(teamId);
-        if(result.success) {
+        if(result.success && result.data) {
             setOffers(result.data);
         } else {
              toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить спонсорские предложения.' });
@@ -52,7 +52,7 @@ export function SponsorshipOffers() {
              toast({
                 variant: 'destructive',
                 title: 'Ошибка',
-                description: 'Не удалось обновить статус предложения.'
+                description: result.error || 'Не удалось обновить статус предложения.'
             });
         }
     };

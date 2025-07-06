@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useEffect, useTransition } from 'react';
+import { useState, useEffect, useTransition, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -9,8 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { UserMinus, ShieldQuestion, Loader2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useParams } from 'next/navigation';
-import { getTeamBySlug } from '@/entities/team/api/get-team-by-slug';
-import type { TeamDetails } from '@/entities/team/model/types';
+import { getTeamBySlug, type TeamDetails, type TeamRosterMember } from '@/entities/team/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { removeMember, setCaptain } from '@/entities/team/api/teams';
 import { useSession } from '@/shared/lib/session/client';
@@ -24,29 +24,25 @@ export function RosterManagementTab() {
     const [isLoading, setIsLoading] = useState(true);
     const [isPending, startTransition] = useTransition();
 
-    useEffect(() => {
-        const fetchTeam = async () => {
-            if (!params.slug) return;
-            setIsLoading(true);
-            const teamData = await getTeamBySlug(params.slug as string);
-            setTeam(teamData);
-            setIsLoading(false);
-        };
-        fetchTeam();
-    }, [params.slug]);
-    
-    const refetchTeam = async () => {
+    const fetchTeam = useCallback(async () => {
+        if (!params.slug) return;
+        setIsLoading(true);
         const teamData = await getTeamBySlug(params.slug as string);
         setTeam(teamData);
-    };
+        setIsLoading(false);
+    }, [params.slug]);
 
+    useEffect(() => {
+        fetchTeam();
+    }, [fetchTeam]);
+    
     const handleRemovePlayer = (playerId: string, playerName: string) => {
         if (!team) return;
         startTransition(async () => {
             const result = await removeMember(team.id, playerId);
             if (result.success) {
                 toast({ variant: 'destructive', title: 'Игрок исключен', description: `${playerName} был удален из состава команды.` });
-                await refetchTeam();
+                await fetchTeam();
             } else {
                 toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
             }
@@ -59,7 +55,7 @@ export function RosterManagementTab() {
              const result = await setCaptain(team.id, playerId);
              if (result.success) {
                 toast({ title: 'Капитан назначен', description: `${playerName} теперь является капитаном команды.` });
-                await refetchTeam();
+                await fetchTeam();
              } else {
                   toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
              }
@@ -88,7 +84,7 @@ export function RosterManagementTab() {
         return <p>Команда не найдена.</p>;
     }
     
-    const roster = team.roster;
+    const roster: TeamRosterMember[] = team.roster;
     const isCurrentUserCaptain = currentUser?.id === team.captainId;
 
     return (
@@ -107,7 +103,7 @@ export function RosterManagementTab() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {roster.map(player => (
+                        {roster.map((player: TeamRosterMember) => (
                             <TableRow key={player.id}>
                                 <TableCell className="font-medium flex items-center gap-2">
                                     <Avatar className="h-8 w-8"><AvatarImage src={player.avatar || ''} /><AvatarFallback>{player.name.charAt(0)}</AvatarFallback></Avatar>

@@ -4,8 +4,10 @@
 
 import { useEffect, useState } from 'react';
 import { SponsorshipDashboard } from '@/widgets/sponsorship-dashboard';
-import { getSponsorshipDashboardData, type SponsorshipDashboardData } from '@/entities/sponsorship/api/sponsorship';
+import { getSponsorshipDashboardData } from '@/entities/sponsorship/api/sponsorship';
 import { Skeleton } from '@/shared/ui/skeleton';
+import type { SponsorshipDashboardData } from '@/entities/sponsorship/model/types';
+
 
 export default function SponsorshipManagementPage() {
     const [data, setData] = useState<SponsorshipDashboardData | null>(null);

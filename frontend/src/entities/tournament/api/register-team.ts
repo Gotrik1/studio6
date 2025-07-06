@@ -1,8 +1,9 @@
+
 'use server';
 
 import { getSession } from "@/features/auth/session";
 import { revalidatePath } from "next/cache";
-import type { UserTeam } from '@/entities/user/model/types';
+import type { UserTeam } from '@/entities/team/model/types';
 import { fetchWithAuth } from "@/shared/lib/api-client";
 
 export async function registerTeamForTournamentAction(tournamentId: string, tournamentSlug: string) {
@@ -15,13 +16,13 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
         // This is a protected endpoint that should now exist.
         // I will assume it exists based on the requirement of this refactoring.
         // A real implementation might need a `GET /users/me/teams` or similar.
-        const teamsResult = await fetchWithAuth(`/users/${session.user.id}/teams`);
+        const profileResult = await fetchWithAuth(`/users/${session.user.id}`);
         
-        if(!teamsResult.success) {
-             return { success: false, error: teamsResult.error || "Не удалось получить список ваших команд." };
+        if(!profileResult.success || !profileResult.data?.teams) {
+             return { success: false, error: profileResult.error || "Не удалось получить список ваших команд." };
         }
         
-        const userTeams: UserTeam[] = teamsResult.data || [];
+        const userTeams: UserTeam[] = profileResult.data.teams || [];
         
         if (!userTeams || userTeams.length === 0) {
             return { success: false, error: "У вас нет команды для регистрации. Сначала создайте или вступите в команду." };

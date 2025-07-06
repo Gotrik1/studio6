@@ -13,7 +13,7 @@ import {
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
 import { Separator } from "@/shared/ui/separator";
-import { Loader2, AlertCircle, Sparkles, MessageSquare, Clock, Flag, UserX } from "lucide-react";
+import { Loader2, AlertCircle, Sparkles, MessageSquare, Clock, Flag, UserX, BrainCircuit } from "lucide-react";
 import { analyzeReport, type AnalyzeReportOutput } from '@/shared/api/genkit/flows/analyze-report-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
@@ -170,7 +170,7 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
           <Button variant="outline" onClick={() => onOpenChangeHandler(false)}>Отложить</Button>
           <Button 
             variant={getRecommendationVariant(aiResult?.recommendation) || 'default'}
-            onClick={() => onResolve(report.id, getRecommendationText(aiResult?.recommendation))}
+            onClick={() => onResolve(report.id, getRecommendationText(aiResult?.recommendation) as string)}
             disabled={!aiResult}
           >
               Применить рекомендацию
