@@ -16,12 +16,13 @@ import { MediaTab } from "@/widgets/match-details-tabs/ui/media-tab";
 import { useTransition } from "react";
 import { useToast } from "@/shared/hooks/use-toast";
 import { registerTeamForTournamentAction } from "@/entities/tournament/api/register-team";
+import Link from 'next/link';
 
 interface TournamentDetailsPageProps {
   tournament: TournamentDetails;
 }
 
-export function TournamentDetailsPage({ tournament }: TournamentDetailsPageProps) {
+export function TournamentDetailsPage({ tournament }: { tournament: TournamentDetails }) {
     const { toast } = useToast();
     const [isPending, startTransition] = useTransition();
 

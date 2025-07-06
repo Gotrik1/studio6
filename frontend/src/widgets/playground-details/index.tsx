@@ -25,7 +25,6 @@ import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-d
 import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
 import { createReview, getReviews, type CreateReviewData } from '@/entities/playground/api/reviews';
-import { useRouter } from 'next/navigation';
 import type { PlaygroundConditionReport } from '@/entities/playground/api/condition';
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
@@ -36,7 +35,6 @@ import type { PlaygroundReview } from '@/entities/playground/model/types';
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const router = useRouter();
     const [activities, setActivities] = useState<PlaygroundActivity[]>([]);
     const [isLoadingActivities, setIsLoadingActivities] = useState(true);
     const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
@@ -44,7 +42,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
     const [latestIssueReport, setLatestIssueReport] = useState<PlaygroundConditionReport | null>(initialConditionReport);
-    const { addLobby, lobbies } = useLfg();
+    const { addLobby } = useLfg();
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [initialDateTime, setInitialDateTime] = useState<{date: Date, time: string}>();
     
@@ -55,7 +53,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         setIsLoadingActivities(true);
         try {
             const activityData = await getPlaygroundActivity(playground.id);
-            const formattedActivities: PlaygroundActivity[] = activityData.map((act: any) => ({
+            const formattedActivities: PlaygroundActivity[] = activityData.map((act: { id: string; user: { name: string; avatar: string | null; }; metadata: { comment: string; photo: string | null; }; timestamp: string; }) => ({
                 id: act.id,
                 user: {
                     name: act.user.name,

@@ -3,8 +3,7 @@
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { FullUserProfile } from '@/entities/user/model/types';
-import type { TournamentCrm } from '@/entities/user/model/types';
+import type { FullUserProfile, TournamentCrm } from '@/entities/user/model/types';
 import type { Achievement } from '@/entities/achievement/model/types';
 
 
