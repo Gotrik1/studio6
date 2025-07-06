@@ -1,10 +1,11 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
-import type { Playground } from '@/entities/playground/model/types';
+import type { Playground, PlaygroundReview } from '@/entities/playground/model/types';
 import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -17,7 +18,6 @@ import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
 import { PlaygroundReviewsTab } from '@/widgets/playground-reviews-tab';
-import type { PlaygroundReview } from '@/entities/playground/model/types';
 import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
@@ -29,6 +29,7 @@ import { useRouter } from 'next/navigation';
 import type { PlaygroundConditionReport } from '@/entities/playground/api/condition';
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
+import { reportPlaygroundIssue } from '@/entities/playground/api/report';
 
 
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
@@ -41,7 +42,8 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
     const [isLoadingReviews, setIsLoadingReviews] = useState(true);
     const [isCheckInOpen, setIsCheckInOpen] = useState(false);
     const [isReportIssueOpen, setIsReportIssueOpen] = useState(false);
-    const { addLobby } = useLfg();
+    const [latestIssueReport, setLatestIssueReport] = useState<PlaygroundConditionReport | null>(initialConditionReport);
+    const { addLobby, lobbies } = useLfg();
     const [isPlanGameOpen, setIsPlanGameOpen] = useState(false);
     const [initialDateTime, setInitialDateTime] = useState<{date: Date, time: string}>();
     
@@ -138,6 +140,27 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         }
     };
     
+    const handleReportSubmit = async (data: { category: string; comment: string }) => {
+        const result = await reportPlaygroundIssue({
+            playgroundId: playground.id,
+            ...data
+        });
+        if (result.success && result.data) {
+             setLatestIssueReport(result.data as PlaygroundConditionReport);
+              toast({
+                title: "Спасибо за ваше сообщение!",
+                description: "Информация о проблеме была передана модераторам."
+            });
+        } else {
+             toast({
+                variant: 'destructive',
+                title: "Ошибка",
+                description: "Не удалось отправить отчет. Пожалуйста, попробуйте еще раз."
+            })
+        }
+       
+    };
+    
     const openPlanGameDialog = (day: Date, hour: number) => {
         const time = `${String(hour).padStart(2, '0')}:00`;
         setInitialDateTime({ date: day, time });
@@ -213,7 +236,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
                         <TabsTrigger value="media"><BarChart className="mr-2 h-4 w-4" />Медиа</TabsTrigger>
                     </TabsList>
                     <TabsContent value="info" className="mt-6">
-                        <PlaygroundInfoTab playground={playground} issueReport={initialConditionReport} />
+                        <PlaygroundInfoTab playground={playground} issueReport={latestIssueReport} />
                     </TabsContent>
                     <TabsContent value="schedule" className="mt-6">
                         <PlaygroundScheduleTab schedule={schedule} onPlanClick={openPlanGameDialog} isLoading={isLoadingSchedule} />
@@ -250,6 +273,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
                 onOpenChange={setIsReportIssueOpen}
                 playgroundId={playground.id}
                 playgroundName={playground.name}
+                onReportSubmit={handleReportSubmit}
             />
             <PlanGameDialog 
                 isOpen={isPlanGameOpen}
