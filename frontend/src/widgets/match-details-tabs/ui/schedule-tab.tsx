@@ -13,7 +13,12 @@ import { Clock } from "lucide-react";
 
 type BracketMatch = TournamentDetails['bracket']['rounds'][0]['matches'][0];
 // This type is now stricter, ensuring both teams exist for a playable match.
-type PlayableMatch = Extract<BracketMatch, { team1: object; team2: object; date: string; time: string; href?: string; }>;
+type PlayableMatch = BracketMatch & {
+    team1: NonNullable<BracketMatch['team1']>;
+    team2: NonNullable<BracketMatch['team2']>;
+    date: string;
+    time: string;
+};
 
 interface ScheduleTabProps {
     rounds: TournamentDetails['bracket']['rounds'];
