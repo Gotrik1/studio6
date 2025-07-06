@@ -57,6 +57,8 @@ import { GeneratePlaygroundTacticDto } from './dto/generate-playground-tactic.dt
 import type { GeneratePlaygroundTacticOutput } from '@/ai/flows/schemas/generate-playground-tactic-schema';
 import { GeneratePlaygroundLoreDto } from './dto/generate-playground-lore.dto';
 import type { GeneratePlaygroundLoreOutput } from '@/ai/flows/schemas/generate-playground-lore-schema';
+import { GeneratePlaygroundDrillDto } from './dto/generate-playground-drill.dto';
+import type { GeneratePlaygroundDrillOutput } from '@/ai/flows/schemas/generate-playground-drill-schema';
 import { AnalyzeMatchReportDto } from './dto/analyze-match-report.dto';
 import type { AnalyzeMatchReportOutput } from '@/ai/flows/schemas/analyze-match-report-schema';
 import { GenerateMatchCommentaryDto } from './dto/generate-match-commentary.dto';
@@ -116,10 +118,8 @@ import { PlayerScoutDto } from './dto/player-scout.dto';
 import type { PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
-import { GeneratePlaygroundDrillDto } from './dto/generate-playground-drill.dto';
 import { GeneratePlaygroundSummaryDto } from './dto/generate-playground-summary.dto';
 import { GeneratePlaygroundChallengeDto } from './dto/generate-playground-challenge.dto';
-import type { GeneratePlaygroundDrillOutput } from '@/ai/flows/schemas/generate-playground-drill-schema';
 import type { GeneratePlaygroundSummaryOutput } from '@/ai/flows/schemas/generate-playground-summary-schema';
 import type { GeneratePlaygroundChallengeOutput } from '@/ai/flows/schemas/generate-playground-challenge-schema';
 

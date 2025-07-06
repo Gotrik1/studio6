@@ -28,6 +28,7 @@ import { generateTrainingPlan, type GenerateTrainingPlanInput, type GenerateTrai
 import { generatePlaygroundWorkout, type GeneratePlaygroundWorkoutInput, type GeneratePlaygroundWorkoutOutput } from '@/ai/flows/generate-playground-workout-flow';
 import { generatePlaygroundTactic, type GeneratePlaygroundTacticInput, type GeneratePlaygroundTacticOutput } from '@/ai/flows/generate-playground-tactic-flow';
 import { generatePlaygroundLore, type GeneratePlaygroundLoreInput, type GeneratePlaygroundLoreOutput } from '@/ai/flows/generate-playground-lore';
+import { generatePlaygroundDrill, type GeneratePlaygroundDrillInput, type GeneratePlaygroundDrillOutput } from '@/ai/flows/generate-playground-drill-flow';
 import { analyzeMatchReport, type AnalyzeMatchReportInput, type AnalyzeMatchReportOutput } from '@/ai/flows/analyze-match-report-flow';
 import { generateMatchCommentary, type GenerateMatchCommentaryInput, type GenerateMatchCommentaryOutput } from '@/ai/flows/generate-match-commentary-flow';
 import { generateMatchInterview, type GenerateMatchInterviewInput, type GenerateMatchInterviewOutput } from '@/ai/flows/generate-match-interview-flow';
@@ -59,7 +60,6 @@ import { predictMatchOutcome, type PredictMatchOutcomeInput, type PredictMatchOu
 import { playerScout, type PlayerScoutInput, type PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
 import { PromotionsService } from '../promotions/promotions.service';
 import type { Promotion } from '@prisma/client';
-import { generatePlaygroundDrill, type GeneratePlaygroundDrillInput, type GeneratePlaygroundDrillOutput } from '@/ai/flows/generate-playground-drill-flow';
 import { generatePlaygroundChallenge, type GeneratePlaygroundChallengeInput, type GeneratePlaygroundChallengeOutput } from '@/ai/flows/generate-playground-challenge-flow';
 import { generatePlaygroundSummary, type GeneratePlaygroundSummaryInput, type GeneratePlaygroundSummaryOutput } from '@/ai/flows/generate-playground-summary-flow';
 import { PrismaService } from '@/prisma/prisma.service';
