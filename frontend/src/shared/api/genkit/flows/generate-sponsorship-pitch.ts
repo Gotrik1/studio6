@@ -1,25 +1,33 @@
 'use server';
 
-import type { GenerateSponsorshipPitchInput, GenerateSponsorshipPitchOutput } from './schemas/generate-sponsorship-pitch-schema';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
-export type { GenerateSponsorshipPitchInput, GenerateSponsorshipPitchOutput };
+// Define types locally to decouple from backend schemas.
+export type GenerateSponsorshipPitchInput = {
+  teamName: string;
+  achievements: string;
+  goals: string;
+  audience: string;
+};
+
+export type GenerateSponsorshipPitchOutput = {
+  pitch: string;
+};
 
 export async function generateSponsorshipPitch(input: GenerateSponsorshipPitchInput): Promise<GenerateSponsorshipPitchOutput> {
-   const response = await fetch('/api/ai/generate-sponsorship-pitch', {
+   const result = await fetchWithAuth('/ai/generate-sponsorship-pitch', {
         method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        },
         body: JSON.stringify(input),
-        cache: 'no-store',
     });
 
-    if (!response.ok) {
-        const errorBody = await response.text();
-        console.error("Backend API error:", errorBody);
-        throw new Error(`Backend API responded with status: ${response.status}`);
+    if (!result.success) {
+        console.error("Backend API error:", result.error);
+        throw new Error(`Backend API responded with status: ${result.status}`);
     }
-
-    const result = await response.json();
-    return result;
+    
+    if (!result.data) {
+        throw new Error("No data received from backend.");
+    }
+    
+    return result.data;
 }
