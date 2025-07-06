@@ -3,6 +3,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -19,14 +20,14 @@ interface TrainingProgramEditPageProps {
 }
 
 export function TrainingProgramEditPage({ programId }: TrainingProgramEditPageProps) {
-    const { programs, updateProgram, isLoading } = useTraining();
+    const { programs, updateProgram } = useTraining();
     const router = useRouter();
     const { toast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
     
     const programToEdit = programs.find(p => p.id === programId);
 
-    if (isLoading) {
+    if (programs.length === 0) { // Loading state from provider
         return (
              <div className="space-y-6">
                  <Skeleton className="h-20 w-full" />

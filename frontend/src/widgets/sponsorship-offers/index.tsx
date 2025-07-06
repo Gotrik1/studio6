@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -8,8 +9,7 @@ import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Check, X, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { getSponsorshipOffers, respondToSponsorshipOffer } from '@/entities/sponsorship/api/offers';
-import type { SponsorshipOffer } from '@/entities/sponsorship/model/types';
+import { getSponsorshipOffers, respondToSponsorshipOffer, type SponsorshipOffer } from '@/entities/sponsorship/api/offers';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useParams } from 'next/navigation';
 

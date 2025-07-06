@@ -3,6 +3,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -54,14 +55,11 @@ export function MatchOfTheWeekWidget() {
                 
                 // Adapt MatchDetails to Match
                 const adaptedMatchDetails: Match = {
-                    id: matchData.id,
-                    team1: matchData.team1,
-                    team2: matchData.team2,
-                    score: matchData.score,
-                    tournament: matchData.tournament,
-                    game: 'Unknown', // game property is missing on MatchDetails
-                    date: matchData.date,
-                    status: matchData.status,
+                    ...matchData,
+                    id: String(matchData.id),
+                    team1: { ...matchData.team1, id: 'mock-id-1' }, // Add mock ID
+                    team2: { ...matchData.team2, id: 'mock-id-2' }, // Add mock ID
+                    game: 'Unknown',
                     href: `/matches/${matchData.id}`,
                 };
                 
