@@ -1,4 +1,3 @@
-
 import { Injectable } from "@nestjs/common";
 import {
   generateTeamConcept,
@@ -308,7 +307,7 @@ export class AiService {
       ...wizardResult,
       organizerId,
       imageHint: prompt, // Use prompt as image hint
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Mock end date
+      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // Mock end date
     });
   }
 
@@ -558,7 +557,7 @@ export class AiService {
   ): Promise<GenerateDashboardTipOutput> {
     const lastActivity = await this.prisma.activity.findFirst({
       where: { userId },
-      orderBy: { timestamp: "desc" },
+      orderBy: { createdAt: "desc" },
     });
 
     let lastActivityText = "Начал пользоваться платформой.";

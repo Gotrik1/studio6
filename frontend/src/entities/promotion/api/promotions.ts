@@ -6,6 +6,17 @@ import { revalidatePath } from 'next/cache';
 
 export type { Promotion };
 
+export type CreatePromotionData = {
+    name: string;
+    description: string;
+    prize: string;
+    cost: string;
+    imageDataUri: string;
+    imageHint: string;
+    endDate: string;
+    sponsorId?: string;
+};
+
 export async function getPromotions(): Promise<Promotion[]> {
     const result = await fetchWithAuth('/promotions');
     if (!result.success) {
@@ -15,7 +26,7 @@ export async function getPromotions(): Promise<Promotion[]> {
     return result.data;
 }
 
-export async function createPromotion(data: Omit<Promotion, 'id' | 'sponsor'>) {
+export async function createPromotion(data: CreatePromotionData) {
     const result = await fetchWithAuth('/promotions', {
         method: 'POST',
         body: JSON.stringify(data),

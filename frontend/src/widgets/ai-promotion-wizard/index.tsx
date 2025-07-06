@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -14,7 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { generatePromotionWizard, type GeneratePromotionWizardOutput } from '@/shared/api/genkit/flows/generate-promotion-wizard-flow';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useRouter } from 'next/navigation';
-import { createPromotion } from '@/entities/promotion/api/promotions';
+import { createPromotion, type CreatePromotionData } from '@/entities/promotion/api/promotions';
 
 export function AiPromotionWizard() {
     const { toast } = useToast();
@@ -51,7 +50,7 @@ export function AiPromotionWizard() {
         
         setIsCreating(true);
 
-        const promotionData = {
+        const promotionData: CreatePromotionData = {
             name: result.name,
             description: result.description,
             prize: result.prize,
