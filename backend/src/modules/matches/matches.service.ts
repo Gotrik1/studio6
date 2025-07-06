@@ -1,3 +1,4 @@
+
 import {
   Injectable,
   NotFoundException,
@@ -141,6 +142,15 @@ export class MatchesService {
           },
         },
         tournament: true,
+        events: {
+          include: {
+            player: { select: { name: true } },
+            team: { select: { name: true } },
+          },
+          orderBy: {
+            timestamp: "asc",
+          },
+        },
       },
     });
 
@@ -148,7 +158,14 @@ export class MatchesService {
       throw new NotFoundException(`Матч с ID ${id} не найден`);
     }
 
-    // Map Prisma result to the frontend's MatchDetails shape, without mock data
+    const shapedEvents = match.events.map((event) => ({
+      time: format(new Date(event.timestamp), "mm:ss"), // Format for minutes and seconds in a match
+      event: event.type,
+      player: event.player?.name || "N/A",
+      team: event.team?.name || "N/A",
+    }));
+
+    // Map Prisma result to the frontend's MatchDetails shape
     return {
       id: match.id,
       tournament: match.tournament?.name || "Товарищеский матч",
@@ -190,8 +207,7 @@ export class MatchesService {
           avatarHint: "sports player",
         })),
       },
-      // Note: events, teamStats, and media are no longer provided from the backend mock.
-      // The frontend will need to handle their absence.
+      events: shapedEvents,
     };
   }
 

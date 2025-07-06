@@ -1,5 +1,28 @@
 
 
+export enum MatchEventType {
+  GOAL = "GOAL",
+  ASSIST = "ASSIST",
+  YELLOW_CARD = "YELLOW_CARD",
+  RED_CARD = "RED_CARD",
+  SUBSTITUTION = "SUBSTITUTION",
+  KILL = "KILL",
+  DEATH = "DEATH",
+  ASSIST_ESPORTS = "ASSIST_ESPORTS",
+  BOMB_PLANTED = "BOMB_PLANTED",
+  BOMB_DEFUSED = "BOMB_DEFUSED",
+  ROUND_WIN = "ROUND_WIN",
+  ROUND_LOSS = "ROUND_LOSS",
+  OTHER = "OTHER",
+}
+
+export type MatchEvent = {
+    time: string;
+    event: MatchEventType;
+    player: string;
+    team: string;
+};
+
 export type MatchDetails = {
     id: string;
     tournament: string;
@@ -15,8 +38,7 @@ export type MatchDetails = {
         team1: { name: string; role: string; avatar: string; avatarHint: string; }[];
         team2: { name:string; role: string; avatar: string; avatarHint: string; }[];
     };
-    // The following are optional as they are not guaranteed to be in the API response
-    events?: { time: string; event: string; player: string; team: string; }[];
+    events?: MatchEvent[];
     teamStats?: {
         [key: string]: { label: string; team1: number; team2: number; }
     } | null;

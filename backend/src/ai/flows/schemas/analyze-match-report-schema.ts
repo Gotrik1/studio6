@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MatchEventType } from "@prisma/client";
 
 const PlayerSchema = z.object({
   name: z.string(),
@@ -9,7 +10,7 @@ const PlayerSchema = z.object({
 
 const EventSchema = z.object({
   time: z.string(),
-  event: z.string(),
+  event: z.nativeEnum(MatchEventType),
   player: z.string(),
   team: z.string(),
 });
