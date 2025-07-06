@@ -18,7 +18,7 @@ export async function login(values: z.infer<typeof loginSchema>) {
 
   let data;
   try {
-    const response = await fetch(`${process.env.BACKEND_URL}/auth/login`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -40,7 +40,8 @@ export async function login(values: z.infer<typeof loginSchema>) {
   }
   
   // If we got here, user is valid. Set cookie and redirect.
-  await cookies().set('session', JSON.stringify(data), {
+  const cookieStore = await cookies();
+  await cookieStore.set('session', JSON.stringify(data), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 60 * 60 * 24 * 7, // One week
@@ -60,7 +61,7 @@ export async function register(values: z.infer<typeof registerSchema>) {
     const { name, email, password, role } = validatedFields.data;
 
     try {
-        const response = await fetch(`${process.env.BACKEND_URL}/users`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -83,6 +84,7 @@ export async function register(values: z.infer<typeof registerSchema>) {
 
 
 export async function logout() {
-  await cookies().delete('session');
+  const cookieStore = await cookies();
+  await cookieStore.delete('session');
   redirect('/auth');
 }

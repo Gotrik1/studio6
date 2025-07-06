@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useTransition } from 'react';
@@ -38,7 +39,34 @@ export function TrainingProposalsWidget() {
         });
     };
 
-    const renderProposal = (proposal: TrainingProposal, type: 'incoming' | 'outgoing') => {
+    if (isLoading) {
+        return <Card><CardContent className="p-4">Загрузка...</CardContent></Card>
+    }
+
+    return (
+         <Card>
+            <CardHeader>
+                <CardTitle>Приглашения на тренировку</CardTitle>
+                <CardDescription>Принимайте или отклоняйте предложения от других игроков.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div>
+                    <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><ArrowRight className="text-primary"/> Входящие</h4>
+                     <div className="space-y-2">
+                        {incomingProposals.length > 0 ? incomingProposals.map((p: any) => renderProposal(p, 'incoming')) : <p className="text-xs text-muted-foreground text-center p-4">Нет входящих предложений.</p>}
+                    </div>
+                </div>
+                 <div>
+                    <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><ArrowLeft className="text-muted-foreground"/> Исходящие</h4>
+                     <div className="space-y-2">
+                        {outgoingProposals.length > 0 ? outgoingProposals.map((p: any) => renderProposal(p, 'outgoing')) : <p className="text-xs text-muted-foreground text-center p-4">Нет отправленных предложений.</p>}
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+
+    function renderProposal(proposal: TrainingProposal, type: 'incoming' | 'outgoing') {
         const otherUser = type === 'incoming' ? proposal.from : proposal.to;
         
         return (
@@ -74,31 +102,4 @@ export function TrainingProposalsWidget() {
             </Card>
         );
     }
-
-    if (isLoading) {
-        return <Card><CardContent className="p-4">Загрузка...</CardContent></Card>
-    }
-
-    return (
-         <Card>
-            <CardHeader>
-                <CardTitle>Приглашения на тренировку</CardTitle>
-                <CardDescription>Принимайте или отклоняйте предложения от других игроков.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div>
-                    <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><ArrowRight className="text-primary"/> Входящие</h4>
-                     <div className="space-y-2">
-                        {incomingProposals.length > 0 ? incomingProposals.map(p => renderProposal(p, 'incoming')) : <p className="text-xs text-muted-foreground text-center p-4">Нет входящих предложений.</p>}
-                    </div>
-                </div>
-                 <div>
-                    <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><ArrowLeft className="text-muted-foreground"/> Исходящие</h4>
-                     <div className="space-y-2">
-                        {outgoingProposals.length > 0 ? outgoingProposals.map(p => renderProposal(p, 'outgoing')) : <p className="text-xs text-muted-foreground text-center p-4">Нет отправленных предложений.</p>}
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    );
 }

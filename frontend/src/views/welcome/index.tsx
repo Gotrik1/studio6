@@ -1,14 +1,14 @@
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { type OnboardingOutput, type OnboardingSuggestion } from '@/shared/api/genkit/flows/onboarding-assistant-flow';
 import { ArrowRight } from 'lucide-react';
+import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
 import * as LucideIcons from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { Skeleton } from '@/shared/ui/skeleton';
-
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const iconMap: { [key: string]: LucideIcon } = LucideIcons as any;

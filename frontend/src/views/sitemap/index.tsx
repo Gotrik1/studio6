@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Folder, File } from 'lucide-react';
@@ -17,8 +18,8 @@ const sitemapData: TreeNode[] = [
         { name: 'Команды', type: 'folder', children: [
             { name: 'Список команд', type: 'file', href: '/teams' },
             { name: 'Создание команды', type: 'file', href: '/teams/new' },
-            { name: 'Профиль команды', type: 'file', href: '/teams/cyber-eagles' },
-            { name: 'Управление командой', type: 'file', href: '/teams/cyber-eagles/management' },
+            { name: 'Профиль команды', type: 'file', href: '/teams/dvotovyie-atlety' },
+            { name: 'Управление командой', type: 'file', href: '/teams/dvotovyie-atlety/management' },
         ]},
         { name: 'Соревнования', type: 'folder', children: [
             { name: 'Список турниров', type: 'file', href: '/tournaments' },
@@ -65,7 +66,7 @@ const sitemapData: TreeNode[] = [
         { name: 'Управление пользователями', type: 'file', href: '/administration/users' },
         { name: 'Турниры (CRM)', type: 'file', href: '/administration/tournament-crm/dashboard' },
         { name: 'Очередь модерации', type: 'file', href: '/administration/moderation-queue' },
-        { name: 'Экономика PD', type: 'file', href: '/pd-economy' },
+        { name: 'Экономика PD', type: 'file', href: '/administration/pd-economy' },
         { name: 'Геймификация', type: 'file', href: '/administration/gamification' },
         { name: 'Виды спорта', type: 'file', href: '/administration/sports' },
     ]},

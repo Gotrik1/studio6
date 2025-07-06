@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -69,7 +70,7 @@ type PlayerProfileProps = {
 export function PlayerProfile({ user, isCurrentUser, achievements, teams, gallery, careerHistory, playerActivity, stats }: PlayerProfileProps) {
   const [avatar, setAvatar] = useState(user.avatar);
   const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
-  const initials = user.name.split(' ').map((n) => n[0]).join('');
+  const initials = user.name.split(' ').map((n: string) => n[0]).join('');
   const rank = getRankByPoints(user.xp || 0);
   const progressValue = rank.maxPoints === Infinity ? 100 : (((user.xp || 0) - rank.minPoints) / (rank.maxPoints - rank.minPoints)) * 100;
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
@@ -101,7 +102,7 @@ export function PlayerProfile({ user, isCurrentUser, achievements, teams, galler
           <div className="flex flex-col items-center gap-6 -mt-20 text-center sm:flex-row sm:items-end sm:text-left">
             <div className="relative shrink-0">
               <Avatar className="h-32 w-32 border-4 border-background bg-background shadow-lg">
-                <AvatarImage src={avatar || ''} alt={user.name} data-ai-hint="esports player" />
+                <AvatarImage src={avatar || undefined} alt={user.name} data-ai-hint="esports player" />
                 <AvatarFallback className="text-3xl">{initials}</AvatarFallback>
               </Avatar>
               {isCurrentUser && (

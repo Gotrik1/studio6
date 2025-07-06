@@ -22,7 +22,8 @@ import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
 import { useParams } from 'next/navigation';
 import type { CoachedPlayer } from '@/entities/user/model/types';
-import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
+import { getTeamBySlug } from '@/entities/team/api/teams';
+import type { TeamDetails } from '@/entities/team/model/types';
 import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
@@ -51,7 +52,7 @@ export function TeamManagementPage() {
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
     const [isActionPending, startTransition] = useTransition();
     
-    const teamPlayers: CoachedPlayer[] = team?.roster.map((p: any) => ({
+    const teamPlayers: CoachedPlayer[] = team?.roster.map((p) => ({
         id: p.id,
         name: p.name,
         avatar: p.avatar,
@@ -200,7 +201,7 @@ export function TeamManagementPage() {
                                         {joinRequests.map(request => (
                                             <TableRow key={request.id}>
                                                 <TableCell className="font-medium flex items-center gap-2">
-                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.user.avatar || ''} data-ai-hint="player avatar" /><AvatarFallback>{request.user.name.charAt(0)}</AvatarFallback></Avatar>
+                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.user.avatar || undefined} data-ai-hint="player avatar" /><AvatarFallback>{request.user.name.charAt(0)}</AvatarFallback></Avatar>
                                                     {request.user.name}
                                                 </TableCell>
                                                 <TableCell>{request.user.role}</TableCell>

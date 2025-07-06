@@ -7,8 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/shared/ui/button';
 import { Progress } from '@/shared/ui/progress';
 import { useToast } from '@/shared/hooks/use-toast';
-import { getQuests } from '@/entities/quest/api/quests';
-import type { Quest } from '@/entities/quest/model/types';
+import { getQuests, type Quest } from '@/entities/quest/api/quests';
 import { QuestType } from '@/entities/quest/model/types';
 import { Award, Check, Repeat, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';

@@ -10,7 +10,7 @@ import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
 import type { Achievement } from '@/entities/achievement/model/types';
 
-export type { FullUserProfile };
+export type { FullUserProfile, PlayerStats };
 
 // This is the type for the full page props, combining multiple data sources
 export type PlayerProfilePageData = {

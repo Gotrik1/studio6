@@ -7,6 +7,8 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidatePath } from 'next/cache';
 import type { AnalyzeTeamPerformanceOutput } from '@/shared/api/genkit/flows/analyze-team-performance-flow';
 
+export type { Team, TeamDetails };
+
 export async function getTeams(): Promise<Team[]> {
   const result = await fetchWithAuth('/teams');
   if (!result.success) {

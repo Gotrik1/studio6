@@ -16,7 +16,7 @@ export async function getReviews(playgroundId: string): Promise<FetchResult<Play
   });
   
   if (!result.success) {
-        console.error('Failed to fetch reviews:', result.error);
+      console.error('Failed to fetch reviews:', result.error);
       return { success: false, error: result.error, status: result.status, data: null };
   }
   
