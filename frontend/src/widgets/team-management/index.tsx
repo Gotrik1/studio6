@@ -22,7 +22,8 @@ import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
 import { useParams } from 'next/navigation';
 import type { CoachedPlayer } from '@/entities/user/model/types';
-import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/get-team-by-slug';
+import { getTeamBySlug } from '@/entities/team/api/teams';
+import type { TeamDetails } from '@/entities/team/model/types';
 import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
@@ -49,8 +50,9 @@ export function TeamManagementPage() {
     
     const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
+    const [isActionPending, startTransition] = useTransition();
     
-    const teamPlayers: CoachedPlayer[] = team?.roster.map(p => ({
+    const teamPlayers: CoachedPlayer[] = team?.roster.map((p) => ({
         id: p.id,
         name: p.name,
         avatar: p.avatar,
@@ -95,13 +97,11 @@ export function TeamManagementPage() {
         fetchData();
     }, [fetchData]);
 
-    const [isActionPending, startTransition] = useTransition();
-
     const handleAccept = (request: JoinRequest) => {
         startTransition(async () => {
             const result = await acceptTeamApplication(request.id);
             if(result.success) {
-                toast({ title: "Игрок принят!", description: `${request.applicant.name} теперь в вашей команде.` });
+                toast({ title: "Игрок принят!", description: `${request.user.name} теперь в вашей команде.` });
                 await fetchData();
             } else {
                  toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
@@ -116,7 +116,7 @@ export function TeamManagementPage() {
                 toast({
                     variant: 'destructive',
                     title: 'Заявка отклонена',
-                    description: `Заявка от ${request.applicant.name} была отклонена.`,
+                    description: `Заявка от ${request.user.name} была отклонена.`,
                 });
                 await fetchData();
              } else {
@@ -131,9 +131,9 @@ export function TeamManagementPage() {
     };
     
     const analysisDialogRequestProp = selectedRequest ? {
-        name: selectedRequest.applicant.name,
-        role: selectedRequest.applicant.role,
-        avatar: selectedRequest.applicant.avatar || '',
+        name: selectedRequest.user.name,
+        role: selectedRequest.user.role,
+        avatar: selectedRequest.user.avatar || '',
         avatarHint: 'sports player',
         statsSummary: selectedRequest.statsSummary
     } : null;
@@ -201,10 +201,10 @@ export function TeamManagementPage() {
                                         {joinRequests.map(request => (
                                             <TableRow key={request.id}>
                                                 <TableCell className="font-medium flex items-center gap-2">
-                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.applicant.avatar || ''} data-ai-hint="player avatar" /><AvatarFallback>{request.applicant.name.charAt(0)}</AvatarFallback></Avatar>
-                                                    {request.applicant.name}
+                                                    <Avatar className="h-8 w-8"><AvatarImage src={request.user.avatar || ''} data-ai-hint="player avatar" /><AvatarFallback>{request.user.name.charAt(0)}</AvatarFallback></Avatar>
+                                                    {request.user.name}
                                                 </TableCell>
-                                                <TableCell>{request.applicant.role}</TableCell>
+                                                <TableCell>{request.user.role}</TableCell>
                                                 <TableCell className="text-right space-x-1">
                                                     <Button variant="outline" size="sm" onClick={() => handleAnalyze(request)}>AI-Анализ</Button>
                                                     <Button variant="ghost" size="icon" onClick={() => handleDecline(request)} disabled={isActionPending}><X className="h-4 w-4 text-red-500" /></Button>
