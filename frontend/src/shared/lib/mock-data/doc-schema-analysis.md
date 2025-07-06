@@ -55,7 +55,7 @@
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `id`, `message` | `String` | `string` | `string` | ✔ |  |
 | `team`, `user` | `Team`, `User` | `lite-объекты` | `JoinRequest` | ⚠ | Бэкенд отдает облегченные объекты, фронт их агрегирует в свой тип. |
-| `status` | `TeamApplicationStatus` | `string` | — | ✔ | Статус обрабатывается на бэкенде. |
+| `status` | `TeamApplicationStatus` | `string` | `string` | ✔ | |
 
 ---
 
@@ -75,11 +75,11 @@
 ## 7. Match
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id`, `location` | `String` | `string` | `string` | ✔ |  |
+| `id`, `location` | `String` | `string` | `string` | ✔ | |
 | `team1`, `team2` | `Team` | `LiteTeam` | `LiteTeam` | ✔ | Отдаются облегченные DTO. |
 | `team1Score`, `team2Score` | `Int?` | `number \| null` | `string` (в `score`) | ⚠ | На фронтенде счет представлен единой строкой "X-Y", что удобно для UI. |
 | `status` | `MatchStatus` (enum) | `string` | `string` | ✔ | `enum` на бэкенде преобразуется в строку. |
-| `scheduledAt` | `DateTime` | `Date` (или `string`) | `string` | ✔ |  |
+| `scheduledAt` | `DateTime` | `Date` (или `string`) | `string` | ✔ | |
 | `events` | `MatchEvent[]` | `LiteEvent[]` | `MatchEvent[]` | ✔ | DTO формирует облегченные события. |
 
 ---
@@ -97,11 +97,11 @@
 ## 9. Playground
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `id`, `name`, `address` | `String` | `string` | `string` | ✔ |  |
-| `type`, `surface` | `String` | `string` | `string` | ✔ |  |
-| `features` | `String[]` | `string[]` | `string[]` | ✔ |  |
-| `rating`, `checkIns` | `Int` | `number` | `number` | ✔ |  |
-| `creator` | `User` | `LiteUser` | `LiteUser` | ✔ |  |
+| `id`, `name`, `address` | `String` | `string` | `string` | ✔ | |
+| `type`, `surface` | `String` | `string` | `string` | ✔ | |
+| `features` | `String[]` | `string[]` | `string[]` | ✔ | |
+| `rating`, `checkIns` | `Int` | `number` | `number` | ✔ | |
+| `creator` | `User` | `LiteUser` | `LiteUser` | ✔ | |
 | `reviews` | `PlaygroundReview[]` | `LiteReview[]` | `PlaygroundReview[]` | ⚠ | DTO с облегченными данными об отзывах. |
 
 ---
@@ -111,8 +111,8 @@
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `TrainingProgram` | `TrainingProgram` | `TrainingProgram` | `TrainingProgram` | ✔ | Полностью совпадает, так как структура в основном контентная. |
 | `TrainingLog` | `TrainingLog` | `TrainingLog` | `TrainingLogEntry` | ✔ | Структура полностью нормализована и консистентна на всех уровнях. |
-| `LoggedExercise` | `LoggedExercise` | `LoggedExercise` | `ExerciseLog` | ✔ |  |
-| `LoggedSet` | `LoggedSet` | `LoggedSet` | `LoggedSet` | ✔ |  |
+| `LoggedExercise` | `LoggedExercise` | `LoggedExercise` | `ExerciseLog` | ✔ | |
+| `LoggedSet` | `LoggedSet` | `LoggedSet` | `LoggedSet` | ✔ | |
 
 ---
 
@@ -120,7 +120,7 @@
 | Поле | Prisma | Backend DTO/entity | Frontend Type | Совпадает | Комментарий |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `Poll` | `Poll` | `Poll` | `Poll` | ✔ | Структура полностью реляционная и консистентная. |
-| `PollOption` | `PollOption` | `PollOption` | `PollOption` | ✔ |  |
+| `PollOption` | `PollOption` | `PollOption` | `PollOption` | ✔ | |
 | `PollVote` | `PollVote` | — | — | ✔ | Сущность голосования скрыта от фронтенда, он работает только с результатом. |
 | `@@unique` | `[userId, pollId]` | — | — | ✔ | Уникальность голоса обеспечивается на уровне БД. |
 
