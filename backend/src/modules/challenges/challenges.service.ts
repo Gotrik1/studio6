@@ -1,17 +1,75 @@
-
 import {
   Injectable,
   NotFoundException,
   ForbiddenException,
   BadRequestException,
+  Logger,
+  OnModuleInit,
 } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import { Challenge } from "@prisma/client";
 import { CreateChallengeDto } from "./dto/create-challenge.dto";
 
 @Injectable()
-export class ChallengesService {
+export class ChallengesService implements OnModuleInit {
+  private readonly logger = new Logger(ChallengesService.name);
+
   constructor(private prisma: PrismaService) {}
+
+  async onModuleInit() {
+    await this.seedChallenges();
+  }
+
+  async seedChallenges() {
+    const count = await this.prisma.challenge.count();
+    if (count > 0) return;
+
+    this.logger.log("Seeding challenges...");
+
+    const users = await this.prisma.user.findMany({
+      where: { role: "Игрок" },
+      take: 2,
+    });
+    const valorantSport = await this.prisma.sport.findFirst({
+      where: { name: "Valorant" },
+    });
+    const basketballSport = await this.prisma.sport.findFirst({
+      where: { name: "Баскетбол" },
+    });
+
+    if (users.length < 2 || !valorantSport || !basketballSport) {
+      this.logger.warn(
+        "Not enough users or sports to seed challenges. Skipping.",
+      );
+      return;
+    }
+
+    await this.prisma.challenge.create({
+      data: {
+        title: "Дуэль 1 на 1 на AWP",
+        description:
+          "Ищу сильного снайпера для дуэли на карте awp_lego. Ставка - уважение.",
+        wager: 100,
+        creatorId: users[0].id,
+        disciplineId: valorantSport.id,
+        status: "OPEN",
+      },
+    });
+
+    await this.prisma.challenge.create({
+      data: {
+        title: "Баскетбольный баттл",
+        description: "Кто забьет больше трехочковых из 10 попыток?",
+        wager: 50,
+        creatorId: users[1].id,
+        opponentId: users[0].id,
+        disciplineId: basketballSport.id,
+        status: "IN_PROGRESS",
+      },
+    });
+
+    this.logger.log("Challenges seeded.");
+  }
 
   async create(
     createChallengeDto: CreateChallengeDto,
