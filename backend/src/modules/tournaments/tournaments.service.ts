@@ -1,3 +1,4 @@
+
 import {
   Injectable,
   NotFoundException,
@@ -118,6 +119,7 @@ export class TournamentsService {
         tournamentId: id,
         status: "PLANNED",
         scheduledAt: new Date(), // Placeholder для логики расписания
+        round: 1,
       });
     }
 
@@ -261,51 +263,86 @@ export class TournamentsService {
   }
 
   private _shapeTournamentDetails(tournament: any) {
-    // --- Dynamic Bracket Generation Logic ---
-    const rounds: { name: string; matches: any[] }[] = [];
+    // --- Real Bracket Generation Logic ---
+    const roundsMap: Map<number, any[]> = new Map();
     const matches = tournament.matches.map((m: any) => ({
       ...m,
       href: `/matches/${m.id}`,
-      score: m.team1Score !== null ? `${m.team1Score}-${m.team2Score}` : "VS",
+      score:
+        m.team1Score !== null && m.team2Score !== null
+          ? `${m.team1Score}-${m.team2Score}`
+          : "VS",
     }));
+
+    for (const match of matches) {
+      if (match.round) {
+        if (!roundsMap.has(match.round)) {
+          roundsMap.set(match.round, []);
+        }
+        roundsMap.get(match.round)!.push(match);
+      }
+    }
+
+    const sortedRounds = Array.from(roundsMap.keys()).sort((a, b) => a - b);
+
+    // Simple naming for rounds. Can be improved.
+    const roundNames: { [key: number]: string } = {
+      1: "1/8 Финала",
+      2: "Четвертьфиналы",
+      3: "Полуфиналы",
+      4: "Финал",
+    };
+
+    const bracketRounds = sortedRounds.map((roundNum) => {
+      let name = `Раунд ${roundNum}`;
+      if (roundNames[roundNum]) name = roundNames[roundNum];
+      // Special case for final rounds based on number of matches
+      const numMatches = roundsMap.get(roundNum)!.length;
+      if (numMatches === 1 && roundNum > 1) name = "Финал";
+      if (numMatches === 2 && roundNum > 1) name = "Полуфиналы";
+      if (numMatches === 4 && roundNum > 1) name = "Четвертьфиналы";
+
+      return {
+        name: name,
+        matches: roundsMap.get(roundNum)!,
+      };
+    });
+
     let champion: any = null;
-
-    if (matches.length >= 4) {
-      // Quarterfinals
-      rounds.push({ name: "Четвертьфиналы", matches: matches.slice(0, 4) });
-    }
-    if (matches.length >= 6) {
-      // Semifinals
-      rounds.push({ name: "Полуфиналы", matches: matches.slice(4, 6) });
-    }
-    if (matches.length >= 7) {
-      // Final
-      const finalMatch = matches[6];
-      rounds.push({ name: "Финал", matches: [finalMatch] });
-
-      const score1 = finalMatch.team1Score ?? 0;
-      const score2 = finalMatch.team2Score ?? 0;
-      if (score1 > score2) {
-        champion = { id: 99, team1: finalMatch.team1, winner: true };
-      } else if (score2 > score1) {
-        champion = { id: 99, team1: finalMatch.team2, winner: true };
+    if (bracketRounds.length > 0) {
+      const finalRound = bracketRounds[bracketRounds.length - 1];
+      if (finalRound.matches.length === 1) {
+        const finalMatch = finalRound.matches[0];
+        const score1 = finalMatch.team1Score ?? 0;
+        const score2 = finalMatch.team2Score ?? 0;
+        if (score1 > score2) {
+          champion = { id: 99, team1: finalMatch.team1, winner: true };
+        } else if (score2 > score1) {
+          champion = { id: 99, team1: finalMatch.team2, winner: true };
+        }
       }
     }
 
     if (champion) {
-      rounds.push({ name: "Чемпион", matches: [champion] });
+      bracketRounds.push({ name: "Чемпион", matches: [champion] });
     }
 
     // --- Dynamic Schedule Generation ---
     const registrationEndDate = new Date(tournament.registrationEndDate);
     const groupStageDate = new Date(tournament.tournamentStartDate);
-    groupStageDate.setDate(groupStageDate.getDate() + 2);
+    groupStageDate.setDate(groupStageDate.getDate() + 2); // Example logic
+
+    const playoffsStartDate = new Date(groupStageDate);
+    playoffsStartDate.setDate(playoffsStartDate.getDate() + 1); // Example logic
+
+    const finalsDate = new Date(playoffsStartDate);
+    finalsDate.setDate(playoffsStartDate.getDate() + 2); // Example logic
 
     const schedule = {
       registration: `${format(new Date(tournament.registrationStartDate), "d MMM", { locale: ru })}-${format(registrationEndDate, "d MMMM", { locale: ru })}`,
       groupStage: `${format(new Date(tournament.tournamentStartDate), "d")}-${format(groupStageDate, "d MMMM", { locale: ru })}`,
-      playoffs: "5-6 Июля", // can remain mock for now
-      finals: format(new Date(tournament.tournamentStartDate), "d MMMM yyyy", {
+      playoffs: `${format(playoffsStartDate, "d MMMM", { locale: ru })}`,
+      finals: format(new Date(finalsDate), "d MMMM yyyy", {
         locale: ru,
       }),
     };
@@ -332,7 +369,7 @@ export class TournamentsService {
       schedule,
       teams: tournament.teams,
       rules: tournament.rules || "Правила не указаны.",
-      bracket: { rounds },
+      bracket: { rounds: bracketRounds },
       media: tournament.media.map((m: any) => ({ ...m, src: m.src })),
     };
   }
