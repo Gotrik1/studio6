@@ -193,22 +193,6 @@ export class AiService {
     return generatePlaygroundSummary(input);
   }
 
-  async smartSearch(query: string): Promise<SmartSearchOutput> {
-    return smartSearch(query);
-  }
-  
-  async analyzePlayerPerformance(input: AnalyzePlayerPerformanceInput): Promise<AnalyzePlayerPerformanceOutput_1> {
-    return analyzePlayerPerformance(input);
-  }
-  
-  async generateTrainingPlan(input: GenerateTrainingPlanInput): Promise<GenerateTrainingPlanOutput> {
-    return generateTrainingPlan(input);
-  }
-
-  async generatePlaygroundWorkout(input: GeneratePlaygroundWorkoutInput): Promise<GeneratePlaygroundWorkoutOutput> {
-    return generatePlaygroundWorkout(input);
-  }
-
   async generatePlaygroundTactic(input: GeneratePlaygroundTacticInput): Promise<GeneratePlaygroundTacticOutput> {
     return generatePlaygroundTactic(input);
   }
@@ -223,6 +207,22 @@ export class AiService {
   
   async generatePlaygroundChallenge(input: GeneratePlaygroundChallengeInput): Promise<GeneratePlaygroundChallengeOutput> {
     return generatePlaygroundChallenge(input);
+  }
+
+  async smartSearch(query: string): Promise<SmartSearchOutput> {
+    return smartSearch(query);
+  }
+  
+  async analyzePlayerPerformance(input: AnalyzePlayerPerformanceInput): Promise<AnalyzePlayerPerformanceOutput_1> {
+    return analyzePlayerPerformance(input);
+  }
+  
+  async generateTrainingPlan(input: GenerateTrainingPlanInput): Promise<GenerateTrainingPlanOutput> {
+    return generateTrainingPlan(input);
+  }
+
+  async generatePlaygroundWorkout(input: GeneratePlaygroundWorkoutInput): Promise<GeneratePlaygroundWorkoutOutput> {
+    return generatePlaygroundWorkout(input);
   }
 
   async analyzeMatchReport(input: AnalyzeMatchReportInput): Promise<AnalyzeMatchReportOutput> {

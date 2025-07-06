@@ -355,6 +355,14 @@ export class AiController {
     return this.aiService.generatePlaygroundSummary(generatePlaygroundSummaryDto);
   }
 
+  @Post('generate-playground-tactic')
+  @HttpCode(HttpStatus.OK)
+  async generatePlaygroundTactic(
+    @Body() generatePlaygroundTacticDto: GeneratePlaygroundTacticDto,
+  ): Promise<GeneratePlaygroundTacticOutput> {
+    return this.aiService.generatePlaygroundTactic(generatePlaygroundTacticDto);
+  }
+
   @Post('smart-search')
   @HttpCode(HttpStatus.OK)
   async smartSearch(
@@ -385,14 +393,6 @@ export class AiController {
     @Body() generatePlaygroundWorkoutDto: GeneratePlaygroundWorkoutDto,
   ): Promise<GeneratePlaygroundWorkoutOutput> {
     return this.aiService.generatePlaygroundWorkout(generatePlaygroundWorkoutDto);
-  }
-
-  @Post('generate-playground-tactic')
-  @HttpCode(HttpStatus.OK)
-  async generatePlaygroundTactic(
-    @Body() generatePlaygroundTacticDto: GeneratePlaygroundTacticDto,
-  ): Promise<GeneratePlaygroundTacticOutput> {
-    return this.aiService.generatePlaygroundTactic(generatePlaygroundTacticDto);
   }
 
   @Post('generate-playground-lore')
@@ -593,7 +593,7 @@ export class AiController {
   ): Promise<OnboardingOutput> {
     return this.aiService.getOnboardingSuggestions(onboardingAssistantDto);
   }
-
+  
   @Post('predict-match-outcome')
   @HttpCode(HttpStatus.OK)
   async predictMatchOutcome(
