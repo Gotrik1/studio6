@@ -1,7 +1,8 @@
 import { Injectable, OnModuleInit, Logger } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import { ChatGateway } from "@/modules/chat/chat.gateway";
-import { kafka, KAFKA_CLIENT_ID } from "../kafka.config";
+import { kafka } from "../kafka.config";
+import type { ChatMessagePayload } from "../models/chat-message.payload";
 
 @Injectable()
 export class ChatConsumer implements OnModuleInit {
@@ -23,7 +24,9 @@ export class ChatConsumer implements OnModuleInit {
       await consumer.run({
         eachMessage: async ({ message }) => {
           if (!message.value) return;
-          const payload = JSON.parse(message.value.toString());
+          const payload = JSON.parse(
+            message.value.toString(),
+          ) as ChatMessagePayload;
           this.logger.log(
             `Received message from Kafka: ${JSON.stringify(payload)}`,
           );

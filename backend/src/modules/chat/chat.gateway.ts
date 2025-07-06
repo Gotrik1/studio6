@@ -10,6 +10,7 @@ import {
 import { Logger } from "@nestjs/common";
 import { Socket, Server } from "socket.io";
 import { KafkaService } from "../kafka/kafka.service";
+import type { ChatMessagePayload } from "../kafka/models/chat-message.payload";
 
 @WebSocketGateway({
   cors: {
@@ -37,14 +38,14 @@ export class ChatGateway
   }
 
   @SubscribeMessage("sendMessage")
-  async handleMessage(client: Socket, payload: any): Promise<void> {
+  async handleMessage(client: Socket, payload: ChatMessagePayload): Promise<void> {
     this.logger.log(
       `Received message from client ${client.id}, producing to Kafka...`,
     );
     await this.kafkaService.produce("chat-messages", payload);
   }
 
-  broadcastMessage(payload: any) {
+  broadcastMessage(payload: ChatMessagePayload) {
     this.server.emit("receiveMessage", payload);
     this.logger.log(
       `Broadcasted message to all clients: ${JSON.stringify(payload)}`,
