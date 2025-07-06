@@ -17,7 +17,7 @@ export async function getReports(status: 'PENDING' | 'RESOLVED' | 'DISMISSED'): 
   return result.data;
 }
 
-export async function createReport(data: { reportedUserId: string; reason: string; context: string }) {
+export async function createReport(data: { reportedUserId: string; category: string; description: string }) {
     const result = await fetchWithAuth('/reports', {
         method: 'POST',
         body: JSON.stringify(data),
@@ -30,7 +30,7 @@ export async function resolveReport(reportId: string, resolution: string, status
         method: 'PATCH',
         body: JSON.stringify({ resolution, status }),
     });
-
+    
     if (result.success) {
         revalidateTag('reports');
     }

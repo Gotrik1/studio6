@@ -6,8 +6,8 @@ type ReportUser = {
 
 export type Report = {
   id: string;
-  reason: string;
-  context: string;
+  category: string;
+  description: string | null;
   status: 'PENDING' | 'RESOLVED' | 'DISMISSED';
   createdAt: string;
   reporter: ReportUser;

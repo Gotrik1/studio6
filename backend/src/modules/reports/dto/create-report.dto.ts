@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from "class-validator";
+import { IsString, IsNotEmpty, IsOptional } from "class-validator";
 
 export class CreateReportDto {
   @IsString()
@@ -7,9 +7,9 @@ export class CreateReportDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly reason: string;
+  readonly category: string;
 
   @IsString()
-  @IsNotEmpty()
-  readonly context: string;
+  @IsOptional()
+  readonly description?: string;
 }

@@ -44,7 +44,7 @@ const getRecommendationText = (rec?: AnalyzeReportOutput['recommendation']) => {
         case 'temp_ban': return 'Временный бан';
         case 'perm_ban': return 'Постоянный бан';
         case 'no_action': return 'Нет нарушений';
-        default: return '...';
+        default: return rec || '...';
     }
 };
 
@@ -74,8 +74,8 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
 
       try {
           const result = await analyzeReport({
-              reportReason: report.reason,
-              evidenceContext: report.context,
+              reportReason: report.category,
+              evidenceContext: report.description || '',
               reportedUserActivity: mockUserHistory,
           });
           setAiResult(result);
@@ -116,11 +116,11 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
         <div className="py-4 space-y-4">
             <div className="space-y-1">
                 <h4 className="font-semibold text-sm flex items-center gap-2"><Flag className="h-4 w-4"/>Причина</h4>
-                <p className="text-sm p-2 bg-muted rounded-md">{report.reason}</p>
+                <p className="text-sm p-2 bg-muted rounded-md">{report.category}</p>
             </div>
             <div className="space-y-1">
                 <h4 className="font-semibold text-sm flex items-center gap-2"><MessageSquare className="h-4 w-4"/>Контекст</h4>
-                <p className="text-sm p-2 bg-muted rounded-md whitespace-pre-wrap">{report.context}</p>
+                <p className="text-sm p-2 bg-muted rounded-md whitespace-pre-wrap">{report.description}</p>
                  <p className="text-xs text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" />{formatDistanceToNow(new Date(report.createdAt), { addSuffix: true, locale: ru })}</p>
             </div>
             <div className="space-y-1">
@@ -132,7 +132,7 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
                 <div className="flex items-center justify-between mb-2">
                     <h4 className="font-semibold text-sm">Помощник модератора (AI)</h4>
                     <Button variant="outline" size="sm" onClick={handleAnalyzeReport} disabled={isAnalyzing}>
-                        {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                        {isAnalyzing ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <BrainCircuit className="mr-2 h-4 w-4"/>}
                         Проанализировать заново
                     </Button>
                 </div>

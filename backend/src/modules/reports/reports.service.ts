@@ -12,10 +12,13 @@ export class ReportsService {
     reporterId: string,
     createReportDto: CreateReportDto,
   ): Promise<Report> {
+    const { reportedUserId, category, description } = createReportDto;
     return this.prisma.report.create({
       data: {
-        ...createReportDto,
         reporterId,
+        reportedUserId,
+        category,
+        description,
       },
     });
   }
