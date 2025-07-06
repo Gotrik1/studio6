@@ -43,6 +43,8 @@ import type { GeneratePostImageOutput } from '@/ai/flows/schemas/generate-post-i
 import type { GenerateTournamentWizardOutput } from '@/ai/flows/schemas/generate-tournament-wizard-schema';
 import { AnalyzePlaygroundDetailsDto } from './dto/analyze-playground-details.dto';
 import { AnalyzePlaygroundReportDto } from './dto/analyze-playground-report.dto';
+import { GeneratePlaygroundSummaryDto } from './dto/generate-playground-summary.dto';
+import { GeneratePlaygroundTacticDto } from './dto/generate-playground-tactic.dto';
 import type { AnalyzePlaygroundDetailsOutput } from '@/ai/flows/schemas/analyze-playground-details-schema';
 import type { AnalyzePlaygroundReportOutput } from '@/ai/flows/schemas/analyze-playground-report-schema';
 import { SmartSearchDto } from './dto/smart-search.dto';
@@ -53,8 +55,6 @@ import type { GenerateTrainingPlanOutput } from '@/ai/flows/schemas/generate-tra
 import type { AnalyzePlayerPerformanceOutput } from '@/ai/flows/schemas/analyze-player-performance-schema';
 import { GeneratePlaygroundWorkoutDto } from './dto/generate-playground-workout.dto';
 import type { GeneratePlaygroundWorkoutOutput } from '@/ai/flows/schemas/generate-playground-workout-schema';
-import { GeneratePlaygroundTacticDto } from './dto/generate-playground-tactic.dto';
-import type { GeneratePlaygroundTacticOutput } from '@/ai/flows/schemas/generate-playground-tactic-schema';
 import { GeneratePlaygroundLoreDto } from './dto/generate-playground-lore.dto';
 import type { GeneratePlaygroundLoreOutput } from '@/ai/flows/schemas/generate-playground-lore-schema';
 import { GeneratePlaygroundDrillDto } from './dto/generate-playground-drill.dto';
@@ -118,7 +118,6 @@ import { PlayerScoutDto } from './dto/player-scout.dto';
 import type { PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
-import { GeneratePlaygroundSummaryDto } from './dto/generate-playground-summary.dto';
 import { GeneratePlaygroundChallengeDto } from './dto/generate-playground-challenge.dto';
 import type { GeneratePlaygroundSummaryOutput } from '@/ai/flows/schemas/generate-playground-summary-schema';
 import type { GeneratePlaygroundChallengeOutput } from '@/ai/flows/schemas/generate-playground-challenge-schema';
@@ -323,12 +322,6 @@ export class AiController {
     @Body() generatePostImageDto: GeneratePostImageDto,
   ): Promise<GeneratePostImageOutput> {
     return this.aiService.generatePostImage(generatePostImageDto.prompt);
-  }
-
-  @Post('generate-sport-summary')
-  @HttpCode(HttpStatus.OK)
-  async generateSportSummary(@Body() generateSportSummaryDto: GenerateSportSummaryDto): Promise<GenerateSportSummaryOutput> {
-    return this.aiService.generateSportSummary(generateSportSummaryDto);
   }
 
   @Post('analyze-playground-details')
@@ -570,6 +563,12 @@ export class AiController {
     return this.aiService.findVenues(findVenuesDto);
   }
   
+  @Post('generate-sport-summary')
+  @HttpCode(HttpStatus.OK)
+  async generateSportSummary(@Body() generateSportSummaryDto: GenerateSportSummaryDto): Promise<GenerateSportSummaryOutput> {
+    return this.aiService.generateSportSummary(generateSportSummaryDto);
+  }
+
   @Post('generate-tournament-summary')
   @HttpCode(HttpStatus.OK)
   async generateTournamentSummary(

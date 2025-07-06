@@ -177,10 +177,6 @@ export class AiService {
     return generatePostImage_Backend(prompt);
   }
 
-  async generateSportSummary(input: GenerateSportSummaryInput): Promise<GenerateSportSummaryOutput> {
-    return generateSportSummary(input);
-  }
-
   async analyzePlaygroundDetails(input: AnalyzePlaygroundDetailsInput): Promise<AnalyzePlaygroundDetailsOutput> {
     return analyzePlaygroundDetails(input);
   }
@@ -319,6 +315,10 @@ export class AiService {
   
   async findVenues(input: FindVenuesInput): Promise<FindVenuesOutput> {
     return findVenues(input);
+  }
+  
+  async generateSportSummary(input: GenerateSportSummaryInput): Promise<GenerateSportSummaryOutput> {
+    return generateSportSummary(input);
   }
 
   async generateNutritionPlan(input: GenerateNutritionPlanInput): Promise<GenerateNutritionPlanOutput> {
