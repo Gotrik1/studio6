@@ -118,8 +118,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { GeneratePlaygroundDrillDto } from './dto/generate-playground-drill.dto';
 import { GeneratePlaygroundSummaryDto } from './dto/generate-playground-summary.dto';
+import { GeneratePlaygroundChallengeDto } from './dto/generate-playground-challenge.dto';
 import type { GeneratePlaygroundDrillOutput } from '@/ai/flows/schemas/generate-playground-drill-schema';
 import type { GeneratePlaygroundSummaryOutput } from '@/ai/flows/schemas/generate-playground-summary-schema';
+import type { GeneratePlaygroundChallengeOutput } from '@/ai/flows/schemas/generate-playground-challenge-schema';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -399,6 +401,14 @@ export class AiController {
     @Body() generatePlaygroundDrillDto: GeneratePlaygroundDrillDto,
   ): Promise<GeneratePlaygroundDrillOutput> {
     return this.aiService.generatePlaygroundDrill(generatePlaygroundDrillDto);
+  }
+
+  @Post('generate-playground-challenge')
+  @HttpCode(HttpStatus.OK)
+  async generatePlaygroundChallenge(
+    @Body() generatePlaygroundChallengeDto: GeneratePlaygroundChallengeDto,
+  ): Promise<GeneratePlaygroundChallengeOutput> {
+    return this.aiService.generatePlaygroundChallenge(generatePlaygroundChallengeDto);
   }
 
   @Post('generate-playground-summary')

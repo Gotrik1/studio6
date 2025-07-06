@@ -60,6 +60,7 @@ import { playerScout, type PlayerScoutInput, type PlayerScoutOutput } from '@/ai
 import { PromotionsService } from '../promotions/promotions.service';
 import type { Promotion } from '@prisma/client';
 import { generatePlaygroundDrill, type GeneratePlaygroundDrillInput, type GeneratePlaygroundDrillOutput } from '@/ai/flows/generate-playground-drill-flow';
+import { generatePlaygroundChallenge, type GeneratePlaygroundChallengeInput, type GeneratePlaygroundChallengeOutput } from '@/ai/flows/generate-playground-challenge-flow';
 import { generatePlaygroundSummary, type GeneratePlaygroundSummaryInput, type GeneratePlaygroundSummaryOutput } from '@/ai/flows/generate-playground-summary-flow';
 import { PrismaService } from '@/prisma/prisma.service';
 
@@ -214,6 +215,10 @@ export class AiService {
   
   async generatePlaygroundDrill(input: GeneratePlaygroundDrillInput): Promise<GeneratePlaygroundDrillOutput> {
     return generatePlaygroundDrill(input);
+  }
+  
+  async generatePlaygroundChallenge(input: GeneratePlaygroundChallengeInput): Promise<GeneratePlaygroundChallengeOutput> {
+    return generatePlaygroundChallenge(input);
   }
 
   async generatePlaygroundSummary(input: GeneratePlaygroundSummaryInput): Promise<GeneratePlaygroundSummaryOutput> {
