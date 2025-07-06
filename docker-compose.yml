@@ -1,3 +1,4 @@
+
 # This Docker Compose file sets up a complete development environment
 # that mirrors the production architecture described in the documentation.
 # It includes the frontend, backend, databases, and critical infrastructure
@@ -226,6 +227,19 @@ services:
     networks:
       - prodvor-network
 
+  kong-setup:
+    image: kong/deck:latest
+    container_name: kong-setup
+    command: >
+      deck sync -s /config/kong.yml --kong-addr http://kong:8001
+    volumes:
+      - ./config/kong:/config
+    depends_on:
+      - kong
+    networks:
+      - prodvor-network
+    restart: on-failure
+
   # ---------------------------------------------------
   # Monitoring & Observability
   # ---------------------------------------------------
@@ -333,7 +347,7 @@ services:
       - ./.env
     depends_on:
       - backend
-      - kong
+      - kong-setup
     command: npm run dev
     logging:
       driver: loki

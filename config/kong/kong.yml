@@ -1,0 +1,31 @@
+
+_format_version: "3.0"
+_comment: "Declarative configuration for Kong API Gateway"
+
+services:
+  - name: backend-service
+    url: http://backend:3001
+    routes:
+      - name: backend-route
+        paths:
+          - /
+        strip_path: false
+    plugins:
+      - name: cors
+        config:
+          origins:
+            - "*" # For development; restrict in production
+          methods:
+            - GET
+            - POST
+            - PUT
+            - PATCH
+            - DELETE
+          headers:
+            - "Authorization"
+            - "Content-Type"
+          exposed_headers:
+            - "Content-Length"
+            - "Content-Type"
+          credentials: true
+          max_age: 3600
