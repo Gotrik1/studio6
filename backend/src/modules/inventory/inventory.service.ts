@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { CreateInventoryItemDto } from './dto/create-inventory-item.dto';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
+import { CreateInventoryItemDto } from "./dto/create-inventory-item.dto";
 
 @Injectable()
 export class InventoryService {
@@ -9,7 +13,7 @@ export class InventoryService {
   findAllForUser(userId: string) {
     return this.prisma.inventoryItem.findMany({
       where: { userId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
   }
 
@@ -31,7 +35,7 @@ export class InventoryService {
     }
 
     if (item.userId !== userId) {
-      throw new ForbiddenException('Вы не можете удалить чужой предмет.');
+      throw new ForbiddenException("Вы не можете удалить чужой предмет.");
     }
 
     return this.prisma.inventoryItem.delete({ where: { id } });

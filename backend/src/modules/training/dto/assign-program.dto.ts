@@ -1,5 +1,5 @@
-import { IsString, IsArray, IsNotEmpty } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsArray, IsNotEmpty } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class AssignProgramDto {
   @ApiProperty()

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CoachDto {
   @ApiProperty()
@@ -9,19 +9,19 @@ export class CoachDto {
 
   @ApiProperty({ nullable: true })
   avatar: string | null;
-  
+
   @ApiProperty()
   avatarHint: string;
 
   @ApiProperty()
   specialization: string;
-  
+
   @ApiProperty()
   description: string;
-  
+
   @ApiProperty({ type: [String] })
   tags: string[];
-  
+
   @ApiProperty()
   rating: number;
 

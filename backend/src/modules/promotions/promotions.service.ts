@@ -1,13 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { Prisma, Promotion } from '@prisma/client';
-import { CreatePromotionDto } from './dto/create-promotion.dto';
+
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
+import { Promotion } from "@prisma/client";
+import { CreatePromotionDto } from "./dto/create-promotion.dto";
 
 @Injectable()
 export class PromotionsService {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: CreatePromotionDto & { organizerId: string }): Promise<Promotion> {
+  async create(
+    data: CreatePromotionDto & { organizerId: string },
+  ): Promise<Promotion> {
     return this.prisma.promotion.create({
       data: {
         name: data.name,
@@ -18,7 +21,9 @@ export class PromotionsService {
         imageHint: data.imageHint,
         endDate: data.endDate,
         organizer: { connect: { id: data.organizerId } },
-        sponsor: data.sponsorId ? { connect: { id: data.sponsorId } } : undefined,
+        sponsor: data.sponsorId
+          ? { connect: { id: data.sponsorId } }
+          : undefined,
       },
     });
   }
@@ -29,7 +34,7 @@ export class PromotionsService {
         sponsor: { select: { name: true, logo: true } },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
   }

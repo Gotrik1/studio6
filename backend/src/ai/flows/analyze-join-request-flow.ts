@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An AI agent for analyzing a player's request to join a team.
@@ -8,20 +8,28 @@
  * - AnalyzeJoinRequestOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzeJoinRequestInputSchema, AnalyzeJoinRequestOutputSchema } from './schemas/analyze-join-request-schema';
-import type { AnalyzeJoinRequestInput, AnalyzeJoinRequestOutput } from './schemas/analyze-join-request-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzeJoinRequestInputSchema,
+  AnalyzeJoinRequestOutputSchema,
+} from "./schemas/analyze-join-request-schema";
+import type {
+  AnalyzeJoinRequestInput,
+  AnalyzeJoinRequestOutput,
+} from "./schemas/analyze-join-request-schema";
 
 export type { AnalyzeJoinRequestInput, AnalyzeJoinRequestOutput };
 
-export async function analyzeJoinRequest(input: AnalyzeJoinRequestInput): Promise<AnalyzeJoinRequestOutput> {
+export async function analyzeJoinRequest(
+  input: AnalyzeJoinRequestInput,
+): Promise<AnalyzeJoinRequestOutput> {
   return analyzeJoinRequestFlow(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeJoinRequestPrompt_Backend',
-  input: {schema: AnalyzeJoinRequestInputSchema},
-  output: {schema: AnalyzeJoinRequestOutputSchema},
+  name: "analyzeJoinRequestPrompt_Backend",
+  input: { schema: AnalyzeJoinRequestInputSchema },
+  output: { schema: AnalyzeJoinRequestOutputSchema },
   prompt: `You are an expert sports team scout and analyst. Your task is to evaluate a player's request to join a team.
 
   Analyze the player's profile against the team's needs. Provide a clear recommendation (accept, consider, or decline), a confidence level, and your reasoning.
@@ -36,12 +44,12 @@ const prompt = ai.definePrompt({
 
 const analyzeJoinRequestFlow = ai.defineFlow(
   {
-    name: 'analyzeJoinRequestFlow_Backend',
+    name: "analyzeJoinRequestFlow_Backend",
     inputSchema: AnalyzeJoinRequestInputSchema,
     outputSchema: AnalyzeJoinRequestOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

@@ -1,17 +1,25 @@
-import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { LfgLobby } from '@prisma/client';
-import { CreateLfgLobbyDto } from './dto/create-lfg-lobby.dto';
-import { addMinutes } from 'date-fns';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ConflictException,
+} from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
+import { LfgLobby } from "@prisma/client";
+import { CreateLfgLobbyDto } from "./dto/create-lfg-lobby.dto";
+import { addMinutes } from "date-fns";
 
 @Injectable()
 export class LfgService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createLfgLobbyDto: CreateLfgLobbyDto, userId: string): Promise<LfgLobby> {
+  async create(
+    createLfgLobbyDto: CreateLfgLobbyDto,
+    userId: string,
+  ): Promise<LfgLobby> {
     const { duration, ...rest } = createLfgLobbyDto;
     const endTime = addMinutes(new Date(createLfgLobbyDto.startTime), duration);
-    
+
     return this.prisma.lfgLobby.create({
       data: {
         ...rest,
@@ -25,31 +33,31 @@ export class LfgService {
   async findAll(): Promise<any[]> {
     const now = new Date();
     const lobbies = await this.prisma.lfgLobby.findMany({
-        where: { endTime: { gt: now } }, // Only fetch lobbies that haven't ended
-        include: {
-            creator: { select: { id: true, name: true, avatar: true } },
-            _count: { select: { players: true } },
-        },
-        orderBy: {
-            startTime: 'asc',
-        },
+      where: { endTime: { gt: now } }, // Only fetch lobbies that haven't ended
+      include: {
+        creator: { select: { id: true, name: true, avatar: true } },
+        _count: { select: { players: true } },
+      },
+      orderBy: {
+        startTime: "asc",
+      },
     });
 
-    return lobbies.map(lobby => ({
-        id: lobby.id,
-        type: lobby.type,
-        sport: lobby.sport,
-        location: lobby.location,
-        playgroundId: lobby.playgroundId,
-        startTime: lobby.startTime,
-        endTime: lobby.endTime,
-        playersNeeded: lobby.playersNeeded,
-        playersJoined: lobby._count.players,
-        comment: lobby.comment,
-        creator: {
-            name: lobby.creator.name,
-            avatar: lobby.creator.avatar
-        }
+    return lobbies.map((lobby) => ({
+      id: lobby.id,
+      type: lobby.type,
+      sport: lobby.sport,
+      location: lobby.location,
+      playgroundId: lobby.playgroundId,
+      startTime: lobby.startTime,
+      endTime: lobby.endTime,
+      playersNeeded: lobby.playersNeeded,
+      playersJoined: lobby._count.players,
+      comment: lobby.comment,
+      creator: {
+        name: lobby.creator.name,
+        avatar: lobby.creator.avatar,
+      },
     }));
   }
 
@@ -64,15 +72,15 @@ export class LfgService {
     }
 
     if (lobby.endTime < new Date()) {
-      throw new BadRequestException('Это лобби уже неактивно.');
+      throw new BadRequestException("Это лобби уже неактивно.");
     }
 
     if (lobby.players.length >= lobby.playersNeeded) {
-        throw new ConflictException('Лобби уже заполнено.');
+      throw new ConflictException("Лобби уже заполнено.");
     }
-    
-    if (lobby.players.some(player => player.id === userId)) {
-        throw new ConflictException('Вы уже находитесь в этом лобби.');
+
+    if (lobby.players.some((player) => player.id === userId)) {
+      throw new ConflictException("Вы уже находитесь в этом лобби.");
     }
 
     return this.prisma.lfgLobby.update({

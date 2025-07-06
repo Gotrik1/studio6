@@ -1,8 +1,8 @@
-import { Injectable, LoggerService, LogLevel } from '@nestjs/common';
+import { Injectable, LoggerService, LogLevel } from "@nestjs/common";
 
 @Injectable()
 export class JsonLogger implements LoggerService {
-  private logLevels: LogLevel[] = ['log', 'warn', 'error'];
+  private logLevels: LogLevel[] = ["log", "warn", "error"];
 
   constructor(logLevel?: LogLevel) {
     if (logLevel) {
@@ -11,28 +11,28 @@ export class JsonLogger implements LoggerService {
   }
 
   log(message: any, context?: string) {
-    if (!this.isLevelEnabled('log')) return;
-    this.printMessage(message, 'log', context);
+    if (!this.isLevelEnabled("log")) return;
+    this.printMessage(message, "log", context);
   }
 
   error(message: any, trace?: string, context?: string) {
-    if (!this.isLevelEnabled('error')) return;
-    this.printMessage(message, 'error', context, trace);
+    if (!this.isLevelEnabled("error")) return;
+    this.printMessage(message, "error", context, trace);
   }
 
   warn(message: any, context?: string) {
-    if (!this.isLevelEnabled('warn')) return;
-    this.printMessage(message, 'warn', context);
+    if (!this.isLevelEnabled("warn")) return;
+    this.printMessage(message, "warn", context);
   }
 
   debug(message: any, context?: string) {
-    if (!this.isLevelEnabled('debug')) return;
-    this.printMessage(message, 'debug', context);
+    if (!this.isLevelEnabled("debug")) return;
+    this.printMessage(message, "debug", context);
   }
 
   verbose(message: any, context?: string) {
-    if (!this.isLevelEnabled('verbose')) return;
-    this.printMessage(message, 'verbose', context);
+    if (!this.isLevelEnabled("verbose")) return;
+    this.printMessage(message, "verbose", context);
   }
 
   setLogLevels(levels: LogLevel[]) {
@@ -42,11 +42,11 @@ export class JsonLogger implements LoggerService {
   private isLevelEnabled(level: LogLevel): boolean {
     return this.logLevels.includes(level);
   }
-  
+
   private mapLogLevel(level: LogLevel): LogLevel[] {
-      const allLevels: LogLevel[] = ['verbose', 'debug', 'log', 'warn', 'error'];
-      const index = allLevels.indexOf(level);
-      return allLevels.slice(index);
+    const allLevels: LogLevel[] = ["verbose", "debug", "log", "warn", "error"];
+    const index = allLevels.indexOf(level);
+    return allLevels.slice(index);
   }
 
   private printMessage(

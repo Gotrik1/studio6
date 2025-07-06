@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { CreateAnnouncementDto } from './dto/create-announcement.dto';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
+import { CreateAnnouncementDto } from "./dto/create-announcement.dto";
+import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 
 @Injectable()
 export class TournamentAnnouncementsService {
@@ -13,7 +13,7 @@ export class TournamentAnnouncementsService {
   async findAllForTournament(tournamentId: string) {
     return this.prisma.tournamentAnnouncement.findMany({
       where: { tournamentId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       include: { sender: { select: { name: true } } },
     });
   }
@@ -39,7 +39,7 @@ export class TournamentAnnouncementsService {
     });
 
     if (!tournament) {
-      throw new NotFoundException('Турнир не найден');
+      throw new NotFoundException("Турнир не найден");
     }
 
     const participantIds = [
@@ -56,14 +56,18 @@ export class TournamentAnnouncementsService {
     });
 
     // Publish event to RabbitMQ for notifications
-    this.amqpConnection.publish('prodvor_exchange', 'tournament.announcement.created', {
-      announcementId: announcement.id,
-      tournamentId: tournament.id,
-      tournamentSlug: tournament.slug,
-      tournamentName: tournament.name,
-      subject: announcement.subject,
-      participantIds: participantIds,
-    });
+    this.amqpConnection.publish(
+      "prodvor_exchange",
+      "tournament.announcement.created",
+      {
+        announcementId: announcement.id,
+        tournamentId: tournament.id,
+        tournamentSlug: tournament.slug,
+        tournamentName: tournament.name,
+        subject: announcement.subject,
+        participantIds: participantIds,
+      },
+    );
 
     return announcement;
   }

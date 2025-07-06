@@ -1,8 +1,8 @@
-import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { CreateQuestDto } from './dto/create-quest.dto';
-import { PrismaService } from '@/prisma/prisma.service';
-import { Quest, QuestType } from '@prisma/client';
-import { quests as initialQuestData } from '../../shared/lib/mock-data/gamification';
+import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
+import { CreateQuestDto } from "./dto/create-quest.dto";
+import { PrismaService } from "@/prisma/prisma.service";
+import { Quest, QuestType } from "@prisma/client";
+import { quests as initialQuestData } from "../../shared/lib/mock-data/gamification";
 
 @Injectable()
 export class QuestsService implements OnModuleInit {
@@ -18,28 +18,31 @@ export class QuestsService implements OnModuleInit {
     const count = await this.prisma.quest.count();
     if (count > 0) return;
 
-    this.logger.log('Seeding initial quests...');
-    
+    this.logger.log("Seeding initial quests...");
+
     const questsToCreate = [
-      ...initialQuestData.daily.map(q => ({ ...q, type: QuestType.DAILY })),
-      ...initialQuestData.weekly.map(q => ({ ...q, type: QuestType.WEEKLY })),
-      ...initialQuestData.special.map(q => ({ ...q, type: QuestType.SPECIAL })),
+      ...initialQuestData.daily.map((q) => ({ ...q, type: QuestType.DAILY })),
+      ...initialQuestData.weekly.map((q) => ({ ...q, type: QuestType.WEEKLY })),
+      ...initialQuestData.special.map((q) => ({
+        ...q,
+        type: QuestType.SPECIAL,
+      })),
     ];
 
     for (const questData of questsToCreate) {
-        await this.prisma.quest.create({
-            data: {
-                title: questData.title,
-                description: questData.description,
-                reward: questData.reward,
-                goal: questData.goal,
-                href: questData.href,
-                type: questData.type,
-            }
-        });
+      await this.prisma.quest.create({
+        data: {
+          title: questData.title,
+          description: questData.description,
+          reward: questData.reward,
+          goal: questData.goal,
+          href: questData.href,
+          type: questData.type,
+        },
+      });
     }
-    
-    this.logger.log('Initial quests seeded successfully.');
+
+    this.logger.log("Initial quests seeded successfully.");
   }
 
   create(createQuestDto: CreateQuestDto): Promise<Quest> {
@@ -51,7 +54,7 @@ export class QuestsService implements OnModuleInit {
   findAll(): Promise<Quest[]> {
     return this.prisma.quest.findMany({
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
   }

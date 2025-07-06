@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An AI agent for predicting the outcome of a match.
@@ -8,20 +8,28 @@
  * - PredictMatchOutcomeOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { PredictMatchOutcomeInputSchema, PredictMatchOutcomeOutputSchema } from './schemas/predict-match-outcome-schema';
-import type { PredictMatchOutcomeInput, PredictMatchOutcomeOutput } from './schemas/predict-match-outcome-schema';
+import { ai } from "../genkit";
+import {
+  PredictMatchOutcomeInputSchema,
+  PredictMatchOutcomeOutputSchema,
+} from "./schemas/predict-match-outcome-schema";
+import type {
+  PredictMatchOutcomeInput,
+  PredictMatchOutcomeOutput,
+} from "./schemas/predict-match-outcome-schema";
 
 export type { PredictMatchOutcomeInput, PredictMatchOutcomeOutput };
 
-export async function predictMatchOutcome(input: PredictMatchOutcomeInput): Promise<PredictMatchOutcomeOutput> {
+export async function predictMatchOutcome(
+  input: PredictMatchOutcomeInput,
+): Promise<PredictMatchOutcomeOutput> {
   return predictMatchOutcomeFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'predictMatchOutcomePrompt_Backend',
-  input: {schema: PredictMatchOutcomeInputSchema},
-  output: {schema: PredictMatchOutcomeOutputSchema},
+  name: "predictMatchOutcomePrompt_Backend",
+  input: { schema: PredictMatchOutcomeInputSchema },
+  output: { schema: PredictMatchOutcomeOutputSchema },
   prompt: `You are an expert sports analyst with a deep understanding of statistics and team dynamics.
 Your task is to predict the winner of an upcoming match based on the provided data.
 
@@ -37,12 +45,12 @@ Based on your analysis, predict the winner, state your confidence level (high, m
 
 const predictMatchOutcomeFlow_Backend = ai.defineFlow(
   {
-    name: 'predictMatchOutcomeFlow_Backend',
+    name: "predictMatchOutcomeFlow_Backend",
     inputSchema: PredictMatchOutcomeInputSchema,
     outputSchema: PredictMatchOutcomeOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

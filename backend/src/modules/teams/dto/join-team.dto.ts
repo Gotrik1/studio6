@@ -1,4 +1,3 @@
-
 export class JoinTeamDto {
-    readonly userId: string;
+  readonly userId: string;
 }

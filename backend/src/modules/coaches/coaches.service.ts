@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { CoachDto } from './dto/coach.dto';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
+import { CoachDto } from "./dto/coach.dto";
 
 @Injectable()
 export class CoachesService {
@@ -9,7 +9,7 @@ export class CoachesService {
   async findAll(): Promise<CoachDto[]> {
     const coachesWithProfiles = await this.prisma.user.findMany({
       where: {
-        role: 'Тренер',
+        role: "Тренер",
         coachProfile: { isNot: null },
       },
       include: {
@@ -17,17 +17,17 @@ export class CoachesService {
       },
     });
 
-    return coachesWithProfiles.map(user => ({
-        id: user.coachProfile!.id,
-        name: user.name,
-        avatar: user.avatar,
-        avatarHint: 'sports coach portrait',
-        specialization: user.coachProfile!.specialization,
-        description: user.coachProfile!.description,
-        tags: user.coachProfile!.tags,
-        rating: user.coachProfile!.rating,
-        price: user.coachProfile!.price.toString(),
-        profileUrl: `/profiles/coach/${user.id}`,
+    return coachesWithProfiles.map((user) => ({
+      id: user.coachProfile!.id,
+      name: user.name,
+      avatar: user.avatar,
+      avatarHint: "sports coach portrait",
+      specialization: user.coachProfile!.specialization,
+      description: user.coachProfile!.description,
+      tags: user.coachProfile!.tags,
+      rating: user.coachProfile!.rating,
+      price: user.coachProfile!.price.toString(),
+      profileUrl: `/profiles/coach/${user.id}`,
     }));
   }
 }

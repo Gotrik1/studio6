@@ -1,7 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { LfgLobbyType } from '@prisma/client';
-import { IsString, IsNotEmpty, IsEnum, IsInt, Min, Max, IsDate, IsOptional, MaxLength } from 'class-validator';
-import { Type } from 'class-transformer';
+import { ApiProperty } from "@nestjs/swagger";
+import { LfgLobbyType } from "@prisma/client";
+import {
+  IsString,
+  IsNotEmpty,
+  IsEnum,
+  IsInt,
+  Min,
+  Max,
+  IsDate,
+  IsOptional,
+  MaxLength,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreateLfgLobbyDto {
   @ApiProperty({ enum: LfgLobbyType })
@@ -17,7 +27,7 @@ export class CreateLfgLobbyDto {
   @IsString()
   @IsNotEmpty()
   readonly location: string;
-  
+
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
@@ -27,7 +37,7 @@ export class CreateLfgLobbyDto {
   @IsDate()
   @Type(() => Date)
   readonly startTime: Date;
-  
+
   @ApiProperty()
   @IsInt()
   @Min(30)

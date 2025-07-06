@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { CreateMeasurementDto } from './dto/create-measurement.dto';
-import { PrismaService } from '@/prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { CreateMeasurementDto } from "./dto/create-measurement.dto";
+import { PrismaService } from "@/prisma/prisma.service";
 
 @Injectable()
 export class MeasurementsService {
@@ -19,7 +19,7 @@ export class MeasurementsService {
   findAllForUser(userId: string) {
     return this.prisma.measurement.findMany({
       where: { userId },
-      orderBy: { date: 'desc' },
+      orderBy: { date: "desc" },
     });
   }
 }

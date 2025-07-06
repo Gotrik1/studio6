@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview A flow for generating a two-speaker dialogue from a topic.
@@ -7,20 +7,28 @@
  * - GenerateDialogueOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GenerateDialogueInputSchema, GenerateDialogueOutputSchema } from './schemas/dialogue-generation-schema';
-import type { GenerateDialogueInput, GenerateDialogueOutput } from './schemas/dialogue-generation-schema';
+import { ai } from "../genkit";
+import {
+  GenerateDialogueInputSchema,
+  GenerateDialogueOutputSchema,
+} from "./schemas/dialogue-generation-schema";
+import type {
+  GenerateDialogueInput,
+  GenerateDialogueOutput,
+} from "./schemas/dialogue-generation-schema";
 
 export type { GenerateDialogueInput, GenerateDialogueOutput };
 
-export async function generateDialogue(topic: GenerateDialogueInput): Promise<GenerateDialogueOutput> {
+export async function generateDialogue(
+  topic: GenerateDialogueInput,
+): Promise<GenerateDialogueOutput> {
   return generateDialogueFlow_Backend(topic);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateDialoguePrompt_Backend',
-  input: {schema: GenerateDialogueInputSchema},
-  output: {schema: GenerateDialogueOutputSchema},
+  name: "generateDialoguePrompt_Backend",
+  input: { schema: GenerateDialogueInputSchema },
+  output: { schema: GenerateDialogueOutputSchema },
   prompt: `You are a scriptwriter. Generate a short, engaging dialogue between two people, Speaker1 and Speaker2, on the following topic. The dialogue should be about 4-6 lines long in total. Ensure the output format is a single string with each line of dialogue on a new line, like this:
 Speaker1: Hello there.
 Speaker2: General Kenobi!
@@ -31,12 +39,12 @@ Topic: {{{input}}}
 
 const generateDialogueFlow_Backend = ai.defineFlow(
   {
-    name: 'generateDialogueFlow_Backend',
+    name: "generateDialogueFlow_Backend",
     inputSchema: GenerateDialogueInputSchema,
     outputSchema: GenerateDialogueOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

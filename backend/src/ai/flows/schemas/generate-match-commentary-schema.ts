@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 const EventSchema = z.object({
-    time: z.string(),
-    event: z.string(),
-    player: z.string(),
-    team: z.string(),
+  time: z.string(),
+  event: z.string(),
+  player: z.string(),
+  team: z.string(),
 });
 
 export const GenerateMatchCommentaryInputSchema = z.object({
@@ -12,9 +12,17 @@ export const GenerateMatchCommentaryInputSchema = z.object({
   team2Name: z.string(),
   events: z.array(EventSchema),
 });
-export type GenerateMatchCommentaryInput = z.infer<typeof GenerateMatchCommentaryInputSchema>;
+export type GenerateMatchCommentaryInput = z.infer<
+  typeof GenerateMatchCommentaryInputSchema
+>;
 
 export const GenerateMatchCommentaryOutputSchema = z.object({
-  commentaryScript: z.string().describe("An exciting play-by-play commentary script based on the match events."),
+  commentaryScript: z
+    .string()
+    .describe(
+      "An exciting play-by-play commentary script based on the match events.",
+    ),
 });
-export type GenerateMatchCommentaryOutput = z.infer<typeof GenerateMatchCommentaryOutputSchema>;
+export type GenerateMatchCommentaryOutput = z.infer<
+  typeof GenerateMatchCommentaryOutputSchema
+>;

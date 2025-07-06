@@ -1,15 +1,22 @@
-
-import { Inject, Injectable, NotFoundException, BadRequestException, Logger, OnModuleInit, ForbiddenException } from '@nestjs/common';
-import { CreateTeamDto } from './dto/create-team.dto';
-import { PrismaService } from '@/prisma/prisma.service';
-import { Team, ActivityType, Prisma } from '@prisma/client';
-import { LeaderboardTeamDto } from './dto/leaderboard-team.dto';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { Cache } from 'cache-manager';
-import { CreatePracticeDto } from './dto/create-practice.dto';
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
-import { analyzeTeamPerformance } from '@/ai/flows/analyze-team-performance-flow';
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+  OnModuleInit,
+  ForbiddenException,
+} from "@nestjs/common";
+import { CreateTeamDto } from "./dto/create-team.dto";
+import { PrismaService } from "@/prisma/prisma.service";
+import { Team, ActivityType, Prisma } from "@prisma/client";
+import { LeaderboardTeamDto } from "./dto/leaderboard-team.dto";
+import { CACHE_MANAGER } from "@nestjs/cache-manager";
+import { Cache } from "cache-manager";
+import { CreatePracticeDto } from "./dto/create-practice.dto";
+import { format } from "date-fns";
+import { ru } from "date-fns/locale";
+import { analyzeTeamPerformance } from "@/ai/flows/analyze-team-performance-flow";
 
 @Injectable()
 export class TeamsService implements OnModuleInit {
@@ -28,53 +35,76 @@ export class TeamsService implements OnModuleInit {
     const teamCount = await this.prisma.team.count();
     if (teamCount > 0) return;
 
-    this.logger.log('Seeding initial teams...');
-    
+    this.logger.log("Seeding initial teams...");
+
     // Ensure a user exists to be a captain
     let captain = await this.prisma.user.findFirst();
     if (!captain) {
-        captain = await this.prisma.user.create({
-            data: {
-                email: 'captain@example.com',
-                name: 'Captain Seed',
-                passwordHash: 'seeded',
-                role: 'Капитан',
-            }
-        });
+      captain = await this.prisma.user.create({
+        data: {
+          email: "captain@example.com",
+          name: "Captain Seed",
+          passwordHash: "seeded",
+          role: "Капитан",
+        },
+      });
     }
 
     const teamsToCreate = [
-      { name: 'Дворовые Атлеты', game: 'Футбол', motto: 'Играем сердцем', slug: 'dvotovyie-atlety' },
-      { name: 'Соколы', game: 'Футбол', motto: 'Выше только небо', slug: 'sokoly' },
-      { name: 'Торпедо', game: 'Футбол', motto: 'Только вперед', slug: 'torpedo' },
-      { name: 'Вымпел', game: 'Футбол', motto: 'Сила в единстве', slug: 'vympel' },
+      {
+        name: "Дворовые Атлеты",
+        game: "Футбол",
+        motto: "Играем сердцем",
+        slug: "dvotovyie-atlety",
+      },
+      {
+        name: "Соколы",
+        game: "Футбол",
+        motto: "Выше только небо",
+        slug: "sokoly",
+      },
+      {
+        name: "Торпедо",
+        game: "Футбол",
+        motto: "Только вперед",
+        slug: "torpedo",
+      },
+      {
+        name: "Вымпел",
+        game: "Футбол",
+        motto: "Сила в единстве",
+        slug: "vympel",
+      },
     ];
 
     for (const teamData of teamsToCreate) {
-        // Need a unique captain for each team
-        const teamCaptain = await this.prisma.user.create({
-            data: {
-                email: `${teamData.slug}@example.com`,
-                name: `Captain ${teamData.name}`,
-                passwordHash: 'seeded',
-                role: 'Капитан',
-            }
-        });
+      // Need a unique captain for each team
+      const teamCaptain = await this.prisma.user.create({
+        data: {
+          email: `${teamData.slug}@example.com`,
+          name: `Captain ${teamData.name}`,
+          passwordHash: "seeded",
+          role: "Капитан",
+        },
+      });
 
-        await this.prisma.team.create({
-            data: {
-                ...teamData,
-                creatorId: teamCaptain.id,
-                captainId: teamCaptain.id,
-            }
-        });
+      await this.prisma.team.create({
+        data: {
+          ...teamData,
+          creatorId: teamCaptain.id,
+          captainId: teamCaptain.id,
+        },
+      });
     }
-     this.logger.log('Initial teams seeded.');
+    this.logger.log("Initial teams seeded.");
   }
 
   async create(createTeamDto: CreateTeamDto): Promise<Team> {
     const { name, captainId, game, motto, logo, dataAiHint } = createTeamDto;
-    const slug = name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const slug = name
+      .toLowerCase()
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9-]/g, "");
 
     return this.prisma.team.create({
       data: {
@@ -101,7 +131,7 @@ export class TeamsService implements OnModuleInit {
     const teams = await this.prisma.team.findMany({
       include: {
         captain: {
-          select: { name: true }
+          select: { name: true },
         },
         _count: {
           select: { members: true },
@@ -110,12 +140,12 @@ export class TeamsService implements OnModuleInit {
     });
 
     // Map Prisma result to the shape expected by the frontend
-    return teams.map(team => ({
+    return teams.map((team) => ({
       id: team.id,
       name: team.name,
-      motto: team.motto || 'Девиз не указан',
-      logo: team.logo || 'https://placehold.co/100x100.png',
-      dataAiHint: team.dataAiHint || 'team logo',
+      motto: team.motto || "Девиз не указан",
+      logo: team.logo || "https://placehold.co/100x100.png",
+      dataAiHint: team.dataAiHint || "team logo",
       game: team.game,
       rank: team.rank,
       members: team._count.members,
@@ -144,7 +174,7 @@ export class TeamsService implements OnModuleInit {
       where: { slug },
       include: {
         captain: {
-          select: { name: true }
+          select: { name: true },
         },
         members: {
           select: {
@@ -154,10 +184,10 @@ export class TeamsService implements OnModuleInit {
             role: true,
             status: true,
             trainingLogs: {
-                select: {
-                    status: true
-                }
-            }
+              select: {
+                status: true,
+              },
+            },
           },
         },
       },
@@ -168,17 +198,22 @@ export class TeamsService implements OnModuleInit {
     }
 
     const roster = team.members.map((member) => {
-      const completed = member.trainingLogs.filter(log => log.status === 'completed').length;
-      const skipped = member.trainingLogs.filter(log => log.status === 'skipped').length;
+      const completed = member.trainingLogs.filter(
+        (log) => log.status === "completed",
+      ).length;
+      const skipped = member.trainingLogs.filter(
+        (log) => log.status === "skipped",
+      ).length;
       const totalRelevant = completed + skipped;
-      const adherence = totalRelevant > 0 ? Math.round((completed / totalRelevant) * 100) : 100;
+      const adherence =
+        totalRelevant > 0 ? Math.round((completed / totalRelevant) * 100) : 100;
 
       return {
         id: member.id,
         name: member.name,
-        avatar: member.avatar || 'https://placehold.co/100x100.png',
+        avatar: member.avatar || "https://placehold.co/100x100.png",
         role: member.role,
-        rating: 'Immortal', // This can stay as mock for now, as ELO/Rating is not in the schema yet.
+        rating: "Immortal", // This can stay as mock for now, as ELO/Rating is not in the schema yet.
         status: member.status,
         adherence,
       };
@@ -187,9 +222,9 @@ export class TeamsService implements OnModuleInit {
     const result = {
       id: team.id,
       name: team.name,
-      motto: team.motto || 'Девиз не указан',
-      logo: team.logo || 'https://placehold.co/100x100.png',
-      dataAiHint: team.dataAiHint || 'team logo',
+      motto: team.motto || "Девиз не указан",
+      logo: team.logo || "https://placehold.co/100x100.png",
+      dataAiHint: team.dataAiHint || "team logo",
       game: team.game,
       rank: team.rank,
       wins: team.wins,
@@ -205,16 +240,21 @@ export class TeamsService implements OnModuleInit {
     await this.cacheManager.set(cacheKey, result); // TTL is set globally in CacheModule
     return result;
   }
-  
-  async getLeaderboard(params?: { game?: string }): Promise<LeaderboardTeamDto[]> {
-    const cacheKey = `leaderboard_teams_${params?.game || 'all'}`;
-    const cachedLeaderboard = await this.cacheManager.get<LeaderboardTeamDto[]>(cacheKey);
+
+  async getLeaderboard(params?: {
+    game?: string;
+  }): Promise<LeaderboardTeamDto[]> {
+    const cacheKey = `leaderboard_teams_${params?.game || "all"}`;
+    const cachedLeaderboard =
+      await this.cacheManager.get<LeaderboardTeamDto[]>(cacheKey);
 
     if (cachedLeaderboard) {
       return cachedLeaderboard;
     }
-    
-    const whereClause = params?.game ? Prisma.sql`WHERE game = ${params.game}` : Prisma.empty;
+
+    const whereClause = params?.game
+      ? Prisma.sql`WHERE game = ${params.game}`
+      : Prisma.empty;
 
     const result: LeaderboardTeamDto[] = await this.prisma.$queryRaw`
         SELECT
@@ -233,7 +273,7 @@ export class TeamsService implements OnModuleInit {
         ORDER BY wins DESC, losses ASC
         LIMIT 10
     `;
-    
+
     await this.cacheManager.set(cacheKey, result); // TTL is set globally in CacheModule
     return result;
   }
@@ -249,19 +289,21 @@ export class TeamsService implements OnModuleInit {
     }
 
     if (team.members.length > 0) {
-      throw new BadRequestException('Вы уже являетесь участником этой команды.');
+      throw new BadRequestException(
+        "Вы уже являетесь участником этой команды.",
+      );
     }
-    
+
     await this.prisma.activity.create({
-        data: {
-            type: ActivityType.TEAM_JOINED,
-            userId: userId,
-            metadata: {
-                teamName: team.name,
-                teamHref: `/teams/${team.slug}`,
-                icon: 'Users',
-            }
-        }
+      data: {
+        type: ActivityType.TEAM_JOINED,
+        userId: userId,
+        metadata: {
+          teamName: team.name,
+          teamHref: `/teams/${team.slug}`,
+          icon: "Users",
+        },
+      },
     });
 
     return this.prisma.team.update({
@@ -275,7 +317,11 @@ export class TeamsService implements OnModuleInit {
     });
   }
 
-  async setHomePlayground(teamId: string, playgroundId: string, captainId: string): Promise<Team> {
+  async setHomePlayground(
+    teamId: string,
+    playgroundId: string,
+    captainId: string,
+  ): Promise<Team> {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
     });
@@ -285,12 +331,14 @@ export class TeamsService implements OnModuleInit {
     }
 
     if (team.captainId !== captainId) {
-      throw new ForbiddenException('Только капитан может изменить домашнюю площадку.');
+      throw new ForbiddenException(
+        "Только капитан может изменить домашнюю площадку.",
+      );
     }
-    
+
     const updatedTeam = await this.prisma.team.update({
-        where: { id: teamId },
-        data: { homePlaygroundId: playgroundId },
+      where: { id: teamId },
+      data: { homePlaygroundId: playgroundId },
     });
 
     // Invalidate cache
@@ -299,7 +347,11 @@ export class TeamsService implements OnModuleInit {
     return updatedTeam;
   }
 
-  async removeMember(teamId: string, memberIdToRemove: string, captainId: string): Promise<Team> {
+  async removeMember(
+    teamId: string,
+    memberIdToRemove: string,
+    captainId: string,
+  ): Promise<Team> {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
     });
@@ -309,11 +361,11 @@ export class TeamsService implements OnModuleInit {
     }
 
     if (team.captainId !== captainId) {
-      throw new ForbiddenException('Только капитан может удалять участников.');
+      throw new ForbiddenException("Только капитан может удалять участников.");
     }
 
     if (memberIdToRemove === captainId) {
-        throw new BadRequestException('Капитан не может удалить самого себя.');
+      throw new BadRequestException("Капитан не может удалить самого себя.");
     }
 
     await this.cacheManager.del(`team_slug_${team.slug}`);
@@ -328,7 +380,11 @@ export class TeamsService implements OnModuleInit {
     });
   }
 
-  async setCaptain(teamId: string, newCaptainId: string, currentCaptainId: string): Promise<Team> {
+  async setCaptain(
+    teamId: string,
+    newCaptainId: string,
+    currentCaptainId: string,
+  ): Promise<Team> {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
       include: { members: true },
@@ -339,38 +395,44 @@ export class TeamsService implements OnModuleInit {
     }
 
     if (team.captainId !== currentCaptainId) {
-      throw new ForbiddenException('Только текущий капитан может передать полномочия.');
-    }
-    
-    if (newCaptainId === currentCaptainId) {
-        throw new BadRequestException('Этот пользователь уже является капитаном.');
+      throw new ForbiddenException(
+        "Только текущий капитан может передать полномочия.",
+      );
     }
 
-    const isMember = team.members.some(m => m.id === newCaptainId);
+    if (newCaptainId === currentCaptainId) {
+      throw new BadRequestException(
+        "Этот пользователь уже является капитаном.",
+      );
+    }
+
+    const isMember = team.members.some((m) => m.id === newCaptainId);
     if (!isMember) {
-        throw new BadRequestException('Новый капитан должен быть участником команды.');
+      throw new BadRequestException(
+        "Новый капитан должен быть участником команды.",
+      );
     }
 
     await this.prisma.$transaction([
-        // Update team captain
-        this.prisma.team.update({
-            where: { id: teamId },
-            data: { captainId: newCaptainId },
-        }),
-        // Update new captain's role
-        this.prisma.user.update({
-            where: { id: newCaptainId },
-            data: { role: 'Капитан' },
-        }),
-         // Update old captain's role
-        this.prisma.user.update({
-            where: { id: currentCaptainId },
-            data: { role: 'Игрок' },
-        })
+      // Update team captain
+      this.prisma.team.update({
+        where: { id: teamId },
+        data: { captainId: newCaptainId },
+      }),
+      // Update new captain's role
+      this.prisma.user.update({
+        where: { id: newCaptainId },
+        data: { role: "Капитан" },
+      }),
+      // Update old captain's role
+      this.prisma.user.update({
+        where: { id: currentCaptainId },
+        data: { role: "Игрок" },
+      }),
     ]);
-    
+
     await this.cacheManager.del(`team_slug_${team.slug}`);
-    
+
     // Return updated team
     return this.prisma.team.findUnique({ where: { id: teamId } });
   }
@@ -379,11 +441,15 @@ export class TeamsService implements OnModuleInit {
     return this.prisma.teamPractice.findMany({
       where: { teamId },
       include: { playground: { select: { name: true } } },
-      orderBy: { date: 'asc' },
+      orderBy: { date: "asc" },
     });
   }
 
-  async createPractice(teamId: string, captainId: string, dto: CreatePracticeDto) {
+  async createPractice(
+    teamId: string,
+    captainId: string,
+    dto: CreatePracticeDto,
+  ) {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
     });
@@ -393,14 +459,16 @@ export class TeamsService implements OnModuleInit {
     }
 
     if (team.captainId !== captainId) {
-      throw new ForbiddenException('Только капитан может планировать тренировки.');
+      throw new ForbiddenException(
+        "Только капитан может планировать тренировки.",
+      );
     }
 
     return this.prisma.teamPractice.create({
       data: {
         ...dto,
         team: { connect: { id: teamId } },
-        playground: { connect: { id: dto.playgroundId } }
+        playground: { connect: { id: dto.playgroundId } },
       },
     });
   }
@@ -408,34 +476,42 @@ export class TeamsService implements OnModuleInit {
   async getDashboardData(teamId: string) {
     const upcomingMatch = await this.prisma.match.findFirst({
       where: {
-        status: 'PLANNED',
+        status: "PLANNED",
         OR: [{ team1Id: teamId }, { team2Id: teamId }],
       },
       include: {
-        team1: { select: { id: true, name: true, logo: true, dataAiHint: true } },
-        team2: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+        team1: {
+          select: { id: true, name: true, logo: true, dataAiHint: true },
+        },
+        team2: {
+          select: { id: true, name: true, logo: true, dataAiHint: true },
+        },
         tournament: { select: { name: true, game: true } },
       },
-      orderBy: { scheduledAt: 'asc' },
+      orderBy: { scheduledAt: "asc" },
     });
 
     const recentResults = await this.prisma.match.findMany({
       where: {
-        status: 'FINISHED',
+        status: "FINISHED",
         OR: [{ team1Id: teamId }, { team2Id: teamId }],
       },
-       include: {
-        team1: { select: { id: true, name: true, logo: true, dataAiHint: true } },
-        team2: { select: { id: true, name: true, logo: true, dataAiHint: true } },
+      include: {
+        team1: {
+          select: { id: true, name: true, logo: true, dataAiHint: true },
+        },
+        team2: {
+          select: { id: true, name: true, logo: true, dataAiHint: true },
+        },
         tournament: { select: { name: true, game: true } },
       },
-      orderBy: { finishedAt: 'desc' },
+      orderBy: { finishedAt: "desc" },
       take: 2,
     });
 
     return {
       upcomingMatch: this._shapeMatch(upcomingMatch),
-      recentResults: recentResults.map(match => this._shapeMatch(match)),
+      recentResults: recentResults.map((match) => this._shapeMatch(match)),
     };
   }
 
@@ -446,25 +522,25 @@ export class TeamsService implements OnModuleInit {
       team1: {
         id: match.team1.id,
         name: match.team1.name,
-        logo: match.team1.logo || 'https://placehold.co/100x100.png',
-        logoHint: match.team1.dataAiHint || 'team logo',
+        logo: match.team1.logo || "https://placehold.co/100x100.png",
+        logoHint: match.team1.dataAiHint || "team logo",
       },
       team2: {
         id: match.team2.id,
         name: match.team2.name,
-        logo: match.team2.logo || 'https://placehold.co/100x100.png',
-        logoHint: match.team2.dataAiHint || 'team logo',
+        logo: match.team2.logo || "https://placehold.co/100x100.png",
+        logoHint: match.team2.dataAiHint || "team logo",
       },
       score:
         match.team1Score !== null && match.team2Score !== null
           ? `${match.team1Score}-${match.team2Score}`
-          : 'VS',
-      tournament: match.tournament?.name || 'Товарищеский матч',
-      game: match.tournament?.game || 'Неизвестно',
-      date: format(new Date(match.scheduledAt), 'd MMMM yyyy', { locale: ru }),
+          : "VS",
+      tournament: match.tournament?.name || "Товарищеский матч",
+      game: match.tournament?.game || "Неизвестно",
+      date: format(new Date(match.scheduledAt), "d MMMM yyyy", { locale: ru }),
       href: `/matches/${match.id}`,
       status: match.status,
-    }
+    };
   }
 
   async getCoachSummary(teamId: string): Promise<any> {
@@ -479,25 +555,32 @@ export class TeamsService implements OnModuleInit {
 
     const dashboardData = await this.getDashboardData(teamId);
 
-    const recentMatchesSummary = (dashboardData.recentResults || []).map((match: any) => {
-      const isTeam1 = match.team1.id === team.id;
-      const scoreParts = match.score.split('-').map((s: string) => parseInt(s, 10));
-      const userTeamScore = isTeam1 ? scoreParts[0] : scoreParts[1];
-      const opponentScore = isTeam1 ? scoreParts[1] : scoreParts[0];
-      let resultText = 'Ничья';
-      if (!isNaN(userTeamScore) && !isNaN(opponentScore)) {
-        if (userTeamScore > opponentScore) resultText = 'Победа';
-        if (userTeamScore < opponentScore) resultText = 'Поражение';
-      }
-      const opponentName = isTeam1 ? match.team2.name : match.team1.name;
-      return `${resultText} ${match.score} против '${opponentName}'`;
-    }).join(', ') || 'Нет недавних матчей.';
+    const recentMatchesSummary =
+      (dashboardData.recentResults || [])
+        .map((match: any) => {
+          const isTeam1 = match.team1.id === team.id;
+          const scoreParts = match.score
+            .split("-")
+            .map((s: string) => parseInt(s, 10));
+          const userTeamScore = isTeam1 ? scoreParts[0] : scoreParts[1];
+          const opponentScore = isTeam1 ? scoreParts[1] : scoreParts[0];
+          let resultText = "Ничья";
+          if (!isNaN(userTeamScore) && !isNaN(opponentScore)) {
+            if (userTeamScore > opponentScore) resultText = "Победа";
+            if (userTeamScore < opponentScore) resultText = "Поражение";
+          }
+          const opponentName = isTeam1 ? match.team2.name : match.team1.name;
+          return `${resultText} ${match.score} против '${opponentName}'`;
+        })
+        .join(", ") || "Нет недавних матчей.";
 
-    const playerStats = team.members.map(player => ({
+    const playerStats = team.members.map((player) => ({
       name: player.name,
       kda: (Math.random() * (1.8 - 0.8) + 0.8).toFixed(1), // Mock data
       winRate: `${Math.floor(Math.random() * (75 - 50 + 1) + 50)}%`, // Mock data
-      recentPerformanceTrend: ['up', 'down', 'stable'][Math.floor(Math.random() * 3)] as 'up' | 'down' | 'stable',
+      recentPerformanceTrend: ["up", "down", "stable"][
+        Math.floor(Math.random() * 3)
+      ] as "up" | "down" | "stable",
     }));
 
     return analyzeTeamPerformance({
@@ -506,7 +589,6 @@ export class TeamsService implements OnModuleInit {
       playerStats,
     });
   }
-
 
   async remove(id: string): Promise<Team> {
     return this.prisma.team.delete({ where: { id } });

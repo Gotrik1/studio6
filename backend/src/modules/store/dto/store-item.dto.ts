@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsBoolean, IsOptional } from 'class-validator';
+import { IsString, IsNumber, IsBoolean, IsOptional } from "class-validator";
 
 export class StoreItemDto {
   @IsString()
@@ -9,7 +9,7 @@ export class StoreItemDto {
 
   @IsString()
   readonly description: string;
-  
+
   @IsNumber()
   readonly price: number;
 
@@ -23,7 +23,7 @@ export class StoreItemDto {
 
   @IsString()
   readonly category: string;
-  
+
   @IsBoolean()
   readonly isRealMoney: boolean;
 }

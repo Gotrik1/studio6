@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI coach for analyzing team performance.
  *
@@ -7,20 +7,28 @@
  * - AnalyzeTeamPerformanceOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzeTeamPerformanceInputSchema, AnalyzeTeamPerformanceOutputSchema } from './schemas/analyze-team-performance-schema';
-import type { AnalyzeTeamPerformanceInput, AnalyzeTeamPerformanceOutput } from './schemas/analyze-team-performance-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzeTeamPerformanceInputSchema,
+  AnalyzeTeamPerformanceOutputSchema,
+} from "./schemas/analyze-team-performance-schema";
+import type {
+  AnalyzeTeamPerformanceInput,
+  AnalyzeTeamPerformanceOutput,
+} from "./schemas/analyze-team-performance-schema";
 
 export type { AnalyzeTeamPerformanceInput, AnalyzeTeamPerformanceOutput };
 
-export async function analyzeTeamPerformance(input: AnalyzeTeamPerformanceInput): Promise<AnalyzeTeamPerformanceOutput> {
+export async function analyzeTeamPerformance(
+  input: AnalyzeTeamPerformanceInput,
+): Promise<AnalyzeTeamPerformanceOutput> {
   return analyzeTeamPerformanceFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeTeamPerformancePrompt_Backend',
-  input: {schema: AnalyzeTeamPerformanceInputSchema},
-  output: {schema: AnalyzeTeamPerformanceOutputSchema},
+  name: "analyzeTeamPerformancePrompt_Backend",
+  input: { schema: AnalyzeTeamPerformanceInputSchema },
+  output: { schema: AnalyzeTeamPerformanceOutputSchema },
   prompt: `You are an expert esports analyst and coach. Your task is to provide a deep analysis of the team "{{teamName}}".
 
 Analyze the provided data:
@@ -40,12 +48,12 @@ Based on this, identify:
 
 const analyzeTeamPerformanceFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzeTeamPerformanceFlow_Backend',
+    name: "analyzeTeamPerformanceFlow_Backend",
     inputSchema: AnalyzeTeamPerformanceInputSchema,
     outputSchema: AnalyzeTeamPerformanceOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

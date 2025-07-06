@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const UserSchema = z.object({
   id: z.string(),
@@ -28,12 +28,16 @@ export const TournamentSchema = z.object({
   slug: z.string(),
 });
 
-export const SmartSearchInputSchema = z.string().describe('The user\'s natural language search query.');
+export const SmartSearchInputSchema = z
+  .string()
+  .describe("The user's natural language search query.");
 export type SmartSearchInput = z.infer<typeof SmartSearchInputSchema>;
 
 export const SmartSearchOutputSchema = z.object({
-  users: z.array(UserSchema).describe('A list of users relevant to the query.'),
-  teams: z.array(TeamSchema).describe('A list of teams relevant to the query.'),
-  tournaments: z.array(TournamentSchema).describe('A list of tournaments relevant to the query.'),
+  users: z.array(UserSchema).describe("A list of users relevant to the query."),
+  teams: z.array(TeamSchema).describe("A list of teams relevant to the query."),
+  tournaments: z
+    .array(TournamentSchema)
+    .describe("A list of tournaments relevant to the query."),
 });
 export type SmartSearchOutput = z.infer<typeof SmartSearchOutputSchema>;

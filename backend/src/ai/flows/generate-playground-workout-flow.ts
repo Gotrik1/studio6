@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for generating workout routines for sports playgrounds.
  *
@@ -7,18 +7,26 @@
  * - GeneratePlaygroundWorkoutOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GeneratePlaygroundWorkoutInputSchema, GeneratePlaygroundWorkoutOutputSchema } from './schemas/generate-playground-workout-schema';
-import type { GeneratePlaygroundWorkoutInput, GeneratePlaygroundWorkoutOutput } from './schemas/generate-playground-workout-schema';
+import { ai } from "../genkit";
+import {
+  GeneratePlaygroundWorkoutInputSchema,
+  GeneratePlaygroundWorkoutOutputSchema,
+} from "./schemas/generate-playground-workout-schema";
+import type {
+  GeneratePlaygroundWorkoutInput,
+  GeneratePlaygroundWorkoutOutput,
+} from "./schemas/generate-playground-workout-schema";
 
 export type { GeneratePlaygroundWorkoutInput, GeneratePlaygroundWorkoutOutput };
 
-export async function generatePlaygroundWorkout(input: GeneratePlaygroundWorkoutInput): Promise<GeneratePlaygroundWorkoutOutput> {
+export async function generatePlaygroundWorkout(
+  input: GeneratePlaygroundWorkoutInput,
+): Promise<GeneratePlaygroundWorkoutOutput> {
   return generatePlaygroundWorkoutFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generatePlaygroundWorkoutPrompt_Backend',
+  name: "generatePlaygroundWorkoutPrompt_Backend",
   input: { schema: GeneratePlaygroundWorkoutInputSchema },
   output: { schema: GeneratePlaygroundWorkoutOutputSchema },
   prompt: `You are an expert AI sports coach. Your task is to create a workout or drill routine tailored to the specific type of playground and its available equipment. Respond in Russian.
@@ -44,7 +52,7 @@ const prompt = ai.definePrompt({
 
 const generatePlaygroundWorkoutFlow_Backend = ai.defineFlow(
   {
-    name: 'generatePlaygroundWorkoutFlow_Backend',
+    name: "generatePlaygroundWorkoutFlow_Backend",
     inputSchema: GeneratePlaygroundWorkoutInputSchema,
     outputSchema: GeneratePlaygroundWorkoutOutputSchema,
   },
@@ -54,5 +62,5 @@ const generatePlaygroundWorkoutFlow_Backend = ai.defineFlow(
       throw new Error("AI failed to generate a workout.");
     }
     return output;
-  }
+  },
 );

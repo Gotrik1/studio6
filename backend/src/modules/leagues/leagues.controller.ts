@@ -1,10 +1,10 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { LeaguesService } from './leagues.service';
-import { ApiTags } from '@nestjs/swagger';
-import { Public } from '../auth/decorators/public.decorator';
+import { Controller, Get, Param } from "@nestjs/common";
+import { LeaguesService } from "./leagues.service";
+import { ApiTags } from "@nestjs/swagger";
+import { Public } from "../auth/decorators/public.decorator";
 
-@ApiTags('Leagues')
-@Controller('leagues')
+@ApiTags("Leagues")
+@Controller("leagues")
 export class LeaguesController {
   constructor(private readonly leaguesService: LeaguesService) {}
 
@@ -15,8 +15,8 @@ export class LeaguesController {
   }
 
   @Public()
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.leaguesService.findOne(id);
   }
 }

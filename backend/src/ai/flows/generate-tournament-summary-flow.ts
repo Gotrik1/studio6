@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for generating a full media kit for a completed tournament.
  *
@@ -7,18 +7,26 @@
  * - GenerateTournamentSummaryOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GenerateTournamentSummaryInputSchema, GenerateTournamentSummaryOutputSchema } from './schemas/generate-tournament-summary-schema';
-import type { GenerateTournamentSummaryInput, GenerateTournamentSummaryOutput } from './schemas/generate-tournament-summary-schema';
+import { ai } from "../genkit";
+import {
+  GenerateTournamentSummaryInputSchema,
+  GenerateTournamentSummaryOutputSchema,
+} from "./schemas/generate-tournament-summary-schema";
+import type {
+  GenerateTournamentSummaryInput,
+  GenerateTournamentSummaryOutput,
+} from "./schemas/generate-tournament-summary-schema";
 
 export type { GenerateTournamentSummaryInput, GenerateTournamentSummaryOutput };
 
-export async function generateTournamentSummary(input: GenerateTournamentSummaryInput): Promise<GenerateTournamentSummaryOutput> {
+export async function generateTournamentSummary(
+  input: GenerateTournamentSummaryInput,
+): Promise<GenerateTournamentSummaryOutput> {
   return generateTournamentSummaryFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateTournamentSummaryPrompt_Backend',
+  name: "generateTournamentSummaryPrompt_Backend",
   input: { schema: GenerateTournamentSummaryInputSchema },
   output: { schema: GenerateTournamentSummaryOutputSchema },
   prompt: `You are an expert sports journalist and SMM manager for the ProDvor platform.
@@ -39,12 +47,12 @@ Please provide the following:
 
 const generateTournamentSummaryFlow_Backend = ai.defineFlow(
   {
-    name: 'generateTournamentSummaryFlow_Backend',
+    name: "generateTournamentSummaryFlow_Backend",
     inputSchema: GenerateTournamentSummaryInputSchema,
     outputSchema: GenerateTournamentSummaryOutputSchema,
   },
   async (input) => {
     const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

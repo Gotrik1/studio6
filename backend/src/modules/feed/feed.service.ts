@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
 
 @Injectable()
 export class FeedService {
@@ -8,7 +8,7 @@ export class FeedService {
   async getFeed() {
     return this.prisma.activity.findMany({
       orderBy: {
-        timestamp: 'desc',
+        timestamp: "desc",
       },
       take: 20,
       include: {

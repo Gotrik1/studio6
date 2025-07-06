@@ -1,3 +1,3 @@
 export class SponsorshipScoutDto {
-    readonly prompt: string;
+  readonly prompt: string;
 }

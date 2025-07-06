@@ -1,11 +1,11 @@
-import { IsString, IsNotEmpty, IsOptional, IsIn } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsOptional, IsIn } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateTournamentMediaDto {
   @ApiProperty()
   @IsString()
-  @IsIn(['IMAGE', 'VIDEO', 'AUDIO'])
-  readonly type: 'IMAGE' | 'VIDEO' | 'AUDIO';
+  @IsIn(["IMAGE", "VIDEO", "AUDIO"])
+  readonly type: "IMAGE" | "VIDEO" | "AUDIO";
 
   @ApiProperty()
   @IsString()

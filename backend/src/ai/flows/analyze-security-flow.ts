@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An AI agent for analyzing user activity for security risks.
@@ -8,20 +8,28 @@
  * - AnalyzeSecurityOutput - The return type for the analyzeSecurity function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzeSecurityInputSchema, AnalyzeSecurityOutputSchema } from './schemas/analyze-security-schema';
-import type { AnalyzeSecurityInput, AnalyzeSecurityOutput } from './schemas/analyze-security-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzeSecurityInputSchema,
+  AnalyzeSecurityOutputSchema,
+} from "./schemas/analyze-security-schema";
+import type {
+  AnalyzeSecurityInput,
+  AnalyzeSecurityOutput,
+} from "./schemas/analyze-security-schema";
 
 export type { AnalyzeSecurityInput, AnalyzeSecurityOutput };
 
-export async function analyzeSecurity(input: AnalyzeSecurityInput): Promise<AnalyzeSecurityOutput> {
+export async function analyzeSecurity(
+  input: AnalyzeSecurityInput,
+): Promise<AnalyzeSecurityOutput> {
   return analyzeSecurityFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeSecurityPrompt_Backend',
-  input: {schema: AnalyzeSecurityInputSchema},
-  output: {schema: AnalyzeSecurityOutputSchema},
+  name: "analyzeSecurityPrompt_Backend",
+  input: { schema: AnalyzeSecurityInputSchema },
+  output: { schema: AnalyzeSecurityOutputSchema },
   prompt: `You are a security expert for an esports platform. Analyze the provided activity log for any potential security risks or suspicious behavior.
 
   Focus on:
@@ -39,12 +47,12 @@ const prompt = ai.definePrompt({
 
 const analyzeSecurityFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzeSecurityFlow_Backend',
+    name: "analyzeSecurityFlow_Backend",
     inputSchema: AnalyzeSecurityInputSchema,
     outputSchema: AnalyzeSecurityOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

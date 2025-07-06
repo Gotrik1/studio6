@@ -1,20 +1,28 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for generating a team tactic for a specific playground.
  */
 
-import { ai } from '../genkit';
-import { GeneratePlaygroundTacticInputSchema, GeneratePlaygroundTacticOutputSchema } from './schemas/generate-playground-tactic-schema';
-import type { GeneratePlaygroundTacticInput, GeneratePlaygroundTacticOutput } from './schemas/generate-playground-tactic-schema';
+import { ai } from "../genkit";
+import {
+  GeneratePlaygroundTacticInputSchema,
+  GeneratePlaygroundTacticOutputSchema,
+} from "./schemas/generate-playground-tactic-schema";
+import type {
+  GeneratePlaygroundTacticInput,
+  GeneratePlaygroundTacticOutput,
+} from "./schemas/generate-playground-tactic-schema";
 
 export type { GeneratePlaygroundTacticInput, GeneratePlaygroundTacticOutput };
 
-export async function generatePlaygroundTactic(input: GeneratePlaygroundTacticInput): Promise<GeneratePlaygroundTacticOutput> {
+export async function generatePlaygroundTactic(
+  input: GeneratePlaygroundTacticInput,
+): Promise<GeneratePlaygroundTacticOutput> {
   return generatePlaygroundTacticFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generatePlaygroundTacticPrompt_Backend',
+  name: "generatePlaygroundTacticPrompt_Backend",
   input: { schema: GeneratePlaygroundTacticInputSchema },
   output: { schema: GeneratePlaygroundTacticOutputSchema },
   prompt: `You are an expert sports and esports strategist. A team is looking for a tactic to use on a specific playground.
@@ -37,7 +45,7 @@ const prompt = ai.definePrompt({
 
 const generatePlaygroundTacticFlow_Backend = ai.defineFlow(
   {
-    name: 'generatePlaygroundTacticFlow_Backend',
+    name: "generatePlaygroundTacticFlow_Backend",
     inputSchema: GeneratePlaygroundTacticInputSchema,
     outputSchema: GeneratePlaygroundTacticOutputSchema,
   },
@@ -47,5 +55,5 @@ const generatePlaygroundTacticFlow_Backend = ai.defineFlow(
       throw new Error("AI failed to generate a tactic.");
     }
     return output;
-  }
+  },
 );

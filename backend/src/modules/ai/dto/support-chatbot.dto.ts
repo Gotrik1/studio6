@@ -1,3 +1,3 @@
 export class SupportChatbotDto {
-    readonly query: string;
+  readonly query: string;
 }

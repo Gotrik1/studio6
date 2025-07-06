@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for analyzing individual player eSports performance.
  *
@@ -7,21 +7,28 @@
  * - AnalyzeEsportsPerformanceOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzeEsportsPerformanceInputSchema, AnalyzeEsportsPerformanceOutputSchema } from './schemas/analyze-esports-performance-schema';
-import type { AnalyzeEsportsPerformanceInput, AnalyzeEsportsPerformanceOutput } from './schemas/analyze-esports-performance-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzeEsportsPerformanceInputSchema,
+  AnalyzeEsportsPerformanceOutputSchema,
+} from "./schemas/analyze-esports-performance-schema";
+import type {
+  AnalyzeEsportsPerformanceInput,
+  AnalyzeEsportsPerformanceOutput,
+} from "./schemas/analyze-esports-performance-schema";
 
 export type { AnalyzeEsportsPerformanceInput, AnalyzeEsportsPerformanceOutput };
 
-
-export async function analyzeEsportsPerformance(input: AnalyzeEsportsPerformanceInput): Promise<AnalyzeEsportsPerformanceOutput> {
+export async function analyzeEsportsPerformance(
+  input: AnalyzeEsportsPerformanceInput,
+): Promise<AnalyzeEsportsPerformanceOutput> {
   return analyzeEsportsPerformanceFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeEsportsPerformancePrompt_Backend',
-  input: {schema: AnalyzeEsportsPerformanceInputSchema},
-  output: {schema: AnalyzeEsportsPerformanceOutputSchema},
+  name: "analyzeEsportsPerformancePrompt_Backend",
+  input: { schema: AnalyzeEsportsPerformanceInputSchema },
+  output: { schema: AnalyzeEsportsPerformanceOutputSchema },
   prompt: `You are an expert esports analyst and coach. Analyze the provided player statistics and match history to identify key strengths, weaknesses, and provide actionable recommendations for improvement. Respond in Russian.
 
 Player Statistics:
@@ -36,12 +43,12 @@ Please provide a concise analysis, focusing on clear, actionable feedback. Ident
 
 const analyzeEsportsPerformanceFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzeEsportsPerformanceFlow_Backend',
+    name: "analyzeEsportsPerformanceFlow_Backend",
     inputSchema: AnalyzeEsportsPerformanceInputSchema,
     outputSchema: AnalyzeEsportsPerformanceOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

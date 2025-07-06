@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI assistant for onboarding new users.
  *
@@ -7,20 +7,28 @@
  * - OnboardingOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { OnboardingInputSchema, OnboardingOutputSchema } from './schemas/onboarding-assistant-schema';
-import type { OnboardingInput, OnboardingOutput } from './schemas/onboarding-assistant-schema';
+import { ai } from "../genkit";
+import {
+  OnboardingInputSchema,
+  OnboardingOutputSchema,
+} from "./schemas/onboarding-assistant-schema";
+import type {
+  OnboardingInput,
+  OnboardingOutput,
+} from "./schemas/onboarding-assistant-schema";
 
 export type { OnboardingInput, OnboardingOutput };
 
-export async function getOnboardingSuggestions(input: OnboardingInput): Promise<OnboardingOutput> {
+export async function getOnboardingSuggestions(
+  input: OnboardingInput,
+): Promise<OnboardingOutput> {
   return onboardingAssistantFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'onboardingAssistantPrompt_Backend',
-  input: {schema: OnboardingInputSchema},
-  output: {schema: OnboardingOutputSchema},
+  name: "onboardingAssistantPrompt_Backend",
+  input: { schema: OnboardingInputSchema },
+  output: { schema: OnboardingOutputSchema },
   prompt: `You are a friendly and helpful onboarding assistant for the "ProDvor" esports platform.
 A new user, {{userName}}, has just signed up with the role of "{{userRole}}".
 
@@ -52,12 +60,12 @@ Example for a 'Капитан':
 
 const onboardingAssistantFlow_Backend = ai.defineFlow(
   {
-    name: 'onboardingAssistantFlow_Backend',
+    name: "onboardingAssistantFlow_Backend",
     inputSchema: OnboardingInputSchema,
     outputSchema: OnboardingOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

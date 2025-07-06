@@ -1,15 +1,22 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Query,
+} from "@nestjs/common";
+import { MatchesService } from "./matches.service";
+import { CreateMatchDto } from "./dto/create-match.dto";
+import { UpdateMatchDto } from "./dto/update-match.dto";
+import { ApiQuery, ApiTags } from "@nestjs/swagger";
+import { Public } from "../auth/decorators/public.decorator";
+import { MatchStatus } from "@prisma/client";
+import { ResolveDisputeDto } from "./dto/resolve-dispute.dto";
 
-import { Controller, Get, Post, Body, Param, Patch, Query } from '@nestjs/common';
-import { MatchesService } from './matches.service';
-import { CreateMatchDto } from './dto/create-match.dto';
-import { UpdateMatchDto } from './dto/update-match.dto';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
-import { Public } from '../auth/decorators/public.decorator';
-import { MatchStatus } from '@prisma/client';
-import { ResolveDisputeDto } from './dto/resolve-dispute.dto';
-
-@ApiTags('Matches')
-@Controller('matches')
+@ApiTags("Matches")
+@Controller("matches")
 export class MatchesController {
   constructor(private readonly matchesService: MatchesService) {}
 
@@ -20,36 +27,47 @@ export class MatchesController {
 
   @Public()
   @Get()
-  @ApiQuery({ name: 'status', enum: MatchStatus, required: false })
-  @ApiQuery({ name: 'tournamentId', required: false, description: 'Фильтр по ID турнира' })
-  @ApiQuery({ name: 'teamId', required: false, description: 'Фильтр по ID команды' })
+  @ApiQuery({ name: "status", enum: MatchStatus, required: false })
+  @ApiQuery({
+    name: "tournamentId",
+    required: false,
+    description: "Фильтр по ID турнира",
+  })
+  @ApiQuery({
+    name: "teamId",
+    required: false,
+    description: "Фильтр по ID команды",
+  })
   findAll(
-    @Query('status') status?: MatchStatus, 
-    @Query('tournamentId') tournamentId?: string,
-    @Query('teamId') teamId?: string
+    @Query("status") status?: MatchStatus,
+    @Query("tournamentId") tournamentId?: string,
+    @Query("teamId") teamId?: string,
   ) {
     return this.matchesService.findAll({ status, tournamentId, teamId });
   }
-  
+
   @Public()
-  @Get('match-of-the-week')
+  @Get("match-of-the-week")
   findMatchOfTheWeek() {
     return this.matchesService.findMatchOfTheWeek();
   }
 
   @Public()
-  @Get(':id')
-  findOne(@Param('id') id: string) {
+  @Get(":id")
+  findOne(@Param("id") id: string) {
     return this.matchesService.findOne(id);
   }
 
-  @Patch(':id/score')
-  updateScore(@Param('id') id: string, @Body() updateMatchDto: UpdateMatchDto) {
+  @Patch(":id/score")
+  updateScore(@Param("id") id: string, @Body() updateMatchDto: UpdateMatchDto) {
     return this.matchesService.updateScore(id, updateMatchDto);
   }
 
-  @Post(':id/resolve')
-  resolveDispute(@Param('id') id: string, @Body() resolveDisputeDto: ResolveDisputeDto) {
-      return this.matchesService.resolveDispute(id, resolveDisputeDto);
+  @Post(":id/resolve")
+  resolveDispute(
+    @Param("id") id: string,
+    @Body() resolveDisputeDto: ResolveDisputeDto,
+  ) {
+    return this.matchesService.resolveDispute(id, resolveDisputeDto);
   }
 }

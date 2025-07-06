@@ -1,7 +1,11 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { CreateTrainingProposalDto } from './dto/create-training-proposal.dto';
-import { UpdateTrainingProposalDto } from './dto/update-training-proposal.dto';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
+import { CreateTrainingProposalDto } from "./dto/create-training-proposal.dto";
+import { UpdateTrainingProposalDto } from "./dto/update-training-proposal.dto";
 
 @Injectable()
 export class TrainingProposalsService {
@@ -33,22 +37,28 @@ export class TrainingProposalsService {
         program: { select: { id: true, name: true } },
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
     });
   }
 
-  async updateStatus(userId: string, proposalId: string, updateDto: UpdateTrainingProposalDto) {
+  async updateStatus(
+    userId: string,
+    proposalId: string,
+    updateDto: UpdateTrainingProposalDto,
+  ) {
     const proposal = await this.prisma.trainingProposal.findUnique({
       where: { id: proposalId },
     });
 
     if (!proposal) {
-      throw new NotFoundException('Предложение не найдено.');
+      throw new NotFoundException("Предложение не найдено.");
     }
 
     if (proposal.toId !== userId) {
-      throw new ForbiddenException('Вы не можете изменить статус этого предложения.');
+      throw new ForbiddenException(
+        "Вы не можете изменить статус этого предложения.",
+      );
     }
 
     return this.prisma.trainingProposal.update({

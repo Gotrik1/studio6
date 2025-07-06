@@ -1,3 +1,4 @@
+
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -5,42 +6,48 @@ import {
   WebSocketServer,
   OnGatewayConnection,
   OnGatewayDisconnect,
-} from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
-import { Socket, Server } from 'socket.io';
-import { KafkaService } from '../kafka/kafka.service';
+} from "@nestjs/websockets";
+import { Logger } from "@nestjs/common";
+import { Socket, Server } from "socket.io";
+import { KafkaService } from "../kafka/kafka.service";
 
 @WebSocketGateway({
   cors: {
-    origin: '*', // For development, allow all origins
+    origin: "*", // For development, allow all origins
   },
 })
-export class ChatGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+export class ChatGateway
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @WebSocketServer() server: Server;
-  private logger: Logger = new Logger('ChatGateway');
+  private logger: Logger = new Logger("ChatGateway");
 
   constructor(private readonly kafkaService: KafkaService) {}
 
-  afterInit(server: Server) {
-    this.logger.log('ChatGateway Initialized!');
+  afterInit() {
+    this.logger.log("ChatGateway Initialized!");
   }
 
   handleDisconnect(client: Socket) {
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  handleConnection(client: Socket, ...args: any[]) {
+  handleConnection(client: Socket) {
     this.logger.log(`Client connected: ${client.id}`);
   }
-  
-  @SubscribeMessage('sendMessage')
+
+  @SubscribeMessage("sendMessage")
   async handleMessage(client: Socket, payload: any): Promise<void> {
-    this.logger.log(`Received message from client ${client.id}, producing to Kafka...`);
-    await this.kafkaService.produce('chat-messages', payload);
+    this.logger.log(
+      `Received message from client ${client.id}, producing to Kafka...`,
+    );
+    await this.kafkaService.produce("chat-messages", payload);
   }
 
   broadcastMessage(payload: any) {
-      this.server.emit('receiveMessage', payload);
-      this.logger.log(`Broadcasted message to all clients: ${JSON.stringify(payload)}`);
+    this.server.emit("receiveMessage", payload);
+    this.logger.log(
+      `Broadcasted message to all clients: ${JSON.stringify(payload)}`,
+    );
   }
 }

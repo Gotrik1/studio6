@@ -1,4 +1,5 @@
-'use server';
+
+"use server";
 
 /**
  * @fileOverview An AI-powered search agent for the ProDvor platform.
@@ -8,11 +9,14 @@
  * - SmartSearchOutput - The return type for the smartSearch function.
  */
 
-import { ai } from '../genkit';
-import { z } from 'zod';
-import { PrismaService } from '@/prisma/prisma.service';
-import { SmartSearchInputSchema, SmartSearchOutputSchema, UserSchema, TeamSchema, TournamentSchema } from './schemas/smart-search-schema';
-import type { SmartSearchInput, SmartSearchOutput } from './schemas/smart-search-schema';
+import { ai } from "../genkit";
+import { z } from "zod";
+import { PrismaService } from "@/prisma/prisma.service";
+import { SmartSearchInputSchema, SmartSearchOutputSchema } from "./schemas/smart-search-schema";
+import type {
+  SmartSearchInput,
+  SmartSearchOutput,
+} from "./schemas/smart-search-schema";
 
 const prisma = new PrismaService();
 
@@ -20,75 +24,81 @@ export type { SmartSearchInput, SmartSearchOutput };
 
 const searchPlatformData_Backend = ai.defineTool(
   {
-    name: 'searchPlatformData_Backend',
-    description: 'Searches for users, teams, and tournaments based on a textual query. Use this to find any information on the platform.',
-    inputSchema: z.string().describe('The user\'s search query.'),
+    name: "searchPlatformData_Backend",
+    description:
+      "Searches for users, teams, and tournaments based on a textual query. Use this to find any information on the platform.",
+    inputSchema: z.string().describe("The user's search query."),
     outputSchema: SmartSearchOutputSchema,
   },
   async (query) => {
     const lowercasedQuery = query.toLowerCase();
 
-    const users = (await prisma.user.findMany({
+    const users = (
+      await prisma.user.findMany({
         where: {
-            OR: [
-                { name: { contains: lowercasedQuery, mode: 'insensitive' } },
-                { email: { contains: lowercasedQuery, mode: 'insensitive' } },
-                { role: { contains: lowercasedQuery, mode: 'insensitive' } },
-            ]
+          OR: [
+            { name: { contains: lowercasedQuery, mode: "insensitive" } },
+            { email: { contains: lowercasedQuery, mode: "insensitive" } },
+            { role: { contains: lowercasedQuery, mode: "insensitive" } },
+          ],
         },
         take: 10,
-    })).map(u => ({
-        id: u.id,
-        name: u.name,
-        role: u.role,
-        avatar: u.avatar || 'https://placehold.co/100x100.png',
-        profileUrl: `/profiles/player/${u.id}`, // Simplified
+      })
+    ).map((u) => ({
+      id: u.id,
+      name: u.name,
+      role: u.role,
+      avatar: u.avatar || "https://placehold.co/100x100.png",
+      profileUrl: `/profiles/player/${u.id}`, // Simplified
     }));
 
-    const teams = (await prisma.team.findMany({
+    const teams = (
+      await prisma.team.findMany({
         where: {
-             OR: [
-                { name: { contains: lowercasedQuery, mode: 'insensitive' } },
-                { game: { contains: lowercasedQuery, mode: 'insensitive' } },
-            ]
+          OR: [
+            { name: { contains: lowercasedQuery, mode: "insensitive" } },
+            { game: { contains: lowercasedQuery, mode: "insensitive" } },
+          ],
         },
         include: { _count: { select: { members: true } } },
         take: 10,
-    })).map(t => ({
-        name: t.name,
-        motto: t.motto || '',
-        logo: t.logo || 'https://placehold.co/100x100.png',
-        dataAiHint: t.dataAiHint || 'team logo',
-        rank: t.rank,
-        members: t._count.members,
-        slug: t.slug,
-        game: t.game,
+      })
+    ).map((t) => ({
+      name: t.name,
+      motto: t.motto || "",
+      logo: t.logo || "https://placehold.co/100x100.png",
+      dataAiHint: t.dataAiHint || "team logo",
+      rank: t.rank,
+      members: t._count.members,
+      slug: t.slug,
+      game: t.game,
     }));
 
-    const tournaments = (await prisma.tournament.findMany({
-       where: {
-             OR: [
-                { name: { contains: lowercasedQuery, mode: 'insensitive' } },
-                { game: { contains: lowercasedQuery, mode: 'insensitive' } },
-            ]
+    const tournaments = (
+      await prisma.tournament.findMany({
+        where: {
+          OR: [
+            { name: { contains: lowercasedQuery, mode: "insensitive" } },
+            { game: { contains: lowercasedQuery, mode: "insensitive" } },
+          ],
         },
         take: 10,
-    })).map(t => ({
-        name: t.name,
-        game: t.game,
-        status: t.status,
-        image: t.bannerImage || 'https://placehold.co/2560x720.png',
-        dataAiHint: t.bannerImageHint || 'esports tournament',
-        slug: t.slug,
+      })
+    ).map((t) => ({
+      name: t.name,
+      game: t.game,
+      status: t.status,
+      image: t.bannerImage || "https://placehold.co/2560x720.png",
+      dataAiHint: t.bannerImageHint || "esports tournament",
+      slug: t.slug,
     }));
 
     return { users, teams, tournaments };
-  }
+  },
 );
 
-
 const smartSearchPrompt_Backend = ai.definePrompt({
-  name: 'smartSearchPrompt_Backend',
+  name: "smartSearchPrompt_Backend",
   input: { schema: SmartSearchInputSchema },
   output: { schema: SmartSearchOutputSchema },
   tools: [searchPlatformData_Backend],
@@ -104,16 +114,18 @@ User Query: "{{{input}}}"
 
 const smartSearchFlow_Backend = ai.defineFlow(
   {
-    name: 'smartSearchFlow_Backend',
+    name: "smartSearchFlow_Backend",
     inputSchema: SmartSearchInputSchema,
     outputSchema: SmartSearchOutputSchema,
   },
-  async input => {
+  async (input) => {
     const response = await smartSearchPrompt_Backend(input);
     return response.output!;
-  }
+  },
 );
 
-export async function smartSearch(query: SmartSearchInput): Promise<SmartSearchOutput> {
+export async function smartSearch(
+  query: SmartSearchInput,
+): Promise<SmartSearchOutput> {
   return smartSearchFlow_Backend(query);
 }

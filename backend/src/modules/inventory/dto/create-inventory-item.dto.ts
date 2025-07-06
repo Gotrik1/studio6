@@ -1,5 +1,12 @@
-import { IsString, IsNotEmpty, IsInt, Min, IsDateString, IsOptional } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {
+  IsString,
+  IsNotEmpty,
+  IsInt,
+  Min,
+  IsDateString,
+  IsOptional,
+} from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateInventoryItemDto {
   @ApiProperty()

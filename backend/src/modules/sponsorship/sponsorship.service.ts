@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
 
 @Injectable()
 export class SponsorshipService {
@@ -19,23 +19,24 @@ export class SponsorshipService {
       },
       take: 5,
     });
-    
+
     return {
-      sponsoredTeams: sponsoredTeams.map(t => ({
-          slug: t.slug,
-          name: t.name,
-          logo: t.logo || '',
-          logoHint: t.dataAiHint || 'team logo',
-          investment: '50,000 PD', // This would be calculated in a real app
-          since: t.updatedAt.toISOString().split('T')[0]
+      sponsoredTeams: sponsoredTeams.map((t) => ({
+        slug: t.slug,
+        name: t.name,
+        logo: t.logo || "",
+        logoHint: t.dataAiHint || "team logo",
+        investment: "50,000 PD", // This would be calculated in a real app
+        since: t.updatedAt.toISOString().split("T")[0],
       })),
-      teamsSeekingSponsorship: teamsSeekingSponsorship.map(t => ({
-          slug: t.slug,
-          name: t.name,
-          logo: t.logo || '',
-          logoHint: t.dataAiHint || 'team logo',
-          game: t.game,
-          pitch: t.motto || `Команда ${t.name} ищет поддержки для участия в турнирах.`
+      teamsSeekingSponsorship: teamsSeekingSponsorship.map((t) => ({
+        slug: t.slug,
+        name: t.name,
+        logo: t.logo || "",
+        logoHint: t.dataAiHint || "team logo",
+        game: t.game,
+        pitch:
+          t.motto || `Команда ${t.name} ищет поддержки для участия в турнирах.`,
       })),
     };
   }

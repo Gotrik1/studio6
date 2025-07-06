@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 class WinLossDataDto {
   @ApiProperty()
@@ -41,7 +41,7 @@ export class PlayerStatsDto {
 
   @ApiProperty({ type: [WinrateByMapDataDto] })
   winrateByMapData: WinrateByMapDataDto[];
-  
+
   @ApiProperty({ type: PlayerStatsSummaryDto })
   summary: PlayerStatsSummaryDto;
 }

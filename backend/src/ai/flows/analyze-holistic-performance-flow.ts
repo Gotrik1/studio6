@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for a holistic analysis of physical and esports performance.
  *
@@ -7,21 +7,31 @@
  * - AnalyzeHolisticPerformanceOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzeHolisticPerformanceInputSchema, AnalyzeHolisticPerformanceOutputSchema } from './schemas/analyze-holistic-performance-schema';
-import type { AnalyzeHolisticPerformanceInput, AnalyzeHolisticPerformanceOutput } from './schemas/analyze-holistic-performance-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzeHolisticPerformanceInputSchema,
+  AnalyzeHolisticPerformanceOutputSchema,
+} from "./schemas/analyze-holistic-performance-schema";
+import type {
+  AnalyzeHolisticPerformanceInput,
+  AnalyzeHolisticPerformanceOutput,
+} from "./schemas/analyze-holistic-performance-schema";
 
-export type { AnalyzeHolisticPerformanceInput, AnalyzeHolisticPerformanceOutput };
+export type {
+  AnalyzeHolisticPerformanceInput,
+  AnalyzeHolisticPerformanceOutput,
+};
 
-
-export async function analyzeHolisticPerformance(input: AnalyzeHolisticPerformanceInput): Promise<AnalyzeHolisticPerformanceOutput> {
+export async function analyzeHolisticPerformance(
+  input: AnalyzeHolisticPerformanceInput,
+): Promise<AnalyzeHolisticPerformanceOutput> {
   return analyzeHolisticPerformanceFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeHolisticPerformancePrompt_Backend',
-  input: {schema: AnalyzeHolisticPerformanceInputSchema},
-  output: {schema: AnalyzeHolisticPerformanceOutputSchema},
+  name: "analyzeHolisticPerformancePrompt_Backend",
+  input: { schema: AnalyzeHolisticPerformanceInputSchema },
+  output: { schema: AnalyzeHolisticPerformanceOutputSchema },
   prompt: `You are an expert sports scientist and esports performance coach. Your task is to perform a holistic analysis of a player, finding correlations between their physical training and their esports performance.
 
   PLAYER DATA:
@@ -39,12 +49,12 @@ const prompt = ai.definePrompt({
 
 const analyzeHolisticPerformanceFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzeHolisticPerformanceFlow_Backend',
+    name: "analyzeHolisticPerformanceFlow_Backend",
     inputSchema: AnalyzeHolisticPerformanceInputSchema,
     outputSchema: AnalyzeHolisticPerformanceOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

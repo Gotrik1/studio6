@@ -1,4 +1,3 @@
-
 export class TextToSpeechDto {
-    readonly text: string;
+  readonly text: string;
 }

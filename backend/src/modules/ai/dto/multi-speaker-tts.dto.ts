@@ -1,3 +1,3 @@
 export class MultiSpeakerTtsDto {
-    readonly script: string;
+  readonly script: string;
 }

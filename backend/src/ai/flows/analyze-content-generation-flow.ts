@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview AI agent for analyzing existing user-generated content to inform AI content generation.
@@ -8,20 +8,28 @@
  * - AnalyzeContentOutput - The return type for the analyzeContent function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzeContentInputSchema, AnalyzeContentOutputSchema } from './schemas/analyze-content-generation-schema';
-import type { AnalyzeContentInput, AnalyzeContentOutput } from './schemas/analyze-content-generation-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzeContentInputSchema,
+  AnalyzeContentOutputSchema,
+} from "./schemas/analyze-content-generation-schema";
+import type {
+  AnalyzeContentInput,
+  AnalyzeContentOutput,
+} from "./schemas/analyze-content-generation-schema";
 
 export type { AnalyzeContentInput, AnalyzeContentOutput };
 
-export async function analyzeContent(input: AnalyzeContentInput): Promise<AnalyzeContentOutput> {
+export async function analyzeContent(
+  input: AnalyzeContentInput,
+): Promise<AnalyzeContentOutput> {
   return analyzeContentFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeContentPrompt_Backend',
-  input: {schema: AnalyzeContentInputSchema},
-  output: {schema: AnalyzeContentOutputSchema},
+  name: "analyzeContentPrompt_Backend",
+  input: { schema: AnalyzeContentInputSchema },
+  output: { schema: AnalyzeContentOutputSchema },
   prompt: `You are an AI assistant specializing in content analysis and generation.
 
 You will analyze the user-generated content provided and identify its sentiment,
@@ -40,12 +48,12 @@ Analyze the content and provide the following information:
 
 const analyzeContentFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzeContentFlow_Backend',
+    name: "analyzeContentFlow_Backend",
     inputSchema: AnalyzeContentInputSchema,
     outputSchema: AnalyzeContentOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

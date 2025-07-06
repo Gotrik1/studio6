@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for generating a daily challenge for a sports playground.
  *
@@ -7,18 +7,29 @@
  * - GeneratePlaygroundChallengeOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GeneratePlaygroundChallengeInputSchema, GeneratePlaygroundChallengeOutputSchema } from './schemas/generate-playground-challenge-schema';
-import type { GeneratePlaygroundChallengeInput, GeneratePlaygroundChallengeOutput } from './schemas/generate-playground-challenge-schema';
+import { ai } from "../genkit";
+import {
+  GeneratePlaygroundChallengeInputSchema,
+  GeneratePlaygroundChallengeOutputSchema,
+} from "./schemas/generate-playground-challenge-schema";
+import type {
+  GeneratePlaygroundChallengeInput,
+  GeneratePlaygroundChallengeOutput,
+} from "./schemas/generate-playground-challenge-schema";
 
-export type { GeneratePlaygroundChallengeInput, GeneratePlaygroundChallengeOutput };
+export type {
+  GeneratePlaygroundChallengeInput,
+  GeneratePlaygroundChallengeOutput,
+};
 
-export async function generatePlaygroundChallenge(input: GeneratePlaygroundChallengeInput): Promise<GeneratePlaygroundChallengeOutput> {
+export async function generatePlaygroundChallenge(
+  input: GeneratePlaygroundChallengeInput,
+): Promise<GeneratePlaygroundChallengeOutput> {
   return generatePlaygroundChallengeFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generatePlaygroundChallengePrompt_Backend',
+  name: "generatePlaygroundChallengePrompt_Backend",
   input: { schema: GeneratePlaygroundChallengeInputSchema },
   output: { schema: GeneratePlaygroundChallengeOutputSchema },
   prompt: `You are a creative game master for a sports platform. Your task is to generate a simple, fun, daily skill challenge for a user visiting a specific playground. The challenge should be relevant to the playground's sport type.
@@ -39,7 +50,7 @@ const prompt = ai.definePrompt({
 
 const generatePlaygroundChallengeFlow_Backend = ai.defineFlow(
   {
-    name: 'generatePlaygroundChallengeFlow_Backend',
+    name: "generatePlaygroundChallengeFlow_Backend",
     inputSchema: GeneratePlaygroundChallengeInputSchema,
     outputSchema: GeneratePlaygroundChallengeOutputSchema,
   },
@@ -49,5 +60,5 @@ const generatePlaygroundChallengeFlow_Backend = ai.defineFlow(
       throw new Error("AI failed to generate a challenge.");
     }
     return output;
-  }
+  },
 );

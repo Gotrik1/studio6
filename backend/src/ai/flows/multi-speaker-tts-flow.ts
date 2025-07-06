@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview A flow for generating multi-speaker speech from a script.
@@ -7,23 +7,31 @@
  * - MultiSpeakerTtsOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import wav from 'wav';
-import { googleAI } from '@genkit-ai/googleai';
-import { MultiSpeakerTtsInputSchema, MultiSpeakerTtsOutputSchema } from './schemas/multi-speaker-tts-schema';
-import type { MultiSpeakerTtsInput, MultiSpeakerTtsOutput } from './schemas/multi-speaker-tts-schema';
+import { ai } from "../genkit";
+import wav from "wav";
+import { googleAI } from "@genkit-ai/googleai";
+import {
+  MultiSpeakerTtsInputSchema,
+  MultiSpeakerTtsOutputSchema,
+} from "./schemas/multi-speaker-tts-schema";
+import type {
+  MultiSpeakerTtsInput,
+  MultiSpeakerTtsOutput,
+} from "./schemas/multi-speaker-tts-schema";
 
 export type { MultiSpeakerTtsInput, MultiSpeakerTtsOutput };
 
-export async function multiSpeakerTts(script: MultiSpeakerTtsInput): Promise<MultiSpeakerTtsOutput> {
-    return multiSpeakerTtsFlow_Backend(script);
+export async function multiSpeakerTts(
+  script: MultiSpeakerTtsInput,
+): Promise<MultiSpeakerTtsOutput> {
+  return multiSpeakerTtsFlow_Backend(script);
 }
 
 async function toWav(
   pcmData: Buffer,
   channels = 1,
   rate = 24000,
-  sampleWidth = 2
+  sampleWidth = 2,
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const writer = new wav.Writer({
@@ -33,12 +41,12 @@ async function toWav(
     });
 
     const bufs: Buffer[] = [];
-    writer.on('error', reject);
-    writer.on('data', (d) => {
+    writer.on("error", reject);
+    writer.on("data", (d) => {
       bufs.push(d);
     });
-    writer.on('end', () => {
-      resolve(Buffer.concat(bufs).toString('base64'));
+    writer.on("end", () => {
+      resolve(Buffer.concat(bufs).toString("base64"));
     });
 
     writer.write(pcmData);
@@ -47,51 +55,51 @@ async function toWav(
 }
 
 const multiSpeakerTtsFlow_Backend = ai.defineFlow(
-    {
-        name: 'multiSpeakerTtsFlow_Backend',
-        inputSchema: MultiSpeakerTtsInputSchema,
-        outputSchema: MultiSpeakerTtsOutputSchema,
-    },
-    async (query) => {
-        const { media } = await ai.generate({
-            model: googleAI.model('gemini-2.5-flash-preview-tts'),
-            config: {
-                responseModalities: ['AUDIO'],
-                speechConfig: {
-                    multiSpeakerVoiceConfig: {
-                        speakerVoiceConfigs: [
-                            {
-                                speaker: 'Speaker1',
-                                voiceConfig: {
-                                    prebuiltVoiceConfig: { voiceName: 'Algenib' },
-                                },
-                            },
-                            {
-                                speaker: 'Speaker2',
-                                voiceConfig: {
-                                    prebuiltVoiceConfig: { voiceName: 'Achernar' },
-                                },
-                            },
-                        ],
-                    },
+  {
+    name: "multiSpeakerTtsFlow_Backend",
+    inputSchema: MultiSpeakerTtsInputSchema,
+    outputSchema: MultiSpeakerTtsOutputSchema,
+  },
+  async (query) => {
+    const { media } = await ai.generate({
+      model: googleAI.model("gemini-2.5-flash-preview-tts"),
+      config: {
+        responseModalities: ["AUDIO"],
+        speechConfig: {
+          multiSpeakerVoiceConfig: {
+            speakerVoiceConfigs: [
+              {
+                speaker: "Speaker1",
+                voiceConfig: {
+                  prebuiltVoiceConfig: { voiceName: "Algenib" },
                 },
-            },
-            prompt: query,
-        });
+              },
+              {
+                speaker: "Speaker2",
+                voiceConfig: {
+                  prebuiltVoiceConfig: { voiceName: "Achernar" },
+                },
+              },
+            ],
+          },
+        },
+      },
+      prompt: query,
+    });
 
-        if (!media || !media.url) {
-            throw new Error('No audio data returned from the model.');
-        }
-
-        const audioBuffer = Buffer.from(
-            media.url.substring(media.url.indexOf(',') + 1),
-            'base64'
-        );
-        
-        const wavBase64 = await toWav(audioBuffer);
-
-        return {
-            audioDataUri: 'data:audio/wav;base64,' + wavBase64,
-        };
+    if (!media || !media.url) {
+      throw new Error("No audio data returned from the model.");
     }
+
+    const audioBuffer = Buffer.from(
+      media.url.substring(media.url.indexOf(",") + 1),
+      "base64",
+    );
+
+    const wavBase64 = await toWav(audioBuffer);
+
+    return {
+      audioDataUri: "data:audio/wav;base64," + wavBase64,
+    };
+  },
 );

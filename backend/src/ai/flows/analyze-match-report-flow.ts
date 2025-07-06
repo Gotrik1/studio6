@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for analyzing a completed match and generating a report.
  *
@@ -7,18 +7,26 @@
  * - AnalyzeMatchReportOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzeMatchReportInputSchema, AnalyzeMatchReportOutputSchema } from './schemas/analyze-match-report-schema';
-import type { AnalyzeMatchReportInput, AnalyzeMatchReportOutput } from './schemas/analyze-match-report-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzeMatchReportInputSchema,
+  AnalyzeMatchReportOutputSchema,
+} from "./schemas/analyze-match-report-schema";
+import type {
+  AnalyzeMatchReportInput,
+  AnalyzeMatchReportOutput,
+} from "./schemas/analyze-match-report-schema";
 
 export type { AnalyzeMatchReportInput, AnalyzeMatchReportOutput };
 
-export async function analyzeMatchReport(input: AnalyzeMatchReportInput): Promise<AnalyzeMatchReportOutput> {
+export async function analyzeMatchReport(
+  input: AnalyzeMatchReportInput,
+): Promise<AnalyzeMatchReportOutput> {
   return analyzeMatchReportFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeMatchReportPrompt_Backend',
+  name: "analyzeMatchReportPrompt_Backend",
   input: { schema: AnalyzeMatchReportInputSchema },
   output: { schema: AnalyzeMatchReportOutputSchema },
   prompt: `You are an expert sports analyst and commentator. Your task is to provide a detailed post-match analysis for a game in the "{{{tournament}}}" tournament.
@@ -52,12 +60,12 @@ const prompt = ai.definePrompt({
 
 const analyzeMatchReportFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzeMatchReportFlow_Backend',
+    name: "analyzeMatchReportFlow_Backend",
     inputSchema: AnalyzeMatchReportInputSchema,
     outputSchema: AnalyzeMatchReportOutputSchema,
   },
   async (input) => {
     const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

@@ -1,5 +1,5 @@
-import { IsString, IsNotEmpty, IsIn } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsIn } from "class-validator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class CreateSportDto {
   @ApiProperty()
@@ -12,7 +12,7 @@ export class CreateSportDto {
   @IsNotEmpty()
   readonly icon: string;
 
-  @ApiProperty({ enum: ['Командный', 'Некомандный', 'Киберспорт'] })
-  @IsIn(['Командный', 'Некомандный', 'Киберспорт'])
-  readonly category: 'Командный' | 'Некомандный' | 'Киберспорт';
+  @ApiProperty({ enum: ["Командный", "Некомандный", "Киберспорт"] })
+  @IsIn(["Командный", "Некомандный", "Киберспорт"])
+  readonly category: "Командный" | "Некомандный" | "Киберспорт";
 }

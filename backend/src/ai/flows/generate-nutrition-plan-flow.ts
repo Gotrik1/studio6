@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for generating personalized nutrition plans.
  *
@@ -7,18 +7,26 @@
  * - GenerateNutritionPlanOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GenerateNutritionPlanInputSchema, GenerateNutritionPlanOutputSchema } from './schemas/generate-nutrition-plan-schema';
-import type { GenerateNutritionPlanInput, GenerateNutritionPlanOutput } from './schemas/generate-nutrition-plan-schema';
+import { ai } from "../genkit";
+import {
+  GenerateNutritionPlanInputSchema,
+  GenerateNutritionPlanOutputSchema,
+} from "./schemas/generate-nutrition-plan-schema";
+import type {
+  GenerateNutritionPlanInput,
+  GenerateNutritionPlanOutput,
+} from "./schemas/generate-nutrition-plan-schema";
 
 export type { GenerateNutritionPlanInput, GenerateNutritionPlanOutput };
 
-export async function generateNutritionPlan(input: GenerateNutritionPlanInput): Promise<GenerateNutritionPlanOutput> {
+export async function generateNutritionPlan(
+  input: GenerateNutritionPlanInput,
+): Promise<GenerateNutritionPlanOutput> {
   return generateNutritionPlanFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateNutritionPlanPrompt_Backend',
+  name: "generateNutritionPlanPrompt_Backend",
   input: { schema: GenerateNutritionPlanInputSchema },
   output: { schema: GenerateNutritionPlanOutputSchema },
   prompt: `You are an expert nutritionist and dietitian. Your task is to create a personalized nutrition plan based on the user's data. All text must be in Russian.
@@ -40,12 +48,12 @@ The final output MUST be in the specified JSON format.
 
 const generateNutritionPlanFlow_Backend = ai.defineFlow(
   {
-    name: 'generateNutritionPlanFlow_Backend',
+    name: "generateNutritionPlanFlow_Backend",
     inputSchema: GenerateNutritionPlanInputSchema,
     outputSchema: GenerateNutritionPlanOutputSchema,
   },
   async (input) => {
     const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

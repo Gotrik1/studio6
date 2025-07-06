@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { PlaygroundsService } from './playgrounds.service';
-import { PlaygroundsController } from './playgrounds.controller';
+import { Module } from "@nestjs/common";
+import { PlaygroundsService } from "./playgrounds.service";
+import { PlaygroundsController } from "./playgrounds.controller";
 
 @Module({
   controllers: [PlaygroundsController],

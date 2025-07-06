@@ -1,5 +1,5 @@
-import { RabbitMQModule as NestRabbitMQModule } from '@golevelup/nestjs-rabbitmq';
-import { Global, Module } from '@nestjs/common';
+import { RabbitMQModule as NestRabbitMQModule } from "@golevelup/nestjs-rabbitmq";
+import { Global, Module } from "@nestjs/common";
 
 @Global()
 @Module({
@@ -7,11 +7,11 @@ import { Global, Module } from '@nestjs/common';
     NestRabbitMQModule.forRoot(NestRabbitMQModule, {
       exchanges: [
         {
-          name: 'prodvor_exchange',
-          type: 'topic',
+          name: "prodvor_exchange",
+          type: "topic",
         },
       ],
-      uri: process.env.RABBITMQ_URL || 'amqp://user:password@rabbitmq:5672',
+      uri: process.env.RABBITMQ_URL || "amqp://user:password@rabbitmq:5672",
       connectionInitOptions: { wait: false },
     }),
   ],

@@ -1,6 +1,8 @@
-import { z } from 'zod';
+import { z } from "zod";
 
-export const SupportChatbotInputSchema = z.string().describe("User's question for the support chatbot.");
+export const SupportChatbotInputSchema = z
+  .string()
+  .describe("User's question for the support chatbot.");
 export type SupportChatbotInput = z.infer<typeof SupportChatbotInputSchema>;
 
 export const SupportChatbotOutputSchema = z.object({

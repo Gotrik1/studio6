@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for analyzing user reports about playground conditions.
  *
@@ -7,18 +7,26 @@
  * - AnalyzePlaygroundReportOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzePlaygroundReportInputSchema, AnalyzePlaygroundReportOutputSchema } from './schemas/analyze-playground-report-schema';
-import type { AnalyzePlaygroundReportInput, AnalyzePlaygroundReportOutput } from './schemas/analyze-playground-report-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzePlaygroundReportInputSchema,
+  AnalyzePlaygroundReportOutputSchema,
+} from "./schemas/analyze-playground-report-schema";
+import type {
+  AnalyzePlaygroundReportInput,
+  AnalyzePlaygroundReportOutput,
+} from "./schemas/analyze-playground-report-schema";
 
 export type { AnalyzePlaygroundReportInput, AnalyzePlaygroundReportOutput };
 
-export async function analyzePlaygroundReport(input: AnalyzePlaygroundReportInput): Promise<AnalyzePlaygroundReportOutput> {
+export async function analyzePlaygroundReport(
+  input: AnalyzePlaygroundReportInput,
+): Promise<AnalyzePlaygroundReportOutput> {
   return analyzePlaygroundReportFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzePlaygroundReportPrompt_Backend',
+  name: "analyzePlaygroundReportPrompt_Backend",
   input: { schema: AnalyzePlaygroundReportInputSchema },
   output: { schema: AnalyzePlaygroundReportOutputSchema },
   prompt: `You are a facilities manager for a sports platform. A user has reported an issue with a playground.
@@ -38,7 +46,7 @@ const prompt = ai.definePrompt({
 
 const analyzePlaygroundReportFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzePlaygroundReportFlow_Backend',
+    name: "analyzePlaygroundReportFlow_Backend",
     inputSchema: AnalyzePlaygroundReportInputSchema,
     outputSchema: AnalyzePlaygroundReportOutputSchema,
   },
@@ -48,5 +56,5 @@ const analyzePlaygroundReportFlow_Backend = ai.defineFlow(
       throw new Error("AI failed to analyze the report.");
     }
     return output;
-  }
+  },
 );

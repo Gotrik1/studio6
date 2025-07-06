@@ -1,17 +1,16 @@
-
 export type CareerHistoryItem = {
-    id: string;
-    teamName: string;
-    period: string;
-    role: string;
-    review: string;
+  id: string;
+  teamName: string;
+  period: string;
+  role: string;
+  review: string;
 };
 
 export type GalleryItem = {
-    id: string;
-    src: string;
-    alt: string;
-    dataAiHint: string;
+  id: string;
+  src: string;
+  alt: string;
+  dataAiHint: string;
 };
 
 export type UserTeam = {
@@ -26,55 +25,55 @@ export type UserTeam = {
 };
 
 export type TournamentCrm = {
-    id: string;
-    name: string;
-    sport: string;
-    status: string;
-    participants: number;
-    maxParticipants: number;
-    startDate: string;
-    organizer: string;
-    rules: string;
+  id: string;
+  name: string;
+  sport: string;
+  status: string;
+  participants: number;
+  maxParticipants: number;
+  startDate: string;
+  organizer: string;
+  rules: string;
 };
 
 export type Measurement = {
-    id: string;
-    date: string;
-    weight: number;
-    bodyFat?: number;
-    chest?: number;
-    waist?: number;
-    hips?: number;
-    biceps?: number;
-    thigh?: number;
+  id: string;
+  date: string;
+  weight: number;
+  bodyFat?: number;
+  chest?: number;
+  waist?: number;
+  hips?: number;
+  biceps?: number;
+  thigh?: number;
 };
 
 export type PlayerStats = {
-    winLossData: { wins: number, losses: number };
-    kdaByMonthData: { month: string, kda: number }[];
-    winrateByMapData: { map: string, winrate: number }[];
-    summary: {
-        matches: number;
-        winrate: number;
-        winStreak: number;
-        kda: number;
-    };
+  winLossData: { wins: number; losses: number };
+  kdaByMonthData: { month: string; kda: number }[];
+  winrateByMapData: { map: string; winrate: number }[];
+  summary: {
+    matches: number;
+    winrate: number;
+    winStreak: number;
+    kda: number;
+  };
 };
 
 export type CoachedPlayer = {
-    id: string;
-    name: string;
-    avatar: string | null;
-    avatarHint: string;
-    role: string;
-    stats: { kda: string; winRate: string; favoriteMap: string };
-    matchHistory: string;
+  id: string;
+  name: string;
+  avatar: string | null;
+  avatarHint: string;
+  role: string;
+  stats: { kda: string; winRate: string; favoriteMap: string };
+  matchHistory: string;
 };
 
 export type JudgedMatch = {
-    id: string;
-    team1: { name: string; };
-    team2: { name: string; };
-    resolution: string;
-    timestamp: string | null;
+  id: string;
+  team1: { name: string };
+  team2: { name: string };
+  resolution: string;
+  timestamp: string | null;
 };

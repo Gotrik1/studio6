@@ -1,3 +1,3 @@
 export class SmartSearchDto {
-    readonly query: string;
+  readonly query: string;
 }

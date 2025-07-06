@@ -1,20 +1,20 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { ActivityType } from '@prisma/client';
-import { CreateCheckInDto } from './dto/create-check-in.dto';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
+import { ActivityType } from "@prisma/client";
+import { CreateCheckInDto } from "./dto/create-check-in.dto";
 
 @Injectable()
 export class ActivitiesService {
   constructor(private prisma: PrismaService) {}
-  
+
   async getPlaygroundFeed(playgroundId: string) {
     return this.prisma.activity.findMany({
       where: {
         playgroundId,
-        type: 'PLAYGROUND_CHECK_IN',
+        type: "PLAYGROUND_CHECK_IN",
       },
       orderBy: {
-        timestamp: 'desc',
+        timestamp: "desc",
       },
       take: 20,
       include: {

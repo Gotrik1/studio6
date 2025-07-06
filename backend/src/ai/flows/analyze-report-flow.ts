@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An AI agent for analyzing user reports and suggesting moderation actions.
@@ -8,20 +8,28 @@
  * - AnalyzeReportOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzeReportInputSchema, AnalyzeReportOutputSchema } from './schemas/analyze-report-schema';
-import type { AnalyzeReportInput, AnalyzeReportOutput } from './schemas/analyze-report-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzeReportInputSchema,
+  AnalyzeReportOutputSchema,
+} from "./schemas/analyze-report-schema";
+import type {
+  AnalyzeReportInput,
+  AnalyzeReportOutput,
+} from "./schemas/analyze-report-schema";
 
 export type { AnalyzeReportInput, AnalyzeReportOutput };
 
-export async function analyzeReport(input: AnalyzeReportInput): Promise<AnalyzeReportOutput> {
+export async function analyzeReport(
+  input: AnalyzeReportInput,
+): Promise<AnalyzeReportOutput> {
   return analyzeReportFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeReportPrompt_Backend',
-  input: {schema: AnalyzeReportInputSchema},
-  output: {schema: AnalyzeReportOutputSchema},
+  name: "analyzeReportPrompt_Backend",
+  input: { schema: AnalyzeReportInputSchema },
+  output: { schema: AnalyzeReportOutputSchema },
   prompt: `You are an expert, impartial platform moderator with years of experience. Your task is to analyze a user report and recommend a fair course of action.
 
   Analyze the following information:
@@ -41,12 +49,12 @@ const prompt = ai.definePrompt({
 
 const analyzeReportFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzeReportFlow_Backend',
+    name: "analyzeReportFlow_Backend",
     inputSchema: AnalyzeReportInputSchema,
     outputSchema: AnalyzeReportOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

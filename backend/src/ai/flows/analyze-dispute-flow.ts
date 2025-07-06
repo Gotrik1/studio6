@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An AI agent for analyzing disputed matches and suggesting resolutions.
@@ -8,21 +8,28 @@
  * - AnalyzeDisputeOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzeDisputeInputSchema, AnalyzeDisputeOutputSchema } from './schemas/analyze-dispute-schema';
-import type { AnalyzeDisputeInput, AnalyzeDisputeOutput } from './schemas/analyze-dispute-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzeDisputeInputSchema,
+  AnalyzeDisputeOutputSchema,
+} from "./schemas/analyze-dispute-schema";
+import type {
+  AnalyzeDisputeInput,
+  AnalyzeDisputeOutput,
+} from "./schemas/analyze-dispute-schema";
 
 export type { AnalyzeDisputeInput, AnalyzeDisputeOutput };
 
-
-export async function analyzeDispute(input: AnalyzeDisputeInput): Promise<AnalyzeDisputeOutput> {
+export async function analyzeDispute(
+  input: AnalyzeDisputeInput,
+): Promise<AnalyzeDisputeOutput> {
   return analyzeDisputeFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeDisputePrompt_Backend',
-  input: {schema: AnalyzeDisputeInputSchema},
-  output: {schema: AnalyzeDisputeOutputSchema},
+  name: "analyzeDisputePrompt_Backend",
+  input: { schema: AnalyzeDisputeInputSchema },
+  output: { schema: AnalyzeDisputeOutputSchema },
   prompt: `You are an expert, impartial sports arbiter. Your task is to analyze a disputed match and recommend a fair resolution.
 
   Analyze the following information:
@@ -43,12 +50,12 @@ const prompt = ai.definePrompt({
 
 const analyzeDisputeFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzeDisputeFlow_Backend',
+    name: "analyzeDisputeFlow_Backend",
     inputSchema: AnalyzeDisputeInputSchema,
     outputSchema: AnalyzeDisputeOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An AI agent for generating a compelling sponsorship pitch for an esports team.
@@ -8,20 +8,28 @@
  * - GenerateSponsorshipPitchOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GenerateSponsorshipPitchInputSchema, GenerateSponsorshipPitchOutputSchema } from './schemas/generate-sponsorship-pitch-schema';
-import type { GenerateSponsorshipPitchInput, GenerateSponsorshipPitchOutput } from './schemas/generate-sponsorship-pitch-schema';
+import { ai } from "../genkit";
+import {
+  GenerateSponsorshipPitchInputSchema,
+  GenerateSponsorshipPitchOutputSchema,
+} from "./schemas/generate-sponsorship-pitch-schema";
+import type {
+  GenerateSponsorshipPitchInput,
+  GenerateSponsorshipPitchOutput,
+} from "./schemas/generate-sponsorship-pitch-schema";
 
 export type { GenerateSponsorshipPitchInput, GenerateSponsorshipPitchOutput };
 
-export async function generateSponsorshipPitch(input: GenerateSponsorshipPitchInput): Promise<GenerateSponsorshipPitchOutput> {
+export async function generateSponsorshipPitch(
+  input: GenerateSponsorshipPitchInput,
+): Promise<GenerateSponsorshipPitchOutput> {
   return generateSponsorshipPitchFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateSponsorshipPitchPrompt_Backend',
-  input: {schema: GenerateSponsorshipPitchInputSchema},
-  output: {schema: GenerateSponsorshipPitchOutputSchema},
+  name: "generateSponsorshipPitchPrompt_Backend",
+  input: { schema: GenerateSponsorshipPitchInputSchema },
+  output: { schema: GenerateSponsorshipPitchOutputSchema },
   prompt: `You are a professional sports marketing agent. Your task is to write a compelling sponsorship pitch for an esports team based on the information provided. The pitch should be professional, confident, and clearly outline the value proposition for a potential sponsor. The language must be Russian.
 
 Team Information:
@@ -41,12 +49,12 @@ Generate the pitch now.
 
 const generateSponsorshipPitchFlow_Backend = ai.defineFlow(
   {
-    name: 'generateSponsorshipPitchFlow_Backend',
+    name: "generateSponsorshipPitchFlow_Backend",
     inputSchema: GenerateSponsorshipPitchInputSchema,
     outputSchema: GenerateSponsorshipPitchOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { UsersService } from '../users/users.service';
-import { TournamentsService } from '../tournaments/tournaments.service';
-import { MatchesService } from '../matches/matches.service';
-import { MatchStatus } from '@prisma/client';
+import { Injectable } from "@nestjs/common";
+import { UsersService } from "../users/users.service";
+import { TournamentsService } from "../tournaments/tournaments.service";
+import { MatchesService } from "../matches/matches.service";
+import { MatchStatus } from "@prisma/client";
 
 @Injectable()
 export class AdminService {
@@ -20,13 +20,13 @@ export class AdminService {
     ]);
 
     const activeTournaments = allTournaments.filter(
-      (t: any) => t.status === 'Идет' || t.status === 'Регистрация',
+      (t: any) => t.status === "Идет" || t.status === "Регистрация",
     ).length;
 
     const openTickets = disputedMatches.length;
 
     // Revenue is still mocked as there is no payment logic
-    const monthlyRevenue = '$5,230';
+    const monthlyRevenue = "$5,230";
 
     return {
       totalUsers,

@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for generating a summary for a sport.
  *
@@ -7,18 +7,26 @@
  * - GenerateSportSummaryOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GenerateSportSummaryInputSchema, GenerateSportSummaryOutputSchema } from './schemas/generate-sport-summary-schema';
-import type { GenerateSportSummaryInput, GenerateSportSummaryOutput } from './schemas/generate-sport-summary-schema';
+import { ai } from "../genkit";
+import {
+  GenerateSportSummaryInputSchema,
+  GenerateSportSummaryOutputSchema,
+} from "./schemas/generate-sport-summary-schema";
+import type {
+  GenerateSportSummaryInput,
+  GenerateSportSummaryOutput,
+} from "./schemas/generate-sport-summary-schema";
 
 export type { GenerateSportSummaryInput, GenerateSportSummaryOutput };
 
-export async function generateSportSummary(input: GenerateSportSummaryInput): Promise<GenerateSportSummaryOutput> {
+export async function generateSportSummary(
+  input: GenerateSportSummaryInput,
+): Promise<GenerateSportSummaryOutput> {
   return generateSportSummaryFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateSportSummaryPrompt_Backend',
+  name: "generateSportSummaryPrompt_Backend",
   input: { schema: GenerateSportSummaryInputSchema },
   output: { schema: GenerateSportSummaryOutputSchema },
   prompt: `You are a sports encyclopedia. Generate a short, engaging summary for the sport: {{{sportName}}}.
@@ -32,12 +40,12 @@ const prompt = ai.definePrompt({
 
 const generateSportSummaryFlow_Backend = ai.defineFlow(
   {
-    name: 'generateSportSummaryFlow_Backend',
+    name: "generateSportSummaryFlow_Backend",
     inputSchema: GenerateSportSummaryInputSchema,
     outputSchema: GenerateSportSummaryOutputSchema,
   },
   async (input) => {
     const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

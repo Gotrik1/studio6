@@ -1,8 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { CreatePlaygroundReportDto } from './dto/create-playground-report.dto';
-import { analyzePlaygroundReport } from '@/ai/flows/analyze-playground-report-flow';
-import { ReportStatus } from '@prisma/client';
+import { Injectable, NotFoundException } from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
+import { CreatePlaygroundReportDto } from "./dto/create-playground-report.dto";
+import { analyzePlaygroundReport } from "@/ai/flows/analyze-playground-report-flow";
+import { ReportStatus } from "@prisma/client";
 
 @Injectable()
 export class PlaygroundReportsService {
@@ -10,11 +10,13 @@ export class PlaygroundReportsService {
 
   async createReport(reporterId: string, dto: CreatePlaygroundReportDto) {
     const playground = await this.prisma.playground.findUnique({
-        where: { id: dto.playgroundId },
+      where: { id: dto.playgroundId },
     });
 
     if (!playground) {
-        throw new NotFoundException(`Площадка с ID ${dto.playgroundId} не найдена.`);
+      throw new NotFoundException(
+        `Площадка с ID ${dto.playgroundId} не найдена.`,
+      );
     }
 
     // Call AI flow to analyze the report
@@ -37,16 +39,16 @@ export class PlaygroundReportsService {
       },
     });
   }
-  
+
   async getLatestConditionReport(playgroundId: string) {
-      return this.prisma.playgroundReport.findFirst({
-          where: {
-              playgroundId,
-              status: 'PENDING', // Only show unresolved issues
-          },
-          orderBy: {
-              createdAt: 'desc',
-          },
-      });
+    return this.prisma.playgroundReport.findFirst({
+      where: {
+        playgroundId,
+        status: "PENDING", // Only show unresolved issues
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
   }
 }

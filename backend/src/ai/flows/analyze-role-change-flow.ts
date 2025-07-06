@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An AI agent for analyzing a user's request for a role change.
@@ -8,20 +8,28 @@
  * - AnalyzeRoleChangeOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzeRoleChangeInputSchema, AnalyzeRoleChangeOutputSchema } from './schemas/analyze-role-change-schema';
-import type { AnalyzeRoleChangeInput, AnalyzeRoleChangeOutput } from './schemas/analyze-role-change-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzeRoleChangeInputSchema,
+  AnalyzeRoleChangeOutputSchema,
+} from "./schemas/analyze-role-change-schema";
+import type {
+  AnalyzeRoleChangeInput,
+  AnalyzeRoleChangeOutput,
+} from "./schemas/analyze-role-change-schema";
 
 export type { AnalyzeRoleChangeInput, AnalyzeRoleChangeOutput };
 
-export async function analyzeRoleChange(input: AnalyzeRoleChangeInput): Promise<AnalyzeRoleChangeOutput> {
+export async function analyzeRoleChange(
+  input: AnalyzeRoleChangeInput,
+): Promise<AnalyzeRoleChangeOutput> {
   return analyzeRoleChangeFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzeRoleChangePrompt_Backend',
-  input: {schema: AnalyzeRoleChangeInputSchema},
-  output: {schema: AnalyzeRoleChangeOutputSchema},
+  name: "analyzeRoleChangePrompt_Backend",
+  input: { schema: AnalyzeRoleChangeInputSchema },
+  output: { schema: AnalyzeRoleChangeOutputSchema },
   prompt: `You are an experienced administrator of a sports platform. Your task is to evaluate a user for a promotion to a position of responsibility.
 
   Analyze the user's activity summary to determine if they are a good fit for the requested role.
@@ -40,12 +48,12 @@ const prompt = ai.definePrompt({
 
 const analyzeRoleChangeFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzeRoleChangeFlow_Backend',
+    name: "analyzeRoleChangeFlow_Backend",
     inputSchema: AnalyzeRoleChangeInputSchema,
     outputSchema: AnalyzeRoleChangeOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

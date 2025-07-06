@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An AI agent for generating a personalized training plan based on performance analysis.
@@ -8,21 +8,28 @@
  * - GenerateTrainingPlanOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GenerateTrainingPlanInputSchema, GenerateTrainingPlanOutputSchema } from './schemas/generate-training-plan-schema';
-import type { GenerateTrainingPlanInput, GenerateTrainingPlanOutput } from './schemas/generate-training-plan-schema';
+import { ai } from "../genkit";
+import {
+  GenerateTrainingPlanInputSchema,
+  GenerateTrainingPlanOutputSchema,
+} from "./schemas/generate-training-plan-schema";
+import type {
+  GenerateTrainingPlanInput,
+  GenerateTrainingPlanOutput,
+} from "./schemas/generate-training-plan-schema";
 
 export type { GenerateTrainingPlanInput, GenerateTrainingPlanOutput };
 
-
-export async function generateTrainingPlan(input: GenerateTrainingPlanInput): Promise<GenerateTrainingPlanOutput> {
+export async function generateTrainingPlan(
+  input: GenerateTrainingPlanInput,
+): Promise<GenerateTrainingPlanOutput> {
   return generateTrainingPlanFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateTrainingPlanPrompt_Backend',
-  input: {schema: GenerateTrainingPlanInputSchema},
-  output: {schema: GenerateTrainingPlanOutputSchema},
+  name: "generateTrainingPlanPrompt_Backend",
+  input: { schema: GenerateTrainingPlanInputSchema },
+  output: { schema: GenerateTrainingPlanOutputSchema },
   prompt: `You are an expert fitness coach. You have just analyzed a user's performance. Now, create a concrete, actionable training plan for them for the next week. The plan must be in Russian.
 
   PLAYER ANALYSIS:
@@ -42,12 +49,12 @@ const prompt = ai.definePrompt({
 
 const generateTrainingPlanFlow_Backend = ai.defineFlow(
   {
-    name: 'generateTrainingPlanFlow_Backend',
+    name: "generateTrainingPlanFlow_Backend",
     inputSchema: GenerateTrainingPlanInputSchema,
     outputSchema: GenerateTrainingPlanOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

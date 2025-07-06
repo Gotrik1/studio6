@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for generating a personalized skill drill for a user on a specific playground.
  *
@@ -7,18 +7,26 @@
  * - GeneratePlaygroundDrillOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GeneratePlaygroundDrillInputSchema, GeneratePlaygroundDrillOutputSchema } from './schemas/generate-playground-drill-schema';
-import type { GeneratePlaygroundDrillInput, GeneratePlaygroundDrillOutput } from './schemas/generate-playground-drill-schema';
+import { ai } from "../genkit";
+import {
+  GeneratePlaygroundDrillInputSchema,
+  GeneratePlaygroundDrillOutputSchema,
+} from "./schemas/generate-playground-drill-schema";
+import type {
+  GeneratePlaygroundDrillInput,
+  GeneratePlaygroundDrillOutput,
+} from "./schemas/generate-playground-drill-schema";
 
 export type { GeneratePlaygroundDrillInput, GeneratePlaygroundDrillOutput };
 
-export async function generatePlaygroundDrill(input: GeneratePlaygroundDrillInput): Promise<GeneratePlaygroundDrillOutput> {
+export async function generatePlaygroundDrill(
+  input: GeneratePlaygroundDrillInput,
+): Promise<GeneratePlaygroundDrillOutput> {
   return generatePlaygroundDrillFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generatePlaygroundDrillPrompt_Backend',
+  name: "generatePlaygroundDrillPrompt_Backend",
   input: { schema: GeneratePlaygroundDrillInputSchema },
   output: { schema: GeneratePlaygroundDrillOutputSchema },
   prompt: `You are an expert personal sports coach. A player is at a '{{{playgroundType}}}' playground and wants to work on a specific weakness.
@@ -36,7 +44,7 @@ const prompt = ai.definePrompt({
 
 const generatePlaygroundDrillFlow_Backend = ai.defineFlow(
   {
-    name: 'generatePlaygroundDrillFlow_Backend',
+    name: "generatePlaygroundDrillFlow_Backend",
     inputSchema: GeneratePlaygroundDrillInputSchema,
     outputSchema: GeneratePlaygroundDrillOutputSchema,
   },
@@ -46,5 +54,5 @@ const generatePlaygroundDrillFlow_Backend = ai.defineFlow(
       throw new Error("AI failed to generate a skill drill.");
     }
     return output;
-  }
+  },
 );

@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An AI agent for generating content based on topics and tone.
@@ -8,20 +8,28 @@
  * - GenerateContentOutput - The return type for the generateContent function.
  */
 
-import { ai } from '../genkit';
-import { GenerateContentInputSchema, GenerateContentOutputSchema } from './schemas/generate-content-schema';
-import type { GenerateContentInput, GenerateContentOutput } from './schemas/generate-content-schema';
+import { ai } from "../genkit";
+import {
+  GenerateContentInputSchema,
+  GenerateContentOutputSchema,
+} from "./schemas/generate-content-schema";
+import type {
+  GenerateContentInput,
+  GenerateContentOutput,
+} from "./schemas/generate-content-schema";
 
 export type { GenerateContentInput, GenerateContentOutput };
 
-export async function generateContent(input: GenerateContentInput): Promise<GenerateContentOutput> {
+export async function generateContent(
+  input: GenerateContentInput,
+): Promise<GenerateContentOutput> {
   return generateContentFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generateContentPrompt_Backend',
-  input: {schema: GenerateContentInputSchema},
-  output: {schema: GenerateContentOutputSchema},
+  name: "generateContentPrompt_Backend",
+  input: { schema: GenerateContentInputSchema },
+  output: { schema: GenerateContentOutputSchema },
   prompt: `You are a creative content generator for a sports platform called "ProDvor".
 Your task is to generate a {{contentType}} with an {{tone}} tone about the following topic: {{{topic}}}.
 
@@ -30,12 +38,12 @@ Keep the content concise, engaging, and relevant to a sports audience.`,
 
 const generateContentFlow_Backend = ai.defineFlow(
   {
-    name: 'generateContentFlow_Backend',
+    name: "generateContentFlow_Backend",
     inputSchema: GenerateContentInputSchema,
     outputSchema: GenerateContentOutputSchema,
   },
-  async input => {
-    const {output} = await prompt(input);
+  async (input) => {
+    const { output } = await prompt(input);
     return output!;
-  }
+  },
 );

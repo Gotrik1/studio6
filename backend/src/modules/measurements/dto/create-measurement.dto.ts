@@ -1,4 +1,4 @@
-import { IsDateString, IsNumber, IsOptional, Min, Max } from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, Min, Max } from "class-validator";
 
 export class CreateMeasurementDto {
   @IsDateString()

@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
-import { achievements as mockAchievements } from './mock-data';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "@/prisma/prisma.service";
+import { achievements as mockAchievements } from "./mock-data";
 
 @Injectable()
 export class AchievementsService {

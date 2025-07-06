@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for generating a rich, structured analysis of a sports playground.
  *
@@ -7,18 +7,26 @@
  * - AnalyzePlaygroundDetailsOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { AnalyzePlaygroundDetailsInputSchema, AnalyzePlaygroundDetailsOutputSchema } from './schemas/analyze-playground-details-schema';
-import type { AnalyzePlaygroundDetailsInput, AnalyzePlaygroundDetailsOutput } from './schemas/analyze-playground-details-schema';
+import { ai } from "../genkit";
+import {
+  AnalyzePlaygroundDetailsInputSchema,
+  AnalyzePlaygroundDetailsOutputSchema,
+} from "./schemas/analyze-playground-details-schema";
+import type {
+  AnalyzePlaygroundDetailsInput,
+  AnalyzePlaygroundDetailsOutput,
+} from "./schemas/analyze-playground-details-schema";
 
 export type { AnalyzePlaygroundDetailsInput, AnalyzePlaygroundDetailsOutput };
 
-export async function analyzePlaygroundDetails(input: AnalyzePlaygroundDetailsInput): Promise<AnalyzePlaygroundDetailsOutput> {
+export async function analyzePlaygroundDetails(
+  input: AnalyzePlaygroundDetailsInput,
+): Promise<AnalyzePlaygroundDetailsOutput> {
   return analyzePlaygroundDetailsFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'analyzePlaygroundDetailsPrompt_Backend',
+  name: "analyzePlaygroundDetailsPrompt_Backend",
   input: { schema: AnalyzePlaygroundDetailsInputSchema },
   output: { schema: AnalyzePlaygroundDetailsOutputSchema },
   prompt: `You are an expert local sports guide. You provide witty, insightful, and honest reviews of sports venues. Analyze the provided playground data and generate a structured review. Respond in Russian.
@@ -41,7 +49,7 @@ const prompt = ai.definePrompt({
 
 const analyzePlaygroundDetailsFlow_Backend = ai.defineFlow(
   {
-    name: 'analyzePlaygroundDetailsFlow_Backend',
+    name: "analyzePlaygroundDetailsFlow_Backend",
     inputSchema: AnalyzePlaygroundDetailsInputSchema,
     outputSchema: AnalyzePlaygroundDetailsOutputSchema,
   },
@@ -51,5 +59,5 @@ const analyzePlaygroundDetailsFlow_Backend = ai.defineFlow(
       throw new Error("AI failed to generate playground details.");
     }
     return output;
-  }
+  },
 );

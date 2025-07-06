@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from "@nestjs/swagger";
 
 export class KingOfTheCourtDto {
   @ApiProperty()
@@ -9,7 +9,7 @@ export class KingOfTheCourtDto {
 
   @ApiProperty({ nullable: true })
   logo: string | null;
-  
+
   @ApiProperty({ nullable: true })
   dataAiHint: string | null;
 

@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for generating a summary for a sports playground.
  *
@@ -7,18 +7,26 @@
  * - GeneratePlaygroundSummaryOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GeneratePlaygroundSummaryInputSchema, GeneratePlaygroundSummaryOutputSchema } from './schemas/generate-playground-summary-schema';
-import type { GeneratePlaygroundSummaryInput, GeneratePlaygroundSummaryOutput } from './schemas/generate-playground-summary-schema';
+import { ai } from "../genkit";
+import {
+  GeneratePlaygroundSummaryInputSchema,
+  GeneratePlaygroundSummaryOutputSchema,
+} from "./schemas/generate-playground-summary-schema";
+import type {
+  GeneratePlaygroundSummaryInput,
+  GeneratePlaygroundSummaryOutput,
+} from "./schemas/generate-playground-summary-schema";
 
 export type { GeneratePlaygroundSummaryInput, GeneratePlaygroundSummaryOutput };
 
-export async function generatePlaygroundSummary(input: GeneratePlaygroundSummaryInput): Promise<GeneratePlaygroundSummaryOutput> {
+export async function generatePlaygroundSummary(
+  input: GeneratePlaygroundSummaryInput,
+): Promise<GeneratePlaygroundSummaryOutput> {
   return generatePlaygroundSummaryFlow_Backend(input);
 }
 
 const prompt = ai.definePrompt({
-  name: 'generatePlaygroundSummaryPrompt_Backend',
+  name: "generatePlaygroundSummaryPrompt_Backend",
   input: { schema: GeneratePlaygroundSummaryInputSchema },
   output: { schema: GeneratePlaygroundSummaryOutputSchema },
   prompt: `You are a local sports enthusiast who knows all the spots in town. Based on the details of this playground, write a short, informal summary for other players.
@@ -36,7 +44,7 @@ const prompt = ai.definePrompt({
 
 const generatePlaygroundSummaryFlow_Backend = ai.defineFlow(
   {
-    name: 'generatePlaygroundSummaryFlow_Backend',
+    name: "generatePlaygroundSummaryFlow_Backend",
     inputSchema: GeneratePlaygroundSummaryInputSchema,
     outputSchema: GeneratePlaygroundSummaryOutputSchema,
   },
@@ -46,5 +54,5 @@ const generatePlaygroundSummaryFlow_Backend = ai.defineFlow(
       throw new Error("AI failed to generate a summary.");
     }
     return output;
-  }
+  },
 );

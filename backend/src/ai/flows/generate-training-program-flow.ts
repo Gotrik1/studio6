@@ -1,4 +1,4 @@
-'use server';
+"use server";
 /**
  * @fileOverview An AI agent for generating personalized training programs.
  *
@@ -7,21 +7,34 @@
  * - GenerateTrainingProgramOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GenerateTrainingProgramInputSchema, GenerateTrainingProgramOutputSchema } from './schemas/generate-training-program-schema';
-import type { GenerateTrainingProgramInput, GenerateTrainingProgramOutput } from './schemas/generate-training-program-schema';
-import { PrismaService } from '@/prisma/prisma.service';
+import { ai } from "../genkit";
+import {
+  GenerateTrainingProgramInputSchema,
+  GenerateTrainingProgramOutputSchema,
+} from "./schemas/generate-training-program-schema";
+import type {
+  GenerateTrainingProgramInput,
+  GenerateTrainingProgramOutput,
+} from "./schemas/generate-training-program-schema";
+import { PrismaService } from "@/prisma/prisma.service";
 
 const prisma = new PrismaService();
 
 export type { GenerateTrainingProgramInput, GenerateTrainingProgramOutput };
 
-export async function generateTrainingProgram(input: GenerateTrainingProgramInput): Promise<GenerateTrainingProgramOutput> {
+export async function generateTrainingProgram(
+  input: GenerateTrainingProgramInput,
+): Promise<GenerateTrainingProgramOutput> {
   const exercises = await prisma.exercise.findMany();
-  const allExercisesString = exercises.map(ex => `- ${ex.name} (Группа мышц: ${ex.category}, Оборудование: ${ex.equipment})`).join('\n');
-  
+  const allExercisesString = exercises
+    .map(
+      (ex) =>
+        `- ${ex.name} (Группа мышц: ${ex.category}, Оборудование: ${ex.equipment})`,
+    )
+    .join("\n");
+
   const prompt = ai.definePrompt({
-    name: 'generateTrainingProgramPrompt_Backend',
+    name: "generateTrainingProgramPrompt_Backend",
     input: { schema: GenerateTrainingProgramInputSchema },
     output: { schema: GenerateTrainingProgramOutputSchema },
     prompt: `Ты — опытный фитнес-тренер и диетолог. Твоя задача — создать персонализированную программу тренировок на неделю на основе данных пользователя.
@@ -51,15 +64,15 @@ export async function generateTrainingProgram(input: GenerateTrainingProgramInpu
 
   const generateTrainingProgramFlow_Backend = ai.defineFlow(
     {
-      name: 'generateTrainingProgramFlow_Backend',
+      name: "generateTrainingProgramFlow_Backend",
       inputSchema: GenerateTrainingProgramInputSchema,
       outputSchema: GenerateTrainingProgramOutputSchema,
     },
     async (flowInput) => {
       const { output } = await prompt(flowInput);
       return output!;
-    }
+    },
   );
-  
+
   return generateTrainingProgramFlow_Backend(input);
 }

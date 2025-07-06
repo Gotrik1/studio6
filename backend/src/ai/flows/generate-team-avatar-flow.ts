@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An AI agent for generating team avatars.
@@ -8,35 +8,43 @@
  * - GenerateTeamAvatarOutput - The return type for the function.
  */
 
-import { ai } from '../genkit';
-import { GenerateTeamAvatarInputSchema, GenerateTeamAvatarOutputSchema } from './schemas/generate-team-avatar-schema';
-import type { GenerateTeamAvatarInput, GenerateTeamAvatarOutput } from './schemas/generate-team-avatar-schema';
+import { ai } from "../genkit";
+import {
+  GenerateTeamAvatarInputSchema,
+  GenerateTeamAvatarOutputSchema,
+} from "./schemas/generate-team-avatar-schema";
+import type {
+  GenerateTeamAvatarInput,
+  GenerateTeamAvatarOutput,
+} from "./schemas/generate-team-avatar-schema";
 
 export type { GenerateTeamAvatarInput, GenerateTeamAvatarOutput };
 
-export async function generateTeamAvatar(input: GenerateTeamAvatarInput): Promise<GenerateTeamAvatarOutput> {
+export async function generateTeamAvatar(
+  input: GenerateTeamAvatarInput,
+): Promise<GenerateTeamAvatarOutput> {
   return generateTeamAvatarFlow_Backend(input);
 }
 
 const generateTeamAvatarFlow_Backend = ai.defineFlow(
   {
-    name: 'generateTeamAvatarFlow_Backend',
+    name: "generateTeamAvatarFlow_Backend",
     inputSchema: GenerateTeamAvatarInputSchema,
     outputSchema: GenerateTeamAvatarOutputSchema,
   },
-  async ({prompt}) => {
-    const {media} = await ai.generate({
-      model: 'googleai/gemini-2.0-flash-preview-image-generation',
+  async ({ prompt }) => {
+    const { media } = await ai.generate({
+      model: "googleai/gemini-2.0-flash-preview-image-generation",
       prompt: `A sports team logo, ${prompt}. Minimalist, vector style, on a plain background.`,
       config: {
-        responseModalities: ['TEXT', 'IMAGE'],
+        responseModalities: ["TEXT", "IMAGE"],
       },
     });
 
     if (!media?.url) {
-        throw new Error('Image generation failed.');
+      throw new Error("Image generation failed.");
     }
 
     return { avatarDataUri: media.url };
-  }
+  },
 );
