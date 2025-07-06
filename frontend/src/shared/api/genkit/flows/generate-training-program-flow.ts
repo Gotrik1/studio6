@@ -1,22 +1,51 @@
 'use server';
 
-import type { GenerateTrainingProgramInput, GenerateTrainingProgramOutput } from './schemas/generate-training-program-schema';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
-export type { GenerateTrainingProgramInput, GenerateTrainingProgramOutput };
+// Types are defined here to decouple from backend schemas.
+export type ExerciseDetail = {
+    name: string;
+    sets: string;
+    reps: string;
+    plannedWeight?: string;
+    isSupersetWithPrevious?: boolean;
+    technique?: string;
+};
+
+export type WorkoutDay = {
+    day: number;
+    title: string;
+    exercises: ExerciseDetail[];
+};
+
+export type GenerateTrainingProgramInput = {
+  goal: 'Набор массы' | 'Снижение веса' | 'Рельеф' | 'Сила';
+  experience: 'Новичок' | 'Средний' | 'Продвинутый';
+  daysPerWeek: number;
+  gender: 'Мужской' | 'Женский';
+  focus?: string;
+};
+
+export type GenerateTrainingProgramOutput = {
+  name: string;
+  description: string;
+  weeklySplit: WorkoutDay[];
+};
 
 export async function generateTrainingProgram(input: GenerateTrainingProgramInput): Promise<GenerateTrainingProgramOutput> {
-  const response = await fetch('/api/ai/generate-training-program', {
+  const result = await fetchWithAuth('/ai/generate-training-program', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
-    cache: 'no-store',
   });
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    console.error("Backend API error:", errorBody);
-    throw new Error(`Backend API responded with status: ${response.status}`);
+  if (!result.success) {
+    console.error("Backend API error:", result.error);
+    throw new Error(result.error || `Backend API responded with status: ${result.status}`);
   }
 
-  return response.json();
+  if (!result.data) {
+      throw new Error("No data received from backend.");
+  }
+  
+  return result.data;
 }
