@@ -1,4 +1,5 @@
 
+
 import JudgeClient from "@/app/(app)/administration/judge/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";

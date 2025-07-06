@@ -41,4 +41,3 @@ export function AdminAchievementsTab({ achievements }: AdminAchievementsTabProps
         </Card>
     );
 }
-

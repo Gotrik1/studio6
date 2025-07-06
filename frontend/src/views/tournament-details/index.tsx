@@ -50,10 +50,11 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
             <Card className="overflow-hidden">
                  <div className="relative h-48 sm:h-64">
                     <Image src={tournament.image} alt={`${tournament.name} banner`} fill className="object-cover" data-ai-hint={tournament.dataAiHint} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                    <div className="absolute bottom-6 left-6 text-white">
-                        <Badge variant={getStatusVariant(tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен')}>{tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен'}</Badge>
-                        <h1 className="font-headline text-2xl sm:text-4xl font-bold text-white shadow-lg mt-2">{tournament.name}</h1>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
+                        <div>
+                            <Badge variant={getStatusVariant(tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен')}>{tournament.status === 'ONGOING' ? 'Идет' : tournament.status === 'REGISTRATION' ? 'Регистрация' : 'Завершен'}</Badge>
+                            <h1 className="font-headline text-2xl sm:text-4xl font-bold text-white shadow-lg mt-2">{tournament.name}</h1>
+                        </div>
                     </div>
                      <div className="absolute top-4 right-4">
                         {canRegister && (
@@ -146,7 +147,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                  </TabsContent>
 
                  <TabsContent value="media" className="mt-4">
-                    <MediaTab media={tournament.media || []} />
+                    <MediaTab media={tournament.media.map(m => ({ ...m, hint: m.hint || ''})) || []} />
                 </TabsContent>
             </Tabs>
         </div>

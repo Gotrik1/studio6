@@ -12,8 +12,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
 import { Loader2 } from 'lucide-react';
-import { useToast } from '@/shared/hooks/use-toast';
-import { reportPlaygroundIssue } from '@/entities/playground/api/report';
 
 const issueSchema = z.object({
   category: z.string({ required_error: "Выберите категорию проблемы." }),
@@ -35,10 +33,10 @@ interface ReportPlaygroundIssueDialogProps {
     onOpenChange: (isOpen: boolean) => void;
     playgroundId: string;
     playgroundName: string;
+    onReportSubmit: (data: FormValues) => Promise<void>;
 }
 
-export function ReportPlaygroundIssueDialog({ isOpen, onOpenChange, playgroundId, playgroundName }: ReportPlaygroundIssueDialogProps) {
-    const { toast } = useToast();
+export function ReportPlaygroundIssueDialog({ isOpen, onOpenChange, playgroundName, onReportSubmit }: ReportPlaygroundIssueDialogProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     
     const form = useForm<FormValues>({
@@ -50,26 +48,10 @@ export function ReportPlaygroundIssueDialog({ isOpen, onOpenChange, playgroundId
 
     const onSubmit = async (data: FormValues) => {
         setIsSubmitting(true);
-        const result = await reportPlaygroundIssue({
-            playgroundId,
-            ...data
-        });
-        
-        if (result.success) {
-            toast({
-                title: "Спасибо за ваше сообщение!",
-                description: "Информация о проблеме была передана модераторам."
-            });
-            onOpenChange(false);
-            form.reset();
-        } else {
-             toast({
-                variant: "destructive",
-                title: "Ошибка",
-                description: result.error || "Не удалось отправить отчет. Пожалуйста, попробуйте еще раз."
-            });
-        }
+        await onReportSubmit(data);
         setIsSubmitting(false);
+        onOpenChange(false);
+        form.reset();
     };
 
     return (
