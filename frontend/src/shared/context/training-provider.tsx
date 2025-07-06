@@ -23,7 +23,7 @@ interface TrainingContextType {
 
 const TrainingContext = createContext<TrainingContextType | undefined>(undefined);
 
-export const TrainingProvider = ({ children }: { children: React.ReactNode }) => {
+export const TrainingProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
   const { user } = useSession();
   const [programs, setPrograms] = useState<TrainingProgram[]>([]);

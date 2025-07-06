@@ -20,7 +20,7 @@ const getMetrics = (completedWorkouts: TrainingLogEntry[]) => {
     const exerciseCounts = new Map<string, number>();
     completedWorkouts.forEach(entry => {
         entry.exercises.forEach(ex => {
-            exerciseCounts.set(ex.name, (exerciseCounts.get(ex.name) || 0) + 1);
+            exerciseCounts.set(ex.exercise.name, (exerciseCounts.get(ex.exercise.name) || 0) + 1);
         });
     });
     
@@ -72,14 +72,14 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
 
                     const estimated1RM = calculate1RM(set.loggedWeight, set.loggedReps);
                     
-                    if (!recordHistoryMap[exercise.name]) {
-                        recordHistoryMap[exercise.name] = [];
+                    if (!recordHistoryMap[exercise.exercise.name]) {
+                        recordHistoryMap[exercise.exercise.name] = [];
                     }
-                    recordHistoryMap[exercise.name].push({ date: entry.date, e1RM: estimated1RM });
+                    recordHistoryMap[exercise.exercise.name].push({ date: entry.date, e1RM: estimated1RM });
 
-                    if (!bestRecordsMap[exercise.name] || estimated1RM > bestRecordsMap[exercise.name].e1RM) {
-                        bestRecordsMap[exercise.name] = {
-                            exercise: exercise.name,
+                    if (!bestRecordsMap[exercise.exercise.name] || estimated1RM > bestRecordsMap[exercise.exercise.name].e1RM) {
+                        bestRecordsMap[exercise.exercise.name] = {
+                            exercise: exercise.exercise.name,
                             e1RM: estimated1RM,
                             weight: set.loggedWeight,
                             reps: set.loggedReps,
@@ -90,10 +90,10 @@ export const getTrainingAnalytics = (log: TrainingLogEntry[]) => {
             });
             
             if (sessionHasExercise) {
-                if (!fullHistoryMap[exercise.name]) {
-                    fullHistoryMap[exercise.name] = [];
+                if (!fullHistoryMap[exercise.exercise.name]) {
+                    fullHistoryMap[exercise.exercise.name] = [];
                 }
-                fullHistoryMap[exercise.name].push(session);
+                fullHistoryMap[exercise.exercise.name].push(session);
             }
         });
     });
