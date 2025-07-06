@@ -7,12 +7,14 @@ import {
 import { PrismaService } from "@/prisma/prisma.service";
 import { CreateTeamApplicationDto } from "./dto/create-team-application.dto";
 import { TeamsService } from "../teams/teams.service";
+import { UsersService } from "../users/users.service";
 
 @Injectable()
 export class TeamApplicationsService {
   constructor(
     private prisma: PrismaService,
     private teamsService: TeamsService,
+    private usersService: UsersService,
   ) {}
 
   async findForTeam(teamId: string, captainId: string) {
@@ -20,12 +22,25 @@ export class TeamApplicationsService {
     if (!team || team.captainId !== captainId) {
       throw new ForbiddenException("Only the captain can view applications.");
     }
-    return this.prisma.teamApplication.findMany({
+    const applications = await this.prisma.teamApplication.findMany({
       where: { teamId, status: "PENDING", tournamentId: null },
       include: {
         user: { select: { id: true, name: true, avatar: true, role: true } },
       },
     });
+
+    const applicationsWithStats = await Promise.all(
+      applications.map(async (app) => {
+        const stats = await this.usersService.getStatsForUser(app.userId);
+        const statsSummary = `Matches: ${stats.summary.matches}, Winrate: ${stats.summary.winrate}%, KDA: ${stats.summary.kda}`;
+        return {
+          ...app,
+          statsSummary,
+        };
+      }),
+    );
+
+    return applicationsWithStats;
   }
 
   async create(userId: string, dto: CreateTeamApplicationDto) {
