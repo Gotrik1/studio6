@@ -14,10 +14,13 @@ import { Clock } from "lucide-react";
 type BracketMatch = TournamentDetails['bracket']['rounds'][0]['matches'][0];
 // This type is now stricter, ensuring both teams exist for a playable match.
 type PlayableMatch = BracketMatch & {
+    id: string;
     team1: NonNullable<BracketMatch['team1']>;
     team2: NonNullable<BracketMatch['team2']>;
     date: string;
     time: string;
+    href: string;
+    score?: string;
 };
 
 interface ScheduleTabProps {
@@ -30,9 +33,9 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
     const allMatches = rounds
         .flatMap((round): BracketMatch[] => round.matches)
         // Stricter filtering to ensure both teams are present.
-        .filter((match): match is PlayableMatch => 'team1' in match && !!match.team1 && 'team2' in match && !!match.team2 && !!match.date && !!match.time);
+        .filter((match): match is PlayableMatch => 'team1' in match && !!match.team1 && 'team2' in match && !!match.team2 && !!match.date && !!match.time && !!match.id && !!match.href);
 
-    const groupedMatches = allMatches.reduce((acc: GroupedMatches, match: PlayableMatch) => {
+    const groupedMatches: GroupedMatches = allMatches.reduce((acc: GroupedMatches, match: PlayableMatch) => {
         const dateStr = format(new Date(match.date), 'yyyy-MM-dd');
         if (!acc[dateStr]) {
             acc[dateStr] = [];
