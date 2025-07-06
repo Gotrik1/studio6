@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -165,16 +166,21 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
                     </Alert>
                 )}
              </div>
+             <Separator />
+            <div>
+                <h4 className="font-semibold text-sm mb-2">Вынести решение</h4>
+                 <div className="flex flex-col sm:flex-row gap-2">
+                    <Button className="flex-1" onClick={() => onResolve(String(report.id), `победа присуждена ${report.reporter.name}`)}>
+                        <Shield className="mr-2 h-4 w-4"/>Правота за {report.reporter.name}
+                    </Button>
+                    <Button className="flex-1" variant="destructive" onClick={() => onResolve(String(report.id), 'отклонена')}>
+                        Отклонить жалобу
+                    </Button>
+                 </div>
+            </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChangeHandler(false)}>Отложить</Button>
-          <Button 
-            variant={getRecommendationVariant(aiResult?.recommendation) || 'default'}
-            onClick={() => onResolve(report.id, getRecommendationText(aiResult?.recommendation) as string)}
-            disabled={!aiResult}
-          >
-              Применить рекомендацию
-          </Button>
+          <Button variant="ghost" onClick={() => onOpenChangeHandler(false)}>Закрыть</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

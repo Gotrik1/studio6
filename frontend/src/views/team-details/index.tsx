@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState, useTransition } from 'react';
@@ -50,7 +51,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
     }
 
     const isCaptain = currentUser?.id === team.captainId;
-    const isMember = team.roster.some((member: TeamRosterMember) => member.id === currentUser?.id);
+    const isMember = team.roster.some((member) => member.id === currentUser?.id);
 
     const handleJoinTeam = () => {
         startTransition(async () => {
@@ -143,7 +144,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {team.roster.map((player: TeamRosterMember) => (
+                                    {team.roster.map((player) => (
                                         <TableRow key={player.id}>
                                             <TableCell className="font-medium flex items-center gap-2">
                                                 <Avatar className="h-8 w-8"><AvatarImage src={player.avatar || ''} /><AvatarFallback>{String(player.name).charAt(0)}</AvatarFallback></Avatar>

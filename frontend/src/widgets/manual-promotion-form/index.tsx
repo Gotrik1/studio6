@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,6 +24,7 @@ import { createPromotion, type CreatePromotionData } from '@/entities/promotion/
 import type { Sponsor } from '@/entities/sponsor/model/types';
 import { getSponsors } from '@/entities/sponsor/api/sponsors';
 import { Textarea } from '@/shared/ui/textarea';
+import { Separator } from '@/shared/ui/separator';
 
 const promotionSchema = z.object({
   name: z.string().min(5, 'Название должно быть не менее 5 символов.'),
@@ -72,7 +74,7 @@ export function ManualPromotionForm({ isEditMode }: ManualPromotionFormProps) {
     };
 
     const result = await createPromotion(promotionData);
-
+    
     if (result.success) {
         toast({
             title: 'Промо-акция создана!',
@@ -154,7 +156,7 @@ export function ManualPromotionForm({ isEditMode }: ManualPromotionFormProps) {
                     <CardFooter>
                         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isEditMode ? 'Сохранить изменения' : 'Создать промо-акцию'}
+                            <PlusCircle className="mr-2 h-4 w-4" /> {isEditMode ? 'Сохранить изменения' : 'Создать промо-акцию'}
                         </Button>
                     </CardFooter>
                 </form>

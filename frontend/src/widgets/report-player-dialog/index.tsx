@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState } from 'react';
@@ -36,12 +37,12 @@ const reportReasons = [
 
 export function ReportPlayerDialog({ isOpen, onOpenChange, reportedPlayerName, reportedPlayerId }: ReportPlayerDialogProps) {
   const { toast } = useToast();
-  const [reason, setReason] = useState('');
+  const [category, setCategory] = useState('');
   const [details, setDetails] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
-    if (!reason || !details) {
+    if (!category || !details) {
       toast({
         variant: 'destructive',
         title: 'Ошибка',
@@ -53,7 +54,7 @@ export function ReportPlayerDialog({ isOpen, onOpenChange, reportedPlayerName, r
     setIsSubmitting(true);
     const result = await createReport({
         reportedUserId: reportedPlayerId,
-        category: reason,
+        category: category,
         description: details,
     });
     
@@ -63,7 +64,7 @@ export function ReportPlayerDialog({ isOpen, onOpenChange, reportedPlayerName, r
           description: `Ваша жалоба на игрока ${reportedPlayerName} была отправлена на рассмотрение модераторам.`,
         });
         onOpenChange(false);
-        setReason('');
+        setCategory('');
         setDetails('');
     } else {
         toast({
@@ -78,7 +79,7 @@ export function ReportPlayerDialog({ isOpen, onOpenChange, reportedPlayerName, r
   
   const handleOpenChange = (open: boolean) => {
       if (!open) {
-          setReason('');
+          setCategory('');
           setDetails('');
       }
       onOpenChange(open);
@@ -99,7 +100,7 @@ export function ReportPlayerDialog({ isOpen, onOpenChange, reportedPlayerName, r
         <div className="py-4 space-y-4">
           <div>
             <Label htmlFor="reason">Причина жалобы</Label>
-            <Select value={reason} onValueChange={setReason}>
+            <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger id="reason">
                     <SelectValue placeholder="Выберите причину..." />
                 </SelectTrigger>

@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getSession } from "@/features/auth/session";
@@ -13,9 +14,6 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
     }
 
     try {
-        // This is a protected endpoint that should now exist.
-        // I will assume it exists based on the requirement of this refactoring.
-        // A real implementation might need a `GET /users/me/teams` or similar.
         const profileResult = await fetchWithAuth(`/users/${session.user.id}`);
         
         if(!profileResult.success) {
