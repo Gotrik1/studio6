@@ -439,6 +439,14 @@ export class AiController {
     return this.aiService.generateMatchPost(generateMatchPostDto);
   }
 
+  @Post('generate-nutrition-plan')
+  @HttpCode(HttpStatus.OK)
+  async generateNutritionPlan(
+    @Body() generateNutritionPlanDto: GenerateNutritionPlanDto,
+  ): Promise<GenerateNutritionPlanOutput> {
+    return this.aiService.generateNutritionPlan(generateNutritionPlanDto);
+  }
+
   @Post('analyze-holistic-performance')
   @HttpCode(HttpStatus.OK)
   async analyzeHolisticPerformance(
@@ -552,14 +560,6 @@ export class AiController {
     return this.aiService.findVenues(findVenuesDto);
   }
   
-  @Post('generate-nutrition-plan')
-  @HttpCode(HttpStatus.OK)
-  async generateNutritionPlan(
-    @Body() generateNutritionPlanDto: GenerateNutritionPlanDto,
-  ): Promise<GenerateNutritionPlanOutput> {
-    return this.aiService.generateNutritionPlan(generateNutritionPlanDto);
-  }
-
   @Post('generate-tournament-summary')
   @HttpCode(HttpStatus.OK)
   async generateTournamentSummary(
