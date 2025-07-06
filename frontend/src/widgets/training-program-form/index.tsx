@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -46,8 +45,7 @@ export type ProgramFormValues = z.infer<typeof programSchema>;
 
 interface TrainingProgramFormProps {
     initialData?: TrainingProgram;
-    onSubmit: (data: ProgramFormValues) => void;
-    isSaving: boolean;
+    onSubmit: (data: ProgramFormValues) => Promise<void>;
 }
 
 interface DaySectionProps {
@@ -124,8 +122,9 @@ const DaySection = ({ dayIndex, control, removeDay, openExercisePicker }: DaySec
 };
 
 
-export function TrainingProgramForm({ initialData, onSubmit, isSaving }: TrainingProgramFormProps) {
+export function TrainingProgramForm({ initialData, onSubmit }: TrainingProgramFormProps) {
     const [isPickerOpen, setIsPickerOpen] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentDayIndex, setCurrentDayIndex] = useState<number | null>(null);
     const [allExercises, setAllExercises] = useState<Exercise[]>([]);
     const isEditMode = !!initialData;
@@ -136,7 +135,7 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
 
     const form = useForm<ProgramFormValues>({
         resolver: zodResolver(programSchema),
-        defaultValues: initialData ? {
+        defaultValues: isEditMode ? {
              name: initialData.name,
              description: initialData.description,
              goal: initialData.goal,
@@ -165,10 +164,37 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
         },
     });
 
+    useEffect(() => {
+        if(isEditMode && initialData && allExercises.length > 0) {
+            form.reset({
+                 name: initialData.name,
+                 description: initialData.description,
+                 goal: initialData.goal,
+                 splitType: initialData.splitType,
+                 days: initialData.weeklySplit.map(day => ({
+                     title: day.title,
+                     exercises: day.exercises.map(ex => {
+                         const fullExercise = allExercises.find(e => e.name === ex.name);
+                         return {
+                            id: fullExercise?.id || `temp-${Math.random()}`,
+                            ...ex,
+                         };
+                     }),
+                 })),
+            })
+        }
+    }, [isEditMode, initialData, allExercises, form]);
+
     const { fields, append, remove } = useFieldArray({
         control: form.control,
         name: 'days',
     });
+    
+     const handleFormSubmit = async (data: ProgramFormValues) => {
+        setIsSubmitting(true);
+        await onSubmit(data);
+        setIsSubmitting(false);
+    };
 
     const openExercisePicker = (dayIndex: number) => {
         setCurrentDayIndex(dayIndex);
@@ -202,7 +228,7 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
                 </div>
             </div>
             <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6 mt-6">
+                <form onSubmit={form.handleSubmit(handleFormSubmit)} className="space-y-6 mt-6">
                     <Card>
                         <CardHeader>
                             <CardTitle>Общая информация</CardTitle>
@@ -227,8 +253,8 @@ export function TrainingProgramForm({ initialData, onSubmit, isSaving }: Trainin
 
                     <CardFooter className="flex-col sm:flex-row justify-between gap-4 p-4">
                         <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={handleAddDay}><PlusCircle className="mr-2 h-4 w-4" /> Добавить день</Button>
-                        <Button type="submit" className="w-full sm:w-auto" disabled={isSaving}>
-                            {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        <Button type="submit" className="w-full sm:w-auto" disabled={isSubmitting}>
+                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                             {isEditMode ? 'Сохранить изменения' : 'Создать программу'}
                         </Button>
                     </CardFooter>

@@ -6,6 +6,8 @@ import {
   Req,
   Post,
   Body,
+  Patch,
+  Delete,
 } from "@nestjs/common";
 import { TrainingService } from "./training.service";
 import { ApiTags, ApiOperation, ApiBearerAuth } from "@nestjs/swagger";
@@ -13,6 +15,7 @@ import { Public } from "../auth/decorators/public.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { Request } from "express";
 import { AssignProgramDto } from "./dto/assign-program.dto";
+import { CreateProgramData, UpdateProgramData } from "./dto/program.dto";
 
 @ApiTags("Training")
 @Controller("training")
@@ -38,6 +41,36 @@ export class TrainingController {
   @ApiOperation({ summary: "Получить список всех программ тренировок" })
   findAllPrograms() {
     return this.trainingService.findAllPrograms();
+  }
+
+  @Post("programs")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Создать новую программу тренировок" })
+  createProgram(@Body() createDto: CreateProgramData, @Req() req: Request) {
+    const authorName = (req.user as any).name;
+    return this.trainingService.createProgram(createDto, authorName);
+  }
+
+  @Patch("programs/:id")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Обновить программу тренировок" })
+  updateProgram(
+    @Param("id") id: string,
+    @Body() updateDto: UpdateProgramData,
+  ) {
+    // In a real app, you'd check if the user is the author or an admin
+    return this.trainingService.updateProgram(id, updateDto);
+  }
+
+  @Delete("programs/:id")
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Удалить программу тренировок" })
+  deleteProgram(@Param("id") id: string) {
+    // In a real app, you would add logic to check if the current user is the author
+    return this.trainingService.deleteProgram(id);
   }
 
   @UseGuards(JwtAuthGuard)

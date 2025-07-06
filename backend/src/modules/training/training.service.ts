@@ -1,4 +1,3 @@
-
 import {
   Injectable,
   OnModuleInit,
@@ -8,8 +7,9 @@ import {
 import { PrismaService } from "@/prisma/prisma.service";
 import { exercisesList } from "./seed-data";
 import { trainingPrograms as mockPrograms } from "./seed-data-programs";
-import type { Exercise } from "@prisma/client";
+import type { Exercise, TrainingProgram } from "@prisma/client";
 import { AssignProgramDto } from "./dto/assign-program.dto";
+import type { CreateProgramData, UpdateProgramData } from "./dto/program.dto";
 
 // Define a type for the transformed exercise to ensure type safety
 type TransformedExercise = Omit<
@@ -190,6 +190,89 @@ export class TrainingService implements OnModuleInit {
     });
   }
 
+  async createProgram(
+    data: CreateProgramData,
+    authorName: string,
+  ): Promise<TrainingProgram> {
+    const { weeklySplit, ...programData } = data;
+    return this.prisma.trainingProgram.create({
+      data: {
+        ...programData,
+        id: `manual-${Date.now()}`,
+        author: authorName,
+        isAiGenerated: false,
+        coverImage: "https://placehold.co/600x400.png",
+        coverImageHint: "gym weights",
+        weeklySplit: {
+          create: weeklySplit.map((day) => ({
+            day: day.day,
+            title: day.title,
+            exercises: {
+              create: day.exercises.map((ex) => ({
+                name: ex.name,
+                sets: ex.sets,
+                reps: ex.reps,
+                plannedWeight: ex.plannedWeight,
+                isSupersetWithPrevious: ex.isSupersetWithPrevious,
+                technique: ex.technique,
+              })),
+            },
+          })),
+        },
+      },
+    });
+  }
+
+  async updateProgram(
+    id: string,
+    data: UpdateProgramData,
+  ): Promise<TrainingProgram> {
+    const { weeklySplit, ...programData } = data;
+
+    return this.prisma.$transaction(async (tx) => {
+      const existingProgram = await tx.trainingProgram.findUnique({
+        where: { id },
+        include: { weeklySplit: { include: { exercises: true } } },
+      });
+
+      if (!existingProgram) {
+        throw new NotFoundException(`Program with ID ${id} not found.`);
+      }
+
+      for (const day of existingProgram.weeklySplit) {
+        await tx.workoutExercise.deleteMany({ where: { workoutDayId: day.id } });
+      }
+      await tx.workoutDay.deleteMany({ where: { trainingProgramId: id } });
+
+      return tx.trainingProgram.update({
+        where: { id },
+        data: {
+          ...programData,
+          weeklySplit: {
+            create: weeklySplit.map((day) => ({
+              day: day.day,
+              title: day.title,
+              exercises: {
+                create: day.exercises.map((ex) => ({
+                  name: ex.name,
+                  sets: ex.sets,
+                  reps: ex.reps,
+                  plannedWeight: ex.plannedWeight,
+                  isSupersetWithPrevious: ex.isSupersetWithPrevious,
+                  technique: ex.technique,
+                })),
+              },
+            })),
+          },
+        },
+      });
+    });
+  }
+
+  async deleteProgram(id: string): Promise<TrainingProgram> {
+    return this.prisma.trainingProgram.delete({ where: { id } });
+  }
+
   async getLogsForUser(userId: string) {
     return this.prisma.trainingLog.findMany({
       where: { userId },
@@ -208,16 +291,27 @@ export class TrainingService implements OnModuleInit {
   }
 
   async assignProgram(assignProgramDto: AssignProgramDto) {
-    this.logger.log(
-      `Assigning program ${assignProgramDto.programId} to players: ${assignProgramDto.playerIds.join(", ")}`,
-    );
-    // In a real app, you would create associations in the database here.
-    // For example:
-    // const assignments = assignProgramDto.playerIds.map(playerId => ({
-    //     userId: playerId,
-    //     trainingProgramId: assignProgramDto.programId,
-    // }));
-    // await this.prisma.userTrainingProgram.createMany({ data: assignments, skipDuplicates: true });
+    const { programId, playerIds } = assignProgramDto;
+
+    const assignments = playerIds.map((playerId) => ({
+      userId: playerId,
+      programId: programId,
+    }));
+
+    await this.prisma.userTrainingProgram.updateMany({
+      where: {
+        userId: { in: playerIds },
+      },
+      data: {
+        isActive: false,
+      },
+    });
+    
+    await this.prisma.userTrainingProgram.createMany({
+        data: assignments,
+        skipDuplicates: true
+    });
+    
     return { success: true, message: "Program assigned successfully" };
   }
 }

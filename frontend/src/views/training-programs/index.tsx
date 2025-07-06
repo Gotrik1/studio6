@@ -1,21 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
-import { useToast } from "@/shared/hooks/use-toast";
+import { useToast } from '@/shared/hooks/use-toast';
 import { Bot, CalendarDays, Dumbbell, Edit, MoreVertical, PlusCircle, Save, Target, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from '@/shared/lib/session/client';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
-import { useTraining } from '@/shared/context/training-provider';
+import { useTraining } from '@/app/providers/training-provider';
 import { Skeleton } from '@/shared/ui/skeleton';
+import type { ProgramFormValues } from '@/entities/training-program/api/programs';
 
-function ProgramCard({ program, isOwner, onSave, onDelete }: { program: TrainingProgram; isOwner: boolean; onSave: (p: TrainingProgram) => void; onDelete: (p: TrainingProgram) => void; }) {
+function ProgramCard({ program, isOwner, onSave, onDelete }: { program: TrainingProgram; isOwner: boolean; onSave: (p: TrainingProgram) => Promise<boolean>; onDelete: (p: TrainingProgram) => Promise<boolean>; }) {
     return (
         <Card className="flex flex-col overflow-hidden transition-all hover:shadow-2xl h-full group">
             <div className="relative">
@@ -97,30 +98,45 @@ export function TrainingProgramsPage() {
     const { user } = useSession();
     const { toast } = useToast();
 
-    const myPrograms = programs.filter(p => p.author === user?.name || p.author === 'Вы' || p.author === 'ProDvor AI');
-    const communityPrograms = programs.filter(p => p.author !== user?.name && p.author !== 'Вы' && p.author !== 'ProDvor AI');
+    const myPrograms = useMemo(() => {
+        return programs.filter(p => p.author === user?.name || p.author === 'Вы' || p.author === 'ProDvor AI');
+    }, [programs, user]);
+
+    const communityPrograms = useMemo(() => {
+        return programs.filter(p => p.author !== user?.name && p.author !== 'Вы' && p.author !== 'ProDvor AI');
+    }, [programs, user]);
     
-    const handleDelete = (program: TrainingProgram) => {
-        deleteProgram(program.id);
-        toast({
-            title: "Программа удалена",
-            description: `Программа "${program.name}" была успешно удалена.`,
-        });
+    const handleDelete = async (program: TrainingProgram) => {
+        const success = await deleteProgram(program.id);
+        if (success) {
+            toast({
+                title: "Программа удалена",
+                description: `Программа "${program.name}" была успешно удалена.`,
+            });
+        }
     };
 
-    const handleSaveProgram = (programToClone: TrainingProgram) => {
+    const handleSaveProgram = async (programToClone: TrainingProgram) => {
         if (!user) return;
-        const newProgram: TrainingProgram = {
-            ...programToClone,
-            id: `cloned-${programToClone.id}-${Date.now()}`,
-            author: user.name,
-            isAiGenerated: false,
-        };
-        addProgram(newProgram);
-        toast({
-            title: "Программа сохранена!",
-            description: `Программа "${programToClone.name}" была добавлена в 'Мои программы'.`,
-        });
+        
+        const programData: ProgramFormValues = {
+            name: `${programToClone.name} (Копия)`,
+            description: programToClone.description,
+            goal: programToClone.goal,
+            splitType: programToClone.splitType,
+            days: programToClone.weeklySplit.map(day => ({
+                title: day.title,
+                exercises: day.exercises.map(ex => ({...ex, id: `temp-${Math.random()}`}))
+            }))
+        }
+
+        const success = await addProgram(programData);
+        if (success) {
+            toast({
+                title: "Программа сохранена!",
+                description: `Программа "${programToClone.name}" была добавлена в 'Мои программы'.`,
+            });
+        }
     };
 
     return (
