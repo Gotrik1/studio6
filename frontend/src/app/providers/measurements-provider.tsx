@@ -1,13 +1,15 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import type { Measurement } from '@/entities/user/model/types';
 import { getMeasurements, createMeasurement } from '@/entities/measurement/api/measurements';
 import { useToast } from '@/shared/hooks/use-toast';
+import type { FetchResult } from '../lib/api-client';
 
 interface MeasurementsContextType {
   history: Measurement[];
-  addMeasurement: (data: Omit<Measurement, 'id' | 'date'>) => Promise<{ success: boolean; error?: string | undefined; data: any; status: number; }>;
+  addMeasurement: (data: Omit<Measurement, 'id' | 'date'>) => Promise<FetchResult<any>>;
   isLoading: boolean;
 }
 

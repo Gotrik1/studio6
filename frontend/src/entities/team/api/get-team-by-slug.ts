@@ -2,6 +2,7 @@
 'use server';
 
 import type { TeamDetails, TeamRosterMember } from '@/entities/team/model/types';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
 export type { TeamDetails };
 
@@ -29,35 +30,26 @@ const adaptBackendTeamToFrontend = (backendData: any): TeamDetails => {
       role: member.role,
       rating: member.rating,
       status: member.status,
+      adherence: member.adherence ?? 0,
     })),
   };
 };
 
 
 export async function getTeamBySlug(slug: string): Promise<TeamDetails | null> {
-    try {
-        const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-        if (!baseUrl) {
-            console.error('Backend URL not configured');
-            return null;
-        }
-        const res = await fetch(`${baseUrl}/teams/slug/${slug}`, {
-            cache: 'no-store',
-        });
+    const result = await fetchWithAuth(`/teams/slug/${slug}`, {
+        cache: 'no-store',
+    });
 
-        if (!res.ok) {
-            return null; // Handle 404 or other errors gracefully
-        }
-        
-        const rawTeamData = await res.json();
-        if (!rawTeamData) {
-            return null;
-        }
-
-        return adaptBackendTeamToFrontend(rawTeamData);
-
-    } catch (error) {
-        console.error(`Failed to fetch team by slug ${slug}:`, error);
+    if (!result.success) {
+        console.error(`Failed to fetch team by slug ${slug}:`, result.error);
+        return null; // Handle 404 or other errors gracefully
+    }
+    
+    const rawTeamData = result.data;
+    if (!rawTeamData) {
         return null;
     }
+
+    return adaptBackendTeamToFrontend(rawTeamData);
 }

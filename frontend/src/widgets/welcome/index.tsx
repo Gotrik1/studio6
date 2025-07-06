@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useSession } from '@/shared/lib/session/client';
-import { getOnboardingSuggestions, type OnboardingOutput } from '@/shared/api/genkit/flows/onboarding-assistant-flow';
+import { getOnboardingSuggestions, type OnboardingOutput, type OnboardingSuggestion } from '@/shared/api/genkit/flows/onboarding-assistant-flow';
 import { ArrowRight } from 'lucide-react';
 import { Skeleton } from '@/shared/ui/skeleton';
 import Link from 'next/link';
@@ -27,23 +27,12 @@ const OnboardingSkeleton = () => (
     </div>
 );
 
-export function WelcomePage() {
-    const { user, loading: userLoading } = useSession();
-    const [suggestions, setSuggestions] = useState<OnboardingOutput | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+interface WelcomePageProps {
+    initialSuggestions: OnboardingOutput | null;
+}
 
-    useEffect(() => {
-        if (user) {
-            getOnboardingSuggestions({ userName: user.name, userRole: user.role })
-                .then((data) => setSuggestions(data))
-                .catch(console.error)
-                .finally(() => setIsLoading(false));
-        } else if (!userLoading) {
-            setIsLoading(false);
-        }
-    }, [user, userLoading]);
-    
-    if (userLoading || isLoading) {
+export function WelcomePage({ initialSuggestions }: WelcomePageProps) {
+    if (!initialSuggestions) {
         return (
             <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
                 <Card className="w-full max-w-2xl p-8">
@@ -52,25 +41,19 @@ export function WelcomePage() {
             </div>
         );
     }
-    
-    if (!suggestions) {
-         return (
-             <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center text-center">
-                 <p>Не удалось загрузить рекомендации. <Button variant="link" onClick={() => window.location.reload()}>Попробовать снова</Button></p>
-             </div>
-        );
-    }
+
+    const { greeting, mainSuggestion, suggestions } = initialSuggestions;
 
     return (
         <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
             <Card className="w-full max-w-2xl animate-in fade-in-50">
                 <CardHeader>
-                    <CardTitle className="text-3xl font-headline">{suggestions.greeting}</CardTitle>
-                    <CardDescription className="text-lg">{suggestions.mainSuggestion}</CardDescription>
+                    <CardTitle className="text-3xl font-headline">{greeting}</CardTitle>
+                    <CardDescription className="text-lg">{mainSuggestion}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <h3 className="font-semibold">Ваши первые квесты:</h3>
-                     {suggestions.suggestions.map((quest) => {
+                     {suggestions.map((quest: OnboardingSuggestion) => {
                         const Icon = iconMap[quest.icon] || LucideIcons.HelpCircle;
                         return (
                              <Link href={quest.href} key={quest.title} className="block">

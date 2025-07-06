@@ -1,8 +1,11 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { moderatorUser, moderatorAchievements } from "@/shared/lib/mock-data/moderator-profile";
+import type { FullUserProfile } from '@/entities/user/model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
+
 
 const ModeratorProfile = dynamic(() => import('@/entities/user/ui/moderator-profile').then(mod => mod.ModeratorProfile), {
   loading: () => <div className="space-y-6">
@@ -14,8 +17,8 @@ const ModeratorProfile = dynamic(() => import('@/entities/user/ui/moderator-prof
 });
 
 type ModeratorProfileProps = {
-  user: typeof moderatorUser;
-  achievements: typeof moderatorAchievements;
+  user: FullUserProfile;
+  achievements: Achievement[];
 };
 
 export default function ModeratorClient({ user, achievements }: ModeratorProfileProps) {

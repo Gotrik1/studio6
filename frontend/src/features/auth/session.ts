@@ -10,7 +10,7 @@ export type SessionData = {
 
 export async function getSession(): Promise<SessionData | null> {
   const cookieStore = cookies();
-  const sessionCookie = cookieStore.get('session')?.value;
+  const sessionCookie = (await cookieStore).get('session')?.value;
   if (!sessionCookie) return null;
 
   try {

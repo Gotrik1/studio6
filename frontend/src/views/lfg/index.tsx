@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -8,7 +7,7 @@ import { Button } from '@/shared/ui/button';
 import { PlusCircle, Swords, Search, Loader2, Sparkles, Dumbbell } from 'lucide-react';
 import { LfgCreateDialog, type FormValues as LfgFormValues } from '@/widgets/lfg-create-dialog';
 import { Textarea } from '@/shared/ui/textarea';
-import { findLfgLobbies } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
+import { findLfgLobbies, type FindLfgLobbiesOutput } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
 import type { LfgLobby as LfgLobbyType } from '@/entities/lfg/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
@@ -54,7 +53,7 @@ export function LfgPage() {
         }
     };
     
-    const handleCreateLobby = async (data: LfgFormValues) => {
+    const handleCreateLobby = async (data: LfgFormValues): Promise<boolean> => {
         const [hours, minutes] = data.time.split(':').map(Number);
         const combinedDate = new Date(data.date);
         combinedDate.setHours(hours, minutes, 0, 0);
@@ -77,6 +76,7 @@ export function LfgPage() {
         } else {
              toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось создать лобби.' });
         }
+        return success;
     };
     
     const lobbiesToDisplay = useMemo(() => {

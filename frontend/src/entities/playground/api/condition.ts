@@ -1,3 +1,4 @@
+
 'use server';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
@@ -17,7 +18,7 @@ export async function getPlaygroundCondition(playgroundId: string): Promise<Play
         return result.data;
     }
 
-    if (result.status !== 404) {
+    if (!result.success && result.status !== 404) {
          console.error(`Failed to fetch playground condition for ${playgroundId}:`, result.error);
     }
 

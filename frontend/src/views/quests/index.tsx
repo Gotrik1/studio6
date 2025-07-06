@@ -1,12 +1,13 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Progress } from '@/shared/ui/progress';
 import { useToast } from '@/shared/hooks/use-toast';
-import { quests as initialQuests, type Quest } from '@/shared/config/gamification';
+import type { Quest } from '@/entities/quest/model/types';
+import { getQuests } from '@/entities/quest/api/quests';
 import { Award, Check, Repeat, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { usePDEconomy } from '@/shared/context/pd-provider';
@@ -65,13 +66,21 @@ function QuestsSection({ title, quests, onClaim, claimedQuests }: { title: strin
 export function QuestsPage() {
     const { toast } = useToast();
     const { addTransaction } = usePDEconomy();
-    const [quests, setQuests] = useState(initialQuests);
-    const [claimedQuests, setClaimedQuests] = useState<Set<string>>(new Set(initialQuests.special.filter(q => q.progress >= q.goal).map(q => q.id)));
+    const [quests, setQuests] = useState<Quest[]>([]);
+    const [claimedQuests, setClaimedQuests] = useState<Set<string>>(new Set());
+    
+    useEffect(() => {
+        getQuests().then(data => {
+            setQuests(data);
+            const initiallyClaimed = new Set(data.filter(q => q.progress >= q.goal && q.type === 'SPECIAL').map(q => q.id));
+            setClaimedQuests(initiallyClaimed);
+        });
+    }, []);
 
     const handleClaimReward = (questId: string, reward: number) => {
         setClaimedQuests(prev => new Set(prev).add(questId));
         addTransaction(`Награда за квест`, reward);
-        const quest = [...quests.daily, ...quests.weekly, ...quests.special].find(q => q.id === questId);
+        const quest = quests.find(q => q.id === questId);
         toast({
             title: `Награда получена!`,
             description: `Вы получили ${reward} PD за выполнение квеста "${quest?.title}".`
@@ -80,12 +89,8 @@ export function QuestsPage() {
     
     // In a real app, this would be a server-side reset based on cron jobs
     const handleResetDailies = () => {
-        setQuests(prev => ({
-            ...prev,
-            daily: prev.daily.map(q => ({...q, progress: 0}))
-        }));
-        // Remove daily quests from claimed set
-        const dailyIds = new Set(quests.daily.map(q => q.id));
+        setQuests(prev => prev.map(q => q.type === 'DAILY' ? {...q, progress: 0} : q));
+        const dailyIds = new Set(quests.filter(q => q.type === 'DAILY').map(q => q.id));
         setClaimedQuests(prev => new Set([...prev].filter(id => !dailyIds.has(id))));
         toast({ title: 'Ежедневные квесты обновлены!' });
     }
@@ -115,13 +120,13 @@ export function QuestsPage() {
                     <TabsTrigger value="special">Специальные</TabsTrigger>
                 </TabsList>
                 <TabsContent value="daily" className="mt-6">
-                    <QuestsSection title="Ежедневные" quests={quests.daily} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+                    <QuestsSection title="Ежедневные" quests={quests.filter(q => q.type === 'DAILY')} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
                 </TabsContent>
                 <TabsContent value="weekly" className="mt-6">
-                    <QuestsSection title="Еженедельные" quests={quests.weekly} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+                    <QuestsSection title="Еженедельные" quests={quests.filter(q => q.type === 'WEEKLY')} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
                 </TabsContent>
                 <TabsContent value="special" className="mt-6">
-                    <QuestsSection title="Специальные" quests={quests.special} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+                    <QuestsSection title="Специальные" quests={quests.filter(q => q.type === 'SPECIAL')} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
                 </TabsContent>
             </Tabs>
         </div>

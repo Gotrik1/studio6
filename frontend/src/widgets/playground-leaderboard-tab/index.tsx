@@ -9,7 +9,7 @@ import type { Playground } from '@/entities/playground/model/types';
 export function PlaygroundLeaderboardTab({ playground }: { playground: Playground }) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <PlaygroundLeaderboard />
+            <PlaygroundLeaderboard playgroundId={playground.id} />
             <AiPlaygroundChallenge playground={playground} />
         </div>
     );

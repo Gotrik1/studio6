@@ -31,8 +31,9 @@ export function TeamScheduleTab() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const fetchPractices = useCallback(async () => {
+        if (!teamId) return;
         setIsLoading(true);
-        const result = await getTeamPractices(teamId);
+        const result = await getTeamPractices(teamId as string);
         if (result.success) {
             setPractices(result.data.map((p: any) => ({
                 id: p.id,
@@ -66,7 +67,7 @@ export function TeamScheduleTab() {
             playgroundId: data.playgroundId,
         };
         
-        const result = await createTeamPractice(teamId, payload);
+        const result = await createTeamPractice(teamId as string, payload);
         if (result.success) {
             toast({ title: 'Тренировка запланирована!', description: 'Новая тренировка добавлена в расписание.' });
             await fetchPractices();

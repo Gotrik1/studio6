@@ -1,10 +1,12 @@
+
 'use server';
 
 import { getSession } from "@/features/auth/session";
 
-type FetchResult<T> = {
+export type FetchResult<T> = {
     success: true;
     data: T;
+    status: number;
 } | {
     success: false;
     error: string;
@@ -42,8 +44,8 @@ export async function fetchWithAuth<T = any>(url: string, options: RequestInit =
   }
   
   if (response.status === 204 || response.headers.get('content-length') === '0') {
-    return { success: true, data: null as T };
+    return { success: true, data: null as T, status: response.status };
   }
 
-  return { success: true, data: await response.json() };
+  return { success: true, data: await response.json(), status: response.status };
 }

@@ -1,8 +1,10 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { managerUser, managerAchievements } from "@/shared/lib/mock-data/manager-profile";
+import type { FullUserProfile } from '@/entities/user/model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
 
 const ManagerProfile = dynamic(() => import('@/entities/user/ui/manager-profile').then(mod => mod.ManagerProfile), {
   loading: () => <div className="space-y-6">
@@ -14,8 +16,8 @@ const ManagerProfile = dynamic(() => import('@/entities/user/ui/manager-profile'
 });
 
 type ManagerProfileProps = {
-  user: typeof managerUser;
-  achievements: typeof managerAchievements;
+  user: FullUserProfile;
+  achievements: Achievement[];
 };
 
 export default function ManagerClient({ user, achievements }: ManagerProfileProps) {

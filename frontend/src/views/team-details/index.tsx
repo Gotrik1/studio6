@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useTransition, useEffect } from 'react';
@@ -72,7 +71,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                         <div className="absolute bottom-6 left-6 flex items-end gap-4">
                             <Avatar className="h-24 w-24 border-4 border-background">
-                                <AvatarImage src={team.logo || ''} alt={team.name} data-ai-hint={team.dataAiHint || ''} />
+                                <AvatarImage src={team.logo || undefined} alt={team.name} data-ai-hint={team.dataAiHint || ''} />
                                 <AvatarFallback className="text-3xl">{team.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div>

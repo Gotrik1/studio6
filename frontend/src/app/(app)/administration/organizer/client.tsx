@@ -1,10 +1,11 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { FullUserProfile } from '@/entities/user/api/get-user';
+import type { FullUserProfile } from '@/entities/user/model/types';
 import type { TournamentCrm } from '@/entities/user/model/types';
-import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import type { Achievement } from '@/entities/achievement/model/types';
 
 
 const OrganizerProfile = dynamic(() => import('@/entities/user/ui/organizer-profile').then(mod => mod.OrganizerProfile), {
@@ -18,7 +19,7 @@ const OrganizerProfile = dynamic(() => import('@/entities/user/ui/organizer-prof
 
 type OrganizerProfileProps = {
   user: FullUserProfile;
-  achievements: typeof AchievementsArray;
+  achievements: Achievement[];
   tournaments: TournamentCrm[];
 };
 

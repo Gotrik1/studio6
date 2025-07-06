@@ -1,16 +1,16 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
-import type { Playground } from '@/entities/playground/model/types';
+import type { Playground, KingTeam } from '@/entities/playground/model/types';
 import { MapPin, Check, Star, AlertTriangle, Crown } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
-import type { Team } from '@/entities/team/model/types';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/shared/ui/tooltip';
 
-export function PlaygroundCard({ playground, kingTeam, isLive }: { playground: Playground, kingTeam?: Team | null, isLive?: boolean }) {
+export function PlaygroundCard({ playground, kingTeam, isLive }: { playground: Playground, kingTeam?: KingTeam | null, isLive?: boolean }) {
     return (
         <Link href={`/playgrounds/${playground.id}`} className="block h-full">
             <Card className="h-full overflow-hidden transition-all hover:shadow-lg hover:border-primary">
@@ -32,7 +32,7 @@ export function PlaygroundCard({ playground, kingTeam, isLive }: { playground: P
                                     <TooltipTrigger asChild>
                                         <div className="relative">
                                             <Avatar className="h-10 w-10 border-2 border-amber-400">
-                                                <AvatarImage src={kingTeam.logo!} alt={kingTeam.name} />
+                                                <AvatarImage src={kingTeam.logo || undefined} alt={kingTeam.name} />
                                                 <AvatarFallback>{kingTeam.name.charAt(0)}</AvatarFallback>
                                             </Avatar>
                                             <div className="absolute -top-2 -left-2 rotate-[-30deg]">

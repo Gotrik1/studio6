@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from "@/shared/lib/api-client";
@@ -13,7 +14,9 @@ export async function getFeed(): Promise<Activity[]> {
         }
     });
     if (!result.success || !Array.isArray(result.data)) {
-        console.error("Failed to fetch feed", result.error);
+        if (!result.success) {
+            console.error("Failed to fetch feed", result.error);
+        }
         return [];
     }
     

@@ -1,7 +1,7 @@
 
 'use server';
 
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { fetchWithAuth, type FetchResult } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 import type { PlaygroundReview } from '../model/types';
 
@@ -10,14 +10,16 @@ export type CreateReviewData = {
     comment: string;
 };
 
-export async function getReviews(playgroundId: string) {
+export async function getReviews(playgroundId: string): Promise<FetchResult<PlaygroundReview[]>> {
   const result = await fetchWithAuth(`/playgrounds/${playgroundId}/reviews`, {
     next: { tags: [`reviews-${playgroundId}`] }
   });
   
   if (!result.success || !Array.isArray(result.data)) {
-      console.error('Failed to fetch reviews:', result.error);
-      return { success: false, error: result.error, data: [] };
+      if(!result.success) {
+        console.error('Failed to fetch reviews:', result.error);
+      }
+      return { success: false, error: result.success ? 'Invalid data format' : result.error, status: result.success ? 500 : result.status, data: [] };
   }
 
   // Adapter to map backend data to frontend type
@@ -33,7 +35,7 @@ export async function getReviews(playgroundId: string) {
       },
   }));
 
-  return { success: true, data: formattedData };
+  return { success: true, data: formattedData, status: result.status };
 }
 
 export async function createReview(playgroundId: string, data: CreateReviewData) {

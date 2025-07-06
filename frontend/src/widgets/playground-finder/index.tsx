@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -10,8 +11,8 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { PlaygroundCard } from '@/widgets/playground-card';
-import { getKingOfTheCourt } from '@/shared/lib/get-king-of-the-court';
-import type { Playground } from '@/entities/playground/model/types';
+import type { Playground, KingTeam } from '@/entities/playground/model/types';
+import type { Team } from '@/entities/team/model/types';
 
 export function PlaygroundFinder() {
     const { toast } = useToast();
@@ -101,13 +102,13 @@ export function PlaygroundFinder() {
                 {suggestedPlaygrounds && suggestedPlaygrounds.length > 0 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in-50">
                         {suggestedPlaygrounds.map(playground => {
-                            const kingTeam = getKingOfTheCourt(playground.id);
+                            const kingTeam = playground.kingOfTheCourt;
                             const isLive = livePlaygrounds.has(playground.id);
                             return (
                                  <PlaygroundCard 
                                     key={playground.id} 
                                     playground={playground as any} // Cast because of slight type differences
-                                    kingTeam={kingTeam}
+                                    kingTeam={kingTeam as KingTeam | null}
                                     isLive={isLive}
                                 />
                             )

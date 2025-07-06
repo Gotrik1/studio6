@@ -1,8 +1,11 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { adminUser, adminAchievements } from "@/shared/lib/mock-data/admin-profile";
+import type { FullUserProfile } from '@/entities/user/model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
+
 
 const AdminProfile = dynamic(() => import('@/entities/user/ui/admin-profile').then(mod => mod.AdminProfile), {
   loading: () => <div className="space-y-6">
@@ -14,8 +17,8 @@ const AdminProfile = dynamic(() => import('@/entities/user/ui/admin-profile').th
 });
 
 type AdminProfileProps = {
-  user: typeof adminUser;
-  achievements: typeof adminAchievements;
+  user: FullUserProfile;
+  achievements: Achievement[];
 };
 
 export default function AdministratorClient({ user, achievements }: AdminProfileProps) {

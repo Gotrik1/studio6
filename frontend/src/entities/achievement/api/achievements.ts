@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -8,6 +9,8 @@ export async function getAchievementsForUser(userId: string): Promise<Achievemen
     if (result.success && Array.isArray(result.data)) {
         return result.data;
     }
-    console.error(`Failed to fetch achievements for user ${userId}:`, result.error);
+    if (!result.success) {
+        console.error(`Failed to fetch achievements for user ${userId}:`, result.error);
+    }
     return [];
 }

@@ -1,4 +1,5 @@
 
+'use client';
 
 import {
   Avatar,
@@ -30,7 +31,7 @@ export function UserNav({ user }: { user: User }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.avatar || ''} alt={user?.name || ''} />
+            <AvatarImage src={user?.avatar || undefined} alt={user?.name || ''} />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
         </Button>

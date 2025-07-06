@@ -3,8 +3,9 @@
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { fanUser, fanAchievements } from "@/shared/lib/mock-data/fan-profile";
 import type { Team } from '@/entities/team/model/types';
+import type { FullUserProfile } from '@/entities/user/model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
 
 const FanProfile = dynamic(() => import('@/entities/user/ui/fan-profile').then(mod => mod.FanProfile), {
   loading: () => <div className="space-y-6">
@@ -16,8 +17,8 @@ const FanProfile = dynamic(() => import('@/entities/user/ui/fan-profile').then(m
 });
 
 type FanClientProps = {
-  user: typeof fanUser;
-  achievements: typeof fanAchievements;
+  user: FullUserProfile;
+  achievements: Achievement[];
   favoriteTeams: Team[];
   isCurrentUser: boolean;
 };

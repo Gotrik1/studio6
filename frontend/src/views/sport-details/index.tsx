@@ -18,7 +18,8 @@ import { Star } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { useToast } from '@/shared/hooks/use-toast';
 import { getPlayerLeaderboard, type PlayerLeaderboardItem } from '@/entities/leaderboard/api/get-player-leaderboard';
-import { getTeamLeaderboard, type TeamLeaderboardItem } from '@/entities/team/api/get-leaderboard';
+import { getTeamLeaderboard } from '@/entities/team/api/get-leaderboard';
+import type { TeamLeaderboardItem } from '@/entities/leaderboard/model/types';
 import { fetchTournaments, type Tournament } from '@/entities/tournament/api/get-tournaments';
 import { Skeleton } from '@/shared/ui/skeleton';
 
