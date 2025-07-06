@@ -1,22 +1,42 @@
 'use server';
 
-import type { GenerateTournamentSummaryInput, GenerateTournamentSummaryOutput } from './schemas/generate-tournament-summary-schema';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 
-export type { GenerateTournamentSummaryInput, GenerateTournamentSummaryOutput };
+// Define types locally to decouple from backend schemas.
+export type TournamentMatchResult = {
+    team1: string;
+    team2: string;
+    score: string;
+};
+
+export type GenerateTournamentSummaryInput = {
+  tournamentName: string;
+  tournamentGame: string;
+  finalMatch: TournamentMatchResult;
+  champion: string;
+};
+
+export type GenerateTournamentSummaryOutput = {
+  summaryArticle: string;
+  mvp: {
+    name: string;
+    reason: string;
+  };
+  socialMediaPost: string;
+  imagePrompts: string[];
+};
 
 export async function generateTournamentSummary(input: GenerateTournamentSummaryInput): Promise<GenerateTournamentSummaryOutput> {
-  const response = await fetch('/api/ai/generate-tournament-summary', {
+  const result = await fetchWithAuth('/ai/generate-tournament-summary', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(input),
     cache: 'no-store',
   });
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    console.error("Backend API error:", errorBody);
-    throw new Error(`Backend API responded with status: ${response.status}`);
+  if (!result.success) {
+    console.error("Backend API error:", result.error);
+    throw new Error(`Backend API responded with status: ${result.status}`);
   }
 
-  return response.json();
+  return result.data;
 }
