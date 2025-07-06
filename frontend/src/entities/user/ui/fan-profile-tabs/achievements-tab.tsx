@@ -2,8 +2,9 @@
 'use client';
 
 import { Card, CardContent } from "@/shared/ui/card";
-import type { fanAchievements as FanAchievementsArray } from "@/shared/lib/mock-data/fan-profile";
 import { Star, Ticket, MessageSquare, Heart, UserPlus, Award } from "lucide-react";
+import type { Achievement } from '@/entities/achievement/model/types';
+
 
 const iconComponents = {
     UserPlus,
@@ -14,7 +15,6 @@ const iconComponents = {
     Award,
 };
 
-type Achievement = (typeof FanAchievementsArray)[0];
 
 interface FanAchievementsTabProps {
     achievements: Achievement[];

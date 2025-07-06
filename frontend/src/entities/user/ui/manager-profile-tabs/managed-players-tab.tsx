@@ -17,7 +17,7 @@ export function ManagedPlayersTab() {
 
     useEffect(() => {
         getUsers().then(users => {
-            setPlayers(users.slice(0, 3).map(u => ({ ...u, mainSport: 'Valorant' }))); // Add mock game
+            setPlayers(users.slice(0, 3).map(u => ({ ...u, mainSport: 'Valorant' } as any))); // Add mock game
             setLoading(false);
         });
     }, []);
@@ -47,7 +47,7 @@ export function ManagedPlayersTab() {
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-9 w-9">
-                                            <AvatarImage src={player.avatar} alt={player.name} />
+                                            <AvatarImage src={player.avatar || ''} alt={player.name} />
                                             <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <span className="font-medium">{player.name}</span>

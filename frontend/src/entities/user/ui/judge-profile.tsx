@@ -14,8 +14,8 @@ import { Wand2, ImageIcon } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import Link from 'next/link';
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
-import type { FullUserProfile } from '../api/get-user';
-import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import type { FullUserProfile } from '../model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
 
 const JudgeStatsTab = dynamic(() => import('@/entities/user/ui/judge-profile-tabs/stats-tab').then(mod => mod.JudgeStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -32,7 +32,7 @@ const JudgedMatchesTab = dynamic(() => import('@/widgets/judge-profile-tabs/judg
 
 type JudgeProfileProps = {
   user: FullUserProfile;
-  achievements: typeof AchievementsArray;
+  achievements: Achievement[];
 };
 
 export function JudgeProfile({ user, achievements }: JudgeProfileProps) {

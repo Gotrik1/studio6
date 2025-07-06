@@ -14,9 +14,9 @@ import { useState } from 'react';
 import { Wand2, ImageIcon } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
-import type { FullUserProfile } from '@/entities/user/api/get-user';
-import type { TournamentCrm } from '@/entities/user/model/types';
-import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import type { FullUserProfile, TournamentCrm } from '../model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
+
 
 const OrganizerStatsTab = dynamic(() => import('@/entities/user/ui/organizer-profile-tabs/stats-tab').then(mod => mod.OrganizerStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -33,7 +33,7 @@ const ManagedTournamentsTab = dynamic(() => import('@/entities/user/ui/organizer
 
 type OrganizerProfileProps = {
   user: FullUserProfile;
-  achievements: typeof AchievementsArray;
+  achievements: Achievement[];
   tournaments: TournamentCrm[];
 };
 
@@ -118,7 +118,7 @@ export function OrganizerProfile({ user, achievements, tournaments }: OrganizerP
       <UserAvatarGeneratorDialog
             isOpen={isAvatarDialogOpen}
             onOpenChange={setIsAvatarDialogOpen}
-            currentAvatar={avatar}
+            currentAvatar={avatar || ''}
             onAvatarSave={setAvatar}
         />
         <ProfileBannerGeneratorDialog

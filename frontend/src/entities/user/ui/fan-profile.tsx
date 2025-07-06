@@ -11,8 +11,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Wand2, ImageIcon } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
-import type { fanUser, fanAchievements } from "@/shared/lib/mock-data/fan-profile";
 import type { Team } from '@/entities/team/model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
+import type { FullUserProfile } from '../model/types';
 import Image from "next/image";
 import Link from 'next/link';
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
@@ -33,14 +34,14 @@ const FavoriteTeamsTab = dynamic(() => import('@/entities/user/ui/fan-profile-ta
 
 
 type FanProfileProps = {
-  user: typeof fanUser;
-  achievements: typeof fanAchievements;
+  user: FullUserProfile;
+  achievements: Achievement[];
   favoriteTeams: Team[];
   isCurrentUser: boolean;
 };
 
 export function FanProfile({ user, achievements, favoriteTeams, isCurrentUser }: FanProfileProps) {
-  const initials = user.name.split(' ').map((n) => n[0]).join('');
+  const initials = user.name.split(' ').map((n: string) => n[0]).join('');
   const [avatar, setAvatar] = useState(user.avatar);
   const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
@@ -69,7 +70,7 @@ export function FanProfile({ user, achievements, favoriteTeams, isCurrentUser }:
           <div className="flex flex-col items-center gap-6 -mt-20 text-center sm:flex-row sm:items-end sm:text-left">
             <div className="relative shrink-0">
                 <Avatar className="h-32 w-32 border-4 border-background bg-background shadow-lg">
-                    <AvatarImage src={avatar} alt={user.name} data-ai-hint="sports fan" />
+                    <AvatarImage src={avatar || ''} alt={user.name} data-ai-hint="sports fan" />
                     <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
                 </Avatar>
                  {isCurrentUser && (
@@ -130,7 +131,7 @@ export function FanProfile({ user, achievements, favoriteTeams, isCurrentUser }:
       <UserAvatarGeneratorDialog
         isOpen={isAvatarDialogOpen}
         onOpenChange={setIsAvatarDialogOpen}
-        currentAvatar={avatar}
+        currentAvatar={avatar || ''}
         onAvatarSave={setAvatar}
       />
       <ProfileBannerGeneratorDialog

@@ -51,7 +51,7 @@ export function TeamManagementPage() {
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
     const [isActionPending, startTransition] = useTransition();
     
-    const teamPlayers: CoachedPlayer[] = team?.roster.map(p => ({
+    const teamPlayers: CoachedPlayer[] = team?.roster.map((p: any) => ({
         id: p.id,
         name: p.name,
         avatar: p.avatar,
@@ -95,7 +95,6 @@ export function TeamManagementPage() {
     useEffect(() => {
         fetchData();
     }, [fetchData]);
-
 
     const handleAccept = (request: JoinRequest) => {
         startTransition(async () => {

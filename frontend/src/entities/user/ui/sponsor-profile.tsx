@@ -1,3 +1,4 @@
+
 'use client';
 
 import dynamic from 'next/dynamic';
@@ -13,10 +14,10 @@ import { useState } from 'react';
 import { Wand2, ImageIcon } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
-import type { FullUserProfile } from '../api/get-user';
-import type { achievements as AchievementsArray } from "@/shared/lib/mock-data/profiles";
+import type { FullUserProfile } from '../model/types';
 import type { SponsoredTeam } from '@/entities/sponsorship/model/types';
 import type { Promotion } from '@/entities/promotion/model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
 
 const SponsorStatsTab = dynamic(() => import('@/entities/user/ui/sponsor-profile-tabs/stats-tab').then(mod => mod.SponsorStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -38,7 +39,7 @@ const ActiveCampaignsTab = dynamic(() => import('@/entities/user/ui/sponsor-prof
 
 type SponsorProfileProps = {
   user: FullUserProfile;
-  achievements: typeof AchievementsArray;
+  achievements: Achievement[];
   activeCampaigns: Promotion[];
   sponsoredTeams: SponsoredTeam[];
 };

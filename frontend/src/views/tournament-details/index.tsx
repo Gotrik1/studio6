@@ -13,7 +13,6 @@ import { TournamentBracket } from "@/widgets/tournament-bracket";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { ScheduleTab } from "@/widgets/match-details-tabs/ui/schedule-tab";
 import { MediaTab } from "@/widgets/match-details-tabs/ui/media-tab";
-import { AiAnalysisTab } from "@/widgets/match-details-tabs/ui/ai-analysis-tab";
 import { useTransition } from "react";
 import { useToast } from "@/shared/hooks/use-toast";
 import { registerTeamForTournamentAction } from "@/entities/tournament/api/register-team";
@@ -85,7 +84,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                                <CardHeader><CardTitle>Информация о турнире</CardTitle></CardHeader>
                                <CardContent className="space-y-4 text-sm">
                                    <div className="flex items-center gap-4"><Calendar className="mr-2 h-4 w-4 text-muted-foreground" /> <p><strong>Даты проведения:</strong> {tournament.schedule.finals}</p></div>
-                                   <div className="flex items-center gap-4"><Trophy className="mr-2 h-4 w-4 text-muted-foreground" /><p><strong>Призовой фонд:</strong> {tournament.prizePool}</p></div>
+                                   <div className="flex items-center gap-4"><Trophy className="mr-2 h-4 w-4 text-muted-foreground" /><p><strong>Призовой фонд:</strong> {String(tournament.prizePool)}</p></div>
                                    <div className="flex items-center gap-4"><Users className="mr-2 h-4 w-4 text-muted-foreground" /><p><strong>Количество команд:</strong> {tournament.teamsCount}</p></div>
                                </CardContent>
                            </Card>
@@ -148,7 +147,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                  </TabsContent>
 
                  <TabsContent value="media" className="mt-4">
-                    <MediaTab media={tournament.media} />
+                    <MediaTab media={tournament.media.map(m => ({ ...m, hint: m.hint || ''}))} />
                 </TabsContent>
             </Tabs>
         </div>

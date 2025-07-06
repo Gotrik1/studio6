@@ -9,8 +9,8 @@ import { Button } from "@/shared/ui/button";
 import { Eye, BrainCircuit } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import Link from "next/link";
-import { PlayerAnalysisDialog } from "@/entities/player/ui/player-analysis-dialog";
-import type { CoachedPlayer } from '@/widgets/team-training-analytics';
+import { PlayerAnalysisDialog } from "@/entities/user/ui/player-analysis-dialog";
+import type { CoachedPlayer } from '@/entities/user/model/types';
 
 
 interface MyPlayersTabProps {
@@ -54,7 +54,7 @@ export function MyPlayersTab({ players }: MyPlayersTabProps) {
                                     AI-Анализ
                                 </Button>
                                 <Button size="sm" asChild>
-                                    <Link href="/administration/player">
+                                    <Link href={`/profiles/player/${player.id}`}>
                                         <Eye className="mr-2 h-4 w-4" />
                                         Профиль
                                     </Link>
