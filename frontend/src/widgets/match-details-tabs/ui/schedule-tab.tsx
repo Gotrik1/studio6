@@ -10,6 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import Link from "next/link";
 import { Clock } from "lucide-react";
+import { useMemo } from 'react';
 
 type BracketMatch = TournamentDetails['bracket']['rounds'][0]['matches'][0];
 // This type is now stricter, ensuring both teams exist for a playable match.
@@ -30,19 +31,27 @@ interface ScheduleTabProps {
 type GroupedMatches = Record<string, PlayableMatch[]>;
 
 export function ScheduleTab({ rounds }: ScheduleTabProps) {
-    const allMatches = rounds
-        .flatMap((round): BracketMatch[] => round.matches)
-        // Stricter filtering to ensure both teams are present.
-        .filter((match): match is PlayableMatch => 'team1' in match && !!match.team1 && 'team2' in match && !!match.team2 && !!match.date && !!match.time && !!match.id && !!match.href);
 
-    const groupedMatches: GroupedMatches = allMatches.reduce((acc: GroupedMatches, match: PlayableMatch) => {
+    const allMatches = useMemo(() => rounds
+        .flatMap((round): BracketMatch[] => round.matches)
+        .filter((match): match is PlayableMatch => 
+            !!match &&
+            'team1' in match && !!match.team1 &&
+            'team2' in match && !!match.team2 &&
+            'date' in match && !!match.date &&
+            'time' in match && !!match.time &&
+            'id' in match && !!match.id &&
+            'href' in match && !!match.href
+        ), [rounds]);
+
+    const groupedMatches = useMemo(() => allMatches.reduce((acc: GroupedMatches, match: PlayableMatch) => {
         const dateStr = format(new Date(match.date), 'yyyy-MM-dd');
         if (!acc[dateStr]) {
             acc[dateStr] = [];
         }
         acc[dateStr].push(match);
         return acc;
-    }, {} as GroupedMatches);
+    }, {} as GroupedMatches), [allMatches]);
 
     const sortedDates = Object.keys(groupedMatches).sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
 
@@ -67,7 +76,7 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
             </CardHeader>
             <CardContent>
                  <Accordion type="multiple" defaultValue={sortedDates.map(d => d)} className="w-full">
-                    {sortedDates.map(date => (
+                    {sortedDates.map((date: string) => (
                         <AccordionItem value={date} key={date}>
                             <AccordionTrigger className="text-lg font-semibold">
                                 {format(new Date(date), 'EEEE, d MMMM yyyy', { locale: ru })}

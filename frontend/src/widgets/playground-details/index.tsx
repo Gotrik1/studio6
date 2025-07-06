@@ -5,7 +5,7 @@
 import { useState, useEffect, useCallback, type Dispatch, type SetStateAction } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
-import type { Playground, PlaygroundReview } from '@/entities/playground/model/types';
+import type { Playground } from '@/entities/playground/model/types';
 import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
@@ -30,6 +30,7 @@ import type { PlaygroundConditionReport } from '@/entities/playground/api/condit
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
 import { reportPlaygroundIssue } from '@/entities/playground/api/report';
+import type { PlaygroundReview } from '@/entities/playground/model/types';
 
 
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
@@ -140,7 +141,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         }
     };
     
-    const handleReportSubmit = async (data: { category: string; comment: string }) => {
+    const handleReportSubmit = async (data: { category: string; comment: string; }) => {
         const result = await reportPlaygroundIssue({
             playgroundId: playground.id,
             ...data
@@ -153,7 +154,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
             });
         } else {
              toast({
-                variant: 'destructive',
+                variant: "destructive",
                 title: "Ошибка",
                 description: "Не удалось отправить отчет. Пожалуйста, попробуйте еще раз."
             })
