@@ -88,6 +88,13 @@ export class ChatService implements OnModuleInit {
             },
           },
         },
+        team: {
+          select: {
+            id: true,
+            logo: true,
+            dataAiHint: true,
+          },
+        },
       },
     });
 
@@ -95,13 +102,16 @@ export class ChatService implements OnModuleInit {
       const lastMessage = chat.messages[0];
       const otherParticipant = chat.participants[0];
 
-      // Explicitly map fields to match the frontend `Contact` type.
-      // This adapter pattern ensures consistency even if backend schemas change.
       const contactName = chat.name || otherParticipant?.name || "Unknown Chat";
       const contactAvatar =
         chat.type === "GROUP"
-          ? "https://placehold.co/100x100.png"
+          ? chat.team?.logo || "https://placehold.co/100x100.png"
           : otherParticipant?.avatar || "https://placehold.co/100x100.png";
+
+      const avatarHint =
+        chat.type === "GROUP"
+          ? chat.team?.dataAiHint || "team logo"
+          : "player avatar";
 
       const latestMessage = lastMessage
         ? `${lastMessage.author.name}: ${lastMessage.content}`
@@ -112,11 +122,11 @@ export class ChatService implements OnModuleInit {
         : chat.createdAt.toISOString();
 
       return {
-        id: String(chat.id), // Ensure ID is a string
-        teamId: chat.type === "GROUP" ? chat.id : "",
+        id: String(chat.id),
+        teamId: chat.type === "GROUP" ? chat.team?.id || "" : "",
         name: contactName,
         avatar: contactAvatar,
-        avatarHint: chat.type === "GROUP" ? "team logo" : "player avatar",
+        avatarHint: avatarHint,
         lastMessage: latestMessage,
         timestamp: latestTimestamp,
         isOnline: true, // Mocked for now
