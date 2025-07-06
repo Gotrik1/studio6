@@ -3,10 +3,10 @@
 
 // These types are defined locally to decouple from backend schemas.
 // In a real project, these could be in a shared types package.
-import type { LucideIcon } from 'lucide-react';
+import { icons } from 'lucide-react';
 
 export type OnboardingSuggestion = {
-    icon: keyof typeof LucideIcon;
+    icon: keyof typeof icons;
     title: string;
     description: string;
     href: string;

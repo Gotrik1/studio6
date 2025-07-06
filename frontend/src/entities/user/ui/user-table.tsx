@@ -67,7 +67,7 @@ export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onE
                             <TableRow key={user.id}>
                                 <TableCell>
                                     <Avatar>
-                                        <AvatarImage src={user.avatar} alt={user.name} />
+                                        <AvatarImage src={user.avatar || undefined} alt={user.name} />
                                         <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                 </TableCell>

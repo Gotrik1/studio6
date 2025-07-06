@@ -6,15 +6,16 @@ import Image from 'next/image';
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent } from "@/shared/ui/card";
+import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
-import type { adminUser, adminAchievements } from "@/shared/lib/mock-data/admin-profile";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useState } from 'react';
 import { Wand2, ImageIcon } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
-import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
 import Link from 'next/link';
+import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
+import type { FullUserProfile } from '../model/types';
+import type { Achievement } from '@/entities/achievement/model/types';
 
 const AdminStatsTab = dynamic(() => import('@/entities/user/ui/admin-profile-tabs/stats-tab').then(mod => mod.AdminStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -26,12 +27,12 @@ const AdminAchievementsTab = dynamic(() => import('@/entities/user/ui/admin-prof
 });
 
 type AdminProfileProps = {
-  user: typeof adminUser;
-  achievements: typeof adminAchievements;
+  user: FullUserProfile;
+  achievements: Achievement[];
 };
 
 export function AdminProfile({ user, achievements }: AdminProfileProps) {
-  const initials = user.name.split(' ').map((n) => n[0]).join('');
+  const initials = user.name.split(' ').map((n: string) => n[0]).join('');
   const [avatar, setAvatar] = useState(user.avatar);
   const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
@@ -58,7 +59,7 @@ export function AdminProfile({ user, achievements }: AdminProfileProps) {
           <div className="flex items-end gap-6 -mt-20">
                <div className="relative shrink-0">
                   <Avatar className="h-32 w-32 border-4 border-background bg-background">
-                      <AvatarImage src={avatar} alt={user.name} data-ai-hint="administrator avatar" />
+                      <AvatarImage src={avatar || undefined} alt={user.name} data-ai-hint="administrator avatar" />
                       <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
                   </Avatar>
                    <Button
@@ -107,7 +108,7 @@ export function AdminProfile({ user, achievements }: AdminProfileProps) {
       <UserAvatarGeneratorDialog
             isOpen={isAvatarDialogOpen}
             onOpenChange={setIsAvatarDialogOpen}
-            currentAvatar={avatar}
+            currentAvatar={avatar || ''}
             onAvatarSave={setAvatar}
         />
         <ProfileBannerGeneratorDialog

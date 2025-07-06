@@ -3,15 +3,16 @@ import { getPromotions, type Promotion } from "@/entities/promotion/api/promotio
 import { getSponsorshipDashboardData, type SponsoredTeam } from "@/entities/sponsorship/api/sponsorship";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";
-import { achievements } from "@/shared/lib/mock-data/profiles";
+import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
 
 
 export default async function SponsorProfileRoute({ params }: { params: { id: string } }) {
     // Fetch all necessary data in parallel
-    const [profileData, promotionsData, sponsorshipData] = await Promise.all([
+    const [profileData, promotionsData, sponsorshipData, achievements] = await Promise.all([
         getPlayerProfile(params.id),
         getPromotions(),
-        getSponsorshipDashboardData()
+        getSponsorshipDashboardData(),
+        getAchievementsForUser(params.id)
     ]);
 
     if (!profileData || !profileData.user || profileData.user.role !== 'Спонсор') {
@@ -29,7 +30,7 @@ export default async function SponsorProfileRoute({ params }: { params: { id: st
     return (
         <SponsorClient 
             user={profileData.user} 
-            achievements={achievements} // achievements are still mock-based
+            achievements={achievements}
             activeCampaigns={activeCampaigns}
             sponsoredTeams={sponsoredTeams}
         />

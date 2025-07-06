@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -38,7 +39,7 @@ export function LfgPage() {
 
         try {
             const searchResult = await findLfgLobbies(prompt);
-            setFilteredLobbies(searchResult.recommendations);
+            setFilteredLobbies(searchResult.recommendations.map(l => ({...l, type: l.type.toUpperCase() as 'GAME' | 'TRAINING', startTime: new Date(l.startTime), endTime: new Date(l.endTime) })));
             if (searchResult.recommendations.length === 0) {
                  toast({
                     title: "Ничего не найдено",

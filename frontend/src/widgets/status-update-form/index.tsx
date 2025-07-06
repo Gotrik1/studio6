@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -44,7 +45,7 @@ export function StatusUpdateForm() {
             <CardContent className="p-4">
                 <div className="flex items-start gap-4">
                     <Avatar>
-                        <AvatarImage src={user?.avatar} />
+                        <AvatarImage src={user?.avatar || undefined} />
                         <AvatarFallback>{user?.name?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="w-full space-y-2">

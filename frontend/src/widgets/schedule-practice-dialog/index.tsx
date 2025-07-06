@@ -28,7 +28,7 @@ const practiceSchema = z.object({
   description: z.string().min(10, 'Добавьте описание (минимум 10 символов).'),
 });
 
-type FormValues = z.infer<typeof practiceSchema>;
+export type FormValues = z.infer<typeof practiceSchema>;
 
 interface SchedulePracticeDialogProps {
     isOpen: boolean;

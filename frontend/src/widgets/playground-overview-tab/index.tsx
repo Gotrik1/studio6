@@ -21,7 +21,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { KingOfTheCourtWidget } from '@/widgets/playground-home-team';
 import { Avatar, AvatarImage, AvatarFallback } from '@/shared/ui/avatar';
 import { setHomePlaygroundAction } from './actions';
-import type { Playground } from '@/entities/playground/model/types';
+import type { Playground, KingTeam } from '@/entities/playground/model/types';
 
 
 interface PlaygroundOverviewTabProps {
@@ -53,7 +53,7 @@ export function PlaygroundOverviewTab({ playground }: PlaygroundOverviewTabProps
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <div className="lg:col-span-2 space-y-6">
-        <KingOfTheCourtWidget homeTeamData={playground.kingOfTheCourt} isLoading={false} />
+        <KingOfTheCourtWidget homeTeamData={playground.kingOfTheCourt || null} isLoading={false} />
         <Card>
           <CardHeader>
             <CardTitle>Основная информация</CardTitle>

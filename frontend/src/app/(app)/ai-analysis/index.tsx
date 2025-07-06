@@ -125,7 +125,7 @@ function TextTools() {
                             <div className="space-y-2">
                                 <p className="text-sm font-medium">Ключевые темы:</p>
                                 <div className="flex flex-wrap gap-2">
-                                    {analysisResult.keyTopics.map((topic, i) => <Badge key={i} variant="outline">{topic}</Badge>)}
+                                    {analysisResult.keyTopics.map((topic: string, i: number) => <Badge key={i} variant="outline">{topic}</Badge>)}
                                 </div>
                             </div>
                             <div>

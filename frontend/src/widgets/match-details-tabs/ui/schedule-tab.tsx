@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -77,7 +79,7 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
                                                       <div className="flex items-center gap-2 font-medium">
                                                           <span className="hidden sm:inline">{match.team1.name}</span>
                                                           <Avatar className="h-8 w-8">
-                                                              <AvatarImage src={match.team1.logo} data-ai-hint={match.team1.dataAiHint} />
+                                                              <AvatarImage src={match.team1.logo || ''} data-ai-hint={match.team1.dataAiHint || ''} />
                                                               <AvatarFallback>{match.team1.name.charAt(0)}</AvatarFallback>
                                                           </Avatar>
                                                       </div>
@@ -86,7 +88,7 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
                                                       </div>
                                                        <div className="flex items-center gap-2 font-medium">
                                                            <Avatar className="h-8 w-8">
-                                                              <AvatarImage src={match.team2.logo} data-ai-hint={match.team2.dataAiHint} />
+                                                              <AvatarImage src={match.team2.logo || ''} data-ai-hint={match.team2.dataAiHint || ''} />
                                                               <AvatarFallback>{match.team2.name.charAt(0)}</AvatarFallback>
                                                            </Avatar>
                                                            <span className="hidden sm:inline">{match.team2.name}</span>

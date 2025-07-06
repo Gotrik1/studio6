@@ -1,11 +1,14 @@
 import OrganizerClient from "@/app/(app)/administration/organizer/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";
-import { achievements } from "@/shared/lib/mock-data/profiles";
+import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
 
 
 export default async function OrganizerProfileRoute({ params }: { params: { id: string } }) {
-    const profileData = await getPlayerProfile(params.id);
+    const [profileData, achievements] = await Promise.all([
+        getPlayerProfile(params.id),
+        getAchievementsForUser(params.id)
+    ]);
 
     if (!profileData) {
         notFound();
@@ -14,7 +17,7 @@ export default async function OrganizerProfileRoute({ params }: { params: { id: 
     return (
         <OrganizerClient 
             user={profileData.user} 
-            achievements={achievements} // achievements are still mock-based
+            achievements={achievements}
             tournaments={profileData.user.organizedTournaments || []}
         />
     );

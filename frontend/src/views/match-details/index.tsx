@@ -33,7 +33,7 @@ export function MatchDetailsPage({ match }: MatchDetailsPageProps) {
                         <div className="flex flex-col md:flex-row items-center justify-between w-full">
                             <div className="flex items-center gap-4">
                                 <Avatar className="h-16 w-16 border-4 border-background">
-                                    <AvatarImage src={match.team1.logo} data-ai-hint={match.team1.logoHint} />
+                                    <AvatarImage src={match.team1.logo || undefined} data-ai-hint={match.team1.logoHint || ''} />
                                     <AvatarFallback>{match.team1.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <h1 className="font-headline text-2xl sm:text-4xl font-bold text-white shadow-lg">{match.team1.name}</h1>
@@ -45,7 +45,7 @@ export function MatchDetailsPage({ match }: MatchDetailsPageProps) {
                             <div className="flex items-center gap-4">
                                 <h1 className="font-headline text-2xl sm:text-4xl font-bold text-white shadow-lg">{match.team2.name}</h1>
                                 <Avatar className="h-16 w-16 border-4 border-background">
-                                     <AvatarImage src={match.team2.logo} data-ai-hint={match.team2.logoHint} />
+                                     <AvatarImage src={match.team2.logo || undefined} data-ai-hint={match.team2.logoHint || ''} />
                                      <AvatarFallback>{match.team2.name.charAt(0)}</AvatarFallback>
                                 </Avatar>
                             </div>

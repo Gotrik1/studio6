@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { useState } from 'react';
@@ -12,7 +14,6 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { reportPlaygroundIssue } from '@/entities/playground/api/report';
-
 
 const issueSchema = z.object({
   category: z.string({ required_error: "Выберите категорию проблемы." }),
@@ -30,10 +31,10 @@ const issueCategories = [
 ];
 
 interface ReportPlaygroundIssueDialogProps {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-  playgroundId: string;
-  playgroundName: string;
+    isOpen: boolean;
+    onOpenChange: (isOpen: boolean) => void;
+    playgroundId: string;
+    playgroundName: string;
 }
 
 export function ReportPlaygroundIssueDialog({ isOpen, onOpenChange, playgroundId, playgroundName }: ReportPlaygroundIssueDialogProps) {

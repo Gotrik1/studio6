@@ -1,7 +1,8 @@
 
+
 'use server';
 
-import type { Team } from '@/entities/team/model/types';
+import type { Team, TeamDetails } from '@/entities/team/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidatePath } from 'next/cache';
 import type { AnalyzeTeamPerformanceOutput } from '@/shared/api/genkit/flows/analyze-team-performance-flow';
@@ -32,6 +33,24 @@ export async function getTeams(): Promise<Team[]> {
 
   return [];
 }
+export async function getTeamBySlug(slug: string): Promise<TeamDetails | null> {
+    const result = await fetchWithAuth(`/teams/slug/${slug}`, {
+        cache: 'no-store',
+    });
+
+    if (!result.success) {
+        console.error(`Failed to fetch team by slug ${slug}:`, result.error);
+        return null; // Handle 404 or other errors gracefully
+    }
+    
+    const rawTeamData = result.data;
+    if (!rawTeamData) {
+        return null;
+    }
+
+    return rawTeamData;
+}
+
 
 export async function setHomePlayground(teamId: string, playgroundId: string) {
     const result = await fetchWithAuth(`/teams/${teamId}/home-playground`, {

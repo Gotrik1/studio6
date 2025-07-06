@@ -1,9 +1,10 @@
 
+
 'use server';
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import { CoachedPlayerSummary, FullUserProfile, PlayerStats } from '@/entities/user/model/types';
+import type { CoachedPlayerSummary, FullUserProfile, PlayerStats } from '@/entities/user/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';

@@ -1,9 +1,10 @@
 
+
 'use client';
 
 import { useState } from 'react';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { BrainCircuit, Loader2, AlertCircle, Sparkles, Award, Share2, Copy, Download, Volume2, Mic, Image as ImageIcon } from 'lucide-react';
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -117,7 +118,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                 winningTeam,
                 losingTeam,
                 score: mockFinalMatch.score,
-                matchSummary: result.summaryArticle,
+                matchSummary: summaryResult.summaryArticle,
             });
             setPostResult(postData);
         } catch (e) {
@@ -143,7 +144,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
             const commentaryData = await generateMatchCommentary({
                 team1Name: mockFinalMatch.team1,
                 team2Name: mockFinalMatch.team2,
-                events: mockEvents,
+                events: tournament.events || mockEvents,
             });
             setCommentaryResult(commentaryData);
         } catch (e) {
@@ -220,35 +221,111 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                 <CardHeader>
                                     <CardTitle className="flex items-center gap-2"><Award className="text-amber-500" /> MVP Турнира</CardTitle>
                                 </CardHeader>
-                                <CardContent>
-                                    <p className="text-lg font-bold">{summaryResult.mvp.name}</p>
-                                    <p className="text-sm text-muted-foreground">{summaryResult.mvp.reason}</p>
+                                <CardContent className="space-y-2">
+                                     <p className="font-bold text-lg">{summaryResult.mvp.name}</p>
+                                     <p className="text-sm text-muted-foreground">{summaryResult.mvp.reason}</p>
                                 </CardContent>
                             </Card>
                             <Card>
-                                <CardHeader>
-                                    <CardTitle>Интерактивные медиа</CardTitle>
-                                    <CardDescription>Озвучка, интервью и SMM.</CardDescription>
+                                 <CardHeader>
+                                    <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-green-500" /> Ключевой момент</CardTitle>
                                 </CardHeader>
-                                <CardContent className="space-y-2">
-                                     <Button variant="outline" className="w-full justify-start" onClick={handleGenerateCommentary} disabled={isGeneratingCommentary}><Volume2 className="mr-2 h-4 w-4"/> {isGeneratingCommentary ? 'Генерация...' : 'Комментарий матча'}</Button>
-                                     <Button variant="outline" className="w-full justify-start" onClick={handleGenerateInterview} disabled={isGeneratingInterview}><Mic className="mr-2 h-4 w-4"/> {isGeneratingInterview ? 'Генерация...' : 'Интервью с MVP'}</Button>
-                                     <Button variant="outline" className="w-full justify-start" onClick={handleGeneratePost} disabled={isGeneratingPost}><Share2 className="mr-2 h-4 w-4"/> {isGeneratingPost ? 'Генерация...' : 'Пост для соцсетей'}</Button>
+                                <CardContent>
+                                     <p className="text-sm text-muted-foreground">{result.keyMoment}</p>
+                                </CardContent>
+                            </Card>
+                             <Card>
+                                 <CardHeader>
+                                    <CardTitle className="flex items-center gap-2"><Lightbulb className="h-5 w-5 text-blue-500" /> Советы командам</CardTitle>
+                                </CardHeader>
+                                <CardContent className="space-y-3">
+                                     <div>
+                                        <p className="font-semibold text-sm">{match.team1.name}:</p>
+                                        <p className="text-xs text-muted-foreground">{result.team1Advice}</p>
+                                     </div>
+                                     <div>
+                                        <p className="font-semibold text-sm">{match.team2.name}:</p>
+                                        <p className="text-xs text-muted-foreground">{result.team2Advice}</p>
+                                     </div>
                                 </CardContent>
                             </Card>
                         </div>
-                        {commentaryError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{commentaryError}</AlertDescription></Alert>}
-                        {commentaryResult && <audio controls src={commentaryResult.audioDataUri} className="w-full" />}
+                        <div className="text-center">
+                            <Button variant="outline" onClick={handleGenerate}>
+                                <Sparkles className="mr-2 h-4 w-4" />
+                                Сгенерировать заново
+                            </Button>
+                        </div>
+                        
+                        <Card className="bg-background">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><Volume2 className="h-5 w-5 text-red-500" /> AI Комментатор</CardTitle>
+                                <CardDescription>Прослушайте яркий комментарий ключевых моментов матча, созданный AI.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {!commentaryResult && (
+                                    <Button onClick={handleGenerateCommentary} disabled={isGeneratingCommentary || !summaryResult}>
+                                        {isGeneratingCommentary ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                                        {summaryResult ? 'Сгенерировать комментарий' : 'Сначала сгенерируйте анализ'}
+                                    </Button>
+                                )}
+                                {isGeneratingCommentary && <Skeleton className="h-20 w-full" />}
+                                {commentaryError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{commentaryError}</AlertDescription></Alert>}
+                                {commentaryResult && (
+                                    <div className="space-y-4">
+                                        <audio controls src={commentaryResult.audioDataUri} className="w-full" />
+                                        <div>
+                                            <Label htmlFor="commentary-script">Скрипт:</Label>
+                                            <Textarea id="commentary-script" readOnly value={commentaryResult.commentaryScript} className="mt-2 h-40 bg-muted"/>
+                                        </div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
 
-                        {interviewError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{interviewError}</AlertDescription></Alert>}
-                        {interviewResult && <audio controls src={interviewResult.audioDataUri} className="w-full" />}
+                        <Card className="bg-background">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><Mic className="h-5 w-5 text-purple-500" /> Аудио-интервью с MVP</CardTitle>
+                                <CardDescription>Создайте короткое аудио-интервью с лучшим игроком матча.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {!interviewResult && (
+                                    <Button onClick={handleGenerateInterview} disabled={isGeneratingInterview}>
+                                        {isGeneratingInterview ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                                        Сгенерировать интервью
+                                    </Button>
+                                )}
+                                {isGeneratingInterview && <Skeleton className="h-20 w-full" />}
+                                {interviewError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{interviewError}</AlertDescription></Alert>}
+                                {interviewResult && (
+                                    <div className="space-y-4">
+                                        <audio controls src={interviewResult.audioDataUri} className="w-full" />
+                                        <div>
+                                            <Label htmlFor="interview-script">Скрипт:</Label>
+                                            <Textarea id="interview-script" readOnly value={interviewResult.script} className="mt-2 h-40 bg-muted"/>
+                                        </div>
+                                    </div>
+                                )}
+                            </CardContent>
+                        </Card>
 
-                        {postError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{postError}</AlertDescription></Alert>}
-                        {postResult && (
-                             <Card>
-                                <CardHeader><CardTitle>SMM Пост</CardTitle></CardHeader>
-                                <CardContent className="space-y-4">
-                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Card className="bg-background">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><Share2 className="h-5 w-5 text-green-500" /> SMM-Ассистент</CardTitle>
+                                <CardDescription>Создайте пост для социальных сетей о победе в этом матче.</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                {!postResult && (
+                                    <Button onClick={handleGeneratePost} disabled={isGeneratingPost || !summaryResult}>
+                                        {isGeneratingPost ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
+                                        {summaryResult ? 'Создать пост' : 'Сначала сгенерируйте анализ'}
+                                    </Button>
+                                )}
+                                {isGeneratingPost && <div className="space-y-2"><Skeleton className="h-24 w-full" /><Skeleton className="h-10 w-1/3" /></div>}
+                                {postError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{postError}</AlertDescription></Alert>}
+                                {postResult && (
+                                     <div className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="post-text">Текст поста</Label>
                                                 <Textarea id="post-text" value={postResult.postText} readOnly className="h-48"/>
@@ -260,15 +337,16 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                                 </div>
                                             </div>
                                         </div>
-                                     <div className="flex gap-2">
-                                        <Button onClick={() => handleCopyText(postResult.postText)}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
-                                        <Button variant="outline" onClick={() => handleSaveMedia({ type: 'IMAGE', src: postResult.imageDataUri, description: postResult.postText, hint: 'match victory post' })}>
-                                            <Download className="mr-2 h-4 w-4"/> Сохранить в галерею
-                                        </Button>
+                                         <div className="flex gap-2">
+                                            <Button onClick={() => handleCopyText(postResult.postText)}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
+                                            <Button variant="outline" onClick={() => handleSaveMedia({ type: 'IMAGE', src: postResult.imageDataUri, description: postResult.postText, hint: 'match victory post' })}>
+                                                <Download className="mr-2 h-4 w-4"/> Сохранить в галерею
+                                            </Button>
+                                        </div>
                                     </div>
-                                </CardContent>
-                             </Card>
-                        )}
+                                )}
+                            </CardContent>
+                        </Card>
                         <Card>
                             <CardHeader>
                                 <CardTitle>Сгенерированные изображения</CardTitle>
@@ -286,9 +364,8 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                     </div>
                 )}
             </CardContent>
-
-             <CardFooter>
-                 <Card>
+            <CardFooter>
+                 <Card className="w-full">
                     <CardHeader><CardTitle>Галерея турнира</CardTitle></CardHeader>
                     <CardContent>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

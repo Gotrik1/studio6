@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,8 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Button } from '@/shared/ui/button';
 import { Progress } from '@/shared/ui/progress';
 import { useToast } from '@/shared/hooks/use-toast';
-import type { Quest } from '@/entities/quest/model/types';
 import { getQuests } from '@/entities/quest/api/quests';
+import type { Quest } from '@/entities/quest/model/types';
+import { QuestType } from '@/entities/quest/model/types';
 import { Award, Check, Repeat, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { usePDEconomy } from '@/shared/context/pd-provider';
@@ -72,7 +74,7 @@ export function QuestsPage() {
     useEffect(() => {
         getQuests().then(data => {
             setQuests(data);
-            const initiallyClaimed = new Set(data.filter(q => q.progress >= q.goal && q.type === 'SPECIAL').map(q => q.id));
+            const initiallyClaimed = new Set(data.filter((q: Quest) => q.progress >= q.goal && q.type === 'SPECIAL').map((q: Quest) => q.id));
             setClaimedQuests(initiallyClaimed);
         });
     }, []);
@@ -89,8 +91,8 @@ export function QuestsPage() {
     
     // In a real app, this would be a server-side reset based on cron jobs
     const handleResetDailies = () => {
-        setQuests(prev => prev.map(q => q.type === 'DAILY' ? {...q, progress: 0} : q));
-        const dailyIds = new Set(quests.filter(q => q.type === 'DAILY').map(q => q.id));
+        setQuests(prev => prev.map((q: Quest) => q.type === 'DAILY' ? {...q, progress: 0} : q));
+        const dailyIds = new Set(quests.filter(q => q.type === 'DAILY').map((q: Quest) => q.id));
         setClaimedQuests(prev => new Set([...prev].filter(id => !dailyIds.has(id))));
         toast({ title: 'Ежедневные квесты обновлены!' });
     }

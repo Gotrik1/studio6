@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/shared/ui/card';
@@ -78,10 +79,15 @@ export function KingOfTheCourtWidget({ homeTeamData, isLoading }: KingOfTheCourt
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Avatar className="h-20 w-20 border-4 border-amber-400">
-                                    <AvatarImage src={homeTeamData.logo || ''} alt={homeTeamData.name} data-ai-hint={homeTeamData.dataAiHint || ''} />
-                                    <AvatarFallback className="text-2xl">{homeTeamData.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
+                                <div className="relative">
+                                    <Avatar className="h-20 w-20 border-4 border-amber-400">
+                                        <AvatarImage src={homeTeamData.logo || undefined} alt={homeTeamData.name} data-ai-hint={homeTeamData.dataAiHint || ''} />
+                                        <AvatarFallback className="text-2xl">{homeTeamData.name.charAt(0)}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="absolute -top-2 -left-2 rotate-[-30deg]">
+                                        <Crown className="h-4 w-4 text-amber-400 fill-amber-400" />
+                                    </div>
+                                </div>
                             </TooltipTrigger>
                             <TooltipContent>
                                 <p>Перейти в профиль команды</p>

@@ -1,10 +1,11 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import type { Measurement } from '@/entities/user/model/types';
 import { getMeasurements, createMeasurement } from '@/entities/measurement/api/measurements';
 import { useToast } from '@/shared/hooks/use-toast';
-import type { FetchResult } from '../lib/api-client';
+import type { FetchResult } from '@/shared/lib/api-client';
 
 interface MeasurementsContextType {
   history: Measurement[];
@@ -14,7 +15,7 @@ interface MeasurementsContextType {
 
 const MeasurementsContext = createContext<MeasurementsContextType | undefined>(undefined);
 
-export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
+export const MeasurementsProvider = ({ children }: { children: React.ReactNode }) => {
     const { toast } = useToast();
     const [history, setHistory] = useState<Measurement[]>([]);
     const [isLoading, setIsLoading] = useState(true);
