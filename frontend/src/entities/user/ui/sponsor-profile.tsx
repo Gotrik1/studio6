@@ -14,10 +14,10 @@ import { useState } from 'react';
 import { Wand2, ImageIcon } from 'lucide-react';
 import { UserAvatarGeneratorDialog } from '@/features/user-avatar-generator';
 import { ProfileBannerGeneratorDialog } from '@/features/profile-banner-generator';
-import type { FullUserProfile } from '../model/types';
+import type { Sponsor } from '@/entities/sponsor/model/types';
 import type { SponsoredTeam } from '@/entities/sponsorship/model/types';
 import type { Promotion } from '@/entities/promotion/model/types';
-import type { Achievement } from '@/entities/achievement/model/types';
+import { sponsorAchievements as achievements } from '@/shared/lib/mock-data/sponsor-profile';
 
 const SponsorStatsTab = dynamic(() => import('@/entities/user/ui/sponsor-profile-tabs/stats-tab').then(mod => mod.SponsorStatsTab), {
   loading: () => <div className="grid grid-cols-2 gap-4 md:grid-cols-4"><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /><Skeleton className="h-24 w-full" /></div>,
@@ -38,15 +38,14 @@ const ActiveCampaignsTab = dynamic(() => import('@/entities/user/ui/sponsor-prof
 
 
 type SponsorProfileProps = {
-  user: FullUserProfile;
-  achievements: Achievement[];
+  sponsor: Sponsor;
   activeCampaigns: Promotion[];
   sponsoredTeams: SponsoredTeam[];
 };
 
-export function SponsorProfile({ user, achievements, activeCampaigns, sponsoredTeams }: SponsorProfileProps) {
-  const initials = user.name.split(' ').map((n) => n[0]).join('');
-  const [avatar, setAvatar] = useState(user.avatar);
+export function SponsorProfile({ sponsor, activeCampaigns, sponsoredTeams }: SponsorProfileProps) {
+  const initials = sponsor.name.split(' ').map((n) => n[0]).join('');
+  const [avatar, setAvatar] = useState(sponsor.logo);
   const [banner, setBanner] = useState('https://placehold.co/2560x720.png');
   const [isAvatarDialogOpen, setIsAvatarDialogOpen] = useState(false);
   const [isBannerDialogOpen, setIsBannerDialogOpen] = useState(false);
@@ -72,7 +71,7 @@ export function SponsorProfile({ user, achievements, activeCampaigns, sponsoredT
             <div className="flex items-end gap-6 -mt-20">
                 <div className="relative shrink-0">
                     <Avatar className="h-32 w-32 border-4 border-background bg-background">
-                        <AvatarImage src={avatar || ''} alt={user.name} data-ai-hint="corporate logo" />
+                        <AvatarImage src={avatar || ''} alt={sponsor.name} data-ai-hint="corporate logo" />
                         <AvatarFallback className="text-4xl">{initials}</AvatarFallback>
                     </Avatar>
                     <Button
@@ -89,15 +88,15 @@ export function SponsorProfile({ user, achievements, activeCampaigns, sponsoredT
                 <div className="flex-1 space-y-2">
                     <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                         <div className="space-y-1">
-                            <h1 className="font-headline text-3xl font-bold">{user.name}</h1>
-                            <p className="text-muted-foreground">{user.email}</p>
+                            <h1 className="font-headline text-3xl font-bold">{sponsor.name}</h1>
+                            <p className="text-muted-foreground">{sponsor.description}</p>
                         </div>
                         <div className="flex gap-2">
-                             <Link href="/settings"><Button>Редактировать</Button></Link>
+                             <Link href="/settings"><Button>Управлять</Button></Link>
                         </div>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                        <Badge variant="secondary">{user.role}</Badge>
+                        <Badge variant="secondary">Спонсор</Badge>
                         <Badge variant="outline">Официальный партнер</Badge>
                     </div>
                 </div>

@@ -1,37 +1,24 @@
 import SponsorClient from "@/app/(app)/administration/sponsor/client";
-import { getPromotions } from "@/entities/promotion/api/promotions";
-import { getSponsorshipDashboardData } from "@/entities/sponsorship/api/sponsorship";
-import { getPlayerProfile } from "@/entities/user/api/get-user";
+import { getSponsorById } from "@/entities/sponsor/api/sponsors";
 import { notFound } from "next/navigation";
-import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
-
 
 export default async function SponsorProfileRoute({ params }: { params: { id: string } }) {
-    // Fetch all necessary data in parallel
-    const [profileData, promotionsData, sponsorshipData, achievements] = await Promise.all([
-        getPlayerProfile(params.id),
-        getPromotions(),
-        getSponsorshipDashboardData(),
-        getAchievementsForUser(params.id)
-    ]);
+    const sponsorDetails = await getSponsorById(params.id);
 
-    if (!profileData || !profileData.user || profileData.user.role !== 'Спонсор') {
+    if (!sponsorDetails) {
         notFound();
     }
     
-    // Filter data relevant to this specific sponsor
-    // In a real app, you might have a dedicated endpoint for this
-    const activeCampaigns = promotionsData.filter(
-        p => p.sponsor?.name === profileData.user.name
-    );
-    
-    const sponsoredTeams = sponsorshipData?.sponsoredTeams || [];
+    const sponsoredTeams = (sponsorDetails.teams || []).map((team: any) => ({
+        ...team,
+        investment: "50,000 PD", // Mock investment
+        since: new Date().toISOString().split("T")[0], // Mock since date
+    }));
 
     return (
         <SponsorClient 
-            user={profileData.user} 
-            achievements={achievements}
-            activeCampaigns={activeCampaigns}
+            sponsor={sponsorDetails} 
+            activeCampaigns={sponsorDetails.promotions || []}
             sponsoredTeams={sponsoredTeams}
         />
     );

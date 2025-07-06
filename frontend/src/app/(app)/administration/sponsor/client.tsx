@@ -3,8 +3,7 @@
 
 import dynamic from 'next/dynamic';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { FullUserProfile } from '@/entities/user/model/types';
-import type { Achievement } from '@/entities/achievement/model/types';
+import type { Sponsor } from '@/entities/sponsor/model/types';
 import type { Promotion } from '@/entities/promotion/model/types';
 import type { SponsoredTeam } from '@/entities/sponsorship/model/types';
 
@@ -19,16 +18,14 @@ const SponsorProfile = dynamic(() => import('@/entities/user/ui/sponsor-profile'
 });
 
 type SponsorProfileProps = {
-  user: FullUserProfile;
-  achievements: Achievement[];
+  sponsor: Sponsor;
   activeCampaigns: Promotion[];
   sponsoredTeams: SponsoredTeam[];
 };
 
-export default function SponsorClient({ user, achievements, activeCampaigns, sponsoredTeams }: SponsorProfileProps) {
+export default function SponsorClient({ sponsor, activeCampaigns, sponsoredTeams }: SponsorProfileProps) {
   return <SponsorProfile 
-            user={user} 
-            achievements={achievements} 
+            sponsor={sponsor}
             activeCampaigns={activeCampaigns} 
             sponsoredTeams={sponsoredTeams} 
         />;
