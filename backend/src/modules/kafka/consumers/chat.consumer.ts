@@ -1,25 +1,19 @@
 import { Injectable, OnModuleInit, Logger } from "@nestjs/common";
-import { Kafka } from "kafkajs";
 import { PrismaService } from "@/prisma/prisma.service";
 import { ChatGateway } from "@/modules/chat/chat.gateway";
+import { kafka, KAFKA_CLIENT_ID } from "../kafka.config";
 
 @Injectable()
 export class ChatConsumer implements OnModuleInit {
   private readonly logger = new Logger(ChatConsumer.name);
-  private kafka: Kafka;
 
   constructor(
     private readonly chatGateway: ChatGateway,
     private readonly prisma: PrismaService,
-  ) {
-    this.kafka = new Kafka({
-      clientId: "prodvor-chat-consumer",
-      brokers: (process.env.KAFKA_BROKERS || "kafka:9092").split(","),
-    });
-  }
+  ) {}
 
   async onModuleInit() {
-    const consumer = this.kafka.consumer({ groupId: "chat-group" });
+    const consumer = kafka.consumer({ groupId: "chat-group" });
 
     try {
       await consumer.connect();

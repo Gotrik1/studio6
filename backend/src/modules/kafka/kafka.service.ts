@@ -4,7 +4,8 @@ import {
   OnModuleDestroy,
   Logger,
 } from "@nestjs/common";
-import { Kafka, Producer, Partitioners } from "kafkajs";
+import { Kafka, Producer } from "kafkajs";
+import { kafka, producerConfig } from "./kafka.config";
 
 @Injectable()
 export class KafkaService implements OnModuleInit, OnModuleDestroy {
@@ -14,13 +15,8 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
   public isConnected = false;
 
   constructor() {
-    this.kafka = new Kafka({
-      clientId: "prodvor-backend",
-      brokers: (process.env.KAFKA_BROKERS || "kafka:9092").split(","),
-    });
-    this.producer = this.kafka.producer({
-      createPartitioner: Partitioners.DefaultPartitioner,
-    });
+    this.kafka = kafka;
+    this.producer = this.kafka.producer(producerConfig);
   }
 
   async onModuleInit() {
