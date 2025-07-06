@@ -12,6 +12,8 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ResolveDisputeDto } from "./dto/resolve-dispute.dto";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { PRODVOR_EXCHANGE } from "../rabbitmq/rabbitmq.config";
+import type { MatchFinishedPayload } from "../rabbitmq/models/match-finished.payload";
 
 @Injectable()
 export class MatchesService {
@@ -330,14 +332,20 @@ export class MatchesService {
       ]),
     ];
 
-    this.amqpConnection.publish("prodvor_exchange", "match.finished", {
+    const payload: MatchFinishedPayload = {
       matchId: updatedMatch.id,
       team1Name: match.team1.name,
       team2Name: match.team2.name,
-      score1: updatedMatch.team1Score,
-      score2: updatedMatch.team2Score,
+      score1: updatedMatch.team1Score!,
+      score2: updatedMatch.team2Score!,
       participantIds,
-    });
+    };
+
+    this.amqpConnection.publish(
+      PRODVOR_EXCHANGE,
+      "match.finished",
+      payload,
+    );
 
     return updatedMatch;
   }

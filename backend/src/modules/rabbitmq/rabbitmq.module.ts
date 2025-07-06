@@ -1,5 +1,8 @@
 import { RabbitMQModule as NestRabbitMQModule } from "@golevelup/nestjs-rabbitmq";
 import { Global, Module } from "@nestjs/common";
+import { NotificationsConsumer } from "./consumers/notifications.consumer";
+import { NotificationsModule } from "../notifications/notifications.module";
+import { PRODVOR_EXCHANGE, RABBITMQ_URI } from "./rabbitmq.config";
 
 @Global()
 @Module({
@@ -7,14 +10,16 @@ import { Global, Module } from "@nestjs/common";
     NestRabbitMQModule.forRoot(NestRabbitMQModule, {
       exchanges: [
         {
-          name: "prodvor_exchange",
+          name: PRODVOR_EXCHANGE,
           type: "topic",
         },
       ],
-      uri: process.env.RABBITMQ_URL || "amqp://user:password@rabbitmq:5672",
+      uri: RABBITMQ_URI,
       connectionInitOptions: { wait: false },
     }),
+    NotificationsModule,
   ],
+  providers: [NotificationsConsumer],
   exports: [NestRabbitMQModule],
 })
 export class RabbitMQModule {}

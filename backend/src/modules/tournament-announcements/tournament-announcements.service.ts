@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import { CreateAnnouncementDto } from "./dto/create-announcement.dto";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { PRODVOR_EXCHANGE } from "../rabbitmq/rabbitmq.config";
+import type { TournamentAnnouncementCreatedPayload } from "../rabbitmq/models/tournament-announcement-created.payload";
 
 @Injectable()
 export class TournamentAnnouncementsService {
@@ -56,17 +58,18 @@ export class TournamentAnnouncementsService {
     });
 
     // Publish event to RabbitMQ for notifications
+    const payload: TournamentAnnouncementCreatedPayload = {
+      announcementId: announcement.id,
+      tournamentId: tournament.id,
+      tournamentSlug: tournament.slug,
+      tournamentName: tournament.name,
+      subject: announcement.subject,
+      participantIds: participantIds,
+    };
     this.amqpConnection.publish(
-      "prodvor_exchange",
+      PRODVOR_EXCHANGE,
       "tournament.announcement.created",
-      {
-        announcementId: announcement.id,
-        tournamentId: tournament.id,
-        tournamentSlug: tournament.slug,
-        tournamentName: tournament.name,
-        subject: announcement.subject,
-        participantIds: participantIds,
-      },
+      payload,
     );
 
     return announcement;

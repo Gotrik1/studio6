@@ -7,6 +7,8 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
+import { PRODVOR_EXCHANGE } from "../rabbitmq/rabbitmq.config";
+import type { FriendRequestCreatedPayload } from "../rabbitmq/models/friend-request-created.payload";
 
 @Injectable()
 export class FriendsService {
@@ -115,11 +117,16 @@ export class FriendsService {
     });
 
     // Publish event to RabbitMQ
-    this.amqpConnection.publish("prodvor_exchange", "friend.request.created", {
+    const payload: FriendRequestCreatedPayload = {
       fromUserId: fromId,
       fromUserName: newRequest.from.name,
       toUserId: toId,
-    });
+    };
+    this.amqpConnection.publish(
+      PRODVOR_EXCHANGE,
+      "friend.request.created",
+      payload,
+    );
 
     return newRequest;
   }
