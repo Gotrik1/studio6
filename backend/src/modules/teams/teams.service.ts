@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { CreateTeamDto } from "./dto/create-team.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Team, ActivityType, Prisma, TrainingLogStatus } from "@prisma/client";
+import { Team, ActivityType, Prisma, TrainingLogStatus, Match } from "@prisma/client";
 import { LeaderboardTeamDto } from "./dto/leaderboard-team.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
@@ -529,28 +529,28 @@ export class TeamsService implements OnModuleInit {
     };
   }
 
-  private _shapeMatch(match: any) {
+  private _shapeMatch(match: Match | null) {
     if (!match) return null;
     return {
       id: String(match.id),
       team1: {
-        id: match.team1.id,
-        name: match.team1.name,
-        logo: match.team1.logo || "https://placehold.co/100x100.png",
-        logoHint: match.team1.dataAiHint || "team logo",
+        id: (match as any).team1.id,
+        name: (match as any).team1.name,
+        logo: (match as any).team1.logo || "https://placehold.co/100x100.png",
+        logoHint: (match as any).team1.dataAiHint || "team logo",
       },
       team2: {
-        id: match.team2.id,
-        name: match.team2.name,
-        logo: match.team2.logo || "https://placehold.co/100x100.png",
-        logoHint: match.team2.dataAiHint || "team logo",
+        id: (match as any).team2.id,
+        name: (match as any).team2.name,
+        logo: (match as any).team2.logo || "https://placehold.co/100x100.png",
+        logoHint: (match as any).team2.dataAiHint || "team logo",
       },
       score:
         match.team1Score !== null && match.team2Score !== null
           ? `${match.team1Score}-${match.team2Score}`
           : "VS",
-      tournament: match.tournament?.name || "Товарищеский матч",
-      game: match.tournament?.game || "Неизвестно",
+      tournament: (match as any).tournament?.name || "Товарищеский матч",
+      game: (match as any).tournament?.game || "Неизвестно",
       date: format(new Date(match.scheduledAt), "d MMMM yyyy", { locale: ru }),
       href: `/matches/${match.id}`,
       status: match.status,
@@ -571,7 +571,8 @@ export class TeamsService implements OnModuleInit {
 
     const recentMatchesSummary =
       (dashboardData.recentResults || [])
-        .map((match: any) => {
+        .map((match) => {
+          if (!match) return '';
           const isTeam1 = match.team1.id === team.id;
           const scoreParts = match.score
             .split("-")

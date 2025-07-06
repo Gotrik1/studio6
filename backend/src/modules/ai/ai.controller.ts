@@ -135,6 +135,12 @@ import type { GeneratePlaygroundChallengeOutput } from "@/ai/flows/schemas/gener
 import { GenerateTeamAvatarDto } from "./dto/generate-team-avatar.dto";
 import type { GenerateTeamAvatarOutput } from "@/ai/flows/schemas/generate-team-avatar-schema";
 
+type AuthenticatedUser = {
+  userId: string;
+  name: string;
+  role: string;
+};
+
 @ApiTags("AI")
 @Controller("ai")
 @UseGuards(JwtAuthGuard)
@@ -184,8 +190,8 @@ export class AiController {
     @Body() dto: GeneratePromotionWizardDto,
     @Req() req: Request,
   ) {
-    const userId = (req.user as any).userId;
-    return this.aiService.createPromotionFromWizard(dto.prompt, userId);
+    const user = req.user as AuthenticatedUser;
+    return this.aiService.createPromotionFromWizard(dto.prompt, user.userId);
   }
 
   @Post("generate-team-concept")
@@ -528,7 +534,7 @@ export class AiController {
   async generateDashboardTip(
     @Req() req: Request,
   ): Promise<GenerateDashboardTipOutput> {
-    const user = req.user as any;
+    const user = req.user as AuthenticatedUser;
     return this.aiService.generateDashboardTip(user.userId, user.name);
   }
 
