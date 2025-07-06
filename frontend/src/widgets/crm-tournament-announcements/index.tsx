@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
@@ -20,6 +21,7 @@ type Announcement = {
     subject: string;
     sentTo: number;
     createdAt: string;
+    sender: { name: string; };
 };
 
 interface CrmTournamentAnnouncementsProps {
@@ -134,6 +136,7 @@ export function CrmTournamentAnnouncements({ tournamentId }: CrmTournamentAnnoun
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Тема</TableHead>
+                                    <TableHead>Отправитель</TableHead>
                                     <TableHead className="hidden md:table-cell">Дата</TableHead>
                                     <TableHead className="text-right">Получатели</TableHead>
                                 </TableRow>
@@ -142,6 +145,7 @@ export function CrmTournamentAnnouncements({ tournamentId }: CrmTournamentAnnoun
                                 {announcements.length > 0 ? announcements.map(ann => (
                                     <TableRow key={ann.id}>
                                         <TableCell className="font-medium">{ann.subject}</TableCell>
+                                        <TableCell className="text-muted-foreground">{ann.sender.name}</TableCell>
                                         <TableCell className="hidden md:table-cell text-muted-foreground text-xs">
                                             {format(new Date(ann.createdAt), 'd MMMM yyyy, HH:mm', { locale: ru })}
                                         </TableCell>
@@ -154,7 +158,7 @@ export function CrmTournamentAnnouncements({ tournamentId }: CrmTournamentAnnoun
                                     </TableRow>
                                 )) : (
                                     <TableRow>
-                                        <TableCell colSpan={3} className="text-center h-24">Рассылок еще не было.</TableCell>
+                                        <TableCell colSpan={4} className="text-center h-24">Рассылок еще не было.</TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
