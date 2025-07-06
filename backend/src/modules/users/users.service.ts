@@ -7,7 +7,7 @@ import {
 import { CreateUserDto } from "./dto/create-user.dto";
 import { PrismaService } from "@/prisma/prisma.service";
 import { User, Prisma, TrainingLogStatus } from "@prisma/client";
-import { differenceInYears } from "date-fns";
+import { differenceInYears, format, formatDistanceToNow } from "date-fns";
 import { LeaderboardPlayerDto } from "./dto/leaderboard-player.dto";
 import { PlayerStatsDto } from "./dto/player-stats.dto";
 import type {
@@ -16,6 +16,7 @@ import type {
   JudgedMatch,
   CoachedPlayer,
 } from "@/entities/user/model/types";
+import { ru } from "date-fns/locale";
 
 @Injectable()
 export class UsersService {
@@ -184,7 +185,7 @@ export class UsersService {
 
     const dateOfBirth = user.dateOfBirth
       ? new Date(user.dateOfBirth).toISOString().split("T")[0]
-      : "1998-05-15";
+      : null;
 
     const augmentedProfile = {
       ...user,
@@ -192,21 +193,28 @@ export class UsersService {
       organizedTournaments,
       judgedMatches,
       coaching: coachedPlayers,
-      location: user.location || "Москва, Россия",
-      mainSport: user.mainSport || "Футбол",
-      isVerified: true,
       dateOfBirth: dateOfBirth,
-      age: differenceInYears(new Date(), new Date(dateOfBirth)),
-      preferredSports: user.preferredSports?.length
-        ? user.preferredSports
-        : ["Футбол", "Баскетбол", "Valorant"],
+      age: user.dateOfBirth
+        ? differenceInYears(new Date(), new Date(user.dateOfBirth))
+        : null,
+      location: user.location,
+      mainSport: user.mainSport,
+      isVerified: user.isVerified,
+      preferredSports: user.preferredSports,
       contacts: {
-        telegram: user.telegram || "@player_example",
-        discord: user.discord || "player#1234",
+        telegram: user.telegram,
+        discord: user.discord,
       },
-      activitySummary:
-        "Частые сообщения в чате, участие в 3 турнирах за последний месяц. Нет жалоб.",
-      statsSummary: `Играет в ${user.mainSport || "неизвестно"}, роль - ${user.role}.`,
+      activitySummary: `Пользователь с ${format(
+        user.createdAt,
+        "yyyy",
+      )} года. Последняя активность: ${formatDistanceToNow(user.updatedAt, {
+        addSuffix: true,
+        locale: ru,
+      })}.`, // Generated summary
+      statsSummary: `Играет в ${user.mainSport || "неизвестно"}, роль - ${
+        user.role
+      }.`, // Generated summary
       profileUrl: `/profiles/player/${user.id}`,
     };
 
@@ -283,29 +291,17 @@ export class UsersService {
     const totalMatches = wins + losses;
     const winrate = totalMatches > 0 ? (wins / totalMatches) * 100 : 0;
 
+    // KDA and Map data are not in our schema, so we return empty arrays.
+    // The frontend should handle this gracefully.
     return {
       winLossData: { wins, losses },
-      // KDA and Map data remain mocked as we don't store that level of detail yet
-      kdaByMonthData: [
-        { month: "Янв", kda: 1.2 },
-        { month: "Фев", kda: 1.3 },
-        { month: "Мар", kda: 1.1 },
-        { month: "Апр", kda: 1.4 },
-        { month: "Май", kda: 1.5 },
-        { month: "Июн", kda: 1.25 },
-      ],
-      winrateByMapData: [
-        { map: "Ascent", winrate: 65 },
-        { map: "Bind", winrate: 72 },
-        { map: "Split", winrate: 58 },
-        { map: "Haven", winrate: 81 },
-        { map: "Icebox", winrate: 52 },
-      ],
+      kdaByMonthData: [],
+      winrateByMapData: [],
       summary: {
         matches: totalMatches,
         winrate: parseFloat(winrate.toFixed(1)),
         winStreak,
-        kda: 1.25, // Mock KDA
+        kda: 0, // KDA is not tracked
       },
     };
   }
