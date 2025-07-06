@@ -19,6 +19,9 @@ export class CoachDto {
   @ApiProperty()
   description: string;
 
+  @ApiProperty()
+  experience: string;
+
   @ApiProperty({ type: [String] })
   tags: string[];
 
