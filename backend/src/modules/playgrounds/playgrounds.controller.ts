@@ -79,6 +79,13 @@ export class PlaygroundsController {
   }
 
   @Public()
+  @Get(":id/leaderboard")
+  @ApiOperation({ summary: "Получить лидеров площадки по чекинам" })
+  getLeaderboard(@Param("id") id: string) {
+    return this.playgroundsService.getPlaygroundLeaderboard(id);
+  }
+
+  @Public()
   @Get(":id/reviews")
   @ApiOperation({ summary: "Получить отзывы для площадки" })
   findReviews(@Param("id") id: string) {

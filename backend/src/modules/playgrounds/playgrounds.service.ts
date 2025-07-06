@@ -116,6 +116,54 @@ export class PlaygroundsService {
     return this._getKingOfTheCourt(playgroundId);
   }
 
+  async getPlaygroundLeaderboard(playgroundId: string): Promise<any[]> {
+    const checkIns = await this.prisma.activity.groupBy({
+      by: ["userId"],
+      where: {
+        playgroundId,
+        type: "PLAYGROUND_CHECK_IN",
+      },
+      _count: {
+        userId: true,
+      },
+      orderBy: {
+        _count: {
+          userId: "desc",
+        },
+      },
+      take: 10,
+    });
+
+    if (checkIns.length === 0) {
+      return [];
+    }
+
+    const userIds = checkIns.map((c) => c.userId);
+    const users = await this.prisma.user.findMany({
+      where: {
+        id: { in: userIds },
+      },
+      select: {
+        id: true,
+        name: true,
+        avatar: true,
+      },
+    });
+
+    const usersMap = new Map(users.map((u) => [u.id, u]));
+
+    return checkIns.map((checkIn, index) => {
+      const user = usersMap.get(checkIn.userId);
+      return {
+        id: user?.id || checkIn.userId,
+        rank: index + 1,
+        name: user?.name || "Неизвестный игрок",
+        avatar: user?.avatar || null,
+        checkIns: checkIn._count.userId,
+      };
+    });
+  }
+
   async findAllForAdmin(): Promise<Playground[]> {
     return this.prisma.playground.findMany({
       include: { creator: { select: { name: true, avatar: true } } },
