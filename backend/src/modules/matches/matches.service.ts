@@ -11,10 +11,14 @@ import { UpdateMatchDto } from "./dto/update-match.dto";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ResolveDisputeDto } from "./dto/resolve-dispute.dto";
+import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 
 @Injectable()
 export class MatchesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly amqpConnection: AmqpConnection,
+  ) {}
 
   async create(createMatchDto: CreateMatchDto): Promise<Match> {
     const {
@@ -299,13 +303,17 @@ export class MatchesService {
 
     const match = await this.prisma.match.findUnique({
       where: { id },
+      include: {
+        team1: { include: { members: { select: { id: true } } } },
+        team2: { include: { members: { select: { id: true } } } },
+      },
     });
 
     if (!match) {
       throw new NotFoundException(`Матч с ID ${id} не найден`);
     }
 
-    return this.prisma.match.update({
+    const updatedMatch = await this.prisma.match.update({
       where: { id },
       data: {
         team1Score: score1,
@@ -314,6 +322,24 @@ export class MatchesService {
         finishedAt: new Date(),
       },
     });
+
+    const participantIds = [
+      ...new Set([
+        ...match.team1.members.map((m) => m.id),
+        ...match.team2.members.map((m) => m.id),
+      ]),
+    ];
+
+    this.amqpConnection.publish("prodvor_exchange", "match.finished", {
+      matchId: updatedMatch.id,
+      team1Name: match.team1.name,
+      team2Name: match.team2.name,
+      score1: updatedMatch.team1Score,
+      score2: updatedMatch.team2Score,
+      participantIds,
+    });
+
+    return updatedMatch;
   }
 
   async resolveDispute(
