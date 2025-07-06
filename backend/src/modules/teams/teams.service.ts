@@ -1,3 +1,4 @@
+
 import {
   Inject,
   Injectable,
@@ -9,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { CreateTeamDto } from "./dto/create-team.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Team, ActivityType, Prisma } from "@prisma/client";
+import { Team, ActivityType, Prisma, TrainingLogStatus } from "@prisma/client";
 import { LeaderboardTeamDto } from "./dto/leaderboard-team.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
@@ -199,10 +200,10 @@ export class TeamsService implements OnModuleInit {
 
     const roster = team.members.map((member) => {
       const completed = member.trainingLogs.filter(
-        (log) => log.status === "completed",
+        (log) => log.status === TrainingLogStatus.COMPLETED,
       ).length;
       const skipped = member.trainingLogs.filter(
-        (log) => log.status === "skipped",
+        (log) => log.status === TrainingLogStatus.SKIPPED,
       ).length;
       const totalRelevant = completed + skipped;
       const adherence =

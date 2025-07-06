@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { TrainingLogEntry } from '../model/types';
@@ -13,10 +14,15 @@ function transformApiLogToFrontend(apiLog: any[]): TrainingLogEntry[] {
     coachNotes: log.coachNotes,
     mood: log.mood?.toLowerCase(),
     exercises: log.exercises.map((ex: any) => ({
-      name: ex.exercise.name,
+      id: ex.id,
+      exercise: {
+        id: ex.exercise.id,
+        name: ex.exercise.name,
+      },
       notes: ex.notes,
       isSupersetWithPrevious: ex.isSupersetWithPrevious,
       sets: ex.sets.map((set: any) => ({
+        id: set.id,
         plannedReps: set.plannedReps,
         plannedWeight: set.plannedWeight,
         loggedReps: set.loggedReps,

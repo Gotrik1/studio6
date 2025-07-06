@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { User, Prisma } from "@prisma/client";
+import { User, Prisma, TrainingLogStatus } from "@prisma/client";
 import { differenceInYears } from "date-fns";
 import { LeaderboardPlayerDto } from "./dto/leaderboard-player.dto";
 import { PlayerStatsDto } from "./dto/player-stats.dto";
@@ -40,7 +40,7 @@ export class UsersService {
         email,
         passwordHash: password || "mock_hash", // In a real app, hash the password
         role: role || "PLAYER",
-        status: "ACTIVE",
+        status: "Активен",
         xp: 0,
       },
     });
@@ -159,10 +159,10 @@ export class UsersService {
     const coachedPlayers: CoachedPlayer[] = (user.coaching || []).map(
       (player: any) => {
         const completed = player.trainingLogs.filter(
-          (log: any) => log.status === "completed",
+          (log: any) => log.status === TrainingLogStatus.COMPLETED,
         ).length;
         const skipped = player.trainingLogs.filter(
-          (log: any) => log.status === "skipped",
+          (log: any) => log.status === TrainingLogStatus.SKIPPED,
         ).length;
         const totalRelevant = completed + skipped;
         const adherence =

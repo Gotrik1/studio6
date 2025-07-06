@@ -30,31 +30,35 @@ export type TrainingProgram = {
 };
 
 export type LoggedSet = {
-    plannedReps: string;
-    plannedWeight: string;
-    loggedReps?: number;
-    loggedWeight?: number;
-    rpe?: number;
+    id: string;
+    plannedReps?: string | null;
+    plannedWeight?: string | null;
+    loggedReps?: number | null;
+    loggedWeight?: number | null;
+    rpe?: number | null;
     isCompleted: boolean;
 };
 
 export type ExerciseLog = {
-    name: string;
-    notes?: string;
+    id: string;
+    exercise: {
+        id: string;
+        name: string;
+    },
+    notes?: string | null;
     sets: LoggedSet[];
-    isSupersetWithPrevious?: boolean;
-    technique?: string;
+    isSupersetWithPrevious?: boolean | null;
 };
 
 export type TrainingLogEntry = {
     id: string;
     date: string;
-    workoutName: string;
+    workoutName?: string | null;
     status: 'completed' | 'planned' | 'skipped';
     exercises: ExerciseLog[];
-    mood?: 'great' | 'good' | 'ok' | 'bad';
-    notes?: string;
-    coachNotes?: string;
+    mood?: 'great' | 'good' | 'ok' | 'bad' | null;
+    notes?: string | null;
+    coachNotes?: string | null;
 };
 
 // --- Analytics Types ---
@@ -74,11 +78,11 @@ export type RecordHistoryPoint = {
 export type ExerciseSessionSet = {
     reps: number;
     weight: number;
-    rpe?: number;
+    rpe?: number | null;
 }
 
 export type ExerciseSession = {
     date: string;
-    workoutName: string;
+    workoutName: string | null;
     sets: ExerciseSessionSet[];
 };
