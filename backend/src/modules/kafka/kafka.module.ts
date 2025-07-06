@@ -1,11 +1,13 @@
+
 import { Module, Global } from "@nestjs/common";
 import { KafkaService } from "./kafka.service";
 import { ChatConsumer } from "./consumers/chat.consumer";
-import { ChatGateway } from "@/modules/chat/chat.gateway";
+import { WebsocketsModule } from "../websockets/websockets.module";
 
 @Global()
 @Module({
-  providers: [KafkaService, ChatConsumer, ChatGateway], // Add ChatGateway here because ChatConsumer needs it
+  imports: [WebsocketsModule],
+  providers: [KafkaService, ChatConsumer],
   exports: [KafkaService],
 })
 export class KafkaModule {}

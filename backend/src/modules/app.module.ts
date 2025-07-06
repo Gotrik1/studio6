@@ -1,3 +1,4 @@
+
 import { Module } from "@nestjs/common";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -47,6 +48,7 @@ import { AdminModule } from "./modules/admin/admin.module";
 import { FeedModule } from "./modules/feed/feed.module";
 import { ActivitiesModule } from "./modules/activities/activities.module";
 import { SponsorshipOffersModule } from "./modules/sponsorship-offers/sponsorship-offers.module";
+import { WebsocketsModule } from "./modules/websockets/websockets.module";
 
 @Module({
   imports: [
@@ -94,6 +96,7 @@ import { SponsorshipOffersModule } from "./modules/sponsorship-offers/sponsorshi
     ActivitiesModule,
     FeedModule,
     SponsorshipOffersModule,
+    WebsocketsModule,
   ],
   controllers: [AppController],
   providers: [

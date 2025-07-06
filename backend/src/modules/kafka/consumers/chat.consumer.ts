@@ -1,6 +1,7 @@
+
 import { Injectable, OnModuleInit, Logger } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
-import { ChatGateway } from "@/modules/chat/chat.gateway";
+import { EventsGateway } from "@/modules/websockets/events.gateway";
 import { kafka } from "../kafka.config";
 import type { ChatMessagePayload } from "../models/chat-message.payload";
 
@@ -9,7 +10,7 @@ export class ChatConsumer implements OnModuleInit {
   private readonly logger = new Logger(ChatConsumer.name);
 
   constructor(
-    private readonly chatGateway: ChatGateway,
+    private readonly eventsGateway: EventsGateway,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -47,7 +48,7 @@ export class ChatConsumer implements OnModuleInit {
             );
           }
 
-          this.chatGateway.broadcastMessage(payload);
+          this.eventsGateway.broadcastChatMessage(payload);
         },
       });
     } catch (error) {
