@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -238,17 +237,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
                         />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-6">
-                        <PlaygroundActivityTab activities={activities.map(a => ({
-                            id: a.id,
-                            user: {
-                                name: a.user.name,
-                                avatar: a.user.avatar
-                            },
-                            comment: (a.metadata as any)?.comment || 'Отметился!',
-                            photo: (a.metadata as any)?.photo,
-                            photoHint: 'playground check-in',
-                            timestamp: a.createdAt,
-                        }))} isLoading={isLoadingActivities} />
+                        <PlaygroundActivityTab activities={activities} isLoading={isLoadingActivities} />
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-6">
                         <PlaygroundLeaderboardTab playground={playground} />
