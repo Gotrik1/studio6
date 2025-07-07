@@ -1,9 +1,7 @@
-
-
 'use server';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, Activity, UserTeam } from '@/entities/user/model/types';
+import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, UserTeam } from '@/entities/user/model/types';
 import type { TournamentCrm, JudgedMatch } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -26,7 +24,7 @@ export type PlayerProfilePageData = {
 };
 
 const formatActivityText = (activity: Activity): string => {
-    const metadata = activity.metadata as Record<string, string>; // Cast to Record<string, string> to access dynamic properties
+    const metadata = activity.metadata;
     switch(activity.type) {
         case 'STATUS_POSTED':
             return metadata.text;
@@ -57,7 +55,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
     }
     
     const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map((activity: Activity) => {
-        const metadata = activity.metadata as Record<string, string>; // Allow dynamic property access
+        const metadata = activity.metadata;
         const IconName = metadata.icon as keyof typeof LucideIcons;
         return {
             id: activity.id,

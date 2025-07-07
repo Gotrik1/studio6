@@ -15,7 +15,7 @@ export type FetchResult<T> = {
     data: null;
 };
 
-export async function fetchWithAuth<T = any>(url: string, options: RequestInit = {}): Promise<FetchResult<T>> {
+export async function fetchWithAuth<T = unknown>(url: string, options: RequestInit = {}): Promise<FetchResult<T>> {
   const session = await getSession();
   if (!session?.access_token) {
     return { success: false, error: 'Unauthorized', status: 401, data: null };

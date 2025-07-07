@@ -127,7 +127,7 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
                     </Button>
                 </div>
                 {isAnalyzing && (
-                    <div className="p-4 border border-dashed rounded-lg">
+                    <div className="space-y-2 p-4 border border-dashed rounded-lg">
                         <div className="flex items-center justify-center h-20">
                             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>
                         </div>
@@ -173,5 +173,4 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-}
+  

@@ -1,10 +1,7 @@
-
-
 'use client';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { User as FrontendUser } from '@/shared/lib/types';
 import type { Team, User } from '@prisma/client';
 
 type BackendUser = User;

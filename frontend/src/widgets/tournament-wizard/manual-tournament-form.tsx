@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,13 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/shared/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2, PlusCircle, Trophy } from 'lucide-react';
+import { CalendarIcon, Loader2, Trophy } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -120,7 +119,7 @@ export function ManualTournamentForm() {
                                 <FormItem><FormLabel>Название турнира</FormLabel><FormControl><Input placeholder="Например, ProDvor Summer Cup" {...field} /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name="description" render={({ field }) => (
-                                <FormItem><FormLabel>Краткое описание (необязательно)</FormLabel><FormControl><Textarea placeholder="Для кого этот турнир, какие его цели?" {...field} /></FormControl><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Краткое описание (необязательно)</FormLabel><FormControl><Textarea placeholder="Для кого этот турнир, какие его цели?" {...field} value={field.value ?? ''} /></FormControl><FormMessage /></FormItem>
                             )} />
                         </div>
                         <Separator/>
@@ -157,8 +156,8 @@ export function ManualTournamentForm() {
                                 <FormField control={form.control} name="category" render={({ field }) => (<FormItem><FormLabel>Категория</FormLabel><FormControl><Input placeholder="Например, Любительский" {...field} /></FormControl></FormItem>)} />
                                 <FormField control={form.control} name="location" render={({ field }) => (<FormItem><FormLabel>Место проведения</FormLabel><FormControl><Input placeholder="Онлайн / Название площадки" {...field} /></FormControl></FormItem>)} />
                             </div>
-                            <FormField control={form.control} name="prizePool" render={({ field }) => (<FormItem><FormLabel>Призовой фонд (необязательно)</FormLabel><FormControl><Input placeholder="Например, 50,000 PD + девайсы от спонсора" {...field} /></FormControl></FormItem>)} />
-                            <FormField control={form.control} name="rules" render={({ field }) => (<FormItem><FormLabel>Правила (необязательно)</FormLabel><FormControl><Textarea placeholder="Опишите основные правила и регламент турнира..." {...field} /></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="prizePool" render={({ field }) => (<FormItem><FormLabel>Призовой фонд (необязательно)</FormLabel><FormControl><Input placeholder="Например, 50,000 PD + девайсы от спонсора" {...field} value={field.value ?? ''} /></FormControl></FormItem>)} />
+                            <FormField control={form.control} name="rules" render={({ field }) => (<FormItem><FormLabel>Правила (необязательно)</FormLabel><FormControl><Textarea placeholder="Опишите основные правила и регламент турнира..." {...field} value={field.value ?? ''} /></FormControl></FormItem>)} />
                         </div>
                     </CardContent>
                     <CardFooter>

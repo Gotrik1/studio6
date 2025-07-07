@@ -55,7 +55,8 @@ export function ChallengesPage() {
             toast({ title: 'Вызов брошен!', description: 'Ваш вызов опубликован и виден другим игрокам.' });
             await fetchAllChallenges(); // Refresh all lists
         } catch (error) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось создать вызов.' });
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось создать вызов.';
+            toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
         }
     };
 
@@ -67,7 +68,8 @@ export function ChallengesPage() {
             toast({ title: 'Вызов принят!', description: `Вы приняли вызов от ${challenge?.creator.name}.` });
             await fetchAllChallenges(); // Refresh all lists
         } catch (error) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось принять вызов.' });
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось принять вызов.';
+            toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
         }
     };
 
@@ -105,7 +107,4 @@ export function ChallengesPage() {
                     />
                 )}
             </div>
-            <ChallengeCreateDialog isOpen={isCreateOpen} onOpenChange={setIsCreateOpen} onCreate={handleCreateChallenge} />
-        </>
-    );
-}
+            <ChallengeCreateDialog isOpen={isCreateOpen} onOpenChange={setIsCreateOpen

@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import { useTransition } from 'react';
-import { useTrainingProposals, type TrainingProposal } from '@/app/providers/training-proposal-provider';
+import { useTrainingProposals } from '@/app/providers/training-proposal-provider';
 import { useSession } from '@/shared/lib/session/client';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -13,6 +14,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import type { User } from '@/shared/lib/types';
+import type { TrainingProposal } from '@/app/providers/training-proposal-provider';
 
 
 type ProposalUser = Pick<User, 'id' | 'name' | 'avatar'>;

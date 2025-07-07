@@ -86,5 +86,4 @@ export async function getTournamentById(id: string): Promise<TournamentDetails |
     if (!result.data) {
         return null;
     }
-    return adaptTournamentDetails(result.data);
-}
+    
