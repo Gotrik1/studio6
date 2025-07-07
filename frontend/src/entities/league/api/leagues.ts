@@ -4,7 +4,24 @@
 
 import type { League, LeagueDetails } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import type { Match, Team } from '@prisma/client';
+
+type Team = {
+  id: string;
+  name: string;
+  logo: string | null;
+  dataAiHint: string | null;
+  [key: string]: any;
+};
+
+type Match = {
+    id: string;
+    team1: Team;
+    team2: Team;
+    team1Score: number | null;
+    team2Score: number | null;
+    scheduledAt: string;
+    [key: string]: any;
+};
 
 type BackendLeagueTeam = {
     team: Team;
@@ -14,12 +31,9 @@ type BackendLeagueTeam = {
     losses: number;
     points: number;
 }
-type BackendMatch = Match & {
-    team1: Team;
-    team2: Team;
-}
+type BackendMatch = Match;
 
-type RawBackendLeagueDetails = League & {
+type RawBackendLeagueDetails = Omit<League, 'teams'|'matches'> & {
     teams: BackendLeagueTeam[];
     matches: BackendMatch[];
 }

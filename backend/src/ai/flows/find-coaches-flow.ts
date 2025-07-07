@@ -11,8 +11,8 @@
 
 import { ai } from "../genkit";
 import { z } from "zod";
-import { FindCoachesInputSchema, FindCoachesOutputSchema, CoachSchema } from "../schemas/find-coaches-schema";
-import type { FindCoachesInput, FindCoachesOutput } from "../schemas/find-coaches-schema";
+import { FindCoachesInputSchema, FindCoachesOutputSchema, CoachSchema } from "./schemas/find-coaches-schema";
+import type { FindCoachesInput, FindCoachesOutput } from "./schemas/find-coaches-schema";
 import { PrismaService } from "@/prisma/prisma.service";
 import { Role } from "@prisma/client";
 

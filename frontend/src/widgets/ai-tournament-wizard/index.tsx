@@ -7,7 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
-import { Loader2, Sparkles, Trophy } from 'lucide-react';
+import { Loader2, Sparkles, PartyPopper } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Textarea } from '@/shared/ui/textarea';
@@ -17,7 +17,11 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { createTournament, type CreateTournamentDto } from '@/entities/tournament/api/tournaments';
 import { useRouter } from 'next/navigation';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/ui/select';
-import type { Tournament } from '@prisma/client';
+
+type Tournament = {
+  slug: string;
+};
+
 
 export function AiTournamentWizard() {
     const { toast } = useToast();
@@ -74,12 +78,13 @@ export function AiTournamentWizard() {
         
         const createResult = await createTournament(tournamentData);
         
-        if (createResult.success && createResult.data && 'slug' in (createResult.data as Tournament)) {
+        if (createResult.success && createResult.data && typeof createResult.data === 'object' && 'slug' in createResult.data) {
+            const newTournament = createResult.data as Tournament;
             toast({
                 title: 'Турнир создан!',
                 description: `Турнир "${result.name}" был успешно создан и скоро появится в списке.`
             });
-             router.push(`/tournaments/${(createResult.data as Tournament).slug}`);
+             router.push(`/tournaments/${newTournament.slug}`);
         } else {
              toast({
                 variant: 'destructive',

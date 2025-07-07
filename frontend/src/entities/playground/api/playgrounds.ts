@@ -5,12 +5,8 @@
 import type { Playground, PlaygroundReview, KingTeam } from '@/entities/playground/model/types';
 import { revalidatePath } from 'next/cache';
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import type { User as PrismaUser } from '@prisma/client';
 
-/**
- * Explicit DTO for creating a playground.
- * This ensures the contract with the backend API is clear and consistent.
- */
+// Keep this type as it defines the contract for creating a playground
 export type CreatePlaygroundData = {
     name: string;
     address: string;
@@ -21,10 +17,15 @@ export type CreatePlaygroundData = {
     coverImageHint?: string;
 };
 
-type RawReview = Omit<PlaygroundReview, 'author'> & { author: PrismaUser; createdAt: string; };
+// Local types to represent the raw data from the backend, avoiding direct Prisma dependency
+type PrismaUser = { id: string, name: string, avatar: string | null };
+type PrismaPlaygroundReview = { id: string, rating: number, comment: string, createdAt: string, author: PrismaUser };
+type PrismaPlayground = Omit<Playground, 'reviews' | 'kingOfTheCourt' | 'creator'> & {
+    creator: PrismaUser;
+};
 
-type RawPlayground = Omit<Playground, 'reviews' | 'kingOfTheCourt'> & {
-    reviews: RawReview[];
+type RawPlayground = PrismaPlayground & {
+    reviews: PrismaPlaygroundReview[];
     kingOfTheCourt?: KingTeam | null;
 }
 
@@ -64,12 +65,12 @@ export async function getPlaygroundById(id: string): Promise<Playground | null> 
     return {
         ...playground,
         id: String(playground.id),
-        kingOfTheCourt: playground.kingOfTheCourt, // Pass through new data
+        kingOfTheCourt: playground.kingOfTheCourt,
         reviews: (playground.reviews || []).map((review) => ({
             id: String(review.id),
             rating: review.rating,
             comment: review.comment,
-            timestamp: review.createdAt,
+            timestamp: new Date(review.createdAt).toISOString(),
             author: {
                 id: String(review.author.id),
                 name: review.author.name,

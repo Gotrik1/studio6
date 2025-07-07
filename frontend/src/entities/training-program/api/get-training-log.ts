@@ -4,19 +4,12 @@
 
 import type { TrainingLogEntry, ExerciseLog, LoggedSet } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import type { TrainingLog, LoggedExercise, LoggedSet as PrismaSet, Exercise as PrismaExercise } from '@prisma/client';
 
-type RawLoggedSet = PrismaSet;
-
-type RawExerciseLog = LoggedExercise & {
-    exercise: PrismaExercise;
-    sets: RawLoggedSet[];
-};
-
-type RawTrainingLogEntry = TrainingLog & {
-    exercises: RawExerciseLog[];
-};
-
+// Local types to avoid direct dependency on @prisma/client
+type PrismaExercise = { id: string, name: string, [key: string]: any };
+type PrismaSet = { id: string, plannedReps: string | null, plannedWeight: string | null, loggedReps: number | null, loggedWeight: number | null, rpe: number | null, isCompleted: boolean };
+type RawLoggedExercise = { id: string, notes: string | null, isSupersetWithPrevious: boolean | null, exercise: PrismaExercise, sets: PrismaSet[] };
+type RawTrainingLogEntry = { id: string, date: string, workoutName: string | null, status: 'COMPLETED' | 'PLANNED' | 'SKIPPED', mood: 'great' | 'good' | 'ok' | 'bad' | null, notes: string | null, coachNotes: string | null, exercises: RawLoggedExercise[] };
 
 function transformApiLogToFrontend(apiLog: RawTrainingLogEntry[]): TrainingLogEntry[] {
   return apiLog.map(log => ({
@@ -27,7 +20,7 @@ function transformApiLogToFrontend(apiLog: RawTrainingLogEntry[]): TrainingLogEn
     notes: log.notes,
     coachNotes: log.coachNotes,
     mood: log.mood?.toLowerCase() as 'great' | 'good' | 'ok' | 'bad' | undefined,
-    exercises: log.exercises.map((ex: RawExerciseLog): ExerciseLog => ({
+    exercises: log.exercises.map((ex: RawLoggedExercise): ExerciseLog => ({
       id: ex.id,
       exercise: {
         id: ex.exercise.id,
@@ -35,7 +28,7 @@ function transformApiLogToFrontend(apiLog: RawTrainingLogEntry[]): TrainingLogEn
       },
       notes: ex.notes,
       isSupersetWithPrevious: ex.isSupersetWithPrevious,
-      sets: ex.sets.map((set: RawLoggedSet): LoggedSet => ({
+      sets: ex.sets.map((set: PrismaSet): LoggedSet => ({
         id: set.id,
         plannedReps: set.plannedReps,
         plannedWeight: set.plannedWeight,

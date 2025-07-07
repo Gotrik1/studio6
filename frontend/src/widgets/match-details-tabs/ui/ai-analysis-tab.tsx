@@ -1,29 +1,41 @@
 
+
 'use client';
 
-import { useState } from "react";
-import Image from "next/image";
+import { useState } from 'react';
+import Image from 'next/image';
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic, Share2, Copy, Download, Volume2 } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
-import type { MatchDetails } from "@/entities/match/model/types";
+import type { MatchDetails, MatchEvent } from "@/entities/match/model/types";
 import { analyzeMatchReport, type AnalyzeMatchReportOutput } from '@/shared/api/genkit/flows/analyze-match-report-flow';
 import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
 import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
-import { Textarea } from "@/shared/ui/textarea";
-import { Label } from "@/shared/ui/label";
+import { Textarea } from '@/shared/ui/textarea';
+import { Label } from '@/shared/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { generateMatchCommentary, type GenerateMatchCommentaryOutput } from "@/shared/api/genkit/flows/generate-match-commentary-flow";
+import { useRouter } from 'next/navigation';
+import { createTournamentMedia } from '@/entities/tournament/api/media';
 
 
 interface AiAnalysisTabProps {
     match: MatchDetails;
 }
 
+const mockFinalMatch = {
+    team1: 'Дворовые Атлеты',
+    team2: 'Вымпел',
+    score: '3-3 (2-1 пен)',
+}
+const mockChampion = 'Дворовые Атлеты';
+
+
 export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
     const { toast } = useToast();
+    const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<AnalyzeMatchReportOutput | null>(null);
@@ -57,7 +69,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                 team2Name: match.team2.name,
                 score: match.score,
                 tournament: match.tournament,
-                events: match.events || [],
+                events: (match.events || []) as any,
                 lineupTeam1: match.lineups.team1,
                 lineupTeam2: match.lineups.team2,
             });
@@ -123,9 +135,9 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
         setCommentaryError(null);
         setCommentaryResult(null);
 
-        const mockEvents = [
-            {time: '10:00', event: 'Гол', player: 'Иванов', team: 'Дворовые Атлеты'},
-            {time: '25:00', event: 'Гол', player: 'Петров', team: 'Вымпел'},
+        const mockEvents: MatchEvent[] = [
+            {time: '10:00', event: 'GOAL', player: 'Иванов', team: 'Дворовые Атлеты'},
+            {time: '25:00', event: 'GOAL', player: 'Петров', team: 'Вымпел'},
         ];
 
         try {
@@ -151,6 +163,16 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
           });
         }
     };
+
+    const handleSaveMedia = async (data: { type: 'IMAGE' | 'VIDEO' | 'AUDIO', src: string, description: string, hint: string }) => {
+        const result = await createTournamentMedia(match.id, data);
+        if (result.success) {
+            toast({ title: "Медиа сохранено!", description: "Файл добавлен в галерею турнира." });
+            router.refresh();
+        } else {
+            toast({ variant: 'destructive', title: "Ошибка", description: "Не удалось сохранить медиа." });
+        }
+    }
 
     return (
         <Card>
@@ -311,7 +333,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                                 {isGeneratingPost && <div className="space-y-2"><Skeleton className="h-24 w-full" /><Skeleton className="h-10 w-1/3" /></div>}
                                 {postError && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{postError}</AlertDescription></Alert>}
                                 {postResult && (
-                                    <div className="space-y-4">
+                                     <div className="space-y-4">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div className="space-y-2">
                                                 <Label htmlFor="post-text">Текст поста</Label>
@@ -320,16 +342,14 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                                             <div className="space-y-2">
                                                 <Label>Изображение</Label>
                                                 <div className="relative aspect-video w-full overflow-hidden rounded-md border">
-                                                    <Image src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover"/>
+                                                    <Image src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover" />
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="flex gap-2">
+                                         <div className="flex gap-2">
                                             <Button onClick={() => handleCopyText(postResult.postText)}><Copy className="mr-2 h-4 w-4"/> Копировать текст</Button>
-                                            <Button variant="outline" asChild>
-                                                <a href={postResult.imageDataUri} download="match_post_image.png">
-                                                    <Download className="mr-2 h-4 w-4"/> Скачать изображение
-                                                </a>
+                                            <Button variant="outline" onClick={() => handleSaveMedia({ type: 'IMAGE', src: postResult.imageDataUri, description: postResult.postText, hint: 'match victory post' })}>
+                                                <Download className="mr-2 h-4 w-4"/> Сохранить в галерею
                                             </Button>
                                         </div>
                                     </div>

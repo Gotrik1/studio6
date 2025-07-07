@@ -4,7 +4,9 @@
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { User as PrismaUser } from '@prisma/client';
+
+// Define local types to avoid direct dependency on Prisma
+type PrismaUser = { id: string, name: string, avatar: string | null, role: string, [key: string]: any };
 
 // Frontend-specific types
 export type RosterMember = {
@@ -100,9 +102,7 @@ export async function getTournamentParticipants(tournamentId: string) {
 }
 
 export async function approveApplication(tournamentId: string, applicationId: string) {
-    const result = await fetchWithAuth<{teamId: string, team: { slug: string}}>(`/team-applications/${applicationId}/accept`, {
-        method: 'PATCH',
-    });
+    const result = await fetchWithAuth<{teamId: string, team: { slug: string}}>(`/team-applications/${applicationId}/accept`, { method: 'PATCH' });
     if (result.success && result.data?.team?.slug) {
         revalidateTag(`applications-${tournamentId}`);
         revalidateTag(`team-slug-${result.data.team.slug}`);

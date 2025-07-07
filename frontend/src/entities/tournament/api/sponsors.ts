@@ -5,9 +5,19 @@
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 import type { Sponsor as SponsorType } from '@/entities/sponsor/model/types';
-import type { Sponsor as PrismaSponsor } from '@prisma/client';
 
-type BackendSponsor = PrismaSponsor & { amount?: number };
+// Local type definition to avoid direct Prisma dependency
+type BackendSponsor = {
+    id: string;
+    name: string;
+    logo: string | null;
+    logoHint: string | null;
+    description: string;
+    profileUrl: string;
+    interests: string[];
+    amount?: number;
+};
+
 
 // Adapter to transform a raw sponsor object from the backend
 const adaptSponsor = (sponsor: BackendSponsor | null | undefined): (SponsorType & { amount?: number }) | null => {
@@ -35,10 +45,11 @@ export async function getAssignedSponsors(
 }
 
 export async function getAvailableSponsors() {
-    const result = await fetchWithAuth('/sponsors');
+    const result = await fetchWithAuth<BackendSponsor[]>('/sponsors');
 
     if (result.success && Array.isArray(result.data)) {
-        result.data = result.data.map(adaptSponsor).filter(Boolean);
+        const adaptedData = result.data.map(adaptSponsor).filter(Boolean) as SponsorType[];
+        return { ...result, data: adaptedData };
     }
 
     return result;

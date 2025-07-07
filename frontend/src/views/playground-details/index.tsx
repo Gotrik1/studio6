@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -12,7 +13,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { useSession } from '@/shared/lib/session/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { useLfg } from '@/shared/context/lfg-provider';
+import { useLfg } from '@/app/providers/lfg-provider';
 import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
@@ -28,18 +29,7 @@ import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
 import { reportPlaygroundIssue } from '@/entities/playground/api/report';
 import type { Activity } from '@/entities/feed/model/types';
-
-type PlaygroundActivity = {
-    id: string;
-    user: {
-        name: string;
-        avatar: string | null;
-    };
-    comment: string;
-    photo?: string | null;
-    photoHint?: string;
-    timestamp: string;
-};
+import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
     const { user } = useSession();
@@ -261,7 +251,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
                         <PlaygroundActivityTab activities={activities} isLoading={isLoadingActivities} />
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-6">
-                        <PlaygroundLeaderboardTab playgroundId={playground.id} />
+                        <PlaygroundLeaderboardTab playground={playground} />
                     </TabsContent>
                     <TabsContent value="media" className="mt-6">
                         <PlaygroundMediaTab />

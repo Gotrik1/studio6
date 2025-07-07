@@ -12,6 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import type { User } from "@/shared/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
 
+
 interface UserTableProps {
     users: User[];
     onOpenBanUnbanDialog: (user: User, action: 'ban' | 'unban') => void;
@@ -78,7 +79,7 @@ export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onE
                                     <Badge variant="outline">{user.role}</Badge>
                                 </TableCell>
                                 <TableCell className="hidden md:table-cell">
-                                    <Badge variant={user.status === 'Активен' ? 'default' : 'destructive'}>{user.status}</Badge>
+                                    <Badge variant={user.status === 'ACTIVE' ? 'default' : 'destructive'}>{user.status === 'ACTIVE' ? 'Активен' : 'Забанен'}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
                                      <DropdownMenu>

@@ -2,20 +2,22 @@
 
 'use server';
 
-import type { TournamentDetails, BracketMatch, BracketRound, MatchEvent } from '@/entities/tournament/model/types';
+import type { TournamentDetails, BracketMatch, BracketRound, MatchEvent, TournamentMedia } from '@/entities/tournament/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import type { Team, Match, User, TournamentMedia as PrismaTournamentMedia, MediaType } from '@prisma/client';
 
-export type TournamentMedia = Omit<PrismaTournamentMedia, 'createdAt'> & { createdAt: string };
-type RawTeam = Pick<Team, 'name' | 'logo' | 'dataAiHint' | 'slug'>;
-type RawMatch = Pick<Match, 'id' | 'team1Score' | 'team2Score' | 'scheduledAt'> & { winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam, events?: MatchEvent[] };
+// Local types to avoid direct dependency on @prisma/client
+type RawTeam = { name: string; logo: string | null; dataAiHint: string | null; slug?: string; };
+type RawMatch = { id: string | number, team1Score: number | null, team2Score: number | null, scheduledAt: string, winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam, events?: MatchEvent[] };
 type RawRound = { name: string; matches: RawMatch[] };
+type RawUser = { name: string, avatar: string | null };
+type RawTournamentMedia = { id: string, createdAt: string, tournamentId: string, description: string | null, type: string, src: string, hint: string | null };
+
 type RawTournamentData = Omit<TournamentDetails, 'bracket' | 'teams' | 'matches' | 'media' | 'organizer'> & {
     bracket: { rounds: RawRound[] };
     teams: RawTeam[];
     matches: RawMatch[];
-    media: { id: string, createdAt: Date, tournamentId: string, description: string | null, type: MediaType, src: string, hint: string | null }[];
-    organizer: Pick<User, 'name' | 'avatar'>;
+    media: RawTournamentMedia[];
+    organizer: RawUser;
 };
 
 // Adapter function to transform raw backend data into the frontend's TournamentDetails type

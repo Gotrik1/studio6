@@ -1,7 +1,6 @@
-
 import { Module } from "@nestjs/common";
-import { AppController } from "../app.controller";
-import { AppService } from "../app.service";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
 import { UsersModule } from "./users/users.module";
 import { TeamsModule } from "./teams/teams.module";
 import { TournamentsModule } from "./tournaments/tournaments.module";
@@ -51,7 +50,7 @@ import { SponsorshipOffersModule } from "./sponsorship-offers/sponsorship-offers
 import { WebsocketsModule } from "./websockets/websockets.module";
 import { StorageModule } from "./storage/storage.module";
 import { MonitoringModule } from "./monitoring/monitoring.module";
-import { PlaygroundReportsModule } from './playground-reports/playground-reports.module';
+import { PlaygroundReportsModule } from "./playground-reports/playground-reports.module";
 
 @Module({
   imports: [

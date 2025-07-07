@@ -21,16 +21,14 @@ import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
 import { useParams } from 'next/navigation';
-import type { CoachedPlayer } from '@/entities/user/model/types';
+import type { CoachedPlayer, JoinRequest } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
-import type { JoinRequest } from '@/entities/team-application/model/types';
+import type { Application } from '@/entities/team-application/api/applications';
 
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
-
-type Application = JoinRequest;
 
 export function TeamManagementPage() {
     const { toast } = useToast();
@@ -65,7 +63,7 @@ export function TeamManagementPage() {
             if (teamData) {
                 const appsResult = await getTeamApplications(teamData.id);
                  if (appsResult.success && Array.isArray(appsResult.data)) {
-                    setJoinRequests(appsResult.data as JoinRequest[]);
+                    setJoinRequests(appsResult.data as Application[]);
                 } else {
                     toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
                 }

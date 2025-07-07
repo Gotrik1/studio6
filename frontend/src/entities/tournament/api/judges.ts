@@ -4,12 +4,10 @@
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { User as PrismaUser } from '@prisma/client';
 import type { User } from '@/shared/lib/types';
 
-
-type BackendJudge = PrismaUser;
-
+// Assuming the backend returns a user object compatible with this structure.
+type BackendJudge = User;
 
 // Adapter function to map backend judge data to frontend User type
 const mapBackendJudgeToFrontendUser = (backendJudge: BackendJudge): User => {
@@ -31,7 +29,7 @@ export async function getAssignedJudges(tournamentId: string): Promise<User[]> {
 }
 
 export async function getAvailableJudges(): Promise<User[]> {
-    const result = await fetchWithAuth<BackendJudge[]>('/users?role=Судья');
+    const result = await fetchWithAuth<BackendJudge[]>('/users?role=JUDGE');
     // Assuming /users endpoint already returns the correct User shape, but we can map just in case.
     if (result.success && Array.isArray(result.data)) {
          return result.data.map(mapBackendJudgeToFrontendUser);
