@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect, useTransition, useCallback, type ComponentType } from 'react';
+import { useState, useEffect, useTransition, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
 import { Button } from '@/shared/ui/button';
@@ -38,122 +38,6 @@ const FriendCardSkeleton = () => (
         </div>
     </div>
 );
-
-const renderContent = (loading: boolean, data: any[], Component: ComponentType<any>, onAction: any, onAction2?: any, emptyMessage: string = 'Пусто') => {
-    if (loading) {
-        return (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <FriendCardSkeleton />
-                <FriendCardSkeleton />
-                <FriendCardSkeleton />
-            </div>
-        )
-    }
-    if (data.length === 0) {
-        return <p className="col-span-full text-center text-muted-foreground py-8">{emptyMessage}</p>
-    }
-    return <Component data={data} onAction={onAction} onAction2={onAction2} />
-};
-
-export function FriendsPage() {
-    const { toast } = useToast();
-    const [friends, setFriends] = useState<Friend[]>([]);
-    const [requests, setRequests] = useState<FriendRequest[]>([]);
-    const [suggestions, setSuggestions] = useState<FriendSuggestion[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [, startTransition] = useTransition();
-
-    const fetchAllData = useCallback(async () => {
-        setLoading(true);
-        try {
-            const [friendsData, requestsData, suggestionsData] = await Promise.all([
-                getFriends(),
-                getFriendRequests(),
-                getFriendSuggestions()
-            ]);
-            setFriends(friendsData);
-            setRequests(requestsData);
-            setSuggestions(suggestionsData);
-        } catch (error) {
-            console.error(error);
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить данные.' });
-        } finally {
-            setLoading(false);
-        }
-    }, [toast]);
-
-    useEffect(() => {
-        fetchAllData();
-    }, [fetchAllData]);
-
-    const handleAction = (action: (...args: any[]) => Promise<any>, successMessage: string, errorMessage: string, ...args: any[]) => {
-        startTransition(async () => {
-            try {
-                await action(...args);
-                toast({ title: successMessage });
-                await fetchAllData();
-            } catch (e) {
-                console.error(e);
-                toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
-            }
-        });
-    }
-
-    const handleAcceptRequest = (request: FriendRequest) => handleAction(acceptFriendRequest, 'Запрос принят', 'Не удалось принять запрос', request.id);
-    const handleDeclineRequest = (request: FriendRequest) => handleAction(declineFriendRequest, 'Запрос отклонен', 'Не удалось отклонить запрос', request.id);
-    const handleRemoveFriend = (friend: Friend) => handleAction(removeFriend, 'Друг удален', 'Не удалось удалить друга', friend.id);
-    const handleAddFriend = (suggestion: FriendSuggestion) => handleAction(addSuggestedFriend, 'Запрос отправлен', 'Не удалось отправить запрос', suggestion.id);
-
-    return (
-        <div className="space-y-6 opacity-0 animate-fade-in-up">
-            <div className="space-y-2">
-                <h1 className="font-headline text-3xl font-bold tracking-tight">Друзья</h1>
-                <p className="text-muted-foreground">
-                    Управляйте вашим списком друзей и находите новых.
-                </p>
-            </div>
-
-            <Tabs defaultValue="friends">
-                <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="friends">
-                        Мои друзья <Badge className="ml-2">{friends.length}</Badge>
-                    </TabsTrigger>
-                    <TabsTrigger value="requests">
-                        Запросы <Badge className="ml-2">{requests.length}</Badge>
-                    </TabsTrigger>
-                    <TabsTrigger value="suggestions">Рекомендации</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="friends" className="mt-4">
-                    <Card>
-                        <CardHeader><CardTitle>Список друзей</CardTitle></CardHeader>
-                        <CardContent>
-                            {renderContent(loading, friends, FriendsList, handleRemoveFriend, undefined, "У вас пока нет друзей.")}
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                <TabsContent value="requests" className="mt-4">
-                    <Card>
-                         <CardHeader><CardTitle>Входящие запросы</CardTitle><CardDescription>Запросы на добавление в друзья от других игроков.</CardDescription></CardHeader>
-                        <CardContent>
-                           {renderContent(loading, requests, RequestsList, handleAcceptRequest, handleDeclineRequest, "Новых запросов нет.")}
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                <TabsContent value="suggestions" className="mt-4">
-                     <Card>
-                         <CardHeader><CardTitle>Возможные друзья</CardTitle><CardDescription>Игроки, которых вы можете знать.</CardDescription></CardHeader>
-                        <CardContent>
-                            {renderContent(loading, suggestions, SuggestionsList, handleAddFriend, undefined, "Нет новых рекомендаций.")}
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
-        </div>
-    );
-}
 
 const FriendsList = ({data, onAction}: {data: Friend[], onAction: (friend: Friend) => void}) => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -222,3 +106,129 @@ const SuggestionsList = ({data, onAction}: {data: FriendSuggestion[], onAction: 
        ))}
    </div>
 );
+
+export function FriendsPage() {
+    const { toast } = useToast();
+    const [friends, setFriends] = useState<Friend[]>([]);
+    const [requests, setRequests] = useState<FriendRequest[]>([]);
+    const [suggestions, setSuggestions] = useState<FriendSuggestion[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [, startTransition] = useTransition();
+
+    const fetchAllData = useCallback(async () => {
+        setLoading(true);
+        try {
+            const [friendsData, requestsData, suggestionsData] = await Promise.all([
+                getFriends(),
+                getFriendRequests(),
+                getFriendSuggestions()
+            ]);
+            setFriends(friendsData);
+            setRequests(requestsData);
+            setSuggestions(suggestionsData);
+        } catch (error) {
+            console.error(error);
+            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить данные.' });
+        } finally {
+            setLoading(false);
+        }
+    }, [toast]);
+
+    useEffect(() => {
+        fetchAllData();
+    }, [fetchAllData]);
+
+    const handleAction = (action: (id: string) => Promise<unknown>, successMessage: string, errorMessage: string, id: string) => {
+        startTransition(async () => {
+            try {
+                await action(id);
+                toast({ title: successMessage });
+                await fetchAllData();
+            } catch (e) {
+                console.error(e);
+                toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
+            }
+        });
+    }
+
+    const handleAcceptRequest = (request: FriendRequest) => handleAction(acceptFriendRequest, 'Запрос принят', 'Не удалось принять запрос', request.id);
+    const handleDeclineRequest = (request: FriendRequest) => handleAction(declineFriendRequest, 'Запрос отклонен', 'Не удалось отклонить запрос', request.id);
+    const handleRemoveFriend = (friend: Friend) => handleAction(removeFriend, 'Друг удален', 'Не удалось удалить друга', friend.id);
+    const handleAddFriend = (suggestion: FriendSuggestion) => handleAction(addSuggestedFriend, 'Запрос отправлен', 'Не удалось отправить запрос', suggestion.id);
+
+    return (
+        <div className="space-y-6 opacity-0 animate-fade-in-up">
+            <div className="space-y-2">
+                <h1 className="font-headline text-3xl font-bold tracking-tight">Друзья</h1>
+                <p className="text-muted-foreground">
+                    Управляйте вашим списком друзей и находите новых.
+                </p>
+            </div>
+
+            <Tabs defaultValue="friends">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="friends">
+                        Мои друзья <Badge className="ml-2">{friends.length}</Badge>
+                    </TabsTrigger>
+                    <TabsTrigger value="requests">
+                        Запросы <Badge className="ml-2">{requests.length}</Badge>
+                    </TabsTrigger>
+                    <TabsTrigger value="suggestions">Рекомендации</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="friends" className="mt-4">
+                    <Card>
+                        <CardHeader><CardTitle>Список друзей</CardTitle></CardHeader>
+                        <CardContent>
+                            {loading ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    <FriendCardSkeleton />
+                                    <FriendCardSkeleton />
+                                    <FriendCardSkeleton />
+                                </div>
+                            ) : friends.length === 0 ? (
+                                <p className="col-span-full text-center text-muted-foreground py-8">У вас пока нет друзей.</p>
+                            ) : (
+                                <FriendsList data={friends} onAction={handleRemoveFriend} />
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="requests" className="mt-4">
+                    <Card>
+                         <CardHeader><CardTitle>Входящие запросы</CardTitle><CardDescription>Запросы на добавление в друзья от других игроков.</CardDescription></CardHeader>
+                        <CardContent>
+                           {loading ? (
+                                <div className="space-y-3">
+                                    <FriendCardSkeleton />
+                                </div>
+                            ) : requests.length === 0 ? (
+                                <p className="col-span-full text-center text-muted-foreground py-8">Новых запросов нет.</p>
+                            ) : (
+                               <RequestsList data={requests} onAction={handleAcceptRequest} onAction2={handleDeclineRequest} />
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="suggestions" className="mt-4">
+                     <Card>
+                         <CardHeader><CardTitle>Возможные друзья</CardTitle><CardDescription>Игроки, которых вы можете знать.</CardDescription></CardHeader>
+                        <CardContent>
+                            {loading ? (
+                                <div className="space-y-3">
+                                    <FriendCardSkeleton />
+                                </div>
+                            ) : suggestions.length === 0 ? (
+                                <p className="col-span-full text-center text-muted-foreground py-8">Нет новых рекомендаций.</p>
+                            ) : (
+                                <SuggestionsList data={suggestions} onAction={handleAddFriend} />
+                            )}
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+            </Tabs>
+        </div>
+    );
+}
