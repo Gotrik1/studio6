@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2, PlusCircle } from 'lucide-react';
+import { CalendarIcon, Loader2, PlusCircle, UploadCloud } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
@@ -24,7 +24,6 @@ import type { Sport } from '@/entities/sport/model/types';
 import { getSports } from '@/entities/sport/api/sports';
 import { Textarea } from '@/shared/ui/textarea';
 import { Separator } from '@/shared/ui/separator';
-import type { Tournament } from '@prisma/client';
 
 const tournamentSchema = z.object({
   name: z.string().min(5, 'Название должно быть не менее 5 символов.'),
@@ -93,7 +92,8 @@ export function ManualTournamentForm({ isEditMode }: ManualTournamentFormProps) 
             title: 'Турнир создан!',
             description: `Турнир "${data.name}" был успешно создан и скоро появится в списке.`
         });
-        router.push(`/tournaments/${(result.data as { slug: string }).slug}`);
+        const newTournament = result.data as { slug: string };
+        router.push(`/tournaments/${newTournament.slug}`);
     } else {
          toast({
             variant: 'destructive',
