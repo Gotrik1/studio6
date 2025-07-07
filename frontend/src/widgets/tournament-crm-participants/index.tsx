@@ -47,13 +47,13 @@ export function CrmTournamentParticipants({ tournamentId }: CrmTournamentPartici
             
             if (appsResult.success && appsResult.data) {
                 setApplications(appsResult.data);
-            } else {
+            } else if (!appsResult.success) {
                 throw new Error(appsResult.error);
             }
 
             if (participantsResult.success && participantsResult.data) {
                 setParticipants(participantsResult.data);
-            } else {
+            } else if (!participantsResult.success) {
                 throw new Error(participantsResult.error);
             }
 

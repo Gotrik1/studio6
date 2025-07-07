@@ -9,7 +9,7 @@ export type GeneratePromotionImageOutput = {
 };
 
 export async function generatePromotionImage(prompt: GeneratePromotionImageInput): Promise<GeneratePromotionImageOutput> {
-  const result = await fetchWithAuth('/ai/generate-promotion-image', {
+  const result = await fetchWithAuth<GeneratePromotionImageOutput>('/ai/generate-promotion-image', {
     method: 'POST',
     body: JSON.stringify({ prompt }),
   });

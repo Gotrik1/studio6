@@ -15,7 +15,7 @@ export type GeneratePlaygroundTacticOutput = {
 };
 
 export async function generatePlaygroundTactic(input: GeneratePlaygroundTacticInput): Promise<GeneratePlaygroundTacticOutput> {
-    const result = await fetchWithAuth('/ai/generate-playground-tactic', {
+    const result = await fetchWithAuth<GeneratePlaygroundTacticOutput>('/ai/generate-playground-tactic', {
         method: 'POST',
         body: JSON.stringify(input),
     });

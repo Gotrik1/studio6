@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/shared/ui/card';
@@ -17,7 +19,6 @@ import { Button } from '@/shared/ui/button';
 import { Save } from 'lucide-react';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { CrmTournamentMediaCenter } from '@/widgets/crm-tournament-media-center';
-import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 import { CrmTournamentDisputes } from '@/widgets/crm-tournament-disputes';
 import { getTournamentById } from '@/entities/tournament/api/get-tournament';
 import type { TournamentDetails } from '@/entities/tournament/model/types';
@@ -41,8 +42,6 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             setLoading(true);
             const data = await getTournamentById(tournamentId);
             if (!data) {
-                // notFound() can only be used in server components.
-                // Redirecting instead.
                 router.push('/404');
                 return;
             }

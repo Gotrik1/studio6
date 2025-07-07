@@ -16,7 +16,7 @@ export type GeneratePromotionWizardOutput = {
 };
 
 export async function generatePromotionWizard(input: GeneratePromotionWizardInput): Promise<GeneratePromotionWizardOutput> {
-  const result = await fetchWithAuth('/ai/generate-promotion-wizard', {
+  const result = await fetchWithAuth<GeneratePromotionWizardOutput>('/ai/generate-promotion-wizard', {
     method: 'POST',
     body: JSON.stringify(input),
     cache: 'no-store',

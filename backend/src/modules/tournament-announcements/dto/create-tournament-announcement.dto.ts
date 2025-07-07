@@ -1,7 +1,7 @@
 import { IsString, MinLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CreateAnnouncementDto {
+export class CreateTournamentAnnouncementDto {
   @ApiProperty({
     description: "Тема объявления",
     example: "Изменение расписания",

@@ -12,7 +12,7 @@ export type GenerateDashboardTipOutput = {
 };
 
 export async function generateDashboardTip(): Promise<GenerateDashboardTipOutput> {
-    const result = await fetchWithAuth('/ai/dashboard-tip');
+    const result = await fetchWithAuth<GenerateDashboardTipOutput>('/ai/dashboard-tip');
     
     if (!result.success) {
         throw new Error(result.error || 'Failed to fetch dashboard tip');

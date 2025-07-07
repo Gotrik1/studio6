@@ -1,17 +1,30 @@
+
+
 'use client';
 
-import { PlaygroundActivityFeed } from '@/widgets/playground-activity-feed';
+import { PlaygroundActivityFeed, type PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { PlaygroundCurrentActivity } from '@/widgets/playground-current-activity';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Card, CardHeader, CardContent } from '@/shared/ui/card';
-import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
+import type { Activity } from '@/entities/feed/model/types';
+
 
 interface PlaygroundActivityTabProps {
-    activities: PlaygroundActivity[];
+    activities: Activity[];
     isLoading: boolean;
 }
 
 export function PlaygroundActivityTab({ activities, isLoading }: PlaygroundActivityTabProps) {
+    const formattedActivities: PlaygroundActivity[] = (activities || [])
+        .filter(act => act.type === 'PLAYGROUND_CHECK_IN' && 'comment' in act.metadata)
+        .map(act => ({
+            id: act.id,
+            user: act.user,
+            comment: (act.metadata as { comment?: string }).comment || 'Отметился на площадке.',
+            photo: (act.metadata as { photo?: string }).photo,
+            timestamp: act.createdAt
+        }));
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
@@ -41,11 +54,11 @@ export function PlaygroundActivityTab({ activities, isLoading }: PlaygroundActiv
                         </CardContent>
                     </Card>
                 ) : (
-                    <PlaygroundActivityFeed activities={activities} />
+                    <PlaygroundActivityFeed activities={formattedActivities} />
                 )}
             </div>
             <div className="lg:col-span-1">
-                <PlaygroundCurrentActivity activities={activities} />
+                <PlaygroundCurrentActivity activities={formattedActivities} />
             </div>
         </div>
     );

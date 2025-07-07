@@ -20,7 +20,7 @@ export type GeneratePlaygroundWorkoutOutput = {
 };
 
 export async function generatePlaygroundWorkout(input: GeneratePlaygroundWorkoutInput): Promise<GeneratePlaygroundWorkoutOutput> {
-  const result = await fetchWithAuth('/ai/generate-playground-workout', {
+  const result = await fetchWithAuth<GeneratePlaygroundWorkoutOutput>('/ai/generate-playground-workout', {
     method: 'POST',
     body: JSON.stringify(input),
     cache: 'no-store',

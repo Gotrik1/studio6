@@ -174,5 +174,6 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
                 </CardContent>
             </Card>
         </div>
+        </>
     );
 }

@@ -11,6 +11,7 @@ import { Popover, PopoverTrigger, PopoverContent } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { format, addDays, subDays } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import type { FoodLogEntry } from '@/entities/nutrition/model/types';
 import type { FoodItem } from '@/entities/nutrition/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useNutrition } from '@/shared/context/nutrition-provider';
@@ -162,7 +163,7 @@ function ProductCatalogTab() {
         async function loadItems() {
             setIsLoading(true);
             const items = await getFoodItems();
-            setFoodItems(items);
+            setFoodItems(items as FoodItem[]);
             setIsLoading(false);
         }
         loadItems();

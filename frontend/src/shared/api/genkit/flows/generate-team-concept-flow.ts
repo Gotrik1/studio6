@@ -14,7 +14,7 @@ export type GenerateTeamConceptOutput = {
 };
 
 export async function generateTeamConcept(input: GenerateTeamConceptInput): Promise<GenerateTeamConceptOutput> {
-  const result = await fetchWithAuth('/ai/generate-team-concept', {
+  const result = await fetchWithAuth<GenerateTeamConceptOutput>('/ai/generate-team-concept', {
     method: 'POST',
     body: JSON.stringify(input),
     cache: 'no-store',

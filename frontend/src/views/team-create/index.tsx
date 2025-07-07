@@ -17,7 +17,7 @@ import { generateTeamConcept, type GenerateTeamConceptOutput } from '@/shared/ap
 import { Skeleton } from '@/shared/ui/skeleton';
 import { createTeamAction } from '@/entities/team/api/create-team';
 import { useSession } from '@/shared/lib/session/client';
-import type { Team } from '@prisma/client';
+import type { Team } from '@/entities/team/model/types';
 
 export function NewTeamPage() {
     const { toast } = useToast();
@@ -80,7 +80,7 @@ export function NewTeamPage() {
              toast({
                 variant: 'destructive',
                 title: 'Ошибка',
-                description: createResult.error || 'Не удалось создать команду.',
+                description: (createResult.error as string) || 'Не удалось создать команду.',
             });
         }
         setIsCreating(false);

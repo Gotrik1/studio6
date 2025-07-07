@@ -399,7 +399,9 @@ export class TeamsService implements OnModuleInit {
     }
 
     if (team.captainId !== captainId) {
-      throw new ForbiddenException("Только капитан может удалять участников.");
+      throw new ForbiddenException(
+        "Только капитан может удалять участников.",
+      );
     }
 
     if (memberIdToRemove === captainId) {

@@ -13,7 +13,7 @@ export type GenerateSportSummaryOutput = {
 };
 
 export async function generateSportSummary(input: GenerateSportSummaryInput): Promise<GenerateSportSummaryOutput> {
-  const result = await fetchWithAuth('/ai/generate-sport-summary', {
+  const result = await fetchWithAuth<GenerateSportSummaryOutput>('/ai/generate-sport-summary', {
     method: 'POST',
     body: JSON.stringify(input),
   });

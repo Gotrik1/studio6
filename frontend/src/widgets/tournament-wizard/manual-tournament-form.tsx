@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -86,11 +88,11 @@ export function ManualTournamentForm({ isEditMode }: ManualTournamentFormProps) 
     const result = await createTournament(tournamentData);
     
     if (result.success && result.data && typeof result.data === 'object' && 'slug' in result.data) {
+        const newTournament = result.data as { slug: string };
         toast({
             title: 'Турнир создан!',
             description: `Турнир "${data.name}" был успешно создан и скоро появится в списке.`
         });
-        const newTournament = result.data as { slug: string };
         router.push(`/tournaments/${newTournament.slug}`);
     } else {
          toast({

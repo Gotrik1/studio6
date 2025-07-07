@@ -21,7 +21,7 @@ export type GenerateTournamentWizardOutput = {
 
 
 export async function generateTournamentWizard(input: GenerateTournamentWizardInput): Promise<GenerateTournamentWizardOutput> {
-  const result = await fetchWithAuth('/ai/generate-tournament-wizard', {
+  const result = await fetchWithAuth<GenerateTournamentWizardOutput>('/ai/generate-tournament-wizard', {
     method: 'POST',
     body: JSON.stringify(input),
     cache: 'no-store',

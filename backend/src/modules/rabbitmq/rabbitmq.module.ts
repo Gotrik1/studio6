@@ -8,7 +8,7 @@ import { WebsocketsModule } from "../websockets/websockets.module";
 @Global()
 @Module({
   imports: [
-    NestRabbitMQModule.forRoot({
+    NestRabbitMQModule.forRoot(NestRabbitMQModule, {
       exchanges: [
         {
           name: PRODVOR_EXCHANGE,

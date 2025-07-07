@@ -44,7 +44,7 @@ export class UsersService {
         name,
         email,
         passwordHash: password || "mock_hash",
-        role: (role as Role) || Role.PLAYER,
+        role: role as Role,
         status: UserStatus.ACTIVE,
         xp: 0,
       },

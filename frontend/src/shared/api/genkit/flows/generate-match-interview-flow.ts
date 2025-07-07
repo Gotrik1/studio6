@@ -14,7 +14,7 @@ export type GenerateMatchInterviewOutput = {
 
 
 export async function generateMatchInterview(input: GenerateMatchInterviewInput): Promise<GenerateMatchInterviewOutput> {
-  const result = await fetchWithAuth('/ai/generate-match-interview', {
+  const result = await fetchWithAuth<GenerateMatchInterviewOutput>('/ai/generate-match-interview', {
     method: 'POST',
     body: JSON.stringify(input),
     cache: 'no-store',

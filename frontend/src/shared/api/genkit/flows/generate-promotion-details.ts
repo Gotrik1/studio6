@@ -13,7 +13,7 @@ export type GeneratePromotionDetailsOutput = {
 };
 
 export async function generatePromotionDetails(input: GeneratePromotionDetailsInput): Promise<GeneratePromotionDetailsOutput> {
-  const result = await fetchWithAuth('/ai/generate-promotion-details', {
+  const result = await fetchWithAuth<GeneratePromotionDetailsOutput>('/ai/generate-promotion-details', {
     method: 'POST',
     body: JSON.stringify(input),
   });

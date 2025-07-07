@@ -33,7 +33,7 @@ export type GenerateTrainingProgramOutput = {
 };
 
 export async function generateTrainingProgram(input: GenerateTrainingProgramInput): Promise<GenerateTrainingProgramOutput> {
-  const result = await fetchWithAuth('/ai/generate-training-program', {
+  const result = await fetchWithAuth<GenerateTrainingProgramOutput>('/ai/generate-training-program', {
     method: 'POST',
     body: JSON.stringify(input),
   });

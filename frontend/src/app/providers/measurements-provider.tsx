@@ -38,12 +38,12 @@ export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
         loadMeasurements();
     }, [loadMeasurements]);
 
-    const addMeasurement = async (data: Omit<Measurement, 'id'>) => {
+    const addMeasurement = async (data: Omit<Measurement, 'id'>): Promise<FetchResult<Measurement>> => {
         const result = await createMeasurement(data);
         if (result.success) {
             await loadMeasurements(); // Refetch to get the latest data
         }
-        return result as FetchResult<Measurement>;
+        return result;
     };
 
     const value = { history, addMeasurement, isLoading };

@@ -27,7 +27,7 @@ export type GenerateNutritionPlanOutput = {
 };
 
 export async function generateNutritionPlan(input: GenerateNutritionPlanInput): Promise<GenerateNutritionPlanOutput> {
-  const result = await fetchWithAuth('/ai/generate-nutrition-plan', {
+  const result = await fetchWithAuth<GenerateNutritionPlanOutput>('/ai/generate-nutrition-plan', {
     method: 'POST',
     body: JSON.stringify(input),
     cache: 'no-store',

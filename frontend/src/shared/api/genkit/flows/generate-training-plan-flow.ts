@@ -24,7 +24,7 @@ export type GenerateTrainingPlanOutput = {
 };
 
 export async function generateTrainingPlan(input: GenerateTrainingPlanInput): Promise<GenerateTrainingPlanOutput> {
-  const result = await fetchWithAuth('/ai/generate-training-plan', {
+  const result = await fetchWithAuth<GenerateTrainingPlanOutput>('/ai/generate-training-plan', {
     method: 'POST',
     body: JSON.stringify(input),
     cache: 'no-store',

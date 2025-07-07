@@ -14,7 +14,7 @@ export type GeneratePlaygroundSummaryOutput = {
 };
 
 export async function generatePlaygroundSummary(input: GeneratePlaygroundSummaryInput): Promise<GeneratePlaygroundSummaryOutput> {
-  const result = await fetchWithAuth('/ai/generate-playground-summary', {
+  const result = await fetchWithAuth<GeneratePlaygroundSummaryOutput>('/ai/generate-playground-summary', {
     method: 'POST',
     body: JSON.stringify(input),
   });

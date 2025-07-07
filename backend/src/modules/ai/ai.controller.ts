@@ -127,7 +127,6 @@ import type { GenerateTrainingProgramOutput } from "@/ai/flows/schemas/generate-
 import type { OnboardingOutput } from "@/ai/flows/schemas/onboarding-assistant-schema";
 import type { PredictMatchOutcomeOutput } from "@/ai/flows/schemas/predict-match-outcome-schema";
 import { PlayerScoutDto } from "./dto/player-scout.dto";
-import type { PlayerScoutOutput } from "@/ai/flows/player-scout-flow";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { Request } from "express";
 import { GeneratePlaygroundChallengeDto } from "./dto/generate-playground-challenge.dto";
@@ -137,6 +136,7 @@ import { GenerateTeamAvatarDto } from "./dto/generate-team-avatar.dto";
 import type { GenerateTeamAvatarOutput } from "@/ai/flows/schemas/generate-team-avatar-schema";
 import type { GeneratePlaygroundTacticOutput } from '@/ai/flows/schemas/generate-playground-tactic-schema';
 import type { GeneratePlaygroundWorkoutOutput } from '@/ai/flows/schemas/generate-playground-workout-schema';
+import type { PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
 
 type AuthenticatedUser = {
   userId: string;

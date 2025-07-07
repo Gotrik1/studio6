@@ -15,7 +15,7 @@ export type GenerateSponsorshipPitchOutput = {
 };
 
 export async function generateSponsorshipPitch(input: GenerateSponsorshipPitchInput): Promise<GenerateSponsorshipPitchOutput> {
-   const result = await fetchWithAuth('/ai/generate-sponsorship-pitch', {
+   const result = await fetchWithAuth<GenerateSponsorshipPitchOutput>('/ai/generate-sponsorship-pitch', {
         method: 'POST',
         body: JSON.stringify(input),
     });

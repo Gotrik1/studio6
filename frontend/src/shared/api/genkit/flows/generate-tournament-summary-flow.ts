@@ -27,7 +27,7 @@ export type GenerateTournamentSummaryOutput = {
 };
 
 export async function generateTournamentSummary(input: GenerateTournamentSummaryInput): Promise<GenerateTournamentSummaryOutput> {
-  const result = await fetchWithAuth('/ai/generate-tournament-summary', {
+  const result = await fetchWithAuth<GenerateTournamentSummaryOutput>('/ai/generate-tournament-summary', {
     method: 'POST',
     body: JSON.stringify(input),
     cache: 'no-store',

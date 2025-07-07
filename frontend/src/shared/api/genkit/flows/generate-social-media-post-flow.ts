@@ -17,7 +17,7 @@ export type GenerateSocialMediaPostOutput = {
 };
 
 export async function generateSocialMediaPost(input: GenerateSocialMediaPostInput): Promise<GenerateSocialMediaPostOutput> {
-    const response = await fetchWithAuth('/ai/generate-social-media-post', {
+    const response = await fetchWithAuth<GenerateSocialMediaPostOutput>('/ai/generate-social-media-post', {
         method: 'POST',
         headers: {
         'Content-Type': 'application/json',

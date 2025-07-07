@@ -14,7 +14,7 @@ export type GenerateTeamAvatarOutput = {
 export async function generateTeamAvatar(
   input: GenerateTeamAvatarInput
 ): Promise<GenerateTeamAvatarOutput> {
-  const result = await fetchWithAuth('/ai/generate-team-avatar', {
+  const result = await fetchWithAuth<GenerateTeamAvatarOutput>('/ai/generate-team-avatar', {
     method: 'POST',
     body: JSON.stringify(input),
   });

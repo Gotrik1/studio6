@@ -16,7 +16,7 @@ export async function generateUserAvatar(
   input: GenerateUserAvatarInput
 ): Promise<GenerateUserAvatarOutput> {
 
-  const response = await fetchWithAuth(
+  const response = await fetchWithAuth<GenerateUserAvatarOutput>(
     `/ai/generate-user-avatar`,
     {
       method: 'POST',

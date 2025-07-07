@@ -9,7 +9,7 @@ export type GeneratePostImageOutput = {
 };
 
 export async function generatePostImage(prompt: GeneratePostImageInput): Promise<GeneratePostImageOutput> {
-    const result = await fetchWithAuth('/api/ai/generate-post-image', {
+    const result = await fetchWithAuth<GeneratePostImageOutput>('/ai/generate-post-image', {
         method: 'POST',
         body: JSON.stringify({ prompt }),
     });

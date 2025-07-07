@@ -13,7 +13,7 @@ export type GenerateProfileBannerOutput = {
 export async function generateProfileBanner(
   input: GenerateProfileBannerInput
 ): Promise<GenerateProfileBannerOutput> {
-  const response = await fetchWithAuth('/ai/generate-profile-banner', {
+  const response = await fetchWithAuth<GenerateProfileBannerOutput>('/ai/generate-profile-banner', {
     method: 'POST',
     body: JSON.stringify(input),
   });
