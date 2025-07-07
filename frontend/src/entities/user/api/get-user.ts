@@ -27,7 +27,7 @@ export type PlayerProfilePageData = {
 };
 
 const formatActivityText = (activity: Activity): string => {
-    const metadata = activity.metadata as any;
+    const metadata: Record<string, string> = activity.metadata as Record<string, string>;
     switch(activity.type) {
         case 'STATUS_POSTED':
             return metadata.text;
@@ -58,7 +58,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
     }
     
     const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map((activity: Activity) => {
-        const metadata: any = activity.metadata;
+        const metadata: Record<string, string> = activity.metadata as Record<string, string>;
         const IconName = metadata.icon as keyof typeof LucideIcons;
         return {
             id: activity.id,

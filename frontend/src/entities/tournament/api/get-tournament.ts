@@ -72,7 +72,7 @@ export async function getTournamentBySlug(slug: string): Promise<TournamentDetai
         return null;
     }
 
-    return adaptTournamentDetails(result.data);
+    return adaptTournamentDetails(result.data as RawTournamentData);
 }
 
 export async function getTournamentById(id: string): Promise<TournamentDetails | null> {
@@ -87,5 +87,5 @@ export async function getTournamentById(id: string): Promise<TournamentDetails |
         return null;
     }
     
-    return adaptTournamentDetails(result.data);
+    return adaptTournamentDetails(result.data as RawTournamentData);
 }

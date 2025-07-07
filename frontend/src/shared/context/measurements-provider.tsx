@@ -2,7 +2,7 @@
 
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { Measurement } from '@/entities/user/model/types';
 import { getMeasurements, createMeasurement } from '@/entities/measurement/api/measurements';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -16,7 +16,7 @@ interface MeasurementsContextType {
 
 const MeasurementsContext = createContext<MeasurementsContextType | undefined>(undefined);
 
-export const MeasurementsProvider = ({ children }: { children: React.ReactNode }) => {
+export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
     const { toast } = useToast();
     const [history, setHistory] = useState<Measurement[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -26,8 +26,8 @@ export const MeasurementsProvider = ({ children }: { children: React.ReactNode }
         try {
             const data = await getMeasurements();
             setHistory(data);
-        } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить замеры.';
+        } catch (e: unknown) {
+            const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить замеры.';
             toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
         } finally {
             setIsLoading(false);

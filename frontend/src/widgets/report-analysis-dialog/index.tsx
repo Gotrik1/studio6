@@ -13,7 +13,7 @@ import {
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
 import { Separator } from "@/shared/ui/separator";
-import { Loader2, AlertCircle, Sparkles, MessageSquare, Clock, Flag, UserX, BrainCircuit, Shield } from "lucide-react";
+import { Loader2, AlertCircle, Sparkles, MessageSquare, Clock, Flag, UserX, BrainCircuit } from "lucide-react";
 import { analyzeReport, type AnalyzeReportOutput } from '@/shared/api/genkit/flows/analyze-report-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
@@ -159,11 +159,14 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
             <div>
                 <h4 className="font-semibold text-sm mb-2">Вынести решение</h4>
                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button className="flex-1" onClick={() => onResolve(String(report.id), `Правота за ${report.reporter.name}`)}>
-                        <Shield className="mr-2 h-4 w-4"/>Правота за {report.reporter.name}
+                    <Button className="flex-1" onClick={() => onResolve(String(report.id), 'Предупреждение')}>
+                        Выдать предупреждение
                     </Button>
-                    <Button className="flex-1" variant="destructive" onClick={() => onResolve(String(report.id), 'отклонена')}>
-                        Отклонить жалобу
+                    <Button className="flex-1" variant="destructive" onClick={() => onResolve(String(report.id), 'Временный бан')}>
+                        Временный бан
+                    </Button>
+                     <Button className="flex-1" variant="destructive" onClick={() => onResolve(String(report.id), 'Постоянный бан')}>
+                        Постоянный бан
                     </Button>
                  </div>
             </div>

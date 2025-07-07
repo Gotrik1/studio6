@@ -18,6 +18,7 @@ import { ImageIcon, MessageSquare, Shield, BrainCircuit, Loader2, AlertCircle, S
 import { analyzeDispute, type AnalyzeDisputeOutput } from '@/shared/api/genkit/flows/analyze-dispute-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
+import { cn } from '@/shared/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import type { Match } from '@/entities/match/model/types';
@@ -177,7 +178,7 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                         <Sparkles className="h-4 w-4" />
                         <AlertTitle className="flex justify-between items-center">
                             <span>Рекомендация: {getRecommendationText(aiResult.recommendation)}</span>
-                             <Badge variant="outline" className={getConfidenceColor(aiResult.confidence)}>
+                             <Badge variant="outline" className={cn(getConfidenceColor(aiResult.confidence))}>
                                 Уверенность: {aiResult.confidence}
                             </Badge>
                         </AlertTitle>

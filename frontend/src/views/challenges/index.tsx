@@ -54,8 +54,8 @@ export function ChallengesPage() {
             await createChallenge(data);
             toast({ title: 'Вызов брошен!', description: 'Ваш вызов опубликован и виден другим игрокам.' });
             await fetchAllChallenges(); // Refresh all lists
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Не удалось создать вызов.';
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Не удалось создать вызов.';
             toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
         }
     };
@@ -67,8 +67,8 @@ export function ChallengesPage() {
             const challenge = challenges.find(c => c.id === challengeId);
             toast({ title: 'Вызов принят!', description: `Вы приняли вызов от ${challenge?.creator.name}.` });
             await fetchAllChallenges(); // Refresh all lists
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Не удалось принять вызов.';
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Не удалось принять вызов.';
             toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
         }
     };

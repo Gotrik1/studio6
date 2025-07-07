@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -38,12 +39,12 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
                 getAvailableMedicalPartners()
             ]);
             
-            if (assignedRes.success) setAssignedMedics(assignedRes.data);
+            if (assignedRes.success) setAssignedMedics(assignedRes.data as MedicalPartner[]);
             else throw new Error(assignedRes.error);
 
             if (availableRes.success && Array.isArray(availableRes.data) && Array.isArray(assignedRes.data)) {
                 const assignedIds = new Set(assignedRes.data.map((p: MedicalPartner) => p.id));
-                setAvailableMedics(availableRes.data.filter((p: MedicalPartner) => !assignedIds.has(p.id)));
+                setAvailableMedics((availableRes.data as MedicalPartner[]).filter((p: MedicalPartner) => !assignedIds.has(p.id)));
             } else {
                  throw new Error(availableRes.error || 'Failed to process available medics');
             }

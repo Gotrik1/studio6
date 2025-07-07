@@ -14,13 +14,16 @@ import { getAssignedSponsors, getAvailableSponsors, unassignSponsor } from '@/en
 import type { Sponsor } from '@/entities/sponsor/model/types';
 import { AssignSponsorDialog } from '@/widgets/assign-sponsor-dialog';
 
+type SponsorWithAmount = Sponsor & { amount?: number };
+
+
 interface CrmTournamentSponsorsProps {
     tournamentId: string;
 }
 
 export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsProps) {
     const { toast } = useToast();
-    const [assignedSponsors, setAssignedSponsors] = useState<(Sponsor & { amount?: number })[]>([]);
+    const [assignedSponsors, setAssignedSponsors] = useState<SponsorWithAmount[]>([]);
     const [availableSponsors, setAvailableSponsors] = useState<Sponsor[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
@@ -34,12 +37,12 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                 getAvailableSponsors()
             ]);
             
-            if (assignedRes.success) setAssignedSponsors(assignedRes.data as (Sponsor & { amount?: number })[]);
+            if (assignedRes.success && Array.isArray(assignedRes.data)) setAssignedSponsors(assignedRes.data as SponsorWithAmount[]);
             else throw new Error(assignedRes.error);
 
             if (availableRes.success && Array.isArray(availableRes.data) && Array.isArray(assignedRes.data)) {
                 const assignedIds = new Set(assignedRes.data.map((p: Sponsor) => p.id));
-                setAvailableSponsors(availableRes.data.filter((p: Sponsor) => !assignedIds.has(p.id)));
+                setAvailableSponsors((availableRes.data as Sponsor[]).filter((p: Sponsor) => !assignedIds.has(p.id)));
             } else {
                  throw new Error(availableRes.error || 'Failed to process available sponsors');
             }

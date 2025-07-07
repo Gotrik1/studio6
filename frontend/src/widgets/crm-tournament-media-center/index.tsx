@@ -130,7 +130,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
     };
 
      const handleGenerateCommentary = async () => {
-        if (!summaryResult) return;
+        if (!result) return;
         setIsGeneratingCommentary(true);
         setCommentaryError(null);
         setCommentaryResult(null);

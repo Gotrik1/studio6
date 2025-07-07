@@ -5,7 +5,7 @@
 import Link from "next/link";
 import { managementCards, profileCards, contentCards, systemCards } from '@/widgets/file-tree';
 import { AdminStatsCards } from "@/widgets/admin-stats-cards";
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle } from '@/shared/ui/card';
 
 type AdminSectionCardProps = {
     title: string;

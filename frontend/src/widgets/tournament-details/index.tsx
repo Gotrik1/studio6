@@ -142,7 +142,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                  </TabsContent>
 
                  <TabsContent value="media" className="mt-4">
-                    <MediaTab media={tournament.media.map(m => ({ ...m, hint: m.hint || ''}))} />
+                    <MediaTab media={(tournament.media || []).map(m => ({ ...m, hint: m.hint || ''}))} />
                 </TabsContent>
             </Tabs>
         </div>

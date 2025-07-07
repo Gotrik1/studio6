@@ -14,6 +14,15 @@ import { useParams } from 'next/navigation';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useToast } from '@/shared/hooks/use-toast';
 
+type BackendPractice = {
+    id: string;
+    title: string;
+    description: string;
+    date: string; // ISO string
+    playground?: { name: string } | null;
+    playgroundId: string;
+};
+
 type TeamPractice = {
     id: string;
     title: string;
@@ -35,8 +44,8 @@ export function TeamScheduleTab() {
         if (!teamId) return;
         setIsLoading(true);
         const result = await getTeamPractices(teamId as string);
-        if (result.success) {
-            setPractices(result.data.map((p: any) => ({
+        if (result.success && Array.isArray(result.data)) {
+            setPractices(result.data.map((p: BackendPractice) => ({
                 id: p.id,
                 title: p.title,
                 description: p.description,

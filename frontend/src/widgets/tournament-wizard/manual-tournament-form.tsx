@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,17 +8,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2, Trophy } from 'lucide-react';
+import { CalendarIcon, Loader2, Trophy, UploadCloud } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { createTournament } from '@/entities/tournament/api/tournaments';
+import { createTournament, type CreateTournamentDto } from '@/entities/tournament/api/tournaments';
 import { useRouter } from 'next/navigation';
 import { getSports, type Sport } from '@/entities/sport/api/sports';
 import { Textarea } from '@/shared/ui/textarea';
@@ -54,9 +56,14 @@ const tournamentSchema = z.object({
     path: ['tournamentStartDate'],
 });
 
-export type FormValues = z.infer<typeof tournamentSchema>;
+type FormValues = z.infer<typeof tournamentSchema>;
 
-export function ManualTournamentForm() {
+interface ManualTournamentFormProps {
+    isEditMode?: boolean; // to reuse this form for editing
+}
+
+
+export function ManualTournamentForm({ isEditMode }: ManualTournamentFormProps) {
   const { toast } = useToast();
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,8 +92,14 @@ export function ManualTournamentForm() {
   const onSubmit = async (data: FormValues) => {
     setIsSubmitting(true);
     
-    const result = await createTournament(data);
-
+    const tournamentData: CreateTournamentDto = {
+        ...data,
+        bannerImage: 'https://placehold.co/2560x720.png', // Mock image for manual form
+        bannerImageHint: 'esports tournament banner',
+    };
+    
+    const result = await createTournament(tournamentData);
+    
     if (result.success) {
         toast({
             title: 'Турнир создан!',
@@ -94,13 +107,12 @@ export function ManualTournamentForm() {
         });
         router.push(`/tournaments/${result.data.slug}`);
     } else {
-        toast({
+         toast({
             variant: 'destructive',
             title: 'Ошибка создания турнира',
             description: result.error,
         });
     }
-
     setIsSubmitting(false);
   };
   
@@ -163,7 +175,7 @@ export function ManualTournamentForm() {
                     <CardFooter>
                         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            <Trophy className="mr-2 h-4 w-4" /> Создать турнир
+                            <Trophy className="mr-2 h-4 w-4" /> {isEditMode ? 'Сохранить изменения' : 'Создать турнир'}
                         </Button>
                     </CardFooter>
                 </form>
