@@ -34,7 +34,7 @@ export class SponsorshipService implements OnModuleInit {
         name: s.team.name,
         logo: s.team.logo || "",
         logoHint: s.team.dataAiHint || "team logo",
-        investment: `${s.amount.toLocaleString('ru-RU')} PD`,
+        investment: `${Number(s.amount).toLocaleString('ru-RU')} PD`,
         since: s.signedAt.toISOString().split("T")[0],
       })),
       teamsSeekingSponsorship: teamsSeekingSponsorship.map((t) => ({

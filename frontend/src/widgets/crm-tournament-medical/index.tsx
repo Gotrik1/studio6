@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -51,7 +49,7 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
             } else if (!availableRes.success) {
                  throw new Error(availableRes.error || 'Failed to process available medics');
             }
-        } catch (error: unknown) {
+        } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить данные.';
             toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить данные: ${errorMessage}` });
         } finally {

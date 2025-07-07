@@ -1,4 +1,3 @@
-
 import {
   Injectable,
   OnModuleInit,
@@ -213,6 +212,7 @@ export class TrainingService implements OnModuleInit {
         id: `manual-${Date.now()}`,
         author: authorName,
         isAiGenerated: false,
+        daysPerWeek: weeklySplit.length,
         coverImage: "https://placehold.co/600x400.png",
         coverImageHint: "gym weights",
         weeklySplit: {
@@ -260,6 +260,7 @@ export class TrainingService implements OnModuleInit {
         where: { id },
         data: {
           ...programData,
+          daysPerWeek: weeklySplit.length,
           weeklySplit: {
             create: weeklySplit.map((day) => ({
               day: day.day,

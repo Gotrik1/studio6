@@ -1,5 +1,5 @@
 import type { z } from "zod";
-import type { SummarizePlaygroundReviewsInputSchema } from "../schemas/summarize-playground-reviews-schema";
+import type { SummarizePlaygroundReviewsInputSchema } from "@/ai/flows/schemas/summarize-playground-reviews-schema";
 
 export class SummarizePlaygroundReviewsDto
   implements z.infer<typeof SummarizePlaygroundReviewsInputSchema>

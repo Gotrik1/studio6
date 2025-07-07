@@ -1,4 +1,3 @@
-
 import {
   Injectable,
   ConflictException,
@@ -108,7 +107,7 @@ export class TeamApplicationsService {
     }
     return this.prisma.teamApplication.update({
       where: { id: applicationId },
-      data: { status: TeamApplicationStatus.DECLINED },
+      data: { status: TeamApplicationStatus.REJECTED },
       include: { team: { select: { id: true, slug: true } } },
     });
   }

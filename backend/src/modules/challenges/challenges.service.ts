@@ -7,7 +7,7 @@ import {
   OnModuleInit,
 } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Challenge } from "@prisma/client";
+import { Challenge, Role } from "@prisma/client";
 import { CreateChallengeDto } from "./dto/create-challenge.dto";
 
 @Injectable()
@@ -27,7 +27,7 @@ export class ChallengesService implements OnModuleInit {
     this.logger.log("Seeding challenges...");
 
     const users = await this.prisma.user.findMany({
-      where: { role: "Игрок" },
+      where: { role: Role.PLAYER },
       take: 2,
     });
     const valorantSport = await this.prisma.sport.findFirst({
@@ -50,8 +50,8 @@ export class ChallengesService implements OnModuleInit {
         description:
           "Ищу сильного снайпера для дуэли на карте awp_lego. Ставка - уважение.",
         wager: 100,
-        creatorId: users[0].id,
-        disciplineId: valorantSport.id,
+        creator: { connect: { id: users[0].id } },
+        discipline: { connect: { id: valorantSport.id } },
         status: "OPEN",
       },
     });
@@ -61,9 +61,9 @@ export class ChallengesService implements OnModuleInit {
         title: "Баскетбольный баттл",
         description: "Кто забьет больше трехочковых из 10 попыток?",
         wager: 50,
-        creatorId: users[1].id,
-        opponentId: users[0].id,
-        disciplineId: basketballSport.id,
+        creator: { connect: { id: users[1].id } },
+        opponent: { connect: { id: users[0].id } },
+        discipline: { connect: { id: basketballSport.id } },
         status: "IN_PROGRESS",
       },
     });
@@ -82,7 +82,7 @@ export class ChallengesService implements OnModuleInit {
         description,
         wager,
         discipline: { connect: { id: disciplineId } },
-        creatorId: userId,
+        creator: { connect: { id: userId } },
         status: "OPEN",
       },
     });

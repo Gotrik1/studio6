@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -11,7 +9,8 @@ import { CrmMatchResultDialog, type MatchResult } from '@/widgets/crm-score-dial
 import { useToast } from '@/shared/hooks/use-toast';
 import { Badge } from '@/shared/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
-import type { BracketMatch, TournamentDetails } from '@/entities/tournament/model/types';
+import type { TournamentDetails, BracketMatch } from '@/entities/tournament/model/types';
+
 
 type MatchState = BracketMatch & {
     comment?: string;
@@ -79,7 +78,7 @@ export function CrmTournamentMatches({ rounds }: CrmTournamentMatchesProps) {
     const matchIdToRoundName = useMemo(() => {
         return rounds.reduce((acc, round) => {
             round.matches.forEach(match => {
-                if (match.id) {
+                if ('id' in match && match.id) {
                     acc[String(match.id)] = round.name;
                 }
             });

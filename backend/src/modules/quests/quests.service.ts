@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleInit } from "@nestjs/common";
 import { CreateQuestDto } from "./dto/create-quest.dto";
 import { PrismaService } from "@/prisma/prisma.service";
 import { Quest, QuestType } from "@prisma/client";
-import { quests as initialQuestData } from "../../shared/lib/mock-data/gamification";
+import { quests as initialQuestData } from "./seed-data";
 
 @Injectable()
 export class QuestsService implements OnModuleInit {

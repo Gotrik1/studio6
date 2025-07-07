@@ -1,4 +1,3 @@
-
 import {
   Injectable,
   ConflictException,
@@ -7,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { User, Prisma, TrainingLogStatus } from "@prisma/client";
+import { User, Prisma, TrainingLogStatus, Role, UserStatus } from "@prisma/client";
 import { differenceInYears, format, formatDistanceToNow } from "date-fns";
 import { LeaderboardPlayerDto } from "./dto/leaderboard-player.dto";
 import { PlayerStatsDto } from "./dto/player-stats.dto";
@@ -45,8 +44,8 @@ export class UsersService {
         name,
         email,
         passwordHash: password || "mock_hash",
-        role: role || "PLAYER",
-        status: "Активен",
+        role: (role as Role) || Role.PLAYER,
+        status: UserStatus.ACTIVE,
         xp: 0,
       },
     });
@@ -185,10 +184,10 @@ export class UsersService {
           id: String(player.id),
           name: player.name,
           avatar: player.avatar || null,
+          avatarHint: 'player avatar',
           role: player.role,
           stats: { kda: "1.25", winRate: "55%", favoriteMap: "Ascent" }, // mock
           matchHistory: "W-L-W-W-L", // mock
-          adherence,
         };
       },
     );

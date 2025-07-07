@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit, Logger } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import { CoachDto } from "./dto/coach.dto";
+import { Role, UserStatus } from "@prisma/client";
 
 @Injectable()
 export class CoachesService implements OnModuleInit {
@@ -13,7 +14,7 @@ export class CoachesService implements OnModuleInit {
   }
 
   async seedCoaches() {
-    const coachCount = await this.prisma.user.count({ where: { role: 'Тренер' } });
+    const coachCount = await this.prisma.user.count({ where: { role: Role.COACH } });
     if (coachCount > 0) return;
 
     this.logger.log('Seeding coach...');
@@ -26,8 +27,8 @@ export class CoachesService implements OnModuleInit {
             email: 'coach.maria@example.com',
             name: 'Мария "Shadow" Петрова',
             passwordHash: 'seeded',
-            role: 'Тренер',
-            status: 'Активен',
+            role: Role.COACH,
+            status: UserStatus.ACTIVE,
             xp: 7500,
             avatar: 'https://placehold.co/100x100.png',
             mainSport: 'Valorant',
@@ -52,7 +53,7 @@ export class CoachesService implements OnModuleInit {
   async findAll(): Promise<CoachDto[]> {
     const coachesWithProfiles = await this.prisma.user.findMany({
       where: {
-        role: "Тренер",
+        role: Role.COACH,
         coachProfile: { isNot: null },
       },
       include: {

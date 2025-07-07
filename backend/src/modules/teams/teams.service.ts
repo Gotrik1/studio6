@@ -1,4 +1,3 @@
-
 import {
   Inject,
   Injectable,
@@ -501,9 +500,11 @@ export class TeamsService implements OnModuleInit {
 
     return this.prisma.teamPractice.create({
       data: {
-        ...dto,
         team: { connect: { id: teamId } },
         playground: { connect: { id: dto.playgroundId } },
+        title: dto.title,
+        description: dto.description,
+        date: dto.date,
       },
     });
   }

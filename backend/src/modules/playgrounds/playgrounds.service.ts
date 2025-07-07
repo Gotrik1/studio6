@@ -1,7 +1,6 @@
-
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Playground } from "@prisma/client";
+import { Playground, Prisma } from "@prisma/client";
 import { CreatePlaygroundDto } from "./dto/create-playground.dto";
 import { CreateReviewDto } from "./dto/create-review.dto";
 import { summarizePlaygroundReviews } from "@/ai/flows/summarize-playground-reviews-flow";

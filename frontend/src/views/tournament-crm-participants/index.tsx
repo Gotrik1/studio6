@@ -1,5 +1,3 @@
-
-
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from 'react';
@@ -45,15 +43,15 @@ export function CrmTournamentParticipants({ tournamentId }: CrmTournamentPartici
                 getTournamentParticipants(tournamentId)
             ]);
             
-            if (appsResult.success && appsResult.data) {
+            if (appsResult.success && Array.isArray(appsResult.data)) {
                 setApplications(appsResult.data);
-            } else if (!appsResult.success) {
+            } else {
                 throw new Error(appsResult.error);
             }
 
-            if (participantsResult.success && participantsResult.data) {
+            if (participantsResult.success && Array.isArray(participantsResult.data)) {
                 setParticipants(participantsResult.data);
-            } else if (!participantsResult.success) {
+            } else {
                 throw new Error(participantsResult.error);
             }
 

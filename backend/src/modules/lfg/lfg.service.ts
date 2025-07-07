@@ -5,7 +5,7 @@ import {
   ConflictException,
 } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
-import { LfgLobby, LfgLobbyStatus } from "@prisma/client";
+import { LfgLobby, LfgLobbyStatus, Prisma } from "@prisma/client";
 import { CreateLfgLobbyDto } from "./dto/create-lfg-lobby.dto";
 import { addMinutes } from "date-fns";
 
@@ -17,16 +17,22 @@ export class LfgService {
     createLfgLobbyDto: CreateLfgLobbyDto,
     userId: string,
   ): Promise<LfgLobby> {
-    const { duration, ...rest } = createLfgLobbyDto;
+    const { duration, playgroundId, ...rest } = createLfgLobbyDto;
     const endTime = addMinutes(new Date(createLfgLobbyDto.startTime), duration);
 
+    const data: Prisma.LfgLobbyCreateInput = {
+      ...rest,
+      endTime,
+      creator: { connect: { id: userId } },
+      players: { connect: { id: userId } },
+    };
+
+    if (playgroundId) {
+      data.playground = { connect: { id: playgroundId } };
+    }
+
     return this.prisma.lfgLobby.create({
-      data: {
-        ...rest,
-        endTime,
-        creator: { connect: { id: userId } },
-        players: { connect: { id: userId } },
-      },
+      data,
     });
   }
 

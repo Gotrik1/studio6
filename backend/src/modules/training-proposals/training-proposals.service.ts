@@ -14,8 +14,8 @@ export class TrainingProposalsService {
   async create(fromId: string, createDto: CreateTrainingProposalDto) {
     return this.prisma.trainingProposal.create({
       data: {
-        fromId,
-        toId: createDto.toId,
+        from: { connect: { id: fromId } },
+        to: { connect: { id: createDto.toId } },
         sport: createDto.sport,
         date: createDto.date,
         comment: createDto.comment,
