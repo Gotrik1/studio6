@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useTransition, useCallback } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -21,7 +21,7 @@ import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
 import { useParams } from 'next/navigation';
-import type { CoachedPlayer, FullUserProfile } from '@/entities/user/model/types';
+import { CoachedPlayer } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
@@ -33,7 +33,12 @@ const teamNeeds = "Мы ищем опытного защитника, котор
 type Application = {
     id: string;
     teamId: string;
-    applicant: FullUserProfile;
+    applicant: {
+        id: string;
+        name: string;
+        avatar: string | null;
+        role: string;
+    };
     message: string;
     statsSummary: string;
 };
@@ -72,7 +77,7 @@ export function TeamManagementPage() {
             if (teamData) {
                 const appsResult = await getTeamApplications(teamData.id);
                  if (appsResult.success && Array.isArray(appsResult.data)) {
-                    setJoinRequests(appsResult.data as Application[]);
+                    setJoinRequests(appsResult.data);
                 } else {
                     toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
                 }

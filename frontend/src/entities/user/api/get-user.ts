@@ -3,8 +3,7 @@
 'use server';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, UserTeam } from '@/entities/user/model/types';
-import type { TournamentCrm, JudgedMatch } from '@/entities/user/model/types';
+import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, UserTeam, JudgedMatch, TournamentCrm } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -89,7 +88,7 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
 
         const rawProfile = result.data;
         
-        const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player: CoachedPlayerSummary) => ({
+        const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player) => ({
             id: String(player.id),
             name: player.name,
             avatar: player.avatar || null,
@@ -102,20 +101,20 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
             ...rawProfile,
             activities: (rawProfile.activities || []).map((act: Activity) => ({...act, id: String(act.id)})),
             coaching: coachedPlayers, // Use adapted data
-            teams: (rawProfile.teams || []).map((team: UserTeam) => ({
+            teams: (rawProfile.teams || []).map((team) => ({
                 ...team,
                 id: String(team.id),
                 logo: team.logo || null,
             })),
             gallery: [],
             careerHistory: [],
-            judgedMatches: (rawProfile.judgedMatches || []).map((match: JudgedMatch) => ({
+            judgedMatches: (rawProfile.judgedMatches || []).map((match) => ({
                 ...match,
                 id: String(match.id),
                 team1: { name: match.team1.name },
                 team2: { name: match.team2.name },
             })),
-            organizedTournaments: (rawProfile.organizedTournaments || []).map((t: TournamentCrm) => ({
+            organizedTournaments: (rawProfile.organizedTournaments || []).map((t) => ({
                 ...t,
                 id: String(t.id),
             })),

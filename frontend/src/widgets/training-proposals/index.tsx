@@ -13,11 +13,10 @@ import { ArrowRight, Check, X, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import type { User } from '@/shared/lib/types';
 import type { TrainingProposal } from '@/app/providers/training-proposal-provider';
 
 
-type ProposalUser = Pick<User, 'id' | 'name' | 'avatar'>;
+type ProposalUser = { id: string; name: string; avatar: string | null; };
 
 export function TrainingProposalsWidget() {
     const { user } = useSession();

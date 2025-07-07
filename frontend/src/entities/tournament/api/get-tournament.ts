@@ -19,7 +19,7 @@ type RawTournamentData = Omit<TournamentDetails, 'bracket' | 'teams' | 'matches'
 
 // Adapter function to transform raw backend data into the frontend's TournamentDetails type
 function adaptTournamentDetails(data: RawTournamentData): TournamentDetails {
-    if (!data) return null as any;
+    if (!data) return null as unknown as TournamentDetails;
 
     const shapeTeam = (team: RawTeam | null | undefined) => ({
         name: team?.name || 'TBD',

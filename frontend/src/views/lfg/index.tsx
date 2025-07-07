@@ -39,7 +39,7 @@ export function LfgPage() {
 
         try {
             const searchResult = await findLfgLobbies(prompt);
-            setFilteredLobbies(searchResult.recommendations.map((l: any) => ({...l, type: l.type.toUpperCase() as 'GAME' | 'TRAINING', startTime: new Date(l.startTime), endTime: new Date(l.endTime) })));
+            setFilteredLobbies(searchResult.recommendations.map((l: LfgLobbyType) => ({...l, type: l.type.toUpperCase() as 'GAME' | 'TRAINING', startTime: new Date(l.startTime), endTime: new Date(l.endTime) })));
             if (searchResult.recommendations.length === 0) {
                  toast({
                     title: "Ничего не найдено",
@@ -165,4 +165,3 @@ export function LfgPage() {
         </>
     );
 }
-

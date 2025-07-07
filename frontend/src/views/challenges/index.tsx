@@ -35,8 +35,8 @@ export function ChallengesPage() {
             setChallenges(openData);
             setMyChallenges(myData);
             setHistory(historyData);
-        } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить вызовы.';
+        } catch (e: unknown) {
+            const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить вызовы.';
             toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
         } finally {
             setIsLoading(false);

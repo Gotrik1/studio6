@@ -175,7 +175,7 @@ export function MatchesListPage() {
        <CrmMatchResultDialog
         isOpen={isScoreDialogOpen}
         onOpenChange={setIsScoreDialogOpen}
-        match={selectedMatch as any} 
+        match={selectedMatch} 
         onMatchUpdate={handleMatchUpdate}
       />
     </div>
