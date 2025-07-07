@@ -138,6 +138,15 @@ enum LfgLobbyStatus {
   CANCELLED
 }
 
+enum ActivityType {
+  STATUS_POSTED
+  MATCH_PLAYED
+  TEAM_JOINED
+  TOURNAMENT_REGISTERED
+  ACHIEVEMENT_UNLOCKED
+  PLAYGROUND_CHECK_IN
+}
+
 // ==============================================================================
 // Models
 // ==============================================================================
@@ -206,6 +215,7 @@ model User {
   sentAnnouncements         TournamentAnnouncement[]
   notifications             Notification[]
   matchEvents               MatchEvent[]
+  activities                Activity[]
 }
 
 model Team {
@@ -318,6 +328,7 @@ model Match {
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
   notifications      Notification[]
+  judges             User[]        @relation("JudgedMatches")
 }
 
 model MatchEvent {
@@ -503,16 +514,6 @@ model League {
   matches     Match[]
 }
 
-model TrainingPlanAssignment {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  programId String
-  program   TrainingProgram @relation(fields: [programId], references: [id])
-}
-
 model UserTrainingProgram {
   id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
@@ -521,6 +522,8 @@ model UserTrainingProgram {
   programId String
   assignedAt DateTime @default(now())
   isActive   Boolean  @default(true)
+
+  @@unique([userId, programId])
 }
 
 model Chat {
