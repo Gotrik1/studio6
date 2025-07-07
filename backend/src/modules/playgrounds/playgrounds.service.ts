@@ -230,7 +230,8 @@ export class PlaygroundsService {
     const averageRating = totalRating / reviews.length;
 
     return {
-      ...summary,
+      pros: summary.pros || [],
+      cons: summary.cons || [],
       averageRating: parseFloat(averageRating.toFixed(1)),
     };
   }

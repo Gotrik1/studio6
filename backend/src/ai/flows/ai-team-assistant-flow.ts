@@ -101,7 +101,7 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
     }
 
     // 2. Format the data for the prompt
-    const teamGoals = team.goals || "Цели команды не установлены.";
+    const teamGoals = "Цели команды не установлены."; // Mocked for now
 
     let teamActivity = "";
 
@@ -109,7 +109,7 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
     if (team.chat && team.chat.messages.length > 0) {
       teamActivity += "Последние сообщения в чате:\n";
       team.chat.messages.reverse().forEach((msg) => {
-        teamActivity += `- ${msg.author.name}: ${msg.text}\n`;
+        teamActivity += `- ${msg.author.name}: ${msg.content}\n`;
       });
     } else {
       teamActivity += "В чате команды пока нет сообщений.\n";

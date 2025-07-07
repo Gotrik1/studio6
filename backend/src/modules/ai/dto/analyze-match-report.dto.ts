@@ -1,5 +1,6 @@
 import type { z } from "zod";
 import type { AnalyzeMatchReportInputSchema } from "@/ai/flows/schemas/analyze-match-report-schema";
+import { MatchEventType } from '@prisma/client';
 
 export class AnalyzeMatchReportDto
   implements z.infer<typeof AnalyzeMatchReportInputSchema>
@@ -10,7 +11,7 @@ export class AnalyzeMatchReportDto
   readonly tournament: string;
   readonly events: {
     time: string;
-    event: string;
+    event: MatchEventType;
     player: string;
     team: string;
   }[];
