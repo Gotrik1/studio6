@@ -13,10 +13,7 @@ import { ai } from "../genkit";
 import { z } from "zod";
 import { PrismaService } from "@/prisma/prisma.service";
 import { SmartSearchInputSchema, SmartSearchOutputSchema } from "../schemas/smart-search-schema";
-import type {
-  SmartSearchInput,
-  SmartSearchOutput,
-} from "../schemas/smart-search-schema";
+import type { SmartSearchInput, SmartSearchOutput } from "../schemas/smart-search-schema";
 
 const prisma = new PrismaService();
 
@@ -63,6 +60,7 @@ const searchPlatformData_Backend = ai.defineTool(
         take: 10,
       })
     ).map((t) => ({
+      id: t.id,
       name: t.name,
       motto: t.motto || "",
       logo: t.logo || "https://placehold.co/100x100.png",
@@ -71,6 +69,8 @@ const searchPlatformData_Backend = ai.defineTool(
       members: t._count.members,
       slug: t.slug,
       game: t.game,
+      captain: t.captainId,
+      homePlaygroundId: t.homePlaygroundId
     }));
 
     const tournaments = (

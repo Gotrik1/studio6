@@ -26,7 +26,7 @@ import { getUsers } from '@/entities/user/api/get-users';
 import type { User } from '@/shared/lib/types';
 
 
-const allRoles = ["Все роли", "Администратор", "Модератор", "Капитан", "Игрок", "Судья", "Менеджер", "Организатор", "Спонсор", "Болельщик"];
+const allRoles = ["Все роли", "ADMINISTRATOR", "MODERATOR", "CAPTAIN", "PLAYER", "JUDGE", "MANAGER", "ORGANIZER", "SPONSOR", "FAN", "COACH"];
 const allStatuses = ["Все статусы", "Активен", "Забанен"];
 
 const USERS_PER_PAGE = 8;

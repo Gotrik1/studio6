@@ -38,9 +38,9 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
                 getAvailableMedicalPartners()
             ]);
             
-            if (assignedRes.success) {
+            if (assignedRes.success && Array.isArray(assignedRes.data)) {
                 setAssignedMedics(assignedRes.data as MedicalPartner[]);
-            } else {
+            } else if (!assignedRes.success) {
                 throw new Error(assignedRes.error);
             }
 

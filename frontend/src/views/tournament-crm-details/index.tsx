@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/shared/ui/card';
@@ -8,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
 import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants';
 import { TournamentBracket } from '@/widgets/tournament-bracket';
+import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
 import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
 import { CrmTournamentAnnouncements } from '@/widgets/crm-tournament-announcements';
@@ -42,7 +42,9 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             setLoading(true);
             const data = await getTournamentById(tournamentId);
             if (!data) {
-                router.push('/404');
+                // Using notFound() from next/navigation is for Server Components
+                // In a client component, we'd typically redirect or show a message.
+                router.push('/404'); 
                 return;
             }
             setTournament(data);
