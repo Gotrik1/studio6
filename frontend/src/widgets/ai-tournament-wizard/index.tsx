@@ -7,7 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
-import { Loader2, Sparkles, PartyPopper } from 'lucide-react';
+import { Loader2, Sparkles, PartyPopper, Trophy } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Textarea } from '@/shared/ui/textarea';
@@ -17,10 +17,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { createTournament, type CreateTournamentDto } from '@/entities/tournament/api/tournaments';
 import { useRouter } from 'next/navigation';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/ui/select';
-
-type Tournament = {
-  slug: string;
-};
+import type { Tournament } from '@/entities/tournament/model/types';
 
 
 export function AiTournamentWizard() {

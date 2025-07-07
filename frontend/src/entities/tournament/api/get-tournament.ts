@@ -2,10 +2,10 @@
 
 'use server';
 
-import type { TournamentDetails, BracketMatch, BracketRound, MatchEvent, TournamentMedia } from '@/entities/tournament/model/types';
+import type { TournamentDetails, BracketMatch, BracketRound, MatchEvent, TournamentMedia as FrontendTournamentMedia } from '@/entities/tournament/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
-// Local types to avoid direct dependency on @prisma/client
+// Local types to avoid direct dependency on backend schemas
 type RawTeam = { name: string; logo: string | null; dataAiHint: string | null; slug?: string; };
 type RawMatch = { id: string | number, team1Score: number | null, team2Score: number | null, scheduledAt: string, winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam, events?: MatchEvent[] };
 type RawRound = { name: string; matches: RawMatch[] };

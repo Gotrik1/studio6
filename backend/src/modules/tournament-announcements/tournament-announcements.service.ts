@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
-import { CreateAnnouncementDto } from "./dto/create-announcement.dto";
+import { CreateTournamentAnnouncementDto } from "./dto/create-tournament-announcement.dto";
 import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { PRODVOR_EXCHANGE } from "../rabbitmq/rabbitmq.config";
 import type { TournamentAnnouncementCreatedPayload } from "../rabbitmq/models/tournament-announcement-created.payload";
@@ -23,7 +23,7 @@ export class TournamentAnnouncementsService {
   async create(
     tournamentId: string,
     senderId: string,
-    dto: CreateAnnouncementDto,
+    dto: CreateTournamentAnnouncementDto,
   ) {
     const tournament = await this.prisma.tournament.findUnique({
       where: { id: tournamentId },

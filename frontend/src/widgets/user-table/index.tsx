@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import type { FC } from 'react';
@@ -107,7 +108,7 @@ export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onE
                                                 Списать PD
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
-                                            {user.status !== 'Забанен' ? (
+                                            {user.status !== 'BANNED' ? (
                                                 <DropdownMenuItem 
                                                     className="text-destructive focus:bg-destructive/10 focus:text-destructive"
                                                     onClick={() => onOpenBanUnbanDialog(user, 'ban')}

@@ -302,9 +302,9 @@ export class AiService {
   ): Promise<Promotion> {
     const wizardResult = await generatePromotionWizard({ prompt });
     return this.promotionsService.create({
-      ...wizardResult,
       organizerId,
-      imageHint: prompt, // Use prompt as image hint
+      imageHint: prompt,
+      ...wizardResult,
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // Mock end date
     });
   }

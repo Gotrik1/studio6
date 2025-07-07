@@ -142,9 +142,9 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
 
         try {
             const commentaryData = await generateMatchCommentary({
-                team1Name: match.team1.name,
-                team2Name: match.team2.name,
-                events: match.events || mockEvents,
+                team1Name: mockFinalMatch.team1,
+                team2Name: mockFinalMatch.team2,
+                events: tournament.matches?.[0].events || mockEvents,
             });
             setCommentaryResult(commentaryData);
         } catch (e) {
@@ -177,94 +177,45 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
     return (
         <Card>
             <CardHeader>
-                <CardTitle>Анализ матча от AI</CardTitle>
-                <CardDescription>
-                    Искусственный интеллект разбирает игру, чтобы выявить ключевые моменты, лучших игроков и дать советы командам.
-                </CardDescription>
+                <CardTitle>AI Медиа-Центр</CardTitle>
+                <CardDescription>Сгенерируйте полный медиа-кит для вашего турнира в один клик.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                {!result && !isLoading && (
-                    <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg">
-                        <BrainCircuit className="h-12 w-12 text-muted-foreground mb-4" />
-                        <p className="font-semibold mb-2">Готовы к глубокому разбору?</p>
-                        <p className="text-sm text-muted-foreground mb-4">Нажмите кнопку, чтобы AI проанализировал ход матча.</p>
-                        <Button onClick={handleAnalyze}>
-                            <Sparkles className="mr-2 h-4 w-4" />
-                            Сгенерировать анализ
-                        </Button>
+                <Button onClick={handleAnalyze} disabled={isLoading || match.status !== 'Завершен'}>
+                    {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
+                    {isLoading ? 'Генерация...' : 'Сгенерировать медиа-кит'}
+                </Button>
+                 {match.status !== 'Завершен' && (
+                    <Alert variant="destructive">
+                        <AlertCircle className="h-4 w-4" />
+                        <AlertTitle>Функция недоступна</AlertTitle>
+                        <AlertDescription>Медиа-кит можно сгенерировать только для завершенных турниров.</AlertDescription>
+                    </Alert>
+                )}
+                 {error && <Alert variant="destructive"><AlertTitle>Ошибка</AlertTitle><AlertDescription>{error}</AlertDescription></Alert>}
+                 
+                {isLoading && (
+                    <div className="space-y-4">
+                        <Skeleton className="h-40 w-full" />
+                        <Skeleton className="h-24 w-full" />
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <Skeleton className="aspect-square w-full" />
+                            <Skeleton className="aspect-square w-full" />
+                            <Skeleton className="aspect-square w-full" />
+                            <Skeleton className="aspect-square w-full" />
+                        </div>
                     </div>
                 )}
                 
-                {isLoading && (
-                    <div className="space-y-4">
-                        <Skeleton className="h-24 w-full" />
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <Skeleton className="h-32 w-full" />
-                            <Skeleton className="h-32 w-full" />
-                            <Skeleton className="h-32 w-full" />
-                        </div>
-                    </div>
-                )}
-
-                {error && (
-                    <Alert variant="destructive">
-                        <AlertCircle className="h-4 w-4" />
-                        <AlertTitle>Ошибка</AlertTitle>
-                        <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                )}
-
                 {result && (
                     <div className="space-y-6 animate-in fade-in-50">
-                        <Card className="bg-muted/30">
-                            <CardHeader>
-                                <CardTitle className="flex items-center gap-2"><BarChart3 className="h-5 w-5 text-primary" /> Краткая сводка матча</CardTitle>
-                            </CardHeader>
+                        <Card>
+                            <CardHeader><CardTitle>Итоговая статья</CardTitle></CardHeader>
                             <CardContent>
-                                <p className="text-muted-foreground">{result.summary}</p>
+                                <Textarea readOnly value={result.summary} className="h-48" />
+                                <Button variant="ghost" size="sm" onClick={() => handleCopyText(result.summary)} className="mt-2"><Copy className="mr-2 h-4 w-4"/>Копировать</Button>
                             </CardContent>
                         </Card>
-                        
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                            <Card>
-                                <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><Medal className="h-5 w-5 text-amber-500" /> MVP Матча</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-2">
-                                     <p className="font-bold text-lg">{result.mvp.name}</p>
-                                     <p className="text-sm text-muted-foreground">{result.mvp.reason}</p>
-                                </CardContent>
-                            </Card>
-                            <Card>
-                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><Trophy className="h-5 w-5 text-green-500" /> Ключевой момент</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                     <p className="text-sm text-muted-foreground">{result.keyMoment}</p>
-                                </CardContent>
-                            </Card>
-                             <Card>
-                                 <CardHeader>
-                                    <CardTitle className="flex items-center gap-2"><Lightbulb className="h-5 w-5 text-blue-500" /> Советы командам</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-3">
-                                     <div>
-                                        <p className="font-semibold text-sm">{match.team1.name}:</p>
-                                        <p className="text-xs text-muted-foreground">{result.team1Advice}</p>
-                                     </div>
-                                     <div>
-                                        <p className="font-semibold text-sm">{match.team2.name}:</p>
-                                        <p className="text-xs text-muted-foreground">{result.team2Advice}</p>
-                                     </div>
-                                </CardContent>
-                            </Card>
-                        </div>
-                        <div className="text-center">
-                            <Button variant="outline" onClick={handleAnalyze}>
-                                <Sparkles className="mr-2 h-4 w-4" />
-                                Сгенерировать заново
-                            </Button>
-                        </div>
                         
                         <Card className="bg-background">
                             <CardHeader>

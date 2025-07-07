@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback, useTransition } from 'react';
@@ -27,7 +28,7 @@ import type { User } from '@/shared/lib/types';
 
 
 const allRoles = ["Все роли", "ADMINISTRATOR", "MODERATOR", "CAPTAIN", "PLAYER", "JUDGE", "MANAGER", "ORGANIZER", "SPONSOR", "FAN", "COACH"];
-const allStatuses = ["Все статусы", "Активен", "Забанен"];
+const allStatuses = ["Все статусы", "ACTIVE", "BANNED"];
 
 const USERS_PER_PAGE = 8;
 
@@ -105,11 +106,11 @@ export function UserManagementPage() {
         startTransition(() => {
             // In a real app, this would be an API call.
             // For now, we optimistically update the state.
-            const newStatus = actionType === 'ban' ? 'Забанен' : 'Активен';
+            const newStatus = actionType === 'ban' ? 'BANNED' : 'ACTIVE';
             setUsers(prev => prev.map(u => u.id === userToAction.id ? { ...u, status: newStatus } : u));
             
             toast({
-                title: `Статус пользователя ${userToAction.name} изменен на "${newStatus}".`,
+                title: `Статус пользователя ${userToAction.name} изменен.`,
                 variant: actionType === 'unban' ? 'default' : 'destructive'
             });
             
@@ -174,7 +175,7 @@ export function UserManagementPage() {
                             </SelectTrigger>
                             <SelectContent>
                                  {allStatuses.map(status => (
-                                    <SelectItem key={status} value={status}>{status}</SelectItem>
+                                    <SelectItem key={status} value={status}>{status === 'ACTIVE' ? 'Активен' : 'Забанен'}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>

@@ -1,8 +1,23 @@
 
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
+import type { User } from '@/shared/lib/types';
+
+
+export type Application = {
+    id: string;
+    teamId: string;
+    user: User;
+    message?: string;
+    statsSummary?: string;
+    team: {
+        id: string;
+        slug: string;
+    };
+};
 
 export async function getTeamApplications(teamId: string) {
     return fetchWithAuth(`/teams/${teamId}/applications`, {

@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -28,13 +27,12 @@ import type { PlaygroundConditionReport } from '@/entities/playground/api/condit
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
 import { reportPlaygroundIssue } from '@/entities/playground/api/report';
-import type { Activity } from '@/entities/feed/model/types';
-import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
+import type { Activity, PlaygroundCheckInActivity } from '@/entities/feed/model/types';
 
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const [activities, setActivities] = useState<PlaygroundActivity[]>([]);
+    const [activities, setActivities] = useState<Activity[]>([]);
     const [isLoadingActivities, setIsLoadingActivities] = useState(true);
     const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
     const [isLoadingReviews, setIsLoadingReviews] = useState(true);
@@ -52,17 +50,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         setIsLoadingActivities(true);
         try {
             const activityData = await getPlaygroundActivity(playground.id);
-            const formattedActivities: PlaygroundActivity[] = (activityData as Activity[])
-                .filter(act => act.type === 'PLAYGROUND_CHECK_IN' && 'comment' in act.metadata)
-                .map(act => ({
-                    id: act.id,
-                    user: act.user,
-                    comment: (act.metadata as { comment?: string }).comment || 'Отметился на площадке.',
-                    photo: (act.metadata as { photo?: string }).photo,
-                    photoHint: 'playground check-in',
-                    timestamp: act.createdAt,
-                }));
-            setActivities(formattedActivities);
+            setActivities(activityData);
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить ленту активности.' });
@@ -248,7 +236,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
                         />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-6">
-                        <PlaygroundActivityTab activities={activities} isLoading={isLoadingActivities} />
+                        <PlaygroundActivityTab activities={activities.filter((a): a is PlaygroundCheckInActivity => a.type === 'PLAYGROUND_CHECK_IN')} isLoading={isLoadingActivities} />
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-6">
                         <PlaygroundLeaderboardTab playground={playground} />

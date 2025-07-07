@@ -4,9 +4,7 @@
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-
-// Define local types to avoid direct dependency on Prisma
-type PrismaUser = { id: string, name: string, avatar: string | null, role: string, [key: string]: any };
+import type { User } from '@/shared/lib/types';
 
 // Frontend-specific types
 export type RosterMember = {
@@ -23,6 +21,9 @@ export type Participant = {
 };
 export type Application = {
     id: string;
+    teamId: string;
+    message?: string;
+    user: User;
     team: {
         id: string;
         name: string;
@@ -33,23 +34,29 @@ export type Application = {
 
 type BackendApplication = {
     id: string;
+    teamId: string;
+    message?: string;
+    user: User;
     team: {
         id: string;
         name: string;
         slug: string;
-        captain: PrismaUser | null
+        captain: { name: string } | null;
     }
 }
 type BackendParticipantTeam = {
     id: string;
     name: string;
-    captain: PrismaUser | null;
-    members: PrismaUser[];
+    captain: User | null;
+    members: User[];
 };
 
 function adaptApplication(app: BackendApplication): Application {
     return {
         id: app.id,
+        teamId: app.teamId,
+        message: app.message,
+        user: app.user,
         team: {
             id: app.team.id,
             name: app.team.name,
@@ -74,8 +81,8 @@ function adaptParticipant(team: BackendParticipantTeam): Participant {
 
 
 export async function getTournamentApplications(tournamentId: string) {
-    const result = await fetchWithAuth<BackendApplication[]>(`/tournaments/${tournamentId}/applications`, {
-        next: { tags: [`applications-${tournamentId}`] }
+    const result = await fetchWithAuth<BackendApplication[]>(`/teams/${tournamentId}/applications`, {
+        next: { tags: [`team-applications-${tournamentId}`] }
     });
     
     if (result.success && Array.isArray(result.data)) {
@@ -104,7 +111,7 @@ export async function getTournamentParticipants(tournamentId: string) {
 export async function approveApplication(tournamentId: string, applicationId: string) {
     const result = await fetchWithAuth<{teamId: string, team: { slug: string}}>(`/team-applications/${applicationId}/accept`, { method: 'PATCH' });
     if (result.success && result.data?.team?.slug) {
-        revalidateTag(`applications-${tournamentId}`);
+        revalidateTag(`team-applications-${tournamentId}`);
         revalidateTag(`team-slug-${result.data.team.slug}`);
     }
     return result;
@@ -113,7 +120,7 @@ export async function approveApplication(tournamentId: string, applicationId: st
 export async function rejectApplication(tournamentId: string, applicationId: string) {
     const result = await fetchWithAuth<{teamId: string}>(`/team-applications/${applicationId}/decline`, { method: 'PATCH' });
      if (result.success && result.data) {
-        revalidateTag(`applications-${result.data.teamId}`);
+        revalidateTag(`team-applications-${result.data.teamId}`);
     }
     return result;
 }
@@ -124,7 +131,7 @@ export async function removeParticipant(tournamentId: string, teamId: string) {
       });
       if (result.success) {
           revalidateTag(`participants-${tournamentId}`);
-          revalidateTag(`applications-${tournamentId}`);
+          revalidateTag(`team-applications-${tournamentId}`);
       }
       return result;
 }

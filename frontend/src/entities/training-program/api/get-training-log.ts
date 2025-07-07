@@ -5,11 +5,11 @@
 import type { TrainingLogEntry, ExerciseLog, LoggedSet } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
-// Local types to avoid direct dependency on @prisma/client
+// Local types to avoid direct dependency on backend schemas
 type PrismaExercise = { id: string, name: string, [key: string]: any };
 type PrismaSet = { id: string, plannedReps: string | null, plannedWeight: string | null, loggedReps: number | null, loggedWeight: number | null, rpe: number | null, isCompleted: boolean };
 type RawLoggedExercise = { id: string, notes: string | null, isSupersetWithPrevious: boolean | null, exercise: PrismaExercise, sets: PrismaSet[] };
-type RawTrainingLogEntry = { id: string, date: string, workoutName: string | null, status: 'COMPLETED' | 'PLANNED' | 'SKIPPED', mood: 'great' | 'good' | 'ok' | 'bad' | null, notes: string | null, coachNotes: string | null, exercises: RawLoggedExercise[] };
+type RawTrainingLogEntry = { id: string, date: string, workoutName: string | null, status: 'COMPLETED' | 'PLANNED' | 'SKIPPED', mood: 'GREAT' | 'GOOD' | 'OK' | 'BAD' | null, notes: string | null, coachNotes: string | null, exercises: RawLoggedExercise[] };
 
 function transformApiLogToFrontend(apiLog: RawTrainingLogEntry[]): TrainingLogEntry[] {
   return apiLog.map(log => ({

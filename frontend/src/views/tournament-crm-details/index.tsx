@@ -8,7 +8,6 @@ import { notFound, useRouter } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
 import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants';
 import { TournamentBracket } from '@/widgets/tournament-bracket';
-import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
 import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
 import { CrmTournamentAnnouncements } from '@/widgets/crm-tournament-announcements';
@@ -91,7 +90,6 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                         <TabsTrigger value="participants">Участники</TabsTrigger>
                         <TabsTrigger value="rules">Правила</TabsTrigger>
                         <TabsTrigger value="judges">Судьи</TabsTrigger>
-                        <TabsTrigger value="matches">Матчи</TabsTrigger>
                         <TabsTrigger value="disputes">Споры</TabsTrigger>
                         <TabsTrigger value="bracket">Сетка</TabsTrigger>
                         <TabsTrigger value="media-center">Медиа-центр</TabsTrigger>
@@ -135,10 +133,6 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
 
                 <TabsContent value="judges" className="mt-4">
                     <CrmTournamentJudges tournamentId={tournament.id} />
-                </TabsContent>
-
-                <TabsContent value="matches" className="mt-4">
-                    <CrmTournamentMatches rounds={tournament.bracket.rounds} />
                 </TabsContent>
 
                 <TabsContent value="disputes" className="mt-4">
