@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { Input } from '@/shared/ui/input';
@@ -125,11 +125,6 @@ export function ExercisesCatalogPage() {
                                         <Badge variant="outline">{exercise.equipment}</Badge>
                                     </div>
                                 </CardContent>
-                                <CardFooter className="p-0">
-                                    <div className="w-full text-center p-2 text-sm font-medium text-primary bg-primary/10">
-                                        Подробнее
-                                    </div>
-                                </CardFooter>
                             </Card>
                         </Link>
                     ))}

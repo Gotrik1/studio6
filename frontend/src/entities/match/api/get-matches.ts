@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import type { Match } from '@/entities/match/model/types';
@@ -13,7 +14,7 @@ export async function fetchMatches(status?: string, tournamentId?: string, teamI
   const queryString = params.toString();
   const url = `/matches${queryString ? `?${queryString}` : ''}`;
   
-  const result = await fetchWithAuth(url);
+  const result = await fetchWithAuth<Match[]>(url);
 
   if (!result.success) {
     console.error('Failed to fetch matches from backend:', result.error);

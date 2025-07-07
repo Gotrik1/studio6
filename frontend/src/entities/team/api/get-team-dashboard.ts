@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { Match } from '@/entities/match/model/types';
@@ -9,7 +10,7 @@ export type TeamDashboardData = {
 };
 
 export async function getTeamDashboardData(teamId: string): Promise<TeamDashboardData | null> {
-    const result = await fetchWithAuth(`/teams/${teamId}/dashboard`);
+    const result = await fetchWithAuth<TeamDashboardData>(`/teams/${teamId}/dashboard`);
     
     if (!result.success) {
         console.error(`Failed to fetch dashboard data for team ${teamId}:`, result.error);

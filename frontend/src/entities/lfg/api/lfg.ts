@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { LfgLobby } from '@/entities/lfg/model/types';
@@ -16,7 +17,7 @@ export type CreateLobbyApiData = {
 };
 
 export async function fetchLobbies(): Promise<LfgLobby[]> {
-    const result = await fetchWithAuth('/lfg');
+    const result = await fetchWithAuth<LfgLobby[]>('/lfg');
     if (!result.success) {
         console.error('Failed to fetch lobbies:', result.error);
         return [];

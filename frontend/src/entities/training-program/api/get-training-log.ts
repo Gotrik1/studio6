@@ -49,7 +49,7 @@ function transformApiLogToFrontend(apiLog: RawTrainingLogEntry[]): TrainingLogEn
 }
 
 export async function getTrainingLog(): Promise<TrainingLogEntry[]> {
-    const result = await fetchWithAuth('/training/log');
+    const result = await fetchWithAuth<RawTrainingLogEntry[]>('/training/log');
     if (!result.success) {
         console.error("Failed to fetch training log:", result.error);
         return [];

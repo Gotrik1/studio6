@@ -174,7 +174,7 @@ export function JudgeCenterPage() {
                                                     <TableCell className="text-right">{match.judge}</TableCell>
                                                 </TableRow>
                                             )) : (
-                                                <TableRow><TableCell colSpan={3} className="h-24 text-center">Разрешенных споров нет.</TableCell></TableRow>
+                                                <TableRow><TableCell colSpan={3} className="text-center h-24">Разрешенных споров нет.</TableCell></TableRow>
                                             )}
                                         </TableBody>
                                     </Table>

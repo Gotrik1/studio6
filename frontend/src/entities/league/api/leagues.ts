@@ -19,8 +19,13 @@ type BackendMatch = Match & {
     team2: Team;
 }
 
+type RawBackendLeagueDetails = League & {
+    teams: BackendLeagueTeam[];
+    matches: BackendMatch[];
+}
+
 export async function getLeagues(): Promise<League[]> {
-    const result = await fetchWithAuth('/leagues');
+    const result = await fetchWithAuth<League[]>('/leagues');
     if (!result.success) {
         console.error('Failed to fetch leagues:', result.error);
         return [];
@@ -29,7 +34,7 @@ export async function getLeagues(): Promise<League[]> {
 }
 
 export async function getLeagueById(id: string): Promise<LeagueDetails | null> {
-    const result = await fetchWithAuth(`/leagues/${id}`);
+    const result = await fetchWithAuth<RawBackendLeagueDetails>(`/leagues/${id}`);
     if (!result.success) {
         console.error(`Failed to fetch league ${id}:`, result.error);
         return null;

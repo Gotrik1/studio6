@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -5,7 +6,7 @@ import type { Poll } from '../model/types';
 import { revalidateTag } from 'next/cache';
 
 export async function getLatestPoll(): Promise<Poll | null> {
-    const result = await fetchWithAuth('/polls/latest', {
+    const result = await fetchWithAuth<Poll>('/polls/latest', {
         next: { tags: ['poll'] }
     });
     if (!result.success) {

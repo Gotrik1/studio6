@@ -1,8 +1,10 @@
 
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidatePath } from 'next/cache';
+import type { Match } from '@prisma/client';
 
 type ResolveDisputePayload = {
   winnerId: string;
@@ -12,7 +14,7 @@ type ResolveDisputePayload = {
 };
 
 export async function resolveDispute(matchId: string, payload: ResolveDisputePayload) {
-  const result = await fetchWithAuth(`/matches/${matchId}/resolve`, {
+  const result = await fetchWithAuth<Match>(`/matches/${matchId}/resolve`, {
     method: 'POST',
     body: JSON.stringify(payload),
   });

@@ -4,13 +4,13 @@
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { Sponsor } from '@/entities/sponsor/model/types';
+import type { Sponsor as SponsorType } from '@/entities/sponsor/model/types';
 import type { Sponsor as PrismaSponsor } from '@prisma/client';
 
 type BackendSponsor = PrismaSponsor & { amount?: number };
 
 // Adapter to transform a raw sponsor object from the backend
-const adaptSponsor = (sponsor: BackendSponsor | null | undefined): (Sponsor & { amount?: number }) | null => {
+const adaptSponsor = (sponsor: BackendSponsor | null | undefined): (SponsorType & { amount?: number }) | null => {
     if (!sponsor) return null;
     return {
         ...sponsor,
@@ -22,14 +22,16 @@ const adaptSponsor = (sponsor: BackendSponsor | null | undefined): (Sponsor & { 
     };
 };
 
-export async function getAssignedSponsors(tournamentId: string) {
-    const result = await fetchWithAuth(`/tournaments/${tournamentId}/sponsors`, { next: { tags: [`sponsors-${tournamentId}`] } });
+export async function getAssignedSponsors(
+    tournamentId: string,
+  ): Promise<(SponsorType & { amount: number })[]> {
+    const result = await fetchWithAuth<BackendSponsor[]>(`/tournaments/${tournamentId}/sponsors`, { next: { tags: [`sponsors-${tournamentId}`] } });
     
     if (result.success && Array.isArray(result.data)) {
-        result.data = result.data.map(adaptSponsor).filter(Boolean);
+        return (result.data.map(adaptSponsor).filter(Boolean) as (SponsorType & { amount: number })[]);
     }
 
-    return result;
+    return [];
 }
 
 export async function getAvailableSponsors() {

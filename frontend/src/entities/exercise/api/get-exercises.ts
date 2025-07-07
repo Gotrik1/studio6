@@ -1,10 +1,11 @@
+
 'use server';
 
 import type { Exercise } from '@/entities/exercise/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
 export async function getExercises(): Promise<Exercise[]> {
-    const result = await fetchWithAuth('/training/exercises');
+    const result = await fetchWithAuth<Exercise[]>('/training/exercises');
     if (!result.success) {
         console.error('Failed to fetch exercises:', result.error);
         return [];
@@ -13,7 +14,7 @@ export async function getExercises(): Promise<Exercise[]> {
 }
 
 export async function getExerciseById(id: string): Promise<Exercise | null> {
-    const result = await fetchWithAuth(`/training/exercises/${id}`);
+    const result = await fetchWithAuth<Exercise>(`/training/exercises/${id}`);
     if (!result.success) {
         console.error(`Failed to fetch exercise ${id}:`, result.error);
         return null;

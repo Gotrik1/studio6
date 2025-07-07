@@ -6,9 +6,8 @@ import { getSession } from "@/features/auth/session";
 import { revalidatePath } from "next/cache";
 import type { UserTeam as UserTeamType } from '@/entities/team/model/types';
 import { fetchWithAuth } from "@/shared/lib/api-client";
-import type { UserProfile } from '@prisma/client';
+import type { FullUserProfile } from '@/entities/user/model/types';
 
-type FullUserProfile = UserProfile & { teams: UserTeamType[] };
 
 export async function registerTeamForTournamentAction(tournamentId: string, tournamentSlug: string) {
     const session = await getSession();

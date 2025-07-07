@@ -9,7 +9,7 @@ import type { Report } from '../model/types';
 export type { Report };
 
 export async function getReports(status: 'PENDING' | 'RESOLVED' | 'DISMISSED'): Promise<Report[]> {
-  const result = await fetchWithAuth(`/reports?status=${status}`, { next: { tags: ['reports'] } });
+  const result = await fetchWithAuth<Report[]>(`/reports?status=${status}`, { next: { tags: ['reports'] } });
   if (!result.success) {
     console.error('Failed to fetch reports:', result.error);
     return [];

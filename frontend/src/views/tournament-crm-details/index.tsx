@@ -21,10 +21,10 @@ import { Button } from '@/shared/ui/button';
 import { Save } from 'lucide-react';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { CrmTournamentMediaCenter } from '@/widgets/crm-tournament-media-center';
-import { CrmTournamentDisputes } from '@/widgets/crm-tournament-disputes';
 import { getTournamentById } from '@/entities/tournament/api/get-tournament';
 import type { TournamentDetails } from '@/entities/tournament/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { DisputeResolutionDialog } from '@/widgets/dispute-resolution-dialog';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -138,7 +138,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
 
                 <TabsContent value="disputes" className="mt-4">
-                    <CrmTournamentDisputes tournamentId={tournament.id} />
+                    <DisputeResolutionDialog isOpen={true} onOpenChange={()=>{}} match={null} onResolve={()=>{}} />
                 </TabsContent>
 
                 <TabsContent value="bracket" className="mt-4">

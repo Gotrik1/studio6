@@ -1,7 +1,8 @@
 
+
 'use server';
 
-import type { Playground } from '@/entities/playground/model/types';
+import type { Playground, PlaygroundReview } from '@/entities/playground/model/types';
 import { revalidatePath } from 'next/cache';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
@@ -21,7 +22,7 @@ export type CreatePlaygroundData = {
 
 export async function getPlaygrounds(): Promise<Playground[]> {
   try {
-    const result = await fetchWithAuth('/playgrounds');
+    const result = await fetchWithAuth<Playground[]>('/playgrounds');
     if (!result.success) {
       console.error('Failed to fetch playgrounds:', result.error);
       return [];
@@ -43,7 +44,7 @@ export async function getPlaygrounds(): Promise<Playground[]> {
 
 export async function getPlaygroundById(id: string): Promise<Playground | null> {
   try {
-    const result = await fetchWithAuth(`/playgrounds/${id}`, {
+    const result = await fetchWithAuth<Playground>(`/playgrounds/${id}`, {
         next: { tags: [`playground-${id}`] }
     });
     if (!result.success) {
@@ -57,11 +58,11 @@ export async function getPlaygroundById(id: string): Promise<Playground | null> 
             ...playground,
             id: String(playground.id),
             kingOfTheCourt: playground.kingOfTheCourt, // Pass through new data
-            reviews: (playground.reviews || []).map((review: { id: string; rating: number; comment: string; createdAt: string; author: { id: string; name: string; avatar: string | null; }; }) => ({
+            reviews: (playground.reviews || []).map((review: PlaygroundReview) => ({
                 id: String(review.id),
                 rating: review.rating,
                 comment: review.comment,
-                timestamp: review.createdAt,
+                timestamp: review.timestamp,
                 author: {
                     id: String(review.author.id),
                     name: review.author.name,

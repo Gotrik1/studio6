@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { SponsorshipDashboardData, SponsoredTeam } from '@/entities/sponsorship/model/types';
@@ -6,7 +7,7 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 export type { SponsoredTeam };
 
 export async function getSponsorshipDashboardData(): Promise<SponsorshipDashboardData | null> {
-    const result = await fetchWithAuth('/sponsorship/dashboard');
+    const result = await fetchWithAuth<SponsorshipDashboardData>('/sponsorship/dashboard');
     if (!result.success) {
         console.error("Failed to fetch sponsorship data:", result.error);
         return null;

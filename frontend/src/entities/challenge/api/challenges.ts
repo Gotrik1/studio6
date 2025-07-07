@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { Challenge } from '@/entities/challenge/model/types';
@@ -13,7 +14,7 @@ export type CreateChallengeData = {
 };
 
 export async function getChallenges(filter: 'open' | 'my' | 'history'): Promise<Challenge[]> {
-  const result = await fetchWithAuth(`/challenges?filter=${filter}`);
+  const result = await fetchWithAuth<Challenge[]>(`/challenges?filter=${filter}`);
   if (!result.success) return [];
   return result.data;
 }

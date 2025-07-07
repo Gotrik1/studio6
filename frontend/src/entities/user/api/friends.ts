@@ -1,3 +1,4 @@
+
 'use server';
 
 import { revalidatePath } from "next/cache";
@@ -28,19 +29,19 @@ export type FriendSuggestion = {
 };
 
 export async function getFriends(): Promise<Friend[]> {
-    const result = await fetchWithAuth('/friends');
+    const result = await fetchWithAuth<Friend[]>('/friends');
     if (!result.success) return [];
     return result.data;
 }
 
 export async function getFriendRequests(): Promise<FriendRequest[]> {
-     const result = await fetchWithAuth('/friends/requests');
+     const result = await fetchWithAuth<FriendRequest[]>('/friends/requests');
     if (!result.success) return [];
     return result.data;
 }
 
 export async function getFriendSuggestions(): Promise<FriendSuggestion[]> {
-    const result = await fetchWithAuth('/friends/suggestions');
+    const result = await fetchWithAuth<FriendSuggestion[]>('/friends/suggestions');
     if (!result.success) return [];
     return result.data;
 }

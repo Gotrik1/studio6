@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -14,7 +15,7 @@ export type FaqCategory = {
 };
 
 export async function getFaqCategories(): Promise<FaqCategory[]> {
-    const result = await fetchWithAuth('/faq');
+    const result = await fetchWithAuth<FaqCategory[]>('/faq');
     if (!result.success) {
         console.error("Failed to fetch FAQ:", result.error);
         return [];

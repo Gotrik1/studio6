@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -18,7 +19,7 @@ export type CreatePromotionData = {
 };
 
 export async function getPromotions(): Promise<Promotion[]> {
-    const result = await fetchWithAuth('/promotions');
+    const result = await fetchWithAuth<Promotion[]>('/promotions');
     if (!result.success) {
         console.error("Failed to fetch promotions:", result.error);
         return [];

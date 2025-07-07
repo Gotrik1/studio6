@@ -10,7 +10,7 @@ import type { AnalyzeTeamPerformanceOutput } from '@/shared/api/genkit/flows/ana
 export type { Team, TeamDetails };
 
 export async function getTeams(): Promise<Team[]> {
-  const result = await fetchWithAuth('/teams');
+  const result = await fetchWithAuth<Team[]>('/teams');
   if (!result.success) {
     console.error('Failed to fetch teams from backend:', result.error);
     return []; // Return empty array on failure
@@ -36,7 +36,7 @@ export async function getTeams(): Promise<Team[]> {
   return [];
 }
 export async function getTeamBySlug(slug: string): Promise<TeamDetails | null> {
-    const result = await fetchWithAuth(`/teams/slug/${slug}`, {
+    const result = await fetchWithAuth<TeamDetails>(`/teams/slug/${slug}`, {
         cache: 'no-store',
     });
 
@@ -55,7 +55,7 @@ export async function getTeamBySlug(slug: string): Promise<TeamDetails | null> {
 
 
 export async function setHomePlayground(teamId: string, playgroundId: string) {
-    const result = await fetchWithAuth(`/teams/${teamId}/home-playground`, {
+    const result = await fetchWithAuth<Team>(`/teams/${teamId}/home-playground`, {
         method: 'PATCH',
         body: JSON.stringify({ playgroundId }),
     });
@@ -82,7 +82,7 @@ export async function setCaptain(teamId: string, newCaptainId: string) {
 }
 
 export async function getTeamCoachSummary(teamId: string): Promise<AnalyzeTeamPerformanceOutput | null> {
-    const result = await fetchWithAuth(`/teams/${teamId}/coach-summary`);
+    const result = await fetchWithAuth<AnalyzeTeamPerformanceOutput>(`/teams/${teamId}/coach-summary`);
     if (!result.success) {
         console.error('Failed to fetch team coach summary:', result.error);
         return null;

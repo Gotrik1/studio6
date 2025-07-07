@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { Sport } from '../model/types';
@@ -7,7 +8,7 @@ import { revalidateTag } from 'next/cache';
 export type { Sport };
 
 export async function getSports(): Promise<Sport[]> {
-    const result = await fetchWithAuth('/sports', { next: { tags: ['sports'] } });
+    const result = await fetchWithAuth<Sport[]>('/sports', { next: { tags: ['sports'] } });
     if (!result.success) {
         console.error("Failed to fetch sports:", result.error);
         return [];
@@ -16,7 +17,7 @@ export async function getSports(): Promise<Sport[]> {
 }
 
 export async function getSportById(id: string): Promise<Sport | null> {
-    const result = await fetchWithAuth(`/sports/${id}`);
+    const result = await fetchWithAuth<Sport>(`/sports/${id}`);
     if (!result.success) {
         console.error(`Failed to fetch sport ${id}:`, result.error);
         return null;

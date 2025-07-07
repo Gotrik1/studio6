@@ -1,4 +1,5 @@
 
+
 'use server';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
@@ -10,7 +11,7 @@ export type PlaygroundConditionReport = {
 };
 
 export async function getPlaygroundCondition(playgroundId: string): Promise<PlaygroundConditionReport | null> {
-    const result = await fetchWithAuth(`/playgrounds/${playgroundId}/condition`, {
+    const result = await fetchWithAuth<PlaygroundConditionReport>(`/playgrounds/${playgroundId}/condition`, {
         next: { tags: [`playground-condition-${playgroundId}`] }
     });
 

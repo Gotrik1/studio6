@@ -1,6 +1,5 @@
 
 
-
 'use server';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
@@ -13,7 +12,6 @@ import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
 import type { Achievement } from '@/entities/achievement/model/types';
 import type { Activity } from '@/entities/feed/model/types';
-
 
 export type { FullUserProfile, PlayerStats };
 

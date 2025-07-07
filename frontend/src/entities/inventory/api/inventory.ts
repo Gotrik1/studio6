@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { InventoryItem } from '@/entities/inventory/model/types';
@@ -5,7 +6,7 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 
 export async function getInventory(): Promise<InventoryItem[]> {
-    const result = await fetchWithAuth('/inventory', {
+    const result = await fetchWithAuth<InventoryItem[]>('/inventory', {
         next: { tags: ['inventory'] }
     });
     if (!result.success) {

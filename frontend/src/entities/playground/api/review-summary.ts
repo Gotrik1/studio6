@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -9,7 +10,7 @@ export type ReviewSummary = {
 };
 
 export async function getPlaygroundReviewSummary(playgroundId: string): Promise<ReviewSummary | null> {
-    const result = await fetchWithAuth(`/playgrounds/${playgroundId}/review-summary`);
+    const result = await fetchWithAuth<ReviewSummary>(`/playgrounds/${playgroundId}/review-summary`);
     if (result.success) {
         return result.data;
     }

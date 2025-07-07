@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -21,7 +22,7 @@ export async function createTeamApplication(teamId: string, message: string) {
 }
 
 export async function acceptTeamApplication(applicationId: string) {
-    const result = await fetchWithAuth(`/team-applications/${applicationId}/accept`, { method: 'PATCH' });
+    const result = await fetchWithAuth<{teamId: string, team: { slug: string}}>(`/team-applications/${applicationId}/accept`, { method: 'PATCH' });
     if (result.success) {
         revalidateTag(`team-applications-${result.data.teamId}`);
         // Also revalidate team details to update roster
@@ -31,7 +32,7 @@ export async function acceptTeamApplication(applicationId: string) {
 }
 
 export async function declineTeamApplication(applicationId: string) {
-    const result = await fetchWithAuth(`/team-applications/${applicationId}/decline`, { method: 'PATCH' });
+    const result = await fetchWithAuth<{teamId: string}>(`/team-applications/${applicationId}/decline`, { method: 'PATCH' });
      if (result.success) {
         revalidateTag(`team-applications-${result.data.teamId}`);
     }

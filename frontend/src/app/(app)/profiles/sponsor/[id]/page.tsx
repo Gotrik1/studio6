@@ -1,6 +1,5 @@
 
 
-
 'use client';
 
 import SponsorClient from "@/app/(app)/administration/sponsor/client";

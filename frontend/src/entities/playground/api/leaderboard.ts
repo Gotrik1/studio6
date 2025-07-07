@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -22,7 +23,7 @@ type BackendLeaderboardItem = {
 
 
 export async function getPlaygroundLeaderboard(playgroundId: string): Promise<PlaygroundLeaderboardItem[]> {
-    const result = await fetchWithAuth(`/playgrounds/${playgroundId}/leaderboard`);
+    const result = await fetchWithAuth<BackendLeaderboardItem[]>(`/playgrounds/${playgroundId}/leaderboard`);
     
     if (!result.success) {
         console.error(`Failed to fetch leaderboard for playground ${playgroundId}:`, result.error);
@@ -30,9 +31,11 @@ export async function getPlaygroundLeaderboard(playgroundId: string): Promise<Pl
     }
 
     if (Array.isArray(result.data)) {
-        return result.data.map((item: BackendLeaderboardItem) => ({
-            ...item,
+        return result.data.map((item, index) => ({
             id: String(item.userId),
+            rank: item.rank ?? index + 1,
+            name: item.name || 'Неизвестный игрок',
+            avatar: item.avatar || null,
             checkIns: item._count.userId,
         }));
     }
