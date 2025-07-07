@@ -44,7 +44,7 @@ export function TeamScheduleTab() {
     const fetchPractices = useCallback(async () => {
         if (!teamId) return;
         setIsLoading(true);
-        const result: FetchResult<BackendPractice[]> = await getTeamPractices(teamId as string);
+        const result = await getTeamPractices(teamId as string);
         if (result.success && Array.isArray(result.data)) {
             setPractices(result.data.map((p: BackendPractice) => ({
                 id: p.id,

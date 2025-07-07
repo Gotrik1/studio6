@@ -4,6 +4,7 @@
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
+import type { User as PrismaUser } from '@prisma/client';
 
 // Frontend-specific types
 export type RosterMember = {
@@ -28,17 +29,73 @@ export type Application = {
     };
 };
 
+type BackendApplication = {
+    id: string;
+    team: {
+        id: string;
+        name: string;
+        slug: string;
+        captain: PrismaUser | null
+    }
+}
+type BackendParticipantTeam = {
+    id: string;
+    name: string;
+    captain: PrismaUser | null;
+    members: PrismaUser[];
+};
+
+function adaptApplication(app: BackendApplication): Application {
+    return {
+        id: app.id,
+        team: {
+            id: app.team.id,
+            name: app.team.name,
+            slug: app.team.slug,
+            captain: { name: app.team.captain?.name || 'N/A' },
+        },
+    };
+}
+function adaptParticipant(team: BackendParticipantTeam): Participant {
+    return {
+        id: team.id,
+        name: team.name,
+        captain: { name: team.captain?.name || 'N/A' },
+        members: team.members.map(m => ({
+            id: m.id,
+            name: m.name,
+            avatar: m.avatar,
+            role: m.role
+        }))
+    }
+}
+
+
 export async function getTournamentApplications(tournamentId: string) {
-    return fetchWithAuth<Application[]>(`/tournaments/${tournamentId}/applications`, {
+    const result = await fetchWithAuth<BackendApplication[]>(`/tournaments/${tournamentId}/applications`, {
         next: { tags: [`applications-${tournamentId}`] }
     });
+    
+    if (result.success && Array.isArray(result.data)) {
+        return {
+            ...result,
+            data: result.data.map(adaptApplication)
+        }
+    }
+    return result;
 }
 
 export async function getTournamentParticipants(tournamentId: string) {
-    const result = await fetchWithAuth<Participant[]>(`/tournaments/${tournamentId}/participants`, {
+    const result = await fetchWithAuth<BackendParticipantTeam[]>(`/tournaments/${tournamentId}/participants`, {
         next: { tags: [`participants-${tournamentId}`] }
     });
     
+     if (result.success && Array.isArray(result.data)) {
+        return {
+            ...result,
+            data: result.data.map(adaptParticipant)
+        }
+    }
     return result;
 }
 

@@ -1,10 +1,8 @@
-
 import type { Team } from '@/entities/team/model/types';
 
 export type SponsoredTeam = Team & {
     investment: string;
     since: string;
-    logoHint: string | null;
 };
 
 export type TeamSeekingSponsorship = {

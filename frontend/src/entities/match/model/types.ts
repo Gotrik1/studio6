@@ -71,7 +71,7 @@ export type Match = {
     status: string;
     href: string;
     playgroundId?: string | null;
-    disputeReason?: string;
+    disputeReason?: string | null;
     timestamp?: string;
-    resolution?: string;
+    resolution?: string | null;
 };

@@ -26,11 +26,13 @@ export async function getPlaygroundLeaderboard(playgroundId: string): Promise<Pl
     const result = await fetchWithAuth<BackendLeaderboardItem[]>(`/playgrounds/${playgroundId}/leaderboard`);
     
     if (!result.success || !Array.isArray(result.data)) {
-        console.error(`Failed to fetch leaderboard for playground ${playgroundId}:`, result.error);
+        if (!result.success) {
+            console.error(`Failed to fetch leaderboard for playground ${playgroundId}:`, result.error);
+        }
         return [];
     }
     
-    return result.data.map((item, index) => ({
+    return result.data.map((item: BackendLeaderboardItem, index: number) => ({
         id: String(item.userId),
         rank: item.rank ?? index + 1,
         name: item.name || 'Неизвестный игрок',

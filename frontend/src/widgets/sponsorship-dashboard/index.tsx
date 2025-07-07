@@ -93,7 +93,7 @@ export function SponsorshipDashboard({ data }: { data: SponsorshipDashboardData 
                                     <TableRow key={team.slug}>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
-                                                <Image src={team.logo} alt={team.name} width={24} height={24} className="rounded-full" data-ai-hint={team.logoHint}/>
+                                                <Image src={team.logo} alt={team.name} width={24} height={24} className="rounded-full" data-ai-hint={team.logoHint || 'team logo'}/>
                                                 <span className="font-medium">{team.name}</span>
                                             </div>
                                         </TableCell>

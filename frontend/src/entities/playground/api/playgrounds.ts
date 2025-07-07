@@ -5,7 +5,7 @@
 import type { Playground, PlaygroundReview, KingTeam } from '@/entities/playground/model/types';
 import { revalidatePath } from 'next/cache';
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import type { User } from '@prisma/client';
+import type { User as PrismaUser } from '@prisma/client';
 
 /**
  * Explicit DTO for creating a playground.
@@ -21,8 +21,10 @@ export type CreatePlaygroundData = {
     coverImageHint?: string;
 };
 
+type RawReview = Omit<PlaygroundReview, 'author'> & { author: PrismaUser; createdAt: string; };
+
 type RawPlayground = Omit<Playground, 'reviews' | 'kingOfTheCourt'> & {
-    reviews: (Omit<PlaygroundReview, 'author'> & { author: User })[];
+    reviews: RawReview[];
     kingOfTheCourt?: KingTeam | null;
 }
 

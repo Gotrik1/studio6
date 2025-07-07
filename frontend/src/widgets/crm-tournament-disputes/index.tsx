@@ -2,22 +2,23 @@
 
 'use client';
 
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/shared/ui/card';
+import { useState, useEffect, useCallback } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
 import { DisputeResolutionDialog } from '@/widgets/dispute-resolution-dialog';
 import { useToast } from '@/shared/hooks/use-toast';
-import { fetchMatches } from '@/entities/match/api/get-matches';
-import { resolveDispute } from '@/entities/match/api/resolve-dispute';
-import type { Match } from '@/entities/match/model/types';
-import { Skeleton } from '@/shared/ui/skeleton';
-import { useState, useEffect, useCallback } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { fetchMatches } from '@/entities/match/api/get-matches';
+import type { Match } from '@/entities/match/model/types';
+import { Skeleton } from '@/shared/ui/skeleton';
+import { resolveDispute } from '@/entities/match/api/resolve-dispute';
+import { Badge } from '@/shared/ui/badge';
 
 type DisputedMatch = Match & {
     disputeReason: string;
-    timestamp?: string;
+    timestamp: string;
 };
 
 interface CrmTournamentDisputesProps {
@@ -46,13 +47,14 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
         setSelectedMatch(match);
         setIsDialogOpen(true);
     };
-
+    
     const handleResolve = async (matchId: string, resolution: string) => {
         const matchToResolve = disputedMatches.find(m => m.id === matchId);
         if (!matchToResolve) return;
 
+        // Simplified logic for winner/score for this implementation
         const result = await resolveDispute(matchId, {
-            winnerId: matchToResolve.team1.id, // Simplified for demo
+            winnerId: matchToResolve.team1.id, // For demo, let's make team1 the winner
             resolution,
             score1: 1, // Mock score
             score2: 0,
@@ -63,7 +65,7 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
                 title: 'Спор разрешен!',
                 description: `Решение по матчу ${matchToResolve.team1.name} vs ${matchToResolve.team2.name} было принято.`
             });
-            await fetchData();
+            await fetchData(); // Refetch data
             setIsDialogOpen(false);
         } else {
              toast({
@@ -92,33 +94,30 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Матч</TableHead>
-                                <TableHead>Причина спора</TableHead>
+                                <TableHead className="hidden md:table-cell">Причина</TableHead>
                                 <TableHead className="hidden md:table-cell">Поступил</TableHead>
                                 <TableHead className="text-right"></TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {disputedMatches.map(match => (
+                            {disputedMatches.length > 0 ? disputedMatches.map(match => (
                                 <TableRow key={match.id}>
                                     <TableCell className="font-medium">{match.team1.name} vs {match.team2.name}</TableCell>
-                                    <TableCell>{match.disputeReason}</TableCell>
+                                    <TableCell className="hidden md:table-cell text-muted-foreground truncate max-w-sm">{match.disputeReason}</TableCell>
                                     <TableCell className="hidden md:table-cell">{match.timestamp ? formatDistanceToNow(new Date(match.timestamp), { addSuffix: true, locale: ru }) : '-'}</TableCell>
                                     <TableCell className="text-right">
                                         <Button size="sm" onClick={() => handleReviewClick(match)}>Рассмотреть</Button>
                                     </TableCell>
                                 </TableRow>
-                            ))}
-                            {disputedMatches.length === 0 && (
-                                <TableRow>
-                                    <TableCell colSpan={4} className="text-center h-24">Спорных матчей нет.</TableCell>
-                                </TableRow>
+                            )) : (
+                                <TableRow><TableCell colSpan={4} className="h-24 text-center">Активных споров нет.</TableCell></TableRow>
                             )}
                         </TableBody>
                     </Table>
                 )}
             </CardContent>
         </Card>
-        <DisputeResolutionDialog
+        <DisputeResolutionDialog 
             isOpen={isDialogOpen}
             onOpenChange={setIsDialogOpen}
             match={selectedMatch}
