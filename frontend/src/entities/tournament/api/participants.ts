@@ -46,11 +46,9 @@ export async function approveApplication(tournamentId: string, applicationId: st
     const result = await fetchWithAuth<{teamId: string, team: { slug: string}}>(`/team-applications/${applicationId}/accept`, {
         method: 'PATCH',
     });
-    if (result.success && result.data) {
+    if (result.success && result.data?.team?.slug) {
         revalidateTag(`applications-${tournamentId}`);
-        if(result.data.team?.slug) {
-            revalidateTag(`team-slug-${result.data.team.slug}`);
-        }
+        revalidateTag(`team-slug-${result.data.team.slug}`);
     }
     return result;
 }

@@ -2,10 +2,9 @@
   "name": "prodvor-monorepo",
   "private": true,
   "workspaces": [
-    "frontend",
-    "backend"
+    "frontend"
   ],
   "scripts": {
-    "dev": "npm run dev --workspace=frontend"
+    "dev": "next dev -p 9002 -H 0.0.0.0"
   }
 }
