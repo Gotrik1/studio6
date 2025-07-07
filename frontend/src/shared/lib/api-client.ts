@@ -49,5 +49,5 @@ export async function fetchWithAuth<T = unknown>(url: string, options: RequestIn
   }
 
   const data = await response.json();
-  return { success: true, data: data, status: response.status };
+  return { success: true, data: data as T, status: response.status };
 }

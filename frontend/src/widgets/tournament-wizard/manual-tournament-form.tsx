@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/shared/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
@@ -38,22 +38,8 @@ const tournamentSchema = z.object({
   location: z.string().min(3, "Укажите место проведения"),
   prizePool: z.string().optional(),
   rules: z.string().optional(),
-}).refine(data => {
-    if (data.registrationStartDate && data.registrationEndDate) {
-        return data.registrationEndDate > data.registrationStartDate;
-    }
-    return true;
-}, {
-    message: 'Конец регистрации должен быть после начала.',
-    path: ['registrationEndDate'],
-}).refine(data => {
-    if (data.registrationEndDate && data.tournamentStartDate) {
-        return data.tournamentStartDate > data.registrationEndDate;
-    }
-    return true;
-}, {
-    message: 'Начало турнира должно быть после конца регистрации.',
-    path: ['tournamentStartDate'],
+  coverImage: z.string().optional(),
+  coverImageHint: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof tournamentSchema>;

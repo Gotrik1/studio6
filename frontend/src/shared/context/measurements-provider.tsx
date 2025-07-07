@@ -26,8 +26,8 @@ export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await getMeasurements();
             setHistory(data);
-        } catch (e: unknown) {
-            const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить замеры.';
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить замеры.';
             toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
         } finally {
             setIsLoading(false);

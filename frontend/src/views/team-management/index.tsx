@@ -1,9 +1,10 @@
 
 
+
 'use client';
 
-import { useState, useEffect, useTransition, useCallback } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
+import { useState, useEffect, useCallback, useTransition } from 'react';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -30,19 +31,7 @@ import type { JoinRequest } from '@/entities/team-application/model/types';
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
-type Application = {
-    id: string;
-    teamId: string;
-    applicant: {
-        id: string;
-        name: string;
-        avatar: string | null;
-        role: string;
-    };
-    message: string;
-    statsSummary: string;
-};
-
+type Application = JoinRequest;
 
 export function TeamManagementPage() {
     const { toast } = useToast();

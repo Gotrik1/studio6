@@ -3,7 +3,7 @@
 'use server';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, UserTeam, JudgedMatch, TournamentCrm } from '@/entities/user/model/types';
+import type { CoachedPlayerSummary, FullUserProfile, PlayerStats } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -57,7 +57,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
     }
     
     const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map((activity: Activity) => {
-        const metadata: Record<string, string> = activity.metadata as Record<string, string>;
+        const metadata = activity.metadata as Record<string, string>;
         const IconName = metadata.icon as keyof typeof LucideIcons;
         return {
             id: activity.id,
