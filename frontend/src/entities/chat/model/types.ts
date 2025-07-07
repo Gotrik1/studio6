@@ -12,7 +12,7 @@ export type ChatContact = {
 
 export type ChatMessage = {
     id: string;
-    text: string;
+    content: string;
     createdAt: string;
     chatId: string;
     author: {

@@ -49,7 +49,7 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
                 const assignedIds = new Set((assignedRes.data as MedicalPartner[]).map((p: MedicalPartner) => p.id));
                 setAvailableMedics((availableRes.data as MedicalPartner[]).filter((p: MedicalPartner) => !assignedIds.has(p.id)));
             } else if (!availableRes.success) {
-                 throw new Error('Failed to process available medics');
+                 throw new Error(availableRes.error || 'Failed to process available medics');
             }
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить данные.';

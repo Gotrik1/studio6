@@ -17,6 +17,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { createTournament, type CreateTournamentDto } from '@/entities/tournament/api/tournaments';
 import { useRouter } from 'next/navigation';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/shared/ui/select';
+import type { Tournament } from '@prisma/client';
 
 export function AiTournamentWizard() {
     const { toast } = useToast();
@@ -73,17 +74,17 @@ export function AiTournamentWizard() {
         
         const createResult = await createTournament(tournamentData);
         
-        if (createResult.success && createResult.data && 'slug' in createResult.data) {
+        if (createResult.success && createResult.data && 'slug' in (createResult.data as Tournament)) {
             toast({
                 title: 'Турнир создан!',
-                description: `Турнир "${result.name}" успешно создан и скоро появится в списке.`
+                description: `Турнир "${result.name}" был успешно создан и скоро появится в списке.`
             });
-             router.push(`/tournaments/${(createResult.data as {slug: string}).slug}`);
+             router.push(`/tournaments/${(createResult.data as Tournament).slug}`);
         } else {
              toast({
                 variant: 'destructive',
                 title: 'Ошибка создания турнира',
-                description: createResult.error || 'Не удалось создать турнир.',
+                description: (createResult as {error: string}).error || 'Не удалось создать турнир.',
             });
         }
         setIsCreating(false);

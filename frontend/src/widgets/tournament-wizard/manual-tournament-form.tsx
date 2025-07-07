@@ -8,13 +8,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2, PlusCircle } from 'lucide-react';
+import { CalendarIcon, Loader2, PlusCircle, UploadCloud } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
@@ -24,6 +24,7 @@ import type { Sport } from '@/entities/sport/model/types';
 import { getSports } from '@/entities/sport/api/sports';
 import { Textarea } from '@/shared/ui/textarea';
 import { Separator } from '@/shared/ui/separator';
+import type { Tournament } from '@prisma/client';
 
 const tournamentSchema = z.object({
   name: z.string().min(5, 'Название должно быть не менее 5 символов.'),
@@ -87,17 +88,17 @@ export function ManualTournamentForm({ isEditMode }: ManualTournamentFormProps) 
     
     const result = await createTournament(tournamentData);
     
-    if (result.success && result.data && 'slug' in result.data) {
+    if (result.success && result.data && typeof result.data === 'object' && 'slug' in result.data) {
         toast({
             title: 'Турнир создан!',
             description: `Турнир "${data.name}" был успешно создан и скоро появится в списке.`
         });
-        router.push(`/tournaments/${result.data.slug}`);
+        router.push(`/tournaments/${(result.data as Tournament).slug}`);
     } else {
          toast({
             variant: 'destructive',
             title: 'Ошибка создания турнира',
-            description: result.error || 'Не удалось создать турнир.',
+            description: (result as {error: string}).error || 'Не удалось создать турнир.',
         });
     }
     setIsSubmitting(false);

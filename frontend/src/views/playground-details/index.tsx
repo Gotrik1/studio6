@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -21,19 +22,19 @@ import { PlaygroundLeaderboardTab } from '@/widgets/playground-leaderboard-tab';
 import { PlaygroundMediaTab } from '@/widgets/playground-media-tab';
 import { PlaygroundScheduleTab } from '@/widgets/playground-schedule-tab';
 import { ReportPlaygroundIssueDialog } from '@/widgets/report-playground-issue-dialog';
-import type { PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { getPlaygroundActivity, createCheckIn } from '@/entities/playground/api/activity';
 import { createReview, getReviews, type CreateReviewData, type PlaygroundReview } from '@/entities/playground/api/reviews';
 import type { PlaygroundConditionReport } from '@/entities/playground/api/condition';
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
 import { reportPlaygroundIssue } from '@/entities/playground/api/report';
+import type { Activity } from '@/entities/feed/model/types';
 
 
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const [activities, setActivities] = useState<PlaygroundActivity[]>([]);
+    const [activities, setActivities] = useState<Activity[]>([]);
     const [isLoadingActivities, setIsLoadingActivities] = useState(true);
     const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
     const [isLoadingReviews, setIsLoadingReviews] = useState(true);
@@ -51,18 +52,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         setIsLoadingActivities(true);
         try {
             const activityData = await getPlaygroundActivity(playground.id);
-            const formattedActivities: PlaygroundActivity[] = (activityData as any[]).map((act: { id: string; user: { name: string; avatar: string | null; }; metadata: { comment: string; photo: string | null; }; createdAt: string; }) => ({
-                id: act.id,
-                user: {
-                    name: act.user.name,
-                    avatar: act.user.avatar,
-                },
-                comment: act.metadata.comment || 'Отметился на площадке.',
-                photo: act.metadata.photo,
-                photoHint: 'playground check-in',
-                timestamp: act.createdAt,
-            }));
-            setActivities(formattedActivities);
+            setActivities(activityData as Activity[]);
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить ленту активности.' });
@@ -248,7 +238,17 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
                         />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-6">
-                        <PlaygroundActivityTab activities={activities} isLoading={isLoadingActivities} />
+                        <PlaygroundActivityTab activities={activities.map(a => ({
+                            id: a.id,
+                            user: {
+                                name: a.user.name,
+                                avatar: a.user.avatar
+                            },
+                            comment: (a.metadata as any)?.comment || 'Отметился!',
+                            photo: (a.metadata as any)?.photo,
+                            photoHint: 'playground check-in',
+                            timestamp: a.createdAt,
+                        }))} isLoading={isLoadingActivities} />
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-6">
                         <PlaygroundLeaderboardTab playground={playground} />

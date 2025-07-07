@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -16,6 +17,7 @@ import { generateTeamConcept, type GenerateTeamConceptOutput } from '@/shared/ap
 import { Skeleton } from '@/shared/ui/skeleton';
 import { createTeamAction } from '@/entities/team/api/create-team';
 import { useSession } from '@/shared/lib/session/client';
+import type { Team } from '@prisma/client';
 
 export function NewTeamPage() {
     const { toast } = useToast();
@@ -68,11 +70,12 @@ export function NewTeamPage() {
         const createResult = await createTeamAction(newTeamData);
         
         if (createResult.success) {
+            const newTeam = createResult.data as Team;
             toast({
                 title: 'Команда создана!',
                 description: `Команда "${result.name}" успешно создана.`,
             });
-            router.push(`/teams/${createResult.data.slug}`);
+            router.push(`/teams/${newTeam.slug}`);
         } else {
              toast({
                 variant: 'destructive',

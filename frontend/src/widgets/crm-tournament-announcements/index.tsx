@@ -39,8 +39,8 @@ export function CrmTournamentAnnouncements({ tournamentId }: CrmTournamentAnnoun
     const fetchAnnouncements = async () => {
         setIsLoading(true);
         const result = await getAnnouncements(tournamentId);
-        if(result.success) {
-            setAnnouncements(result.data);
+        if(result.success && result.data) {
+            setAnnouncements(result.data as Announcement[]);
         } else {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить рассылки.' });
         }
