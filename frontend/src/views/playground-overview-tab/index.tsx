@@ -10,7 +10,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Home, Loader2, User, Star } from 'lucide-react';
 import { KingOfTheCourtWidget } from '@/widgets/playground-home-team';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { setHomePlaygroundAction } from './actions';
+import { setHomePlaygroundAction } from '@/widgets/playground-overview-tab/actions';
 import type { Playground } from '@/entities/playground/model/types';
 import { Badge } from '@/shared/ui/badge';
 

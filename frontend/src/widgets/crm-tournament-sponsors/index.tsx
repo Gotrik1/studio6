@@ -10,7 +10,7 @@ import { Button } from '@/shared/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getAssignedSponsors, getAvailableSponsors, unassignSponsor } from '@/entities/tournament/api/sponsors';
+import { getAssignedSponsors, getAvailableSponsors, unassignSponsor, assignSponsor } from '@/entities/tournament/api/sponsors';
 import type { Sponsor } from '@/entities/sponsor/model/types';
 import { AssignSponsorDialog } from '@/widgets/assign-sponsor-dialog';
 
@@ -37,7 +37,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                 getAvailableSponsors()
             ]);
             
-            if (assignedRes.success) setAssignedSponsors(assignedRes.data as SponsorWithAmount[]);
+            if (assignedRes.success && assignedRes.data) setAssignedSponsors(assignedRes.data as SponsorWithAmount[]);
             else throw new Error(assignedRes.error);
 
             if (availableRes.success && Array.isArray(availableRes.data)) {
@@ -46,7 +46,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
             } else {
                  throw new Error(availableRes.error || 'Failed to process available sponsors');
             }
-        } catch (error: unknown) {
+        } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить данные';
             toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить данные: ${errorMessage}` });
         } finally {

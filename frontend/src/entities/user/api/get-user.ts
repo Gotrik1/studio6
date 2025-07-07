@@ -1,9 +1,10 @@
 
 
+
 'use server';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { FullUserProfile, PlayerStats } from '@/entities/user/model/types';
+import type { FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -62,7 +63,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
             type: activity.type,
             icon: IconName,
             text: formatActivityText(activity),
-            createdAt: activity.createdAt,
+            createdAt: activity.timestamp,
         };
     });
 
@@ -98,6 +99,9 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
                 locale: ru,
             })}.`,
             profileUrl: `/profiles/player/${rawProfile.id}`,
+            // Ensure gallery and careerHistory are arrays
+            gallery: (rawProfile.gallery || []) as GalleryItem[],
+            careerHistory: (rawProfile.careerHistory || []) as CareerHistoryItem[],
         };
 
         return {
