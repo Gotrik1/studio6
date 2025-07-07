@@ -4,7 +4,7 @@
 
 import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Bot, MessageSquare, Trophy, Award, Heart, MessageCircle, Share2, Users } from 'lucide-react';
+import { Bot, MessageSquare, Trophy, Award, Heart, MessageCircle, Share2, Users, MapPin } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Separator } from '@/shared/ui/separator';
 import { useState, useEffect } from 'react';
@@ -21,7 +21,7 @@ const iconMap: { [key: string]: React.ElementType } = {
     STATUS_POSTED: MessageSquare,
     TEAM_JOINED: Users,
     TOURNAMENT_REGISTERED: Trophy,
-    PLAYGROUND_CHECK_IN: MessageSquare,
+    PLAYGROUND_CHECK_IN: MapPin,
     default: MessageSquare
 };
 
@@ -107,7 +107,6 @@ export function Feed() {
             setIsLoading(true);
             const data = await getFeed();
             const formattedData: ActivityItem[] = data.map(item => {
-                const metadata: Record<string, string> = item.metadata as Record<string, string>;
                 const IconComponent = iconMap[item.type as keyof typeof iconMap] || iconMap.default;
                 return {
                     id: item.id,

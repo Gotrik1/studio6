@@ -1,4 +1,5 @@
 
+
 import SponsorClient from "@/app/(app)/administration/sponsor/client";
 import { getSponsorById, type SponsorDetails } from "@/entities/sponsor/api/sponsors";
 import { notFound } from "next/navigation";
@@ -15,7 +16,7 @@ export async function SponsorProfilePage() {
         notFound();
     }
 
-    const sponsoredTeams: SponsoredTeam[] = (sponsorDetails.teams || []).map((team) => ({
+    const sponsoredTeams: SponsoredTeam[] = (sponsorDetails.teams || []).map((team: Team) => ({
         ...team,
         logo: team.logo || 'https://placehold.co/100x100.png',
         logoHint: team.dataAiHint || 'team logo',

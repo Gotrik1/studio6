@@ -58,14 +58,7 @@ export class SponsorsService implements OnModuleInit {
       where: { id },
       include: {
         promotions: true,
-        teams: {
-          select: {
-            slug: true,
-            name: true,
-            logo: true,
-            dataAiHint: true,
-          }
-        }
+        teams: true, // Fetch full team objects
       }
     });
 

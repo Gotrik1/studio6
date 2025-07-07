@@ -43,7 +43,9 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             setLoading(true);
             const data = await getTournamentById(tournamentId);
             if (!data) {
-                notFound();
+                // notFound() can only be used in server components.
+                // Redirecting instead.
+                router.push('/404');
                 return;
             }
             setTournament(data);
@@ -161,10 +163,6 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
 
                 <TabsContent value="sponsors" className="mt-4">
                     <CrmTournamentSponsors tournamentId={tournament.id} />
-                </TabsContent>
-
-                <TabsContent value="medical" className="mt-4">
-                    <CrmTournamentMedical tournamentId={tournament.id} />
                 </TabsContent>
                 
                 <TabsContent value="announcements" className="mt-4">

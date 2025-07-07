@@ -4,6 +4,7 @@ type BaseActivity = {
     id: string;
     user: Pick<User, 'id' | 'name' | 'avatar'>;
     timestamp: string;
+    createdAt: string; // Add this to match backend data
 }
 
 // Specific metadata types
@@ -33,6 +34,10 @@ export type AchievementUnlockedMetadata = {
     title: string;
     icon: 'Award';
 };
+export type PlaygroundCheckInMetadata = {
+    comment: string;
+    photo?: string;
+};
 
 
 // Discriminated union for activities
@@ -56,6 +61,10 @@ export type AchievementUnlockedActivity = BaseActivity & {
     type: 'ACHIEVEMENT_UNLOCKED';
     metadata: AchievementUnlockedMetadata;
 };
+export type PlaygroundCheckInActivity = BaseActivity & {
+    type: 'PLAYGROUND_CHECK_IN';
+    metadata: PlaygroundCheckInMetadata;
+};
 
 // The final Activity type is a union of all specific activity types.
 export type Activity = 
@@ -63,4 +72,5 @@ export type Activity =
     | MatchPlayedActivity
     | TeamJoinedActivity
     | TournamentRegisteredActivity
-    | AchievementUnlockedActivity;
+    | AchievementUnlockedActivity
+    | PlaygroundCheckInActivity;

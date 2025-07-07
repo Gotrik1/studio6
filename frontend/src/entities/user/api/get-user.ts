@@ -3,9 +3,9 @@
 'use client';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, UserTeam, TournamentCrm, JudgedMatch, CoachedPlayerSummary } from '@/entities/user/model/types';
+import type { FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, UserTeam } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
-import { format, formatDistanceToNow, differenceInYears } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
@@ -36,6 +36,8 @@ const formatActivityText = (activity: Activity): string => {
              return `Зарегистрировал команду <a href="#" class="font-bold hover:underline">${metadata.teamName}</a> на турнир <a href="${metadata.tournamentHref}" class="font-bold hover:underline">${metadata.tournamentName}</a>.`;
         case 'ACHIEVEMENT_UNLOCKED':
              return `Разблокировано достижение: <span class="font-bold">${metadata.title}</span>`;
+        case 'PLAYGROUND_CHECK_IN':
+            return metadata.comment || 'Отметился на площадке.';
         default:
             return 'Совершил(а) новое действие.';
     }
@@ -61,7 +63,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
             type: activity.type,
             icon: IconName,
             text: formatActivityText(activity),
-            createdAt: activity.timestamp,
+            createdAt: activity.createdAt,
         };
     });
 

@@ -19,8 +19,8 @@ import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/sha
 import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
 import { useRouter } from 'next/navigation';
 import { createTournamentMedia } from '@/entities/tournament/api/media';
-import type { TournamentDetails } from '@/entities/tournament/model/types';
-import type { MatchEvent } from '@prisma/client';
+import type { TournamentDetails, MatchEvent } from '@/entities/match/model/types';
+
 
 interface CrmTournamentMediaCenterProps {
     tournament: TournamentDetails;
@@ -292,7 +292,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                 {!postResult && (
                                     <Button onClick={handleGeneratePost} disabled={isGeneratingPost || !summaryResult}>
                                         {isGeneratingPost ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                                        {summaryResult ? 'Создать пост' : 'Сначала сгенерируйте анализ'}
+                                        {result ? 'Создать пост' : 'Сначала сгенерируйте анализ'}
                                     </Button>
                                 )}
                                 {isGeneratingPost && <div className="space-y-2"><Skeleton className="h-24 w-full" /><Skeleton className="h-10 w-1/3" /></div>}
