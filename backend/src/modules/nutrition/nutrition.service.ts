@@ -25,7 +25,17 @@ export class NutritionService implements OnModuleInit {
     if (count === 0) {
       this.logger.log("Seeding food items...");
       await this.prisma.foodItem.createMany({
-        data: nutritionItems.map(({ id: _id, ...rest }) => rest),
+        data: nutritionItems.map((item) => ({
+          name: item.name,
+          category: item.category,
+          image: item.image,
+          imageHint: item.imageHint,
+          calories: item.calories,
+          protein: item.protein,
+          fat: item.fat,
+          carbs: item.carbs,
+          description: item.description,
+        })),
         skipDuplicates: true,
       });
       this.logger.log("Food items seeded successfully.");

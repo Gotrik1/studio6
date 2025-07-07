@@ -1,3 +1,4 @@
+
 import {
   Injectable,
   OnModuleInit,
@@ -53,7 +54,18 @@ export class TrainingService implements OnModuleInit {
     if (count === 0) {
       this.logger.log("Seeding exercises...");
       await this.prisma.exercise.createMany({
-        data: exercisesList.map(({ id: _id, ...rest }) => rest), // Exclude mock ID
+        data: exercisesList.map((item) => ({
+          name: item.name,
+          description: item.description,
+          category: item.category,
+          equipment: item.equipment,
+          image: item.image,
+          imageHint: item.imageHint,
+          videoUrl: item.videoUrl,
+          techniqueTips: item.techniqueTips,
+          commonMistakes: item.commonMistakes,
+          alternatives: item.alternatives,
+        })),
         skipDuplicates: true,
       });
       this.logger.log("Exercises seeded successfully.");

@@ -1,5 +1,5 @@
 
-import { Injectable, Logger } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import { NotificationType, type Notification } from "@prisma/client";
 import type { FriendRequestCreatedPayload } from "../rabbitmq/models/friend-request-created.payload";
