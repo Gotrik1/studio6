@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -19,7 +20,7 @@ export async function getPlaygroundLeaderboard(playgroundId: string): Promise<Pl
     }
 
     if (Array.isArray(result.data)) {
-        return result.data.map((item: any) => ({
+        return result.data.map((item: PlaygroundLeaderboardItem) => ({
             ...item,
             id: String(item.id),
         }));

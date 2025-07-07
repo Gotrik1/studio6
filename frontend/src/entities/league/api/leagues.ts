@@ -1,6 +1,7 @@
+
 'use server';
 
-import type { League, LeagueDetails, LeagueMatch, LeagueTeam } from '../model/types';
+import type { League, LeagueDetails } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
 export async function getLeagues(): Promise<League[]> {

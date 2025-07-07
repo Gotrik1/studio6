@@ -1,7 +1,7 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import { revalidateTag } from 'next/cache';
 
 export async function getFoodItems() {
   const result = await fetchWithAuth('/nutrition/food-items');

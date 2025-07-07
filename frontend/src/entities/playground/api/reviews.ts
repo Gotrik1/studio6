@@ -1,7 +1,4 @@
 
-
-
-
 'use server';
 
 import { fetchWithAuth, type FetchResult } from '@/shared/lib/api-client';
@@ -29,7 +26,7 @@ export async function getReviews(playgroundId: string): Promise<FetchResult<Play
   }
 
   // Adapter to map backend data to frontend type
-  const formattedData: PlaygroundReview[] = result.data.map((review: any) => ({
+  const formattedData: PlaygroundReview[] = result.data.map((review: { id: string; rating: number; comment: string; createdAt: string; author: { id: string; name: string; avatar: string | null; }; }) => ({
       id: String(review.id),
       rating: review.rating,
       comment: review.comment,

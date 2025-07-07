@@ -1,4 +1,4 @@
-import type { Sponsor } from '@/entities/sponsor/model/types';
+
 
 export type SponsoredTeam = {
     slug: string;

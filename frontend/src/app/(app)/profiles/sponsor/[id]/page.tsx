@@ -1,6 +1,9 @@
+
 import SponsorClient from "@/app/(app)/administration/sponsor/client";
 import { getSponsorById } from "@/entities/sponsor/api/sponsors";
 import { notFound } from "next/navigation";
+import type { SponsoredTeam } from "@/entities/sponsorship/model/types";
+
 
 export default async function SponsorProfileRoute({ params }: { params: { id: string } }) {
     const sponsorDetails = await getSponsorById(params.id);
@@ -9,7 +12,7 @@ export default async function SponsorProfileRoute({ params }: { params: { id: st
         notFound();
     }
     
-    const sponsoredTeams = (sponsorDetails.teams || []).map((team: any) => ({
+    const sponsoredTeams: SponsoredTeam[] = (sponsorDetails.teams || []).map((team: { slug: string; name: string; logo: string; dataAiHint: string; }) => ({
         ...team,
         investment: "50,000 PD", // Mock investment
         since: new Date().toISOString().split("T")[0], // Mock since date
@@ -17,7 +20,7 @@ export default async function SponsorProfileRoute({ params }: { params: { id: st
 
     return (
         <SponsorClient 
-            sponsor={sponsorDetails} 
+            sponsor={sponsorDetails}
             activeCampaigns={sponsorDetails.promotions || []}
             sponsoredTeams={sponsoredTeams}
         />

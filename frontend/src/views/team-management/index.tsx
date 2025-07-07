@@ -1,9 +1,4 @@
 
-
-
-
-
-
 'use client';
 
 import { useState, useEffect, useTransition, useCallback } from 'react';
@@ -31,17 +26,9 @@ import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/ap
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
 import type { User } from '@/shared/lib/types';
-
+import type { JoinRequest } from '@/entities/team-application/model/types';
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
-
-type JoinRequest = {
-    id: string;
-    teamId: string;
-    applicant: User;
-    message: string;
-    statsSummary: string; // For AI analysis
-};
 
 export function TeamManagementPage() {
     const { toast } = useToast();

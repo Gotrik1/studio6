@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -26,8 +27,9 @@ export const LfgProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await fetchLobbies();
             setLobbies(data);
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить лобби.' });
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : "Произошла неизвестная ошибка";
+            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить лобби: ${errorMessage}` });
         } finally {
             setIsLoading(false);
         }

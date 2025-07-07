@@ -11,7 +11,7 @@ import { generateMatchPost, type GenerateMatchPostOutput } from '@/shared/api/ge
 import Link from 'next/link';
 import Image from 'next/image';
 import { getMatchOfTheWeek } from '@/entities/match/api/get-match';
-import type { Match } from '@/entities/match/model/types';
+import type { Match, MatchDetails } from '@/entities/match/model/types';
 
 type ResultData = {
     matchPost: GenerateMatchPostOutput;
@@ -33,22 +33,35 @@ export function MatchOfTheWeekWidget() {
                     throw new Error("No match of the week found.");
                 }
 
-                const scoreParts = matchData.score.split('-').map(s => parseInt(s.trim(), 10));
+                // We need to cast MatchDetails to Match
+                const simplifiedMatch: Match = {
+                    id: matchData.id,
+                    team1: matchData.team1,
+                    team2: matchData.team2,
+                    score: matchData.score,
+                    tournament: matchData.tournament,
+                    game: matchData.game || 'Неизвестно',
+                    date: matchData.date,
+                    status: matchData.status,
+                    href: `/matches/${matchData.id}`
+                };
+
+                const scoreParts = simplifiedMatch.score.split('-').map(s => parseInt(s.trim(), 10));
                 if (scoreParts.length < 2 || isNaN(scoreParts[0]) || isNaN(scoreParts[1])) {
                     throw new Error("Invalid score format for match of the week.");
                 }
 
-                const winningTeam = scoreParts[0] > scoreParts[1] ? matchData.team1.name : matchData.team2.name;
-                const losingTeam = scoreParts[0] > scoreParts[1] ? matchData.team2.name : matchData.team1.name;
+                const winningTeam = scoreParts[0] > scoreParts[1] ? simplifiedMatch.team1.name : simplifiedMatch.team2.name;
+                const losingTeam = scoreParts[0] > scoreParts[1] ? simplifiedMatch.team2.name : simplifiedMatch.team1.name;
 
                 const postData = await generateMatchPost({
                     winningTeam,
                     losingTeam,
-                    score: matchData.score,
-                    matchSummary: `A close match in the ${matchData.tournament || 'friendly game'}.`
+                    score: simplifiedMatch.score,
+                    matchSummary: `A close match in the ${simplifiedMatch.tournament || 'friendly game'}.`
                 });
                 
-                setResult({ matchPost: postData, matchDetails: matchData });
+                setResult({ matchPost: postData, matchDetails: simplifiedMatch });
             } catch (e) {
                 console.error('Failed to fetch match of the week:', e);
                 setError('Не удалось загрузить матч недели.');
