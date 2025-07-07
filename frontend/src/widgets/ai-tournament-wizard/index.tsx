@@ -7,7 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
-import { Loader2, Sparkles, PartyPopper } from 'lucide-react';
+import { Loader2, Sparkles, Trophy } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Textarea } from '@/shared/ui/textarea';
@@ -78,12 +78,12 @@ export function AiTournamentWizard() {
                 title: 'Турнир создан!',
                 description: `Турнир "${result.name}" успешно создан и скоро появится в списке.`
             });
-             router.push(`/tournaments/${createResult.data.slug}`);
+             router.push(`/tournaments/${(createResult.data as {slug: string}).slug}`);
         } else {
              toast({
                 variant: 'destructive',
                 title: 'Ошибка создания турнира',
-                description: createResult.error,
+                description: createResult.error || 'Не удалось создать турнир.',
             });
         }
         setIsCreating(false);

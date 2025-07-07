@@ -24,6 +24,7 @@ import { CrmTournamentDisputes } from '@/widgets/crm-tournament-disputes';
 import { getTournamentById } from '@/entities/tournament/api/get-tournament';
 import type { TournamentDetails } from '@/entities/tournament/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -162,6 +163,10 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
 
                 <TabsContent value="sponsors" className="mt-4">
                     <CrmTournamentSponsors tournamentId={tournament.id} />
+                </TabsContent>
+
+                <TabsContent value="medical" className="mt-4">
+                    <CrmTournamentMedical tournamentId={tournament.id} />
                 </TabsContent>
                 
                 <TabsContent value="announcements" className="mt-4">

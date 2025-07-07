@@ -12,12 +12,12 @@ import { generateMatchPost, type GenerateMatchPostOutput } from '@/shared/api/ge
 import Link from 'next/link';
 import Image from 'next/image';
 import { getMatchOfTheWeek } from '@/entities/match/api/get-match';
-import type { MatchDetails } from '@/entities/match/model/types';
+import type { MatchDetails, Match } from '@/entities/match/model/types';
 
 
 type ResultData = {
     matchPost: GenerateMatchPostOutput;
-    matchDetails: MatchDetails;
+    matchDetails: Match;
 };
 
 export function MatchOfTheWeekWidget() {
@@ -50,7 +50,7 @@ export function MatchOfTheWeekWidget() {
                     matchSummary: `A close match in the ${matchData.tournament || 'friendly game'}.`
                 });
                 
-                setResult({ matchPost: postData, matchDetails: matchData });
+                setResult({ matchPost: postData, matchDetails: matchData as Match });
             } catch (e) {
                 console.error('Failed to fetch match of the week:', e);
                 setError('Не удалось загрузить матч недели.');

@@ -11,7 +11,6 @@ import { PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { assignMedicalPartner, getAssignedMedicalStaff, getAvailableMedicalPartners, unassignMedicalPartner } from '@/entities/tournament/api/medical';
-import { FetchResult } from '@/shared/lib/api-client';
 
 type MedicalPartner = {
   id: string;
@@ -40,13 +39,16 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
                 getAvailableMedicalPartners()
             ]);
             
-            if (assignedRes.success) setAssignedMedics(assignedRes.data as MedicalPartner[]);
-            else throw new Error(assignedRes.error);
+            if (assignedRes.success) {
+                setAssignedMedics(assignedRes.data as MedicalPartner[]);
+            } else {
+                throw new Error(assignedRes.error);
+            }
 
             if (availableRes.success && Array.isArray(availableRes.data)) {
                 const assignedIds = new Set((assignedRes.data as MedicalPartner[]).map((p: MedicalPartner) => p.id));
                 setAvailableMedics((availableRes.data as MedicalPartner[]).filter((p: MedicalPartner) => !assignedIds.has(p.id)));
-            } else if (availableRes.success === false) {
+            } else if (!availableRes.success) {
                  throw new Error(availableRes.error || 'Failed to process available medics');
             }
         } catch (error: unknown) {
@@ -174,5 +176,6 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
                 </CardContent>
             </Card>
         </div>
+        </>
     );
 }

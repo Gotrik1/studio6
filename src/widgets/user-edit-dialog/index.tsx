@@ -25,7 +25,7 @@ interface UserEditDialogProps {
 
 const allRoles = [ "Администратор", "Модератор", "Капитан", "Игрок", "Судья", "Менеджер", "Организатор", "Спонсор", "Болельщик", "Тренер"];
 
-const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
+const getConfidenceColor = (confidence?: 'high' | 'medium' | 'low') => {
     switch(confidence) {
         case 'high': return 'text-green-500';
         case 'medium': return 'text-yellow-500';

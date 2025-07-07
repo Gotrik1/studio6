@@ -43,7 +43,7 @@ export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
         if (result.success) {
             await loadMeasurements(); // Refetch to get the latest data
         }
-        return result;
+        return result as FetchResult<Measurement>;
     };
 
     const value = { history, addMeasurement, isLoading };

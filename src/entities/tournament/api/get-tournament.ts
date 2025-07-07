@@ -6,7 +6,7 @@ import type { TournamentDetails, BracketMatch, BracketRound, MatchEvent } from '
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import type { Team, Match, User, TournamentMedia as PrismaTournamentMedia, MediaType } from '@prisma/client';
 
-export type TournamentMedia = PrismaTournamentMedia;
+export type TournamentMedia = Omit<PrismaTournamentMedia, 'createdAt'> & { createdAt: string };
 type RawTeam = Pick<Team, 'name' | 'logo' | 'dataAiHint' | 'slug'>;
 type RawMatch = Pick<Match, 'id' | 'team1Score' | 'team2Score' | 'scheduledAt'> & { winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam, events?: MatchEvent[] };
 type RawRound = { name: string; matches: RawMatch[] };
