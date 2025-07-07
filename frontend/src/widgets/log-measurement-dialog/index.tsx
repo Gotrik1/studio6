@@ -1,10 +1,11 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/shared/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
-import { Input } from '@/shared/ui/input';
-import { Label } from '@/shared/ui/label';
+import { Button } from "@/shared/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -17,6 +18,7 @@ import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import type { FetchResult } from '@/shared/lib/api-client';
 
 const measurementSchema = z.object({
     date: z.date({ required_error: "Выберите дату." }),
@@ -34,7 +36,7 @@ type FormValues = z.infer<typeof measurementSchema>;
 interface LogMeasurementDialogProps {
     isOpen: boolean;
     onOpenChange: (isOpen: boolean) => void;
-    onLog: (data: Omit<Measurement, 'id'>) => Promise<{ success: boolean; error?: string | undefined; data: any; status: number; }>;
+    onLog: (data: Omit<Measurement, 'id'>) => Promise<FetchResult<Measurement>>;
     latestMeasurement?: Measurement;
 }
 

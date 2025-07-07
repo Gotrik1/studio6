@@ -1,8 +1,9 @@
+
 'use client';
 
 import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Bot, MessageSquare, Trophy, Award, Heart, MessageCircle, Share2, Users, UserPlus } from 'lucide-react';
+import { Bot, MessageSquare, Trophy, Award, Heart, MessageCircle, Share2, Users } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { Separator } from '@/shared/ui/separator';
 import { useState, useEffect } from 'react';
@@ -21,19 +22,20 @@ const iconMap = {
 };
 
 const formatActivityText = (activity: Activity): string => {
+    const metadata = activity.metadata as any;
     switch(activity.type) {
         case 'STATUS_POSTED':
-            return activity.metadata.text;
+            return metadata.text;
         case 'MATCH_PLAYED':
-            return `Сыграл матч за <a href="${activity.metadata.teamHref}" class="font-bold hover:underline">${activity.metadata.team}</a> против <a href="#" class="font-bold hover:underline">${activity.metadata.opponent}</a>. <span class="${activity.metadata.result === 'Победа' ? 'text-green-500' : 'text-red-500'} font-bold">${activity.metadata.result} ${activity.metadata.score}</span>.`;
+            return `Сыграл матч за <a href="${metadata.teamHref}" class="font-bold hover:underline">${metadata.team}</a> против <a href="#" class="font-bold hover:underline">${metadata.opponent}</a>. <span class="${metadata.result === 'Победа' ? 'text-green-500' : 'text-red-500'} font-bold">${metadata.result} ${metadata.score}</span>.`;
         case 'TEAM_JOINED':
-            return `Присоединился к команде <a href="${activity.metadata.teamHref}" class="font-bold hover:underline">${activity.metadata.teamName}</a>.`;
+            return `Присоединился к команде <a href="${metadata.teamHref}" class="font-bold hover:underline">${metadata.teamName}</a>.`;
         case 'TOURNAMENT_REGISTERED':
-             return `Зарегистрировал команду <a href="#" class="font-bold hover:underline">${activity.metadata.teamName}</a> на турнир <a href="${activity.metadata.tournamentHref}" class="font-bold hover:underline">${activity.metadata.tournamentName}</a>.`;
+             return `Зарегистрировал команду <a href="#" class="font-bold hover:underline">${metadata.teamName}</a> на турнир <a href="${metadata.tournamentHref}" class="font-bold hover:underline">${metadata.tournamentName}</a>.`;
         case 'ACHIEVEMENT_UNLOCKED':
-             return `Разблокировано достижение: <span class="font-bold">${activity.metadata.title}</span>`;
+             return `Разблокировано достижение: <span class="font-bold">${metadata.title}</span>`;
         default:
-             // This case should ideally not be reached if all types are handled
+            // This case should ideally not be reached if all types are handled
             return 'Совершил(а) новое действие.';
     }
 }
@@ -64,7 +66,7 @@ const FeedItemFooter = () => (
 const GenericFeedItem = ({ item }: { item: Activity }) => {
     // The icon is now determined by metadata, which is safer
     const getIcon = () => {
-        if ('icon' in item.metadata && item.metadata.icon) {
+        if (item.metadata && 'icon' in item.metadata && typeof item.metadata.icon === 'string') {
             const IconComponent = iconMap[item.metadata.icon as keyof typeof iconMap];
             if (IconComponent) return IconComponent;
         }
@@ -75,7 +77,7 @@ const GenericFeedItem = ({ item }: { item: Activity }) => {
 
     return (
         <Card>
-            <FeedItemHeader user={item.user} timestamp={item.timestamp} icon={Icon} />
+            <FeedItemHeader user={item.user} timestamp={item.createdAt} icon={Icon} />
             <CardContent className="p-4 pt-0">
                 <p className="text-sm" dangerouslySetInnerHTML={{ __html: formatActivityText(item) }} />
             </CardContent>

@@ -1,6 +1,8 @@
+
+
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Trophy, Shield, Target } from 'lucide-react';
@@ -110,7 +112,7 @@ export function TeamOverviewDashboard({ team, upcomingMatch, recentResults }: Te
                             </div>
                         ))}
                     </CardContent>
-                     <CardFooter>
+                    <CardFooter>
                         <Button variant="outline" className="w-full" disabled>Полный состав</Button>
                     </CardFooter>
                 </Card>

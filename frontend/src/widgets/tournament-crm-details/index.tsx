@@ -172,4 +172,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 <TabsContent value="settings" className="mt-4">
                     <CrmTournamentSettings tournament={tournament} />
                 </TabsContent>
-            </
+            </Tabs>
+        </div>
+    );
+}

@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -39,9 +40,10 @@ export function TeamCoachTab({ team }: TeamCoachTabProps) {
             } else {
                 throw new Error("Не удалось получить анализ.");
             }
-        } catch (e: any) {
+        } catch (e) {
+            const err = e as Error;
             console.error(e);
-            setError(e.message || "Не удалось сгенерировать анализ. Пожалуйста, попробуйте еще раз.");
+            setError(err.message || "Не удалось сгенерировать анализ. Пожалуйста, попробуйте еще раз.");
         } finally {
             setIsLoading(false);
         }

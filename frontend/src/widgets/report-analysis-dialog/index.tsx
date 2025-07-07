@@ -173,4 +173,5 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  
+  );
+}

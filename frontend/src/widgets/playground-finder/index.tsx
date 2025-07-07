@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Textarea } from '@/shared/ui/textarea';
@@ -12,7 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { PlaygroundCard } from '@/widgets/playground-card';
-import type { Playground, KingTeam } from '@/entities/playground/model/types';
+import type { Playground } from '@/entities/playground/model/types';
 
 export function PlaygroundFinder() {
     const { toast } = useToast();
@@ -22,7 +22,7 @@ export function PlaygroundFinder() {
     const [aiSummary, setAiSummary] = useState<string | null>(null);
     const [suggestedPlaygrounds, setSuggestedPlaygrounds] = useState<Playground[] | null>(null);
 
-    const livePlaygrounds = useMemo(() => new Set(['playground-2']), []);
+    const livePlaygrounds = new Set(['playground-2']); // This can remain mock for now
 
     const handleSearch = async () => {
         if (!prompt) {
@@ -53,6 +53,17 @@ export function PlaygroundFinder() {
             setIsLoading(false);
         }
     };
+    
+    const renderSkeleton = () => (
+         <div className="space-y-6">
+            <div>
+                <Skeleton className="h-8 w-1/3 mb-2" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-80" />)}
+                </div>
+            </div>
+        </div>
+    );
 
     return (
         <div className="space-y-6">
@@ -85,11 +96,7 @@ export function PlaygroundFinder() {
             </Card>
 
             <div className="mt-8 space-y-4">
-                {isLoading && (
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-80 w-full" />)}
-                     </div>
-                )}
+                {isLoading && renderSkeleton()}
                 
                 {aiSummary && (
                      <Alert>

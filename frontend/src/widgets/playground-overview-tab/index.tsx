@@ -4,7 +4,7 @@
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/shared/ui/alert-dialog';
 import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Home, Loader2, User, Star } from 'lucide-react';
 import { KingOfTheCourtWidget } from '@/widgets/playground-home-team';
@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { setHomePlaygroundAction } from './actions';
 import { useTransition } from 'react';
 import type { Playground } from '@/entities/playground/model/types';
+import { Badge } from '@/shared/ui/badge';
 
 
 interface PlaygroundOverviewTabProps {

@@ -23,10 +23,10 @@ import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-gener
 import { useParams } from 'next/navigation';
 import type { CoachedPlayer } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
-import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
 import type { JoinRequest } from '@/entities/team-application/model/types';
+
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
@@ -34,7 +34,6 @@ export function TeamManagementPage() {
     const { toast } = useToast();
     const params = useParams<{ slug: string }>();
     const [team, setTeam] = useState<TeamDetails | null>(null);
-    const [, setDashboardData] = useState<TeamDashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
     
@@ -62,19 +61,9 @@ export function TeamManagementPage() {
             const teamData = await getTeamBySlug(params.slug as string);
             setTeam(teamData);
             if (teamData) {
-                const [dashData, appsResult] = await Promise.all([
-                    getTeamDashboardData(teamData.id),
-                    getTeamApplications(teamData.id)
-                ]);
-                setDashboardData(dashData);
-                if (appsResult.success) {
-                    setJoinRequests(appsResult.data.map((app: any) => ({
-                        id: app.id,
-                        teamId: app.teamId,
-                        applicant: app.user,
-                        message: app.message,
-                        statsSummary: app.statsSummary || 'Статистика отсутствует',
-                    })));
+                const appsResult = await getTeamApplications(teamData.id);
+                 if (appsResult.success && Array.isArray(appsResult.data)) {
+                    setJoinRequests(appsResult.data);
                 } else {
                     toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
                 }
