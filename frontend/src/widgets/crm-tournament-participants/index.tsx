@@ -21,22 +21,24 @@ import {
     removeParticipant,
 } from '@/entities/tournament/api/participants';
 import { Badge } from '@/shared/ui/badge';
-import type { User as PrismaUser } from '@prisma/client';
+import type { Team, User as PrismaUser } from '@prisma/client';
 
+type BackendUser = PrismaUser;
+type BackendTeam = Team & { captain: BackendUser; members: BackendUser[] };
+
+// Frontend-specific types
 type RosterMember = {
     id: string;
     name: string;
     avatar: string | null;
     role: string;
 };
-
 type Participant = {
     id: string;
     name: string;
     captain: { name: string; };
     members: RosterMember[];
 };
-
 type Application = {
     id: string;
     team: {
