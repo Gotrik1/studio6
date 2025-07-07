@@ -51,7 +51,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         setIsLoadingActivities(true);
         try {
             const activityData = await getPlaygroundActivity(playground.id);
-            const formattedActivities: PlaygroundActivity[] = activityData.map((act: { id: string; user: { name: string; avatar: string | null; }; metadata: { comment: string; photo: string | null; }; createdAt: string; }) => ({
+            const formattedActivities: PlaygroundActivity[] = (activityData as any[]).map((act: { id: string; user: { name: string; avatar: string | null; }; metadata: { comment: string; photo: string | null; }; createdAt: string; }) => ({
                 id: act.id,
                 user: {
                     name: act.user.name,
