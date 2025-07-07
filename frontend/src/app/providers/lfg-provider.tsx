@@ -28,8 +28,8 @@ export const LfgProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await fetchLobbies();
             setLobbies(data);
-        } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : "Произошла неизвестная ошибка";
+        } catch (e: unknown) {
+            const errorMessage = e instanceof Error ? e.message : "Произошла неизвестная ошибка";
             toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить лобби: ${errorMessage}` });
         } finally {
             setIsLoading(false);

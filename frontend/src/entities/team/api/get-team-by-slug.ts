@@ -1,6 +1,5 @@
 
 
-
 'use client';
 
 import type { TeamDetails, TeamRosterMember } from '@/entities/team/model/types';
@@ -66,5 +65,5 @@ export async function getTeamBySlug(slug: string): Promise<TeamDetails | null> {
         return null;
     }
 
-    return adaptBackendTeamToFrontend(rawTeamData);
+    return adaptBackendTeamToFrontend(rawTeamData as BackendTeamData);
 }

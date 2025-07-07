@@ -1,21 +1,19 @@
 
 
-
-
 'use server';
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, Activity } from '@/entities/user/model/types';
-import type { UserTeam } from '@/entities/team/model/types';
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, Activity, UserTeam } from '@/entities/user/model/types';
+import type { TournamentCrm, JudgedMatch } from '@/entities/user/model/types';
+import * as LucideIcons from 'lucide-react';
+import { format, formatDistanceToNow } from 'date-fns';
+import { ru } from 'date-fns/locale';
+import { fetchWithAuth } from './api-client';
 import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
 import type { Achievement } from '@/entities/achievement/model/types';
-import type { TournamentCrm, JudgedMatch, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
-import * as LucideIcons from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { ru } from 'date-fns/locale';
+
 
 export type { FullUserProfile, PlayerStats };
 
@@ -57,7 +55,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
         return null;
     }
     
-    const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map(activity => {
+    const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map((activity: Activity) => {
         const metadata = activity.metadata as any; // Allow dynamic property access
         const IconName = metadata.icon as keyof typeof LucideIcons;
         return {
@@ -115,8 +113,8 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
                 id: String(team.id),
                 logo: team.logo || null,
             })),
-            gallery: (rawProfile.gallery || []).map((item: GalleryItem) => ({...item, id: String(item.id)})),
-            careerHistory: (rawProfile.careerHistory || []).map((item: CareerHistoryItem) => ({...item, id: String(item.id)})),
+            gallery: [],
+            careerHistory: [],
             judgedMatches: (rawProfile.judgedMatches || []).map((match: JudgedMatch) => ({
                 ...match,
                 id: String(match.id),

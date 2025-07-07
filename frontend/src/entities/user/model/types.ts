@@ -1,4 +1,5 @@
 
+
 export type CareerHistoryItem = {
   id: string;
   teamName: string;
@@ -124,4 +125,16 @@ export type FullUserProfile = {
   organizedTournaments?: TournamentCrm[];
   coaching?: CoachedPlayerSummary[];
   judgedMatches?: JudgedMatch[];
+};
+
+export type User = {
+    id: string;
+    name: string;
+    email: string;
+    avatar: string | null;
+    role: string;
+    status?: 'Активен' | 'Забанен';
+    xp?: number;
+    activitySummary?: string; // for AI analysis
+    profileUrl?: string; // for search results
 };

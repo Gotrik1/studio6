@@ -106,7 +106,7 @@ export function RosterManagementTab() {
                         {roster.map((player) => (
                             <TableRow key={player.id}>
                                 <TableCell className="font-medium flex items-center gap-2">
-                                    <Avatar className="h-8 w-8"><AvatarImage src={player.avatar || ''} /><AvatarFallback>{player.name.charAt(0)}</AvatarFallback></Avatar>
+                                    <Avatar className="h-8 w-8"><AvatarImage src={player.avatar || undefined} /><AvatarFallback>{player.name.charAt(0)}</AvatarFallback></Avatar>
                                     {player.name}
                                 </TableCell>
                                 <TableCell>{player.id === team.captainId ? 'Капитан' : player.role}</TableCell>

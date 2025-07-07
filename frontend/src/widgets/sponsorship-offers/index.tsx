@@ -1,20 +1,16 @@
 
 
-
-
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Check, X, Loader2 } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 import Image from 'next/image';
-import { getSponsorshipOffers, respondToSponsorshipOffer } from '@/entities/sponsorship/api/offers';
+import { getSponsorshipOffers, respondToSponsorshipOffer, type SponsorshipOffer } from '@/entities/sponsorship/api/offers';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useParams } from 'next/navigation';
-import type { SponsorshipOffer } from '@/entities/sponsorship/model/types';
 
 export function SponsorshipOffers() {
     const { toast } = useToast();
@@ -27,7 +23,7 @@ export function SponsorshipOffers() {
         setIsLoading(true);
         const result = await getSponsorshipOffers(teamId);
         if(result.success && result.data) {
-            setOffers(result.data);
+            setOffers(result.data as SponsorshipOffer[]);
         } else {
              toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить спонсорские предложения.' });
         }

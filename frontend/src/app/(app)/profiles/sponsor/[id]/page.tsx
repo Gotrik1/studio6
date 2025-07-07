@@ -1,16 +1,24 @@
 
 
+'use client';
+
 import SponsorClient from "@/app/(app)/administration/sponsor/client";
 import { getSponsorById } from "@/entities/sponsor/api/sponsors";
 import { notFound } from "next/navigation";
 import type { SponsoredTeam } from "@/entities/sponsorship/model/types";
+import { useEffect, useState } from "react";
+import type { SponsorDetails } from "@/entities/sponsor/api/sponsors";
 
 
-export default async function SponsorProfileRoute({ params }: { params: { id: string } }) {
-    const sponsorDetails = await getSponsorById(params.id);
+export default function SponsorProfileRoute({ params }: { params: { id: string } }) {
+    const [sponsorDetails, setSponsorDetails] = useState<SponsorDetails | null>(null);
+
+    useEffect(() => {
+        getSponsorById(params.id).then(setSponsorDetails);
+    }, [params.id]);
 
     if (!sponsorDetails) {
-        notFound();
+        return notFound();
     }
     
     const sponsoredTeams: SponsoredTeam[] = (sponsorDetails.teams || []).map((team: { slug: string; name: string; logo: string | null; dataAiHint: string | null; }) => ({
