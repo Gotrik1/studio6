@@ -62,7 +62,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
             type: activity.type,
             icon: IconName,
             text: formatActivityText(activity),
-            createdAt: activity.timestamp,
+            createdAt: activity.createdAt,
         };
     });
 
@@ -85,6 +85,8 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
         }
 
         const rawProfile = result.data;
+        
+        if (!rawProfile) return null;
         
         const augmentedProfile: FullUserProfile = {
             ...rawProfile,

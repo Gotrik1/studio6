@@ -41,8 +41,8 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
             else throw new Error(assignedRes.error);
 
             if (availableRes.success && Array.isArray(availableRes.data)) {
-                const assignedIds = new Set((assignedRes.data as SponsorWithAmount[]).map((p) => p.id));
-                setAvailableSponsors((availableRes.data as Sponsor[]).filter((p) => !assignedIds.has(p.id)));
+                const assignedIds = new Set((assignedRes.data as SponsorWithAmount[]).map((p: SponsorWithAmount) => p.id));
+                setAvailableSponsors((availableRes.data as Sponsor[]).filter((p: Sponsor) => !assignedIds.has(p.id)));
             } else {
                  throw new Error(availableRes.error || 'Failed to process available sponsors');
             }
@@ -65,11 +65,11 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
     
     const handleRemoveSponsor = async (sponsor: Sponsor) => {
         const result = await unassignSponsor(tournamentId, sponsor.id);
-        if (result.success) {
+         if (result.success) {
             toast({ title: "Спонсор удален", description: `${sponsor.name} больше не является спонсором турнира.` });
             await fetchData();
         } else {
-            toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
+             toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
         }
     };
 
@@ -82,7 +82,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                     <CardDescription>Партнеры, поддерживающие это событие.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                     {isLoading ? <Skeleton className="h-40 w-full" /> : (
                         <Table>
                             <TableHeader>
                                 <TableRow>

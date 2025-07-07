@@ -32,7 +32,8 @@ export function ExercisesCatalogPage() {
             try {
                 const data = await getExercises();
                 setExercises(data);
-            } catch {
+            } catch (error) {
+                console.error(error);
                 toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить упражнения.' });
             } finally {
                 setLoading(false);
