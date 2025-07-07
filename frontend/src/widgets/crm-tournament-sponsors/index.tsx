@@ -38,9 +38,9 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
             setAssignedSponsors(assignedData);
 
             if (availableRes.success && Array.isArray(availableRes.data)) {
-                const assignedIds = new Set(assignedData.map((p: SponsorWithAmount) => p.id));
+                const assignedIds = new Set((assignedData as SponsorWithAmount[]).map((p: SponsorWithAmount) => p.id));
                 setAvailableSponsors((availableRes.data).filter((p: Sponsor) => !assignedIds.has(p.id)));
-            } else {
+            } else if (!availableRes.success) {
                  throw new Error(availableRes.error || 'Failed to process available sponsors');
             }
         } catch (error: unknown) {

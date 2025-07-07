@@ -3,7 +3,7 @@
 'use client';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, UserTeam } from '@/entities/user/model/types';
+import type { FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';

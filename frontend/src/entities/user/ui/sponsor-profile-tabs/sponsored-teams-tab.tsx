@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
@@ -37,7 +38,7 @@ export function SponsoredTeamsTab({ teams }: SponsoredTeamsTabProps) {
                                 <TableCell>
                                     <div className="flex items-center gap-3">
                                         <Avatar className="h-9 w-9">
-                                            <AvatarImage src={team.logo} alt={team.name} data-ai-hint={team.logoHint} />
+                                            <AvatarImage src={team.logo} alt={team.name} data-ai-hint={team.dataAiHint || ''} />
                                             <AvatarFallback>{team.name.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <span className="font-medium">{team.name}</span>

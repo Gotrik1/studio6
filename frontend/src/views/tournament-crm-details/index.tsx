@@ -10,7 +10,6 @@ import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants
 import { TournamentBracket } from '@/widgets/tournament-bracket';
 import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
 import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
-import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
 import { CrmTournamentAnnouncements } from '@/widgets/crm-tournament-announcements';
 import { CrmTournamentSettings } from '@/widgets/crm-tournament-settings';
 import { useState, useEffect } from 'react';

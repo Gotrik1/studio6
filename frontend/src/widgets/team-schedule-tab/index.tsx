@@ -13,7 +13,6 @@ import { getTeamPractices, createTeamPractice } from '@/entities/team/api/practi
 import { useParams } from 'next/navigation';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useToast } from '@/shared/hooks/use-toast';
-import type { FetchResult } from '@/shared/lib/api-client';
 
 type BackendPractice = {
     id: string;

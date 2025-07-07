@@ -4,7 +4,7 @@
 
 import type { TournamentDetails, BracketMatch, BracketRound } from '@/entities/tournament/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import type { Team, Match, User, TournamentMedia as PrismaTournamentMedia } from '@prisma/client';
+import type { Team, Match, User, TournamentMedia as PrismaTournamentMedia, MediaType } from '@prisma/client';
 
 export type TournamentMedia = PrismaTournamentMedia;
 type RawTeam = Pick<Team, 'name' | 'logo' | 'dataAiHint' | 'slug'>;
@@ -14,7 +14,7 @@ type RawTournamentData = Omit<TournamentDetails, 'bracket' | 'teams' | 'matches'
     bracket: { rounds: RawRound[] };
     teams: RawTeam[];
     matches: RawMatch[];
-    media: TournamentMedia[];
+    media: { id: string, createdAt: Date, tournamentId: string, description: string | null, type: MediaType, src: string, hint: string | null }[];
     organizer: Pick<User, 'name' | 'avatar'>;
 };
 
@@ -57,7 +57,8 @@ function adaptTournamentDetails(data: RawTournamentData): TournamentDetails {
         organizer: {
             name: data.organizer?.name || 'Unknown',
             avatar: data.organizer?.avatar || null
-        }
+        },
+        media: (data.media || []).map(m => ({...m, createdAt: m.createdAt.toISOString()})),
     };
 }
 
