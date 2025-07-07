@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState, useEffect, useTransition, useCallback } from 'react';
@@ -23,7 +24,6 @@ import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-gener
 import { useParams } from 'next/navigation';
 import type { CoachedPlayer } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
-import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
 import type { JoinRequest } from '@/entities/team-application/model/types';
@@ -61,14 +61,9 @@ export function TeamManagementPage() {
             const teamData = await getTeamBySlug(params.slug as string);
             setTeam(teamData);
             if (teamData) {
-                const [dashData, appsResult] = await Promise.all([
-                    getTeamDashboardData(teamData.id),
-                    getTeamApplications(teamData.id)
-                ]);
-                 // Set dashboardData if needed elsewhere, currently unused
-                // setDashboardData(dashData);
-                if (appsResult.success && Array.isArray(appsResult.data)) {
-                    setJoinRequests(appsResult.data.map((app: any) => ({
+                const appsResult = await getTeamApplications(teamData.id);
+                 if (appsResult.success && Array.isArray(appsResult.data)) {
+                    setJoinRequests(appsResult.data.map((app) => ({
                         id: app.id,
                         teamId: app.teamId,
                         applicant: app.user,

@@ -1,5 +1,6 @@
 
 
+
 'use server';
 
 import { getSession } from "@/features/auth/session";
@@ -47,3 +48,4 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
         return { success: false, error: message };
     }
 }
+

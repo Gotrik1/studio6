@@ -68,3 +68,4 @@ export async function getTeamBySlug(slug: string): Promise<TeamDetails | null> {
     return adaptBackendTeamToFrontend(rawTeamData as BackendTeamData);
 }
 
+
