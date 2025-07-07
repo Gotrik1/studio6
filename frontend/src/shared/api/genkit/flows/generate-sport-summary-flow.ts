@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -18,7 +19,7 @@ export async function generateSportSummary(input: GenerateSportSummaryInput): Pr
     body: JSON.stringify(input),
   });
 
-  if (!result.success) {
+  if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);
     throw new Error(result.error || 'Failed to generate sport summary.');
   }

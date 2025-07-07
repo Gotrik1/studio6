@@ -1,3 +1,4 @@
+
 import {
   Injectable,
   OnModuleInit,
@@ -209,6 +210,7 @@ export class TrainingService implements OnModuleInit {
     return this.prisma.trainingProgram.create({
       data: {
         ...programData,
+        description: programData.description || "",
         id: `manual-${Date.now()}`,
         author: authorName,
         isAiGenerated: false,
@@ -260,6 +262,7 @@ export class TrainingService implements OnModuleInit {
         where: { id },
         data: {
           ...programData,
+          description: programData.description || "",
           daysPerWeek: weeklySplit.length,
           weeklySplit: {
             create: weeklySplit.map((day) => ({

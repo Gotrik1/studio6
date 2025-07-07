@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -18,7 +19,7 @@ export async function generateProfileBanner(
     body: JSON.stringify(input),
   });
 
-  if (!response.success) {
+  if (!response.success || !response.data) {
       console.error("Backend API error:", response.error);
       throw new Error(`Backend API responded with status: ${response.status}`);
   }

@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -28,13 +27,13 @@ import type { PlaygroundConditionReport } from '@/entities/playground/api/condit
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
 import { reportPlaygroundIssue } from '@/entities/playground/api/report';
-import type { Activity } from '@/entities/feed/model/types';
+import type { Activity, PlaygroundCheckInActivity } from '@/entities/feed/model/types';
 
 
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
     const { user } = useSession();
     const { toast } = useToast();
-    const [activities, setActivities] = useState<Activity[]>([]);
+    const [activities, setActivities] = useState<PlaygroundCheckInActivity[]>([]);
     const [isLoadingActivities, setIsLoadingActivities] = useState(true);
     const [reviews, setReviews] = useState<PlaygroundReview[]>([]);
     const [isLoadingReviews, setIsLoadingReviews] = useState(true);
@@ -52,7 +51,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
         setIsLoadingActivities(true);
         try {
             const activityData = await getPlaygroundActivity(playground.id);
-            setActivities(activityData);
+            setActivities(activityData.filter((a: Activity): a is PlaygroundCheckInActivity => a.type === 'PLAYGROUND_CHECK_IN'));
         } catch (error) {
             console.error(error);
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить ленту активности.' });

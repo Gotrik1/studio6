@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -19,12 +20,10 @@ export async function generateTeamAvatar(
     body: JSON.stringify(input),
   });
 
-  if (!result.success) {
+  if (!result.success || !result.data) {
       console.error("Backend API error:", result.error);
       throw new Error(result.error || `Backend API responded with status: ${result.status}`);
   }
   
   return result.data;
 }
-
-    

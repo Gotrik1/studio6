@@ -1,10 +1,9 @@
 
-
 'use client';
 
 import type { FC } from 'react';
 import Link from "next/link";
-import { MoreHorizontal, Gavel, Pencil, Coins, Undo2 } from "lucide-react";
+import { MoreHorizontal, Gavel, Pencil, Coins, Undo2, Users2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -12,7 +11,6 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import type { User } from "@/shared/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
-import { Users2 } from 'lucide-react';
 
 interface UserTableProps {
     users: User[];

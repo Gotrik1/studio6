@@ -1,3 +1,4 @@
+
 import { Injectable } from "@nestjs/common";
 import {
   generateTeamConcept,
@@ -281,8 +282,8 @@ import {
 import {
   playerScout,
   type PlayerScoutOutput,
+  type PlayerScoutInput,
 } from "@/ai/flows/player-scout-flow";
-import type { PlayerScoutInput } from '@/ai/flows/player-scout-flow';
 import { PromotionsService } from "../promotions/promotions.service";
 import type { Promotion } from "@prisma/client";
 import {
@@ -305,13 +306,9 @@ export class AiService {
   ): Promise<Promotion> {
     const wizardResult = await generatePromotionWizard({ prompt });
     return this.promotionsService.create({
+      ...wizardResult,
       organizerId,
       imageHint: prompt, // Use prompt as image hint
-      name: wizardResult.name,
-      description: wizardResult.description,
-      prize: wizardResult.prize,
-      cost: wizardResult.cost,
-      imageDataUri: wizardResult.imageDataUri,
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // Mock end date
     });
   }

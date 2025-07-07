@@ -1,3 +1,4 @@
+
 "use server";
 
 /**
@@ -68,7 +69,6 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
     outputSchema: AiTeamAssistantOutputSchema,
   },
   async ({ teamId }) => {
-    // 1. Fetch team data from the database
     const team = await prisma.team.findUnique({
       where: { id: teamId },
       include: {
@@ -100,7 +100,6 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
       throw new Error(`Team with id ${teamId} not found.`);
     }
 
-    // 2. Format the data for the prompt
     const teamGoals = "Цели команды не установлены."; // Mocked for now
 
     let teamActivity = "";
@@ -138,7 +137,6 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
       });
     }
 
-    // 3. Call the prompt with the formatted data
     const { output } = await prompt({ teamGoals, teamActivity });
     return output!;
   },

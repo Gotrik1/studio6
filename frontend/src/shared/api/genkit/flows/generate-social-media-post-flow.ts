@@ -26,7 +26,7 @@ export async function generateSocialMediaPost(input: GenerateSocialMediaPostInpu
         cache: 'no-store',
     });
 
-    if (!response.success) {
+    if (!response.success || !response.data) {
         console.error("Backend API error:", response.error);
         throw new Error(response.error || `Backend API responded with status: ${response.status}`);
     }

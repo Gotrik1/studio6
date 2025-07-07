@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -14,7 +15,7 @@ export async function generatePromotionImage(prompt: GeneratePromotionImageInput
     body: JSON.stringify({ prompt }),
   });
 
-  if (!result.success) {
+  if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);
     throw new Error(`Backend API responded with status: ${result.status}`);
   }

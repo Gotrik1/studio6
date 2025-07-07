@@ -1,3 +1,4 @@
+
 import { RabbitMQModule as NestRabbitMQModule } from "@golevelup/nestjs-rabbitmq";
 import { Global, Module } from "@nestjs/common";
 import { NotificationsConsumer } from "./consumers/notifications.consumer";
@@ -8,7 +9,7 @@ import { WebsocketsModule } from "../websockets/websockets.module";
 @Global()
 @Module({
   imports: [
-    NestRabbitMQModule.forRoot(NestRabbitMQModule, {
+    NestRabbitMQModule.forRoot({
       exchanges: [
         {
           name: PRODVOR_EXCHANGE,

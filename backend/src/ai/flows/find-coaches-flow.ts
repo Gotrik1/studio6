@@ -1,3 +1,4 @@
+
 "use server";
 
 /**
@@ -14,12 +15,13 @@ import {
   FindCoachesInputSchema,
   FindCoachesOutputSchema,
   CoachSchema,
-} from "./schemas/find-coaches-schema";
+} from "../schemas/find-coaches-schema";
 import type {
   FindCoachesInput,
   FindCoachesOutput,
-} from "./schemas/find-coaches-schema";
+} from "../schemas/find-coaches-schema";
 import { PrismaService } from "@/prisma/prisma.service";
+import { Role } from "@prisma/client";
 
 const prisma = new PrismaService();
 
@@ -43,7 +45,7 @@ const findCoachesTool_Backend = ai.defineTool(
 
     const coachesWithProfiles = await prisma.user.findMany({
       where: {
-        role: "Тренер",
+        role: Role.COACH,
         coachProfile: { isNot: null },
         OR: [
           { name: { contains: lowercasedQuery, mode: "insensitive" } },
@@ -78,6 +80,7 @@ const findCoachesTool_Backend = ai.defineTool(
         specialization: user.coachProfile!.specialization,
         description: user.coachProfile!.description,
         tags: user.coachProfile!.tags,
+        experience: user.coachProfile!.experience,
         rating: user.coachProfile!.rating,
         price: user.coachProfile!.price.toString(),
         profileUrl: `/profiles/coach/${user.id}`,

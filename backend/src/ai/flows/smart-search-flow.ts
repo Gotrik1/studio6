@@ -12,11 +12,11 @@
 import { ai } from "../genkit";
 import { z } from "zod";
 import { PrismaService } from "@/prisma/prisma.service";
-import { SmartSearchInputSchema, SmartSearchOutputSchema } from "./schemas/smart-search-schema";
+import { SmartSearchInputSchema, SmartSearchOutputSchema } from "../schemas/smart-search-schema";
 import type {
   SmartSearchInput,
   SmartSearchOutput,
-} from "./schemas/smart-search-schema";
+} from "../schemas/smart-search-schema";
 
 const prisma = new PrismaService();
 
@@ -39,7 +39,6 @@ const searchPlatformData_Backend = ai.defineTool(
           OR: [
             { name: { contains: lowercasedQuery, mode: "insensitive" } },
             { email: { contains: lowercasedQuery, mode: "insensitive" } },
-            { role: { contains: lowercasedQuery, mode: "insensitive" } },
           ],
         },
         take: 10,

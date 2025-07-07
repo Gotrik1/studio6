@@ -1,3 +1,4 @@
+
 "use server";
 
 import { ai } from "../genkit";
@@ -6,14 +7,17 @@ import {
   PlayerScoutInputSchema,
   PlayerScoutOutputSchema,
   PlayerProfileSchema,
-} from "./schemas/player-scout-schema";
+} from "../schemas/player-scout-schema";
 import type {
   PlayerScoutInput,
   PlayerScoutOutput,
-} from "./schemas/player-scout-schema";
+} from "../schemas/player-scout-schema";
 import { PrismaService } from "@/prisma/prisma.service";
+import { Role } from '@prisma/client';
 
 const prisma = new PrismaService();
+
+export type { PlayerScoutInput, PlayerScoutOutput };
 
 const findPlayersTool_Backend = ai.defineTool(
   {
@@ -35,11 +39,10 @@ const findPlayersTool_Backend = ai.defineTool(
       where: {
         OR: [
           { name: { contains: lowercasedQuery, mode: "insensitive" } },
-          { role: { contains: lowercasedQuery, mode: "insensitive" } },
           { mainSport: { contains: lowercasedQuery, mode: "insensitive" } },
         ],
         // Exclude administrative roles from regular player scouting
-        role: { notIn: ["Администратор", "Модератор", "Судья"] },
+        role: { notIn: [Role.ADMINISTRATOR, Role.MODERATOR, Role.JUDGE] },
       },
       take: 10, // Limit results to LLM
     });

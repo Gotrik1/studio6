@@ -25,7 +25,7 @@ export async function generateUserAvatar(
     }
   );
 
-  if (!response.success) {
+  if (!response.success || !response.data) {
     throw new Error(`Backend API responded with status: ${response.status}`);
   }
 

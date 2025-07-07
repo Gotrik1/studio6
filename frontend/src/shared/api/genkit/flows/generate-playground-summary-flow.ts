@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -19,13 +20,9 @@ export async function generatePlaygroundSummary(input: GeneratePlaygroundSummary
     body: JSON.stringify(input),
   });
 
-  if (!result.success) {
+  if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);
     throw new Error(`Backend API responded with status: ${result.status || 500}`);
-  }
-
-  if (!result.data) {
-    throw new Error("No data received from backend.");
   }
 
   return result.data;

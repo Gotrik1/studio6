@@ -1,3 +1,4 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
@@ -38,13 +39,9 @@ export async function generateTrainingProgram(input: GenerateTrainingProgramInpu
     body: JSON.stringify(input),
   });
 
-  if (!result.success) {
+  if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);
     throw new Error(result.error || `Backend API responded with status: ${result.status}`);
-  }
-
-  if (!result.data) {
-      throw new Error("No data received from backend.");
   }
   
   return result.data;
