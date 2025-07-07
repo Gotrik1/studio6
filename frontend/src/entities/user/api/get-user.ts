@@ -3,9 +3,9 @@
 'use server';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayer, CoachedPlayerSummary, FullUserProfile, PlayerStats } from '@/entities/user/model/types';
+import type { FullUserProfile, PlayerStats } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
-import { format, formatDistanceToNow, differenceInYears } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
@@ -86,36 +86,8 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
 
         const rawProfile = result.data;
         
-        const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player: CoachedPlayerSummary) => ({
-            id: String(player.id),
-            name: player.name,
-            avatar: player.avatar || null,
-            role: player.role,
-            mainSport: player.mainSport || 'не указан',
-            adherence: player.adherence,
-        }));
-
         const augmentedProfile: FullUserProfile = {
             ...rawProfile,
-            activities: (rawProfile.activities || []).map((act) => ({...act, id: String(act.id)})),
-            coaching: coachedPlayers, // Use adapted data
-            teams: (rawProfile.teams || []).map((team) => ({
-                ...team,
-                id: String(team.id),
-                logo: team.logo || null,
-            })),
-            gallery: [],
-            careerHistory: [],
-            judgedMatches: (rawProfile.judgedMatches || []).map((match) => ({
-                ...match,
-                id: String(match.id),
-                team1: { name: match.team1.name },
-                team2: { name: match.team2.name },
-            })),
-            organizedTournaments: (rawProfile.organizedTournaments || []).map((t) => ({
-                ...t,
-                id: String(t.id),
-            })),
              activitySummary: `Пользователь с ${format(
                 new Date(rawProfile.createdAt),
                 "yyyy",

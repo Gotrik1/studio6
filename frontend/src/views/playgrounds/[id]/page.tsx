@@ -1,4 +1,3 @@
-
 import { getPlaygroundById } from '@/entities/playground/api/playgrounds';
 import { getPlaygroundCondition } from '@/entities/playground/api/condition';
 import PlaygroundDetailsPage from '@/views/playground-details';

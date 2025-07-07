@@ -10,7 +10,7 @@ import type { Team } from "@/entities/team/model/types";
 const SPONSOR_ID = 'gfuel'; 
 
 export async function SponsorProfilePage() {
-    const sponsorDetails = await getSponsorById(SPONSOR_ID);
+    const sponsorDetails: SponsorDetails | null = await getSponsorById(SPONSOR_ID);
 
     if (!sponsorDetails) {
         notFound();

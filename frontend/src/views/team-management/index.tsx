@@ -4,7 +4,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -22,7 +22,7 @@ import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
 import { useParams } from 'next/navigation';
-import { CoachedPlayer } from '@/entities/user/model/types';
+import type { CoachedPlayer, FullUserProfile, CoachedPlayerSummary } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
