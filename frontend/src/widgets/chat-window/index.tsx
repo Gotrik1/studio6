@@ -59,7 +59,7 @@ export function ChatWindow({ chat }: ChatWindowProps) {
                     sender: message.author.id === user.id ? 'user' : 'other',
                     name: message.author.name,
                     avatar: message.author.avatar || '',
-                    text: message.text,
+                    text: message.content,
                 }]);
             }
         });

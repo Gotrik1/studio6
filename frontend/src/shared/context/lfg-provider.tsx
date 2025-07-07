@@ -1,6 +1,8 @@
+
+
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, type ReactNode, useEffect, useCallback } from 'react';
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { fetchLobbies, createLobby, joinLobby as apiJoinLobby, type CreateLobbyApiData } from '@/entities/lfg/api/lfg';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -26,8 +28,9 @@ export const LfgProvider = ({ children }: { children: ReactNode }) => {
         try {
             const data = await fetchLobbies();
             setLobbies(data);
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить лобби.' });
+        } catch (e: unknown) {
+            const errorMessage = e instanceof Error ? e.message : "Произошла неизвестная ошибка";
+            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить лобби: ${errorMessage}` });
         } finally {
             setIsLoading(false);
         }

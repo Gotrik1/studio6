@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/shared/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/ui/card';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/shared/ui/dropdown-menu";
 import { useToast } from '@/shared/hooks/use-toast';
 import { Bot, CalendarDays, Dumbbell, Edit, MoreVertical, PlusCircle, Save, Target, Trash2 } from 'lucide-react';
@@ -20,7 +20,7 @@ import type { ProgramFormValues } from '@/widgets/training-program-form';
 
 function ProgramCard({ program, isOwner, onSave, onDelete }: { program: TrainingProgram; isOwner: boolean; onSave: (p: TrainingProgram) => Promise<boolean>; onDelete: (p: TrainingProgram) => Promise<boolean>; }) {
     return (
-        <Card className="flex flex-col overflow-hidden transition-all hover:shadow-2xl h-full group">
+        <Card className="flex flex-col overflow-hidden transition-all hover:shadow-lg h-full group">
             <div className="relative">
                 <Link href={`/training/programs/${program.id}`}>
                     <div className="relative h-48">

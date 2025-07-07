@@ -7,9 +7,9 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 import type { Team, Match, TournamentMedia, User } from '@prisma/client';
 
 type RawTeam = Pick<Team, 'name' | 'logo' | 'dataAiHint' | 'slug'>;
-type RawMatch = Pick<Match, 'id' | 'score' | 'team1Score' | 'team2Score' | 'scheduledAt'> & { winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam };
+type RawMatch = Pick<Match, 'id' | 'team1Score' | 'team2Score' | 'scheduledAt'> & { winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam };
 type RawRound = { name: string; matches: RawMatch[] };
-type RawTournamentData = Omit<TournamentDetails, 'bracket' | 'teams' | 'matches'> & {
+type RawTournamentData = Omit<TournamentDetails, 'bracket' | 'teams' | 'matches' | 'media' | 'organizer'> & {
     bracket: { rounds: RawRound[] };
     teams: RawTeam[];
     matches: RawMatch[];

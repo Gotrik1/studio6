@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -8,6 +9,7 @@ import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
 import { Loader2, CheckCircle, Upload } from 'lucide-react';
 import Image from 'next/image';
+import { useToast } from '@/shared/hooks/use-toast';
 
 interface PlaygroundCheckInDialogProps {
   isOpen: boolean;
@@ -17,6 +19,7 @@ interface PlaygroundCheckInDialogProps {
 }
 
 export function PlaygroundCheckInDialog({ isOpen, onOpenChange, onCheckIn, playgroundName }: PlaygroundCheckInDialogProps) {
+    const { toast } = useToast();
     const [comment, setComment] = useState('');
     const [preview, setPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);

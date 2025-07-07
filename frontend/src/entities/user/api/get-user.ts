@@ -2,17 +2,17 @@
 
 'use server';
 
-import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, Activity, UserTeam } from '@/entities/user/model/types';
 import type { TournamentCrm, JudgedMatch } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { fetchWithAuth } from './api-client';
+import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
 import type { Achievement } from '@/entities/achievement/model/types';
+import type { User as BaseUser } from '@/shared/lib/types';
 
 
 export type { FullUserProfile, PlayerStats };
@@ -26,7 +26,7 @@ export type PlayerProfilePageData = {
 };
 
 const formatActivityText = (activity: Activity): string => {
-    const metadata = activity.metadata as any; // Cast to any to access dynamic properties
+    const metadata = activity.metadata as Record<string, string>; // Cast to Record<string, string> to access dynamic properties
     switch(activity.type) {
         case 'STATUS_POSTED':
             return metadata.text;
@@ -39,6 +39,7 @@ const formatActivityText = (activity: Activity): string => {
         case 'ACHIEVEMENT_UNLOCKED':
              return `Разблокировано достижение: <span class="font-bold">${metadata.title}</span>`;
         default:
+            // This case should ideally not be reached if all types are handled
             return 'Совершил(а) новое действие.';
     }
 }
@@ -56,7 +57,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
     }
     
     const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map((activity: Activity) => {
-        const metadata = activity.metadata as any; // Allow dynamic property access
+        const metadata = activity.metadata as Record<string, string>; // Allow dynamic property access
         const IconName = metadata.icon as keyof typeof LucideIcons;
         return {
             id: activity.id,
@@ -146,11 +147,13 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
 }
 
 
-export async function getUsers(): Promise<User[]> {
+export async function getUsers(): Promise<BaseUser[]> {
     const result = await fetchWithAuth('/users');
-    if (result.success) {
+    if (result.success && Array.isArray(result.data)) {
         return result.data;
     }
-    console.error('Failed to fetch users:', result.error);
+    if (!result.success) {
+        console.error('Failed to fetch users:', result.error);
+    }
     return [];
 }

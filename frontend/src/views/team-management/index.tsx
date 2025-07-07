@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useTransition, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -26,8 +26,6 @@ import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
 import type { JoinRequest as TeamJoinRequest } from '@/entities/team-application/model/types';
-import { TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
-
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 

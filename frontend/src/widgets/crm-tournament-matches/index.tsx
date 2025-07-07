@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -10,10 +11,10 @@ import { CrmMatchResultDialog, type MatchResult } from '@/widgets/crm-score-dial
 import { useToast } from '@/shared/hooks/use-toast';
 import { Badge } from '@/shared/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
-import type { TournamentDetails } from '@/entities/tournament/model/types';
-import type { Match } from '@/entities/match/model/types';
+import type { TournamentDetails, BracketMatch } from '@/entities/tournament/model/types';
 
-type MatchState = Match & {
+
+type MatchState = BracketMatch & {
     comment?: string;
     status: 'pending' | 'played' | 'technical_defeat_t1' | 'technical_defeat_t2';
 };
@@ -27,15 +28,15 @@ export function CrmTournamentMatches({ rounds }: CrmTournamentMatchesProps) {
     
     const allMatches = useMemo(() => {
         return rounds.flatMap(round => 
-            round.matches.filter((match): match is Match => 'team2' in match)
+            round.matches.filter((match): match is BracketMatch & { id: string } => 'team2' in match && !!match.id)
         );
     }, [rounds]);
     
     const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, status: (m.score && m.score !== 'VS') ? 'played' : 'pending' })));
-    const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+    const [selectedMatch, setSelectedMatch] = useState<BracketMatch | null>(null);
     const [isScoreDialogOpen, setIsScoreDialogOpen] = useState(false);
 
-    const handleOpenScoreDialog = (match: Match) => {
+    const handleOpenScoreDialog = (match: BracketMatch) => {
         setSelectedMatch(match);
         setIsScoreDialogOpen(true);
     };
@@ -79,7 +80,7 @@ export function CrmTournamentMatches({ rounds }: CrmTournamentMatchesProps) {
     const matchIdToRoundName = useMemo(() => {
         return rounds.reduce((acc, round) => {
             round.matches.forEach(match => {
-                if ('team2' in match) {
+                if ('team2' in match && match.id) {
                     acc[String(match.id)] = round.name;
                 }
             });

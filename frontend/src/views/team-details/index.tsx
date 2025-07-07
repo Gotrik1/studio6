@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import { useState, useTransition } from 'react';
-import { Card, CardHeader, CardContent, CardTitle, CardFooter } from "@/shared/ui/card";
+import { Card, CardHeader, CardContent, CardTitle } from "@/shared/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
@@ -15,7 +16,7 @@ import { useSession } from '@/shared/lib/session/client';
 import { DonationDialog } from '@/features/donation-dialog/index';
 import { TeamChatInterface } from '@/widgets/team-chat-interface';
 import { TeamStatsTab } from '@/widgets/team-stats-tab';
-import type { TeamDetails, TeamRosterMember } from '@/entities/team/model/types';
+import type { TeamDetails } from '@/entities/team/model/types';
 import { useToast } from '@/shared/hooks/use-toast';
 import { joinTeamAction } from '@/entities/team/api/join-team';
 import type { Playground } from '@/entities/playground/model/types';
@@ -145,7 +146,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
                                     {team.roster.map((player) => (
                                         <TableRow key={player.id}>
                                             <TableCell className="font-medium flex items-center gap-2">
-                                                <Avatar className="h-8 w-8"><AvatarImage src={player.avatar || ''} /><AvatarFallback>{String(player.name).charAt(0)}</AvatarFallback></Avatar>
+                                                <Avatar className="h-8 w-8"><AvatarImage src={player.avatar || undefined} /><AvatarFallback>{String(player.name).charAt(0)}</AvatarFallback></Avatar>
                                                 {player.name}
                                             </TableCell>
                                             <TableCell>{player.id === team.captainId ? 'Капитан' : player.role}</TableCell>

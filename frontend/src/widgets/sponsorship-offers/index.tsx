@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useTransition } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -18,6 +18,7 @@ export function SponsorshipOffers() {
     const teamId = params.slug as string; // Assuming slug is the team id for this page.
     const [offers, setOffers] = useState<SponsorshipOffer[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isActionPending, startTransition] = useTransition();
 
     const fetchOffers = useCallback(async () => {
         setIsLoading(true);
@@ -37,25 +38,27 @@ export function SponsorshipOffers() {
     }, [teamId, fetchOffers]);
 
 
-    const handleResponse = async (offerId: string, status: 'ACCEPTED' | 'DECLINED') => {
+    const handleResponse = (offerId: string, status: 'ACCEPTED' | 'DECLINED') => {
         const offer = offers.find(o => o.id === offerId);
         if (!offer) return;
         
-        const result = await respondToSponsorshipOffer(offerId, status);
-        
-        if (result.success) {
-            toast({
-                title: status === 'ACCEPTED' ? 'Предложение принято!' : 'Предложение отклонено',
-                description: `Вы ответили на предложение от ${offer.sponsor.name}.`
-            });
-            fetchOffers(); // Refetch data
-        } else {
-             toast({
-                variant: 'destructive',
-                title: 'Ошибка',
-                description: result.error || 'Не удалось обновить статус предложения.'
-            });
-        }
+        startTransition(async () => {
+            const result = await respondToSponsorshipOffer(offerId, status);
+            
+            if (result.success) {
+                toast({
+                    title: status === 'ACCEPTED' ? 'Предложение принято!' : 'Предложение отклонено',
+                    description: `Вы ответили на предложение от ${offer.sponsor.name}.`
+                });
+                await fetchOffers(); // Refetch data
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: 'Ошибка',
+                    description: result.error || 'Не удалось обновить статус предложения.'
+                });
+            }
+        });
     };
 
     const pendingOffers = offers.filter(o => o.status === 'PENDING');
@@ -84,8 +87,8 @@ export function SponsorshipOffers() {
                                     </div>
                                 </div>
                                 <div className="flex gap-2">
-                                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleResponse(offer.id, 'DECLINED')}><X className="h-4 w-4" /></Button>
-                                    <Button size="icon" variant="ghost" className="text-green-500" onClick={() => handleResponse(offer.id, 'ACCEPTED')}><Check className="h-4 w-4" /></Button>
+                                    <Button size="icon" variant="ghost" className="text-destructive" onClick={() => handleResponse(offer.id, 'DECLINED')} disabled={isActionPending}><X className="h-4 w-4" /></Button>
+                                    <Button size="icon" variant="ghost" className="text-green-500" onClick={() => handleResponse(offer.id, 'ACCEPTED')} disabled={isActionPending}><Check className="h-4 w-4" /></Button>
                                 </div>
                             </div>
                         </Card>

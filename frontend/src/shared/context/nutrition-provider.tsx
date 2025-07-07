@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useMemo, useEffect, useCallback } from 'react';
@@ -33,8 +34,8 @@ const defaultTargets: NutritionTargets = {
     carbs: 300,
 };
 
-function transformRawLog(rawLog: FoodLogEntry[]): FoodLogEntry[] {
-    return rawLog.map((entry: any) => {
+function transformRawLog(rawLog: any[]): FoodLogEntry[] {
+    return rawLog.map((entry) => {
         const ratio = entry.grams / 100;
         return {
             id: entry.id,

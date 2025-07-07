@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getSession } from "@/features/auth/session";
@@ -47,5 +48,6 @@ export async function fetchWithAuth<T = any>(url: string, options: RequestInit =
     return { success: true, data: null as T, status: response.status };
   }
 
-  return { success: true, data: await response.json(), status: response.status };
+  const data = await response.json();
+  return { success: true, data: data, status: response.status };
 }

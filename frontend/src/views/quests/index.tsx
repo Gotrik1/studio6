@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -73,7 +72,7 @@ export function QuestsPage() {
     useEffect(() => {
         getQuests().then(data => {
             setQuests(data);
-            const initiallyClaimed = new Set(data.filter((q: Quest) => q.progress >= q.goal && q.type === 'SPECIAL').map((q: Quest) => q.id));
+            const initiallyClaimed = new Set(data.filter((q: Quest) => q.progress >= q.goal && q.type === QuestType.SPECIAL).map((q: Quest) => q.id));
             setClaimedQuests(initiallyClaimed);
         });
     }, []);
@@ -91,7 +90,7 @@ export function QuestsPage() {
     // In a real app, this would be a server-side reset based on cron jobs
     const handleResetDailies = () => {
         setQuests(prev => prev.map((q: Quest) => q.type === 'DAILY' ? {...q, progress: 0} : q));
-        const dailyIds = new Set(quests.filter(q => q.type === 'DAILY').map((q: Quest) => q.id));
+        const dailyIds = new Set(quests.filter(q => q.type === QuestType.DAILY).map((q: Quest) => q.id));
         setClaimedQuests(prev => new Set([...prev].filter(id => !dailyIds.has(id))));
         toast({ title: 'Ежедневные квесты обновлены!' });
     }

@@ -93,19 +93,13 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
                                                  <div className="flex-1 flex items-center justify-center gap-4">
                                                       <div className="flex items-center gap-2 font-medium">
                                                           <span className="hidden sm:inline">{match.team1?.name}</span>
-                                                          <Avatar className="h-8 w-8">
-                                                              <AvatarImage src={match.team1?.logo || ''} data-ai-hint={match.team1?.dataAiHint || ''} />
-                                                              <AvatarFallback>{match.team1?.name.charAt(0)}</AvatarFallback>
-                                                          </Avatar>
+                                                          <Avatar className="h-8 w-8"><AvatarImage src={match.team1?.logo || ''} data-ai-hint={match.team1?.dataAiHint || ''} /><AvatarFallback>{match.team1?.name.charAt(0)}</AvatarFallback></Avatar>
                                                       </div>
                                                       <div className="text-center">
                                                           <p className="text-xl font-bold">{match.score}</p>
                                                       </div>
                                                        <div className="flex items-center gap-2 font-medium">
-                                                           <Avatar className="h-8 w-8">
-                                                              <AvatarImage src={match.team2?.logo || ''} data-ai-hint={match.team2?.dataAiHint || ''} />
-                                                              <AvatarFallback>{match.team2?.name.charAt(0)}</AvatarFallback>
-                                                           </Avatar>
+                                                           <Avatar className="h-8 w-8"><AvatarImage src={match.team2?.logo || ''} data-ai-hint={match.team2?.dataAiHint || ''} /><AvatarFallback>{match.team2?.name.charAt(0)}</AvatarFallback></Avatar>
                                                            <span className="hidden sm:inline">{match.team2?.name}</span>
                                                       </div>
                                                  </div>

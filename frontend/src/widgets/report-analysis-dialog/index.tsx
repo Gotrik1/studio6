@@ -1,12 +1,8 @@
 
 
-
-
-
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -52,22 +48,12 @@ const getRecommendationText = (rec?: AnalyzeReportOutput['recommendation']) => {
     }
 };
 
-const getRecommendationVariant = (rec?: AnalyzeReportOutput['recommendation']): "destructive" | "secondary" | "default" | "outline" | null | undefined => {
-    switch (rec) {
-        case 'perm_ban': return 'destructive';
-        case 'temp_ban': return 'destructive';
-        case 'warning': return 'secondary';
-        default: return 'outline';
-    }
-};
-
-
 export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }: ReportAnalysisDialogProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiResult, setAiResult] = useState<AnalyzeReportOutput | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
 
-  const handleAnalyzeReport = async () => {
+  const handleAnalyzeReport = useCallback(async () => {
       if (!report) return;
 
       setIsAnalyzing(true);
@@ -89,7 +75,7 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
       } finally {
           setIsAnalyzing(false);
       }
-  };
+  }, [report]);
 
   useEffect(() => {
     if (isOpen && report) {
@@ -173,7 +159,7 @@ export function ReportAnalysisDialog({ isOpen, onOpenChange, report, onResolve }
             <div>
                 <h4 className="font-semibold text-sm mb-2">Вынести решение</h4>
                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Button className="flex-1" onClick={() => onResolve(String(report.id), `победа присуждена ${report.reporter.name}`)}>
+                    <Button className="flex-1" onClick={() => onResolve(String(report.id), `Правота за ${report.reporter.name}`)}>
                         <Shield className="mr-2 h-4 w-4"/>Правота за {report.reporter.name}
                     </Button>
                     <Button className="flex-1" variant="destructive" onClick={() => onResolve(String(report.id), 'отклонена')}>

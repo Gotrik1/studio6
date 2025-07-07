@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -50,7 +51,7 @@ export function FanZonePage() {
         const result = await submitVote(pollId, optionId);
         if(result.success) {
             toast({ title: 'Голос учтён!' });
-            loadData(); // Refetch to update poll results
+            await loadData(); // Refetch to update poll results
             return true;
         } else {
             toast({ variant: 'destructive', title: 'Ошибка', description: result.error });

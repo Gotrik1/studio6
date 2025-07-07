@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -14,12 +15,13 @@ export type TrainingProposal = {
     date: Date;
     comment: string | null;
     status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+    program?: { id: string; name: string } | null;
 };
 
 interface TrainingProposalContextType {
   proposals: TrainingProposal[];
   isLoading: boolean;
-  addProposal: (toUserId: string, sport: string, date: Date, comment: string) => Promise<boolean>;
+  addProposal: (data: { toUserId: string, sport: string, date: Date, comment: string, programId?: string }) => Promise<boolean>;
   updateProposalStatus: (proposalId: string, status: 'ACCEPTED' | 'DECLINED') => Promise<boolean>;
   friends: Friend[];
 }
@@ -42,14 +44,14 @@ export const TrainingProposalProvider = ({ children }: { children: ReactNode }) 
 
             setFriends(friendsData);
 
-            if (proposalsResult.success) {
+            if (proposalsResult.success && proposalsResult.data) {
                 // Convert date strings to Date objects
-                const formattedProposals = proposalsResult.data.map((p: any) => ({
+                const formattedProposals = (proposalsResult.data as TrainingProposal[]).map((p) => ({
                     ...p,
                     date: new Date(p.date),
                 }));
                 setProposals(formattedProposals);
-            } else {
+            } else if (!proposalsResult.success) {
                 console.error("Failed to fetch proposals", proposalsResult.error);
                 setProposals([]);
             }
@@ -68,8 +70,9 @@ export const TrainingProposalProvider = ({ children }: { children: ReactNode }) 
     }, [sessionUser, fetchAllData]);
 
 
-    const addProposal = async (toId: string, sport: string, date: Date, comment: string) => {
-        const result = await createTrainingProposal({ toId, sport, date, comment });
+    const addProposal = async (data: { toUserId: string, sport: string, date: Date, comment: string, programId?: string }) => {
+        const { toUserId, ...restData } = data;
+        const result = await createTrainingProposal({ toId: toUserId, ...restData });
         if (result.success) {
             await fetchAllData();
             return true;

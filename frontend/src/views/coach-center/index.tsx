@@ -1,10 +1,10 @@
 
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/shared/ui/card';
 import { ClipboardList, Users, TrendingUp, BookOpen, BarChart3 } from 'lucide-react';
-import { useToast } from '@/shared/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { MyPlayersTab } from '@/entities/user/ui/coach-profile-tabs/my-players-tab';
@@ -44,7 +44,6 @@ const PageSkeleton = () => (
 
 export function CoachCenterPage() {
     const { user } = useSession();
-    const { toast } = useToast();
     const { programs } = useTraining();
     const [coachData, setCoachData] = useState<FullUserProfile | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -52,8 +51,8 @@ export function CoachCenterPage() {
     const [isAssignProgramOpen, setIsAssignProgramOpen] = useState(false);
     const [selectedProgram, setSelectedProgram] = useState<TrainingProgram | null>(null);
 
-    useEffect(() => {
-        if(user) {
+    const fetchCoachData = useCallback(async () => {
+         if(user) {
             getPlayerProfile(user.id).then(data => {
                 if(data) {
                     setCoachData(data.user);
@@ -62,6 +61,10 @@ export function CoachCenterPage() {
             })
         }
     }, [user]);
+
+    useEffect(() => {
+        fetchCoachData();
+    }, [fetchCoachData]);
 
     const handleAssignProgram = (program: TrainingProgram) => {
         setSelectedProgram(program);

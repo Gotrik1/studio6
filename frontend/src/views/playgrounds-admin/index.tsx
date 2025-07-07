@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
@@ -49,7 +50,7 @@ export function PlaygroundsAdminPage() {
         const result = await fetchWithAuth(`/playgrounds/admin/${id}/approve`, { method: 'PATCH' });
         if (result.success) {
             toast({ title: 'Площадка одобрена', description: 'Статус площадки изменен на "Одобрено".' });
-            fetchPlaygrounds();
+            await fetchPlaygrounds();
         } else {
              toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
         }
@@ -59,7 +60,7 @@ export function PlaygroundsAdminPage() {
         const result = await fetchWithAuth(`/playgrounds/admin/${id}`, { method: 'DELETE' });
         if (result.success) {
             toast({ title: 'Площадка удалена', variant: 'destructive' });
-            fetchPlaygrounds();
+            await fetchPlaygrounds();
         } else {
             toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
         }

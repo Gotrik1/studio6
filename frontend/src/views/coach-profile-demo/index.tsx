@@ -1,5 +1,6 @@
+
 import CoachClient from "@/app/(app)/administration/coach/client";
-import { getPlayerProfile, type FullUserProfile } from "@/entities/user/api/get-user";
+import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";
 import type { CoachedPlayer, CoachedPlayerSummary } from '@/entities/user/model/types';
 import { getAchievementsForUser } from "@/entities/achievement/api/achievements";

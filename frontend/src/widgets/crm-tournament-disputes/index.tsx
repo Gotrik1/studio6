@@ -14,11 +14,13 @@ import { fetchMatches } from '@/entities/match/api/get-matches';
 import type { Match } from '@/entities/match/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { resolveDispute } from '@/entities/match/api/resolve-dispute';
+import { Badge } from '@/shared/ui/badge';
 
 type DisputedMatch = Match & {
     disputeReason: string;
     timestamp: string;
 };
+
 
 interface CrmTournamentDisputesProps {
     tournamentId: string;
@@ -70,7 +72,7 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
                 title: 'Спор разрешен!',
                 description: `Решение по матчу ${matchToResolve.team1.name} vs ${matchToResolve.team2.name} было принято.`
             });
-            fetchData(); // Refetch data
+            await fetchData(); // Refetch data
             setIsDialogOpen(false);
         } else {
              toast({

@@ -1,6 +1,8 @@
+
+
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Badge } from '@/shared/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -41,6 +43,7 @@ export function SponsorsPage() {
                 const data = await getSponsors();
                 setSponsors(data);
             } catch (error) {
+                console.error(error);
                 toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список партнеров.' });
             } finally {
                 setIsLoading(false);
@@ -70,7 +73,7 @@ export function SponsorsPage() {
                          <Link key={sponsor.id} href={sponsor.profileUrl || '#'} className="block h-full">
                             <Card className="flex flex-col h-full transition-all hover:shadow-2xl hover:border-primary cursor-pointer">
                                 <CardHeader className="flex flex-row items-center gap-4">
-                                    <Image src={sponsor.logo || 'https://placehold.co/100x100.png'} alt={sponsor.name} width={64} height={64} className="rounded-lg border" data-ai-hint={sponsor.logoHint || 'sponsor logo'} />
+                                    <Image src={sponsor.logo || 'https://placehold.co/100x100.png'} alt={sponsor.name} width={64} height={64} className="rounded-lg border" data-ai-hint={sponsor.logoHint} />
                                     <div>
                                         <CardTitle>{sponsor.name}</CardTitle>
                                         <div className="flex flex-wrap gap-1 mt-2">

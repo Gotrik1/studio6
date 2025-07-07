@@ -19,7 +19,7 @@ import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/sha
 import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
 import { useRouter } from 'next/navigation';
 import { createTournamentMedia } from '@/entities/tournament/api/media';
-import type { TournamentDetails } from '@/entities/tournament/model/types';
+import type { TournamentDetails, MatchEvent } from '@/entities/tournament/model/types';
 
 
 interface CrmTournamentMediaCenterProps {
@@ -91,7 +91,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
 
         try {
             const interviewData = await generateMatchInterview({
-                matchSummary: summaryResult.summary,
+                matchSummary: summaryResult.summaryArticle,
                 mvpName: summaryResult.mvp.name,
             });
             setInterviewResult(interviewData);
@@ -118,7 +118,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                 winningTeam,
                 losingTeam,
                 score: mockFinalMatch.score,
-                matchSummary: summaryResult.summary,
+                matchSummary: summaryResult.summaryArticle,
             });
             setPostResult(postData);
         } catch (e) {
@@ -144,7 +144,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
             const commentaryData = await generateMatchCommentary({
                 team1Name: mockFinalMatch.team1,
                 team2Name: mockFinalMatch.team2,
-                events: tournament.events || mockEvents,
+                events: (tournament.events as MatchEvent[]) || mockEvents,
             });
             setCommentaryResult(commentaryData);
         } catch (e) {
