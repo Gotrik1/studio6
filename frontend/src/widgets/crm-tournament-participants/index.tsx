@@ -2,12 +2,12 @@
 
 'use client';
 
-import { useState, useMemo, useEffect, useCallback, useTransition } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
+import { useState, useEffect, useCallback, useTransition } from 'react';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Check, X, Mail, Trash2, ChevronDown, Users } from 'lucide-react';
+import { Check, X, Mail, Trash2, ChevronDown } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
 import { useToast } from '@/shared/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
@@ -21,6 +21,8 @@ import {
     removeParticipant,
 } from '@/entities/tournament/api/participants';
 import { Badge } from '@/shared/ui/badge';
+import type { User } from '@/shared/lib/types';
+
 
 type RosterMember = {
     id: string;
@@ -65,14 +67,15 @@ export function CrmTournamentParticipants({ tournamentId }: CrmTournamentPartici
                 getTournamentParticipants(tournamentId)
             ]);
             
-            if (appsResult.success) setApplications(appsResult.data);
+            if (appsResult.success) setApplications(appsResult.data as Application[]);
             else throw new Error(appsResult.error);
 
-            if (participantsResult.success) setParticipants(participantsResult.data);
+            if (participantsResult.success) setParticipants(participantsResult.data as Participant[]);
             else throw new Error(participantsResult.error);
 
-        } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить участников: ${error.message}` });
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить данные участников';
+            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить участников: ${errorMessage}` });
         } finally {
             setIsLoading(false);
         }

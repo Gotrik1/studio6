@@ -4,9 +4,9 @@
 
 import { useState } from 'react';
 import { Button } from "@/shared/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic, Share2, Copy, Download, Volume2, Image as ImageIcon } from "lucide-react";
+import { Loader2, AlertCircle, Sparkles, Mic, Share2, Copy, Download, Volume2, Image as ImageIcon } from "lucide-react";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { generateTournamentSummary, type GenerateTournamentSummaryOutput } from '@/shared/api/genkit/flows/generate-tournament-summary-flow';
 import { generatePostImage, type GeneratePostImageOutput } from '@/shared/api/genkit/flows/generate-post-image-flow';
@@ -91,7 +91,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
 
         try {
             const interviewData = await generateMatchInterview({
-                matchSummary: summaryResult.summaryArticle,
+                matchSummary: summaryResult.summary,
                 mvpName: summaryResult.mvp.name,
             });
             setInterviewResult(interviewData);
@@ -118,7 +118,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                 winningTeam,
                 losingTeam,
                 score: mockFinalMatch.score,
-                matchSummary: summaryResult.summaryArticle,
+                matchSummary: summaryResult.summary,
             });
             setPostResult(postData);
         } catch (e) {
@@ -144,7 +144,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
             const commentaryData = await generateMatchCommentary({
                 team1Name: mockFinalMatch.team1,
                 team2Name: mockFinalMatch.team2,
-                events: mockEvents,
+                events: tournament.events || mockEvents,
             });
             setCommentaryResult(commentaryData);
         } catch (e) {
@@ -292,7 +292,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                 {!postResult && (
                                     <Button onClick={handleGeneratePost} disabled={isGeneratingPost || !summaryResult}>
                                         {isGeneratingPost ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                                        {summaryResult ? 'Создать пост' : 'Сначала сгенерируйте анализ'}
+                                        {result ? 'Создать пост' : 'Сначала сгенерируйте анализ'}
                                     </Button>
                                 )}
                                 {isGeneratingPost && <div className="space-y-2"><Skeleton className="h-24 w-full" /><Skeleton className="h-10 w-1/3" /></div>}

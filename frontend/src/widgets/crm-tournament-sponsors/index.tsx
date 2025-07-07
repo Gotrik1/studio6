@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -33,17 +34,18 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                 getAvailableSponsors()
             ]);
             
-            if (assignedRes.success) setAssignedSponsors(assignedRes.data);
+            if (assignedRes.success) setAssignedSponsors(assignedRes.data as (Sponsor & { amount?: number })[]);
             else throw new Error(assignedRes.error);
 
-            if (availableRes.success) {
-                const assignedIds = new Set(assignedRes.data.map((p: any) => p.id));
-                setAvailableSponsors(availableRes.data.filter((p: any) => !assignedIds.has(p.id)));
+            if (availableRes.success && Array.isArray(availableRes.data) && Array.isArray(assignedRes.data)) {
+                const assignedIds = new Set(assignedRes.data.map((p: Sponsor) => p.id));
+                setAvailableSponsors(availableRes.data.filter((p: Sponsor) => !assignedIds.has(p.id)));
             } else {
-                 throw new Error(availableRes.error);
+                 throw new Error(availableRes.error || 'Failed to process available sponsors');
             }
-        } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить данные: ${error.message}` });
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить данные';
+            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить данные: ${errorMessage}` });
         } finally {
             setIsLoading(false);
         }
@@ -120,12 +122,12 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                     <CardDescription>Аккредитованные партнеры, доступные для назначения.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                     {isLoading ? <Skeleton className="h-40 w-full" /> : (
                         <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Спонсор</TableHead>
-                                    <TableHead className="text-right">Действие</TableHead>
+                                    <TableHead className="text-right"></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -133,8 +135,13 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                                     <TableRow key={sponsor.id}>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
-                                                <Avatar className="h-8 w-8"><AvatarImage src={sponsor.logo || ''} data-ai-hint={sponsor.logoHint} /><AvatarFallback>{sponsor.name.charAt(0)}</AvatarFallback></Avatar>
-                                                <p className="font-semibold">{sponsor.name}</p>
+                                                 <Avatar className="h-9 w-9">
+                                                    <AvatarImage src={sponsor.logo || ''} data-ai-hint={sponsor.logoHint || 'medical logo'}/>
+                                                    <AvatarFallback>{sponsor.name.charAt(0)}</AvatarFallback>
+                                                </Avatar>
+                                                <div>
+                                                    <p className="font-semibold">{sponsor.name}</p>
+                                                </div>
                                             </div>
                                         </TableCell>
                                         <TableCell className="text-right">
@@ -150,7 +157,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
                                 )}
                             </TableBody>
                         </Table>
-                    )}
+                     )}
                 </CardContent>
             </Card>
         </div>

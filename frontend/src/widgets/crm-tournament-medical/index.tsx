@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -40,14 +41,15 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
             if (assignedRes.success) setAssignedMedics(assignedRes.data);
             else throw new Error(assignedRes.error);
 
-            if (availableRes.success) {
-                const assignedIds = new Set(assignedRes.data.map((p: any) => p.id));
-                setAvailableMedics(availableRes.data.filter((p: any) => !assignedIds.has(p.id)));
+            if (availableRes.success && Array.isArray(availableRes.data) && Array.isArray(assignedRes.data)) {
+                const assignedIds = new Set(assignedRes.data.map((p: MedicalPartner) => p.id));
+                setAvailableMedics(availableRes.data.filter((p: MedicalPartner) => !assignedIds.has(p.id)));
             } else {
-                 throw new Error(availableRes.error);
+                 throw new Error(availableRes.error || 'Failed to process available medics');
             }
-        } catch (error: any) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить данные: ${error.message}` });
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить данные.';
+            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить данные: ${errorMessage}` });
         } finally {
             setIsLoading(false);
         }
@@ -69,11 +71,11 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
     
     const handleRemoveMedic = async (medic: MedicalPartner) => {
         const result = await unassignMedicalPartner(tournamentId, medic.id);
-        if (result.success) {
+         if (result.success) {
             toast({ title: "Мед. поддержка снята", description: `${medic.name} снят(а) с турнира.` });
             await fetchData();
         } else {
-            toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
+             toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
         }
     };
 
@@ -85,7 +87,7 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
                     <CardDescription>Медицинские бригады и специалисты, работающие на этом турнире.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {isLoading ? <Skeleton className="h-40 w-full" /> : (
+                     {isLoading ? <Skeleton className="h-40 w-full" /> : (
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -124,7 +126,7 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
                     )}
                 </CardContent>
             </Card>
-            <Card>
+             <Card>
                 <CardHeader>
                     <CardTitle>Аккредитованные мед. службы</CardTitle>
                     <CardDescription>Доступные для назначения на турнир партнеры.</CardDescription>
