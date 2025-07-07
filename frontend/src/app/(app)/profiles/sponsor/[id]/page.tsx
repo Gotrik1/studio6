@@ -37,3 +37,4 @@ export default function SponsorProfileRoute({ params }: { params: { id: string }
         />
     );
 }
+

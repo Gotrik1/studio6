@@ -34,7 +34,6 @@ export function TeamManagementPage() {
     const { toast } = useToast();
     const params = useParams<{ slug: string }>();
     const [team, setTeam] = useState<TeamDetails | null>(null);
-    const [, setDashboardData] = useState<TeamDashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
     
@@ -66,8 +65,9 @@ export function TeamManagementPage() {
                     getTeamDashboardData(teamData.id),
                     getTeamApplications(teamData.id)
                 ]);
-                setDashboardData(dashData);
-                if (appsResult.success) {
+                 // Set dashboardData if needed elsewhere, currently unused
+                // setDashboardData(dashData);
+                if (appsResult.success && Array.isArray(appsResult.data)) {
                     setJoinRequests(appsResult.data.map((app: any) => ({
                         id: app.id,
                         teamId: app.teamId,
