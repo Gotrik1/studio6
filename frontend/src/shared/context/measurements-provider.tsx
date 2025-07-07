@@ -1,6 +1,5 @@
 
 
-
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
@@ -17,7 +16,7 @@ interface MeasurementsContextType {
 
 const MeasurementsContext = createContext<MeasurementsContextType | undefined>(undefined);
 
-export const MeasurementsProvider = ({ children }: { children: React.ReactNode }) => {
+export const MeasurementsProvider = ({ children }: { children: ReactNode }) => {
     const { toast } = useToast();
     const [history, setHistory] = useState<Measurement[]>([]);
     const [isLoading, setIsLoading] = useState(true);

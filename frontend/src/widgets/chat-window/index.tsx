@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState, useRef, useEffect, KeyboardEvent, useCallback } from 'react';
+import { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Input } from '@/shared/ui/input';
@@ -51,13 +52,13 @@ export function ChatWindow({ chat }: ChatWindowProps) {
         const newSocket = io(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:3001');
         setSocket(newSocket);
         
-        newSocket.on('receiveMessage', (message: any) => {
+        newSocket.on('receiveMessage', (message: ChatMessage) => {
             // Only update if the message is for the current chat
             if (message.chatId === chat.id) {
                 setMessages(prev => [...prev, {
-                    sender: message.sender.id === user.id ? 'user' : 'other',
-                    name: message.sender.name,
-                    avatar: message.sender.avatar,
+                    sender: message.author.id === user.id ? 'user' : 'other',
+                    name: message.author.name,
+                    avatar: message.author.avatar || '',
                     text: message.text,
                 }]);
             }
@@ -79,7 +80,7 @@ export function ChatWindow({ chat }: ChatWindowProps) {
                         sender: msg.author.id === user.id ? 'user' : 'other',
                         name: msg.author.name,
                         avatar: msg.author.avatar || '',
-                        text: msg.text,
+                        text: msg.content,
                     }));
                     setMessages(formattedHistory);
                 } catch (error) {

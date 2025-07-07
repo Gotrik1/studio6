@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -15,16 +16,8 @@ import { BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
 import { analyzeJoinRequest, type AnalyzeJoinRequestOutput } from '@/shared/api/genkit/flows/analyze-join-request-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
-import { cn } from '@/shared/lib/utils';
 import type { JoinRequest } from '@/entities/team-application/model/types';
 
-
-interface JoinRequestAnalysisDialogProps {
-  isOpen: boolean;
-  onOpenChange: (isOpen: boolean) => void;
-  request: JoinRequest | null;
-  teamNeeds: string;
-}
 
 const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
     switch(confidence) {
@@ -32,6 +25,13 @@ const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
         case 'medium': return 'text-yellow-500';
         case 'low': return 'text-orange-500';
     }
+}
+
+interface JoinRequestAnalysisDialogProps {
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  request: JoinRequest | null;
+  teamNeeds: string;
 }
 
 export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamNeeds }: JoinRequestAnalysisDialogProps) {
@@ -66,16 +66,21 @@ export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamN
       }
   };
 
-  const onOpenChangeHandler = (open: boolean) => {
-    if (open && request) {
+  useEffect(() => {
+    if (isOpen && request) {
       handleAnalyze(); // Analyze automatically when dialog opens
-    } else {
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, request]);
+
+  const onOpenChangeHandler = (open: boolean) => {
+    if (!open) {
       setAiResult(null);
       setAiError(null);
     }
     onOpenChange(open);
   };
-
+  
   if (!request) return null;
 
   return (

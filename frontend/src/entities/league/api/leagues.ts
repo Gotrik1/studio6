@@ -4,6 +4,20 @@
 
 import type { League, LeagueDetails } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
+import type { Match, Team } from '@prisma/client';
+
+type BackendLeagueTeam = {
+    team: Team;
+    played: number;
+    wins: number;
+    draws: number;
+    losses: number;
+    points: number;
+}
+type BackendMatch = Match & {
+    team1: Team;
+    team2: Team;
+}
 
 export async function getLeagues(): Promise<League[]> {
     const result = await fetchWithAuth('/leagues');
@@ -30,7 +44,7 @@ export async function getLeagueById(id: string): Promise<LeagueDetails | null> {
         game: rawData.game,
         image: rawData.image,
         imageHint: rawData.imageHint,
-        teams: rawData.teams.map((lt: { team: { id: string, name: string, logo: string | null, dataAiHint: string | null }, played: number, wins: number, draws: number, losses: number, points: number }) => ({
+        teams: rawData.teams.map((lt: BackendLeagueTeam) => ({
             id: lt.team.id,
             name: lt.team.name,
             logo: lt.team.logo || 'https://placehold.co/100x100.png',
@@ -41,7 +55,7 @@ export async function getLeagueById(id: string): Promise<LeagueDetails | null> {
             losses: lt.losses,
             points: lt.points,
         })),
-        matches: rawData.matches.map((m: { id: string, team1: { name: string, logo: string | null, dataAiHint: string | null }, team2: { name: string, logo: string | null, dataAiHint: string | null }, team1Score: number | null, team2Score: number | null, scheduledAt: string }) => ({
+        matches: rawData.matches.map((m: BackendMatch) => ({
             id: m.id,
             team1: { name: m.team1.name, logo: m.team1.logo || 'https://placehold.co/100x100.png', logoHint: m.team1.dataAiHint || 'team logo' },
             team2: { name: m.team2.name, logo: m.team2.logo || 'https://placehold.co/100x100.png', logoHint: m.team2.dataAiHint || 'team logo' },

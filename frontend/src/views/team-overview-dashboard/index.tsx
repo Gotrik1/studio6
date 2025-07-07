@@ -5,7 +5,7 @@
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/shared/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
-import { Trophy, Shield, Target, Users } from 'lucide-react';
+import { Trophy, Shield, Target } from 'lucide-react';
 import Link from 'next/link';
 import type { Match } from "@/entities/match/model/types";
 import type { TeamDetails, TeamRosterMember } from "@/entities/team/model/types";

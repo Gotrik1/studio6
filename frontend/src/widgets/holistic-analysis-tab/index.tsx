@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState } from 'react';
@@ -18,9 +19,6 @@ import type { PlayerStats } from '@/entities/user/model/types';
 interface HolisticAnalysisTabProps {
     stats: PlayerStats | null;
 }
-
-const mockFitnessGoal = 'Набор массы';
-
 
 export function HolisticAnalysisTab({ stats }: HolisticAnalysisTabProps) {
     const { log } = useTraining();

@@ -1,9 +1,8 @@
 
 
-
 'use client';
 
-import { useState, useEffect, useTransition, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -26,7 +25,9 @@ import type { CoachedPlayer } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
-import type { JoinRequest } from '@/entities/team-application/model/types';
+import type { JoinRequest as TeamJoinRequest } from '@/entities/team-application/model/types';
+import { TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
+
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
@@ -35,9 +36,9 @@ export function TeamManagementPage() {
     const params = useParams<{ slug: string }>();
     const [team, setTeam] = useState<TeamDetails | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
+    const [joinRequests, setJoinRequests] = useState<TeamJoinRequest[]>([]);
     
-    const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
+    const [selectedRequest, setSelectedRequest] = useState<TeamJoinRequest | null>(null);
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
     const [isActionPending, startTransition] = useTransition();
     
@@ -63,13 +64,7 @@ export function TeamManagementPage() {
             if (teamData) {
                 const appsResult = await getTeamApplications(teamData.id);
                  if (appsResult.success && Array.isArray(appsResult.data)) {
-                    setJoinRequests(appsResult.data.map((app) => ({
-                        id: app.id,
-                        teamId: app.teamId,
-                        applicant: app.user,
-                        message: app.message,
-                        statsSummary: app.statsSummary || 'Статистика отсутствует',
-                    })));
+                    setJoinRequests(appsResult.data);
                 } else {
                     toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
                 }
@@ -83,7 +78,7 @@ export function TeamManagementPage() {
         fetchData();
     }, [fetchData]);
 
-    const handleAccept = (request: JoinRequest) => {
+    const handleAccept = (request: TeamJoinRequest) => {
         startTransition(async () => {
             const result = await acceptTeamApplication(request.id);
             if(result.success) {
@@ -95,7 +90,7 @@ export function TeamManagementPage() {
         });
     };
 
-    const handleDecline = (request: JoinRequest) => {
+    const handleDecline = (request: TeamJoinRequest) => {
         startTransition(async () => {
              const result = await declineTeamApplication(request.id);
              if(result.success) {
@@ -111,7 +106,7 @@ export function TeamManagementPage() {
         });
     };
     
-    const handleAnalyze = (request: JoinRequest) => {
+    const handleAnalyze = (request: TeamJoinRequest) => {
         setSelectedRequest(request);
         setIsAnalysisOpen(true);
     };

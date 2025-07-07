@@ -1,6 +1,7 @@
+
 'use client';
 
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/shared/ui/card";
+import { Card, CardHeader, CardTitle } from "@/shared/ui/card";
 import Link from "next/link";
 import { managementCards, profileCards, contentCards, systemCards } from '@/widgets/file-tree';
 import { AdminStatsCards } from "@/widgets/admin-stats-cards";
@@ -21,7 +22,7 @@ const AdminSectionCard = ({ title, description, href, icon: Icon }: AdminSection
                 </div>
                 <div className="flex-1">
                     <CardTitle>{title}</CardTitle>
-                    <CardDescription>{description}</CardDescription>
+                    <p className="text-sm text-muted-foreground">{description}</p>
                 </div>
             </CardHeader>
         </Card>

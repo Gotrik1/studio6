@@ -1,4 +1,5 @@
 
+
 export type SponsoredTeam = {
     slug: string;
     name: string;

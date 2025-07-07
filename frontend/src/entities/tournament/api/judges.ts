@@ -3,26 +3,19 @@
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { User } from '@/shared/lib/types';
+import type { User as PrismaUser } from '@prisma/client';
 
-type BackendJudge = {
-    id: string;
-    name: string;
-    fullName?: string;
-    avatar: string | null;
-    avatarUrl?: string | null;
-    email: string;
-    role: string;
-}
+type BackendJudge = PrismaUser;
+
 
 // Adapter function to map backend judge data to frontend User type
 const mapBackendJudgeToFrontendUser = (backendJudge: BackendJudge): User => {
     return {
         id: String(backendJudge.id), // Ensure ID is a string
-        name: backendJudge.fullName || backendJudge.name,
-        avatar: backendJudge.avatarUrl || backendJudge.avatar || null, // Handle multiple possible names and provide fallback
-        email: backendJudge.email || '',
-        role: backendJudge.role || 'Судья',
+        name: backendJudge.name,
+        avatar: backendJudge.avatar || null,
+        email: backendJudge.email,
+        role: backendJudge.role,
     };
 };
 

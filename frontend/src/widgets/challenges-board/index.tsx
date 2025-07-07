@@ -1,6 +1,6 @@
+
 'use client';
 
-import { useMemo } from 'react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
 import type { Challenge } from '@/entities/challenge/model/types';
 import type { User } from '@/shared/lib/types';

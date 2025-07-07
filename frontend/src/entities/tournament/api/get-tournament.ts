@@ -4,25 +4,28 @@
 
 import type { TournamentDetails, BracketMatch, BracketRound } from '@/entities/tournament/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
+import type { Team, Match, TournamentMedia, User } from '@prisma/client';
 
-type RawTeam = { name: string; logo: string | null; dataAiHint?: string | null; slug?: string; };
-type RawMatch = { id: string | number; team1?: RawTeam; team2?: RawTeam; score?: string; winner?: boolean; href?: string; date?: string; time?: string; team1Score?: number | null; team2Score?: number | null; scheduledAt?: string };
+type RawTeam = Pick<Team, 'name' | 'logo' | 'dataAiHint' | 'slug'>;
+type RawMatch = Pick<Match, 'id' | 'score' | 'team1Score' | 'team2Score' | 'scheduledAt'> & { winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam };
 type RawRound = { name: string; matches: RawMatch[] };
 type RawTournamentData = Omit<TournamentDetails, 'bracket' | 'teams' | 'matches'> & {
     bracket: { rounds: RawRound[] };
     teams: RawTeam[];
     matches: RawMatch[];
+    media: TournamentMedia[];
+    organizer: Pick<User, 'name' | 'avatar'>;
 };
 
 // Adapter function to transform raw backend data into the frontend's TournamentDetails type
 function adaptTournamentDetails(data: RawTournamentData): TournamentDetails {
     if (!data) return null as any;
 
-    const shapeTeam = (team: RawTeam) => ({
-        name: team.name,
-        logo: team.logo || null,
-        dataAiHint: team.dataAiHint || 'team logo',
-        slug: team.slug,
+    const shapeTeam = (team: RawTeam | null | undefined) => ({
+        name: team?.name || 'TBD',
+        logo: team?.logo || null,
+        dataAiHint: team?.dataAiHint || 'team logo',
+        slug: team?.slug,
     });
     
     const shapeMatch = (match: RawMatch): BracketMatch => ({
@@ -32,7 +35,7 @@ function adaptTournamentDetails(data: RawTournamentData): TournamentDetails {
         score: match.team1Score !== null && match.team2Score !== null ? `${match.team1Score}-${match.team2Score}` : 'VS',
         winner: match.winner,
         href: `/matches/${String(match.id)}`,
-        date: match.scheduledAt,
+        date: match.scheduledAt ? new Date(match.scheduledAt).toISOString() : undefined,
         time: match.scheduledAt ? new Date(match.scheduledAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '',
     });
     

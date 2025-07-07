@@ -4,22 +4,24 @@
 
 import type { TrainingLogEntry, ExerciseLog, LoggedSet } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
+import type { TrainingLog, LoggedExercise, LoggedSet as PrismaSet, Exercise as PrismaExercise } from '@prisma/client';
 
-type RawLoggedSet = {
-    id: string; plannedReps?: string | null; plannedWeight?: string | null; loggedReps?: number | null; loggedWeight?: number | null; rpe?: number | null; isCompleted: boolean;
+type RawLoggedSet = PrismaSet;
+
+type RawExerciseLog = LoggedExercise & {
+    exercise: PrismaExercise;
+    sets: RawLoggedSet[];
 };
-type RawExerciseLog = {
-    id: string; exercise: { id: string; name: string }; notes?: string | null; isSupersetWithPrevious?: boolean | null; sets: RawLoggedSet[];
-};
-type RawTrainingLogEntry = {
-    id: string; date: string; workoutName?: string | null; status: 'COMPLETED' | 'PLANNED' | 'SKIPPED'; exercises: RawExerciseLog[]; mood?: 'GREAT' | 'GOOD' | 'OK' | 'BAD' | null; notes?: string | null; coachNotes?: string | null;
+
+type RawTrainingLogEntry = TrainingLog & {
+    exercises: RawExerciseLog[];
 };
 
 
 function transformApiLogToFrontend(apiLog: RawTrainingLogEntry[]): TrainingLogEntry[] {
   return apiLog.map(log => ({
     id: log.id,
-    date: log.date,
+    date: log.date.toString(),
     workoutName: log.workoutName,
     status: log.status.toLowerCase() as 'completed' | 'planned' | 'skipped',
     notes: log.notes,
@@ -52,5 +54,5 @@ export async function getTrainingLog(): Promise<TrainingLogEntry[]> {
         console.error("Failed to fetch training log:", result.error);
         return [];
     }
-    return transformApiLogToFrontend(result.data);
+    return transformApiLogToFrontend(result.data as RawTrainingLogEntry[]);
 }

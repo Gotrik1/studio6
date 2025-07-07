@@ -121,13 +121,13 @@ export function QuestsPage() {
                     <TabsTrigger value="special">Специальные</TabsTrigger>
                 </TabsList>
                 <TabsContent value="daily" className="mt-6">
-                    <QuestsSection title="Ежедневные" quests={quests.filter(q => q.type === 'DAILY')} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+                    <QuestsSection title="Ежедневные" quests={quests.filter(q => q.type === QuestType.DAILY)} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
                 </TabsContent>
                 <TabsContent value="weekly" className="mt-6">
-                    <QuestsSection title="Еженедельные" quests={quests.filter(q => q.type === 'WEEKLY')} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+                    <QuestsSection title="Еженедельные" quests={quests.filter(q => q.type === QuestType.WEEKLY)} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
                 </TabsContent>
                 <TabsContent value="special" className="mt-6">
-                    <QuestsSection title="Специальные" quests={quests.filter(q => q.type === 'SPECIAL')} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
+                    <QuestsSection title="Специальные" quests={quests.filter(q => q.type === QuestType.SPECIAL)} onClaim={handleClaimReward} claimedQuests={claimedQuests} />
                 </TabsContent>
             </Tabs>
         </div>

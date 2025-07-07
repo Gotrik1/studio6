@@ -9,7 +9,7 @@ import { ru } from 'date-fns/locale';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/shared/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import Link from "next/link";
-import { Clock, ChevronDown } from "lucide-react";
+import { Clock } from "lucide-react";
 import { useMemo } from 'react';
 
 type BracketMatch = TournamentDetails['bracket']['rounds'][0]['matches'][0];
@@ -44,7 +44,7 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
             'href' in match && !!match.href
         ), [rounds]);
 
-    const groupedMatches: GroupedMatches = useMemo(() => allMatches.reduce((acc: GroupedMatches, match: PlayableMatch) => {
+    const groupedMatches: GroupedMatches = useMemo(() => allMatches.reduce((acc, match: PlayableMatch) => {
         const dateStr = format(new Date(match.date), 'yyyy-MM-dd');
         if (!acc[dateStr]) {
             acc[dateStr] = [];

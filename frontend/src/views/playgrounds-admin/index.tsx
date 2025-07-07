@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
@@ -20,7 +21,7 @@ export function PlaygroundsAdminPage() {
     const [statusFilter, setStatusFilter] = useState('Все');
     const [isLoading, setIsLoading] = useState(true);
 
-    const fetchPlaygrounds = async () => {
+    const fetchPlaygrounds = useCallback(async () => {
         setIsLoading(true);
         const result = await fetchWithAuth('/playgrounds/admin/all');
         if (result.success) {
@@ -29,11 +30,11 @@ export function PlaygroundsAdminPage() {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить площадки.' });
         }
         setIsLoading(false);
-    };
+    }, [toast]);
 
     useEffect(() => {
         fetchPlaygrounds();
-    }, []);
+    }, [fetchPlaygrounds]);
 
     const filteredPlaygrounds = useMemo(() => {
         return playgrounds.filter(p => {

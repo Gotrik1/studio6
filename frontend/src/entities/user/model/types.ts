@@ -1,5 +1,4 @@
 
-
 export type CareerHistoryItem = {
   id: string;
   teamName: string;

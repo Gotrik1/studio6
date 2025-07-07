@@ -4,17 +4,21 @@
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { User } from '@/shared/lib/types';
+import type { User as FrontendUser } from '@/shared/lib/types';
+import type { Team, User } from '@prisma/client';
 
+type BackendUser = User;
+type BackendTeam = Team & { captain: BackendUser; members: BackendUser[] };
+type BackendApplication = { id: string; team: BackendTeam };
 
 // Adapter to transform a raw team object from the backend
-const adaptParticipantTeam = (team: { id: string; captain: { id: string; name: string; }; members: User[]; }) => {
+const adaptParticipantTeam = (team: BackendTeam) => {
     if (!team) return null;
     return {
         ...team,
         id: String(team.id),
         captain: team.captain ? { ...team.captain, id: String(team.captain.id) } : null,
-        members: (team.members || []).map((member: User) => ({
+        members: (team.members || []).map((member: BackendUser) => ({
             ...member,
             id: String(member.id),
             avatar: member.avatar || null,
@@ -28,7 +32,7 @@ export async function getTournamentApplications(tournamentId: string) {
     });
     
     if (result.success && Array.isArray(result.data)) {
-        result.data = result.data.map((app: { id: string; team: { id: string; captain: { id: string; name: string; }; members: User[]; }; }) => ({
+        result.data = result.data.map((app: BackendApplication) => ({
             ...app,
             id: String(app.id),
             team: adaptParticipantTeam(app.team),

@@ -54,22 +54,12 @@ const getRecommendationText = (rec?: AnalyzeDisputeOutput['recommendation']) => 
     }
 };
 
-const getRecommendationVariant = (rec?: AnalyzeDisputeOutput['recommendation']): "destructive" | "secondary" | "default" | "outline" | null | undefined => {
-    switch (rec) {
-        case 'perm_ban': return 'destructive';
-        case 'temp_ban': return 'destructive';
-        case 'warning': return 'secondary';
-        default: return 'outline';
-    }
-};
-
-
 export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve }: DisputeResolutionDialogProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiResult, setAiResult] = useState<AnalyzeDisputeOutput | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
 
-  const handleAnalyzeDispute = async () => {
+  const handleAnalyzeDispute = useCallback(async () => {
       if (!match) return;
 
       setIsAnalyzing(true);
@@ -95,7 +85,7 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
       } finally {
           setIsAnalyzing(false);
       }
-  };
+  }, [match]);
 
   useEffect(() => {
     if (isOpen && match) {

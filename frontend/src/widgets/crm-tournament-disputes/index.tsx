@@ -20,11 +20,6 @@ type DisputedMatch = Match & {
     timestamp: string;
 };
 
-type ResolvedMatch = Match & {
-    resolution: string;
-    judge: string; // Mocked for now
-};
-
 interface CrmTournamentDisputesProps {
     tournamentId: string;
 }

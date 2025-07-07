@@ -11,6 +11,16 @@ export type PlaygroundLeaderboardItem = {
     checkIns: number;
 };
 
+type BackendLeaderboardItem = {
+    userId: string;
+    _count: { userId: number };
+    rank?: number;
+    name?: string;
+    avatar?: string | null;
+    checkIns?: number;
+}
+
+
 export async function getPlaygroundLeaderboard(playgroundId: string): Promise<PlaygroundLeaderboardItem[]> {
     const result = await fetchWithAuth(`/playgrounds/${playgroundId}/leaderboard`);
     
@@ -20,9 +30,10 @@ export async function getPlaygroundLeaderboard(playgroundId: string): Promise<Pl
     }
 
     if (Array.isArray(result.data)) {
-        return result.data.map((item: { userId: string; _count: { userId: number }}) => ({
+        return result.data.map((item: BackendLeaderboardItem) => ({
             ...item,
             id: String(item.userId),
+            checkIns: item._count.userId,
         }));
     }
     

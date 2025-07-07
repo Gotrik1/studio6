@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useForm } from 'react-hook-form';
@@ -67,7 +68,7 @@ export function PlaygroundCreateForm() {
         });
 
         if (result.success) {
-             let toastDescription = 'Место добавлено и отправлено на модерацию! Вы получили 1 месяц PRO-подписки!';
+            const toastDescription = 'Место добавлено и отправлено на модерацию! Вы получили 1 месяц PRO-подписки!';
             // Could check user role here in a real app
             toast({
                 title: "Место добавлено!",
@@ -179,6 +180,7 @@ export function PlaygroundCreateForm() {
                                     <input id="media-upload" type="file" className="hidden" accept="image/png, image/jpeg" />
                                 </label>
                             </FormControl>
+                             <FormDescription>Рекомендуемый размер 1200x400. Будет отображаться на странице площадки.</FormDescription>
                         </FormItem>
                     </CardContent>
                     <CardFooter>

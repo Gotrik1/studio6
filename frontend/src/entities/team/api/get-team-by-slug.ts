@@ -60,12 +60,10 @@ export async function getTeamBySlug(slug: string): Promise<TeamDetails | null> {
         return null; // Handle 404 or other errors gracefully
     }
     
-    const rawTeamData = result.data;
+    const rawTeamData = result.data as BackendTeamData;
     if (!rawTeamData) {
         return null;
     }
 
-    return adaptBackendTeamToFrontend(rawTeamData as BackendTeamData);
+    return adaptBackendTeamToFrontend(rawTeamData);
 }
-
-

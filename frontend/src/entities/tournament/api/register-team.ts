@@ -1,12 +1,14 @@
 
 
-
 'use server';
 
 import { getSession } from "@/features/auth/session";
 import { revalidatePath } from "next/cache";
-import type { UserTeam } from '@/entities/team/model/types';
+import type { UserTeam as UserTeamType } from '@/entities/team/model/types';
 import { fetchWithAuth } from "@/shared/lib/api-client";
+import type { UserProfile } from '@prisma/client';
+
+type FullUserProfile = UserProfile & { teams: UserTeamType[] };
 
 export async function registerTeamForTournamentAction(tournamentId: string, tournamentSlug: string) {
     const session = await getSession();
@@ -15,13 +17,13 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
     }
 
     try {
-        const profileResult = await fetchWithAuth(`/users/${session.user.id}`);
+        const profileResult = await fetchWithAuth<FullUserProfile>(`/users/${session.user.id}`);
         
         if(!profileResult.success) {
              return { success: false, error: profileResult.error || "Не удалось получить список ваших команд." };
         }
         
-        const userTeams: UserTeam[] = profileResult.data.teams || [];
+        const userTeams: UserTeamType[] = profileResult.data.teams || [];
         
         if (!userTeams || userTeams.length === 0) {
             return { success: false, error: "У вас нет команды для регистрации. Сначала создайте или вступите в команду." };
@@ -40,7 +42,7 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
         }
         
         revalidatePath(`/tournaments/${tournamentSlug}`);
-        return { success: true };
+        return { success: true, data: registerResult.data };
 
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : 'Server error';
@@ -48,4 +50,3 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
         return { success: false, error: message };
     }
 }
-

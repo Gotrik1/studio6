@@ -9,7 +9,7 @@ import Link from 'next/link';
 import { Input } from '@/shared/ui/input';
 import { Card, CardHeader } from '@/shared/ui/card';
 import { getPlaygrounds } from '@/entities/playground/api/playgrounds';
-import type { Playground, KingTeam } from '@/entities/playground/model/types';
+import type { Playground } from '@/entities/playground/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useToast } from '@/shared/hooks/use-toast';
 

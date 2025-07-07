@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useTransition } from 'react';
@@ -13,6 +12,10 @@ import { ArrowRight, Check, X, ArrowLeft, Loader2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import type { User } from '@/shared/lib/types';
+
+
+type ProposalUser = Pick<User, 'id' | 'name' | 'avatar'>;
 
 export function TrainingProposalsWidget() {
     const { user } = useSession();
@@ -43,31 +46,8 @@ export function TrainingProposalsWidget() {
         return <Card><CardContent className="p-4">Загрузка...</CardContent></Card>
     }
 
-    return (
-         <Card>
-            <CardHeader>
-                <CardTitle>Приглашения на тренировку</CardTitle>
-                <CardDescription>Принимайте или отклоняйте предложения от других игроков.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-                <div>
-                    <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><ArrowRight className="text-primary"/> Входящие</h4>
-                     <div className="space-y-2">
-                        {incomingProposals.length > 0 ? incomingProposals.map((p: any) => renderProposal(p, 'incoming')) : <p className="text-xs text-muted-foreground text-center p-4">Нет входящих предложений.</p>}
-                    </div>
-                </div>
-                 <div>
-                    <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><ArrowLeft className="text-muted-foreground"/> Исходящие</h4>
-                     <div className="space-y-2">
-                        {outgoingProposals.length > 0 ? outgoingProposals.map((p: any) => renderProposal(p, 'outgoing')) : <p className="text-xs text-muted-foreground text-center p-4">Нет отправленных предложений.</p>}
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-    );
-
-    function renderProposal(proposal: TrainingProposal, type: 'incoming' | 'outgoing') {
-        const otherUser = type === 'incoming' ? proposal.from : proposal.to;
+    const renderProposal = (proposal: TrainingProposal, type: 'incoming' | 'outgoing') => {
+        const otherUser: ProposalUser = type === 'incoming' ? proposal.from : proposal.to;
         
         return (
             <Card key={proposal.id} className="p-4">
@@ -102,4 +82,27 @@ export function TrainingProposalsWidget() {
             </Card>
         );
     }
+    
+    return (
+         <Card>
+            <CardHeader>
+                <CardTitle>Приглашения на тренировку</CardTitle>
+                <CardDescription>Принимайте или отклоняйте предложения от других игроков.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div>
+                    <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><ArrowRight className="text-primary"/> Входящие</h4>
+                     <div className="space-y-2">
+                        {incomingProposals.length > 0 ? incomingProposals.map((p) => renderProposal(p, 'incoming')) : <p className="text-xs text-muted-foreground text-center p-4">Нет входящих предложений.</p>}
+                    </div>
+                </div>
+                 <div>
+                    <h4 className="font-semibold text-sm mb-2 flex items-center gap-2"><ArrowLeft className="text-muted-foreground"/> Исходящие</h4>
+                     <div className="space-y-2">
+                        {outgoingProposals.length > 0 ? outgoingProposals.map((p) => renderProposal(p, 'outgoing')) : <p className="text-xs text-muted-foreground text-center p-4">Нет отправленных предложений.</p>}
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
 }

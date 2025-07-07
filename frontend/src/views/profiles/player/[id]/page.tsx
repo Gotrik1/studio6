@@ -1,9 +1,10 @@
 
 
 import PlayerClient from "@/app/(app)/administration/player/client";
-import { getPlayerProfilePageData, PlayerProfilePageData } from "@/entities/user/api/get-user";
+import { getPlayerProfilePageData } from "@/entities/user/api/get-user";
 import { getSession } from "@/features/auth/session";
 import { notFound } from "next/navigation";
+import type { PlayerProfilePageData } from '@/entities/user/api/get-user';
 
 export default async function PlayerProfileRoute({ params }: { params: { id: string } }) {
     const [pageData, session] = await Promise.all([

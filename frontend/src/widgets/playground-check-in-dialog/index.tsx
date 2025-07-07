@@ -6,7 +6,6 @@ import { Button } from "@/shared/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
 import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
-import { useToast } from '@/shared/hooks/use-toast';
 import { Loader2, CheckCircle, Upload } from 'lucide-react';
 import Image from 'next/image';
 
@@ -19,14 +18,12 @@ interface PlaygroundCheckInDialogProps {
 
 export function PlaygroundCheckInDialog({ isOpen, onOpenChange, onCheckIn, playgroundName }: PlaygroundCheckInDialogProps) {
     const [comment, setComment] = useState('');
-    const [photo, setPhoto] = useState<File | null>(null);
     const [preview, setPreview] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const selectedFile = e.target.files[0];
-            setPhoto(selectedFile);
             const reader = new FileReader();
             reader.onloadend = () => setPreview(reader.result as string);
             reader.readAsDataURL(selectedFile);
@@ -45,7 +42,6 @@ export function PlaygroundCheckInDialog({ isOpen, onOpenChange, onCheckIn, playg
     const handleOpenChange = (open: boolean) => {
         if (!open) {
             setComment('');
-            setPhoto(null);
             setPreview(null);
         }
         onOpenChange(open);
