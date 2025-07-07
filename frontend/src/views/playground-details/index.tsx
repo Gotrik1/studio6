@@ -4,12 +4,14 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect, useCallback, type Dispatch, type SetStateAction } from 'react';
 import { Card } from '@/shared/ui/card';
 import Image from 'next/image';
-import type { Playground, PlaygroundReview } from '@/entities/playground/model/types';
+import type { Playground } from '@/entities/playground/model/types';
+import type { PlaygroundReview } from '@/entities/playground/model/types';
 import { MapPin, CheckCircle, List, MessagesSquare, Star, BarChart, AlertTriangle } from 'lucide-react';
 import { Badge } from '@/shared/ui/badge';
 import { Button } from '@/shared/ui/button';

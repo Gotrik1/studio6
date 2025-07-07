@@ -4,6 +4,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -57,8 +58,8 @@ export function MatchOfTheWeekWidget() {
                 const adaptedMatchDetails: Match = {
                     ...matchData,
                     id: String(matchData.id),
-                    team1: { ...matchData.team1, id: 'mock-id-1' }, // Add mock ID
-                    team2: { ...matchData.team2, id: 'mock-id-2' }, // Add mock ID
+                    team1: { ...matchData.team1, id: 'mock-id-1', logo: matchData.team1.logo || '', logoHint: matchData.team1.logoHint || '' },
+                    team2: { ...matchData.team2, id: 'mock-id-2', logo: matchData.team2.logo || '', logoHint: matchData.team2.logoHint || '' },
                     game: 'Unknown',
                     href: `/matches/${matchData.id}`,
                 };

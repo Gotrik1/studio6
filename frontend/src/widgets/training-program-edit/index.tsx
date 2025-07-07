@@ -1,13 +1,20 @@
 
+
+
+
+
+
+
 'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { TrainingProgramForm, type ProgramFormValues } from '@/widgets/training-program-form';
 import { useToast } from '@/shared/hooks/use-toast';
-import type { TrainingProgram } from '@/entities/training-program/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useTraining } from '@/shared/context/training-provider';
+import type { TrainingProgram } from '@/entities/training-program/model/types';
+
 
 interface TrainingProgramEditPageProps {
     programId: string;
@@ -35,39 +42,17 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
         return <div>Программа не найдена.</div>
     }
 
-    const handleSubmit = (data: ProgramFormValues) => {
+    const handleSubmit = async (data: ProgramFormValues) => {
         setIsSaving(true);
-        const updatedProgram: TrainingProgram = {
-            ...programToEdit,
-            name: data.name,
-            description: data.description || '',
-            goal: data.goal,
-            daysPerWeek: data.days.length,
-            splitType: data.splitType,
-            weeklySplit: data.days.map((day, index) => ({
-                day: index + 1,
-                title: day.title,
-                exercises: day.exercises.map(ex => ({ 
-                    name: ex.name, 
-                    sets: ex.sets, 
-                    reps: ex.reps,
-                    plannedWeight: ex.plannedWeight,
-                    isSupersetWithPrevious: ex.isSupersetWithPrevious || false,
-                    technique: ex.technique || '',
-                })),
-            })),
-        };
-        
-        updateProgram(updatedProgram);
-
-        setTimeout(() => {
+        const success = await updateProgram(programId, data);
+        if (success) {
             toast({
                 title: "Программа обновлена!",
                 description: `Программа "${data.name}" была успешно сохранена.`,
             });
-            setIsSaving(false);
             router.push('/training/programs');
-        }, 1000);
+        }
+        setIsSaving(false);
     };
 
     return (

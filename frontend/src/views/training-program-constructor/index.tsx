@@ -1,5 +1,8 @@
+
+
 'use client';
 
+import { useState } from 'react';
 import { TrainingProgramForm, type ProgramFormValues } from '@/widgets/training-program-form';
 import { AiProgramGenerator } from '@/widgets/ai-program-generator';
 import { Wand2, Hand } from 'lucide-react';
@@ -14,8 +17,10 @@ export default function TrainingProgramConstructorPage() {
     const { addProgram } = useTraining();
     const { toast } = useToast();
     const router = useRouter();
+    const [isSaving, setIsSaving] = useState(false);
 
     const handleProgramGenerated = async (program: TrainingProgram) => {
+        setIsSaving(true);
         const success = await addProgram({
             name: program.name,
             description: program.description,
@@ -33,9 +38,11 @@ export default function TrainingProgramConstructorPage() {
             });
             router.push('/training/programs');
         }
+        setIsSaving(false);
     };
     
     const handleManualSubmit = async (data: ProgramFormValues) => {
+        setIsSaving(true);
         const success = await addProgram(data);
         if (success) {
             toast({
@@ -44,6 +51,7 @@ export default function TrainingProgramConstructorPage() {
             });
             router.push('/training/programs');
         }
+        setIsSaving(false);
     };
 
     return (
@@ -56,7 +64,7 @@ export default function TrainingProgramConstructorPage() {
                 <AiProgramGenerator onProgramGenerated={handleProgramGenerated} />
             </TabsContent>
             <TabsContent value="manual">
-                <TrainingProgramForm onSubmit={handleManualSubmit} />
+                <TrainingProgramForm onSubmit={handleManualSubmit} isSaving={isSaving} />
             </TabsContent>
         </Tabs>
     );
