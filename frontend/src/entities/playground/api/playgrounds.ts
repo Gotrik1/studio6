@@ -2,9 +2,10 @@
 
 'use server';
 
-import type { Playground, PlaygroundReview } from '@/entities/playground/model/types';
+import type { Playground, PlaygroundReview, KingTeam } from '@/entities/playground/model/types';
 import { revalidatePath } from 'next/cache';
 import { fetchWithAuth } from '@/shared/lib/api-client';
+import type { User } from '@prisma/client';
 
 /**
  * Explicit DTO for creating a playground.
@@ -20,17 +21,21 @@ export type CreatePlaygroundData = {
     coverImageHint?: string;
 };
 
+type RawPlayground = Omit<Playground, 'reviews' | 'kingOfTheCourt'> & {
+    reviews: (Omit<PlaygroundReview, 'author'> & { author: User })[];
+    kingOfTheCourt?: KingTeam | null;
+}
+
 export async function getPlaygrounds(): Promise<Playground[]> {
   try {
     const result = await fetchWithAuth<Playground[]>('/playgrounds');
-    if (!result.success) {
+    if (!result.success || !result.data) {
       console.error('Failed to fetch playgrounds:', result.error);
       return [];
     }
-    const playgrounds = result.data;
     
     // Adapter to convert numeric ID to string
-    return playgrounds.map((p: Playground) => ({
+    return result.data.map((p: Playground) => ({
       ...p,
       id: String(p.id),
       reviews: [], // Reviews aren't needed for the list view
@@ -44,34 +49,32 @@ export async function getPlaygrounds(): Promise<Playground[]> {
 
 export async function getPlaygroundById(id: string): Promise<Playground | null> {
   try {
-    const result = await fetchWithAuth<Playground>(`/playgrounds/${id}`, {
+    const result = await fetchWithAuth<RawPlayground>(`/playgrounds/${id}`, {
         next: { tags: [`playground-${id}`] }
     });
-    if (!result.success) {
+    if (!result.success || !result.data) {
         console.error(`Failed to fetch playground ${id}:`, result.error);
         return null;
     }
     const playground = result.data;
-    if (playground) {
-        // Adapter to convert numeric ID to string and format reviews
-        return {
-            ...playground,
-            id: String(playground.id),
-            kingOfTheCourt: playground.kingOfTheCourt, // Pass through new data
-            reviews: (playground.reviews || []).map((review: PlaygroundReview) => ({
-                id: String(review.id),
-                rating: review.rating,
-                comment: review.comment,
-                timestamp: review.timestamp,
-                author: {
-                    id: String(review.author.id),
-                    name: review.author.name,
-                    avatar: review.author.avatar,
-                },
-            }))
-        };
-    }
-    return null;
+
+    // Adapter to convert numeric ID to string and format reviews
+    return {
+        ...playground,
+        id: String(playground.id),
+        kingOfTheCourt: playground.kingOfTheCourt, // Pass through new data
+        reviews: (playground.reviews || []).map((review) => ({
+            id: String(review.id),
+            rating: review.rating,
+            comment: review.comment,
+            timestamp: review.createdAt,
+            author: {
+                id: String(review.author.id),
+                name: review.author.name,
+                avatar: review.author.avatar,
+            },
+        }))
+    };
   } catch (error) {
     console.error(`getPlaygroundById error for id ${id}:`, error);
     return null;

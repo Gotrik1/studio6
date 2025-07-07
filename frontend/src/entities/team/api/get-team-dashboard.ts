@@ -12,7 +12,7 @@ export type TeamDashboardData = {
 export async function getTeamDashboardData(teamId: string): Promise<TeamDashboardData | null> {
     const result = await fetchWithAuth<TeamDashboardData>(`/teams/${teamId}/dashboard`);
     
-    if (!result.success) {
+    if (!result.success || !result.data) {
         console.error(`Failed to fetch dashboard data for team ${teamId}:`, result.error);
         return null;
     }

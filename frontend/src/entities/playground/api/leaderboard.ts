@@ -25,20 +25,16 @@ type BackendLeaderboardItem = {
 export async function getPlaygroundLeaderboard(playgroundId: string): Promise<PlaygroundLeaderboardItem[]> {
     const result = await fetchWithAuth<BackendLeaderboardItem[]>(`/playgrounds/${playgroundId}/leaderboard`);
     
-    if (!result.success) {
+    if (!result.success || !Array.isArray(result.data)) {
         console.error(`Failed to fetch leaderboard for playground ${playgroundId}:`, result.error);
         return [];
     }
-
-    if (Array.isArray(result.data)) {
-        return result.data.map((item, index) => ({
-            id: String(item.userId),
-            rank: item.rank ?? index + 1,
-            name: item.name || 'Неизвестный игрок',
-            avatar: item.avatar || null,
-            checkIns: item._count.userId,
-        }));
-    }
     
-    return [];
+    return result.data.map((item, index) => ({
+        id: String(item.userId),
+        rank: item.rank ?? index + 1,
+        name: item.name || 'Неизвестный игрок',
+        avatar: item.avatar || null,
+        checkIns: item._count.userId,
+    }));
 }

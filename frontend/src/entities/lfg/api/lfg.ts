@@ -18,7 +18,7 @@ export type CreateLobbyApiData = {
 
 export async function fetchLobbies(): Promise<LfgLobby[]> {
     const result = await fetchWithAuth<LfgLobby[]>('/lfg');
-    if (!result.success) {
+    if (!result.success || !result.data) {
         console.error('Failed to fetch lobbies:', result.error);
         return [];
     }

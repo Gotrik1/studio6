@@ -9,7 +9,7 @@ export async function getInventory(): Promise<InventoryItem[]> {
     const result = await fetchWithAuth<InventoryItem[]>('/inventory', {
         next: { tags: ['inventory'] }
     });
-    if (!result.success) {
+    if (!result.success || !result.data) {
         console.error('Failed to fetch inventory:', result.error);
         return [];
     }

@@ -3,7 +3,7 @@
 'use client';
 
 import SponsorClient from "@/app/(app)/administration/sponsor/client";
-import { getSponsorById, type SponsorWithDetails } from "@/entities/sponsor/api/sponsors";
+import { getSponsorById, type SponsorDetails } from "@/entities/sponsor/api/sponsors";
 import { notFound } from "next/navigation";
 import type { SponsoredTeam } from "@/entities/sponsorship/model/types";
 import { useEffect, useState } from "react";
@@ -11,7 +11,7 @@ import type { Team } from "@/entities/team/model/types";
 
 
 export default function SponsorProfileRoute({ params }: { params: { id: string } }) {
-    const [sponsorDetails, setSponsorDetails] = useState<SponsorWithDetails | null>(null);
+    const [sponsorDetails, setSponsorDetails] = useState<SponsorDetails | null>(null);
 
     useEffect(() => {
         getSponsorById(params.id).then(setSponsorDetails);

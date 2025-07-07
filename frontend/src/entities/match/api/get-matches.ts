@@ -16,7 +16,7 @@ export async function fetchMatches(status?: string, tournamentId?: string, teamI
   
   const result = await fetchWithAuth<Match[]>(url);
 
-  if (!result.success) {
+  if (!result.success || !result.data) {
     console.error('Failed to fetch matches from backend:', result.error);
     return []; // Return empty array on failure
   }

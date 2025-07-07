@@ -27,7 +27,7 @@ export async function respondToSponsorshipOffer(offerId: string, status: 'ACCEPT
         body: JSON.stringify({ status }),
     });
 
-    if (result.success) {
+    if (result.success && result.data) {
         revalidateTag(`sponsorship-offers-${result.data.teamId}`);
     }
 

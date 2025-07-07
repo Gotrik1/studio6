@@ -20,7 +20,7 @@ export type CreatePromotionData = {
 
 export async function getPromotions(): Promise<Promotion[]> {
     const result = await fetchWithAuth<Promotion[]>('/promotions');
-    if (!result.success) {
+    if (!result.success || !result.data) {
         console.error("Failed to fetch promotions:", result.error);
         return [];
     }

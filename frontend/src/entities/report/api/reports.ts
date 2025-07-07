@@ -10,7 +10,7 @@ export type { Report };
 
 export async function getReports(status: 'PENDING' | 'RESOLVED' | 'DISMISSED'): Promise<Report[]> {
   const result = await fetchWithAuth<Report[]>(`/reports?status=${status}`, { next: { tags: ['reports'] } });
-  if (!result.success) {
+  if (!result.success || !result.data) {
     console.error('Failed to fetch reports:', result.error);
     return [];
   }

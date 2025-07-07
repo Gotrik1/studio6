@@ -51,7 +51,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             setLoading(false);
         }
         loadTournament();
-    }, [tournamentId]);
+    }, [tournamentId, router]);
 
     
     const handleSaveRules = () => {

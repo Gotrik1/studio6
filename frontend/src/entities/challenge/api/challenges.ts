@@ -15,7 +15,7 @@ export type CreateChallengeData = {
 
 export async function getChallenges(filter: 'open' | 'my' | 'history'): Promise<Challenge[]> {
   const result = await fetchWithAuth<Challenge[]>(`/challenges?filter=${filter}`);
-  if (!result.success) return [];
+  if (!result.success || !result.data) return [];
   return result.data;
 }
 

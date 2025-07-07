@@ -21,6 +21,7 @@ const iconMap: { [key: string]: React.ElementType } = {
     STATUS_POSTED: MessageSquare,
     TEAM_JOINED: Users,
     TOURNAMENT_REGISTERED: Trophy,
+    PLAYGROUND_CHECK_IN: MessageSquare,
     default: MessageSquare
 };
 
@@ -37,6 +38,8 @@ const formatActivityText = (activity: Activity): string => {
              return `Зарегистрировал команду <a href="#" class="font-bold hover:underline">${metadata.teamName}</a> на турнир <a href="${metadata.tournamentHref}" class="font-bold hover:underline">${metadata.tournamentName}</a>.`;
         case 'ACHIEVEMENT_UNLOCKED':
              return `Разблокировано достижение: <span class="font-bold">${metadata.title}</span>`;
+        case 'PLAYGROUND_CHECK_IN':
+            return metadata.comment || 'Отметился на площадке.';
         default:
             return 'Совершил(а) новое действие.';
     }
@@ -105,7 +108,7 @@ export function Feed() {
             const data = await getFeed();
             const formattedData: ActivityItem[] = data.map(item => {
                 const metadata: Record<string, string> = item.metadata as Record<string, string>;
-                const IconComponent = iconMap[metadata.icon as keyof typeof iconMap] || iconMap.default;
+                const IconComponent = iconMap[item.type as keyof typeof iconMap] || iconMap.default;
                 return {
                     id: item.id,
                     user: item.user,

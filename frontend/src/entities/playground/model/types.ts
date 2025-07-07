@@ -1,3 +1,4 @@
+
 export type KingTeam = {
     id: string;
     name: string;
@@ -12,6 +13,7 @@ export type KingTeam = {
 export type PlaygroundReview = {
     id: string;
     author: {
+        id: string;
         name: string;
         avatar: string | null;
     };

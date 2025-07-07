@@ -2,12 +2,13 @@
 
 'use server';
 
-import type { TournamentDetails, BracketMatch, BracketRound, TournamentMedia, MatchEvent } from '@/entities/tournament/model/types';
+import type { TournamentDetails, BracketMatch, BracketRound } from '@/entities/tournament/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import type { Team, Match, User } from '@prisma/client';
+import type { Team, Match, User, TournamentMedia as PrismaTournamentMedia } from '@prisma/client';
 
+export type TournamentMedia = PrismaTournamentMedia;
 type RawTeam = Pick<Team, 'name' | 'logo' | 'dataAiHint' | 'slug'>;
-type RawMatch = Pick<Match, 'id' | 'team1Score' | 'team2Score' | 'scheduledAt'> & { winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam, events?: MatchEvent[] };
+type RawMatch = Pick<Match, 'id' | 'team1Score' | 'team2Score' | 'scheduledAt'> & { winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam, events?: any[] };
 type RawRound = { name: string; matches: RawMatch[] };
 type RawTournamentData = Omit<TournamentDetails, 'bracket' | 'teams' | 'matches' | 'media' | 'organizer'> & {
     bracket: { rounds: RawRound[] };
@@ -64,12 +65,8 @@ function adaptTournamentDetails(data: RawTournamentData): TournamentDetails {
 export async function getTournamentBySlug(slug: string): Promise<TournamentDetails | null> {
     const result = await fetchWithAuth<RawTournamentData>(`/tournaments/slug/${slug}`);
     
-    if (!result.success) {
+    if (!result.success || !result.data) {
         console.error(`Failed to fetch tournament ${slug}:`, result.error);
-        return null;
-    }
-    
-    if (!result.data) {
         return null;
     }
 
@@ -79,12 +76,8 @@ export async function getTournamentBySlug(slug: string): Promise<TournamentDetai
 export async function getTournamentById(id: string): Promise<TournamentDetails | null> {
     const result = await fetchWithAuth<RawTournamentData>(`/tournaments/${id}`);
     
-    if (!result.success) {
+    if (!result.success || !result.data) {
         console.error(`Failed to fetch tournament ${id}:`, result.error);
-        return null;
-    }
-    
-    if (!result.data) {
         return null;
     }
     

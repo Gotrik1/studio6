@@ -26,7 +26,7 @@ type RawBackendLeagueDetails = League & {
 
 export async function getLeagues(): Promise<League[]> {
     const result = await fetchWithAuth<League[]>('/leagues');
-    if (!result.success) {
+    if (!result.success || !result.data) {
         console.error('Failed to fetch leagues:', result.error);
         return [];
     }
@@ -35,7 +35,7 @@ export async function getLeagues(): Promise<League[]> {
 
 export async function getLeagueById(id: string): Promise<LeagueDetails | null> {
     const result = await fetchWithAuth<RawBackendLeagueDetails>(`/leagues/${id}`);
-    if (!result.success) {
+    if (!result.success || !result.data) {
         console.error(`Failed to fetch league ${id}:`, result.error);
         return null;
     }
@@ -65,7 +65,7 @@ export async function getLeagueById(id: string): Promise<LeagueDetails | null> {
             team1: { name: m.team1.name, logo: m.team1.logo || 'https://placehold.co/100x100.png', logoHint: m.team1.dataAiHint || 'team logo' },
             team2: { name: m.team2.name, logo: m.team2.logo || 'https://placehold.co/100x100.png', logoHint: m.team2.dataAiHint || 'team logo' },
             score: `${m.team1Score}-${m.team2Score}`,
-            date: m.scheduledAt,
+            date: new Date(m.scheduledAt).toISOString(),
         }))
     };
 }

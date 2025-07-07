@@ -1,20 +1,9 @@
 
+import type { Team } from '@/entities/team/model/types';
 
-export type SponsoredTeam = {
-    slug: string;
-    name: string;
-    logo: string;
-    logoHint: string;
+export type SponsoredTeam = Team & {
     investment: string;
     since: string;
-    id: string;
-    game: string;
-    motto: string;
-    dataAiHint: string | null;
-    rank: number;
-    homePlaygroundId: string | null;
-    members: number;
-    captain: string;
 };
 
 export type TeamSeekingSponsorship = {

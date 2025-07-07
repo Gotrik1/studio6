@@ -16,7 +16,7 @@ export type FaqCategory = {
 
 export async function getFaqCategories(): Promise<FaqCategory[]> {
     const result = await fetchWithAuth<FaqCategory[]>('/faq');
-    if (!result.success) {
+    if (!result.success || !result.data) {
         console.error("Failed to fetch FAQ:", result.error);
         return [];
     }

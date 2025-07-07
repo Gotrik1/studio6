@@ -11,7 +11,7 @@ export type { Team, TeamDetails };
 
 export async function getTeams(): Promise<Team[]> {
   const result = await fetchWithAuth<Team[]>('/teams');
-  if (!result.success) {
+  if (!result.success || !result.data) {
     console.error('Failed to fetch teams from backend:', result.error);
     return []; // Return empty array on failure
   }
@@ -60,7 +60,7 @@ export async function setHomePlayground(teamId: string, playgroundId: string) {
         body: JSON.stringify({ playgroundId }),
     });
 
-    if (result.success) {
+    if (result.success && result.data) {
         // Revalidate the team page to show the new home playground
         revalidatePath(`/teams/${result.data.slug}`);
     }

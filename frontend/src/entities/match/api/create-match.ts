@@ -20,7 +20,7 @@ export async function createMatch(data: CreateMatchData) {
     }
 
     const userProfileRes = await fetchWithAuth<FullUserProfile>(`/users/${session.user.id}`);
-    if (!userProfileRes.success || !userProfileRes.data.teams || userProfileRes.data.teams.length === 0) {
+    if (!userProfileRes.success || !userProfileRes.data?.teams || userProfileRes.data.teams.length === 0) {
          return { success: false, error: 'Не удалось найти вашу команду. Вы должны быть капитаном или участником команды.' };
     }
     
