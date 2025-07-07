@@ -3,7 +3,7 @@
 'use server';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
+import type { FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, UserTeam, TournamentCrm, JudgedMatch } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -100,6 +100,7 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
             // Ensure gallery and careerHistory are arrays
             gallery: (rawProfile.gallery || []) as GalleryItem[],
             careerHistory: (rawProfile.careerHistory || []) as CareerHistoryItem[],
+            activities: (rawProfile.activities || []).map((act: any) => ({...act, id: String(act.id), timestamp: act.createdAt })),
         };
 
         return {

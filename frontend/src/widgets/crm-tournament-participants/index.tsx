@@ -45,13 +45,19 @@ export function CrmTournamentParticipants({ tournamentId }: CrmTournamentPartici
                 getTournamentParticipants(tournamentId)
             ]);
             
-            if (appsResult.success) setApplications(appsResult.data);
-            else throw new Error(appsResult.error);
+            if (appsResult.success) {
+                setApplications(appsResult.data);
+            } else {
+                throw new Error(appsResult.error);
+            }
 
-            if (participantsResult.success) setParticipants(participantsResult.data);
-            else throw new Error(participantsResult.error);
+            if (participantsResult.success) {
+                setParticipants(participantsResult.data);
+            } else {
+                throw new Error(participantsResult.error);
+            }
 
-        } catch (error: unknown) {
+        } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить данные участников';
             toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить участников: ${errorMessage}` });
         } finally {

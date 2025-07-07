@@ -12,6 +12,8 @@ import { resolveDispute } from '@/entities/match/api/resolve-dispute';
 import type { Match } from '@/entities/match/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useState, useEffect, useCallback } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 type DisputedMatch = Match & {
     disputeReason: string;

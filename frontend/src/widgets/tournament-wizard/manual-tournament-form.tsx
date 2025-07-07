@@ -14,13 +14,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2 } from 'lucide-react';
+import { CalendarIcon, Loader2, PlusCircle } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { createTournament, type CreateTournamentDto } from '@/entities/tournament/api/tournaments';
-import { getSports, type Sport } from '@/entities/sport/api/sports';
+import type { Sport } from '@/entities/sport/model/types';
+import { getSports } from '@/entities/sport/api/sports';
 import { Textarea } from '@/shared/ui/textarea';
 import { Separator } from '@/shared/ui/separator';
 
@@ -86,7 +87,7 @@ export function ManualTournamentForm({ isEditMode }: ManualTournamentFormProps) 
     
     const result = await createTournament(tournamentData);
     
-    if (result.success) {
+    if (result.success && result.data) {
         toast({
             title: 'Турнир создан!',
             description: `Турнир "${data.name}" был успешно создан и скоро появится в списке.`
@@ -161,7 +162,7 @@ export function ManualTournamentForm({ isEditMode }: ManualTournamentFormProps) 
                     <CardFooter>
                         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                             {isEditMode ? 'Сохранить изменения' : 'Создать турнир'}
+                             <PlusCircle className="mr-2 h-4 w-4" /> {isEditMode ? 'Сохранить изменения' : 'Создать турнир'}
                         </Button>
                     </CardFooter>
                 </form>

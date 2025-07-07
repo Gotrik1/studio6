@@ -57,6 +57,8 @@ export function ChallengeCreateDialog({ isOpen, onOpenChange, onCreate }: Challe
             await onCreate(data);
             onOpenChange(false);
             form.reset({ wager: 0, title: '', description: '', disciplineId: '' });
+        } catch (error) {
+            // Error handling is done in the parent component
         } finally {
             setIsSubmitting(false);
         }

@@ -32,22 +32,19 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
-            const [assignedRes, availableRes] = await Promise.all([
-                getAssignedSponsors(tournamentId),
-                getAvailableSponsors()
-            ]);
+            const assignedData = await getAssignedSponsors(tournamentId);
+            const availableRes = await getAvailableSponsors();
             
-            if (assignedRes.success) setAssignedSponsors(assignedRes.data as SponsorWithAmount[]);
-            else throw new Error(assignedRes.error);
+            setAssignedSponsors(assignedData);
 
             if (availableRes.success && Array.isArray(availableRes.data)) {
-                const assignedIds = new Set((assignedRes.data as SponsorWithAmount[]).map((p: SponsorWithAmount) => p.id));
-                setAvailableSponsors((availableRes.data as Sponsor[]).filter((p: Sponsor) => !assignedIds.has(p.id)));
+                const assignedIds = new Set(assignedData.map((p: SponsorWithAmount) => p.id));
+                setAvailableSponsors((availableRes.data).filter((p: Sponsor) => !assignedIds.has(p.id)));
             } else {
                  throw new Error(availableRes.error || 'Failed to process available sponsors');
             }
         } catch (error: unknown) {
-            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить данные';
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить данные.';
             toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить данные: ${errorMessage}` });
         } finally {
             setIsLoading(false);
