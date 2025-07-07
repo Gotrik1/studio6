@@ -26,9 +26,13 @@ type DialogMatch = {
     score?: string;
 };
 
-export function MatchesListPage() {
-  const [matches, setMatches] = useState<Match[]>([]);
-  const [loading, setLoading] = useState(true);
+interface MatchesListPageProps {
+  initialMatches: Match[];
+}
+
+export function MatchesListPage({ initialMatches }: MatchesListPageProps) {
+  const [matches, setMatches] = useState<Match[]>(initialMatches);
+  const [loading, setLoading] = useState(false);
   const [isScoreDialogOpen, setIsScoreDialogOpen] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<DialogMatch | null>(null);
   const { toast } = useToast();
@@ -45,10 +49,6 @@ export function MatchesListPage() {
           setLoading(false);
       }
   }, [toast]);
-
-  useEffect(() => {
-      loadMatches();
-  }, [loadMatches]);
 
   const handleOpenScoreDialog = (match: Match) => {
     const dialogMatch: DialogMatch = {

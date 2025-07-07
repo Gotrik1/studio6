@@ -8,6 +8,7 @@ import { PrismaService } from "@/prisma/prisma.service";
 import { CreateTeamApplicationDto } from "./dto/create-team-application.dto";
 import { TeamsService } from "../teams/teams.service";
 import { UsersService } from "../users/users.service";
+import { TeamApplicationStatus } from "@prisma/client";
 
 @Injectable()
 export class TeamApplicationsService {
@@ -23,7 +24,7 @@ export class TeamApplicationsService {
       throw new ForbiddenException("Only the captain can view applications.");
     }
     const applications = await this.prisma.teamApplication.findMany({
-      where: { teamId, status: "PENDING", tournamentId: null },
+      where: { teamId, status: TeamApplicationStatus.PENDING, tournamentId: null },
       include: {
         user: { select: { id: true, name: true, avatar: true, role: true } },
       },
@@ -55,7 +56,7 @@ export class TeamApplicationsService {
     }
 
     const existingApplication = await this.prisma.teamApplication.findFirst({
-      where: { teamId, userId, tournamentId: null, status: "PENDING" },
+      where: { teamId, userId, tournamentId: null, status: TeamApplicationStatus.PENDING },
     });
     if (existingApplication) {
       throw new ConflictException("You have already applied to this team.");
@@ -85,7 +86,7 @@ export class TeamApplicationsService {
 
     return this.prisma.teamApplication.update({
       where: { id: applicationId },
-      data: { status: "APPROVED" },
+      data: { status: TeamApplicationStatus.APPROVED },
       include: { team: { select: { id: true, slug: true } } },
     });
   }
@@ -107,7 +108,7 @@ export class TeamApplicationsService {
     }
     return this.prisma.teamApplication.update({
       where: { id: applicationId },
-      data: { status: "DECLINED" },
+      data: { status: TeamApplicationStatus.DECLINED },
       include: { team: { select: { id: true, slug: true } } },
     });
   }

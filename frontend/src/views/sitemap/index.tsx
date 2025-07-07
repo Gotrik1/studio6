@@ -2,7 +2,7 @@
 
 'use client';
 
-import { Folder, File } from 'lucide-react';
+import { Folder, File, LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 
 type TreeNode = {
@@ -10,6 +10,7 @@ type TreeNode = {
     type: 'folder' | 'file';
     href?: string;
     children?: TreeNode[];
+    icon?: LucideIcon
 };
 
 const sitemapData: TreeNode[] = [
@@ -36,7 +37,6 @@ const sitemapData: TreeNode[] = [
             { name: 'Личные рекорды', type: 'file', href: '/training/records' },
             { name: 'Замеры тела', type: 'file', href: '/training/measurements' },
             { name: 'Центр питания', type: 'file', href: '/training/nutrition' },
-            { name: 'Дневник питания', type: 'file', href: '/training/nutrition-diary' },
         ]},
         { name: 'Социальные', type: 'folder', children: [
             { name: 'Сообщения', type: 'file', href: '/chats' },
