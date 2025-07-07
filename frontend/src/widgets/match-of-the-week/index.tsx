@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -11,7 +12,8 @@ import { generateMatchPost, type GenerateMatchPostOutput } from '@/shared/api/ge
 import Link from 'next/link';
 import Image from 'next/image';
 import { getMatchOfTheWeek } from '@/entities/match/api/get-match';
-import type { Match, MatchDetails } from '@/entities/match/model/types';
+import type { Match } from '@/entities/match/model/types';
+import type { MatchDetails } from '@/entities/match/model/types';
 
 type ResultData = {
     matchPost: GenerateMatchPostOutput;
@@ -36,8 +38,8 @@ export function MatchOfTheWeekWidget() {
                 // We need to cast MatchDetails to Match
                 const simplifiedMatch: Match = {
                     id: matchData.id,
-                    team1: matchData.team1,
-                    team2: matchData.team2,
+                    team1: { ...matchData.team1, id: 'mock-id-1' },
+                    team2: { ...matchData.team2, id: 'mock-id-2' },
                     score: matchData.score,
                     tournament: matchData.tournament,
                     game: matchData.game || 'Неизвестно',

@@ -1,7 +1,9 @@
 
+
+
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { Measurement } from '@/entities/user/model/types';
 import { getMeasurements, createMeasurement } from '@/entities/measurement/api/measurements';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -9,7 +11,7 @@ import type { FetchResult } from '@/shared/lib/api-client';
 
 interface MeasurementsContextType {
   history: Measurement[];
-  addMeasurement: (data: Omit<Measurement, 'id'>) => Promise<FetchResult<any>>;
+  addMeasurement: (data: Omit<Measurement, 'id'>) => Promise<FetchResult<Measurement>>;
   isLoading: boolean;
 }
 
@@ -25,8 +27,9 @@ export const MeasurementsProvider = ({ children }: { children: React.ReactNode }
         try {
             const data = await getMeasurements();
             setHistory(data);
-        } catch (error) {
-            toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить замеры.' });
+        } catch (error: unknown) {
+            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить замеры.';
+            toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
         } finally {
             setIsLoading(false);
         }

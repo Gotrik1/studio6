@@ -1,16 +1,18 @@
 
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
+import type { Sponsor } from '@/entities/sponsor/model/types';
 
 // Adapter to transform a raw sponsor object from the backend
-const adaptSponsor = (sponsor: any) => {
+const adaptSponsor = (sponsor: Sponsor & { amount?: number }) => {
     if (!sponsor) return null;
     return {
         ...sponsor,
         id: String(sponsor.id),
-        logo: sponsor.logoUrl || sponsor.logo || 'https://placehold.co/100x100.png',
+        logo: sponsor.logo || 'https://placehold.co/100x100.png',
         logoHint: sponsor.logoHint || 'sponsor logo',
         // Now expecting amount from the backend
         amount: sponsor.amount || 0,

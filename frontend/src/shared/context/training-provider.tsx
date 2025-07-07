@@ -1,8 +1,9 @@
 
 
+
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, type ReactNode, useEffect, useCallback } from 'react';
 import type { TrainingProgram, TrainingLogEntry } from '@/entities/training-program/model/types';
 import { getTrainingPrograms } from '@/entities/training-program/api/get-programs';
 import { getTrainingLog } from '@/entities/training-program/api/get-training-log';
@@ -25,7 +26,7 @@ interface TrainingContextType {
 
 const TrainingContext = createContext<TrainingContextType | undefined>(undefined);
 
-export const TrainingProvider = ({ children }: { children: React.ReactNode }) => {
+export const TrainingProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
   const { user } = useSession();
   const [programs, setPrograms] = useState<TrainingProgram[]>([]);

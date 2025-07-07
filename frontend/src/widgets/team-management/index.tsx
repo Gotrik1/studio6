@@ -26,7 +26,6 @@ import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
-import type { User } from '@/shared/lib/types';
 import type { JoinRequest } from '@/entities/team-application/model/types';
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
@@ -35,7 +34,7 @@ export function TeamManagementPage() {
     const { toast } = useToast();
     const params = useParams<{ slug: string }>();
     const [team, setTeam] = useState<TeamDetails | null>(null);
-    const [dashboardData, setDashboardData] = useState<TeamDashboardData | null>(null);
+    const [, setDashboardData] = useState<TeamDashboardData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
     

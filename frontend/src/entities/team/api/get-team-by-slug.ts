@@ -1,19 +1,34 @@
 
 
-'use server';
+
+'use client';
 
 import type { TeamDetails, TeamRosterMember } from '@/entities/team/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
 export type { TeamDetails };
 
+type BackendTeamMember = {
+    id: string;
+    name: string;
+    avatar: string | null;
+    role: string;
+    status: string;
+    adherence: number;
+}
+
+type BackendTeamData = Omit<TeamDetails, 'roster'> & {
+    roster: BackendTeamMember[];
+}
+
+
 // Adapter function to map backend data to frontend TeamDetails type
-const adaptBackendTeamToFrontend = (backendData: any): TeamDetails => {
+const adaptBackendTeamToFrontend = (backendData: BackendTeamData): TeamDetails => {
   return {
     id: String(backendData.id),
     name: backendData.name,
     motto: backendData.motto,
-    logo: backendData.logo || backendData.logoUrl || null, // Handle both possible field names
+    logo: backendData.logo || null,
     dataAiHint: backendData.dataAiHint,
     game: backendData.game,
     rank: backendData.rank,
@@ -24,10 +39,10 @@ const adaptBackendTeamToFrontend = (backendData: any): TeamDetails => {
     captainId: String(backendData.captainId),
     slug: backendData.slug,
     homePlaygroundId: backendData.homePlaygroundId,
-    roster: (backendData.roster || []).map((member: any): TeamRosterMember => ({
+    roster: (backendData.roster || []).map((member: BackendTeamMember): TeamRosterMember => ({
       id: String(member.id),
-      name: member.name || member.fullName, // Handle both possible field names
-      avatar: member.avatar || member.avatarUrl || null,
+      name: member.name,
+      avatar: member.avatar || null,
       role: member.role,
       status: member.status,
       adherence: member.adherence ?? 0,

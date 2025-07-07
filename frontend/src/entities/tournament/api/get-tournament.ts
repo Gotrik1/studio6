@@ -1,21 +1,31 @@
 
+
 'use server';
 
-import type { TournamentDetails } from '@/entities/tournament/model/types';
+import type { TournamentDetails, BracketMatch, BracketRound } from '@/entities/tournament/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 
+type RawTeam = { name: string; logo: string | null; dataAiHint?: string | null; slug?: string; };
+type RawMatch = { id: string | number; team1?: RawTeam; team2?: RawTeam; score?: string; winner?: boolean; href?: string; date?: string; time?: string; team1Score?: number | null; team2Score?: number | null; scheduledAt?: string };
+type RawRound = { name: string; matches: RawMatch[] };
+type RawTournamentData = Omit<TournamentDetails, 'bracket' | 'teams' | 'matches'> & {
+    bracket: { rounds: RawRound[] };
+    teams: RawTeam[];
+    matches: RawMatch[];
+};
+
 // Adapter function to transform raw backend data into the frontend's TournamentDetails type
-function adaptTournamentDetails(data: any): TournamentDetails {
+function adaptTournamentDetails(data: RawTournamentData): TournamentDetails {
     if (!data) return null as any;
 
-    const shapeTeam = (team: any) => ({
+    const shapeTeam = (team: RawTeam) => ({
         name: team.name,
         logo: team.logo || null,
         dataAiHint: team.dataAiHint || 'team logo',
         slug: team.slug,
     });
     
-    const shapeMatch = (match: any) => ({
+    const shapeMatch = (match: RawMatch): BracketMatch => ({
         id: String(match.id),
         team1: match.team1 ? shapeTeam(match.team1) : undefined,
         team2: match.team2 ? shapeTeam(match.team2) : undefined,
@@ -34,7 +44,7 @@ function adaptTournamentDetails(data: any): TournamentDetails {
         matches: (data.matches || []).map(shapeMatch),
         bracket: {
             ...data.bracket,
-            rounds: (data.bracket?.rounds || []).map((round: any) => ({
+            rounds: (data.bracket?.rounds || []).map((round: RawRound): BracketRound => ({
                 ...round,
                 matches: (round.matches || []).map(shapeMatch)
             }))

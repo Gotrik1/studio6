@@ -20,9 +20,9 @@ export async function getPlaygroundLeaderboard(playgroundId: string): Promise<Pl
     }
 
     if (Array.isArray(result.data)) {
-        return result.data.map((item: PlaygroundLeaderboardItem) => ({
+        return result.data.map((item: { userId: string; _count: { userId: number }}) => ({
             ...item,
-            id: String(item.id),
+            id: String(item.userId),
         }));
     }
     

@@ -1,5 +1,6 @@
 
-'use server';
+
+'use client';
 
 import type { League, LeagueDetails } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';

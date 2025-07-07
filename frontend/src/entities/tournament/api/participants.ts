@@ -1,10 +1,10 @@
 
-'use server';
+
+'use client';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 import type { User } from '@/shared/lib/types';
-import type { TeamRosterMember } from '@/entities/team/model/types';
 
 
 // Adapter to transform a raw team object from the backend

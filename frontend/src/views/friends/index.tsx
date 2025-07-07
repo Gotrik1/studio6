@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState, useEffect, useTransition, ComponentType } from 'react';
+import { useState, useEffect, useTransition, useCallback, type ComponentType } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/ui/tabs';
 import { Button } from '@/shared/ui/button';
@@ -60,9 +61,9 @@ export function FriendsPage() {
     const [requests, setRequests] = useState<FriendRequest[]>([]);
     const [suggestions, setSuggestions] = useState<FriendSuggestion[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isPending, startTransition] = useTransition();
+    const [, startTransition] = useTransition();
 
-    const fetchAllData = async () => {
+    const fetchAllData = useCallback(async () => {
         setLoading(true);
         try {
             const [friendsData, requestsData, suggestionsData] = await Promise.all([
@@ -79,11 +80,11 @@ export function FriendsPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [toast]);
 
     useEffect(() => {
         fetchAllData();
-    }, []);
+    }, [fetchAllData]);
 
     const handleAction = (action: (...args: any[]) => Promise<any>, successMessage: string, errorMessage: string, ...args: any[]) => {
         startTransition(async () => {

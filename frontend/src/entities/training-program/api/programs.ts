@@ -1,6 +1,6 @@
+
 'use server';
 
-import type { TrainingProgram } from '../model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 

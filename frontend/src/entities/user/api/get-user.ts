@@ -1,18 +1,21 @@
 
 
 
+
 'use server';
 
 import type { User } from '@/shared/lib/types';
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, Activity } from '@/entities/user/model/types';
+import type { CoachedPlayerSummary, FullUserProfile, PlayerStats, Activity } from '@/entities/user/model/types';
 import type { UserTeam } from '@/entities/team/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
 import type { Achievement } from '@/entities/achievement/model/types';
-import type { TournamentCrm, JudgedMatch } from '@/entities/user/model/types';
+import type { TournamentCrm, JudgedMatch, CareerHistoryItem, GalleryItem } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 export type { FullUserProfile, PlayerStats };
 
@@ -23,7 +26,6 @@ export type PlayerProfilePageData = {
     achievements: Achievement[];
     playerActivity: PlayerActivityItem[];
 };
-
 
 const formatActivityText = (activity: Activity): string => {
     const metadata = activity.metadata as any; // Cast to any to access dynamic properties
@@ -55,7 +57,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
         return null;
     }
     
-    const playerActivity: PlayerActivityItem[] = profileResult.user.activities.map(activity => {
+    const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map(activity => {
         const metadata = activity.metadata as any; // Allow dynamic property access
         const IconName = metadata.icon as keyof typeof LucideIcons;
         return {
@@ -106,13 +108,15 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
 
         const augmentedProfile: FullUserProfile = {
             ...profileData,
-            activities: (profileData.activities || []).map(act => ({...act, id: String(act.id)})),
+            activities: (profileData.activities || []).map((act: Activity) => ({...act, id: String(act.id)})),
             coaching: coachedPlayers, // Use adapted data
             teams: (rawProfile.teams || []).map((team: UserTeam) => ({
                 ...team,
                 id: String(team.id),
                 logo: team.logo || null,
             })),
+            gallery: (rawProfile.gallery || []).map((item: GalleryItem) => ({...item, id: String(item.id)})),
+            careerHistory: (rawProfile.careerHistory || []).map((item: CareerHistoryItem) => ({...item, id: String(item.id)})),
             judgedMatches: (rawProfile.judgedMatches || []).map((match: JudgedMatch) => ({
                 ...match,
                 id: String(match.id),
@@ -122,7 +126,15 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
             organizedTournaments: (rawProfile.organizedTournaments || []).map((t: TournamentCrm) => ({
                 ...t,
                 id: String(t.id),
-            }))
+            })),
+             activitySummary: `Пользователь с ${format(
+                new Date(rawProfile.createdAt),
+                "yyyy",
+            )} года. Последняя активность: ${formatDistanceToNow(new Date(rawProfile.updatedAt), {
+                addSuffix: true,
+                locale: ru,
+            })}.`,
+            profileUrl: `/profiles/player/${rawProfile.id}`,
         };
 
         return {

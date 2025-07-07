@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import { getSession } from "@/features/auth/session";
@@ -40,8 +41,9 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
         revalidatePath(`/tournaments/${tournamentSlug}`);
         return { success: true };
 
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Server error';
         console.error('Error registering team:', error);
-        return { success: false, error: error.message || 'Server error' };
+        return { success: false, error: message };
     }
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -51,7 +52,7 @@ export function ChallengesPage() {
         try {
             await createChallenge(data);
             toast({ title: 'Вызов брошен!', description: 'Ваш вызов опубликован и виден другим игрокам.' });
-            fetchAllChallenges(); // Refresh all lists
+            await fetchAllChallenges(); // Refresh all lists
         } catch (error) {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось создать вызов.' });
         }
@@ -63,7 +64,7 @@ export function ChallengesPage() {
             await acceptChallenge(challengeId);
             const challenge = challenges.find(c => c.id === challengeId);
             toast({ title: 'Вызов принят!', description: `Вы приняли вызов от ${challenge?.creator.name}.` });
-            fetchAllChallenges(); // Refresh all lists
+            await fetchAllChallenges(); // Refresh all lists
         } catch (error) {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось принять вызов.' });
         }

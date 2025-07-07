@@ -1,11 +1,22 @@
+
 'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 import type { User } from '@/shared/lib/types';
 
+type BackendJudge = {
+    id: string;
+    name: string;
+    fullName?: string;
+    avatar: string | null;
+    avatarUrl?: string | null;
+    email: string;
+    role: string;
+}
+
 // Adapter function to map backend judge data to frontend User type
-const mapBackendJudgeToFrontendUser = (backendJudge: any): User => {
+const mapBackendJudgeToFrontendUser = (backendJudge: BackendJudge): User => {
     return {
         id: String(backendJudge.id), // Ensure ID is a string
         name: backendJudge.fullName || backendJudge.name,

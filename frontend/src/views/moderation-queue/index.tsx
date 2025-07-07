@@ -1,21 +1,17 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Button } from '@/shared/ui/button';
-import { DisputeResolutionDialog } from '@/widgets/dispute-resolution-dialog';
+import { ReportAnalysisDialog } from '@/widgets/report-analysis-dialog';
 import { useToast } from '@/shared/hooks/use-toast';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { fetchMatches } from '@/entities/match/api/get-matches';
-import type { Match } from '@/entities/match/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { resolveDispute } from '@/entities/match/api/resolve-dispute';
-import { Badge } from '@/shared/ui/badge';
-import { ReportAnalysisDialog } from '@/widgets/report-analysis-dialog';
-import { getReports, type Report } from '@/entities/report/api/reports';
+import { resolveReport, getReports, type Report } from '@/entities/report/api/reports';
 
 export function ModerationQueuePage() {
     const { toast } = useToast();
@@ -53,15 +49,22 @@ export function ModerationQueuePage() {
         const status = action === 'Нет нарушений' ? 'DISMISSED' : 'RESOLVED';
         const resolution = `Модератор принял решение: ${action}.`;
         
-        // This is a mock implementation. In a real app, you would make an API call.
-        console.log(`Resolving report ${reportId} with status ${status} and resolution "${resolution}"`);
+        const result = await resolveReport(reportId, resolution, status);
         
-        toast({
-            title: 'Жалоба рассмотрена!',
-            description: `Решение по жалобе на игрока ${reportToResolve.reportedUser.name} было принято.`
-        });
-        await fetchData(); // Refetch data
-        setIsDialogOpen(false);
+        if (result.success) {
+            toast({
+                title: 'Жалоба рассмотрена!',
+                description: `Решение по жалобе на игрока ${reportToResolve.reportedUser.name} было принято.`
+            });
+            await fetchData(); // Refetch data
+            setIsDialogOpen(false);
+        } else {
+             toast({
+                variant: 'destructive',
+                title: 'Ошибка',
+                description: result.error || "Не удалось разрешить спор.",
+            });
+        }
     };
 
     return (
