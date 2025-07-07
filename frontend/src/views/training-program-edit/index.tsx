@@ -9,6 +9,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useTraining } from '@/shared/context/training-provider';
 
+
 interface TrainingProgramEditPageProps {
     programId: string;
 }

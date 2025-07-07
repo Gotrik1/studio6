@@ -1,4 +1,5 @@
 
+
 'use server';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
@@ -26,7 +27,7 @@ export type PlayerProfilePageData = {
 };
 
 const formatActivityText = (activity: Activity): string => {
-    const metadata: any = activity.metadata;
+    const metadata = activity.metadata as any;
     switch(activity.type) {
         case 'STATUS_POSTED':
             return metadata.text;
@@ -79,7 +80,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
 
 export async function getPlayerProfile(id: string): Promise<{ user: FullUserProfile; } | null> {
     try {
-        const result = await fetchWithAuth<any>(`/users/${id}`);
+        const result = await fetchWithAuth<FullUserProfile>(`/users/${id}`);
         
         if (!result.success) {
             console.error(`Failed to fetch user ${id}:`, result.error);
@@ -87,14 +88,6 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
         }
 
         const rawProfile = result.data;
-        
-        // Adapter for user data to ensure consistency between frontend and backend
-        const profileData: FullUserProfile = {
-            ...rawProfile,
-            id: String(rawProfile.id),
-            name: rawProfile.fullName || rawProfile.name,
-            avatar: rawProfile.avatarUrl || rawProfile.avatar,
-        };
         
         const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player: CoachedPlayerSummary) => ({
             id: String(player.id),
@@ -106,8 +99,8 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
         }));
 
         const augmentedProfile: FullUserProfile = {
-            ...profileData,
-            activities: (profileData.activities || []).map((act: Activity) => ({...act, id: String(act.id)})),
+            ...rawProfile,
+            activities: (rawProfile.activities || []).map((act: Activity) => ({...act, id: String(act.id)})),
             coaching: coachedPlayers, // Use adapted data
             teams: (rawProfile.teams || []).map((team: UserTeam) => ({
                 ...team,

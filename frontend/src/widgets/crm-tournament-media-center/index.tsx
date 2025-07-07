@@ -3,17 +3,17 @@
 'use client';
 
 import { useState } from 'react';
+import NextImage from 'next/image';
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { Loader2, AlertCircle, Sparkles, Mic, Share2, Copy, Download, Volume2, Image as ImageIcon } from "lucide-react";
+import { Loader2, AlertCircle, Sparkles, Mic, Share2, Copy, Download, Volume2, ImageIcon } from "lucide-react";
 import { Skeleton } from '@/shared/ui/skeleton';
 import { generateTournamentSummary, type GenerateTournamentSummaryOutput } from '@/shared/api/genkit/flows/generate-tournament-summary-flow';
 import { generatePostImage, type GeneratePostImageOutput } from '@/shared/api/genkit/flows/generate-post-image-flow';
 import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
-import NextImage from 'next/image';
 import { generateMatchCommentary, type GenerateMatchCommentaryOutput } from "@/shared/api/genkit/flows/generate-match-commentary-flow";
 import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
 import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
@@ -307,7 +307,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                             <div className="space-y-2">
                                                 <Label>Изображение</Label>
                                                 <div className="relative aspect-video w-full overflow-hidden rounded-md border">
-                                                    <NextImage src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover"/>
+                                                    <NextImage src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover" />
                                                 </div>
                                             </div>
                                         </div>

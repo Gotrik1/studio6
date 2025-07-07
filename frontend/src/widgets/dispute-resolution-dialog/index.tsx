@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -16,7 +17,6 @@ import { ImageIcon, MessageSquare, Shield, BrainCircuit, Loader2, AlertCircle, S
 import { analyzeDispute, type AnalyzeDisputeOutput } from '@/shared/api/genkit/flows/analyze-dispute-flow';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { Badge } from '@/shared/ui/badge';
-import { cn } from '@/shared/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import type { Match } from '@/entities/match/model/types';
@@ -42,14 +42,13 @@ const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
     }
 };
 
-const getRecommendationText = (rec?: AnalyzeDisputeOutput['recommendation']) => {
-    switch (rec) {
-        case 'warning': return 'Выдать предупреждение';
-        case 'temp_ban': return 'Временный бан';
-        case 'perm_ban': return 'Постоянный бан';
-        case 'no_action': return 'Нет нарушений';
-        default: return rec || '...';
-    }
+const getRecommendationText = (rec?: string) => {
+    if (!rec) return '...';
+    if (rec.includes('Warning')) return 'Выдать предупреждение';
+    if (rec.includes('Temporary ban')) return 'Временный бан';
+    if (rec.includes('Permanent ban')) return 'Постоянный бан';
+    if (rec.includes('No action')) return 'Нет нарушений';
+    return rec;
 };
 
 export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve }: DisputeResolutionDialogProps) {
@@ -176,8 +175,8 @@ export function DisputeResolutionDialog({ isOpen, onOpenChange, match, onResolve
                     <Alert>
                         <Sparkles className="h-4 w-4" />
                         <AlertTitle className="flex justify-between items-center">
-                            <span>Рекомендация: {getRecommendationText(aiResult.recommendation as any)}</span>
-                             <Badge variant="outline" className={cn(getConfidenceColor(aiResult.confidence))}>
+                            <span>Рекомендация: {getRecommendationText(aiResult.recommendation)}</span>
+                             <Badge variant="outline" className={getConfidenceColor(aiResult.confidence)}>
                                 Уверенность: {aiResult.confidence}
                             </Badge>
                         </AlertTitle>

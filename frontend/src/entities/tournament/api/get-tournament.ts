@@ -53,7 +53,7 @@ function adaptTournamentDetails(data: RawTournamentData): TournamentDetails {
             }))
         },
         organizer: {
-            ...data.organizer,
+            name: data.organizer?.name || 'Unknown',
             avatar: data.organizer?.avatar || null
         }
     };

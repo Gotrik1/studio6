@@ -3,7 +3,7 @@
 'use client';
 
 import { useState, useEffect, useTransition, useCallback } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
@@ -63,7 +63,13 @@ export function TeamManagementPage() {
             if (teamData) {
                 const appsResult = await getTeamApplications(teamData.id);
                  if (appsResult.success && Array.isArray(appsResult.data)) {
-                    setJoinRequests(appsResult.data as JoinRequest[]);
+                    setJoinRequests(appsResult.data.map((app: any) => ({
+                        id: app.id,
+                        teamId: app.teamId,
+                        applicant: app.user,
+                        message: app.message,
+                        statsSummary: app.statsSummary || 'Статистика отсутствует',
+                    })));
                 } else {
                     toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
                 }
