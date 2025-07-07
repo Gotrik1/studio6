@@ -94,7 +94,7 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
       throw new Error(`Team with id ${teamId} not found.`);
     }
 
-    const teamGoals = "Цели команды не установлены."; // Mocked for now
+    const teamGoals = team.pitch || "Цели команды не установлены.";
 
     let teamActivity = "";
 
