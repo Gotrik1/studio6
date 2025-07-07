@@ -42,8 +42,8 @@ export function CrmTournamentMedical({ tournamentId }: CrmTournamentMedicalProps
             if (assignedRes.success) setAssignedMedics(assignedRes.data as MedicalPartner[]);
             else throw new Error(assignedRes.error);
 
-            if (availableRes.success && Array.isArray(availableRes.data) && Array.isArray(assignedRes.data)) {
-                const assignedIds = new Set(assignedRes.data.map((p: MedicalPartner) => p.id));
+            if (availableRes.success && Array.isArray(availableRes.data)) {
+                const assignedIds = new Set((assignedRes.data as MedicalPartner[]).map((p: MedicalPartner) => p.id));
                 setAvailableMedics((availableRes.data as MedicalPartner[]).filter((p: MedicalPartner) => !assignedIds.has(p.id)));
             } else {
                  throw new Error(availableRes.error || 'Failed to process available medics');

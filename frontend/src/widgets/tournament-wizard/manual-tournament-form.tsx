@@ -8,13 +8,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from '@/shared/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/shared/ui/popover';
 import { Calendar } from '@/shared/ui/calendar';
 import { cn } from '@/shared/lib/utils';
-import { CalendarIcon, Loader2, Trophy, UploadCloud } from 'lucide-react';
+import { CalendarIcon, Loader2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
@@ -161,7 +161,7 @@ export function ManualTournamentForm({ isEditMode }: ManualTournamentFormProps) 
                     <CardFooter>
                         <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
                             {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            <Trophy className="mr-2 h-4 w-4" /> {isEditMode ? 'Сохранить изменения' : 'Создать турнир'}
+                             {isEditMode ? 'Сохранить изменения' : 'Создать турнир'}
                         </Button>
                     </CardFooter>
                 </form>

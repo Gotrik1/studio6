@@ -3,7 +3,7 @@
 'use server';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { CoachedPlayerSummary, FullUserProfile, PlayerStats } from '@/entities/user/model/types';
+import type { CoachedPlayer, CoachedPlayerSummary, FullUserProfile, PlayerStats } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
@@ -63,7 +63,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
             type: activity.type,
             icon: IconName || 'HelpCircle',
             text: formatActivityText(activity),
-            createdAt: activity.createdAt,
+            createdAt: activity.timestamp,
         };
     });
 
@@ -98,7 +98,7 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
 
         const augmentedProfile: FullUserProfile = {
             ...rawProfile,
-            activities: (rawProfile.activities || []).map((act: Activity) => ({...act, id: String(act.id)})),
+            activities: (rawProfile.activities || []).map((act) => ({...act, id: String(act.id)})),
             coaching: coachedPlayers, // Use adapted data
             teams: (rawProfile.teams || []).map((team) => ({
                 ...team,

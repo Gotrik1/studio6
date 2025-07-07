@@ -19,8 +19,8 @@ import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/sha
 import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
 import { useRouter } from 'next/navigation';
 import { createTournamentMedia } from '@/entities/tournament/api/media';
-import type { TournamentDetails, MatchEvent } from '@/entities/tournament/model/types';
-
+import type { TournamentDetails } from '@/entities/tournament/model/types';
+import type { MatchEvent } from '@prisma/client';
 
 interface CrmTournamentMediaCenterProps {
     tournament: TournamentDetails;
@@ -130,7 +130,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
     };
 
      const handleGenerateCommentary = async () => {
-        if (!result) return;
+        if (!summaryResult) return;
         setIsGeneratingCommentary(true);
         setCommentaryError(null);
         setCommentaryResult(null);
@@ -144,7 +144,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
             const commentaryData = await generateMatchCommentary({
                 team1Name: mockFinalMatch.team1,
                 team2Name: mockFinalMatch.team2,
-                events: (tournament.events as MatchEvent[]) || mockEvents,
+                events: (tournament.matches?.[0].events as unknown as MatchEvent[]) || mockEvents,
             });
             setCommentaryResult(commentaryData);
         } catch (e) {
@@ -292,7 +292,7 @@ export function CrmTournamentMediaCenter({ tournament }: CrmTournamentMediaCente
                                 {!postResult && (
                                     <Button onClick={handleGeneratePost} disabled={isGeneratingPost || !summaryResult}>
                                         {isGeneratingPost ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                                        {result ? 'Создать пост' : 'Сначала сгенерируйте анализ'}
+                                        {summaryResult ? 'Создать пост' : 'Сначала сгенерируйте анализ'}
                                     </Button>
                                 )}
                                 {isGeneratingPost && <div className="space-y-2"><Skeleton className="h-24 w-full" /><Skeleton className="h-10 w-1/3" /></div>}

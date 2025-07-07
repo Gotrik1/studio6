@@ -14,13 +14,12 @@ import { fetchMatches } from '@/entities/match/api/get-matches';
 import type { Match } from '@/entities/match/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { resolveDispute } from '@/entities/match/api/resolve-dispute';
-import { Badge } from '@/shared/ui/badge';
+
 
 type DisputedMatch = Match & {
     disputeReason: string;
     timestamp: string;
 };
-
 
 interface CrmTournamentDisputesProps {
     tournamentId: string;

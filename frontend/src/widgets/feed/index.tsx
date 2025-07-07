@@ -12,8 +12,10 @@ import { Skeleton } from '@/shared/ui/skeleton';
 import { getFeed, type Activity } from '@/entities/feed/api/feed';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import type { User } from '@/shared/lib/types';
 
-const iconMap = {
+
+const iconMap: { [key: string]: React.ElementType } = {
     MATCH_PLAYED: Trophy,
     ACHIEVEMENT_UNLOCKED: Award,
     STATUS_POSTED: MessageSquare,
@@ -23,7 +25,7 @@ const iconMap = {
 };
 
 const formatActivityText = (activity: Activity): string => {
-    const metadata: Record<string, string> = activity.metadata as Record<string, string>;
+    const metadata = activity.metadata as Record<string, string>;
     switch(activity.type) {
         case 'STATUS_POSTED':
             return metadata.text;
@@ -36,13 +38,21 @@ const formatActivityText = (activity: Activity): string => {
         case 'ACHIEVEMENT_UNLOCKED':
              return `Разблокировано достижение: <span class="font-bold">${metadata.title}</span>`;
         default:
-            // This case should ideally not be reached if all types are handled
             return 'Совершил(а) новое действие.';
     }
 }
 
+type ActivityUser = Pick<User, 'id' | 'name' | 'avatar'>;
+type ActivityItem = {
+    id: string;
+    user: ActivityUser;
+    timestamp: string;
+    icon: React.ElementType;
+    text: string;
+};
 
-const FeedItemHeader = ({ user, timestamp, icon: Icon }: { user: Activity['user'], timestamp: string, icon: React.ElementType }) => (
+
+const FeedItemHeader = ({ user, timestamp, icon: Icon }: ActivityItem) => (
     <CardHeader className="flex-row items-center gap-3 space-y-0 p-4">
         <Avatar className="h-10 w-10">
             {user.avatar ? <AvatarImage src={user.avatar} data-ai-hint="user avatar"/> : <AvatarFallback><Bot /></AvatarFallback>}
@@ -64,23 +74,12 @@ const FeedItemFooter = () => (
     </CardFooter>
 );
 
-const GenericFeedItem = ({ item }: { item: Activity }) => {
-    // The icon is now determined by metadata, which is safer
-    const getIcon = () => {
-        if (item.metadata && 'icon' in item.metadata && typeof item.metadata.icon === 'string') {
-            const IconComponent = iconMap[item.metadata.icon as keyof typeof iconMap];
-            if (IconComponent) return IconComponent;
-        }
-        return iconMap[item.type as keyof typeof iconMap] || iconMap.default;
-    };
-    
-    const Icon = getIcon();
-
+const GenericFeedItem = ({ item }: { item: ActivityItem }) => {
     return (
         <Card>
-            <FeedItemHeader user={item.user} timestamp={item.createdAt} icon={Icon} />
+            <FeedItemHeader {...item} />
             <CardContent className="p-4 pt-0">
-                <p className="text-sm" dangerouslySetInnerHTML={{ __html: formatActivityText(item) }} />
+                <p className="text-sm" dangerouslySetInnerHTML={{ __html: item.text }} />
             </CardContent>
             <Separator />
             <FeedItemFooter />
@@ -98,13 +97,24 @@ const FeedSkeleton = () => (
 
 export function Feed() {
     const [isLoading, setIsLoading] = useState(true);
-    const [activities, setActivities] = useState<Activity[]>([]);
+    const [activities, setActivities] = useState<ActivityItem[]>([]);
 
     useEffect(() => {
         const fetchFeed = async () => {
             setIsLoading(true);
             const data = await getFeed();
-            setActivities(data);
+            const formattedData: ActivityItem[] = data.map(item => {
+                const metadata: Record<string, string> = item.metadata as Record<string, string>;
+                const IconComponent = iconMap[metadata.icon as keyof typeof iconMap] || iconMap.default;
+                return {
+                    id: item.id,
+                    user: item.user,
+                    timestamp: item.createdAt,
+                    icon: IconComponent,
+                    text: formatActivityText(item),
+                };
+            })
+            setActivities(formattedData);
             setIsLoading(false);
         };
 

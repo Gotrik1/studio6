@@ -15,5 +15,5 @@ export default async function PlaygroundDetailsRoute({ params }: { params: { id:
     if (!playground) {
         notFound();
     }
-    return <PlaygroundDetailsPage playground={playground} initialConditionReport={conditionReport as PlaygroundConditionReport | null} />;
+    return <PlaygroundDetailsPage playground={playground as Playground} initialConditionReport={conditionReport} />;
 }

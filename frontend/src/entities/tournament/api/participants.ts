@@ -70,7 +70,7 @@ export async function rejectApplication(tournamentId: string, applicationId: str
         method: 'PATCH',
         body: JSON.stringify({ status: 'REJECTED' }),
     });
-    if (result.success) {
+     if (result.success) {
         revalidateTag(`applications-${tournamentId}`);
     }
     return result;

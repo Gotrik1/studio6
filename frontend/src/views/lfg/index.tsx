@@ -9,7 +9,8 @@ import { PlusCircle, Swords, Search, Loader2, Sparkles } from 'lucide-react';
 import { LfgCreateDialog, type FormValues as LfgFormValues } from '@/widgets/lfg-create-dialog';
 import { Textarea } from '@/shared/ui/textarea';
 import { findLfgLobbies } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
-import type { LfgLobby as LfgLobbyType } from '@/entities/lfg/model/types';
+import type { LfgLobby as LfgLobbyApiType } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
+import type { LfgLobby as LfgLobbyEntityType } from '@/entities/lfg/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
 import { useLfg } from '@/shared/context/lfg-provider';
@@ -24,7 +25,7 @@ export function LfgPage() {
     const [prompt, setPrompt] = useState('Хочу поиграть в футбол вечером');
     const [isAiLoading, setIsAiLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [filteredLobbies, setFilteredLobbies] = useState<LfgLobbyType[] | null>(null);
+    const [filteredLobbies, setFilteredLobbies] = useState<LfgLobbyEntityType[] | null>(null);
     const [typeFilter, setTypeFilter] = useState<'all' | 'GAME' | 'TRAINING'>('all');
     const { lobbies, isLoading, addLobby, joinLobby } = useLfg();
 
@@ -39,11 +40,11 @@ export function LfgPage() {
 
         try {
             const searchResult = await findLfgLobbies(prompt);
-            setFilteredLobbies(searchResult.recommendations.map((l: LfgLobbyType) => ({...l, type: l.type.toUpperCase() as 'GAME' | 'TRAINING', startTime: new Date(l.startTime), endTime: new Date(l.endTime) })));
+            setFilteredLobbies(searchResult.recommendations.map((l: LfgLobbyApiType) => ({...l, type: l.type.toUpperCase() as 'GAME' | 'TRAINING', startTime: new Date(l.startTime), endTime: new Date(l.endTime), status: 'OPEN' })));
             if (searchResult.recommendations.length === 0) {
                  toast({
                     title: "Ничего не найдено",
-                    description: "Попробуйте изменить ваш запрос или создайте свое лобби.",
+                    description: "Попробуйте изменить ваш запрос.",
                 });
             }
         } catch (e) {

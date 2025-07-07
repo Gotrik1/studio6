@@ -13,6 +13,7 @@ import { getTeamPractices, createTeamPractice } from '@/entities/team/api/practi
 import { useParams } from 'next/navigation';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useToast } from '@/shared/hooks/use-toast';
+import type { FetchResult } from '@/shared/lib/api-client';
 
 type BackendPractice = {
     id: string;
@@ -43,7 +44,7 @@ export function TeamScheduleTab() {
     const fetchPractices = useCallback(async () => {
         if (!teamId) return;
         setIsLoading(true);
-        const result = await getTeamPractices(teamId as string);
+        const result: FetchResult<BackendPractice[]> = await getTeamPractices(teamId as string);
         if (result.success && Array.isArray(result.data)) {
             setPractices(result.data.map((p: BackendPractice) => ({
                 id: p.id,

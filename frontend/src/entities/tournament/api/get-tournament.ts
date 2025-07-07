@@ -2,9 +2,9 @@
 
 'use server';
 
-import type { TournamentDetails, BracketMatch, BracketRound } from '@/entities/tournament/model/types';
+import type { TournamentDetails } from '@/entities/tournament/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
-import type { Team, Match, TournamentMedia, User } from '@prisma/client';
+import type { Team, Match, TournamentMedia, User, BracketMatch, BracketRound } from '@prisma/client';
 
 type RawTeam = Pick<Team, 'name' | 'logo' | 'dataAiHint' | 'slug'>;
 type RawMatch = Pick<Match, 'id' | 'team1Score' | 'team2Score' | 'scheduledAt'> & { winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam };
@@ -61,7 +61,7 @@ function adaptTournamentDetails(data: RawTournamentData): TournamentDetails {
 
 
 export async function getTournamentBySlug(slug: string): Promise<TournamentDetails | null> {
-    const result = await fetchWithAuth(`/tournaments/slug/${slug}`);
+    const result = await fetchWithAuth<RawTournamentData>(`/tournaments/slug/${slug}`);
     
     if (!result.success) {
         console.error(`Failed to fetch tournament ${slug}:`, result.error);
@@ -72,11 +72,11 @@ export async function getTournamentBySlug(slug: string): Promise<TournamentDetai
         return null;
     }
 
-    return adaptTournamentDetails(result.data as RawTournamentData);
+    return adaptTournamentDetails(result.data);
 }
 
 export async function getTournamentById(id: string): Promise<TournamentDetails | null> {
-    const result = await fetchWithAuth(`/tournaments/${id}`);
+    const result = await fetchWithAuth<RawTournamentData>(`/tournaments/${id}`);
     
     if (!result.success) {
         console.error(`Failed to fetch tournament ${id}:`, result.error);
@@ -87,5 +87,5 @@ export async function getTournamentById(id: string): Promise<TournamentDetails |
         return null;
     }
     
-    return adaptTournamentDetails(result.data as RawTournamentData);
+    return adaptTournamentDetails(result.data);
 }
