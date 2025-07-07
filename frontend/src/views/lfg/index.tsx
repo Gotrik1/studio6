@@ -9,7 +9,7 @@ import { PlusCircle, Swords, Search, Loader2, Sparkles } from 'lucide-react';
 import { LfgCreateDialog, type FormValues as LfgFormValues } from '@/widgets/lfg-create-dialog';
 import { Textarea } from '@/shared/ui/textarea';
 import { findLfgLobbies } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
-import type { LfgLobby as LfgLobbyApiType } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
+import type { LfgLobby as LfgLobbyApiType, FindLfgLobbiesOutput } from '@/shared/api/genkit/flows/find-lfg-lobbies-flow';
 import type { LfgLobby as LfgLobbyEntityType } from '@/entities/lfg/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
@@ -39,7 +39,7 @@ export function LfgPage() {
         setFilteredLobbies(null);
 
         try {
-            const searchResult = await findLfgLobbies(prompt);
+            const searchResult: FindLfgLobbiesOutput = await findLfgLobbies(prompt);
             setFilteredLobbies(searchResult.recommendations.map((l: LfgLobbyApiType) => ({...l, type: l.type.toUpperCase() as 'GAME' | 'TRAINING', startTime: new Date(l.startTime), endTime: new Date(l.endTime), status: 'OPEN' })));
             if (searchResult.recommendations.length === 0) {
                  toast({

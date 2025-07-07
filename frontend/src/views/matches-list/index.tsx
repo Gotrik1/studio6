@@ -20,7 +20,7 @@ import { CrmMatchResultDialog, type MatchResult } from '@/widgets/crm-score-dial
 import { updateMatchScore } from '@/entities/match/api/update-match-score';
 
 type DialogMatch = {
-    id: number | string;
+    id: string;
     team1?: { name: string };
     team2?: { name: string };
     score?: string;

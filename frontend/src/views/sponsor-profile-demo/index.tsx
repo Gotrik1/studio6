@@ -17,7 +17,8 @@ export async function SponsorProfilePage() {
     }
 
     const sponsoredTeams: SponsoredTeam[] = (sponsorDetails.teams || []).map((team: Team) => ({
-        ...team,
+        slug: team.slug,
+        name: team.name,
         logo: team.logo || 'https://placehold.co/100x100.png',
         logoHint: team.dataAiHint || 'team logo',
         investment: "50,000 PD", // Mock investment

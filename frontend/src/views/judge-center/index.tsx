@@ -41,7 +41,7 @@ export function JudgeCenterPage() {
             const disputedData = await fetchMatches('DISPUTED');
             const finishedData = await fetchMatches('FINISHED');
             setDisputedMatches(disputedData as DisputedMatch[]);
-            setResolvedMatches(finishedData.filter((m) => m.resolution).map((m) => ({ ...m, judge: 'Вы' } as ResolvedMatch)));
+            setResolvedMatches(finishedData.filter((m: Match) => m.resolution).map((m: Match) => ({ ...m, judge: 'Вы' } as ResolvedMatch)));
         } catch (error) {
             console.error('Failed to fetch matches:', error);
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список матчей.' });

@@ -48,7 +48,7 @@ export function CrmTournamentParticipants({ tournamentId }: CrmTournamentPartici
             if (appsResult.success) setApplications(appsResult.data);
             else throw new Error(appsResult.error);
 
-            if (participantsResult.success) setParticipants(participantsResult.data as Participant[]);
+            if (participantsResult.success) setParticipants(participantsResult.data);
             else throw new Error(participantsResult.error);
 
         } catch (error: unknown) {

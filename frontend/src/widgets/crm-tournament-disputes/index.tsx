@@ -15,10 +15,14 @@ import type { Match } from '@/entities/match/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { resolveDispute } from '@/entities/match/api/resolve-dispute';
 
-
 type DisputedMatch = Match & {
     disputeReason: string;
     timestamp: string;
+};
+
+type ResolvedMatch = Match & {
+    resolution: string;
+    judge: string; // Mocked for now
 };
 
 interface CrmTournamentDisputesProps {
@@ -28,6 +32,7 @@ interface CrmTournamentDisputesProps {
 export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesProps) {
     const { toast } = useToast();
     const [disputedMatches, setDisputedMatches] = useState<DisputedMatch[]>([]);
+    const [resolvedMatches, setResolvedMatches] = useState<ResolvedMatch[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [selectedMatch, setSelectedMatch] = useState<DisputedMatch | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -35,8 +40,10 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
-            const data = await fetchMatches('DISPUTED', tournamentId);
-            setDisputedMatches(data as DisputedMatch[]);
+            const disputedData = await fetchMatches('DISPUTED', tournamentId);
+            const finishedData = await fetchMatches('FINISHED', tournamentId);
+            setDisputedMatches(disputedData as DisputedMatch[]);
+            setResolvedMatches(finishedData.filter((m) => m.resolution).map((m) => ({ ...m, judge: 'Вы' } as ResolvedMatch)));
         } catch (error) {
             console.error('Failed to fetch disputed matches:', error);
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список споров.' });

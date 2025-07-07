@@ -16,6 +16,7 @@ import { MediaTab } from "@/widgets/match-details-tabs/ui/media-tab";
 import { useTransition } from "react";
 import { useToast } from "@/shared/hooks/use-toast";
 import { registerTeamForTournamentAction } from "@/entities/tournament/api/register-team";
+import Link from 'next/link';
 
 export function TournamentDetailsPage({ tournament }: { tournament: TournamentDetails }) {
     const { toast } = useToast();
@@ -88,7 +89,7 @@ export function TournamentDetailsPage({ tournament }: { tournament: TournamentDe
                             <Card>
                                 <CardHeader><CardTitle>Организатор</CardTitle></CardHeader>
                                 <CardContent className="flex items-center gap-3">
-                                    <Avatar><AvatarImage src={tournament.organizer.avatar || undefined} /></Avatar>
+                                    <Avatar><AvatarImage src={tournament.organizer.avatar || undefined} /><AvatarFallback>{tournament.organizer.name.charAt(0)}</AvatarFallback></Avatar>
                                     <p className="font-semibold">{tournament.organizer.name}</p>
                                 </CardContent>
                                 <CardContent><Button className="w-full">Связаться</Button></CardContent>
