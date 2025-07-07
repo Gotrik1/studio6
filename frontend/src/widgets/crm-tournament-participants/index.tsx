@@ -23,17 +23,6 @@ import {
     type Participant
 } from '@/entities/tournament/api/participants';
 import { Badge } from '@/shared/ui/badge';
-import type { User as PrismaUser } from '@prisma/client';
-
-type BackendUser = PrismaUser;
-
-// Frontend-specific types
-export type RosterMember = {
-    id: string;
-    name: string;
-    avatar: string | null;
-    role: string;
-};
 
 interface CrmTournamentParticipantsProps {
     tournamentId: string;
@@ -59,7 +48,7 @@ export function CrmTournamentParticipants({ tournamentId }: CrmTournamentPartici
             if (appsResult.success) setApplications(appsResult.data);
             else throw new Error(appsResult.error);
 
-            if (participantsResult.success) setParticipants(participantsResult.data);
+            if (participantsResult.success) setParticipants(participantsResult.data as Participant[]);
             else throw new Error(participantsResult.error);
 
         } catch (error: unknown) {

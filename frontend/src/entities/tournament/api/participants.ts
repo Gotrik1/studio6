@@ -1,11 +1,7 @@
-
 'use client';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { User as PrismaUser } from '@prisma/client';
-
-type BackendUser = PrismaUser;
 
 // Frontend-specific types
 export type RosterMember = {
@@ -44,14 +40,12 @@ export async function getTournamentParticipants(tournamentId: string) {
 }
 
 export async function approveApplication(tournamentId: string, applicationId: string) {
-    const result = await fetchWithAuth<{teamId: string, team: { slug: string}}>(`/tournaments/${tournamentId}/applications/${applicationId}`, {
+    const result = await fetchWithAuth<{teamId: string, team: { slug: string}}>(`/tournaments/${applicationId}/accept`, {
         method: 'PATCH',
-        body: JSON.stringify({ status: 'APPROVED' }),
     });
-    if (result.success && result.data?.teamId) {
+    if (result.success) {
         revalidateTag(`applications-${tournamentId}`);
-        // Also revalidate team details to update roster
-        if(result.data.team.slug) {
+        if(result.data?.team?.slug) {
             revalidateTag(`team-slug-${result.data.team.slug}`);
         }
     }
@@ -59,9 +53,9 @@ export async function approveApplication(tournamentId: string, applicationId: st
 }
 
 export async function rejectApplication(tournamentId: string, applicationId: string) {
-    const result = await fetchWithAuth<{teamId: string}>(`/tournaments/${tournamentId}/applications/${applicationId}`, { method: 'PATCH', body: JSON.stringify({ status: 'REJECTED' }) });
-     if (result.success && result.data?.teamId) {
-        revalidateTag(`applications-${result.data.teamId}`);
+    const result = await fetchWithAuth<{teamId: string}>(`/tournaments/${applicationId}/decline`, { method: 'PATCH' });
+     if (result.success) {
+        revalidateTag(`applications-${tournamentId}`);
     }
     return result;
 }
@@ -72,7 +66,6 @@ export async function removeParticipant(tournamentId: string, teamId: string) {
       });
       if (result.success) {
           revalidateTag(`participants-${tournamentId}`);
-          // Optionally, revalidate applications if removing a team makes them eligible again
           revalidateTag(`applications-${tournamentId}`);
       }
       return result;
