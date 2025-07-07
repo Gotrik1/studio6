@@ -11,7 +11,6 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
 import type { Achievement } from '@/entities/achievement/model/types';
-import type { User as BaseUser } from '@/shared/lib/types';
 import type { Activity } from '@/entities/feed/model/types';
 
 
@@ -88,7 +87,7 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
 
         const rawProfile = result.data;
         
-        const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player) => ({
+        const coachedPlayers: CoachedPlayerSummary[] = (rawProfile.coaching || []).map((player: CoachedPlayerSummary) => ({
             id: String(player.id),
             name: player.name,
             avatar: player.avatar || null,
@@ -136,16 +135,4 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
         console.error(`Error fetching user profile for ${id}:`, error);
         return null;
     }
-}
-
-
-export async function getUsers(): Promise<BaseUser[]> {
-    const result = await fetchWithAuth('/users');
-    if (result.success && Array.isArray(result.data)) {
-        return result.data;
-    }
-    if (!result.success) {
-        console.error('Failed to fetch users:', result.error);
-    }
-    return [];
 }

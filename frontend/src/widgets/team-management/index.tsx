@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect, useTransition, useCallback } from 'react';
+import { useState, useEffect, useCallback, useTransition } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -21,7 +21,7 @@ import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
 import { useParams } from 'next/navigation';
-import type { CoachedPlayer, FullUserProfile } from '@/entities/user/model/types';
+import { CoachedPlayer } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
@@ -30,12 +30,14 @@ import type { JoinRequest } from '@/entities/team-application/model/types';
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
+type Application = JoinRequest;
+
 export function TeamManagementPage() {
     const { toast } = useToast();
     const params = useParams<{ slug: string }>();
     const [team, setTeam] = useState<TeamDetails | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
+    const [joinRequests, setJoinRequests] = useState<Application[]>([]);
     
     const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
@@ -77,7 +79,7 @@ export function TeamManagementPage() {
         fetchData();
     }, [fetchData]);
 
-    const handleAccept = (request: JoinRequest) => {
+    const handleAccept = (request: Application) => {
         startTransition(async () => {
             const result = await acceptTeamApplication(request.id);
             if(result.success) {
@@ -89,7 +91,7 @@ export function TeamManagementPage() {
         });
     };
 
-    const handleDecline = (request: JoinRequest) => {
+    const handleDecline = (request: Application) => {
         startTransition(async () => {
              const result = await declineTeamApplication(request.id);
              if(result.success) {
@@ -105,8 +107,8 @@ export function TeamManagementPage() {
         });
     };
     
-    const handleAnalyze = (request: JoinRequest) => {
-        setSelectedRequest(request);
+    const handleAnalyze = (request: Application) => {
+        setSelectedRequest(request as JoinRequest);
         setIsAnalysisOpen(true);
     };
     

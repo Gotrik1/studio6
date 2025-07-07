@@ -1,6 +1,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from 'react';
@@ -66,7 +67,7 @@ export function TeamManagementPage() {
             if (teamData) {
                 const appsResult = await getTeamApplications(teamData.id);
                  if (appsResult.success && Array.isArray(appsResult.data)) {
-                    setJoinRequests(appsResult.data);
+                    setJoinRequests(appsResult.data as JoinRequest[]);
                 } else {
                     toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
                 }

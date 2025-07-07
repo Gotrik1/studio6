@@ -36,7 +36,7 @@ export function FanZonePage() {
             setPopularTeams(teamsData.slice(0, 4));
             setFanPromotions(promotionsData.slice(0, 2));
             setPoll(pollData);
-        } catch (error) {
+        } catch {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить данные для фан-зоны.'});
         } finally {
             setIsLoading(false);

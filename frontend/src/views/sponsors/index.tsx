@@ -12,25 +12,6 @@ import type { Sponsor } from '@/entities/sponsor/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useToast } from '@/shared/hooks/use-toast';
 
-const SponsorCardSkeleton = () => (
-    <Card className="flex flex-col h-full">
-        <CardHeader className="flex-row items-center gap-4">
-            <Skeleton className="h-16 w-16 rounded-lg" />
-            <div className="space-y-2 flex-1">
-                <Skeleton className="h-6 w-3/4" />
-                <div className="flex flex-wrap gap-1">
-                    <Skeleton className="h-5 w-16" />
-                    <Skeleton className="h-5 w-20" />
-                </div>
-            </div>
-        </CardHeader>
-        <CardContent className="flex-1">
-             <Skeleton className="h-4 w-full" />
-             <Skeleton className="h-4 w-5/6 mt-2" />
-        </CardContent>
-    </Card>
-)
-
 export function SponsorsPage() {
     const { toast } = useToast();
     const [sponsors, setSponsors] = useState<Sponsor[]>([]);
@@ -42,9 +23,8 @@ export function SponsorsPage() {
             try {
                 const data = await getSponsors();
                 setSponsors(data);
-            } catch (error: unknown) {
-                const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить список партнеров.';
-                toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
+            } catch {
+                toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список партнеров.' });
             } finally {
                 setIsLoading(false);
             }
@@ -63,8 +43,8 @@ export function SponsorsPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {isLoading ? (
                     <>
-                        <SponsorCardSkeleton />
-                        <SponsorCardSkeleton />
+                        <Skeleton className="h-48 w-full" />
+                        <Skeleton className="h-48 w-full" />
                     </>
                 ) : (
                     sponsors.length > 0 ? sponsors.map(sponsor => (

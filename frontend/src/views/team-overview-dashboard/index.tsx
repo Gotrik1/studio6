@@ -112,7 +112,7 @@ export function TeamOverviewDashboard({ team, upcomingMatch, recentResults }: Te
                             </div>
                         ))}
                     </CardContent>
-                     <CardFooter>
+                    <CardFooter>
                         <Button variant="outline" className="w-full" disabled>Полный состав</Button>
                     </CardFooter>
                 </Card>

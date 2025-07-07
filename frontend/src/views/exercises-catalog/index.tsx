@@ -1,8 +1,9 @@
 
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Badge } from '@/shared/ui/badge';
 import { Input } from '@/shared/ui/input';
@@ -31,7 +32,7 @@ export function ExercisesCatalogPage() {
             try {
                 const data = await getExercises();
                 setExercises(data);
-            } catch (error) {
+            } catch {
                 toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить упражнения.' });
             } finally {
                 setLoading(false);

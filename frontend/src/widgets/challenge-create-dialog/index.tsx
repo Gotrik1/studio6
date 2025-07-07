@@ -57,7 +57,7 @@ export function ChallengeCreateDialog({ isOpen, onOpenChange, onCreate }: Challe
             await onCreate(data);
             onOpenChange(false);
             form.reset({ wager: 0, title: '', description: '', disciplineId: '' });
-        } catch (e: unknown) {
+        } catch {
             // Toast is handled in the parent component
         } finally {
             setIsSubmitting(false);

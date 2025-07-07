@@ -19,7 +19,6 @@ import { ru } from 'date-fns/locale';
 import { CrmMatchResultDialog, type MatchResult } from '@/widgets/crm-score-dialog';
 import { updateMatchScore } from '@/entities/match/api/update-match-score';
 
-// A type that is compatible with CrmMatchResultDialog
 type DialogMatch = {
     id: number | string;
     team1?: { name: string };

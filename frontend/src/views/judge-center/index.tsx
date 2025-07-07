@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -42,7 +43,7 @@ export function JudgeCenterPage() {
                 fetchMatches('FINISHED'),
             ]);
             setDisputedMatches(disputedData as DisputedMatch[]);
-            setResolvedMatches(finishedData.filter((m: any) => m.resolution).map((m: any) => ({ ...m, judge: 'Вы' })) as ResolvedMatch[]);
+            setResolvedMatches(finishedData.filter((m) => m.resolution).map((m) => ({ ...(m as ResolvedMatch), judge: 'Вы' })));
         } catch (error) {
             console.error('Failed to fetch matches:', error);
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список матчей.' });
