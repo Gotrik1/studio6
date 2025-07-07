@@ -10,8 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// --- Enums ---
-
+// ==============================================================================
+// Enums
+// ==============================================================================
 enum UserRole {
   ADMIN       @map("Администратор")
   MODERATOR   @map("Модератор")
@@ -31,198 +32,10 @@ enum UserStatus {
   INACTIVE  @map("Неактивен")
 }
 
-// --- Models ---
-
-model User {
-  id                        String                   @id @default(cuid())
-  email                     String                   @unique
-  name                      String
-  passwordHash              String
-  avatar                    String?
-  role                      UserRole                 @default(PLAYER)
-  status                    UserStatus               @default(ACTIVE)
-  xp                        Int                      @default(0)
-  createdAt                 DateTime                 @default(now())
-  updatedAt                 DateTime                 @updatedAt
-  dateOfBirth               DateTime?
-  location                  String?
-  mainSport                 String?
-  isVerified                Boolean                  @default(false)
-  preferredSports           String[]
-  telegram                  String?
-  discord                   String?
-  organizedTournaments      Tournament[]             @relation("OrganizedTournaments")
-  judgedTournaments         Tournament[]             @relation("JudgedTournaments")
-  refereedMatches           Match[]                  @relation("RefereeMatches")
-  teamApplications          TeamApplication[]
-  sponsorships              Sponsorship[]
-  sponsorshipOffers         SponsorshipOffer[]
-  measurements              Measurement[]
-  trainingProposalsSent     TrainingProposal[]       @relation("SentProposals")
-  trainingProposalsReceived TrainingProposal[]       @relation("ReceivedProposals")
-  trainingLogs              TrainingLog[]
-  userAchievements          UserAchievement[]
-  inventory                 InventoryItem[]
-  foodLog                   FoodLogEntry[]
-  reportsSent               Report[]                 @relation("ReportsSent")
-  reportsReceived           Report[]                 @relation("ReportsReceived")
-  resolvedReports           Report[]                 @relation("ResolvedReports")
-  playgroundReportsSent     PlaygroundReport[]
-  coachProfile              CoachProfile?
-  careerHistory             CareerHistory[]
-  createdPlaygrounds        Playground[]
-  notifications             Notification[]
-  sentFriendRequests        FriendRequest[]          @relation("SentFriendRequests")
-  receivedFriendRequests    FriendRequest[]          @relation("ReceivedFriendRequests")
-  friends                   User[]                   @relation("Friends")
-  friendOf                  User[]                   @relation("Friends")
-  createdChallenges         Challenge[]              @relation("CreatedChallenges")
-  acceptedChallenges        Challenge[]              @relation("AcceptedChallenges")
-  createdLobbies            LfgLobby[]               @relation("CreatedLobbies")
-  joinedLobbies             LfgLobby[]               @relation("JoinedLobbies")
-  pollVotes                 PollVote[]
-  createdPolls              Poll[]
-  messages                  Message[]
-  chats                     Chat[]                   @relation("UserChats")
-  activities                Activity[]
-  assignedTrainingPrograms  UserTrainingProgram[]
-  teamsAsCaptain            Team[]                   @relation("TeamCaptains")
-  teamsAsCreator            Team[]                   @relation("TeamCreators")
-  teamsAsMember             Team[]                   @relation("TeamMembers")
-  matchEvents               MatchEvent[]
-  organizedPromotions       Promotion[]
-  playgroundReviews         PlaygroundReview[]
-}
-
-model FriendRequest {
-  id        String              @id @default(cuid())
-  from      User                @relation("SentFriendRequests", fields: [fromId], references: [id])
-  fromId    String
-  to        User                @relation("ReceivedFriendRequests", fields: [toId], references: [id])
-  toId      String
-  status    FriendRequestStatus @default(PENDING)
-  createdAt DateTime            @default(now())
-  updatedAt DateTime            @updatedAt
-
-  @@unique([fromId, toId])
-}
-
 enum FriendRequestStatus {
   PENDING
   ACCEPTED
   DECLINED
-}
-
-model Team {
-  id                 String             @id @default(cuid())
-  name               String             @unique
-  motto              String?
-  logo               String?
-  dataAiHint         String?
-  game               String
-  rank               Int                @default(0)
-  wins               Int                @default(0)
-  losses             Int                @default(0)
-  draws              Int                @default(0)
-  seekingSponsorship Boolean            @default(false)
-  pitch              String?
-  creator            User               @relation("TeamCreators", fields: [creatorId], references: [id])
-  creatorId          String
-  captain            User               @relation("TeamCaptains", fields: [captainId], references: [id])
-  captainId          String
-  members            User[]             @relation("TeamMembers")
-  tournaments        Tournament[]
-  team1Matches       Match[]            @relation("Team1Matches")
-  team2Matches       Match[]            @relation("Team2Matches")
-  chat               Chat?
-  practices          TeamPractice[]
-  sponsorships       Sponsorship[]      @relation("SponsoredTeams")
-  sponsorshipOffers  SponsorshipOffer[]
-  applications       TeamApplication[]
-  leagueTeams        LeagueTeam[]
-  homePlayground     Playground?        @relation(fields: [homePlaygroundId], references: [id])
-  homePlaygroundId   String?
-  matchEvents        MatchEvent[]
-}
-
-model Tournament {
-  id                      String                   @id @default(cuid())
-  name                    String
-  slug                    String                   @unique
-  game                    String
-  status                  TournamentStatus
-  format                  String
-  type                    String
-  category                String
-  location                String
-  participantCount        Int
-  prizePool               String?
-  rules                   String?
-  bannerImage             String?
-  bannerImageHint         String?
-  registrationStartDate   DateTime
-  registrationEndDate     DateTime
-  tournamentStartDate     DateTime
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
-  description             String?
-  organizer               User                     @relation("OrganizedTournaments", fields: [organizerId], references: [id])
-  organizerId             String
-  teams                   Team[]
-  matches                 Match[]
-  judges                  User[]                   @relation("JudgedTournaments")
-  sponsors                Sponsor[]                @relation("SponsoredTournaments")
-  medicalPartners         MedicalPartner[]         @relation("TournamentMedicalPartners")
-  announcements           TournamentAnnouncement[]
-  applications            TeamApplication[]
-  league                  League?                  @relation(fields: [leagueId], references: [id])
-  leagueId                String?
-  media                   TournamentMedia[]
-}
-
-model TournamentMedia {
-  id           String     @id @default(cuid())
-  tournament   Tournament @relation(fields: [tournamentId], references: [id])
-  tournamentId String
-  type         String
-  src          String
-  description  String?
-  hint         String?
-  createdAt    DateTime   @default(now())
-}
-
-enum TournamentStatus {
-  REGISTRATION
-  ONGOING
-  FINISHED
-  CANCELLED
-}
-
-model Match {
-  id              String       @id @default(cuid())
-  team1           Team         @relation("Team1Matches", fields: [team1Id], references: [id])
-  team1Id         String
-  team2           Team         @relation("Team2Matches", fields: [team2Id], references: [id])
-  team2Id         String
-  team1Score      Int?
-  team2Score      Int?
-  status          MatchStatus
-  scheduledAt     DateTime
-  finishedAt      DateTime?
-  tournament      Tournament?  @relation(fields: [tournamentId], references: [id])
-  tournamentId    String?
-  league          League?      @relation(fields: [leagueId], references: [id])
-  leagueId        String?
-  referee         User?        @relation("RefereeMatches", fields: [refereeId], references: [id])
-  refereeId       String?
-  disputeReason   String?
-  disputeOpenedAt DateTime?
-  resolution      String?
-  location        String?
-  playground      Playground?  @relation(fields: [playgroundId], references: [id])
-  playgroundId    String?
-  round           Int?
-  events          MatchEvent[]
 }
 
 enum MatchStatus {
@@ -231,19 +44,6 @@ enum MatchStatus {
   FINISHED
   DISPUTED
   CANCELLED
-}
-
-model MatchEvent {
-  id         String         @id @default(cuid())
-  match      Match          @relation(fields: [matchId], references: [id])
-  matchId    String
-  timestamp  DateTime
-  type       MatchEventType
-  team       Team           @relation(fields: [teamId], references: [id])
-  teamId     String
-  player     User           @relation(fields: [playerId], references: [id])
-  playerId   String
-  metadata   Json?
 }
 
 enum MatchEventType {
@@ -266,75 +66,16 @@ enum MatchEventType {
   OTHER
 }
 
-model Sponsor {
-  id          String         @id @default(cuid())
-  name        String         @unique
-  logo        String?
-  logoHint    String?
-  description String
-  profileUrl  String
-  interests   String[]
-  tournaments Tournament[]   @relation("SponsoredTournaments")
-  teams       Team[]         @relation("SponsoredTeams")
-  promotions  Promotion[]
-  offers      SponsorshipOffer[]
+enum MediaType {
+  IMAGE
+  VIDEO
+  AUDIO
 }
 
-model Playground {
-  id              String               @id @default(cuid())
-  name            String
-  address         String
-  type            String
-  coverImage      String?
-  coverImageHint  String?
-  surface         String
-  features        String[]
-  rating          Float
-  checkIns        Int                  @default(0)
-  status          PlaygroundStatus     @default(PENDING_MODERATION)
-  creator         User                 @relation(fields: [creatorId], references: [id])
-  creatorId       String
-  matches         Match[]
-  practices       TeamPractice[]
-  activities      Activity[]
-  reports         PlaygroundReport[]
-  residentTeams   Team[]
-  lfgLobbies      LfgLobby[]
-  reviews         PlaygroundReview[]
-}
-
-enum PlaygroundStatus {
-  APPROVED
-  PENDING_MODERATION
-  REJECTED
-}
-
-model Sponsorship {
-  id         String   @id @default(cuid())
-  team       Team     @relation(fields: [teamId], references: [id])
-  teamId     String
-  sponsor    Sponsor  @relation(fields: [sponsorId], references: [id])
-  sponsorId  String
-  amount     Float
-  signedAt   DateTime @default(now())
-  expiresAt  DateTime
-  contractId String   @unique
-
-  user User @relation(fields: [userId], references: [id])
-  userId String
-}
-
-model TeamApplication {
-  id           String                  @id @default(cuid())
-  team         Team                    @relation(fields: [teamId], references: [id])
-  teamId       String
-  user         User                    @relation(fields: [userId], references: [id])
-  userId       String
-  tournament   Tournament?             @relation(fields: [tournamentId], references: [id])
-  tournamentId String?
-  message      String?
-  status       TeamApplicationStatus   @default(PENDING)
-  createdAt    DateTime                @default(now())
+enum ReportStatus {
+  PENDING
+  RESOLVED
+  DISMISSED
 }
 
 enum TeamApplicationStatus {
@@ -343,39 +84,51 @@ enum TeamApplicationStatus {
   DECLINED
 }
 
-model UserAchievement {
-  user          User        @relation(fields: [userId], references: [id])
-  userId        String
-  achievement   Achievement @relation(fields: [achievementId], references: [id])
-  achievementId String
-  unlockedAt    DateTime    @default(now())
-
-  @@id([userId, achievementId])
+enum ChallengeStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
 
-model Achievement {
-  id          String            @id @default(cuid())
-  name        String            @unique
-  description String
-  icon        String
-  users       UserAchievement[]
+enum ChatType {
+  DIRECT
+  GROUP
 }
 
-model LfgLobby {
-  id           String       @id @default(cuid())
-  type         LfgLobbyType
-  sport        String
-  location     String
-  startTime    DateTime
-  endTime      DateTime
-  playersNeeded Int
-  comment      String
-  status       LfgLobbyStatus @default(OPEN)
-  creator      User         @relation("CreatedLobbies", fields: [creatorId], references: [id])
-  creatorId    String
-  players      User[]       @relation("JoinedLobbies")
-  playground   Playground?  @relation(fields: [playgroundId], references: [id])
-  playgroundId String?
+enum NotificationType {
+  FRIEND_REQUEST
+  MATCH_RESULT
+  TEAM_INVITE
+  TOURNAMENT_START
+  ANNOUNCEMENT
+  CHALLENGE
+  OTHER
+}
+
+enum TrainingLogStatus {
+  PLANNED
+  COMPLETED
+  SKIPPED
+}
+
+enum Mood {
+  GREAT
+  GOOD
+  OK
+  BAD
+}
+
+enum TrainingProposalStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+enum QuestType {
+  DAILY
+  WEEKLY
+  SPECIAL
 }
 
 enum LfgLobbyType {
@@ -391,146 +144,335 @@ enum LfgLobbyStatus {
   CANCELLED
 }
 
-model Chat {
-  id           String    @id @default(cuid())
-  name         String?
-  type         ChatType
-  participants User[]    @relation("UserChats")
-  messages     Message[]
-  team         Team?     @relation(fields: [teamId], references: [id])
-  teamId       String?   @unique
-  createdAt    DateTime  @default(now())
+enum PlaygroundStatus {
+  PENDING_MODERATION
+  APPROVED
+  REJECTED
 }
 
-enum ChatType {
-  DIRECT
-  GROUP
+
+// ==============================================================================
+// Models
+// ==============================================================================
+
+model User {
+  id                      String                   @id @default(cuid())
+  email                   String                   @unique
+  name                    String
+  passwordHash            String
+  avatar                  String?
+  role                    UserRole                 @default(PLAYER)
+  status                  UserStatus               @default(ACTIVE)
+  xp                      Int                      @default(0)
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  dateOfBirth             DateTime?
+  location                String?
+  mainSport               String?
+  isVerified              Boolean                  @default(false)
+  preferredSports         String[]
+  telegram                String?
+  discord                 String?
+
+  // Relations
+  teamsAsCaptain            Team[]                   @relation("CaptainedTeams")
+  createdTeams              Team[]                   @relation("CreatedTeams")
+  teamsAsMember             Team[]                   @relation("TeamMembers")
+  organizedTournaments      Tournament[]
+  createdChallenges         Challenge[]              @relation("CreatedChallenges")
+  acceptedChallenges        Challenge[]              @relation("AcceptedChallenges")
+  sentFriendRequests        FriendRequest[]          @relation("SentFriendRequests")
+  receivedFriendRequests    FriendRequest[]          @relation("ReceivedFriendRequests")
+  refereedMatches           Match[]                  @relation("RefereeMatches")
+  matchEvents               MatchEvent[]
+  reportsSent               Report[]                 @relation("ReportsSent")
+  reportsReceived           Report[]                 @relation("ReportsReceived")
+  reportsResolved           Report[]                 @relation("ReportsResolved")
+  createdPlaygrounds        Playground[]
+  playgroundReports         PlaygroundReport[]       @relation("UserReports")
+  playgroundReviews         PlaygroundReview[]
+  chats                     Chat[]                   @relation("UserChats")
+  messages                  Message[]
+  createdLobbies            LfgLobby[]               @relation("CreatedLobbies")
+  joinedLobbies             LfgLobby[]               @relation("JoinedLobbies")
+  organizedPromotions       Promotion[]
+  sponsorships              Sponsorship[]
+  sponsorshipOffers         SponsorshipOffer[]
+  measurements              Measurement[]
+  trainingProposalsSent     TrainingProposal[]       @relation("SentProposals")
+  trainingProposalsReceived TrainingProposal[]       @relation("ReceivedProposals")
+  inventory                 InventoryItem[]
+  foodLog                   FoodLogEntry[]
+  pollVotes                 PollVote[]
+  sentAnnouncements         TournamentAnnouncement[]
+  notifications             Notification[]
+  achievements              UserAchievement[]
+  trainingPrograms          UserTrainingProgram[]
+  trainingLogs              TrainingLog[]
+  careerHistory             CareerHistory[]
+  coachProfile              CoachProfile?
+  judgedTournaments         Tournament[]             @relation("JudgedTournaments")
+  teamApplications          TeamApplication[]
+  activities                Activity[]
 }
 
-model Message {
-  id        String   @id @default(cuid())
-  content   String
+model FriendRequest {
+  id        String              @id @default(cuid())
+  from      User                @relation("SentFriendRequests", fields: [fromId], references: [id])
+  fromId    String
+  to        User                @relation("ReceivedFriendRequests", fields: [toId], references: [id])
+  toId      String
+  status    FriendRequestStatus @default(PENDING)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+}
+
+model CareerHistory {
+  id String @id @default(cuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String
+  teamName String
+  period String
+  role String
+  review String
   createdAt DateTime @default(now())
-  chat      Chat     @relation(fields: [chatId], references: [id])
-  chatId    String
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  String
 }
 
-model SponsorshipOffer {
-  id          String                 @id @default(cuid())
-  team        Team                   @relation(fields: [teamId], references: [id])
-  teamId      String
-  sponsor     Sponsor                @relation(fields: [sponsorId], references: [id])
-  sponsorId   String
-  user        User                   @relation(fields: [userId], references: [id])
-  userId      String
-  offerText   String
-  status      SponsorshipOfferStatus @default(PENDING)
-  createdAt   DateTime               @default(now())
+model Team {
+  id                 String             @id @default(cuid())
+  name               String             @unique
+  slug               String             @unique
+  game               String
+  motto              String?
+  description        String?
+  logo               String?
+  dataAiHint         String?
+  wins               Int                @default(0)
+  losses             Int                @default(0)
+  draws              Int                @default(0)
+  rank               Int                @default(0)
+  seekingSponsorship Boolean            @default(false)
+  pitch              String?
+  creatorId          String
+  captainId          String
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relations
+  creator            User               @relation("CreatedTeams", fields: [creatorId], references: [id])
+  captain            User               @relation("CaptainedTeams", fields: [captainId], references: [id])
+  members            User[]             @relation("TeamMembers")
+  tournaments        Tournament[]       @relation("TournamentParticipants")
+  matchesAsTeam1     Match[]            @relation("Team1Matches")
+  matchesAsTeam2     Match[]            @relation("Team2Matches")
+  chat               Chat?
+  matchEvents        MatchEvent[]
+  applications       TeamApplication[]
+  sponsorships       Sponsorship[]
+  sponsorshipOffers  SponsorshipOffer[]
+  homePlayground     Playground?        @relation(fields: [homePlaygroundId], references: [id])
+  homePlaygroundId   String?
+  leagueTeams        LeagueTeam[]
+  sponsors           Sponsor[]          @relation("SponsoredTeams")
+  practices          TeamPractice[]
 }
 
-enum SponsorshipOfferStatus {
-  PENDING
-  ACCEPTED
-  DECLINED
+model Tournament {
+  id                      String                   @id @default(cuid())
+  name                    String
+  slug                    String                   @unique
+  game                    String
+  description             String?
+  format                  String
+  type                    String
+  category                String
+  location                String
+  participantCount        Int
+  registrationStartDate   DateTime
+  registrationEndDate     DateTime
+  tournamentStartDate     DateTime
+  status                  String                   @default("REGISTRATION") // REGISTRATION, ONGOING, FINISHED
+  prizePool               String?
+  rules                   String?
+  bannerImage             String?
+  bannerImageHint         String?
+  organizerId             String
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+
+  // Relations
+  organizer               User                     @relation(fields: [organizerId], references: [id])
+  teams                   Team[]                   @relation("TournamentParticipants")
+  matches                 Match[]
+  judges                  User[]                   @relation("JudgedTournaments")
+  sponsors                Sponsor[]                @relation("SponsoredTournaments")
+  medicalPartners         MedicalPartner[]
+  announcements           TournamentAnnouncement[]
+  applications            TeamApplication[]
+  league                  League?                  @relation(fields: [leagueId], references: [id])
+  leagueId                String?
+  media                   TournamentMedia[]
 }
 
-model TrainingProgram {
-  id              String                @id @default(cuid())
+model TournamentMedia {
+    id String @id @default(cuid())
+    tournament Tournament @relation(fields: [tournamentId], references: [id])
+    tournamentId String
+    type MediaType
+    src String
+    description String?
+    hint String?
+    createdAt DateTime @default(now())
+}
+
+model Match {
+  id              String      @id @default(cuid())
+  team1           Team        @relation("Team1Matches", fields: [team1Id], references: [id])
+  team1Id         String
+  team2           Team        @relation("Team2Matches", fields: [team2Id], references: [id])
+  team2Id         String
+  team1Score      Int?
+  team2Score      Int?
+  status          MatchStatus @default(PLANNED)
+  scheduledAt     DateTime
+  finishedAt      DateTime?
+  location        String?
+  disputeReason   String?
+  disputeOpenedAt DateTime?
+  resolution      String?
+  round           Int?
+  tournamentId    String?
+  playgroundId    String?
+  leagueId        String?
+  refereeId       String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  tournament      Tournament? @relation(fields: [tournamentId], references: [id])
+  playground      Playground? @relation(fields: [playgroundId], references: [id])
+  events          MatchEvent[]
+  notifications   Notification[]
+  league          League?     @relation(fields: [leagueId], references: [id])
+  referee         User?       @relation("RefereeMatches", fields: [refereeId], references: [id])
+}
+
+model MatchEvent {
+  id        String         @id @default(cuid())
+  match     Match          @relation(fields: [matchId], references: [id])
+  matchId   String
+  timestamp DateTime       @default(now())
+  type      MatchEventType
+  team      Team           @relation(fields: [teamId], references: [id])
+  teamId    String
+  player    User           @relation(fields: [playerId], references: [id])
+  playerId  String
+  metadata  Json?
+}
+
+model Playground {
+  id              String               @id @default(cuid())
   name            String
-  description     String
-  goal            String
-  daysPerWeek     Int
-  splitType       String
-  author          String
+  address         String
+  type            String
   coverImage      String?
   coverImageHint  String?
-  isAiGenerated   Boolean               @default(false)
-  weeklySplit     WorkoutDay[]
-  assignedToUsers UserTrainingProgram[]
-  proposals       TrainingProposal[]
+  surface         String
+  features        String[]
+  rating          Float                @default(0)
+  checkIns        Int                  @default(0)
+  status          PlaygroundStatus     @default(PENDING_MODERATION)
+  creatorId       String
+  createdAt       DateTime             @default(now())
+
+  // Relations
+  creator         User                 @relation(fields: [creatorId], references: [id])
+  reviews         PlaygroundReview[]
+  reports         PlaygroundReport[]
+  matches         Match[]
+  lfgLobbies      LfgLobby[]
+  residentTeams   Team[]
+  practices       TeamPractice[]
+  activities      Activity[]
 }
 
-model WorkoutDay {
-  id                String            @id @default(cuid())
-  trainingProgram   TrainingProgram   @relation(fields: [trainingProgramId], references: [id])
-  trainingProgramId String
-  day               Int
-  title             String
-  exercises         WorkoutExercise[]
+model Sponsor {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  logo        String?
+  logoHint    String?
+  description String
+  profileUrl  String
+  interests   String[]
+
+  // Relations
+  tournaments     Tournament[] @relation("SponsoredTournaments")
+  teams           Team[]       @relation("SponsoredTeams")
+  promotions      Promotion[]
+  sponsorships    Sponsorship[]
+  offersSent      SponsorshipOffer[]
 }
 
-model WorkoutExercise {
-  id                      String      @id @default(cuid())
-  workoutDay              WorkoutDay  @relation(fields: [workoutDayId], references: [id])
-  workoutDayId            String
-  name                    String
-  sets                    String
-  reps                    String
-  plannedWeight           String?
-  isSupersetWithPrevious  Boolean?
-  technique               String?
+model Promotion {
+    id String @id @default(cuid())
+    name String
+    description String
+    prize String
+    imageDataUri String
+    imageHint String
+    endDate DateTime
+    cost String
+
+    organizer   User    @relation(fields: [organizerId], references: [id])
+    organizerId String
+
+    sponsor   Sponsor? @relation(fields: [sponsorId], references: [id])
+    sponsorId String?
 }
 
-model UserTrainingProgram {
-  user       User            @relation(fields: [userId], references: [id])
-  userId     String
-  program    TrainingProgram @relation(fields: [programId], references: [id])
-  programId  String
-  assignedAt DateTime        @default(now())
-  isActive   Boolean         @default(true)
+model Sponsorship {
+    id        String   @id @default(cuid())
+    team      Team     @relation(fields: [teamId], references: [id])
+    teamId    String
+    sponsor   Sponsor  @relation(fields: [sponsorId], references: [id])
+    sponsorId String
+    amount    Float
+    signedAt  DateTime @default(now())
+    endsAt    DateTime
 
-  @@id([userId, programId])
+    // Relations
+    organizer   User    @relation(fields: [organizerId], references: [id])
+    organizerId String
 }
 
-model TrainingLog {
-  id           String           @id @default(cuid())
-  user         User             @relation(fields: [userId], references: [id])
+model TeamApplication {
+  id           String                @id @default(cuid())
+  team         Team                  @relation(fields: [teamId], references: [id])
+  teamId       String
+  user         User                  @relation(fields: [userId], references: [id])
   userId       String
-  date         DateTime
-  workoutName  String?
-  status       TrainingLogStatus
-  exercises    LoggedExercise[]
-  mood         Mood?
-  notes        String?
-  coachNotes   String?
+  tournament   Tournament?           @relation(fields: [tournamentId], references: [id])
+  tournamentId String?
+  status       TeamApplicationStatus @default(PENDING)
+  message      String?
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
 }
 
-enum Mood {
-  GREAT
-  GOOD
-  OK
-  BAD
-}
-
-model LoggedExercise {
-  id                     String      @id @default(cuid())
-  trainingLog            TrainingLog   @relation(fields: [trainingLogId], references: [id])
-  trainingLogId          String
-  exercise               Exercise    @relation(fields: [exerciseId], references: [id])
-  exerciseId             String
-  sets                   LoggedSet[]
-  notes                  String?
-  isSupersetWithPrevious Boolean?
-}
-
-model LoggedSet {
-  id               String         @id @default(cuid())
-  loggedExercise   LoggedExercise @relation(fields: [loggedExerciseId], references: [id])
-  loggedExerciseId String
-  plannedReps      String?
-  plannedWeight    String?
-  loggedReps       Int?
-  loggedWeight     Int?
-  rpe              Int?
-  isCompleted      Boolean        @default(false)
-}
-
-enum TrainingLogStatus {
-  PLANNED
-  COMPLETED
-  SKIPPED
+model Report {
+  id               String       @id @default(cuid())
+  reporter         User         @relation("ReportsSent", fields: [reporterId], references: [id])
+  reporterId       String
+  reportedUser     User         @relation("ReportsReceived", fields: [reportedUserId], references: [id])
+  reportedUserId   String
+  resolver         User?        @relation("ReportsResolved", fields: [resolverId], references: [id])
+  resolverId       String?
+  category         String
+  description      String?
+  status           ReportStatus @default(PENDING)
+  resolution       String?
+  createdAt        DateTime     @default(now())
+  resolvedAt       DateTime?
 }
 
 model Challenge {
@@ -538,58 +480,16 @@ model Challenge {
   title        String
   description  String
   wager        Int
-  status       ChallengeStatus @default(OPEN)
-  result       String?
   creator      User            @relation("CreatedChallenges", fields: [creatorId], references: [id])
   creatorId    String
   opponent     User?           @relation("AcceptedChallenges", fields: [opponentId], references: [id])
   opponentId   String?
+  winnerId     String?
+  status       ChallengeStatus @default(OPEN)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
   discipline   Sport           @relation(fields: [disciplineId], references: [id])
   disciplineId String
-  createdAt    DateTime        @default(now())
-}
-
-enum ChallengeStatus {
-  OPEN
-  IN_PROGRESS
-  COMPLETED
-  CANCELLED
-}
-
-model Report {
-  id             String       @id @default(cuid())
-  reporter       User         @relation("ReportsSent", fields: [reporterId], references: [id])
-  reporterId     String
-  reportedUser   User         @relation("ReportsReceived", fields: [reportedUserId], references: [id])
-  reportedUserId String
-  category       String
-  description    String?
-  status         ReportStatus @default(PENDING)
-  resolver       User?        @relation("ResolvedReports", fields: [resolverId], references: [id])
-  resolverId     String?
-  resolvedAt     DateTime?
-  resolution     String?
-  createdAt      DateTime     @default(now())
-}
-
-enum ReportStatus {
-  PENDING
-  RESOLVED
-  DISMISSED
-}
-
-model PlaygroundReport {
-  id           String       @id @default(cuid())
-  playground   Playground   @relation(fields: [playgroundId], references: [id])
-  playgroundId String
-  reporter     User         @relation(fields: [reporterId], references: [id])
-  reporterId   String
-  category     String
-  comment      String
-  severity     String
-  summary      String
-  status       ReportStatus @default(PENDING)
-  createdAt    DateTime     @default(now())
 }
 
 model PlaygroundReview {
@@ -603,131 +503,152 @@ model PlaygroundReview {
   createdAt    DateTime   @default(now())
 }
 
-model Promotion {
-  id            String   @id @default(cuid())
-  name          String
-  description   String
-  prize         String
-  cost          String
-  imageDataUri  String
-  imageHint     String
-  endDate       DateTime
-  organizer     User     @relation(fields: [organizerId], references: [id])
-  organizerId   String
-  sponsor       Sponsor? @relation(fields: [sponsorId], references: [id])
-  sponsorId     String?
-  createdAt     DateTime @default(now())
+model PlaygroundReport {
+  id           String     @id @default(cuid())
+  playground   Playground @relation(fields: [playgroundId], references: [id])
+  playgroundId String
+  reporter     User       @relation("UserReports", fields: [reporterId], references: [id])
+  reporterId   String
+  category     String
+  comment      String
+  severity     String // low, medium, high
+  summary      String
+  status       ReportStatus @default(PENDING)
+  createdAt    DateTime   @default(now())
 }
 
-model StoreItem {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  description String
-  price       Float
-  image       String?
-  imageHint   String?
-  category    String
-  isRealMoney Boolean  @default(false)
-  createdAt   DateTime @default(now())
+model Chat {
+  id           String    @id @default(cuid())
+  name         String?
+  type         ChatType
+  participants User[]    @relation("UserChats")
+  messages     Message[]
+  team         Team?     @relation(fields: [teamId], references: [id])
+  teamId       String?   @unique
+  createdAt    DateTime  @default(now())
 }
 
-model InventoryItem {
-  id             String   @id @default(cuid())
-  name           String
-  category       String
-  type           String
-  purchaseDate   DateTime
-  lifespanMonths Int
-  image          String?
-  imageHint      String?
-  user           User     @relation(fields: [userId], references: [id])
-  userId         String
-  createdAt      DateTime @default(now())
-}
-
-model FaqItem {
+model Message {
   id        String   @id @default(cuid())
-  category  String
-  question  String   @unique
-  answer    String
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  content   String
   createdAt DateTime @default(now())
 }
 
-model FoodItem {
-  id          String         @id @default(cuid())
-  name        String         @unique
-  category    String
-  image       String?
-  imageHint   String?
-  calories    Float
-  protein     Float
-  fat         Float
-  carbs       Float
-  description String?
-  logEntries  FoodLogEntry[]
-}
-
-model FoodLogEntry {
-  id         String   @id @default(cuid())
-  user       User     @relation(fields: [userId], references: [id])
+model TrainingLog {
+  id         String            @id @default(cuid())
+  user       User              @relation(fields: [userId], references: [id])
   userId     String
-  foodItem   FoodItem @relation(fields: [foodItemId], references: [id])
-  foodItemId String
-  grams      Int
-  meal       String
-  createdAt  DateTime @default(now())
+  date       DateTime
+  workoutName String?
+  status     TrainingLogStatus @default(PLANNED)
+  mood       Mood?
+  notes      String?
+  coachNotes String?
+
+  exercises LoggedExercise[]
 }
 
-model Measurement {
-  id      String    @id @default(cuid())
-  user    User      @relation(fields: [userId], references: [id])
-  userId  String
-  date    DateTime
-  weight  Float
-  bodyFat Float?
-  chest   Float?
-  waist   Float?
-  hips    Float?
-  biceps  Float?
-  thigh   Float?
+model LoggedExercise {
+  id          String      @id @default(cuid())
+  trainingLog TrainingLog @relation(fields: [trainingLogId], references: [id])
+  trainingLogId String
+  exercise    Exercise    @relation(fields: [exerciseId], references: [id])
+  exerciseId  String
+  notes       String?
+  isSupersetWithPrevious Boolean? @default(false)
+  
+  sets        LoggedSet[]
 }
 
-model TrainingProposal {
-  id        String                   @id @default(cuid())
-  from      User                     @relation("SentProposals", fields: [fromId], references: [id])
-  fromId    String
-  to        User                     @relation("ReceivedProposals", fields: [toId], references: [id])
-  toId      String
-  sport     String
-  date      DateTime
-  comment   String?
-  status    TrainingProposalStatus   @default(PENDING)
-  program   TrainingProgram?         @relation(fields: [programId], references: [id])
-  programId String?
-  createdAt DateTime                 @default(now())
+model LoggedSet {
+    id String @id @default(cuid())
+    loggedExercise LoggedExercise @relation(fields: [loggedExerciseId], references: [id])
+    loggedExerciseId String
+    
+    plannedReps String?
+    plannedWeight String?
+    
+    loggedReps Int?
+    loggedWeight Float?
+    rpe Int? // Rate of Perceived Exertion
+    
+    isCompleted Boolean @default(false)
 }
 
-enum TrainingProposalStatus {
-  PENDING
-  ACCEPTED
-  DECLINED
-}
-
-model Quest {
-  id          String    @id @default(cuid())
-  type        QuestType
-  title       String
+model Achievement {
+  id          String            @id @default(cuid())
+  name        String            @unique
   description String
-  reward      Int
-  goal        Int
-  href        String
-  createdAt   DateTime  @default(now())
+  icon        String
+  users       UserAchievement[]
 }
 
-enum QuestType {
-  DAILY
-  WEEKLY
-  SPECIAL
+model UserAchievement {
+  user          User        @relation(fields: [userId], references: [id])
+  userId        String
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+  achievementId String
+  unlockedAt    DateTime    @default(now())
+
+  @@id([userId, achievementId])
+}
+
+
+model UserTrainingProgram {
+    user User @relation(fields: [userId], references: [id])
+    userId String
+    program TrainingProgram @relation(fields: [programId], references: [id])
+    programId String
+    assignedAt DateTime @default(now())
+    isActive Boolean @default(true)
+
+    @@id([userId, programId])
+}
+
+model TrainingProgram {
+    id String @id @default(cuid())
+    name String
+    description String
+    goal String // e.g., 'Набор массы', 'Сила'
+    daysPerWeek Int
+    splitType String // e.g., 'Full-body', 'Split'
+    author String // Coach name or "ProDvor AI"
+    coverImage String
+    coverImageHint String
+    isAiGenerated Boolean @default(false)
+    createdAt DateTime @default(now())
+
+    weeklySplit WorkoutDay[]
+    assignedTo UserTrainingProgram[]
+    proposals  TrainingProposal[]
+}
+
+model WorkoutDay {
+    id String @id @default(cuid())
+    day Int
+    title String
+    
+    program TrainingProgram @relation(fields: [trainingProgramId], references: [id])
+    trainingProgramId String
+
+    exercises WorkoutExercise[]
+}
+
+model WorkoutExercise {
+    id String @id @default(cuid())
+    name String
+    sets String
+    reps String
+    plannedWeight String?
+    isSupersetWithPrevious Boolean? @default(false)
+    technique String?
+    
+    day WorkoutDay @relation(fields: [workoutDayId], references: [id])
+    workoutDayId String
 }
 
 model Poll {
@@ -735,132 +656,189 @@ model Poll {
   title     String
   question  String
   isActive  Boolean      @default(true)
-  options   PollOption[]
-  votes     PollVote[]
+  createdAt DateTime     @default(now())
   author    User?        @relation(fields: [authorId], references: [id])
   authorId  String?
-  createdAt DateTime     @default(now())
+
+  options   PollOption[]
+  votes     PollVote[]
 }
 
 model PollOption {
-  id     String     @id @default(cuid())
-  text   String
-  poll   Poll       @relation(fields: [pollId], references: [id])
-  pollId String
-  votes  PollVote[]
+  id      String     @id @default(cuid())
+  text    String
+  poll    Poll       @relation(fields: [pollId], references: [id])
+  pollId  String
+  votes   PollVote[]
 }
 
 model PollVote {
-  user         User       @relation(fields: [userId], references: [id])
-  userId       String
-  poll         Poll       @relation(fields: [pollId], references: [id])
-  pollId       String
-  pollOption   PollOption @relation(fields: [pollOptionId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+  userId     String
+  poll       Poll       @relation(fields: [pollId], references: [id])
+  pollId     String
+  pollOption PollOption @relation(fields: [pollOptionId], references: [id])
   pollOptionId String
-  createdAt    DateTime   @default(now())
+  createdAt  DateTime   @default(now())
 
   @@id([userId, pollId])
 }
 
+model StoreItem {
+    id          String @id @default(cuid())
+    name        String
+    description String
+    price       Float
+    image       String?
+    imageHint   String?
+    category    String
+    isRealMoney Boolean @default(false)
+}
+
+model InventoryItem {
+    id String @id @default(cuid())
+    user User @relation(fields: [userId], references: [id])
+    userId String
+    name String
+    category String
+    type String
+    purchaseDate DateTime
+    lifespanMonths Int // estimated lifespan
+    image String?
+    imageHint String?
+    createdAt DateTime @default(now())
+}
+
+
 model Notification {
-  id             String                    @id @default(cuid())
-  user           User                      @relation(fields: [userId], references: [id])
+  id             String           @id @default(cuid())
+  user           User             @relation(fields: [userId], references: [id])
   userId         String
   type           NotificationType
   message        String
   href           String?
-  isRead         Boolean                   @default(false)
-  createdAt      DateTime                  @default(now())
-  announcement   TournamentAnnouncement?   @relation(fields: [announcementId], references: [id])
+  isRead         Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  
+  announcement   TournamentAnnouncement? @relation(fields: [announcementId], references: [id])
   announcementId String?
-}
-
-enum NotificationType {
-  FRIEND_REQUEST
-  MATCH_RESULT
-  ANNOUNCEMENT
-  SYSTEM_ALERT
+  match          Match? @relation(fields: [matchId], references: [id])
+  matchId        String?
 }
 
 model TournamentAnnouncement {
-  id            String         @id @default(cuid())
-  tournament    Tournament     @relation(fields: [tournamentId], references: [id])
-  tournamentId  String
-  sender        User           @relation(fields: [senderId], references: [id])
-  senderId      String
-  subject       String
-  message       String
-  sentTo        Int
-  createdAt     DateTime       @default(now())
-  notifications Notification[]
+    id String @id @default(cuid())
+    tournament Tournament @relation(fields: [tournamentId], references: [id])
+    tournamentId String
+    sender User @relation(fields: [senderId], references: [id])
+    senderId String
+    subject String
+    message String
+    sentTo Int
+    createdAt DateTime @default(now())
+    notifications Notification[]
 }
+
 
 model Activity {
-  id           String      @id @default(cuid())
-  type         ActivityType
-  user         User        @relation(fields: [userId], references: [id])
-  userId       String
-  metadata     Json
-  playground   Playground? @relation(fields: [playgroundId], references: [id])
-  playgroundId String?
-  createdAt    DateTime    @default(now())
-}
-
-enum ActivityType {
-  STATUS_POSTED
-  MATCH_PLAYED
-  TEAM_JOINED
-  TOURNAMENT_REGISTERED
-  ACHIEVEMENT_UNLOCKED
-  PLAYGROUND_CHECK_IN
-}
-
-model CareerHistory {
-  id          String   @id @default(cuid())
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
-  teamName    String
-  period      String
-  role        String
-  review      String
-  createdAt   DateTime @default(now())
-}
-
-model CoachProfile {
-  id             String   @id @default(cuid())
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId         String   @unique
-  specialization String
-  description    String
-  tags           String[]
-  experience     String
-  rating         Float
-  price          Decimal
+    id String @id @default(cuid())
+    type ActivityType
+    user User @relation(fields: [userId], references: [id])
+    userId String
+    createdAt DateTime @default(now())
+    metadata Json
+    playground   Playground? @relation(fields: [playgroundId], references: [id])
+    playgroundId String?
 }
 
 model League {
-  id          String       @id @default(cuid())
-  name        String       @unique
-  description String
-  game        String
-  image       String?
-  imageHint   String?
-  teams       LeagueTeam[]
-  matches     Match[]
+    id        String       @id @default(cuid())
+    name      String
+    description String
+    game      String
+    image     String?
+    imageHint String?
+    createdAt DateTime     @default(now())
+
+    teams     LeagueTeam[]
+    matches   Match[]
 }
 
 model LeagueTeam {
-  league    League   @relation(fields: [leagueId], references: [id])
-  leagueId  String
-  team      Team     @relation(fields: [teamId], references: [id])
-  teamId    String
-  played    Int
-  wins      Int
-  draws     Int
-  losses    Int
-  points    Int
+    league   League @relation(fields: [leagueId], references: [id])
+    leagueId String
+    team     Team   @relation(fields: [teamId], references: [id])
+    teamId   String
+    played   Int    @default(0)
+    wins     Int    @default(0)
+    draws    Int    @default(0)
+    losses   Int    @default(0)
+    points   Int    @default(0)
 
-  @@id([leagueId, teamId])
+    @@id([leagueId, teamId])
+}
+
+model TrainingProposal {
+    id String @id @default(cuid())
+    from User @relation("SentProposals", fields: [fromId], references: [id])
+    fromId String
+    to User @relation("ReceivedProposals", fields: [toId], references: [id])
+    toId String
+    sport String
+    date DateTime
+    comment String?
+    status TrainingProposalStatus @default(PENDING)
+    program TrainingProgram? @relation(fields: [programId], references: [id])
+    programId String?
+    createdAt DateTime @default(now())
+}
+
+model FaqItem {
+    id String @id @default(cuid())
+    category String
+    question String
+    answer String
+    createdAt DateTime @default(now())
+}
+
+model FoodItem {
+    id String @id @default(cuid())
+    name String
+    category String
+    image String?
+    imageHint String?
+    calories Float
+    protein Float
+    fat Float
+    carbs Float
+    description String?
+
+    logEntries FoodLogEntry[]
+}
+
+model FoodLogEntry {
+    id String @id @default(cuid())
+    user User @relation(fields: [userId], references: [id])
+    userId String
+    foodItem FoodItem @relation(fields: [foodItemId], references: [id])
+    foodItemId String
+    grams Int
+    meal String
+    createdAt DateTime @default(now())
+}
+
+model Measurement {
+    id String @id @default(cuid())
+    user User @relation(fields: [userId], references: [id])
+    userId String
+    date DateTime
+    weight Float
+    bodyFat Float?
+    chest Float?
+    waist Float?
+    hips Float?
+    biceps Float?
+    thigh Float?
 }
 
 model MedicalPartner {
@@ -870,7 +848,34 @@ model MedicalPartner {
   contact        String
   avatar         String?
   avatarHint     String?
-  tournaments    Tournament[] @relation("TournamentMedicalPartners")
+
+  tournaments    Tournament[]
+}
+
+model SponsorshipOffer {
+  id        String   @id @default(cuid())
+  team      Team     @relation(fields: [teamId], references: [id])
+  teamId    String
+  sponsor   Sponsor  @relation(fields: [sponsorId], references: [id])
+  sponsorId String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  offerText String
+  status    TeamApplicationStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CoachProfile {
+  id             String   @id @default(cuid())
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String   @unique
+  specialization String
+  description    String
+  tags           String[]
+  experience     String
+  rating         Float
+  price          Decimal
 }
 
 model Sport {
@@ -879,4 +884,51 @@ model Sport {
   icon      String
   category  String
   challenges Challenge[]
+}
+
+model LfgLobby {
+  id           String       @id @default(cuid())
+  type         LfgLobbyType
+  sport        String
+  status       LfgLobbyStatus @default(OPEN)
+  location     String
+  startTime    DateTime
+  endTime      DateTime
+  playersNeeded Int
+  comment      String
+  creatorId    String
+  playgroundId String?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Relations
+  creator      User         @relation("CreatedLobbies", fields: [creatorId], references: [id])
+  players      User[]       @relation("JoinedLobbies")
+  playground   Playground?  @relation(fields: [playgroundId], references: [id])
+}
+
+model TeamPractice {
+  id           String     @id @default(cuid())
+  title        String
+  description  String?
+  date         DateTime
+  team         Team       @relation(fields: [teamId], references: [id])
+  teamId       String
+  playground   Playground @relation(fields: [playgroundId], references: [id])
+  playgroundId String
+}
+
+model Exercise {
+  id             String           @id @default(cuid())
+  name           String           @unique
+  description    String
+  category       String
+  equipment      String
+  image          String?
+  imageHint      String?
+  videoUrl       String?
+  techniqueTips  Json             @default("[]")
+  commonMistakes Json             @default("[]")
+  alternatives   Json             @default("[]")
+  loggedInstances LoggedExercise[]
 }
