@@ -100,7 +100,7 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Матч</TableHead>
-                                    <TableHead className="hidden md:table-cell">Причина спора</TableHead>
+                                    <TableHead className="hidden md:table-cell">Причина</TableHead>
                                     <TableHead className="hidden md:table-cell">Поступил</TableHead>
                                     <TableHead className="text-right"></TableHead>
                                 </TableRow>

@@ -1,13 +1,14 @@
 
 
+
 'use client';
 
 import SponsorClient from "@/app/(app)/administration/sponsor/client";
-import { getSponsorById } from "@/entities/sponsor/api/sponsors";
+import { getSponsorById, type SponsorDetails } from "@/entities/sponsor/api/sponsors";
 import { notFound } from "next/navigation";
 import type { SponsoredTeam } from "@/entities/sponsorship/model/types";
 import { useEffect, useState } from "react";
-import type { SponsorDetails } from "@/entities/sponsor/api/sponsors";
+import type { Team } from "@/entities/team/model/types";
 
 
 export default function SponsorProfileRoute({ params }: { params: { id: string } }) {
@@ -21,7 +22,7 @@ export default function SponsorProfileRoute({ params }: { params: { id: string }
         return notFound();
     }
     
-    const sponsoredTeams: SponsoredTeam[] = (sponsorDetails.teams || []).map((team: { slug: string; name: string; logo: string | null; dataAiHint: string | null; }) => ({
+    const sponsoredTeams: SponsoredTeam[] = (sponsorDetails.teams || []).map((team: Team) => ({
         ...team,
         logo: team.logo || 'https://placehold.co/100x100.png',
         logoHint: team.dataAiHint || 'team logo',
@@ -37,4 +38,3 @@ export default function SponsorProfileRoute({ params }: { params: { id: string }
         />
     );
 }
-

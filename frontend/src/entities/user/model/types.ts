@@ -1,4 +1,7 @@
 
+import type { Activity } from "@/entities/feed/model/types";
+export type { Activity };
+
 export type CareerHistoryItem = {
   id: string;
   teamName: string;
@@ -86,20 +89,6 @@ export type JudgedMatch = {
   timestamp: string | null;
 };
 
-export type Activity = {
-  id: string;
-  type: string;
-  createdAt: string;
-  metadata: {
-    [key: string]: string;
-  };
-  user: {
-    id: string;
-    name: string;
-    avatar: string | null;
-  };
-};
-
 export type FullUserProfile = {
   id: string;
   name: string;
@@ -118,6 +107,8 @@ export type FullUserProfile = {
   preferredSports: string[];
   contacts: { telegram: string; discord: string };
   activities: Activity[];
+  createdAt: string;
+  updatedAt: string;
   teams: UserTeam[];
   gallery: GalleryItem[];
   careerHistory: CareerHistoryItem[];

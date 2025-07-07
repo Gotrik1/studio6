@@ -32,4 +32,5 @@ export type SponsorshipOffer = {
   };
   offerText: string;
   status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+  teamId: string;
 };

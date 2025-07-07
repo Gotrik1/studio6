@@ -11,7 +11,7 @@ import { KingOfTheCourtWidget } from '@/widgets/playground-home-team';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { setHomePlaygroundAction } from './actions';
 import { useTransition } from 'react';
-import type { Playground } from '@/entities/playground/model/types';
+import type { Playground, KingTeam } from '@/entities/playground/model/types';
 import { Badge } from '@/shared/ui/badge';
 
 

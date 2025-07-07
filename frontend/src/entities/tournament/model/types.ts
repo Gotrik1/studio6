@@ -7,7 +7,7 @@ type Team = {
   slug?: string;
 };
 
-type BracketMatch = {
+export type BracketMatch = {
   id: number | string;
   team1?: Team;
   team2?: Team;
@@ -18,7 +18,7 @@ type BracketMatch = {
   time?: string;
 };
 
-type BracketRound = {
+export type BracketRound = {
   name: string;
   matches: BracketMatch[];
 };
@@ -55,6 +55,7 @@ export type TournamentDetails = {
         finals: string;
     };
     teams: Team[];
+    matches: BracketMatch[];
     rules: string;
     bracket: {
         rounds: BracketRound[];

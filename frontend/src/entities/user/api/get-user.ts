@@ -5,7 +5,7 @@
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 import type { CoachedPlayer, CoachedPlayerSummary, FullUserProfile, PlayerStats } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow, differenceInYears } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
@@ -38,7 +38,6 @@ const formatActivityText = (activity: Activity): string => {
         case 'ACHIEVEMENT_UNLOCKED':
              return `Разблокировано достижение: <span class="font-bold">${metadata.title}</span>`;
         default:
-            // This case should ideally not be reached if all types are handled
             return 'Совершил(а) новое действие.';
     }
 }
@@ -57,11 +56,11 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
     
     const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map((activity: Activity) => {
         const metadata = activity.metadata as Record<string, string>;
-        const IconName = metadata.icon as keyof typeof LucideIcons;
+        const IconName = (metadata.icon as keyof typeof LucideIcons) || 'HelpCircle';
         return {
             id: activity.id,
             type: activity.type,
-            icon: IconName || 'HelpCircle',
+            icon: IconName,
             text: formatActivityText(activity),
             createdAt: activity.timestamp,
         };
