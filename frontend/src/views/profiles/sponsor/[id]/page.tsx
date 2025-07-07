@@ -3,11 +3,10 @@
 'use client';
 
 import SponsorClient from "@/app/(app)/administration/sponsor/client";
-import { getSponsorById } from "@/entities/sponsor/api/sponsors";
+import { getSponsorById, type SponsorDetails } from "@/entities/sponsor/api/sponsors";
 import { notFound } from "next/navigation";
 import type { SponsoredTeam } from "@/entities/sponsorship/model/types";
 import { useEffect, useState } from "react";
-import type { SponsorDetails } from "@/entities/sponsor/api/sponsors";
 import type { Team } from "@/entities/team/model/types";
 
 

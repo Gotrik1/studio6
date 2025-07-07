@@ -10,7 +10,7 @@ import { Button } from '@/shared/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getAssignedSponsors, getAvailableSponsors, unassignSponsor, assignSponsor } from '@/entities/tournament/api/sponsors';
+import { getAssignedSponsors, getAvailableSponsors, unassignSponsor } from '@/entities/tournament/api/sponsors';
 import type { Sponsor } from '@/entities/sponsor/model/types';
 import { AssignSponsorDialog } from '@/widgets/assign-sponsor-dialog';
 
@@ -40,7 +40,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
             if (assignedRes.success) setAssignedSponsors(assignedRes.data as SponsorWithAmount[]);
             else throw new Error(assignedRes.error);
 
-            if (availableRes.success && Array.isArray(availableRes.data) && Array.isArray(assignedRes.data)) {
+            if (availableRes.success && Array.isArray(availableRes.data)) {
                 const assignedIds = new Set((assignedRes.data as SponsorWithAmount[]).map((p) => p.id));
                 setAvailableSponsors((availableRes.data as Sponsor[]).filter((p) => !assignedIds.has(p.id)));
             } else {

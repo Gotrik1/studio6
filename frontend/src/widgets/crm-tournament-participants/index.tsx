@@ -21,14 +21,20 @@ import {
     removeParticipant,
 } from '@/entities/tournament/api/participants';
 import { Badge } from '@/shared/ui/badge';
-import type { User } from '@/shared/lib/types';
-
+import type { User as PrismaUser } from '@prisma/client';
 
 type RosterMember = {
     id: string;
     name: string;
     avatar: string | null;
     role: string;
+};
+
+type Participant = {
+    id: string;
+    name: string;
+    captain: { name: string; };
+    members: RosterMember[];
 };
 
 type Application = {
@@ -38,13 +44,6 @@ type Application = {
         name: string;
         captain: { name: string };
     };
-};
-
-type Participant = {
-    id: string;
-    name: string;
-    captain: { name: string; };
-    members: RosterMember[];
 };
 
 interface CrmTournamentParticipantsProps {
@@ -91,7 +90,7 @@ export function CrmTournamentParticipants({ tournamentId }: CrmTournamentPartici
         setOpenCollapsibles(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
     };
 
-    const handleAction = async (action: () => Promise<any>, successMsg: string, errorMsg: string) => {
+    const handleAction = async (action: () => Promise<{ success: boolean; error?: string }>, successMsg: string, errorMsg: string) => {
         startTransition(async () => {
             const result = await action();
             if (result.success) {
