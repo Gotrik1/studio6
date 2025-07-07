@@ -19,35 +19,26 @@ import {
     approveApplication,
     rejectApplication,
     removeParticipant,
+    type Application,
+    type Participant
 } from '@/entities/tournament/api/participants';
 import { Badge } from '@/shared/ui/badge';
-import type { Team } from '@prisma/client';
+import type { User as PrismaUser } from '@prisma/client';
+
+type BackendUser = PrismaUser;
 
 // Frontend-specific types
-type RosterMember = {
+export type RosterMember = {
     id: string;
     name: string;
     avatar: string | null;
     role: string;
 };
-type Participant = {
-    id: string;
-    name: string;
-    captain: { name: string; };
-    members: RosterMember[];
-};
-type Application = {
-    id: string;
-    team: {
-        id: string;
-        name: string;
-        captain: { name: string };
-    };
-};
 
 interface CrmTournamentParticipantsProps {
     tournamentId: string;
 }
+
 
 export function CrmTournamentParticipants({ tournamentId }: CrmTournamentParticipantsProps) {
     const { toast } = useToast();

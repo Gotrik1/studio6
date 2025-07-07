@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useTransition } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -19,55 +19,15 @@ import {
     approveApplication,
     rejectApplication,
     removeParticipant,
+    type Application,
+    type Participant
 } from '@/entities/tournament/api/participants';
 import { Badge } from '@/shared/ui/badge';
-import type { Team, User as PrismaUser } from '@prisma/client';
-
-type BackendUser = PrismaUser;
-type BackendTeam = Team & { captain: BackendUser; members: BackendUser[] };
-type BackendApplication = { id: string; team: BackendTeam };
-
-// Frontend-specific types
-type RosterMember = {
-    id: string;
-    name: string;
-    avatar: string | null;
-    role: string;
-};
-type Participant = {
-    id: string;
-    name: string;
-    captain: { name: string; };
-    members: RosterMember[];
-};
-type Application = {
-    id: string;
-    team: {
-        id: string;
-        name: string;
-        captain: { name: string };
-    };
-};
 
 interface CrmTournamentParticipantsProps {
     tournamentId: string;
 }
 
-// Adapter to transform a raw team object from the backend
-const adaptParticipantTeam = (team: BackendTeam): Participant | null => {
-    if (!team) return null;
-    return {
-        id: String(team.id),
-        name: team.name,
-        captain: team.captain ? { name: team.captain.name } : { name: 'N/A' },
-        members: (team.members || []).map((member: BackendUser) => ({
-            id: String(member.id),
-            name: member.name,
-            avatar: member.avatar || null,
-            role: member.role,
-        })),
-    };
-};
 
 export function CrmTournamentParticipants({ tournamentId }: CrmTournamentParticipantsProps) {
     const { toast } = useToast();

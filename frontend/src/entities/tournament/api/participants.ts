@@ -1,13 +1,11 @@
 
-
 'use client';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { Team, User as PrismaUser } from '@prisma/client';
+import type { User as PrismaUser } from '@prisma/client';
 
 type BackendUser = PrismaUser;
-type BackendApplication = { id: string; team: { id: string, name: string, captain: BackendUser } };
 
 // Frontend-specific types
 export type RosterMember = {
@@ -50,17 +48,19 @@ export async function approveApplication(tournamentId: string, applicationId: st
         method: 'PATCH',
         body: JSON.stringify({ status: 'APPROVED' }),
     });
-    if (result.success && result.data) {
+    if (result.success && result.data?.teamId) {
         revalidateTag(`applications-${tournamentId}`);
         // Also revalidate team details to update roster
-        revalidateTag(`team-slug-${result.data.team.slug}`);
+        if(result.data.team.slug) {
+            revalidateTag(`team-slug-${result.data.team.slug}`);
+        }
     }
     return result;
 }
 
 export async function rejectApplication(tournamentId: string, applicationId: string) {
-    const result = await fetchWithAuth<{teamId: string}>(`/tournaments/${tournamentId}/applications/${applicationId}`, { method: 'PATCH' });
-     if (result.success && result.data) {
+    const result = await fetchWithAuth<{teamId: string}>(`/tournaments/${tournamentId}/applications/${applicationId}`, { method: 'PATCH', body: JSON.stringify({ status: 'REJECTED' }) });
+     if (result.success && result.data?.teamId) {
         revalidateTag(`applications-${result.data.teamId}`);
     }
     return result;

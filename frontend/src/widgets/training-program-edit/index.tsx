@@ -1,6 +1,5 @@
 
 
-
 'use client';
 
 import { useState } from 'react';
@@ -9,7 +8,6 @@ import { TrainingProgramForm, type ProgramFormValues } from '@/widgets/training-
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { useTraining } from '@/shared/context/training-provider';
-import type { TrainingProgram } from '@/entities/training-program/model/types';
 
 
 interface TrainingProgramEditPageProps {
@@ -59,4 +57,3 @@ export function TrainingProgramEditPage({ programId }: TrainingProgramEditPagePr
         />
     );
 }
-
