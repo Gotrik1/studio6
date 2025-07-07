@@ -1,10 +1,4 @@
 
-
-
-
-
-
-
 'use client';
 
 import { useState, useTransition } from 'react';
@@ -55,7 +49,7 @@ export function TeamDetailsPage({ team }: TeamDetailsPageProps) {
     }
 
     const isCaptain = currentUser?.id === team.captainId;
-    const isMember = team.roster.some((member: TeamRosterMember) => member.id === currentUser?.id);
+    const isMember = team.roster.some((member) => member.id === currentUser?.id);
 
     const handleJoinTeam = () => {
         startTransition(async () => {

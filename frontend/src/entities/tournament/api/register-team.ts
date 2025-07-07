@@ -1,7 +1,4 @@
 
-
-
-
 'use server';
 
 import { getSession } from "@/features/auth/session";
@@ -19,7 +16,7 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
         const profileResult = await fetchWithAuth(`/users/${session.user.id}`);
         
         if(!profileResult.success) {
-             return { success: false, error: (profileResult as any).error || "Не удалось получить список ваших команд." };
+             return { success: false, error: profileResult.error || "Не удалось получить список ваших команд." };
         }
         
         const userTeams: UserTeam[] = profileResult.data.teams || [];
@@ -37,7 +34,7 @@ export async function registerTeamForTournamentAction(tournamentId: string, tour
         });
 
         if (!registerResult.success) {
-            return { success: false, error: (registerResult as any).error || 'Failed to register team' };
+            return { success: false, error: (registerResult.error) || 'Failed to register team' };
         }
         
         revalidatePath(`/tournaments/${tournamentSlug}`);

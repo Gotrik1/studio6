@@ -1,10 +1,4 @@
 
-
-
-
-
-
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -17,7 +11,7 @@ import { generateMatchPost, type GenerateMatchPostOutput } from '@/shared/api/ge
 import Link from 'next/link';
 import Image from 'next/image';
 import { getMatchOfTheWeek } from '@/entities/match/api/get-match';
-import type { Match, MatchDetails } from '@/entities/match/model/types';
+import type { Match } from '@/entities/match/model/types';
 
 type ResultData = {
     matchPost: GenerateMatchPostOutput;
@@ -54,17 +48,7 @@ export function MatchOfTheWeekWidget() {
                     matchSummary: `A close match in the ${matchData.tournament || 'friendly game'}.`
                 });
                 
-                // Adapt MatchDetails to Match
-                const adaptedMatchDetails: Match = {
-                    ...matchData,
-                    id: String(matchData.id),
-                    team1: { ...matchData.team1, id: 'mock-id-1', logo: matchData.team1.logo || '', logoHint: matchData.team1.logoHint || '' },
-                    team2: { ...matchData.team2, id: 'mock-id-2', logo: matchData.team2.logo || '', logoHint: matchData.team2.logoHint || '' },
-                    game: 'Unknown',
-                    href: `/matches/${matchData.id}`,
-                };
-                
-                setResult({ matchPost: postData, matchDetails: adaptedMatchDetails });
+                setResult({ matchPost: postData, matchDetails: matchData });
             } catch (e) {
                 console.error('Failed to fetch match of the week:', e);
                 setError('Не удалось загрузить матч недели.');
@@ -130,7 +114,7 @@ export function MatchOfTheWeekWidget() {
             </CardContent>
             <CardFooter>
                 <Button asChild variant="secondary" className="w-full">
-                    <Link href={`/matches/${matchDetails.id}`}>Подробнее</Link>
+                    <Link href={matchDetails.href}>Подробнее</Link>
                 </Button>
             </CardFooter>
         </Card>
