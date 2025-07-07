@@ -1,7 +1,5 @@
 
 
-
-
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from 'react';
@@ -23,7 +21,7 @@ import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
 import { useParams } from 'next/navigation';
-import { CoachedPlayer } from '@/entities/user/model/types';
+import { CoachedPlayer, CoachedPlayerSummary } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
@@ -67,7 +65,7 @@ export function TeamManagementPage() {
             if (teamData) {
                 const appsResult = await getTeamApplications(teamData.id);
                  if (appsResult.success && Array.isArray(appsResult.data)) {
-                    setJoinRequests(appsResult.data as JoinRequest[]);
+                    setJoinRequests(appsResult.data);
                 } else {
                     toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
                 }

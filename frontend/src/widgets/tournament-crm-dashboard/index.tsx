@@ -162,7 +162,7 @@ export function TournamentCrmDashboard() {
                                             <div className="text-sm text-muted-foreground">{tournament.sport}</div>
                                         </TableCell>
                                         <TableCell className="hidden md:table-cell">
-                                            <Badge variant={getStatusVariant(tournament.status as any)}>{getStatusText(tournament.status as any)}</Badge>
+                                            <Badge variant={getStatusVariant(tournament.status)}>{getStatusText(tournament.status)}</Badge>
                                         </TableCell>
                                         <TableCell className="hidden lg:table-cell">
                                             <div className="flex flex-col">

@@ -1,4 +1,5 @@
 
+
 import CoachClient from "@/app/(app)/administration/coach/client";
 import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";

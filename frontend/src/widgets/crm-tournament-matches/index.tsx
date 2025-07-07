@@ -80,7 +80,7 @@ export function CrmTournamentMatches({ rounds }: CrmTournamentMatchesProps) {
     const matchIdToRoundName = useMemo(() => {
         return rounds.reduce((acc, round) => {
             round.matches.forEach(match => {
-                if ('team2' in match && match.id) {
+                if ('id' in match && match.id) {
                     acc[String(match.id)] = round.name;
                 }
             });
@@ -142,7 +142,7 @@ export function CrmTournamentMatches({ rounds }: CrmTournamentMatchesProps) {
             <CrmMatchResultDialog 
                 isOpen={isScoreDialogOpen}
                 onOpenChange={setIsScoreDialogOpen}
-                match={selectedMatch as any}
+                match={selectedMatch}
                 onMatchUpdate={handleMatchUpdate}
             />
         </>

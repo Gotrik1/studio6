@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Card, CardContent, CardFooter, CardHeader } from '@/shared/ui/card';
@@ -22,7 +23,7 @@ const iconMap = {
 };
 
 const formatActivityText = (activity: Activity): string => {
-    const metadata = activity.metadata as any;
+    const metadata: Record<string, string> = activity.metadata as Record<string, string>;
     switch(activity.type) {
         case 'STATUS_POSTED':
             return metadata.text;

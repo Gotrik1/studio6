@@ -4,7 +4,7 @@
 
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
 import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants';
 import { TournamentBracket } from '@/widgets/tournament-bracket';
@@ -35,6 +35,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
     const [loading, setLoading] = useState(true);
     const [rules, setRules] = useState('');
     const { toast } = useToast();
+    const router = useRouter();
 
     useEffect(() => {
         async function loadTournament() {

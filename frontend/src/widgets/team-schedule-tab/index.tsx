@@ -17,7 +17,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 type BackendPractice = {
     id: string;
     title: string;
-    description: string;
+    description: string | null;
     date: string; // ISO string
     playground?: { name: string } | null;
     playgroundId: string;
@@ -26,7 +26,7 @@ type BackendPractice = {
 type TeamPractice = {
     id: string;
     title: string;
-    description: string;
+    description: string | null;
     date: Date;
     location: string;
     playgroundId: string;

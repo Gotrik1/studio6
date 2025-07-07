@@ -25,7 +25,7 @@ export type PlayerProfilePageData = {
 };
 
 const formatActivityText = (activity: Activity): string => {
-    const metadata: Record<string, string> = activity.metadata as Record<string, string>;
+    const metadata = activity.metadata as Record<string, string>;
     switch(activity.type) {
         case 'STATUS_POSTED':
             return metadata.text;

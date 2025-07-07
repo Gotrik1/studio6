@@ -25,8 +25,8 @@ export function PlaygroundsAdminPage() {
     const fetchPlaygrounds = useCallback(async () => {
         setIsLoading(true);
         const result = await fetchWithAuth('/playgrounds/admin/all');
-        if (result.success) {
-            setPlaygrounds(result.data as Playground[]);
+        if (result.success && Array.isArray(result.data)) {
+            setPlaygrounds(result.data);
         } else {
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить площадки.' });
         }

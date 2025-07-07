@@ -2,7 +2,7 @@
 
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { Card, CardHeader, CardContent, CardTitle } from "@/shared/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Button } from "@/shared/ui/button";
@@ -23,7 +23,6 @@ import type { Playground } from '@/entities/playground/model/types';
 import { getPlaygroundById } from '@/entities/playground/api/playgrounds';
 import { TeamOverviewDashboard } from '@/widgets/team-overview-dashboard';
 import { getTeamDashboardData, type TeamDashboardData } from '@/entities/team/api/get-team-dashboard';
-import { useEffect } from 'react';
 
 
 interface TeamDetailsPageProps {

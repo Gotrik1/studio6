@@ -38,12 +38,10 @@ export function JudgeCenterPage() {
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
-            const [disputedData, finishedData] = await Promise.all([
-                fetchMatches('DISPUTED'),
-                fetchMatches('FINISHED'),
-            ]);
+            const disputedData = await fetchMatches('DISPUTED');
+            const finishedData = await fetchMatches('FINISHED');
             setDisputedMatches(disputedData as DisputedMatch[]);
-            setResolvedMatches(finishedData.filter((m) => m.resolution).map((m) => ({ ...(m as ResolvedMatch), judge: 'Вы' })));
+            setResolvedMatches(finishedData.filter((m) => m.resolution).map((m) => ({ ...m, judge: 'Вы' } as ResolvedMatch)));
         } catch (error) {
             console.error('Failed to fetch matches:', error);
             toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список матчей.' });
@@ -78,7 +76,7 @@ export function JudgeCenterPage() {
                 title: 'Спор разрешен!',
                 description: `Решение по матчу ${matchToResolve.team1.name} vs ${matchToResolve.team2.name} было принято.`
             });
-            fetchData(); // Refetch data
+            await fetchData(); // Refetch data
             setIsDialogOpen(false);
         } else {
              toast({
