@@ -87,3 +87,5 @@ export async function getTournamentById(id: string): Promise<TournamentDetails |
         return null;
     }
     
+    return adaptTournamentDetails(result.data);
+}

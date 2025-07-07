@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { useState, useEffect, useTransition, useCallback } from 'react';
@@ -24,7 +26,6 @@ import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
 import type { JoinRequest } from '@/entities/team-application/model/types';
-import type { User } from '@/shared/lib/types';
 
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
@@ -62,7 +63,7 @@ export function TeamManagementPage() {
             if (teamData) {
                 const appsResult = await getTeamApplications(teamData.id);
                  if (appsResult.success && Array.isArray(appsResult.data)) {
-                    setJoinRequests(appsResult.data);
+                    setJoinRequests(appsResult.data as JoinRequest[]);
                 } else {
                     toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
                 }
@@ -187,9 +188,9 @@ export function TeamManagementPage() {
                                 </Table>
                             </CardContent>
                             {joinRequests.length === 0 && (
-                                <CardContent className="text-center text-muted-foreground justify-center">
+                                <CardFooter className="text-center text-muted-foreground justify-center">
                                     Новых заявок нет.
-                                </CardContent>
+                                </CardFooter>
                             )}
                         </Card>
                     </TabsContent>

@@ -35,7 +35,7 @@ const defaultTargets: NutritionTargets = {
 };
 
 function transformRawLog(rawLog: any[]): FoodLogEntry[] {
-    return rawLog.map((entry) => {
+    return rawLog.map((entry: any) => {
         const ratio = entry.grams / 100;
         return {
             id: entry.id,

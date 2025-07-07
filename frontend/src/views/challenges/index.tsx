@@ -107,4 +107,7 @@ export function ChallengesPage() {
                     />
                 )}
             </div>
-            <ChallengeCreateDialog isOpen={isCreateOpen} onOpenChange={setIsCreateOpen
+            <ChallengeCreateDialog isOpen={isCreateOpen} onOpenChange={setIsCreateOpen} onCreate={handleCreateChallenge} />
+        </>
+    );
+}

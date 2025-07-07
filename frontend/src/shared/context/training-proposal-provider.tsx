@@ -46,7 +46,7 @@ export const TrainingProposalProvider = ({ children }: { children: ReactNode }) 
 
             if (proposalsResult.success && proposalsResult.data) {
                 // Convert date strings to Date objects
-                const formattedProposals = (proposalsResult.data as TrainingProposal[]).map((p) => ({
+                const formattedProposals = (proposalsResult.data as any[]).map((p) => ({
                     ...p,
                     date: new Date(p.date),
                 }));

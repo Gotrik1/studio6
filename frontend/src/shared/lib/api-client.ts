@@ -39,7 +39,7 @@ export async function fetchWithAuth<T = unknown>(url: string, options: RequestIn
   });
   
   if (!response.ok) {
-    const errorBody = await response.json().catch(() => ({ message: response.statusText }));
+    const errorBody: { message?: string } = await response.json().catch(() => ({ message: response.statusText }));
     console.error(`API Error on ${url}:`, response.status, errorBody);
     return { success: false, error: errorBody.message || `API request failed with status ${response.status}`, status: response.status, data: null };
   }

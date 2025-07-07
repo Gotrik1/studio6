@@ -38,7 +38,7 @@ const getRecommendationText = (rec?: AnalyzeRoleChangeOutput['recommendation']) 
         case 'approve': return 'Одобрить';
         case 'deny': return 'Отклонить';
         case 'caution': return 'Рассмотреть с осторожностью';
-        default: return '...';
+        default: return rec || '...';
     }
 };
 

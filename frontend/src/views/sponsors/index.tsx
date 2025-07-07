@@ -42,16 +42,16 @@ export function SponsorsPage() {
             try {
                 const data = await getSponsors();
                 setSponsors(data);
-            } catch (error) {
-                console.error(error);
-                toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить список партнеров.' });
+            } catch (error: unknown) {
+                const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить список партнеров.';
+                toast({ variant: 'destructive', title: 'Ошибка', description: errorMessage });
             } finally {
                 setIsLoading(false);
             }
         };
         loadSponsors();
     }, [toast]);
-    
+
     return (
         <div className="space-y-6 opacity-0 animate-fade-in-up">
             <div className="space-y-2">
@@ -65,15 +65,13 @@ export function SponsorsPage() {
                     <>
                         <SponsorCardSkeleton />
                         <SponsorCardSkeleton />
-                        <SponsorCardSkeleton />
-                        <SponsorCardSkeleton />
                     </>
                 ) : (
                     sponsors.length > 0 ? sponsors.map(sponsor => (
-                         <Link key={sponsor.id} href={sponsor.profileUrl || '#'} className="block h-full">
+                         <Link key={sponsor.id} href={sponsor.profileUrl} className="block h-full">
                             <Card className="flex flex-col h-full transition-all hover:shadow-2xl hover:border-primary cursor-pointer">
                                 <CardHeader className="flex flex-row items-center gap-4">
-                                    <Image src={sponsor.logo || 'https://placehold.co/100x100.png'} alt={sponsor.name} width={64} height={64} className="rounded-lg border" data-ai-hint={sponsor.logoHint} />
+                                    <Image src={sponsor.logo || ''} alt={sponsor.name} width={64} height={64} className="rounded-lg border" data-ai-hint={sponsor.logoHint} />
                                     <div>
                                         <CardTitle>{sponsor.name}</CardTitle>
                                         <div className="flex flex-wrap gap-1 mt-2">

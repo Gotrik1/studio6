@@ -1,3 +1,4 @@
+
 'use server';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
@@ -11,6 +12,7 @@ import { getPlayerStats } from "./get-player-stats";
 import { getAchievementsForUser } from '@/entities/achievement/api/achievements';
 import type { Achievement } from '@/entities/achievement/model/types';
 import type { User as BaseUser } from '@/shared/lib/types';
+import type { Activity } from '@/entities/feed/model/types';
 
 
 export type { FullUserProfile, PlayerStats };
@@ -24,7 +26,7 @@ export type PlayerProfilePageData = {
 };
 
 const formatActivityText = (activity: Activity): string => {
-    const metadata = activity.metadata;
+    const metadata: any = activity.metadata;
     switch(activity.type) {
         case 'STATUS_POSTED':
             return metadata.text;
@@ -55,7 +57,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
     }
     
     const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map((activity: Activity) => {
-        const metadata = activity.metadata;
+        const metadata: any = activity.metadata;
         const IconName = metadata.icon as keyof typeof LucideIcons;
         return {
             id: activity.id,
@@ -77,7 +79,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
 
 export async function getPlayerProfile(id: string): Promise<{ user: FullUserProfile; } | null> {
     try {
-        const result = await fetchWithAuth(`/users/${id}`);
+        const result = await fetchWithAuth<any>(`/users/${id}`);
         
         if (!result.success) {
             console.error(`Failed to fetch user ${id}:`, result.error);
