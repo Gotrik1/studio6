@@ -93,6 +93,7 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
                             <TableRow>
                                 <TableHead>Матч</TableHead>
                                 <TableHead>Причина спора</TableHead>
+                                <TableHead className="hidden md:table-cell">Поступил</TableHead>
                                 <TableHead className="text-right"></TableHead>
                             </TableRow>
                         </TableHeader>
@@ -101,6 +102,7 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
                                 <TableRow key={match.id}>
                                     <TableCell className="font-medium">{match.team1.name} vs {match.team2.name}</TableCell>
                                     <TableCell>{match.disputeReason}</TableCell>
+                                    <TableCell className="hidden md:table-cell">{match.timestamp ? formatDistanceToNow(new Date(match.timestamp), { addSuffix: true, locale: ru }) : '-'}</TableCell>
                                     <TableCell className="text-right">
                                         <Button size="sm" onClick={() => handleReviewClick(match)}>Рассмотреть</Button>
                                     </TableCell>
@@ -108,7 +110,7 @@ export function CrmTournamentDisputes({ tournamentId }: CrmTournamentDisputesPro
                             ))}
                             {disputedMatches.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={3} className="text-center h-24">Спорных матчей нет.</TableCell>
+                                    <TableCell colSpan={4} className="text-center h-24">Спорных матчей нет.</TableCell>
                                 </TableRow>
                             )}
                         </TableBody>

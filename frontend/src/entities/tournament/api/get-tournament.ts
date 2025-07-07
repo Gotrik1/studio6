@@ -2,14 +2,12 @@
 
 'use server';
 
-import type { TournamentDetails, BracketMatch, BracketRound } from '@/entities/tournament/model/types';
+import type { TournamentDetails, BracketMatch, BracketRound, TournamentMedia, MatchEvent } from '@/entities/tournament/model/types';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import type { Team, Match, User } from '@prisma/client';
-import type { TournamentMedia } from '../model/types';
-
 
 type RawTeam = Pick<Team, 'name' | 'logo' | 'dataAiHint' | 'slug'>;
-type RawMatch = Pick<Match, 'id' | 'team1Score' | 'team2Score' | 'scheduledAt'> & { winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam };
+type RawMatch = Pick<Match, 'id' | 'team1Score' | 'team2Score' | 'scheduledAt'> & { winner?: boolean, href?: string, date?: string, time?: string, team1?: RawTeam, team2?: RawTeam, events?: MatchEvent[] };
 type RawRound = { name: string; matches: RawMatch[] };
 type RawTournamentData = Omit<TournamentDetails, 'bracket' | 'teams' | 'matches' | 'media' | 'organizer'> & {
     bracket: { rounds: RawRound[] };
@@ -39,6 +37,7 @@ function adaptTournamentDetails(data: RawTournamentData): TournamentDetails {
         href: `/matches/${String(match.id)}`,
         date: match.scheduledAt ? new Date(match.scheduledAt).toISOString() : undefined,
         time: match.scheduledAt ? new Date(match.scheduledAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }) : '',
+        events: match.events
     });
     
     // Adapt the main tournament object

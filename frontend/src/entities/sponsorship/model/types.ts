@@ -7,6 +7,14 @@ export type SponsoredTeam = {
     logoHint: string;
     investment: string;
     since: string;
+    id: string;
+    game: string;
+    motto: string;
+    dataAiHint: string | null;
+    rank: number;
+    homePlaygroundId: string | null;
+    members: number;
+    captain: string;
 };
 
 export type TeamSeekingSponsorship = {

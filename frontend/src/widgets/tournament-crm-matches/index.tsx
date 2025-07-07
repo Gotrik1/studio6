@@ -28,7 +28,7 @@ export function CrmTournamentMatches({ rounds }: CrmTournamentMatchesProps) {
     
     const allMatches = useMemo(() => {
         return rounds.flatMap(round => 
-            round.matches.filter((match): match is BracketMatch => 'team2' in match && !!match.id)
+            round.matches.filter((match): match is BracketMatch => !!match.id && !!match.team1 && !!match.team2)
         );
     }, [rounds]);
     

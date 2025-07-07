@@ -1,11 +1,11 @@
 
 
-'use server';
+'use client';
 
 import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
-import type { FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, UserTeam, TournamentCrm, JudgedMatch } from '@/entities/user/model/types';
+import type { FullUserProfile, PlayerStats, CareerHistoryItem, GalleryItem, UserTeam, TournamentCrm, JudgedMatch, CoachedPlayerSummary } from '@/entities/user/model/types';
 import * as LucideIcons from 'lucide-react';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow, differenceInYears } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { getPlayerStats } from "./get-player-stats";
@@ -53,7 +53,7 @@ export async function getPlayerProfilePageData(id: string): Promise<PlayerProfil
         return null;
     }
     
-    const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map((activity: Activity) => {
+    const playerActivity: PlayerActivityItem[] = (profileResult.user.activities || []).map((activity) => {
         const metadata = activity.metadata as Record<string, string>;
         const IconName = (metadata.icon as keyof typeof LucideIcons) || 'HelpCircle';
         return {
@@ -78,14 +78,12 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
     try {
         const result = await fetchWithAuth<FullUserProfile>(`/users/${id}`);
         
-        if (!result.success) {
+        if (!result.success || !result.data) {
             console.error(`Failed to fetch user ${id}:`, result.error);
             return null;
         }
 
         const rawProfile = result.data;
-        
-        if (!rawProfile) return null;
         
         const augmentedProfile: FullUserProfile = {
             ...rawProfile,
@@ -97,10 +95,9 @@ export async function getPlayerProfile(id: string): Promise<{ user: FullUserProf
                 locale: ru,
             })}.`,
             profileUrl: `/profiles/player/${rawProfile.id}`,
-            // Ensure gallery and careerHistory are arrays
             gallery: (rawProfile.gallery || []) as GalleryItem[],
             careerHistory: (rawProfile.careerHistory || []) as CareerHistoryItem[],
-            activities: (rawProfile.activities || []).map((act: any) => ({...act, id: String(act.id), timestamp: act.createdAt })),
+            activities: (rawProfile.activities || []).map((act) => ({...act, id: String(act.id), timestamp: act.createdAt })),
         };
 
         return {
