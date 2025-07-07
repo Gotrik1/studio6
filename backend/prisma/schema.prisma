@@ -15,20 +15,20 @@ datasource db {
 // ==============================================================================
 
 enum Role {
-  Игрок
-  Капитан
-  Тренер
-  Организатор
-  Судья
-  Менеджер
-  Болельщик
-  Модератор
-  Администратор
+  PLAYER
+  CAPTAIN
+  COACH
+  ORGANIZER
+  JUDGE
+  MANAGER
+  FAN
+  MODERATOR
+  ADMINISTRATOR
 }
 
 enum UserStatus {
-  Активен
-  Забанен
+  ACTIVE
+  BANNED
 }
 
 enum MatchStatus {
@@ -147,7 +147,6 @@ enum ActivityType {
   PLAYGROUND_CHECK_IN
 }
 
-
 // ==============================================================================
 // Models
 // ==============================================================================
@@ -157,8 +156,8 @@ model User {
   email                     String                   @unique
   name                      String
   passwordHash              String
-  role                      Role                     @default(Игрок)
-  status                    UserStatus               @default(Активен)
+  role                      Role                     @default(PLAYER)
+  status                    UserStatus               @default(ACTIVE)
   xp                        Int                      @default(0)
   createdAt                 DateTime                 @default(now())
   updatedAt                 DateTime                 @updatedAt
@@ -208,8 +207,8 @@ model User {
   reportsMade               Report[]                 @relation("ReportsMade")
   reportsAgainst            Report[]                 @relation("ReportsAgainst")
   resolverOfReports         Report[]                 @relation("ReportsResolved")
-  sponsorships              Sponsorship[]            @relation("UserSponsorships")
-  sponsorshipOffers         SponsorshipOffer[]       @relation("UserSponsorshipOffers")
+  sponsorships              Sponsorship[]
+  sponsorshipOffers         SponsorshipOffer[]
   inventoryItems            InventoryItem[]
   foodLogEntries            FoodLogEntry[]
   measurements              Measurement[]
@@ -219,26 +218,26 @@ model User {
 }
 
 model Team {
-  id                   String            @id @default(cuid())
+  id                   String                @id @default(cuid())
   name                 String
   motto                String?
   logo                 String?
   dataAiHint           String?
   game                 String
-  rank                 Int               @default(1)
-  wins                 Int               @default(0)
-  losses               Int               @default(0)
-  draws                Int               @default(0)
-  captain              User              @relation("CaptainTeams", fields: [captainId], references: [id])
+  rank                 Int                   @default(1)
+  wins                 Int                   @default(0)
+  losses               Int                   @default(0)
+  draws                Int                   @default(0)
+  captain              User                  @relation("CaptainTeams", fields: [captainId], references: [id])
   captainId            String
-  members              User[]            @relation("TeamMembers")
+  members              User[]                @relation("TeamMembers")
   tournaments          Tournament[]
-  matchesAsTeam1       Match[]           @relation("Team1Matches")
-  matchesAsTeam2       Match[]           @relation("Team2Matches")
-  creator              User              @relation("CreatorTeams", fields: [creatorId], references: [id])
+  matchesAsTeam1       Match[]               @relation("Team1Matches")
+  matchesAsTeam2       Match[]               @relation("Team2Matches")
+  creator              User                  @relation("CreatorTeams", fields: [creatorId], references: [id])
   creatorId            String
-  slug                 String            @unique
-  homePlayground       Playground?       @relation(fields: [homePlaygroundId], references: [id])
+  slug                 String                @unique
+  homePlayground       Playground?           @relation(fields: [homePlaygroundId], references: [id])
   homePlaygroundId     String?
   chat                 Chat?
   sponsorships         Sponsorship[]
@@ -247,11 +246,10 @@ model Team {
   leagueTeams          LeagueTeam[]
   teamPractices        TeamPractice[]
   matchEvents          MatchEvent[]
-  seekingSponsorship   Boolean           @default(false)
-  pitch                String?           @db.Text
-  createdAt            DateTime          @default(now())
-  updatedAt            DateTime          @updatedAt
-  sponsors             Sponsor[]         @relation("SponsoredTeams")
+  seekingSponsorship   Boolean               @default(false)
+  pitch                String?               @db.Text
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 }
 
 model Tournament {
@@ -278,7 +276,7 @@ model Tournament {
   location                String?
   category                String?
   judges                  User[]                   @relation("JudgedTournaments")
-  sponsors                Sponsor[]                @relation("TournamentSponsors")
+  sponsors                Sponsor[]
   medicalPartners         MedicalPartner[]
   announcements           TournamentAnnouncement[]
   media                   TournamentMedia[]
@@ -371,15 +369,15 @@ model FriendRequest {
 }
 
 model TeamPractice {
-  id           String     @id @default(cuid())
-  team         Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  id           String      @id @default(cuid())
+  team         Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
   teamId       String
   title        String
   description  String?
   date         DateTime
-  playground   Playground @relation(fields: [playgroundId], references: [id], onDelete: Cascade)
+  playground   Playground  @relation(fields: [playgroundId], references: [id], onDelete: Cascade)
   playgroundId String
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime    @default(now())
 }
 
 model Playground {
@@ -450,19 +448,19 @@ model LfgLobby {
 }
 
 model Promotion {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String
-  description   String   @db.Text
+  description   String    @db.Text
   prize         String
   cost          String
-  imageDataUri  String   @db.Text
+  imageDataUri  String    @db.Text
   imageHint     String?
-  organizer     User     @relation(fields: [organizerId], references: [id])
+  organizer     User      @relation(fields: [organizerId], references: [id])
   organizerId   String
-  sponsor       Sponsor? @relation(fields: [sponsorId], references: [id])
+  sponsor       Sponsor?  @relation(fields: [sponsorId], references: [id])
   sponsorId     String?
   endDate       DateTime
-  createdAt     DateTime @default(now())
+  createdAt     DateTime  @default(now())
 }
 
 model Sponsor {
@@ -474,23 +472,21 @@ model Sponsor {
   profileUrl        String
   interests         String[]
   promotions        Promotion[]
-  teams             Team[]             @relation("SponsoredTeams")
+  teams             Team[]
   sponsorships      Sponsorship[]
   sponsorshipOffers SponsorshipOffer[]
-  tournaments       Tournament[]       @relation("TournamentSponsors")
+  tournaments       Tournament[]
 }
 
 model SponsorshipOffer {
-  id        String   @id @default(cuid())
-  team      Team     @relation(fields: [teamId], references: [id])
-  teamId    String
-  sponsor   Sponsor  @relation(fields: [sponsorId], references: [id])
-  sponsorId String
-  offerText String
-  status    String   @default("PENDING") // PENDING, ACCEPTED, DECLINED
-  createdAt DateTime @default(now())
-  user      User?    @relation("UserSponsorshipOffers", fields: [userId], references: [id])
-  userId    String?
+  id         String   @id @default(cuid())
+  team       Team     @relation(fields: [teamId], references: [id])
+  teamId     String
+  sponsor    Sponsor  @relation(fields: [sponsorId], references: [id])
+  sponsorId  String
+  offerText  String
+  status     String   @default("PENDING") // PENDING, ACCEPTED, DECLINED
+  createdAt  DateTime @default(now())
 }
 
 model LeagueTeam {
@@ -508,7 +504,7 @@ model LeagueTeam {
 }
 
 model League {
-  id          String       @id @default(cuid())
+  id          String         @id @default(cuid())
   name        String
   description String
   game        String
@@ -530,17 +526,17 @@ model UserTrainingProgram {
 }
 
 model Chat {
-  id           String    @id @default(cuid())
+  id           String      @id @default(cuid())
   name         String?
   type         ChatType
   participants User[]
   messages     Message[]
-  team         Team?     @relation(fields: [teamId], references: [id])
-  teamId       String?   @unique
-  match        Match?    @relation(fields: [matchId], references: [id])
-  matchId      String?   @unique
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  team         Team?       @relation(fields: [teamId], references: [id])
+  teamId       String?     @unique
+  match        Match?      @relation(fields: [matchId], references: [id])
+  matchId      String?     @unique
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 }
 
 model Message {
@@ -644,11 +640,11 @@ model Challenge {
 }
 
 model Sport {
-  id        String      @id @unique
-  name      String      @unique
-  icon      String
-  category  String
-  Challenge Challenge[]
+  id         String      @id @unique
+  name       String      @unique
+  icon       String
+  category   String
+  challenges Challenge[]
 }
 
 model MedicalPartner {
@@ -669,24 +665,24 @@ model Sponsorship {
   sponsorId String
   amount    Decimal
   signedAt  DateTime @default(now())
-  user      User?    @relation("UserSponsorships", fields: [userId], references: [id])
-  userId    String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
 }
 
 model TrainingProgram {
-  id                String                  @id @default(cuid())
-  name              String
-  description       String
-  goal              String // "Набор массы", "Снижение веса", "Рельеф", "Сила"
-  daysPerWeek       Int
-  splitType         String // "Full-body", "Split", "Upper/Lower"
-  author            String
-  isAiGenerated     Boolean                 @default(false)
-  coverImage        String?
-  coverImageHint    String?
-  weeklySplit       WorkoutDay[]
-  assignments       UserTrainingProgram[]
-  trainingProposals TrainingProposal[]
+  id                       String                  @id @default(cuid())
+  name                     String
+  description              String
+  goal                     String // "Набор массы", "Снижение веса", "Рельеф", "Сила"
+  daysPerWeek              Int
+  splitType                String // "Full-body", "Split", "Upper/Lower"
+  author                   String
+  isAiGenerated            Boolean                 @default(false)
+  coverImage               String?
+  coverImageHint           String?
+  weeklySplit              WorkoutDay[]
+  assignments              UserTrainingProgram[]
+  proposals                TrainingProposal[]
 }
 
 model WorkoutDay {
@@ -699,7 +695,7 @@ model WorkoutDay {
 }
 
 model WorkoutExercise {
-  id                     String    @id @default(cuid())
+  id                     String      @id @default(cuid())
   workoutDay             WorkoutDay  @relation(fields: [workoutDayId], references: [id], onDelete: Cascade)
   workoutDayId           String
   name                   String
@@ -711,8 +707,8 @@ model WorkoutExercise {
 }
 
 model TrainingLog {
-  id         String           @id @default(cuid())
-  user       User             @relation(fields: [userId], references: [id])
+  id         String            @id @default(cuid())
+  user       User              @relation(fields: [userId], references: [id])
   userId     String
   date       DateTime
   workoutName String?
@@ -724,10 +720,10 @@ model TrainingLog {
 }
 
 model LoggedExercise {
-  id                     String         @id @default(cuid())
-  trainingLog            TrainingLog    @relation(fields: [trainingLogId], references: [id], onDelete: Cascade)
+  id                     String      @id @default(cuid())
+  trainingLog            TrainingLog   @relation(fields: [trainingLogId], references: [id], onDelete: Cascade)
   trainingLogId          String
-  exercise               Exercise       @relation(fields: [exerciseId], references: [id])
+  exercise               Exercise      @relation(fields: [exerciseId], references: [id])
   exerciseId             String
   isSupersetWithPrevious Boolean?
   notes                  String?
@@ -776,14 +772,14 @@ model InventoryItem {
 }
 
 model StoreItem {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
   description String
   price       Float
   image       String?
   imageHint   String?
   category    String
-  isRealMoney Boolean @default(false)
+  isRealMoney Boolean  @default(false)
 }
 
 model FaqItem {
@@ -795,8 +791,8 @@ model FaqItem {
 }
 
 model FoodItem {
-  id          String         @id @default(cuid())
-  name        String         @unique
+  id          String        @id @default(cuid())
+  name        String        @unique
   category    String
   image       String?
   imageHint   String?
@@ -860,15 +856,15 @@ model Quest {
 }
 
 model Poll {
-  id        String       @id @default(cuid())
+  id        String     @id @default(cuid())
   title     String
   question  String
   options   PollOption[]
   votes     PollVote[]
-  author    User?        @relation("PollsAuthored", fields: [authorId], references: [id])
+  author    User?      @relation("PollsAuthored", fields: [authorId], references: [id])
   authorId  String?
-  isActive  Boolean      @default(true)
-  createdAt DateTime     @default(now())
+  isActive  Boolean    @default(true)
+  createdAt DateTime   @default(now())
 }
 
 model PollOption {
@@ -892,15 +888,15 @@ model PollVote {
 }
 
 model TournamentAnnouncement {
-  id            String         @id @default(cuid())
-  tournament    Tournament     @relation(fields: [tournamentId], references: [id])
+  id            String       @id @default(cuid())
+  tournament    Tournament   @relation(fields: [tournamentId], references: [id])
   tournamentId  String
-  sender        User           @relation(fields: [senderId], references: [id])
+  sender        User         @relation(fields: [senderId], references: [id])
   senderId      String
   subject       String
   message       String
   sentTo        Int
-  createdAt     DateTime       @default(now())
+  createdAt     DateTime     @default(now())
   notifications Notification[]
 }
 

@@ -15,6 +15,7 @@ import { Public } from "../auth/decorators/public.decorator";
 import { LeaderboardPlayerDto } from "./dto/leaderboard-player.dto";
 import { ApiOperation, ApiQuery, ApiTags, ApiResponse } from "@nestjs/swagger";
 import { PlayerStatsDto } from "./dto/player-stats.dto";
+import { Role } from "@prisma/client";
 
 @ApiTags("Users")
 @Controller("users")
@@ -61,6 +62,7 @@ export class UsersController {
     name: "role",
     required: false,
     description: "Фильтр по роли пользователя",
+    enum: Role
   })
   findAll(@Query("role") role?: string) {
     return this.usersService.findAll({ role });

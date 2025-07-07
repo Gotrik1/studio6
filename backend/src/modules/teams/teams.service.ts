@@ -10,7 +10,7 @@ import {
 } from "@nestjs/common";
 import { CreateTeamDto } from "./dto/create-team.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Team, ActivityType, Prisma, TrainingLogStatus, Match as PrismaMatch } from "@prisma/client";
+import { Team, ActivityType, Prisma, TrainingLogStatus, Match as PrismaMatch, Role } from "@prisma/client";
 import { LeaderboardTeamDto } from "./dto/leaderboard-team.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { Cache } from "cache-manager";
@@ -70,7 +70,7 @@ export class TeamsService implements OnModuleInit {
           email: "captain@example.com",
           name: "Captain Seed",
           passwordHash: "seeded",
-          role: "Капитан",
+          role: Role.CAPTAIN,
         },
       });
     }
@@ -109,7 +109,7 @@ export class TeamsService implements OnModuleInit {
           email: `${teamData.slug}@example.com`,
           name: `Captain ${teamData.name}`,
           passwordHash: "seeded",
-          role: "Капитан",
+          role: Role.CAPTAIN,
         },
       });
 
@@ -459,11 +459,11 @@ export class TeamsService implements OnModuleInit {
       }),
       this.prisma.user.update({
         where: { id: newCaptainId },
-        data: { role: "Капитан" },
+        data: { role: Role.CAPTAIN },
       }),
       this.prisma.user.update({
         where: { id: currentCaptainId },
-        data: { role: "Игрок" },
+        data: { role: Role.PLAYER },
       }),
     ]);
 
