@@ -32,7 +32,7 @@ services:
     volumes:
       - ./database_data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -141,7 +141,7 @@ services:
     volumes:
       - ./database_data/keycloak:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${KEYCLOAK_DB_USER}", "-d", "${KEYCLOAK_DB_DATABASE}"]
+      test: ["CMD-SHELL", "pg_isready -U ${KEYCLOAK_DB_USER} -d ${KEYCLOAK_DB_DATABASE} -h localhost"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -191,7 +191,7 @@ services:
     volumes:
       - ./database_data/kong:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${KONG_PG_USER}", "-d", "${KONG_PG_DATABASE}"]
+      test: ["CMD-SHELL", "pg_isready -U ${KONG_PG_USER} -d ${KONG_PG_DATABASE} -h localhost"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -324,6 +324,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: backend
+    restart: on-failure
     ports:
       - "3001:3001"
     volumes:
@@ -343,7 +344,6 @@ services:
       keycloak:
         condition: service_healthy
     command: npm run start:dev
-    restart: on-failure
     logging:
       driver: loki
       options:
@@ -356,6 +356,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: frontend
+    restart: on-failure
     ports:
       - "9002:9002"
     volumes:
@@ -368,7 +369,6 @@ services:
       - backend
       - kong-setup
     command: npm run dev
-    restart: on-failure
     logging:
       driver: loki
       options:
