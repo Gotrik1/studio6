@@ -1,18 +1,11 @@
 
 
+
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from 'react';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
-import { Button } from '@/shared/ui/button';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
-import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
-import { Check, X, Mail, Trash2, ChevronDown } from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants';
 import { useToast } from '@/shared/hooks/use-toast';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
-import Link from 'next/link';
-import { Skeleton } from '@/shared/ui/skeleton';
 import {
     getTournamentApplications,
     getTournamentParticipants,
@@ -22,7 +15,6 @@ import {
     type Application,
     type Participant
 } from '@/entities/tournament/api/participants';
-import { Badge } from '@/shared/ui/badge';
 import type { User } from '@/shared/lib/types';
 
 
@@ -36,8 +28,8 @@ type BackendApplication = {
         name: string;
         slug: string;
         captain: { name: string } | null;
-    }
-}
+    };
+};
 type BackendParticipantTeam = {
     id: string;
     name: string;
@@ -93,13 +85,13 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 getTournamentParticipants(tournamentId)
             ]);
             
-            if (appsResult.success && Array.isArray(appsResult.data)) {
+            if (appsResult.success && appsResult.data) {
                 setApplications(appsResult.data);
             } else if (!appsResult.success) {
                 throw new Error(appsResult.error);
             }
 
-            if (participantsResult.success && Array.isArray(participantsResult.data)) {
+            if (participantsResult.success && participantsResult.data) {
                 setParticipants(participantsResult.data);
             } else if (!participantsResult.success) {
                 throw new Error(participantsResult.error);
@@ -160,6 +152,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
     }
     
     return <CrmTournamentParticipants
+        tournamentId={tournamentId}
         applications={applications}
         participants={participants}
         isLoading={isLoading}

@@ -1,17 +1,16 @@
 
 
+
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { notFound } from 'next/navigation';
+import { notFound, useRouter } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
 import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants';
 import { TournamentBracket } from '@/widgets/tournament-bracket';
-import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
 import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
-import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
 import { CrmTournamentAnnouncements } from '@/widgets/crm-tournament-announcements';
 import { CrmTournamentSettings } from '@/widgets/crm-tournament-settings';
 import { useState, useEffect } from 'react';
@@ -25,6 +24,8 @@ import { CrmTournamentDisputes } from '@/widgets/crm-tournament-disputes';
 import { getTournamentById } from '@/entities/tournament/api/get-tournament';
 import type { TournamentDetails } from '@/entities/tournament/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
+import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
+import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -35,13 +36,17 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
     const [loading, setLoading] = useState(true);
     const [rules, setRules] = useState('');
     const { toast } = useToast();
+    const router = useRouter();
+
 
     useEffect(() => {
         async function loadTournament() {
             setLoading(true);
             const data = await getTournamentById(tournamentId);
             if (!data) {
-                notFound();
+                // Using notFound() from next/navigation is for Server Components
+                // In a client component, we'd typically redirect or show a message.
+                router.push('/404'); 
                 return;
             }
             setTournament(data);
@@ -49,7 +54,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             setLoading(false);
         }
         loadTournament();
-    }, [tournamentId]);
+    }, [tournamentId, router]);
 
     
     const handleSaveRules = () => {

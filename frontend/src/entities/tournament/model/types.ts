@@ -1,5 +1,6 @@
 
 
+
 export type MatchEventType = "GOAL" | "ASSIST" | "YELLOW_CARD" | "RED_CARD" | "SUBSTITUTION" | "KILL" | "DEATH" | "ASSIST_ESPORTS" | "BOMB_PLANTED" | "BOMB_DEFUSED" | "ROUND_WIN" | "ROUND_LOSS" | "OTHER";
 
 export type MatchEvent = {

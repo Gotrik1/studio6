@@ -1,13 +1,13 @@
 
 
+
 'use client';
 
 import { PlaygroundActivityFeed } from '@/widgets/playground-activity-feed';
 import { PlaygroundCurrentActivity } from '@/widgets/playground-current-activity';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Card, CardHeader, CardContent } from '@/shared/ui/card';
-import type { Activity } from '@/entities/feed/model/types';
-import type { PlaygroundCheckInActivity } from '@/entities/feed/model/types';
+import type { Activity, PlaygroundCheckInActivity } from '@/entities/feed/model/types';
 
 
 interface PlaygroundActivityTabProps {
@@ -23,7 +23,8 @@ export function PlaygroundActivityTab({ activities, isLoading }: PlaygroundActiv
             user: act.user,
             comment: (act.metadata as { comment?: string }).comment || 'Отметился на площадке.',
             photo: (act.metadata as { photo?: string }).photo,
-            createdAt: act.createdAt
+            createdAt: act.createdAt,
+            timestamp: act.createdAt,
         }));
 
     return (
