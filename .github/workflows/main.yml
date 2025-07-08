@@ -125,8 +125,8 @@ jobs:
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
 
-      - name: Install frontend dependencies
-        run: npm install --workspace=frontend
+      - name: Install dependencies
+        run: npm install
 
       - name: Lint frontend
         run: npm run lint --workspace=frontend
@@ -140,6 +140,14 @@ jobs:
       - name: Show frontend logs on failure
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs frontend
+
+      - name: Show Keycloak logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak
+
+      - name: Show Kafka logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
 
       - name: Tear down
         if: always()
