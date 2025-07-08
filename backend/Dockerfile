@@ -1,26 +1,30 @@
-FROM node:20-alpine AS base
-# Install openssl for Prisma
-RUN apk add --no-cache openssl
+FROM node:20-slim
+
+# Install pnpm
+RUN npm install -g pnpm
+
 WORKDIR /usr/src/app
 
-FROM base AS deps
-WORKDIR /usr/src/app
-COPY package.json pnpm-lock.yaml ./
-RUN npm install -g pnpm && pnpm fetch
+# Copy all package manifests and lockfile
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
 
-FROM base AS builder
-WORKDIR /usr/src/app
-COPY --from=deps /usr/src/app/node_modules ./node_modules
+# Install all dependencies for the entire monorepo
+RUN pnpm install --frozen-lockfile
+
+# Copy the rest of the source code
 COPY . .
-RUN npm install -g pnpm && pnpm i --offline
-RUN pnpm --filter prodvor-backend run prisma:generate
-RUN pnpm --filter prodvor-backend run build
 
-FROM base as runner
-WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/backend/dist ./dist
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/backend/package.json ./package.json
+# Generate Prisma client
+RUN pnpm --filter prodvor-backend prisma:generate
+
+# Build the backend application
+RUN pnpm --filter prodvor-backend build
+
+# Add openssl for Prisma
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 3001
-CMD ["node", "dist/main.js"]
+
+CMD ["node", "backend/dist/main.js"]
