@@ -14,10 +14,6 @@ export type Application = {
     };
 };
 
-export type JoinRequest = {
-    id: string;
-    teamId: string;
+export type JoinRequest = Application & {
     applicant: User;
-    message: string;
-    statsSummary: string;
 };

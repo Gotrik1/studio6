@@ -24,7 +24,7 @@ import { Button, buttonVariants } from '@/shared/ui/button';
 import { cn } from '@/shared/lib/utils';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { getUsers } from '@/entities/user/api/get-users';
-import type { User } from '@/shared/lib/types';
+import { User, UserStatus } from '@/shared/lib/types';
 
 
 const allRoles = ["Все роли", "ADMINISTRATOR", "MODERATOR", "CAPTAIN", "PLAYER", "JUDGE", "MANAGER", "ORGANIZER", "SPONSOR", "FAN", "COACH"];
@@ -106,7 +106,7 @@ export function UserManagementPage() {
         startTransition(() => {
             // In a real app, this would be an API call.
             // For now, we optimistically update the state.
-            const newStatus = actionType === 'ban' ? 'BANNED' : 'ACTIVE';
+            const newStatus = actionType === 'ban' ? UserStatus.BANNED : UserStatus.ACTIVE;
             setUsers(prev => prev.map(u => u.id === userToAction.id ? { ...u, status: newStatus } : u));
             
             toast({

@@ -1,3 +1,5 @@
+
+
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
@@ -17,7 +19,7 @@ export type PlaygroundActivity = {
     comment: string;
     photo?: string | null;
     photoHint?: string;
-    timestamp: string;
+    createdAt: string;
 };
 
 interface PlaygroundActivityFeedProps {
@@ -46,7 +48,7 @@ export function PlaygroundActivityFeed({ activities }: PlaygroundActivityFeedPro
                                 <div className="flex-1 space-y-2">
                                     <div className="flex items-baseline justify-between">
                                         <p className="font-semibold text-sm">{activity.user.name}</p>
-                                        <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(activity.timestamp), { addSuffix: true, locale: ru })}</p>
+                                        <p className="text-xs text-muted-foreground">{formatDistanceToNow(new Date(activity.createdAt), { addSuffix: true, locale: ru })}</p>
                                     </div>
                                     <p className="text-sm text-muted-foreground italic">&quot;{activity.comment}&quot;</p>
                                     {activity.photo && (

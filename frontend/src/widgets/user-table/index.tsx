@@ -11,8 +11,8 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import type { User } from "@/shared/lib/types";
+import { UserStatus } from "@/shared/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
-
 
 interface UserTableProps {
     users: User[];
@@ -80,7 +80,7 @@ export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onE
                                     <Badge variant="outline">{user.role}</Badge>
                                 </TableCell>
                                 <TableCell className="hidden md:table-cell">
-                                    <Badge variant={user.status === 'ACTIVE' ? 'default' : 'destructive'}>{user.status === 'ACTIVE' ? 'Активен' : 'Забанен'}</Badge>
+                                    <Badge variant={user.status === UserStatus.ACTIVE ? 'default' : 'destructive'}>{user.status === UserStatus.ACTIVE ? 'Активен' : 'Забанен'}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
                                      <DropdownMenu>
@@ -108,7 +108,7 @@ export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onE
                                                 Списать PD
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
-                                            {user.status !== 'BANNED' ? (
+                                            {user.status !== UserStatus.BANNED ? (
                                                 <DropdownMenuItem 
                                                     className="text-destructive focus:bg-destructive/10 focus:text-destructive"
                                                     onClick={() => onOpenBanUnbanDialog(user, 'ban')}

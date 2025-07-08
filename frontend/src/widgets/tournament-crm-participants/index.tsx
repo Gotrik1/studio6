@@ -23,11 +23,60 @@ import {
     type Participant
 } from '@/entities/tournament/api/participants';
 import { Badge } from '@/shared/ui/badge';
+import type { User } from '@/shared/lib/types';
+
+
+type BackendApplication = {
+    id: string;
+    teamId: string;
+    message?: string;
+    user: User;
+    team: {
+        id: string;
+        name: string;
+        slug: string;
+        captain: { name: string } | null;
+    };
+};
+
+type BackendParticipantTeam = {
+    id: string;
+    name: string;
+    captain: User | null;
+    members: User[];
+};
+
+function adaptApplication(app: BackendApplication): Application {
+    return {
+        id: app.id,
+        teamId: app.teamId,
+        message: app.message,
+        user: app.user,
+        team: {
+            id: app.team.id,
+            name: app.team.name,
+            slug: app.team.slug,
+            captain: { name: app.team.captain?.name || 'N/A' },
+        },
+    };
+}
+function adaptParticipant(team: BackendParticipantTeam): Participant {
+    return {
+        id: team.id,
+        name: team.name,
+        captain: { name: team.captain?.name || 'N/A' },
+        members: team.members.map(m => ({
+            id: m.id,
+            name: m.name,
+            avatar: m.avatar,
+            role: m.role
+        }))
+    }
+}
 
 interface CrmTournamentParticipantsProps {
     tournamentId: string;
 }
-
 
 export function CrmTournamentParticipants({ tournamentId }: CrmTournamentParticipantsProps) {
     const { toast } = useToast();

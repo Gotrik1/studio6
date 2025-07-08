@@ -5,7 +5,7 @@
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 import type { User } from '@/shared/lib/types';
-
+import { UserStatus } from '@/shared/lib/types';
 
 // Assuming the backend returns a user object compatible with this structure.
 type BackendJudge = User;
@@ -18,7 +18,7 @@ const mapBackendJudgeToFrontendUser = (backendJudge: BackendJudge): User => {
         avatar: backendJudge.avatar || null,
         email: backendJudge.email,
         role: backendJudge.role,
-        status: backendJudge.status || 'Активен',
+        status: backendJudge.status || UserStatus.ACTIVE,
     };
 };
 
