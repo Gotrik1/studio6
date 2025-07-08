@@ -83,6 +83,11 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    healthcheck:
+      test: ["CMD-SHELL", "zookeeper-shell zookeeper:2181 get / || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - prodvor-network
 
@@ -90,7 +95,8 @@ services:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     ports:
       - "9092:9092"
     environment:
@@ -139,11 +145,10 @@ services:
       - POSTGRES_DB=keycloak
       - POSTGRES_USER=keycloak
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./database_data/keycloak:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "psql -h localhost -U keycloak -d keycloak -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -U keycloak -d keycloak -c 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -190,11 +195,10 @@ services:
       - POSTGRES_USER=kong
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=kong
-      - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./database_data/kong:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "psql -h localhost -U kong -d kong -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -U kong -d kong -c 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 10
