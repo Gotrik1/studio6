@@ -1,40 +1,40 @@
-
-# Use an official Node.js runtime as a parent image
-FROM node:20-alpine
-
-# Set the working directory in the container
+# Stage 1: Build the application
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy the root package.json and lock files
-COPY package.json package-lock.json* ./
-COPY pnpm-lock.yaml ./
-
-# Copy workspace package.json files and configs
-# We copy backend's package.json as well to satisfy workspace dependencies
-COPY backend/package.json ./backend/
+# Install dependencies
+COPY package.json ./
 COPY frontend/package.json ./frontend/
-COPY frontend/next.config.ts ./frontend/
-COPY frontend/tailwind.config.ts ./frontend/
-COPY frontend/postcss.config.js ./frontend/
-COPY frontend/components.json ./frontend/
-COPY frontend/tsconfig.json ./frontend/
-COPY frontend/.eslintrc.json ./frontend/
+# If you have pnpm-lock.yaml in the root, copy it
+COPY pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
 
-# Install all monorepo dependencies
-RUN npm install
-
-# Copy the rest of the frontend source code
+# Copy source files
 COPY frontend/ ./frontend/
 
-# Set env var to disable telemetry
-ENV NEXT_TELEMETRY_DISABLED 1
+# Set the build-time environment variable
+ARG NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
 
 # Build the Next.js application
-RUN npm run build --workspace=prodvor-frontend
+RUN pnpm --filter prodvor-frontend build
+
+# Stage 2: Production image
+FROM node:20-alpine
+WORKDIR /app
+
+# Install production dependencies only
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/frontend/node_modules ./frontend/node_modules
+COPY package.json ./
+COPY frontend/package.json ./frontend/
+
+# Copy built application
+COPY --from=builder /app/frontend/.next ./frontend/.next
+COPY --from=builder /app/frontend/public ./frontend/public
 
 # Expose the port the app runs on
 EXPOSE 9002
 
-# The start command is in the package.json, this will run `next start`
-# It will be overridden by docker-compose in dev
-CMD ["npm", "start", "--workspace=prodvor-frontend"]
+# The command to run the application will be specified in docker-compose.yml
+# CMD ["npm", "start", "--workspace=prodvor-frontend"]
