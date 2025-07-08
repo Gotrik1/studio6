@@ -1,0 +1,9 @@
+# This file overrides the default docker-compose.yml for CI environments
+# where the loki logging driver plugin is not available.
+services:
+  backend:
+    logging:
+      driver: "json-file"
+  frontend:
+    logging:
+      driver: "json-file"
