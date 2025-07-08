@@ -35,6 +35,43 @@ export type BracketRound = {
   matches: BracketMatch[];
 };
 
+export type MatchDetails = {
+    id: string;
+    tournament: string;
+    status: string;
+    score: string;
+    date: string;
+    time: string;
+    location: string;
+    referee: { name: string };
+    team1: { name: string; logo: string | null; logoHint: string | null; };
+    team2: { name: string; logo: string | null; logoHint: string | null; };
+    lineups: {
+        team1: { name: string; role: string; avatar: string; avatarHint: string; }[];
+        team2: { name:string; role: string; avatar: string; avatarHint: string; }[];
+    };
+    events?: MatchEvent[];
+    teamStats?: {
+        [key: string]: { label: string; team1: number; team2: number; }
+    } | null;
+    media: TournamentMedia[];
+    bracket: {
+      rounds: BracketRound[];
+    };
+};
+
+export type Tournament = {
+  id: string;
+  name: string;
+  game: string;
+  prize: string;
+  status: string;
+  date: string;
+  image: string;
+  dataAiHint: string;
+  slug: string;
+};
+
 export type TournamentDetails = {
     id: string;
     name: string;
@@ -64,16 +101,4 @@ export type TournamentDetails = {
     };
     media: TournamentMedia[];
     matches: BracketMatch[];
-};
-
-export type Tournament = {
-  id: string;
-  name: string;
-  game: string;
-  prize: string;
-  status: string;
-  date: string;
-  image: string;
-  dataAiHint: string;
-  slug: string;
 };

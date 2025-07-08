@@ -5,7 +5,7 @@
 import Image from "next/image";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
-import { Card } from "@/shared/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { BrainCircuit, FileText, BarChart3, Users, Camera } from "lucide-react";
 import { OverviewTab } from "@/widgets/match-details-tabs/ui/overview-tab";
@@ -73,7 +73,7 @@ export function MatchDetailsPage({ match }: MatchDetailsPageProps) {
                     <LineupsTab match={match} />
                 </TabsContent>
                 <TabsContent value="media" className="mt-4">
-                    <MediaTab media={match.media} />
+                    <MediaTab media={(match.media || []).map(m => ({ ...m, hint: m.hint || ''}))} />
                 </TabsContent>
                 <TabsContent value="ai-analysis" className="mt-4">
                     <AiAnalysisTab match={match} />

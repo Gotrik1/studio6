@@ -1,3 +1,4 @@
+
 import { Module } from "@nestjs/common";
 import { AppController } from "../app.controller";
 import { AppService } from "../app.service";
@@ -87,16 +88,16 @@ import { PlaygroundReportsModule } from "./playground-reports/playground-reports
     FaqModule,
     TournamentAnnouncementsModule,
     TournamentJudgesModule,
-    ReportsModule,
-    AchievementsModule,
-    MedicalPartnersModule,
-    TournamentMedicalModule,
     TournamentParticipantsModule,
     TournamentSponsorsModule,
+    TournamentMedicalModule,
+    MedicalPartnersModule,
+    ReportsModule,
+    AchievementsModule,
     TeamApplicationsModule,
     AdminModule,
-    FeedModule,
     ActivitiesModule,
+    FeedModule,
     SponsorshipOffersModule,
     WebsocketsModule,
     StorageModule,

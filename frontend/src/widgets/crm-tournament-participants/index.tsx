@@ -1,9 +1,8 @@
 
 
-
 'use client';
 
-import { useState, useEffect, useCallback, useTransition } from 'react';
+import { useState, useTransition } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
@@ -15,18 +14,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui
 import Link from 'next/link';
 import { Skeleton } from '@/shared/ui/skeleton';
 import {
-    getTournamentApplications,
-    getTournamentParticipants,
-    approveApplication,
-    rejectApplication,
-    removeParticipant,
     type Application,
     type Participant
 } from '@/entities/tournament/api/participants';
 import { Badge } from '@/shared/ui/badge';
 
+
 interface CrmTournamentParticipantsProps {
-    tournamentId: string;
     applications: Application[];
     participants: Participant[];
     isLoading: boolean;
@@ -39,7 +33,7 @@ interface CrmTournamentParticipantsProps {
 }
 
 
-export function CrmTournamentParticipants({
+export function CrmTournamentParticipantsWidget({
     applications,
     participants,
     isLoading,
@@ -50,6 +44,7 @@ export function CrmTournamentParticipants({
     handleDecline,
     handleRemove
 }: CrmTournamentParticipantsProps) {
+    const { toast } = useToast();
 
     if(isLoading) {
         return (
@@ -140,7 +135,7 @@ export function CrmTournamentParticipants({
                                                     </CollapsibleTrigger>
                                                 </TableCell>
                                                 <TableCell className="font-medium">{p.name}</TableCell>
-                                                <TableCell className="hidden md:table-cell">{p.captain?.name || 'N/A'}</TableCell>
+                                                <TableCell className="hidden md:table-cell">{p.captain?.name}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{p.members.length} чел.</TableCell>
                                                 <TableCell className="text-right">
                                                      <div className="flex items-center justify-end gap-2">

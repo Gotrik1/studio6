@@ -1,8 +1,6 @@
 
 
 
-
-
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/shared/ui/card';
@@ -33,7 +31,7 @@ interface TournamentCrmDetailsPageProps {
     tournamentId: string;
 }
 
-export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsPageProps) {
+export function CrmTournamentDetailsPage({ tournamentId }: TournamentCrmDetailsPageProps) {
     const [tournament, setTournament] = useState<TournamentDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const [rules, setRules] = useState('');
