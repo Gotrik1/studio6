@@ -55,6 +55,10 @@ jobs:
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
 
+      - name: Show Keycloak DB logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak-db
+
       - name: Install frontend dependencies
         run: npm install --workspace=frontend
 
@@ -74,4 +78,3 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-
