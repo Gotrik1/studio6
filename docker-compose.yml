@@ -33,7 +33,7 @@ services:
     volumes:
       - ./database_data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres"]
+      test: ["CMD-SHELL", "psql -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -136,13 +136,14 @@ services:
     container_name: keycloak-db
     restart: on-failure
     environment:
+      - POSTGRES_DB=keycloak
       - POSTGRES_USER=keycloak
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=keycloak
+      - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./database_data/keycloak:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres"]
+      test: ["CMD-SHELL", "psql -h localhost -U keycloak -d keycloak -c 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -189,10 +190,11 @@ services:
       - POSTGRES_USER=kong
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=kong
+      - PGPASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./database_data/kong:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres"]
+      test: ["CMD-SHELL", "psql -h localhost -U kong -d kong -c 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 10
