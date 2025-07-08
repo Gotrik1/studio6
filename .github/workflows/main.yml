@@ -22,8 +22,6 @@ jobs:
         run: |
           # Fail fast if critical secrets are missing
           if [ -z "${{ secrets.POSTGRES_PASSWORD }}" ]; then echo "::error::Required secret POSTGRES_PASSWORD is not set." >&2; exit 1; fi
-          if [ -z "${{ secrets.KEYCLOAK_DB_PASSWORD }}" ]; then echo "::error::Required secret KEYCLOAK_DB_PASSWORD is not set." >&2; exit 1; fi
-          if [ -z "${{ secrets.KONG_PG_PASSWORD }}" ]; then echo "::error::Required secret KONG_PG_PASSWORD is not set." >&2; exit 1; fi
           
           # Create .env file
           cat > .env <<EOF
@@ -35,10 +33,8 @@ jobs:
           KEYCLOAK_ADMIN=${{ secrets.KEYCLOAK_ADMIN }}
           KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
           KEYCLOAK_DB_USER=${{ secrets.KEYCLOAK_DB_USER }}
-          KEYCLOAK_DB_PASSWORD=${{ secrets.KEYCLOAK_DB_PASSWORD }}
           KEYCLOAK_DB_DATABASE=${{ secrets.KEYCLOAK_DB_DATABASE }}
           KONG_PG_USER=${{ secrets.KONG_PG_USER }}
-          KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
           KONG_PG_DATABASE=${{ secrets.KONG_PG_DATABASE }}
           KONG_ADMIN_LISTEN=${{ secrets.KONG_ADMIN_LISTEN }}
           KONG_PROXY_LISTEN=${{ secrets.KONG_PROXY_LISTEN }}
