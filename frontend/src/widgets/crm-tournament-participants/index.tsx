@@ -47,13 +47,13 @@ export function CrmTournamentParticipantsWidget({
             ]);
             
             if (appsResult.success && appsResult.data) {
-                setApplications(appsResult.data);
+                setApplications(appsResult.data as Application[]);
             } else if (!appsResult.success) {
                 throw new Error(appsResult.error);
             }
 
             if (participantsResult.success && participantsResult.data) {
-                setParticipants(participantsResult.data);
+                setParticipants(participantsResult.data as Participant[]);
             } else if (!participantsResult.success) {
                 throw new Error(participantsResult.error);
             }
@@ -201,7 +201,7 @@ export function CrmTournamentParticipantsWidget({
                                                     </CollapsibleTrigger>
                                                 </TableCell>
                                                 <TableCell className="font-medium">{p.name}</TableCell>
-                                                <TableCell className="hidden md:table-cell">{p.captain?.name}</TableCell>
+                                                <TableCell className="hidden md:table-cell">{p.captain.name}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{p.members.length} чел.</TableCell>
                                                 <TableCell className="text-right">
                                                      <div className="flex items-center justify-end gap-2">
