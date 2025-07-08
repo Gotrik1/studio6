@@ -1,4 +1,3 @@
-
 name: Docker Compose CI
 
 on:
@@ -102,8 +101,10 @@ jobs:
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
 
+      - name: Show Zookeeper logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs zookeeper
+
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
-
-    
