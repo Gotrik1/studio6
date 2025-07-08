@@ -101,10 +101,6 @@ jobs:
       - name: Show Kafka logs on failure
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
-      
-      - name: Show Zookeeper logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs zookeeper
 
       - name: Tear down
         if: always()
