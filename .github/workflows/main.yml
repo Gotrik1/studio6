@@ -66,6 +66,9 @@ jobs:
 
       - name: Launch all services
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
+        
+      - name: Wait for services to be fully ready
+        run: sleep 30
 
       - name: Run Prisma migrations
         run: docker compose exec backend npm run prisma:migrate:deploy
@@ -120,3 +123,5 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+
+    
