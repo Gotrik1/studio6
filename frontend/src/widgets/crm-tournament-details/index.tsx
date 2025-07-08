@@ -22,7 +22,8 @@ import { Save } from 'lucide-react';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { CrmTournamentMediaCenter } from '@/widgets/crm-tournament-media-center';
 import { CrmTournamentDisputes } from '@/widgets/crm-tournament-disputes';
-import { getTournamentById, type TournamentDetails } from '@/entities/tournament/api/get-tournament';
+import { getTournamentById } from '@/entities/tournament/api/get-tournament';
+import type { TournamentDetails } from '@/entities/tournament/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 interface TournamentCrmDetailsPageProps {

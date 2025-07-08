@@ -5,33 +5,12 @@
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 import type { User } from '@/shared/lib/types';
+import type { Application as AppType, Participant as ParticipantType } from '@/entities/team-application/model/types';
 
-// Frontend-specific types
-export type RosterMember = {
-    id: string;
-    name: string;
-    avatar: string | null;
-    role: string;
-};
-export type Participant = {
-    id: string;
-    name: string;
-    captain: { name: string; } | null;
-    members: RosterMember[];
-};
-export type Application = {
-    id: string;
-    teamId: string;
-    message?: string;
-    user: User;
-    team: {
-        id: string;
-        name: string;
-        slug: string;
-        captain: { name: string; } | null;
-    };
-};
+export type Application = AppType;
+export type Participant = ParticipantType;
 
+// Local types to avoid direct dependency on backend schemas
 type BackendApplication = {
     id: string;
     teamId: string;
@@ -41,7 +20,7 @@ type BackendApplication = {
         id: string;
         name: string;
         slug: string;
-        captain: { name: string } | null;
+        captain: { name: string; } | null;
     }
 }
 type BackendParticipantTeam = {
@@ -53,23 +32,17 @@ type BackendParticipantTeam = {
 
 function adaptApplication(app: BackendApplication): Application {
     return {
-        id: app.id,
-        teamId: app.teamId,
-        message: app.message,
-        user: app.user,
+        ...app,
         team: {
-            id: app.team.id,
-            name: app.team.name,
-            slug: app.team.slug,
+            ...app.team,
             captain: app.team.captain,
         },
     };
 }
 function adaptParticipant(team: BackendParticipantTeam): Participant {
     return {
-        id: team.id,
-        name: team.name,
-        captain: team.captain ? { name: team.captain.name } : null,
+        ...team,
+        captain: team.captain,
         members: team.members.map(m => ({
             id: m.id,
             name: m.name,
