@@ -36,6 +36,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 60s
     networks:
       - prodvor-network
 
@@ -144,6 +145,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 60s
     networks:
       - prodvor-network
 
@@ -166,7 +168,6 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
       KC_PROXY: "edge"
-      KC_HOSTNAME_STRICT: "false"
     ports:
       - "8180:8080"
     restart: always
@@ -194,6 +195,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 60s
     networks:
       - prodvor-network
 
@@ -385,5 +387,3 @@ volumes:
   rabbitmq_data:
   prometheus_data:
   grafana_data:
-
-    
