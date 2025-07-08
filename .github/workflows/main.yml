@@ -22,6 +22,8 @@ jobs:
         run: |
           # Fail fast if critical secrets are missing
           if [ -z "${{ secrets.POSTGRES_PASSWORD }}" ]; then echo "::error::Required secret POSTGRES_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.RABBITMQ_DEFAULT_USER }}" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_USER is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_PASSWORD is not set." >&2; exit 1; fi
           
           # Create .env file
           cat > .env <<EOF
@@ -85,3 +87,5 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+
+    
