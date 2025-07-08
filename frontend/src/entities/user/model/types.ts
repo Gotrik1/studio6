@@ -1,4 +1,3 @@
-
 import type { Activity } from "@/entities/feed/model/types";
 export type { Activity };
 
@@ -95,7 +94,7 @@ export type FullUserProfile = {
   email: string;
   avatar: string | null;
   role: string;
-  status?: "ACTIVE" | "BANNED";
+  status: "ACTIVE" | "BANNED";
   xp?: number;
   activitySummary?: string;
   profileUrl?: string;

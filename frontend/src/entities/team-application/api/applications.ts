@@ -4,7 +4,6 @@
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { User } from '@/shared/lib/types';
 import type { Application as AppType } from '../model/types';
 export type Application = AppType;
 

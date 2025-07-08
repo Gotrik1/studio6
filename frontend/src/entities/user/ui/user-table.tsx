@@ -3,7 +3,7 @@
 
 import type { FC } from 'react';
 import Link from "next/link";
-import { MoreHorizontal, Gavel, Pencil, Coins, Undo2 } from "lucide-react";
+import { MoreHorizontal, Gavel, Pencil, Coins, Undo2, Users2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
@@ -11,7 +11,6 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/shared/ui/table";
 import type { User } from "@/shared/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/shared/ui/dropdown-menu';
-import { Users2 } from 'lucide-react';
 
 interface UserTableProps {
     users: User[];
@@ -79,7 +78,7 @@ export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onE
                                     <Badge variant="outline">{user.role}</Badge>
                                 </TableCell>
                                 <TableCell className="hidden md:table-cell">
-                                    <Badge variant={user.status === 'Активен' ? 'default' : 'destructive'}>{user.status}</Badge>
+                                    <Badge variant={user.status === 'ACTIVE' ? 'default' : 'destructive'}>{user.status === 'ACTIVE' ? 'Активен' : 'Забанен'}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right">
                                      <DropdownMenu>
@@ -107,7 +106,7 @@ export const UserTable: FC<UserTableProps> = ({ users, onOpenBanUnbanDialog, onE
                                                 Списать PD
                                             </DropdownMenuItem>
                                             <DropdownMenuSeparator />
-                                            {user.status !== 'Забанен' ? (
+                                            {user.status !== 'BANNED' ? (
                                                 <DropdownMenuItem 
                                                     className="text-destructive focus:bg-destructive/10 focus:text-destructive"
                                                     onClick={() => onOpenBanUnbanDialog(user, 'ban')}
