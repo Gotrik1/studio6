@@ -1,9 +1,9 @@
 FROM node:20-alpine
 
-WORKDIR /usr/src/app
-
-# Install openssl for Prisma
+# Add openssl for Prisma
 RUN apk add --no-cache openssl
+
+WORKDIR /usr/src/app
 
 COPY package*.json ./
 
@@ -17,5 +17,3 @@ RUN npx prisma generate
 EXPOSE 3001
 
 CMD [ "npm", "run", "start:prod" ]
-
-    
