@@ -1,3 +1,4 @@
+
 # This Docker Compose file sets up a complete development environment
 # that mirrors the production architecture described in the documentation.
 # It includes the frontend, backend, databases, and critical infrastructure
@@ -75,37 +76,24 @@ services:
   # ---------------------------------------------------
   # Message Brokers (Kafka & RabbitMQ)
   # ---------------------------------------------------
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.5.0
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-      ZOO_4LW_COMMANDS_WHITELIST: "*"
-    healthcheck:
-      test: ["CMD", "bash", "-c", "echo ruok | nc localhost 2181 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - prodvor-network
-
   kafka:
     image: confluentinc/cp-kafka:latest
     container_name: kafka
     ports:
       - "9092:9092"
-    depends_on:
-      zookeeper:
-        condition: service_healthy
     environment:
-      CLUSTER_ID: '9e6c7c82-1f7b-4f3e-8b2d-4f8d1b8d7e5a'
       KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT'
+      KAFKA_LISTENERS: 'PLAINTEXT://:9092,CONTROLLER://:9093'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-      KAFKA_PROCESS_ROLES: broker,controller
+      CLUSTER_ID: '9e6c7c82-1f7b-4f3e-8b2d-4f8d1b8d7e5a'
     healthcheck:
         test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
         interval: 15s
@@ -169,6 +157,7 @@ services:
       KC_DB_URL_HOST: keycloak-db
       KC_DB_URL_PORT: 5432
       KC_DB_USERNAME: keycloak
+      KC_DB_SCHEMA: public
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
