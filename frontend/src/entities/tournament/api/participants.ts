@@ -1,6 +1,6 @@
 
 
-'use client';
+'use server';
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
