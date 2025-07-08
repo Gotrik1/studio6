@@ -6,7 +6,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { notFound } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
-import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants';
+import { CrmTournamentParticipantsWidget } from '@/widgets/crm-tournament-participants';
 import { TournamentBracket } from '@/widgets/tournament-bracket';
 import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
@@ -103,7 +103,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
                 
                 <TabsContent value="participants" className="mt-4">
-                    <CrmTournamentParticipants tournamentId={tournament.id} />
+                    <CrmTournamentParticipantsWidget tournamentId={tournament.id} />
                 </TabsContent>
 
                 <TabsContent value="rules" className="mt-4">
