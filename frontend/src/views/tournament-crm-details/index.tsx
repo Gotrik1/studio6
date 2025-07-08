@@ -24,6 +24,7 @@ import { getTournamentById } from '@/entities/tournament/api/get-tournament';
 import type { TournamentDetails } from '@/entities/tournament/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
+import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
@@ -90,6 +91,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
                         <TabsTrigger value="participants">Участники</TabsTrigger>
                         <TabsTrigger value="rules">Правила</TabsTrigger>
                         <TabsTrigger value="judges">Судьи</TabsTrigger>
+                        <TabsTrigger value="matches">Матчи</TabsTrigger>
                         <TabsTrigger value="disputes">Споры</TabsTrigger>
                         <TabsTrigger value="bracket">Сетка</TabsTrigger>
                         <TabsTrigger value="media-center">Медиа-центр</TabsTrigger>
@@ -133,6 +135,10 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
 
                 <TabsContent value="judges" className="mt-4">
                     <CrmTournamentJudges tournamentId={tournament.id} />
+                </TabsContent>
+
+                <TabsContent value="matches" className="mt-4">
+                    <CrmTournamentMatches rounds={tournament.bracket.rounds} />
                 </TabsContent>
 
                 <TabsContent value="disputes" className="mt-4">

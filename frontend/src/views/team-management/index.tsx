@@ -24,25 +24,18 @@ import { useParams } from 'next/navigation';
 import type { CoachedPlayer, User } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getTeamApplications, acceptTeamApplication, declineTeamApplication, type Application as TeamApplication } from '@/entities/team-application/api/applications';
+import { getTeamApplications, acceptTeamApplication, declineTeamApplication, type Application } from '@/entities/team-application/api/applications';
+import type { JoinRequest } from '@/entities/team-application/model/types';
 
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
-
-type JoinRequest = {
-  id: string;
-  applicant: Pick<User, 'id' | 'name' | 'avatar' | 'role'>;
-  teamId: string;
-  message: string;
-  statsSummary: string;
-};
 
 export function TeamManagementPage() {
     const { toast } = useToast();
     const params = useParams<{ slug: string }>();
     const [team, setTeam] = useState<TeamDetails | null>(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [joinRequests, setJoinRequests] = useState<TeamApplication[]>([]);
+    const [joinRequests, setJoinRequests] = useState<Application[]>([]);
     
     const [selectedRequest, setSelectedRequest] = useState<JoinRequest | null>(null);
     const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
@@ -84,7 +77,7 @@ export function TeamManagementPage() {
         fetchData();
     }, [fetchData]);
 
-    const handleAccept = (request: TeamApplication) => {
+    const handleAccept = (request: Application) => {
         startTransition(async () => {
             const result = await acceptTeamApplication(request.id);
             if(result.success) {
@@ -96,7 +89,7 @@ export function TeamManagementPage() {
         });
     };
 
-    const handleDecline = (request: TeamApplication) => {
+    const handleDecline = (request: Application) => {
         startTransition(async () => {
              const result = await declineTeamApplication(request.id);
              if(result.success) {
@@ -112,7 +105,7 @@ export function TeamManagementPage() {
         });
     };
     
-    const handleAnalyze = (request: TeamApplication) => {
+    const handleAnalyze = (request: Application) => {
         const adaptedRequest: JoinRequest = {
             id: request.id,
             applicant: request.user,

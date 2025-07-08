@@ -13,3 +13,11 @@ export type Application = {
         captain: { name: string };
     };
 };
+
+export type JoinRequest = {
+    id: string;
+    teamId: string;
+    applicant: User;
+    message: string;
+    statsSummary: string;
+};

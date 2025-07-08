@@ -110,7 +110,7 @@ export function UserManagementPage() {
             setUsers(prev => prev.map(u => u.id === userToAction.id ? { ...u, status: newStatus } : u));
             
             toast({
-                title: `Статус пользователя ${userToAction.name} изменен на "${newStatus}".`,
+                title: `Статус пользователя ${userToAction.name} изменен.`,
                 variant: actionType === 'unban' ? 'default' : 'destructive'
             });
             

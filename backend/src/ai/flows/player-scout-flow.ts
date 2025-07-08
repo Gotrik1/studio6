@@ -28,7 +28,7 @@ const findPlayersTool_Backend = ai.defineTool(
     const lowercasedQuery = query.toLowerCase();
 
     // In a real app, this would use more sophisticated search like full-text or semantic.
-    const users = await prisma.user.findMany({
+    const users = await this.prisma.user.findMany({
       where: {
         OR: [
           { name: { contains: lowercasedQuery, mode: "insensitive" } },

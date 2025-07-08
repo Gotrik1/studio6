@@ -95,7 +95,7 @@ export type FullUserProfile = {
   email: string;
   avatar: string | null;
   role: string;
-  status?: "Активен" | "Забанен";
+  status?: "ACTIVE" | "BANNED";
   xp?: number;
   activitySummary?: string;
   profileUrl?: string;
@@ -123,7 +123,7 @@ export type User = {
     email: string;
     avatar: string | null;
     role: string;
-    status?: 'Активен' | 'Забанен';
+    status?: 'ACTIVE' | 'BANNED';
     xp?: number;
     activitySummary?: string; // for AI analysis
     profileUrl?: string; // for search results

@@ -3,11 +3,11 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
+import NextImage from 'next/image';
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic, Share2, Copy, Download, Volume2 } from "lucide-react";
+import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic, Share2, Copy, Download, Volume2, ImageIcon } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import type { MatchDetails, MatchEvent } from "@/entities/match/model/types";
 import { analyzeMatchReport, type AnalyzeMatchReportOutput } from '@/shared/api/genkit/flows/analyze-match-report-flow';
@@ -144,7 +144,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
             const commentaryData = await generateMatchCommentary({
                 team1Name: mockFinalMatch.team1,
                 team2Name: mockFinalMatch.team2,
-                events: tournament.matches?.[0].events || mockEvents,
+                events: match.events || mockEvents,
             });
             setCommentaryResult(commentaryData);
         } catch (e) {
@@ -214,6 +214,20 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                             <CardContent>
                                 <Textarea readOnly value={result.summary} className="h-48" />
                                 <Button variant="ghost" size="sm" onClick={() => handleCopyText(result.summary)} className="mt-2"><Copy className="mr-2 h-4 w-4"/>Копировать</Button>
+                            </CardContent>
+                        </Card>
+                         <Card>
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2"><ImageIcon className="h-5 w-5 text-green-500" /> Изображения</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    {images.map((img, index) => (
+                                        <div key={index} className="relative aspect-square">
+                                            <NextImage src={img.imageDataUri} alt={`Сгенерированное изображение ${index + 1}`} fill className="object-cover rounded-md" />
+                                        </div>
+                                    ))}
+                                </div>
                             </CardContent>
                         </Card>
                         

@@ -1,14 +1,6 @@
 
 "use server";
 
-/**
- * @fileOverview An AI assistant for providing summaries of team activity and suggesting relevant content.
- *
- * - aiTeamAssistant - A function that handles the AI assistant process.
- * - AiTeamAssistantInput - The input type for the aiTeamAssistant function.
- * - AiTeamAssistantOutput - The return type for the aiTeamAssistant function.
- */
-
 import { ai } from "../genkit";
 import { z } from "zod";
 import { PrismaService } from "@/prisma/prisma.service";

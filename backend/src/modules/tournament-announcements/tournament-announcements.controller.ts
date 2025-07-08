@@ -8,7 +8,7 @@ import {
   Req,
 } from "@nestjs/common";
 import { TournamentAnnouncementsService } from "./tournament-announcements.service";
-import { CreateTournamentAnnouncementDto } from "./dto/create-tournament-announcement.dto";
+import { CreateAnnouncementDto } from "./dto/create-announcement.dto";
 import { JwtAuthGuard } from "@/modules/auth/guards/jwt-auth.guard";
 import {
   ApiTags,
@@ -34,12 +34,12 @@ export class TournamentAnnouncementsController {
 
   @Post()
   @ApiOperation({ summary: "Создать и отправить новое объявление" })
-  @ApiBody({ type: CreateTournamentAnnouncementDto })
+  @ApiBody({ type: CreateAnnouncementDto })
   @ApiResponse({ status: 201, description: "Объявление успешно создано." })
   create(
     @Param("tournamentId") tournamentId: string,
     @Req() req: Request,
-    @Body() dto: CreateTournamentAnnouncementDto,
+    @Body() dto: CreateAnnouncementDto,
   ) {
     const userId = (req.user as any).userId;
     return this.service.create(tournamentId, userId, dto);

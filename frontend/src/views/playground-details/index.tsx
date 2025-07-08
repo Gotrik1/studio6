@@ -12,7 +12,7 @@ import { useToast } from '@/shared/hooks/use-toast';
 import { PlaygroundCheckInDialog } from '@/widgets/playground-check-in-dialog';
 import { useSession } from '@/shared/lib/session/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
-import { useLfg } from '@/app/providers/lfg-provider';
+import { useLfg } from '@/shared/context/lfg-provider';
 import { PlanGameDialog, type FormValues as PlanGameFormValues } from '@/widgets/plan-game-dialog';
 import { PlaygroundInfoTab } from '@/widgets/playground-info-tab';
 import { PlaygroundActivityTab } from '@/widgets/playground-activity-tab';
@@ -27,7 +27,7 @@ import type { PlaygroundConditionReport } from '@/entities/playground/api/condit
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
 import { reportPlaygroundIssue } from '@/entities/playground/api/report';
-import type { Activity, PlaygroundCheckInActivity } from '@/entities/feed/model/types';
+import type { Activity } from '@/entities/feed/model/types';
 
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
     const { user } = useSession();
@@ -236,7 +236,7 @@ export default function PlaygroundDetailsPage({ playground, initialConditionRepo
                         />
                     </TabsContent>
                     <TabsContent value="activity" className="mt-6">
-                        <PlaygroundActivityTab activities={activities.filter((a): a is PlaygroundCheckInActivity => a.type === 'PLAYGROUND_CHECK_IN')} isLoading={isLoadingActivities} />
+                        <PlaygroundActivityTab activities={activities} isLoading={isLoadingActivities} />
                     </TabsContent>
                     <TabsContent value="leaderboard" className="mt-6">
                         <PlaygroundLeaderboardTab playground={playground} />
