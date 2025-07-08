@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { TeamSchema as TeamDataSchema } from './team.schema';
 
 export const UserSchema = z.object({
   id: z.string(),
@@ -8,19 +9,7 @@ export const UserSchema = z.object({
   profileUrl: z.string(),
 });
 
-export const TeamSchema = z.object({
-    id: z.string(),
-    name: z.string(),
-    motto: z.string(),
-    logo: z.string(),
-    dataAiHint: z.string(),
-    game: z.string(),
-    rank: z.number(),
-    members: z.number(),
-    captain: z.string(),
-    slug: z.string(),
-    homePlaygroundId: z.string().nullable(),
-});
+export const TeamSchema = TeamDataSchema;
 
 export const TournamentSchema = z.object({
   name: z.string(),

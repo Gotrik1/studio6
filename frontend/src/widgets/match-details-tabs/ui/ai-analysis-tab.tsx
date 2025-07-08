@@ -7,18 +7,19 @@ import NextImage from 'next/image';
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { BrainCircuit, Loader2, AlertCircle, Sparkles, Lightbulb, BarChart3, Medal, Trophy, Mic, Share2, Copy, Download, Volume2, ImageIcon } from "lucide-react";
-import { Skeleton } from "@/shared/ui/skeleton";
-import type { MatchDetails, MatchEvent } from "@/entities/match/model/types";
-import { analyzeMatchReport, type AnalyzeMatchReportOutput } from '@/shared/api/genkit/flows/analyze-match-report-flow';
-import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
-import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
+import { BrainCircuit, Loader2, AlertCircle, Sparkles, Mic, Share2, Copy, Download, Volume2, ImageIcon, Trophy } from "lucide-react";
+import { Skeleton } from '@/shared/ui/skeleton';
+import { generateTournamentSummary, type GenerateTournamentSummaryOutput } from '@/shared/api/genkit/flows/generate-tournament-summary-flow';
+import { generatePostImage, type GeneratePostImageOutput } from '@/shared/api/genkit/flows/generate-post-image-flow';
 import { Textarea } from '@/shared/ui/textarea';
 import { Label } from '@/shared/ui/label';
 import { useToast } from '@/shared/hooks/use-toast';
 import { generateMatchCommentary, type GenerateMatchCommentaryOutput } from "@/shared/api/genkit/flows/generate-match-commentary-flow";
+import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/shared/api/genkit/flows/generate-match-interview-flow';
+import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
 import { useRouter } from 'next/navigation';
 import { createTournamentMedia } from '@/entities/tournament/api/media';
+import type { MatchDetails, MatchEvent } from '@/entities/tournament/model/types';
 
 
 interface AiAnalysisTabProps {
@@ -38,7 +39,8 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [result, setResult] = useState<AnalyzeMatchReportOutput | null>(null);
+    const [summaryResult, setSummaryResult] = useState<GenerateTournamentSummaryOutput | null>(null);
+    const [images, setImages] = useState<GeneratePostImageOutput[]>([]);
 
     const [isGeneratingInterview, setIsGeneratingInterview] = useState(false);
     const [interviewError, setInterviewError] = useState<string | null>(null);
@@ -52,38 +54,36 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
     const [commentaryError, setCommentaryError] = useState<string | null>(null);
     const [commentaryResult, setCommentaryResult] = useState<(GenerateMatchCommentaryOutput & { audioDataUri: string }) | null>(null);
 
-    const handleAnalyze = async () => {
+    const handleGenerate = async () => {
         setIsLoading(true);
         setError(null);
-        setResult(null);
-        setInterviewResult(null);
-        setInterviewError(null);
-        setPostResult(null);
-        setPostError(null);
-        setCommentaryResult(null);
-        setCommentaryError(null);
+        setSummaryResult(null);
+        setImages([]);
         
         try {
-            const analysisResult = await analyzeMatchReport({
-                team1Name: match.team1.name,
-                team2Name: match.team2.name,
-                score: match.score,
-                tournament: match.tournament,
-                events: (match.events || []) as any,
-                lineupTeam1: match.lineups.team1,
-                lineupTeam2: match.lineups.team2,
+            const summaryData = await generateTournamentSummary({
+                tournamentName: match.tournament,
+                tournamentGame: 'Неизвестно',
+                champion: mockChampion,
+                finalMatch: mockFinalMatch,
             });
-            setResult(analysisResult);
+            setSummaryResult(summaryData);
+            
+            // Generate images based on prompts
+            const imagePromises = summaryData.imagePrompts.map(prompt => generatePostImage(prompt));
+            const imageResults = await Promise.all(imagePromises);
+            setImages(imageResults);
+
         } catch (e) {
-            console.error("AI Analysis failed:", e);
-            setError("Не удалось сгенерировать анализ. Пожалуйста, попробуйте еще раз.");
+            console.error(e);
+            setError("Не удалось сгенерировать медиа-кит. Попробуйте еще раз.");
         } finally {
             setIsLoading(false);
         }
     };
     
     const handleGenerateInterview = async () => {
-        if (!result) return;
+        if (!summaryResult) return;
         
         setIsGeneratingInterview(true);
         setInterviewError(null);
@@ -91,8 +91,8 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
 
         try {
             const interviewData = await generateMatchInterview({
-                matchSummary: result.summary,
-                mvpName: result.mvp.name,
+                matchSummary: summaryResult.summaryArticle,
+                mvpName: summaryResult.mvp.name,
             });
             setInterviewResult(interviewData);
         } catch (e) {
@@ -104,21 +104,21 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
     };
 
     const handleGeneratePost = async () => {
-        if (!result) return;
+        if (!summaryResult) return;
         setIsGeneratingPost(true);
         setPostError(null);
         setPostResult(null);
     
         try {
-            const scoreParts = match.score.split('-').map(s => parseInt(s, 10));
-            const winningTeam = scoreParts[0] > scoreParts[1] ? match.team1.name : match.team2.name;
-            const losingTeam = scoreParts[0] > scoreParts[1] ? match.team2.name : match.team1.name;
+            const scoreParts = mockFinalMatch.score.split('-').map(s => parseInt(s, 10));
+            const winningTeam = scoreParts[0] > scoreParts[1] ? mockFinalMatch.team1 : mockFinalMatch.team2;
+            const losingTeam = scoreParts[0] > scoreParts[1] ? mockFinalMatch.team2 : mockFinalMatch.team1;
 
             const postData = await generateMatchPost({
                 winningTeam,
                 losingTeam,
-                score: match.score,
-                matchSummary: result.summary
+                score: mockFinalMatch.score,
+                matchSummary: summaryResult.summaryArticle,
             });
             setPostResult(postData);
         } catch (e) {
@@ -130,7 +130,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
     };
 
      const handleGenerateCommentary = async () => {
-        if (!result) return;
+        if (!summaryResult) return;
         setIsGeneratingCommentary(true);
         setCommentaryError(null);
         setCommentaryResult(null);
@@ -181,7 +181,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                 <CardDescription>Сгенерируйте полный медиа-кит для вашего турнира в один клик.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-                <Button onClick={handleAnalyze} disabled={isLoading || match.status !== 'Завершен'}>
+                <Button onClick={handleGenerate} disabled={isLoading || match.status !== 'Завершен'}>
                     {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Sparkles className="mr-2 h-4 w-4" />}
                     {isLoading ? 'Генерация...' : 'Сгенерировать медиа-кит'}
                 </Button>
@@ -207,13 +207,13 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                     </div>
                 )}
                 
-                {result && (
+                {summaryResult && (
                     <div className="space-y-6 animate-in fade-in-50">
                         <Card>
                             <CardHeader><CardTitle>Итоговая статья</CardTitle></CardHeader>
                             <CardContent>
-                                <Textarea readOnly value={result.summary} className="h-48" />
-                                <Button variant="ghost" size="sm" onClick={() => handleCopyText(result.summary)} className="mt-2"><Copy className="mr-2 h-4 w-4"/>Копировать</Button>
+                                <Textarea readOnly value={summaryResult.summaryArticle} className="h-48" />
+                                <Button variant="ghost" size="sm" onClick={() => handleCopyText(summaryResult.summaryArticle)} className="mt-2"><Copy className="mr-2 h-4 w-4"/>Копировать</Button>
                             </CardContent>
                         </Card>
                          <Card>
@@ -222,7 +222,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {images.map((img, index) => (
+                                    {images.map((img: GeneratePostImageOutput, index: number) => (
                                         <div key={index} className="relative aspect-square">
                                             <NextImage src={img.imageDataUri} alt={`Сгенерированное изображение ${index + 1}`} fill className="object-cover rounded-md" />
                                         </div>
@@ -238,9 +238,9 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {!commentaryResult && (
-                                    <Button onClick={handleGenerateCommentary} disabled={isGeneratingCommentary || !result}>
+                                    <Button onClick={handleGenerateCommentary} disabled={isGeneratingCommentary || !summaryResult}>
                                         {isGeneratingCommentary ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                                        {result ? 'Сгенерировать комментарий' : 'Сначала сгенерируйте анализ'}
+                                        {summaryResult ? 'Сгенерировать комментарий' : 'Сначала сгенерируйте анализ'}
                                     </Button>
                                 )}
                                 {isGeneratingCommentary && <Skeleton className="h-20 w-full" />}
@@ -290,9 +290,9 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 {!postResult && (
-                                    <Button onClick={handleGeneratePost} disabled={isGeneratingPost || !result}>
+                                    <Button onClick={handleGeneratePost} disabled={isGeneratingPost || !summaryResult}>
                                         {isGeneratingPost ? <Loader2 className="mr-2 h-4 w-4 animate-spin"/> : <Sparkles className="mr-2 h-4 w-4"/>}
-                                        {result ? 'Создать пост' : 'Сначала сгенерируйте анализ'}
+                                        {summaryResult ? 'Создать пост' : 'Сначала сгенерируйте анализ'}
                                     </Button>
                                 )}
                                 {isGeneratingPost && <div className="space-y-2"><Skeleton className="h-24 w-full" /><Skeleton className="h-10 w-1/3" /></div>}
@@ -307,7 +307,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                                             <div className="space-y-2">
                                                 <Label>Изображение</Label>
                                                 <div className="relative aspect-video w-full overflow-hidden rounded-md border">
-                                                    <Image src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover" />
+                                                    <NextImage src={postResult.imageDataUri} alt="Сгенерированное изображение для поста" fill className="object-cover" />
                                                 </div>
                                             </div>
                                         </div>

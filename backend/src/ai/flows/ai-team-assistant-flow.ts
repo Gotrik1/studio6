@@ -5,8 +5,8 @@ import { ai } from "../genkit";
 import { z } from "zod";
 import { PrismaService } from "@/prisma/prisma.service";
 import type { Match, Team } from "@prisma/client";
-import { AiTeamAssistantInputSchema, AiTeamAssistantOutputSchema } from "../schemas/ai-team-assistant-schema";
-import type { AiTeamAssistantInput, AiTeamAssistantOutput } from "../schemas/ai-team-assistant-schema";
+import { AiTeamAssistantInputSchema, AiTeamAssistantOutputSchema } from "./schemas/ai-team-assistant-schema";
+import type { AiTeamAssistantInput, AiTeamAssistantOutput } from "./schemas/ai-team-assistant-schema";
 
 const prisma = new PrismaService();
 

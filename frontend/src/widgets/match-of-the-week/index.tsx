@@ -12,7 +12,7 @@ import { generateMatchPost, type GenerateMatchPostOutput } from '@/shared/api/ge
 import Link from 'next/link';
 import Image from 'next/image';
 import { getMatchOfTheWeek } from '@/entities/match/api/get-match';
-import type { Match } from '@/entities/match/model/types';
+import type { Match, MatchDetails } from '@/entities/match/model/types';
 
 
 type ResultData = {

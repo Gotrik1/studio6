@@ -169,7 +169,10 @@ export function AiTournamentWizard() {
                                 <Label htmlFor="promo-type">Тип</Label>
                                 <Select value={result.type} onValueChange={(v) => handleFieldChange('type', v)}>
                                     <SelectTrigger id="promo-type"><SelectValue/></SelectTrigger>
-                                    <SelectContent><SelectItem value="team">Командный</SelectItem><SelectItem value="individual">Индивидуальный</SelectItem></SelectContent>
+                                    <SelectContent>
+                                        <SelectItem value="team">Командный</SelectItem>
+                                        <SelectItem value="individual">Индивидуальный</SelectItem>
+                                    </SelectContent>
                                 </Select>
                             </div>
                             <div className="space-y-2">

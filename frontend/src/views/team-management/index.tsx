@@ -21,11 +21,12 @@ import { TeamTrainingAnalytics } from '@/widgets/team-training-analytics';
 import { SponsorshipOffers } from '@/widgets/sponsorship-offers';
 import { AiSocialMediaPostGenerator } from '@/widgets/ai-social-media-post-generator';
 import { useParams } from 'next/navigation';
-import type { CoachedPlayer, User } from '@/entities/user/model/types';
+import type { CoachedPlayer } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
-import type { Application, JoinRequest } from '@/entities/team-application/model/types';
+import { getTeamApplications, acceptTeamApplication, declineTeamApplication, type Application } from '@/entities/team-application/api/applications';
+import type { JoinRequest } from '@/entities/team-application/model/types';
+
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
@@ -62,7 +63,7 @@ export function TeamManagementPage() {
             if (teamData) {
                 const appsResult = await getTeamApplications(teamData.id);
                  if (appsResult.success && Array.isArray(appsResult.data)) {
-                    setJoinRequests(appsResult.data);
+                    setJoinRequests(appsResult.data as Application[]);
                 } else {
                     toast({ variant: 'destructive', title: 'Ошибка', description: 'Не удалось загрузить заявки на вступление.' });
                 }
@@ -105,7 +106,8 @@ export function TeamManagementPage() {
     };
     
     const handleAnalyze = (request: Application) => {
-        setSelectedRequest(request as JoinRequest);
+        const joinRequest: JoinRequest = { ...request, applicant: request.user };
+        setSelectedRequest(joinRequest);
         setIsAnalysisOpen(true);
     };
     

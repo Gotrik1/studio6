@@ -4,8 +4,7 @@
 
 import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
-import type { User } from '@/shared/lib/types';
-import { UserStatus } from '@/shared/lib/types';
+import { User, UserStatus } from '@/shared/lib/types';
 
 // Assuming the backend returns a user object compatible with this structure.
 type BackendJudge = User;
