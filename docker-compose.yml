@@ -97,6 +97,11 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
     networks:
       - prodvor-network
 
@@ -145,7 +150,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
-    command: start --proxy=edge
+    command: start-dev
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -159,9 +164,16 @@ services:
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
     ports:
       - "8180:8080"
     restart: always
+    healthcheck:
+      test: "curl -f http://localhost:8080/health/ready || exit 1"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
     networks:
       - prodvor-network
 
@@ -207,7 +219,7 @@ services:
       kong-migrations:
         condition: service_completed_successfully
       keycloak:
-        condition: service_started
+        condition: service_healthy
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
@@ -321,7 +333,7 @@ services:
       redis:
         condition: service_healthy
       kafka:
-        condition: service_started
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
     command: npm run start:dev
