@@ -4,9 +4,9 @@
 import { ai } from "../genkit";
 import { z } from "zod";
 import { PrismaService } from "@/prisma/prisma.service";
-import type { Match, Team, ChatMessage, User } from "@prisma/client";
-import { AiTeamAssistantInputSchema, AiTeamAssistantOutputSchema } from "./schemas/ai-team-assistant-schema";
-import type { AiTeamAssistantInput, AiTeamAssistantOutput } from "./schemas/ai-team-assistant-schema";
+import type { Match, Team, Message, User } from "@prisma/client";
+import { AiTeamAssistantInputSchema, AiTeamAssistantOutputSchema } from "../schemas/ai-team-assistant-schema";
+import type { AiTeamAssistantInput, AiTeamAssistantOutput } from "../schemas/ai-team-assistant-schema";
 
 const prisma = new PrismaService();
 
@@ -99,7 +99,7 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
     // Add recent chat messages
     if (team.chat && team.chat.messages.length > 0) {
       teamActivity += "Последние сообщения в чате:\n";
-      team.chat.messages.reverse().forEach((msg: ChatMessage & { author: Pick<User, 'name'>}) => {
+      team.chat.messages.reverse().forEach((msg: Message & { author: Pick<User, 'name'>}) => {
         teamActivity += `- ${msg.author.name}: ${msg.content}\n`;
       });
     } else {
