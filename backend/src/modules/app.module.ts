@@ -70,16 +70,7 @@ import { PlaygroundReportsModule } from "./playground-reports/playground-reports
     FriendsModule,
     ChatModule,
     KafkaModule,
-    RabbitMQModule.forRoot({
-      exchanges: [
-        {
-          name: 'prodvor_exchange',
-          type: 'topic',
-        },
-      ],
-      uri: process.env.RABBITMQ_URL || 'amqp://user:password@rabbitmq:5672',
-      connectionInitOptions: { wait: false },
-    }),
+    RabbitMQModule,
     NotificationsModule,
     StoreModule,
     TrainingModule,
