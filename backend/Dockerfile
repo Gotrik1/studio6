@@ -1,50 +1,34 @@
-# Stage 1: Build the application
-FROM node:20-alpine AS builder
 
-# Install OpenSSL, a dependency for Prisma Client
-RUN apk add --no-cache openssl
-
-WORKDIR /usr/src/app
-
-COPY package.json ./
-COPY backend/package.json ./backend/
-COPY frontend/package.json ./frontend/
-COPY pnpm-lock.yaml ./
-
-# Install dependencies using pnpm
-RUN npm install -g pnpm
-RUN pnpm install
-
-COPY backend/ ./backend/
-COPY prisma/ ./prisma/
-
-WORKDIR /usr/src/app/backend
-
-# Generate Prisma Client
-RUN npx prisma generate
-
-# Build the NestJS application
-RUN npm run build
-
-# Stage 2: Create the production image
+# Use an official Node.js runtime as a parent image
 FROM node:20-alpine
 
-# Install OpenSSL for Prisma Client runtime
+# Add openssl for prisma, which is a common requirement on Alpine
 RUN apk add --no-cache openssl
 
+# Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Copy built application and necessary files from the builder stage
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/backend/dist ./dist
-COPY --from=builder /usr/src/app/backend/package.json ./package.json
-# Copy Prisma schema and generated client for runtime
-COPY --from=builder /usr/src/app/prisma ./prisma
-COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+# Copy the root package.json and the lock file
+# Using a wildcard for package-lock.json to avoid errors if it doesn't exist
+COPY package.json package-lock.json* ./
+COPY pnpm-lock.yaml ./
 
+# Copy workspace package.json files
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+
+# Install dependencies for the entire monorepo
+# This leverages npm's workspace capabilities
+RUN npm install
+
+# Copy the rest of the backend source code
+COPY backend/ ./backend/
+
+# Build the backend application
+RUN npm run build --workspace=prodvor-backend
 
 # Expose the port the app runs on
 EXPOSE 3001
 
-# Command to run the application
-CMD ["node", "dist/main"]
+# Default command for production, will be overridden by docker-compose in dev
+CMD ["node", "backend/dist/main.js"]

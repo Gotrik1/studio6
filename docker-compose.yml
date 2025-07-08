@@ -307,15 +307,15 @@ services:
   # ---------------------------------------------------
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: backend
     restart: on-failure
     ports:
       - "3001:3001"
     volumes:
-      - ./backend:/usr/src/app
-      - /usr/src/app/node_modules
+      - ./backend:/usr/src/app/backend
+      - /usr/src/app/backend/node_modules
     env_file:
       - ./.env
     depends_on:
@@ -329,7 +329,7 @@ services:
           condition: service_healthy
       keycloak:
           condition: service_healthy
-    command: npm run start:dev
+    command: npm run start:dev --workspace=prodvor-backend
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:3001 || exit 1"]
       interval: 10s
@@ -344,16 +344,16 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     container_name: frontend
     restart: on-failure
     ports:
       - "9002:9002"
     volumes:
-      - ./frontend:/app
+      - ./frontend:/app/frontend
       - /app/node_modules
-      - /app/.next
+      - /app/frontend/.next
     env_file:
       - ./.env
     depends_on:
@@ -361,7 +361,7 @@ services:
           condition: service_healthy
       kong-setup:
           condition: service_completed_successfully
-    command: npm run dev
+    command: npm run dev --workspace=prodvor-frontend
     logging:
       driver: loki
       options:
