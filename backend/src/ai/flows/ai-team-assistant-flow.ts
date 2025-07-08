@@ -4,8 +4,8 @@
 import { ai } from "../genkit";
 import { z } from "zod";
 import { PrismaService } from "@/prisma/prisma.service";
-import { AiTeamAssistantInputSchema, AiTeamAssistantOutputSchema } from "../schemas/ai-team-assistant-schema";
-import type { AiTeamAssistantInput, AiTeamAssistantOutput } from "../schemas/ai-team-assistant-schema";
+import { AiTeamAssistantInputSchema, AiTeamAssistantOutputSchema } from "./schemas/ai-team-assistant-schema";
+import type { AiTeamAssistantInput, AiTeamAssistantOutput } from "./schemas/ai-team-assistant-schema";
 
 const prisma = new PrismaService();
 
@@ -71,13 +71,13 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
           where: { status: "FINISHED" },
           take: 3,
           orderBy: { finishedAt: "desc" },
-          include: { team2: { select: { name: true } } },
+          include: { team1: true, team2: true },
         },
         matchesAsTeam2: {
           where: { status: "FINISHED" },
           take: 3,
           orderBy: { finishedAt: "desc" },
-          include: { team1: { select: { name: true } } },
+          include: { team1: true, team2: true },
         },
       },
     });
@@ -112,7 +112,7 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
       teamActivity += "\nПоследние результаты матчей:\n";
       allMatches.forEach((match) => {
         const isTeam1 = match.team1Id === teamId;
-        const opponentName = isTeam1 ? (match as any).team2.name : (match as any).team1.name;
+        const opponentName = isTeam1 ? match.team2.name : match.team1.name;
         const teamScore = isTeam1 ? match.team1Score : match.team2Score;
         const opponentScore = isTeam1 ? match.team2Score : match.team1Score;
         let result: "Победа" | "Поражение" | "Ничья" = "Ничья";
