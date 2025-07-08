@@ -175,7 +175,7 @@ export function UserManagementPage() {
                             </SelectTrigger>
                             <SelectContent>
                                  {allStatuses.map(status => (
-                                    <SelectItem key={status} value={status}>{status === 'ACTIVE' ? 'Активен' : 'Забанен'}</SelectItem>
+                                    <SelectItem key={status} value={status}>{status === 'ACTIVE' ? 'Активен' : status === 'BANNED' ? 'Забанен' : status}</SelectItem>
                                 ))}
                             </SelectContent>
                         </Select>

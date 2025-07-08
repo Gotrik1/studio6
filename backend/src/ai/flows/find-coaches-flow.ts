@@ -1,14 +1,6 @@
 
 "use server";
 
-/**
- * @fileOverview An AI agent for helping players find suitable coaches.
- *
- * - findCoaches - A function that handles the coach search process.
- * - FindCoachesInput - The input type for the function.
- * - FindCoachesOutput - The return type for the function.
- */
-
 import { ai } from "../genkit";
 import { z } from "zod";
 import { FindCoachesInputSchema, FindCoachesOutputSchema, CoachSchema } from "./schemas/find-coaches-schema";

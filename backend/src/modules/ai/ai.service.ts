@@ -304,7 +304,11 @@ export class AiService {
     return this.promotionsService.create({
       organizerId,
       imageHint: prompt,
-      ...wizardResult,
+      name: wizardResult.name,
+      description: wizardResult.description,
+      prize: wizardResult.prize,
+      cost: wizardResult.cost,
+      imageDataUri: wizardResult.imageDataUri,
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // Mock end date
     });
   }

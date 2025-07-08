@@ -24,9 +24,8 @@ import { useParams } from 'next/navigation';
 import type { CoachedPlayer, User } from '@/entities/user/model/types';
 import { getTeamBySlug, type TeamDetails } from '@/entities/team/api/teams';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getTeamApplications, acceptTeamApplication, declineTeamApplication, type Application } from '@/entities/team-application/api/applications';
-import type { JoinRequest } from '@/entities/team-application/model/types';
-
+import { getTeamApplications, acceptTeamApplication, declineTeamApplication } from '@/entities/team-application/api/applications';
+import type { Application, JoinRequest } from '@/entities/team-application/model/types';
 
 const teamNeeds = "Мы ищем опытного защитника, который умеет хорошо контролировать поле и начинать атаки. Наш стиль игры - быстрый и комбинационный.";
 
@@ -106,14 +105,7 @@ export function TeamManagementPage() {
     };
     
     const handleAnalyze = (request: Application) => {
-        const adaptedRequest: JoinRequest = {
-            id: request.id,
-            applicant: request.user,
-            teamId: request.teamId,
-            message: request.message || "",
-            statsSummary: request.statsSummary || "Статистика не предоставлена"
-        };
-        setSelectedRequest(adaptedRequest);
+        setSelectedRequest(request as JoinRequest);
         setIsAnalysisOpen(true);
     };
     

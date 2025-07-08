@@ -25,7 +25,7 @@ const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
         case 'medium': return 'text-yellow-500';
         case 'low': return 'text-orange-500';
     }
-}
+};
 
 interface JoinRequestAnalysisDialogProps {
   isOpen: boolean;
