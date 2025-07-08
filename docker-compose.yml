@@ -36,7 +36,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 90s
     networks:
       - prodvor-network
 
@@ -83,7 +82,7 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     healthcheck:
-      test: ["CMD", "cub", "zk-ready", "localhost:2181", "60"]
+      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 | grep imok"]
       interval: 10s
       timeout: 10s
       retries: 10
@@ -151,7 +150,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 90s
     networks:
       - prodvor-network
 
@@ -178,11 +176,10 @@ services:
       - "8180:8080"
     restart: on-failure
     healthcheck:
-      test: "curl -f http://localhost:8080/health/ready || exit 1"
-      interval: 30s
-      timeout: 10s
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      interval: 15s
+      timeout: 5s
       retries: 10
-      start_period: 90s
     networks:
       - prodvor-network
 
@@ -201,7 +198,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 90s
     networks:
       - prodvor-network
 
@@ -242,6 +238,11 @@ services:
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_ADMIN_ERROR_LOG: /dev/stderr
+    healthcheck:
+        test: ["CMD-SHELL", "kong health"]
+        interval: 10s
+        timeout: 5s
+        retries: 10
     ports:
       - "8000:8000"
       - "8443:8443"
@@ -257,7 +258,8 @@ services:
     volumes:
       - ./config/kong:/config
     depends_on:
-      - kong
+      kong:
+        condition: service_healthy
     networks:
       - prodvor-network
     restart: on-failure
@@ -350,6 +352,11 @@ services:
       keycloak:
         condition: service_healthy
     command: npm run start:dev
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3001 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     logging:
       driver: loki
       options:
@@ -372,8 +379,10 @@ services:
     env_file:
       - ./.env
     depends_on:
-      - backend
-      - kong-setup
+      backend:
+          condition: service_healthy
+      kong-setup:
+          condition: service_completed_successfully
     command: npm run dev
     logging:
       driver: loki
