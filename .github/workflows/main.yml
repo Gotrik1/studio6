@@ -77,11 +77,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Lint frontend
-        run: npm run lint --workspace=frontend
-
-      - name: Typecheck frontend
-        run: npm run typecheck --workspace=frontend
+      - name: Lint code
+        run: |
+          npm run lint --workspace=frontend
+          npm run lint --workspace=backend
+      
+      - name: Typecheck code
+        run: |
+          npm run typecheck --workspace=frontend
+          npm run typecheck --workspace=backend
 
       - name: Build frontend
         run: npm run build --workspace=frontend
