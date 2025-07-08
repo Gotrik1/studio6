@@ -49,11 +49,11 @@ jobs:
           EOF
 
       - name: Launch all services
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
 
       - name: Show backend logs on failure
         if: failure()
-        run: docker-compose logs backend
+        run: docker compose logs backend
 
       - name: Install frontend dependencies
         run: npm install --workspace=frontend
@@ -69,8 +69,8 @@ jobs:
 
       - name: Show frontend logs on failure
         if: failure()
-        run: docker-compose logs frontend
+        run: docker compose logs frontend
 
       - name: Tear down
         if: always()
-        run: docker-compose down -v
+        run: docker compose down -v
