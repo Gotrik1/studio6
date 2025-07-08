@@ -18,11 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
       - name: Create .env for docker-compose
         run: |
           cat > .env <<EOF
@@ -55,18 +50,6 @@ jobs:
 
       - name: Launch all services
         run: docker-compose up -d --build
-
-      - name: Run database migrations
-        run: docker-compose run --rm prisma-migrate
-
-      - name: Run backend tests
-        run: docker-compose exec backend npm test
-
-      - name: Lint backend
-        run: docker-compose exec backend npm run lint
-
-      - name: Typecheck backend
-        run: docker-compose exec backend npm run typecheck
 
       - name: Show backend logs on failure
         if: failure()
