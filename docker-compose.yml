@@ -33,7 +33,7 @@ services:
     volumes:
       - ./database_data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h localhost -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -137,12 +137,12 @@ services:
     restart: on-failure
     environment:
       - POSTGRES_USER=keycloak
-      - POSTGRES_PASSWORD
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=keycloak
     volumes:
       - ./database_data/keycloak:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -163,7 +163,7 @@ services:
       - KC_DB_URL_PORT=5432
       - KC_DB_URL_DATABASE=keycloak
       - KC_DB_USERNAME=keycloak
-      - KC_DB_PASSWORD
+      - KC_DB_PASSWORD=${POSTGRES_PASSWORD}
       - KEYCLOAK_ADMIN
       - KEYCLOAK_ADMIN_PASSWORD
       - KC_HTTP_ENABLED=true
@@ -187,12 +187,12 @@ services:
     restart: on-failure
     environment:
       - POSTGRES_USER=kong
-      - POSTGRES_PASSWORD
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=kong
     volumes:
       - ./database_data/kong:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U kong -d kong"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -211,7 +211,7 @@ services:
       - KONG_DATABASE=postgres
       - KONG_PG_HOST=kong-db
       - KONG_PG_USER=kong
-      - KONG_PG_PASSWORD
+      - KONG_PG_PASSWORD=${POSTGRES_PASSWORD}
     restart: on-failure
     networks:
       - prodvor-network
@@ -229,7 +229,7 @@ services:
       - KONG_DATABASE=postgres
       - KONG_PG_HOST=kong-db
       - KONG_PG_USER=kong
-      - KONG_PG_PASSWORD
+      - KONG_PG_PASSWORD=${POSTGRES_PASSWORD}
       - KONG_ADMIN_LISTEN
       - KONG_PROXY_LISTEN
       - KONG_PLUGINS=bundled,oidc
