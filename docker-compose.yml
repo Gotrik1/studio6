@@ -26,15 +26,16 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - ./database_data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
     networks:
       - prodvor-network
 
@@ -84,7 +85,7 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "echo ruok | nc localhost 2181"]
       interval: 10s
-      timeout: 10s
+      timeout: 5s
       retries: 10
     networks:
       - prodvor-network
@@ -97,12 +98,21 @@ services:
         condition: service_healthy
     ports:
       - "9092:9092"
+      - "9093:9093"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
       interval: 15s
@@ -143,13 +153,14 @@ services:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./database_data/keycloak:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -U keycloak -d keycloak -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
     networks:
       - prodvor-network
 
@@ -177,8 +188,8 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
       interval: 15s
-      timeout: 5s
-      retries: 10
+      timeout: 10s
+      retries: 15
     networks:
       - prodvor-network
 
@@ -190,13 +201,14 @@ services:
       POSTGRES_USER: kong
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: kong
+      PGPASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./database_data/kong:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "PGPASSWORD=${POSTGRES_PASSWORD} psql -h localhost -U kong -d kong -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "pg_isready -U kong -d kong"]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 5
     networks:
       - prodvor-network
 
