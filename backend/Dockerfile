@@ -1,30 +1,32 @@
-FROM node:20-slim
+FROM node:20-slim AS base
 
-# Install pnpm
+# 1. Установка зависимостей
+FROM base AS deps
+WORKDIR /usr/src/app
 RUN npm install -g pnpm
 
-WORKDIR /usr/src/app
-
-# Copy all package manifests and lockfile
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Install all dependencies for the entire monorepo
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
-# Copy the rest of the source code
+# 2. Сборка приложения
+FROM base AS builder
+WORKDIR /usr/src/app
+COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 
-# Generate Prisma client
-RUN pnpm --filter prodvor-backend prisma:generate
-
-# Build the backend application
 RUN pnpm --filter prodvor-backend build
 
-# Add openssl for Prisma
-RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+# 3. Финальный образ
+FROM base AS runner
+WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/package.json ./
+COPY --from=builder /usr/src/app/backend/package.json ./backend/
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/dist ./dist
 
 EXPOSE 3001
-
-CMD ["node", "backend/dist/main.js"]
+CMD ["npm", "run", "start:prod", "--workspace=prodvor-backend"]

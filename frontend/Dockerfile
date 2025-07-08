@@ -1,25 +1,34 @@
-FROM node:20-slim
+FROM node:20-slim AS base
 
-# Install pnpm
+# 1. Установка зависимостей
+FROM base AS deps
+WORKDIR /app
 RUN npm install -g pnpm
 
-WORKDIR /app
-
-# Copy all package manifests and lockfile
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Install all dependencies for the entire monorepo
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
-# Copy the rest of the source code
+# 2. Сборка приложения
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Build the frontend application
 RUN pnpm --filter prodvor-frontend build
 
-ENV NODE_ENV production
-EXPOSE 9002
+# 3. Финальный образ
+FROM base AS runner
+WORKDIR /app
 
+ENV NODE_ENV=production
+
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/frontend/package.json ./frontend/
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/frontend/.next ./frontend/.next
+COPY --from=builder /app/frontend/public ./frontend/public
+
+EXPOSE 9002
 CMD ["npm", "start", "--workspace=prodvor-frontend"]
