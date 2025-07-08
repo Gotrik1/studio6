@@ -49,13 +49,8 @@ jobs:
           PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           EOF
 
-      - name: Launch all services in background
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build
-
-      - name: Wait for services to initialize
-        run: |
-          echo "Waiting for 30 seconds for all services to initialize properly..."
-          sleep 30
+      - name: Launch all services
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
 
       - name: Check container statuses
         run: docker compose ps
