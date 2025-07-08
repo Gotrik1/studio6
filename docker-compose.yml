@@ -83,7 +83,7 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
       ZOO_4LW_COMMANDS_WHITELIST: "*"
     healthcheck:
-      test: ["CMD-SHELL", "echo ruok | nc localhost 2181 || exit 1"]
+      test: ["CMD", "bash", "-c", "echo ruok | nc localhost 2181 || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -104,6 +104,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_PROCESS_ROLES: broker,controller
     healthcheck:
         test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
         interval: 15s
