@@ -11,12 +11,33 @@ import { Button } from '@/shared/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getAssignedSponsors, getAvailableSponsors, unassignSponsor, assignSponsor } from '@/entities/tournament/api/sponsors';
-import type { Sponsor } from '@/entities/sponsor/model/types';
+import { assignSponsor, getAssignedSponsors, getAvailableSponsors, unassignSponsor } from '@/entities/tournament/api/sponsors';
+import type { Sponsor as SponsorType } from '@/entities/sponsor/model/types';
 import { AssignSponsorDialog } from '@/widgets/assign-sponsor-dialog';
 
-type SponsorWithAmount = Sponsor & { amount?: number };
+type SponsorWithAmount = SponsorType & { amount?: number };
 
+type BackendSponsor = {
+  id: string;
+  name: string;
+  logo: string | null;
+  logoHint: string | null;
+  description: string;
+  profileUrl: string;
+  interests: string[];
+  amount?: number;
+};
+
+const adaptSponsor = (sponsor: BackendSponsor | null | undefined): (SponsorType & { amount?: number }) | null => {
+    if (!sponsor) return null;
+    return {
+        ...sponsor,
+        id: String(sponsor.id),
+        logo: sponsor.logo || 'https://placehold.co/100x100.png',
+        logoHint: sponsor.logoHint || 'sponsor logo',
+        amount: sponsor.amount || 0,
+    };
+};
 
 interface CrmTournamentSponsorsProps {
     tournamentId: string;
@@ -25,9 +46,9 @@ interface CrmTournamentSponsorsProps {
 export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsProps) {
     const { toast } = useToast();
     const [assignedSponsors, setAssignedSponsors] = useState<SponsorWithAmount[]>([]);
-    const [availableSponsors, setAvailableSponsors] = useState<Sponsor[]>([]);
+    const [availableSponsors, setAvailableSponsors] = useState<SponsorType[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [selectedSponsor, setSelectedSponsor] = useState<Sponsor | null>(null);
+    const [selectedSponsor, setSelectedSponsor] = useState<SponsorType | null>(null);
     const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
 
     const fetchData = useCallback(async () => {
@@ -42,7 +63,8 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
 
             if (availableRes.success && Array.isArray(availableRes.data)) {
                 const assignedIds = new Set(assignedData.map((p: SponsorWithAmount) => p.id));
-                setAvailableSponsors((availableRes.data).filter((p) => !assignedIds.has(p.id)));
+                const adaptedSponsors = (availableRes.data as BackendSponsor[]).map(adaptSponsor).filter((s): s is SponsorType => s !== null);
+                setAvailableSponsors(adaptedSponsors.filter(p => !assignedIds.has(p.id)));
             } else if (!availableRes.success) {
                  throw new Error(availableRes.error || 'Failed to process available sponsors');
             }
@@ -58,12 +80,12 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
         fetchData();
     }, [fetchData]);
 
-    const handleOpenAssignDialog = (sponsor: Sponsor) => {
+    const handleOpenAssignDialog = (sponsor: SponsorType) => {
         setSelectedSponsor(sponsor);
         setIsAssignDialogOpen(true);
     };
     
-    const handleRemoveSponsor = async (sponsor: Sponsor) => {
+    const handleRemoveSponsor = async (sponsor: SponsorType) => {
         const result = await unassignSponsor(tournamentId, sponsor.id);
          if (result.success) {
             toast({ title: "Спонсор удален", description: `${sponsor.name} больше не является спонсором турнира.` });

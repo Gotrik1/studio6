@@ -1,15 +1,17 @@
 
 
-
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { useRouter } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
+import { CrmTournamentParticipantsWidget } from '@/widgets/crm-tournament-participants';
 import { TournamentBracket } from '@/widgets/tournament-bracket';
+import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
 import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
 import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
+import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
 import { CrmTournamentAnnouncements } from '@/widgets/crm-tournament-announcements';
 import { CrmTournamentSettings } from '@/widgets/crm-tournament-settings';
 import { useState, useEffect } from 'react';
@@ -20,18 +22,14 @@ import { Save } from 'lucide-react';
 import { ScrollArea } from '@/shared/ui/scroll-area';
 import { CrmTournamentMediaCenter } from '@/widgets/crm-tournament-media-center';
 import { CrmTournamentDisputes } from '@/widgets/crm-tournament-disputes';
-import { getTournamentById } from '@/entities/tournament/api/get-tournament';
-import type { TournamentDetails } from '@/entities/tournament/model/types';
+import { getTournamentById, type TournamentDetails } from '@/entities/tournament/api/get-tournament';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
-import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
-import { TournamentCrmParticipantsPage } from '@/views/tournament-crm-participants';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;
 }
 
-export function CrmTournamentDetailsPage({ tournamentId }: TournamentCrmDetailsPageProps) {
+export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsPageProps) {
     const [tournament, setTournament] = useState<TournamentDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const [rules, setRules] = useState('');
@@ -108,7 +106,7 @@ export function CrmTournamentDetailsPage({ tournamentId }: TournamentCrmDetailsP
                 </TabsContent>
                 
                 <TabsContent value="participants" className="mt-4">
-                    <TournamentCrmParticipantsPage tournamentId={tournament.id} />
+                    <CrmTournamentParticipantsWidget tournamentId={tournament.id} />
                 </TabsContent>
 
                 <TabsContent value="rules" className="mt-4">
