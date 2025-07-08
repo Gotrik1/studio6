@@ -50,8 +50,11 @@ jobs:
           EOF
 
       - name: Launch all services
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
 
+      - name: Run Prisma migrations
+        run: docker compose exec backend npm run prisma:migrate:deploy
+        
       - name: Check container statuses
         run: docker compose ps
 

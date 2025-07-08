@@ -81,7 +81,7 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-      ZOO_4LW_COMMANDS_WHITELIST: "*"
+      ZOO_4LW_COMMANDS_WHITELIST: "ruok"
     healthcheck:
       test: ["CMD-SHELL", "echo ruok | nc localhost 2181"]
       interval: 10s
@@ -314,20 +314,6 @@ services:
   # ---------------------------------------------------
   # Application Services (Frontend & Backend)
   # ---------------------------------------------------
-  prisma-migrate:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: prisma-migrate
-    command: "npm run prisma:migrate"
-    depends_on:
-      db:
-        condition: service_healthy
-    env_file:
-      - ./.env
-    networks:
-      - prodvor-network
-
   backend:
     build:
       context: ./backend
@@ -342,8 +328,8 @@ services:
     env_file:
       - ./.env
     depends_on:
-      prisma-migrate:
-        condition: service_completed_successfully
+      db:
+        condition: service_healthy
       redis:
         condition: service_healthy
       kafka:
