@@ -6,23 +6,17 @@ import { fetchWithAuth } from '@/shared/lib/api-client';
 import { revalidateTag } from 'next/cache';
 import { User, UserStatus } from '@/shared/lib/types';
 
-// Assuming the backend returns a user object compatible with this structure.
-type BackendJudge = User;
 
-// Adapter function to map backend judge data to frontend User type
-const mapBackendJudgeToFrontendUser = (backendJudge: BackendJudge): User => {
+const mapBackendJudgeToFrontendUser = (backendJudge: User): User => {
     return {
+        ...backendJudge,
         id: String(backendJudge.id), // Ensure ID is a string
-        name: backendJudge.name,
-        avatar: backendJudge.avatar || null,
-        email: backendJudge.email,
-        role: backendJudge.role,
         status: backendJudge.status || UserStatus.ACTIVE,
     };
 };
 
 export async function getAssignedJudges(tournamentId: string): Promise<User[]> {
-    const result = await fetchWithAuth<BackendJudge[]>(`/tournaments/${tournamentId}/judges`);
+    const result = await fetchWithAuth<User[]>(`/tournaments/${tournamentId}/judges`);
     if (result.success && Array.isArray(result.data)) {
         return result.data.map(mapBackendJudgeToFrontendUser);
     }
@@ -30,7 +24,7 @@ export async function getAssignedJudges(tournamentId: string): Promise<User[]> {
 }
 
 export async function getAvailableJudges(): Promise<User[]> {
-    const result = await fetchWithAuth<BackendJudge[]>('/users?role=JUDGE');
+    const result = await fetchWithAuth<User[]>('/users?role=JUDGE');
     // Assuming /users endpoint already returns the correct User shape, but we can map just in case.
     if (result.success && Array.isArray(result.data)) {
          return result.data.map(mapBackendJudgeToFrontendUser);

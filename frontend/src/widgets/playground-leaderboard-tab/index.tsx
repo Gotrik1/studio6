@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { PlaygroundLeaderboard } from '@/widgets/playground-leaderboard';

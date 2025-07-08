@@ -13,7 +13,7 @@ import {
   type GenerateProfileBannerOutput,
 } from "../../ai/flows/generate-profile-banner-flow";
 import { generatePlatformNewsWithAudio } from "../../ai/flows/generate-platform-news-flow";
-import type { NewsWithAudio } from "../../ai/flows/schemas/generate-platform-news-schema";
+import type { NewsWithAudio } from "@/ai/flows/schemas/generate-platform-news-schema";
 import {
   analyzeJoinRequest,
   type AnalyzeJoinRequestInput,
@@ -302,11 +302,7 @@ export class AiService {
   ): Promise<Promotion> {
     const wizardResult = await generatePromotionWizard({ prompt });
     return this.promotionsService.create({
-      name: wizardResult.name,
-      description: wizardResult.description,
-      prize: wizardResult.prize,
-      cost: wizardResult.cost,
-      imageDataUri: wizardResult.imageDataUri,
+      ...wizardResult,
       organizerId,
       imageHint: prompt,
       endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // Mock end date

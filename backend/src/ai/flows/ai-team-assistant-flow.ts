@@ -4,7 +4,7 @@
 import { ai } from "../genkit";
 import { z } from "zod";
 import { PrismaService } from "@/prisma/prisma.service";
-import type { Match, Team } from "@prisma/client";
+import type { Match, Team, ChatMessage, User } from "@prisma/client";
 import { AiTeamAssistantInputSchema, AiTeamAssistantOutputSchema } from "./schemas/ai-team-assistant-schema";
 import type { AiTeamAssistantInput, AiTeamAssistantOutput } from "./schemas/ai-team-assistant-schema";
 
@@ -48,6 +48,11 @@ const prompt = ai.definePrompt({
 1. Краткую сводку (Summary): Оцени общее настроение и выдели ключевые темы из обсуждений.
 2. Рекомендации (Suggestions): Предложи 2-3 конкретных действия, которые капитан может предпринять (например, "провести собрание по тактике X" или "похвалить игрока Y за отличную игру").`,
 });
+
+type MatchWithTeams = Match & {
+  team1: Team;
+  team2: Team;
+};
 
 const aiTeamAssistantFlow_Backend = ai.defineFlow(
   {
@@ -94,7 +99,7 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
     // Add recent chat messages
     if (team.chat && team.chat.messages.length > 0) {
       teamActivity += "Последние сообщения в чате:\n";
-      team.chat.messages.reverse().forEach((msg) => {
+      team.chat.messages.reverse().forEach((msg: ChatMessage & { author: Pick<User, 'name'>}) => {
         teamActivity += `- ${msg.author.name}: ${msg.content}\n`;
       });
     } else {
@@ -112,7 +117,7 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
     if (allMatches.length > 0) {
       teamActivity += "\nПоследние результаты матчей:\n";
       allMatches.forEach((match) => {
-        const typedMatch = match as Match & { team1: Team, team2: Team };
+        const typedMatch = match as MatchWithTeams;
         const isTeam1 = typedMatch.team1Id === teamId;
         const opponentName = isTeam1 ? typedMatch.team2.name : typedMatch.team1.name;
         const teamScore = isTeam1 ? typedMatch.team1Score : typedMatch.team2Score;
