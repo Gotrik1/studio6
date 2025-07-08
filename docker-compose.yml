@@ -4,7 +4,7 @@
 # It includes the frontend, backend, databases, and critical infrastructure
 # like an API Gateway, Identity Provider, and Message Brokers.
 #
-# To run everything: docker-compose up --build
+# To run everything: docker compose up --build
 #
 # Key services and ports:
 # - Frontend (Next.js): http://localhost:9002
@@ -36,7 +36,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 60s
+      start_period: 90s
     networks:
       - prodvor-network
 
@@ -102,7 +102,7 @@ services:
       test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
       interval: 15s
       timeout: 10s
-      retries: 5
+      retries: 10
     networks:
       - prodvor-network
 
@@ -145,7 +145,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 60s
+      start_period: 90s
     networks:
       - prodvor-network
 
@@ -195,7 +195,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 60s
+      start_period: 90s
     networks:
       - prodvor-network
 
