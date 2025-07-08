@@ -47,8 +47,8 @@ export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamN
       setAiError(null);
 
       const playerProfile = `
-        Player: ${request.applicant.name}
-        Role: ${request.applicant.role}
+        Player: ${request.user.name}
+        Role: ${request.user.role}
         Profile Summary: ${request.statsSummary}
       `;
 
@@ -89,7 +89,7 @@ export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamN
         <DialogHeader>
           <DialogTitle>AI-анализ заявки</DialogTitle>
           <DialogDescription>
-            Анализ кандидата {request.applicant.name} для команды.
+            Анализ кандидата {request.user.name} для команды.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">

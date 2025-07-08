@@ -14,6 +14,4 @@ export type Application = {
     };
 };
 
-export type JoinRequest = Application & {
-    applicant: User;
-};
+export type JoinRequest = Application;
