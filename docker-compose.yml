@@ -35,7 +35,7 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     networks:
       - prodvor-network
 
@@ -143,7 +143,7 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${KEYCLOAK_DB_USER} -d ${KEYCLOAK_DB_DATABASE}"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     networks:
       - prodvor-network
 
@@ -193,7 +193,7 @@ services:
       test: ["CMD-SHELL", "pg_isready -U ${KONG_PG_USER} -d ${KONG_PG_DATABASE}"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 10
     networks:
       - prodvor-network
 
