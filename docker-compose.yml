@@ -158,7 +158,7 @@ services:
       KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KC_HTTP_ENABLED: true
+      KC_HTTP_ENABLED: "true"
     ports:
       - "8180:8080"
     restart: always
@@ -170,9 +170,9 @@ services:
     container_name: kong-db
     restart: always
     environment:
-      POSTGRES_USER: ${KONG_PG_USER}
-      POSTGRES_PASSWORD: ${KONG_PG_PASSWORD}
-      POSTGRES_DB: ${KONG_PG_DATABASE}
+      KONG_PG_USER: ${KONG_PG_USER}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE}
     volumes:
       - ./database_data/kong:/var/lib/postgresql/data
     healthcheck:
@@ -369,3 +369,5 @@ volumes:
   rabbitmq_data:
   prometheus_data:
   grafana_data:
+
+    
