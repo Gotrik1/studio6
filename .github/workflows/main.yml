@@ -32,8 +32,8 @@ jobs:
           RABBITMQ_DEFAULT_PASSWORD_SECRET: ${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
         run: |
           # Temporarily echo secrets for debugging
-          echo "RABBITMQ_DEFAULT_USER_SECRET length: ${#RABBITMQ_DEFAULT_USER_SECRET}"
-          echo "POSTGRES_PASSWORD_SECRET length: ${#POSTGRES_PASSWORD_SECRET}"
+          echo "RABBITMQ_DEFAULT_USER_SECRET_LENGTH: ${#RABBITMQ_DEFAULT_USER_SECRET}"
+          echo "POSTGRES_PASSWORD_SECRET_LENGTH: ${#POSTGRES_PASSWORD_SECRET}"
 
           # Fail fast if critical secrets are missing
           if [ -z "$POSTGRES_PASSWORD_SECRET" ]; then echo "::error::Required secret POSTGRES_PASSWORD is not set." >&2; exit 1; fi
@@ -67,9 +67,6 @@ jobs:
       - name: Launch all services
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
 
-      - name: Wait for services to be extra ready
-        run: sleep 15
-
       - name: Run Prisma migrations
         run: docker compose exec backend npm run prisma:migrate:deploy
         
@@ -78,32 +75,32 @@ jobs:
 
       - name: Show Main DB logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs db
+        run: docker compose logs db
 
       - name: Show Keycloak DB logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak-db
-
-      - name: Show Kong DB logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong-db
+        run: docker compose logs keycloak-db
         
       - name: Show backend logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
+        run: docker compose logs backend
 
       - name: Show frontend logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs frontend
+        run: docker compose logs frontend
 
       - name: Show Keycloak logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak
+        run: docker compose logs keycloak
 
       - name: Show Kafka logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
+        run: docker compose logs kafka
       
+      - name: Show Zookeeper logs on failure
+        if: failure()
+        run: docker compose logs zookeeper
+
       - name: Install dependencies
         run: npm install
 
