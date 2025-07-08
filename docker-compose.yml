@@ -24,15 +24,16 @@ services:
     container_name: db
     restart: on-failure
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - PGPASSWORD
     ports:
       - "5432:5432"
     volumes:
       - ./database_data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "PGPASSWORD=${POSTGRES_PASSWORD} psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "psql -h localhost -U \"${POSTGRES_USER}\" -d \"${POSTGRES_DB}\" -c 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -45,8 +46,8 @@ services:
     container_name: pgadmin
     restart: always
     environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      - PGADMIN_DEFAULT_EMAIL
+      - PGADMIN_DEFAULT_PASSWORD
     ports:
       - "5050:80"
     volumes:
@@ -112,8 +113,8 @@ services:
     hostname: rabbitmq
     restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASSWORD: ${RABBITMQ_DEFAULT_PASSWORD}
+      - RABBITMQ_DEFAULT_USER
+      - RABBITMQ_DEFAULT_PASSWORD
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -135,13 +136,14 @@ services:
     container_name: keycloak-db
     restart: on-failure
     environment:
-      POSTGRES_USER: ${KEYCLOAK_DB_USER}
-      POSTGRES_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
-      POSTGRES_DB: ${KEYCLOAK_DB_DATABASE}
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - PGPASSWORD
     volumes:
       - ./database_data/keycloak:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "PGPASSWORD=${KEYCLOAK_DB_PASSWORD} psql -U ${KEYCLOAK_DB_USER} -d ${KEYCLOAK_DB_DATABASE} -h localhost -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "psql -h localhost -U \"${POSTGRES_USER}\" -d \"${POSTGRES_DB}\" -c 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -157,17 +159,17 @@ services:
       keycloak-db:
         condition: service_healthy
     environment:
-      KC_DB: postgres
-      KC_DB_URL_HOST: keycloak-db
-      KC_DB_URL_PORT: 5432
-      KC_DB_URL_DATABASE: ${KEYCLOAK_DB_DATABASE}
-      KC_DB_USERNAME: ${KEYCLOAK_DB_USER}
-      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
-      KC_HTTP_ENABLED: "true"
-      KC_HEALTH_ENABLED: "true"
-      KC_PROXY: "edge"
+      - KC_DB
+      - KC_DB_URL_HOST
+      - KC_DB_URL_PORT
+      - KC_DB_URL_DATABASE
+      - KC_DB_USERNAME
+      - KC_DB_PASSWORD
+      - KEYCLOAK_ADMIN
+      - KEYCLOAK_ADMIN_PASSWORD
+      - KC_HTTP_ENABLED
+      - KC_HEALTH_ENABLED
+      - KC_PROXY
     ports:
       - "8180:8080"
     restart: on-failure
@@ -185,13 +187,14 @@ services:
     container_name: kong-db
     restart: on-failure
     environment:
-      POSTGRES_USER: ${KONG_PG_USER}
-      POSTGRES_PASSWORD: ${KONG_PG_PASSWORD}
-      POSTGRES_DB: ${KONG_PG_DATABASE}
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - PGPASSWORD
     volumes:
       - ./database_data/kong:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "PGPASSWORD=${KONG_PG_PASSWORD} psql -U ${KONG_PG_USER} -d ${KONG_PG_DATABASE} -h localhost -c 'SELECT 1'"]
+      test: ["CMD-SHELL", "psql -h localhost -U \"${POSTGRES_USER}\" -d \"${POSTGRES_DB}\" -c 'SELECT 1'"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -207,10 +210,10 @@ services:
       kong-db:
         condition: service_healthy
     environment:
-      KONG_DATABASE: postgres
-      KONG_PG_HOST: kong-db
-      KONG_PG_USER: ${KONG_PG_USER}
-      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
+      - KONG_DATABASE
+      - KONG_PG_HOST
+      - KONG_PG_USER
+      - KONG_PG_PASSWORD
     restart: on-failure
     networks:
       - prodvor-network
@@ -225,17 +228,17 @@ services:
       keycloak:
         condition: service_healthy
     environment:
-      KONG_DATABASE: postgres
-      KONG_PG_HOST: kong-db
-      KONG_PG_USER: ${KONG_PG_USER}
-      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
-      KONG_ADMIN_LISTEN: ${KONG_ADMIN_LISTEN}
-      KONG_PROXY_LISTEN: ${KONG_PROXY_LISTEN}
-      KONG_PLUGINS: bundled,oidc
-      KONG_PROXY_ACCESS_LOG: /dev/stdout
-      KONG_ADMIN_ACCESS_LOG: /dev/stdout
-      KONG_PROXY_ERROR_LOG: /dev/stderr
-      KONG_ADMIN_ERROR_LOG: /dev/stderr
+      - KONG_DATABASE
+      - KONG_PG_HOST
+      - KONG_PG_USER
+      - KONG_PG_PASSWORD
+      - KONG_ADMIN_LISTEN
+      - KONG_PROXY_LISTEN
+      - KONG_PLUGINS
+      - KONG_PROXY_ACCESS_LOG
+      - KONG_ADMIN_ACCESS_LOG
+      - KONG_PROXY_ERROR_LOG
+      - KONG_ADMIN_ERROR_LOG
     ports:
       - "8000:8000"
       - "8443:8443"

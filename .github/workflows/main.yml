@@ -52,10 +52,11 @@ jobs:
           RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
           RABBITMQ_URL=amqp://${{ secrets.RABBITMQ_DEFAULT_USER }}:${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}@rabbitmq:5672
           NEXT_PUBLIC_BACKEND_URL=http://kong:8000
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           EOF
 
       - name: Launch all services
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
+        run: docker compose --env-file ./.env -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
 
       - name: Show Main DB logs on failure
         if: failure()
