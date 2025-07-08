@@ -1,21 +1,26 @@
-
 FROM node:20-alpine
 
-# Устанавливаем OpenSSL, так как он необходим для Prisma Client
-RUN apk add --no-cache openssl
+# Установка системных зависимостей, включая OpenSSL для Prisma
+RUN apk add --no-cache libc6-compat openssl
+
+# Установка pnpm
+RUN npm install -g pnpm
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY package.json ./
+COPY pnpm-lock.yaml ./
 COPY prisma ./prisma/
 
-RUN npm install
+# Используем pnpm для установки зависимостей
+RUN pnpm install --frozen-lockfile
 
 COPY . .
 
-# Этот порт будет открыт в контейнере.
-# Он будет проброшен на хост-машину в docker-compose.yml.
+RUN pnpm prisma generate
+
+RUN pnpm build
+
 EXPOSE 3001
 
-# Команда для запуска приложения
-CMD ["npm", "run", "start:dev"]
+CMD ["pnpm", "start:prod"]

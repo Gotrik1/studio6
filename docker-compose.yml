@@ -93,6 +93,7 @@ services:
       KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:9093'
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
     healthcheck:
         test: ["CMD-SHELL", "kafka-topics --bootstrap-server localhost:9092 --list"]
         interval: 15s
@@ -161,8 +162,8 @@ services:
       KC_HTTP_ENABLED: true
       KC_HEALTH_ENABLED: true
       KC_PROXY: edge
-      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
     ports:
       - "8180:8080"
     restart: on-failure
@@ -254,7 +255,6 @@ services:
         condition: service_healthy
     networks:
       - prodvor-network
-    restart: on-failure
 
   # ---------------------------------------------------
   # Monitoring & Observability
