@@ -18,8 +18,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Create .env for docker-compose
+      - name: Validate secrets and create .env file
         run: |
+          # Fail fast if critical secrets are missing
+          if [ -z "${{ secrets.POSTGRES_PASSWORD }}" ]; then echo "::error::Required secret POSTGRES_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.KEYCLOAK_DB_PASSWORD }}" ]; then echo "::error::Required secret KEYCLOAK_DB_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.KONG_PG_PASSWORD }}" ]; then echo "::error::Required secret KONG_PG_PASSWORD is not set." >&2; exit 1; fi
+          
+          # Create .env file
           cat > .env <<EOF
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
@@ -51,13 +57,21 @@ jobs:
       - name: Launch all services
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
 
-      - name: Show backend logs on failure
+      - name: Show Main DB logs on failure
         if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs db
 
       - name: Show Keycloak DB logs on failure
         if: failure()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak-db
+
+      - name: Show Kong DB logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong-db
+        
+      - name: Show backend logs on failure
+        if: failure()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
 
       - name: Install frontend dependencies
         run: npm install --workspace=frontend
@@ -78,3 +92,5 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+
+    
