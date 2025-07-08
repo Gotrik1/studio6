@@ -99,6 +99,7 @@ services:
       zookeeper:
         condition: service_healthy
     environment:
+      CLUSTER_ID: '9e6c7c82-1f7b-4f3e-8b2d-4f8d1b8d7e5a'
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092

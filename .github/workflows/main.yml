@@ -31,6 +31,11 @@ jobs:
           RABBITMQ_DEFAULT_USER_SECRET: ${{ secrets.RABBITMQ_DEFAULT_USER }}
           RABBITMQ_DEFAULT_PASSWORD_SECRET: ${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
         run: |
+          # Temporarily echo secrets for debugging
+          echo "POSTGRES_PASSWORD_SECRET=$POSTGRES_PASSWORD_SECRET"
+          echo "RABBITMQ_DEFAULT_USER_SECRET=$RABBITMQ_DEFAULT_USER_SECRET"
+          echo "RABBITMQ_DEFAULT_PASSWORD_SECRET=$RABBITMQ_DEFAULT_PASSWORD_SECRET"
+          
           # Fail fast if critical secrets are missing
           if [ -z "$POSTGRES_PASSWORD_SECRET" ]; then echo "::error::Required secret POSTGRES_PASSWORD is not set." >&2; exit 1; fi
           if [ -z "$RABBITMQ_DEFAULT_USER_SECRET" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_USER is not set." >&2; exit 1; fi
