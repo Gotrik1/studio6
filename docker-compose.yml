@@ -32,7 +32,7 @@ services:
     volumes:
       - ./database_data/postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB} -h localhost"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -141,7 +141,7 @@ services:
     volumes:
       - ./database_data/keycloak:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${KEYCLOAK_DB_USER} -d ${KEYCLOAK_DB_DATABASE} -h localhost"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -170,7 +170,7 @@ services:
       KC_PROXY: "edge"
     ports:
       - "8180:8080"
-    restart: always
+    restart: on-failure
     healthcheck:
       test: "curl -f http://localhost:8080/health/ready || exit 1"
       interval: 30s
@@ -185,13 +185,13 @@ services:
     container_name: kong-db
     restart: always
     environment:
-      KONG_PG_USER: ${KONG_PG_USER}
-      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
-      KONG_PG_DATABASE: ${KONG_PG_DATABASE}
+      POSTGRES_USER: ${KONG_PG_USER}
+      POSTGRES_PASSWORD: ${KONG_PG_PASSWORD}
+      POSTGRES_DB: ${KONG_PG_DATABASE}
     volumes:
       - ./database_data/kong:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${KONG_PG_USER} -d ${KONG_PG_DATABASE} -h localhost"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -p 5432 -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
