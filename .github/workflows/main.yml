@@ -32,10 +32,8 @@ jobs:
           PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
           KEYCLOAK_ADMIN=${{ secrets.KEYCLOAK_ADMIN }}
           KEYCLOAK_ADMIN_PASSWORD=${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
-          KEYCLOAK_DB_USER=${{ secrets.KEYCLOAK_DB_USER }}
-          KEYCLOAK_DB_DATABASE=${{ secrets.KEYCLOAK_DB_DATABASE }}
-          KONG_PG_USER=${{ secrets.KONG_PG_USER }}
-          KONG_PG_DATABASE=${{ secrets.KONG_PG_DATABASE }}
+          KC_DB_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          KONG_PG_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           KONG_ADMIN_LISTEN=${{ secrets.KONG_ADMIN_LISTEN }}
           KONG_PROXY_LISTEN=${{ secrets.KONG_PROXY_LISTEN }}
           DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
