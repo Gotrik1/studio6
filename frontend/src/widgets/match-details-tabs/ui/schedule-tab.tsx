@@ -3,16 +3,16 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
-import type { TournamentDetails } from "@/entities/tournament/model/types";
-import { format } from 'date-fns';
-import { ru } from 'date-fns/locale';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/shared/ui/accordion";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import Link from "next/link";
 import { Clock } from "lucide-react";
 import { useMemo } from 'react';
+import { format } from 'date-fns';
+import { ru } from 'date-fns/locale';
+import type { BracketMatch, BracketRound } from '@/entities/tournament/model/types';
 
-type BracketMatch = TournamentDetails['bracket']['rounds'][0]['matches'][0];
+
 // This type is now stricter, ensuring both teams exist for a playable match.
 type PlayableMatch = BracketMatch & {
     id: string;
@@ -25,7 +25,7 @@ type PlayableMatch = BracketMatch & {
 };
 
 interface ScheduleTabProps {
-    rounds: TournamentDetails['bracket']['rounds'];
+    rounds: BracketRound[];
 }
 
 type GroupedMatches = Record<string, PlayableMatch[]>;
@@ -33,8 +33,8 @@ type GroupedMatches = Record<string, PlayableMatch[]>;
 export function ScheduleTab({ rounds }: ScheduleTabProps) {
 
     const allMatches = useMemo(() => rounds
-        .flatMap((round): BracketMatch[] => round.matches)
-        .filter((match): match is PlayableMatch => 
+        .flatMap((round: BracketRound) => round.matches)
+        .filter((match: BracketMatch): match is PlayableMatch => 
             !!match &&
             'team1' in match && !!match.team1 &&
             'team2' in match && !!match.team2 &&
@@ -44,7 +44,7 @@ export function ScheduleTab({ rounds }: ScheduleTabProps) {
             'href' in match && !!match.href
         ), [rounds]);
 
-    const groupedMatches: GroupedMatches = useMemo(() => allMatches.reduce((acc, match: PlayableMatch) => {
+    const groupedMatches: GroupedMatches = useMemo(() => allMatches.reduce((acc: GroupedMatches, match: PlayableMatch) => {
         const dateStr = format(new Date(match.date), 'yyyy-MM-dd');
         if (!acc[dateStr]) {
             acc[dateStr] = [];

@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState, useMemo } from 'react';
@@ -11,7 +12,7 @@ import { CrmMatchResultDialog, type MatchResult } from '@/widgets/crm-score-dial
 import { useToast } from '@/shared/hooks/use-toast';
 import { Badge } from '@/shared/ui/badge';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/ui/tooltip';
-import type { TournamentDetails, BracketMatch } from '@/entities/tournament/model/types';
+import type { BracketMatch, BracketRound } from '@/entities/tournament/model/types';
 
 
 type MatchState = BracketMatch & {
@@ -20,19 +21,19 @@ type MatchState = BracketMatch & {
 };
 
 interface CrmTournamentMatchesProps {
-    rounds: TournamentDetails['bracket']['rounds'];
+    rounds: BracketRound[];
 }
 
 export function CrmTournamentMatches({ rounds }: CrmTournamentMatchesProps) {
     const { toast } = useToast();
     
     const allMatches = useMemo(() => {
-        return rounds.flatMap(round => 
-            round.matches.filter((match): match is BracketMatch & { id: string } => 'team2' in match && !!match.id)
+        return rounds.flatMap((round: BracketRound) => 
+            round.matches.filter((match: BracketMatch): match is BracketMatch & { id: string } => !!match.id && !!match.team1 && !!match.team2)
         );
     }, [rounds]);
     
-    const [matches, setMatches] = useState<MatchState[]>(allMatches.map(m => ({ ...m, status: (m.score && m.score !== 'VS') ? 'played' : 'pending' })));
+    const [matches, setMatches] = useState<MatchState[]>(allMatches.map((m: BracketMatch) => ({ ...m, status: (m.score && m.score !== 'VS') ? 'played' : 'pending' })));
     const [selectedMatch, setSelectedMatch] = useState<BracketMatch | null>(null);
     const [isScoreDialogOpen, setIsScoreDialogOpen] = useState(false);
 
@@ -78,8 +79,8 @@ export function CrmTournamentMatches({ rounds }: CrmTournamentMatchesProps) {
     }
 
     const matchIdToRoundName = useMemo(() => {
-        return rounds.reduce((acc, round) => {
-            round.matches.forEach(match => {
+        return rounds.reduce((acc: Record<string, string>, round: BracketRound) => {
+            round.matches.forEach((match: BracketMatch) => {
                 if ('id' in match && match.id) {
                     acc[String(match.id)] = round.name;
                 }

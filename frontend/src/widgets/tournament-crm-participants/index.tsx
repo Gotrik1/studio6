@@ -26,139 +26,32 @@ import { Badge } from '@/shared/ui/badge';
 import type { User } from '@/shared/lib/types';
 
 
-type BackendApplication = {
-    id: string;
-    teamId: string;
-    message?: string;
-    user: User;
-    team: {
-        id: string;
-        name: string;
-        slug: string;
-        captain: { name: string } | null;
-    };
-};
-
-type BackendParticipantTeam = {
-    id: string;
-    name: string;
-    captain: User | null;
-    members: User[];
-};
-
-function adaptApplication(app: BackendApplication): Application {
-    return {
-        id: app.id,
-        teamId: app.teamId,
-        message: app.message,
-        user: app.user,
-        team: {
-            id: app.team.id,
-            name: app.team.name,
-            slug: app.team.slug,
-            captain: { name: app.team.captain?.name || 'N/A' },
-        },
-    };
-}
-function adaptParticipant(team: BackendParticipantTeam): Participant {
-    return {
-        id: team.id,
-        name: team.name,
-        captain: { name: team.captain?.name || 'N/A' },
-        members: team.members.map(m => ({
-            id: m.id,
-            name: m.name,
-            avatar: m.avatar,
-            role: m.role
-        }))
-    }
-}
-
 interface CrmTournamentParticipantsProps {
     tournamentId: string;
+    applications: Application[];
+    participants: Participant[];
+    isLoading: boolean;
+    openCollapsibles: string[];
+    isActionPending: boolean;
+    toggleCollapsible: (id: string) => void;
+    handleAccept: (app: Application) => void;
+    handleDecline: (app: Application) => void;
+    handleRemove: (team: Participant) => void;
 }
 
-export function CrmTournamentParticipants({ tournamentId }: CrmTournamentParticipantsProps) {
+
+export function CrmTournamentParticipants({
+    applications,
+    participants,
+    isLoading,
+    openCollapsibles,
+    isActionPending,
+    toggleCollapsible,
+    handleAccept,
+    handleDecline,
+    handleRemove
+}: CrmTournamentParticipantsProps) {
     const { toast } = useToast();
-    const [applications, setApplications] = useState<Application[]>([]);
-    const [participants, setParticipants] = useState<Participant[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [openCollapsibles, setOpenCollapsibles] = useState<string[]>([]);
-    const [isActionPending, startTransition] = useTransition();
-
-    const fetchData = useCallback(async () => {
-        setIsLoading(true);
-        try {
-            const [appsResult, participantsResult] = await Promise.all([
-                getTournamentApplications(tournamentId),
-                getTournamentParticipants(tournamentId)
-            ]);
-            
-            if (appsResult.success && appsResult.data) {
-                setApplications(appsResult.data);
-            } else if (!appsResult.success) {
-                throw new Error(appsResult.error);
-            }
-
-            if (participantsResult.success && participantsResult.data) {
-                setParticipants(participantsResult.data);
-            } else if (!participantsResult.success) {
-                throw new Error(participantsResult.error);
-            }
-
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить данные участников';
-            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить участников: ${errorMessage}` });
-        } finally {
-            setIsLoading(false);
-        }
-    }, [tournamentId, toast]);
-
-    useEffect(() => {
-        if(tournamentId) {
-            fetchData();
-        }
-    }, [tournamentId, fetchData]);
-
-    const toggleCollapsible = (id: string) => {
-        setOpenCollapsibles(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-    };
-
-    const handleAction = async (action: () => Promise<{ success: boolean; error?: string }>, successMsg: string, errorMsg: string) => {
-        startTransition(async () => {
-            const result = await action();
-            if (result.success) {
-                toast({ title: successMsg });
-                await fetchData();
-            } else {
-                 toast({ variant: 'destructive', title: 'Ошибка', description: result.error || errorMsg });
-            }
-        });
-    }
-
-    const handleAccept = (app: Application) => {
-        handleAction(
-            () => approveApplication(tournamentId, app.id),
-            'Заявка принята',
-            `Не удалось принять заявку от ${app.team.name}.`
-        );
-    };
-
-    const handleDecline = (app: Application) => {
-         handleAction(
-            () => rejectApplication(tournamentId, app.id),
-            'Заявка отклонена',
-            `Не удалось отклонить заявку от ${app.team.name}.`
-        );
-    };
-    
-    const handleRemove = (team: Participant) => {
-        handleAction(
-            () => removeParticipant(tournamentId, team.id),
-            'Участник удален',
-            `Не удалось удалить команду ${team.name}.`
-        );
-    }
 
     if(isLoading) {
         return (
@@ -249,7 +142,7 @@ export function CrmTournamentParticipants({ tournamentId }: CrmTournamentPartici
                                                     </CollapsibleTrigger>
                                                 </TableCell>
                                                 <TableCell className="font-medium">{p.name}</TableCell>
-                                                <TableCell className="hidden md:table-cell">{p.captain.name}</TableCell>
+                                                <TableCell className="hidden md:table-cell">{p.captain?.name}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{p.members.length} чел.</TableCell>
                                                 <TableCell className="text-right">
                                                      <div className="flex items-center justify-end gap-2">

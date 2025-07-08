@@ -1,5 +1,6 @@
 
 
+
 export type MatchEventType = "GOAL" | "ASSIST" | "YELLOW_CARD" | "RED_CARD" | "SUBSTITUTION" | "KILL" | "DEATH" | "ASSIST_ESPORTS" | "BOMB_PLANTED" | "BOMB_DEFUSED" | "ROUND_WIN" | "ROUND_LOSS" | "OTHER";
 
 export type MatchEvent = {
@@ -54,7 +55,7 @@ export type MatchDetails = {
     teamStats?: {
         [key: string]: { label: string; team1: number; team2: number; }
     } | null;
-    media?: TournamentMedia[];
+    media: TournamentMedia[];
     bracket: {
       rounds: BracketRound[];
     };

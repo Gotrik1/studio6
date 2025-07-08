@@ -110,8 +110,9 @@ export async function getTournamentParticipants(tournamentId: string) {
 
 export async function approveApplication(tournamentId: string, applicationId: string) {
     const result = await fetchWithAuth<{teamId: string, team: { slug: string}}>(`/team-applications/${applicationId}/accept`, { method: 'PATCH' });
-    if (result.success && result.data?.team?.slug) {
+    if (result.success) {
         revalidateTag(`team-applications-${tournamentId}`);
+        // Also revalidate team details to update roster
         revalidateTag(`team-slug-${result.data.team.slug}`);
     }
     return result;
@@ -119,7 +120,7 @@ export async function approveApplication(tournamentId: string, applicationId: st
 
 export async function rejectApplication(tournamentId: string, applicationId: string) {
     const result = await fetchWithAuth<{teamId: string}>(`/team-applications/${applicationId}/decline`, { method: 'PATCH' });
-     if (result.success && result.data) {
+     if (result.success) {
         revalidateTag(`team-applications-${result.data.teamId}`);
     }
     return result;

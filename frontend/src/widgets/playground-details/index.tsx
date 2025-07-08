@@ -29,7 +29,7 @@ import type { PlaygroundConditionReport } from '@/entities/playground/api/condit
 import type { LfgLobby } from '@/entities/lfg/model/types';
 import { getPlaygroundSchedule } from '@/entities/playground/api/schedule';
 import { reportPlaygroundIssue } from '@/entities/playground/api/report';
-import type { Activity, PlaygroundCheckInActivity } from '@/entities/feed/model/types';
+import type { Activity } from '@/entities/feed/model/types';
 
 export default function PlaygroundDetailsPage({ playground, initialConditionReport }: { playground: Playground, initialConditionReport: PlaygroundConditionReport | null }) {
     const { user } = useSession();

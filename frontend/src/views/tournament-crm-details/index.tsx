@@ -1,13 +1,12 @@
 
 
-
-
 'use client';
 
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter, CardContent } from '@/shared/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/ui/tabs';
 import { notFound, useRouter } from 'next/navigation';
 import { CrmTournamentOverview } from '@/widgets/crm-tournament-overview';
+import { TournamentCrmParticipantsPage } from '@/views/tournament-crm-participants';
 import { TournamentBracket } from '@/widgets/tournament-bracket';
 import { CrmTournamentJudges } from '@/widgets/crm-tournament-judges';
 import { CrmTournamentSponsors } from '@/widgets/crm-tournament-sponsors';
@@ -26,7 +25,6 @@ import type { TournamentDetails } from '@/entities/tournament/model/types';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { CrmTournamentMedical } from '@/widgets/crm-tournament-medical';
 import { CrmTournamentMatches } from '@/widgets/crm-tournament-matches';
-import { TournamentCrmParticipantsPage } from '../tournament-crm-participants';
 
 interface TournamentCrmDetailsPageProps {
     tournamentId: string;

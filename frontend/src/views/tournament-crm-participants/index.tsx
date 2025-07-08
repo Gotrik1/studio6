@@ -1,11 +1,9 @@
 
 
-
-
 'use client';
 
-import { useState, useEffect, useCallback, useTransition } from 'react';
 import { CrmTournamentParticipants as CrmTournamentParticipantsWidget } from '@/widgets/crm-tournament-participants';
+import { useState, useEffect, useCallback, useTransition } from 'react';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
     getTournamentApplications,
@@ -16,67 +14,18 @@ import {
     type Application,
     type Participant
 } from '@/entities/tournament/api/participants';
-import type { User } from '@/shared/lib/types';
 
-
-type BackendApplication = {
-    id: string;
-    teamId: string;
-    message?: string;
-    user: User;
-    team: {
-        id: string;
-        name: string;
-        slug: string;
-        captain: { name: string } | null;
-    };
-};
-type BackendParticipantTeam = {
-    id: string;
-    name: string;
-    captain: User | null;
-    members: User[];
-};
-
-function adaptApplication(app: BackendApplication): Application {
-    return {
-        id: app.id,
-        teamId: app.teamId,
-        message: app.message,
-        user: app.user,
-        team: {
-            id: app.team.id,
-            name: app.team.name,
-            slug: app.team.slug,
-            captain: app.team.captain,
-        },
-    };
-}
-function adaptParticipant(team: BackendParticipantTeam): Participant {
-    return {
-        id: team.id,
-        name: team.name,
-        captain: team.captain ? { name: team.captain.name } : null,
-        members: team.members.map(m => ({
-            id: m.id,
-            name: m.name,
-            avatar: m.avatar,
-            role: m.role
-        }))
-    }
-}
-
-interface TournamentCrmDetailsPageProps {
+interface TournamentCrmParticipantsPageProps {
     tournamentId: string;
 }
 
-export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsPageProps) {
+export function TournamentCrmParticipantsPage({ tournamentId }: TournamentCrmParticipantsPageProps) {
+    const { toast } = useToast();
     const [applications, setApplications] = useState<Application[]>([]);
     const [participants, setParticipants] = useState<Participant[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [openCollapsibles, setOpenCollapsibles] = useState<string[]>([]);
     const [isActionPending, startTransition] = useTransition();
-    const { toast } = useToast();
 
     const fetchData = useCallback(async () => {
         setIsLoading(true);
@@ -87,13 +36,13 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
             ]);
             
             if (appsResult.success && appsResult.data) {
-                setApplications(appsResult.data);
+                setApplications(appsResult.data as Application[]);
             } else if (!appsResult.success) {
                 throw new Error(appsResult.error);
             }
 
             if (participantsResult.success && participantsResult.data) {
-                setParticipants(participantsResult.data);
+                setParticipants(participantsResult.data as Participant[]);
             } else if (!participantsResult.success) {
                 throw new Error(participantsResult.error);
             }

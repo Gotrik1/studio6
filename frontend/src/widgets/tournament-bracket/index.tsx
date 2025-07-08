@@ -1,20 +1,20 @@
 
+
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import Link from "next/link";
 import { cn } from "@/shared/lib/utils";
 import { Trophy } from "lucide-react";
-import type { TournamentDetails } from "@/entities/tournament/model/types";
+import type { BracketMatch, BracketRound } from "@/entities/tournament/model/types";
 
-type BracketMatch = TournamentDetails['bracket']['rounds'][0]['matches'][0];
 
 interface TournamentBracketProps {
-  rounds: TournamentDetails['bracket']['rounds'];
+  rounds: BracketRound[];
 }
 
 const MatchCard = ({ match }: { match: BracketMatch }) => {
-    const scores = match.score?.split('-').map(s => parseInt(s, 10));
+    const scores = match.score?.split('-').map((s: string) => parseInt(s, 10));
     const score1 = scores?.[0] ?? 0;
     const score2 = scores?.[1] ?? 0;
     const team1Wins = match.score ? score1 > score2 : false;
@@ -86,11 +86,11 @@ export function TournamentBracket({ rounds }: TournamentBracketProps) {
     return (
         <div className="w-full overflow-x-auto p-4">
             <div className="flex items-center justify-start gap-12">
-                {rounds.map((round, roundIndex) => (
+                {rounds.map((round: BracketRound, roundIndex: number) => (
                     <div key={round.name} className="flex flex-col items-center flex-shrink-0">
                         <h3 className="mb-6 font-headline text-lg font-bold">{round.name}</h3>
                         <div className={cn("flex flex-col", roundIndex === 0 ? "gap-4" : roundIndex === 1 ? "gap-[5.5rem]" : "gap-[14.5rem]")}>
-                            {round.matches.map((match, matchIndex) => (
+                            {round.matches.map((match: BracketMatch, matchIndex: number) => (
                                 <div key={match.id} className="relative flex items-center">
                                     <MatchCard match={match} />
 

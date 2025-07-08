@@ -11,7 +11,7 @@ import { Button } from '@/shared/ui/button';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { useToast } from '@/shared/hooks/use-toast';
 import { Skeleton } from '@/shared/ui/skeleton';
-import { getAssignedSponsors, getAvailableSponsors, unassignSponsor } from '@/entities/tournament/api/sponsors';
+import { getAssignedSponsors, getAvailableSponsors, unassignSponsor, assignSponsor } from '@/entities/tournament/api/sponsors';
 import type { Sponsor } from '@/entities/sponsor/model/types';
 import { AssignSponsorDialog } from '@/widgets/assign-sponsor-dialog';
 
@@ -33,13 +33,15 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
     const fetchData = useCallback(async () => {
         setIsLoading(true);
         try {
-            const assignedData = await getAssignedSponsors(tournamentId);
-            const availableRes = await getAvailableSponsors();
+            const [assignedData, availableRes] = await Promise.all([
+                getAssignedSponsors(tournamentId),
+                getAvailableSponsors()
+            ]);
             
             setAssignedSponsors(assignedData);
 
             if (availableRes.success && Array.isArray(availableRes.data)) {
-                const assignedIds = new Set((assignedData as SponsorWithAmount[]).map((p: SponsorWithAmount) => p.id));
+                const assignedIds = new Set(assignedData.map((p: SponsorWithAmount) => p.id));
                 setAvailableSponsors((availableRes.data).filter((p) => !assignedIds.has(p.id)));
             } else if (!availableRes.success) {
                  throw new Error(availableRes.error || 'Failed to process available sponsors');

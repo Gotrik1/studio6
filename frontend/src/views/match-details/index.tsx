@@ -8,15 +8,15 @@ import { Badge } from "@/shared/ui/badge";
 import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { BrainCircuit, FileText, BarChart3, Users, Camera } from "lucide-react";
-import { TournamentDetails } from "@/entities/tournament/model/types";
 import { OverviewTab } from "@/widgets/match-details-tabs/ui/overview-tab";
 import { StatsTab } from "@/widgets/match-details-tabs/ui/stats-tab";
 import { LineupsTab } from "@/widgets/match-details-tabs/ui/lineups-tab";
 import { MediaTab } from "@/widgets/match-details-tabs/ui/media-tab";
 import { AiAnalysisTab } from "@/widgets/match-details-tabs/ui/ai-analysis-tab";
+import type { MatchDetails } from "@/entities/match/model/types";
 
 interface MatchDetailsPageProps {
-    match: TournamentDetails;
+    match: MatchDetails;
 }
 
 export function MatchDetailsPage({ match }: MatchDetailsPageProps) {

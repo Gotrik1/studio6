@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState } from 'react';
@@ -19,7 +20,7 @@ import { generateMatchInterview, type GenerateMatchInterviewOutput } from '@/sha
 import { generateMatchPost, type GenerateMatchPostOutput } from "@/shared/api/genkit/flows/generate-match-post-flow";
 import { useRouter } from 'next/navigation';
 import { createTournamentMedia } from '@/entities/tournament/api/media';
-import type { MatchDetails, MatchEvent } from '@/entities/tournament/model/types';
+import type { MatchDetails, MatchEvent } from '@/entities/match/model/types';
 
 
 interface AiAnalysisTabProps {

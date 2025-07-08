@@ -1,6 +1,8 @@
+
+
 'use client';
 
-import { PlaygroundActivityFeed } from '@/widgets/playground-activity-feed';
+import { PlaygroundActivityFeed, type PlaygroundActivity } from '@/widgets/playground-activity-feed';
 import { PlaygroundCurrentActivity } from '@/widgets/playground-current-activity';
 import { Skeleton } from '@/shared/ui/skeleton';
 import { Card, CardHeader, CardContent } from '@/shared/ui/card';
@@ -15,7 +17,7 @@ interface PlaygroundActivityTabProps {
 export function PlaygroundActivityTab({ activities, isLoading }: PlaygroundActivityTabProps) {
     const formattedActivities = (activities || [])
         .filter((act): act is PlaygroundCheckInActivity => act.type === 'PLAYGROUND_CHECK_IN')
-        .map(act => ({
+        .map((act: PlaygroundCheckInActivity) => ({
             id: act.id,
             user: act.user,
             comment: (act.metadata as { comment?: string }).comment || 'Отметился на площадке.',
