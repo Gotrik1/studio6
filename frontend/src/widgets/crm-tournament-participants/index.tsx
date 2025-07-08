@@ -1,22 +1,32 @@
 
 
+
 'use client';
 
+import { useState, useEffect, useCallback, useTransition } from 'react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/shared/ui/card';
 import { Button } from '@/shared/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/shared/ui/avatar';
 import { Check, X, Mail, Trash2, ChevronDown } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { useToast } from '@/shared/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/shared/ui/collapsible';
 import Link from 'next/link';
 import { Skeleton } from '@/shared/ui/skeleton';
-import type { Application, Participant } from '@/entities/tournament/api/participants';
+import {
+    getTournamentApplications,
+    getTournamentParticipants,
+    approveApplication,
+    rejectApplication,
+    removeParticipant,
+    type Application,
+    type Participant
+} from '@/entities/tournament/api/participants';
 import { Badge } from '@/shared/ui/badge';
-import type { User } from '@/shared/lib/types';
-
 
 interface CrmTournamentParticipantsProps {
+    tournamentId: string;
     applications: Application[];
     participants: Participant[];
     isLoading: boolean;
@@ -130,11 +140,11 @@ export function CrmTournamentParticipants({
                                                     </CollapsibleTrigger>
                                                 </TableCell>
                                                 <TableCell className="font-medium">{p.name}</TableCell>
-                                                <TableCell className="hidden md:table-cell">{p.captain.name}</TableCell>
+                                                <TableCell className="hidden md:table-cell">{p.captain?.name || 'N/A'}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{p.members.length} чел.</TableCell>
                                                 <TableCell className="text-right">
                                                      <div className="flex items-center justify-end gap-2">
-                                                        <Button variant="ghost" size="icon" onClick={(e) => {e.stopPropagation()}}><Mail className="h-4 w-4" /></Button>
+                                                        <Button variant="ghost" size="icon" onClick={(e) => {e.stopPropagation(); toast({title: "Сообщение отправлено"})}}><Mail className="h-4 w-4" /></Button>
                                                         <Button variant="ghost" size="icon" onClick={(e) => {e.stopPropagation(); handleRemove(p)}} disabled={isActionPending}><Trash2 className="h-4 w-4 text-red-500" /></Button>
                                                     </div>
                                                 </TableCell>

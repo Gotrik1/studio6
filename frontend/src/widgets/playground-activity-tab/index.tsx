@@ -1,6 +1,3 @@
-
-
-
 'use client';
 
 import { PlaygroundActivityFeed } from '@/widgets/playground-activity-feed';

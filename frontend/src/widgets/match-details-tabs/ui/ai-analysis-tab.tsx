@@ -222,7 +222,7 @@ export function AiAnalysisTab({ match }: AiAnalysisTabProps) {
                             </CardHeader>
                             <CardContent>
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {images.map((img: GeneratePostImageOutput, index: number) => (
+                                    {images.map((img, index) => (
                                         <div key={index} className="relative aspect-square">
                                             <NextImage src={img.imageDataUri} alt={`Сгенерированное изображение ${index + 1}`} fill className="object-cover rounded-md" />
                                         </div>

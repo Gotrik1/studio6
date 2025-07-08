@@ -1,5 +1,6 @@
 
 
+
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
@@ -39,7 +40,7 @@ export function CrmTournamentSponsors({ tournamentId }: CrmTournamentSponsorsPro
 
             if (availableRes.success && Array.isArray(availableRes.data)) {
                 const assignedIds = new Set((assignedData as SponsorWithAmount[]).map((p: SponsorWithAmount) => p.id));
-                setAvailableSponsors((availableRes.data).filter((p: Sponsor) => !assignedIds.has(p.id)));
+                setAvailableSponsors((availableRes.data).filter((p) => !assignedIds.has(p.id)));
             } else if (!availableRes.success) {
                  throw new Error(availableRes.error || 'Failed to process available sponsors');
             }

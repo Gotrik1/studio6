@@ -1,6 +1,7 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -51,7 +52,7 @@ export function MatchOfTheWeekWidget() {
                     matchSummary: `A close match in the ${matchData.tournament || 'friendly game'}.`
                 });
                 
-                setResult({ matchPost: postData, matchDetails: matchData as Match });
+                setResult({ matchPost: postData, matchDetails: matchData });
             } catch (e) {
                 console.error('Failed to fetch match of the week:', e);
                 setError('Не удалось загрузить матч недели.');

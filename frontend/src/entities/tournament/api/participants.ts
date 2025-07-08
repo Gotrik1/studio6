@@ -16,7 +16,7 @@ export type RosterMember = {
 export type Participant = {
     id: string;
     name: string;
-    captain: { name: string; };
+    captain: { name: string; } | null;
     members: RosterMember[];
 };
 export type Application = {
@@ -28,7 +28,7 @@ export type Application = {
         id: string;
         name: string;
         slug: string;
-        captain: { name: string };
+        captain: { name: string; } | null;
     };
 };
 
@@ -61,7 +61,7 @@ function adaptApplication(app: BackendApplication): Application {
             id: app.team.id,
             name: app.team.name,
             slug: app.team.slug,
-            captain: { name: app.team.captain?.name || 'N/A' },
+            captain: app.team.captain,
         },
     };
 }
@@ -69,7 +69,7 @@ function adaptParticipant(team: BackendParticipantTeam): Participant {
     return {
         id: team.id,
         name: team.name,
-        captain: { name: team.captain?.name || 'N/A' },
+        captain: team.captain ? { name: team.captain.name } : null,
         members: team.members.map(m => ({
             id: m.id,
             name: m.name,

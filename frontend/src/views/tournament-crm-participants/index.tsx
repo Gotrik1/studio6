@@ -1,10 +1,11 @@
 
 
 
+
 'use client';
 
 import { useState, useEffect, useCallback, useTransition } from 'react';
-import { CrmTournamentParticipants } from '@/widgets/crm-tournament-participants';
+import { CrmTournamentParticipants as CrmTournamentParticipantsWidget } from '@/widgets/crm-tournament-participants';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
     getTournamentApplications,
@@ -55,7 +56,7 @@ function adaptParticipant(team: BackendParticipantTeam): Participant {
     return {
         id: team.id,
         name: team.name,
-        captain: { name: team.captain?.name || 'N/A' },
+        captain: team.captain ? { name: team.captain.name } : null,
         members: team.members.map(m => ({
             id: m.id,
             name: m.name,
@@ -151,7 +152,7 @@ export function TournamentCrmDetailsPage({ tournamentId }: TournamentCrmDetailsP
         );
     }
     
-    return <CrmTournamentParticipants
+    return <CrmTournamentParticipantsWidget
         tournamentId={tournamentId}
         applications={applications}
         participants={participants}
