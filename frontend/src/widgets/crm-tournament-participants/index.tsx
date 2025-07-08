@@ -47,13 +47,13 @@ export function CrmTournamentParticipantsWidget({
             ]);
             
             if (appsResult.success && appsResult.data) {
-                setApplications(appsResult.data as Application[]);
+                setApplications(appsResult.data);
             } else if (!appsResult.success) {
                 throw new Error(appsResult.error);
             }
 
             if (participantsResult.success && participantsResult.data) {
-                setParticipants(participantsResult.data as Participant[]);
+                setParticipants(participantsResult.data);
             } else if (!participantsResult.success) {
                 throw new Error(participantsResult.error);
             }
@@ -154,7 +154,7 @@ export function CrmTournamentParticipantsWidget({
                                 {applications.length > 0 ? applications.map(app => (
                                     <TableRow key={app.id}>
                                         <TableCell className="font-medium">{app.team.name}</TableCell>
-                                        <TableCell>{app.team.captain?.name || 'N/A'}</TableCell>
+                                        <TableCell>{app.team.captain?.name || 'Не назначен'}</TableCell>
                                         <TableCell className="text-right space-x-1">
                                             <Button variant="ghost" size="icon" onClick={() => handleDecline(app)} disabled={isActionPending}><X className="h-4 w-4 text-red-500" /></Button>
                                             <Button variant="ghost" size="icon" onClick={() => handleAccept(app)} disabled={isActionPending}><Check className="h-4 w-4 text-green-500" /></Button>
@@ -201,7 +201,7 @@ export function CrmTournamentParticipantsWidget({
                                                     </CollapsibleTrigger>
                                                 </TableCell>
                                                 <TableCell className="font-medium">{p.name}</TableCell>
-                                                <TableCell className="hidden md:table-cell">{p.captain.name}</TableCell>
+                                                <TableCell className="hidden md:table-cell">{p.captain?.name || 'Не назначен'}</TableCell>
                                                 <TableCell className="hidden md:table-cell">{p.members.length} чел.</TableCell>
                                                 <TableCell className="text-right">
                                                      <div className="flex items-center justify-end gap-2">
