@@ -1,3 +1,4 @@
+
 import {
   Injectable,
   ConflictException,
@@ -30,47 +31,6 @@ import { Cache } from "cache-manager";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { generateUserCacheKey } from "../cache/cache.utils";
 
-type FullUserProfile = Prisma.UserGetPayload<{
-  include: {
-    activities: true;
-    teamsAsMember: { include: { _count: { select: { members: true } } } };
-    organizedTournaments: { include: { _count: { select: { teams: true } } } };
-    organizedPromotions: {
-      include: { sponsor: { select: { name: true; logo: true } } };
-    };
-    careerHistory: true;
-    coaching: {
-      select: {
-        id: true;
-        name: true;
-        avatar: true;
-        role: true;
-        mainSport: true;
-        trainingLogs: { select: { status: true } };
-      };
-    };
-    judgedMatches: {
-      include: {
-        team1: { select: { name: true } };
-        team2: { select: { name: true } };
-      };
-    };
-  };
-}>;
-
-type ShapedFullUserProfile = FullUserProfile & {
-  teams: UserTeam[];
-  gallery: GalleryItem[];
-  organizedTournaments: TournamentCrm[];
-  judgedMatches: JudgedMatch[];
-  coaching: CoachedPlayerSummary[];
-  age: number | null;
-  activitySummary: string;
-  statsSummary: string;
-  profileUrl: string;
-  contacts: { telegram: string | null; discord: string | null };
-};
-
 type CoachedPlayerFromDb = Prisma.UserGetPayload<{
   select: {
     id: true;
@@ -85,6 +45,39 @@ type CoachedPlayerFromDb = Prisma.UserGetPayload<{
     };
   };
 }>;
+
+// Redefined the type to be standalone and match the exact final shape
+type ShapedFullUserProfile = {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string | null;
+  role: Role;
+  status: UserStatus;
+  xp: number;
+  location: string | null;
+  mainSport: string | null;
+  isVerified: boolean;
+  preferredSports: string[];
+  createdAt: Date;
+  updatedAt: Date;
+  teams: UserTeam[];
+  gallery: GalleryItem[];
+  organizedTournaments: TournamentCrm[];
+  judgedMatches: JudgedMatch[];
+  coaching: CoachedPlayerSummary[];
+  age: number | null;
+  activitySummary: string;
+  statsSummary: string;
+  profileUrl: string;
+  contacts: { telegram: string | null; discord: string | null };
+  dateOfBirth: string | null;
+  activities: (Prisma.ActivityGetPayload<{}>)[];
+  careerHistory: (Prisma.CareerHistoryGetPayload<{}>)[];
+  organizedPromotions: ({
+    sponsor: { name: string; logo: string | null } | null;
+  } & Prisma.PromotionGetPayload<{}>)[];
+};
 
 @Injectable()
 export class UsersService {
@@ -268,35 +261,46 @@ export class UsersService {
       : null;
 
     const augmentedProfile: ShapedFullUserProfile = {
-      ...user,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      role: user.role,
+      status: user.status,
+      xp: user.xp,
+      location: user.location,
+      mainSport: user.mainSport,
+      isVerified: user.isVerified,
+      preferredSports: user.preferredSports,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
       teams: userTeams,
       gallery: [], // Mocked as there's no model for it
-      organizedTournaments,
-      judgedMatches,
+      organizedTournaments: organizedTournaments,
+      judgedMatches: judgedMatches,
       coaching: coachedPlayers,
       dateOfBirth: dateOfBirth,
       age: user.dateOfBirth
         ? differenceInYears(new Date(), new Date(user.dateOfBirth))
         : null,
-      location: user.location,
-      mainSport: user.mainSport,
-      isVerified: user.isVerified,
-      preferredSports: user.preferredSports,
-      contacts: {
-        telegram: user.telegram,
-        discord: user.discord,
-      },
       activitySummary: `Пользователь с ${format(
         user.createdAt,
         "yyyy",
       )} года. Последняя активность: ${formatDistanceToNow(user.updatedAt, {
         addSuffix: true,
         locale: ru,
-      })}.`, // Generated summary
+      })}.`,
       statsSummary: `Играет в ${user.mainSport || "неизвестно"}, роль - ${
         user.role
-      }.`, // Generated summary
+      }.`,
       profileUrl: `/profiles/player/${user.id}`,
+      contacts: {
+        telegram: user.telegram,
+        discord: user.discord,
+      },
+      activities: user.activities,
+      careerHistory: user.careerHistory,
+      organizedPromotions: user.organizedPromotions,
     };
 
     await this.cacheManager.set(cacheKey, augmentedProfile);
