@@ -1,3 +1,4 @@
+
 import {
   Injectable,
   NotFoundException,
@@ -5,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { CreateMatchDto } from "./dto/create-match.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Match, MatchStatus, Prisma } from "@prisma/client";
+import { Match, MatchStatus, Prisma, MatchEventType } from "@prisma/client";
 import { UpdateMatchDto } from "./dto/update-match.dto";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
@@ -14,37 +15,8 @@ import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { PRODVOR_EXCHANGE } from "../rabbitmq/rabbitmq.config";
 import type { MatchFinishedPayload } from "../rabbitmq/models/match-finished.payload";
 
-type MatchForDetails = Prisma.MatchGetPayload<{
-  include: {
-    team1: {
-      include: {
-        members: {
-          select: { id: true; name: true; role: true; avatar: true };
-        };
-      };
-    };
-    team2: {
-      include: {
-        members: {
-          select: { id: true; name: true; role: true; avatar: true };
-        };
-      };
-    };
-    tournament: {
-      include: {
-        media: true;
-      };
-    };
-    events: {
-      include: {
-        player: { select: { name: true } };
-        team: { select: { name: true } };
-      };
-    };
-  };
-}>;
-
-type ShapedMatchForList = Match & {
+type ShapedMatchForList = {
+  id: string;
   team1: { id: string; name: string; logo: string; logoHint: string };
   team2: { id: string; name: string; logo: string; logoHint: string };
   score: string;
@@ -52,6 +24,60 @@ type ShapedMatchForList = Match & {
   game: string;
   date: string;
   href: string;
+  status: string; // Changed from MatchStatus to string
+  [key: string]: unknown; // Allow other properties from original match
+};
+
+type MatchDetailsForFrontend = {
+  id: string;
+  tournament: string;
+  status: string;
+  score: string;
+  date: string;
+  time: string;
+  location: string;
+  referee: { name: string };
+  team1: {
+    id: string;
+    name: string;
+    logo: string;
+    logoHint: string;
+    slug: string;
+    members: { id: string; name: string; role: string; avatar: string | null }[];
+  };
+  team2: {
+    id: string;
+    name: string;
+    logo: string;
+    logoHint: string;
+    slug: string;
+    members: { id: string; name: string; role: string; avatar: string | null }[];
+  };
+  lineups: {
+    team1: { name: string; role: string; avatar: string; avatarHint: string }[];
+    team2: { name: string; role: string; avatar: string; avatarHint: string }[];
+  };
+  events: {
+    time: string;
+    event: MatchEventType;
+    player: string;
+    team: string;
+  }[];
+  teamStats: {
+    [key: string]: { label: string; team1: number; team2: number };
+  } | null;
+  media: ({
+    id: string;
+    type: string;
+    src: string;
+    description: string | null;
+    hint: string | null;
+    createdAt: Date;
+    tournamentId: string;
+  })[];
+  bracket: {
+    rounds: unknown[];
+  };
 };
 
 @Injectable()
@@ -89,7 +115,7 @@ export class MatchesService {
     status?: MatchStatus;
     tournamentId?: string;
     teamId?: string;
-  }): Promise<Match[]> {
+  }): Promise<ShapedMatchForList[]> {
     const where: Prisma.MatchWhereInput = {};
     if (params?.status) {
       where.status = params.status;
@@ -163,7 +189,7 @@ export class MatchesService {
     }));
   }
 
-  async findOne(id: string): Promise<MatchForDetails | null> {
+  async findOne(id: string): Promise<MatchDetailsForFrontend | null> {
     const match = await this.prisma.match.findUnique({
       where: { id },
       include: {
@@ -256,7 +282,7 @@ export class MatchesService {
 
     // Map Prisma result to the frontend's MatchDetails shape
     return {
-      ...match,
+      id: match.id,
       tournament: match.tournament?.name || "Товарищеский матч",
       status:
         match.status === "FINISHED"
