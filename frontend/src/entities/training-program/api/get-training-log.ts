@@ -2,24 +2,37 @@
 
 import type { TrainingLogEntry, ExerciseLog, LoggedSet } from "../model/types";
 import { fetchWithAuth } from "@/shared/lib/api-client";
-import type { Prisma } from "@prisma/client";
 import type { Exercise } from "@/entities/exercise/model/types";
 
-// Local types to avoid direct dependency on backend schemas
-const exerciseWithSets = Prisma.validator<Prisma.LoggedExerciseDefaultArgs>()({
-  include: { exercise: true, sets: true },
-});
-type PrismaLoggedExercise = Prisma.LoggedExerciseGetPayload<
-  typeof exerciseWithSets
-> & { exercise: Exercise };
+// These types should reflect what the backend API actually sends.
+// They are based on the Prisma types but defined independently.
+type RawLoggedSet = {
+  id: string;
+  plannedReps: string | null;
+  plannedWeight: string | null;
+  loggedReps: number | null;
+  loggedWeight: number | null;
+  rpe: number | null;
+  isCompleted: boolean;
+};
 
-const logWithExercises = Prisma.validator<Prisma.TrainingLogDefaultArgs>()({
-  include: { exercises: { include: { exercise: true, sets: true } } },
-});
-type RawTrainingLogEntry = Prisma.TrainingLogGetPayload<
-  typeof logWithExercises
-> & {
-  exercises: PrismaLoggedExercise[];
+type RawLoggedExercise = {
+  id: string;
+  exercise: Exercise;
+  notes: string | null;
+  isSupersetWithPrevious: boolean | null;
+  sets: RawLoggedSet[];
+};
+
+type RawTrainingLogEntry = {
+  id: string;
+  date: string; // ISO string
+  workoutName: string | null;
+  status: "COMPLETED" | "PLANNED" | "SKIPPED";
+  mood: "great" | "good" | "ok" | "bad" | null;
+  notes: string | null;
+  coachNotes: string | null;
+  exercises: RawLoggedExercise[];
 };
 
 function transformApiLogToFrontend(
@@ -39,7 +52,7 @@ function transformApiLogToFrontend(
       | "bad"
       | undefined,
     exercises: log.exercises.map(
-      (ex: PrismaLoggedExercise): ExerciseLog => ({
+      (ex: RawLoggedExercise): ExerciseLog => ({
         id: ex.id,
         exercise: {
           id: ex.exercise.id,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -45,7 +45,6 @@ import { AddFoodDialog } from "@/widgets/add-food-dialog";
 import { getFoodItems } from "@/entities/nutrition/api/nutrition";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { MealType } from "@/entities/nutrition/model/enums";
-import type { FoodLogEntry } from "@/entities/nutrition/model/types";
 
 // Diary Tab Component
 function NutritionDiaryTab() {
