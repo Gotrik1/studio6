@@ -1,3 +1,3 @@
-import { AiAnalysisPage } from '@/views/ai-analysis';
+import { AiAnalysisPage } from "@/views/ai-analysis";
 
 export default AiAnalysisPage;

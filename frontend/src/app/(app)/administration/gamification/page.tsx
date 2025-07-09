@@ -1,3 +1,3 @@
-import { GamificationAdminPage } from '@/views/gamification-admin';
+import { GamificationAdminPage } from "@/views/gamification-admin";
 
 export default GamificationAdminPage;

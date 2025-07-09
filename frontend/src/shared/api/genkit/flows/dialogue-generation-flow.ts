@@ -1,5 +1,4 @@
-
-'use server';
+"use server";
 
 // Define types locally
 export type GenerateDialogueInput = string;
@@ -8,15 +7,16 @@ export type GenerateDialogueOutput = {
   dialogue: string;
 };
 
-
-export async function generateDialogue(topic: GenerateDialogueInput): Promise<GenerateDialogueOutput> {
-  const response = await fetch('/api/ai/generate-dialogue', {
-    method: 'POST',
+export async function generateDialogue(
+  topic: GenerateDialogueInput,
+): Promise<GenerateDialogueOutput> {
+  const response = await fetch("/api/ai/generate-dialogue", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ topic }),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

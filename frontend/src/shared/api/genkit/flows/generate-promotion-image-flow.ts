@@ -1,7 +1,6 @@
+"use server";
 
-'use server';
-
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { fetchWithAuth } from "@/shared/lib/api-client";
 
 export type GeneratePromotionImageInput = string;
 
@@ -9,11 +8,16 @@ export type GeneratePromotionImageOutput = {
   imageDataUri: string;
 };
 
-export async function generatePromotionImage(prompt: GeneratePromotionImageInput): Promise<GeneratePromotionImageOutput> {
-  const result = await fetchWithAuth<GeneratePromotionImageOutput>('/ai/generate-promotion-image', {
-    method: 'POST',
-    body: JSON.stringify({ prompt }),
-  });
+export async function generatePromotionImage(
+  prompt: GeneratePromotionImageInput,
+): Promise<GeneratePromotionImageOutput> {
+  const result = await fetchWithAuth<GeneratePromotionImageOutput>(
+    "/ai/generate-promotion-image",
+    {
+      method: "POST",
+      body: JSON.stringify({ prompt }),
+    },
+  );
 
   if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);

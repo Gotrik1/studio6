@@ -1,4 +1,3 @@
-
-import { SportsAdminPage } from '@/views/sports-admin';
+import { SportsAdminPage } from "@/views/sports-admin";
 
 export default SportsAdminPage;

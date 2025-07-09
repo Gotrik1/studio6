@@ -1,9 +1,7 @@
+"use server";
 
-'use server';
-
-import { fetchWithAuth } from '@/shared/lib/api-client';
-import type { MatchEvent } from '@/entities/match/model/types';
-
+import { fetchWithAuth } from "@/shared/lib/api-client";
+import type { MatchEvent } from "@/entities/match/model/types";
 
 export type GenerateMatchCommentaryInput = {
   team1Name: string;
@@ -16,12 +14,17 @@ export type GenerateMatchCommentaryOutput = {
   audioDataUri: string;
 };
 
-export async function generateMatchCommentary(input: GenerateMatchCommentaryInput): Promise<GenerateMatchCommentaryOutput> {
-  const result = await fetchWithAuth<GenerateMatchCommentaryOutput>('/ai/generate-match-commentary', {
-    method: 'POST',
-    body: JSON.stringify(input),
-    cache: 'no-store',
-  });
+export async function generateMatchCommentary(
+  input: GenerateMatchCommentaryInput,
+): Promise<GenerateMatchCommentaryOutput> {
+  const result = await fetchWithAuth<GenerateMatchCommentaryOutput>(
+    "/ai/generate-match-commentary",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+      cache: "no-store",
+    },
+  );
 
   if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);

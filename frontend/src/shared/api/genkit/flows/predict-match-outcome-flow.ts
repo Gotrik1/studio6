@@ -1,5 +1,4 @@
-
-'use server';
+"use server";
 
 // Define types locally
 export type TeamStats = {
@@ -17,16 +16,18 @@ export type PredictMatchOutcomeInput = {
 
 export type PredictMatchOutcomeOutput = {
   predictedWinner: string;
-  confidence: 'high' | 'medium' | 'low';
+  confidence: "high" | "medium" | "low";
   reasoning: string;
 };
 
-export async function predictMatchOutcome(input: PredictMatchOutcomeInput): Promise<PredictMatchOutcomeOutput> {
-  const response = await fetch('/api/ai/predict-match-outcome', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+export async function predictMatchOutcome(
+  input: PredictMatchOutcomeInput,
+): Promise<PredictMatchOutcomeOutput> {
+  const response = await fetch("/api/ai/predict-match-outcome", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

@@ -1,7 +1,6 @@
+"use server";
 
-'use server';
-
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { fetchWithAuth } from "@/shared/lib/api-client";
 
 // Define types locally
 export type GenerateUserAvatarInput = {
@@ -13,16 +12,15 @@ export type GenerateUserAvatarOutput = {
 };
 
 export async function generateUserAvatar(
-  input: GenerateUserAvatarInput
+  input: GenerateUserAvatarInput,
 ): Promise<GenerateUserAvatarOutput> {
-
   const response = await fetchWithAuth<GenerateUserAvatarOutput>(
     `/ai/generate-user-avatar`,
     {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ prompt: input.prompt }),
-      cache: 'no-store',
-    }
+      cache: "no-store",
+    },
   );
 
   if (!response.success || !response.data) {

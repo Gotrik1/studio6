@@ -1,3 +1,3 @@
-import { NutritionCenterPage } from '@/views/nutrition-center';
+import { NutritionCenterPage } from "@/views/nutrition-center";
 
 export default NutritionCenterPage;

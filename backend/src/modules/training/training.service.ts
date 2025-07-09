@@ -1,4 +1,3 @@
-
 import {
   Injectable,
   OnModuleInit,
@@ -254,7 +253,9 @@ export class TrainingService implements OnModuleInit {
       }
 
       for (const day of existingProgram.weeklySplit) {
-        await tx.workoutExercise.deleteMany({ where: { workoutDayId: day.id } });
+        await tx.workoutExercise.deleteMany({
+          where: { workoutDayId: day.id },
+        });
       }
       await tx.workoutDay.deleteMany({ where: { trainingProgramId: id } });
 
@@ -322,12 +323,12 @@ export class TrainingService implements OnModuleInit {
         isActive: false,
       },
     });
-    
+
     await this.prisma.userTrainingProgram.createMany({
-        data: assignments,
-        skipDuplicates: true
+      data: assignments,
+      skipDuplicates: true,
     });
-    
+
     return { success: true, message: "Program assigned successfully" };
   }
 }

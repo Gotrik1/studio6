@@ -1,20 +1,21 @@
-
-'use server';
+"use server";
 
 // Define types locally
 export type TextToSpeechInput = string;
 export type TextToSpeechOutput = {
-    audioDataUri: string;
+  audioDataUri: string;
 };
 
-export async function textToSpeech(text: TextToSpeechInput): Promise<TextToSpeechOutput> {
-  const response = await fetch('/api/ai/text-to-speech', {
-    method: 'POST',
+export async function textToSpeech(
+  text: TextToSpeechInput,
+): Promise<TextToSpeechOutput> {
+  const response = await fetch("/api/ai/text-to-speech", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ text }),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

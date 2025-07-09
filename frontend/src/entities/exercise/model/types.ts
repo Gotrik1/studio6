@@ -1,13 +1,13 @@
 export type Exercise = {
-    id: string;
-    name: string;
-    description: string;
-    category: string;
-    equipment: string;
-    image: string | null;
-    imageHint: string | null;
-    videoUrl?: string | null;
-    techniqueTips: string[];
-    commonMistakes: string[];
-    alternatives: string[];
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  equipment: string;
+  image: string | null;
+  imageHint: string | null;
+  videoUrl?: string | null;
+  techniqueTips: string[];
+  commonMistakes: string[];
+  alternatives: string[];
 };

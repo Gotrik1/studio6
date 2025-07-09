@@ -1,3 +1,3 @@
-import { PromotionsPage } from '@/views/promotions';
+import { PromotionsPage } from "@/views/promotions";
 
 export default PromotionsPage;

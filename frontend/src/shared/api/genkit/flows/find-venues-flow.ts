@@ -1,6 +1,6 @@
-'use server';
+"use server";
 
-import type { Playground } from '@/entities/playground/model/types';
+import type { Playground } from "@/entities/playground/model/types";
 
 export type FindVenuesInput = {
   query: string;
@@ -11,13 +11,14 @@ export type FindVenuesOutput = {
   suggestedVenues: Playground[];
 };
 
-
-export async function findVenues(input: FindVenuesInput): Promise<FindVenuesOutput> {
-  const response = await fetch('/api/ai/find-venues', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+export async function findVenues(
+  input: FindVenuesInput,
+): Promise<FindVenuesOutput> {
+  const response = await fetch("/api/ai/find-venues", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {
@@ -28,7 +29,7 @@ export async function findVenues(input: FindVenuesInput): Promise<FindVenuesOutp
 
   const result = await response.json();
   return {
-      summary: result.summary,
-      suggestedVenues: result.suggestedVenues as Playground[],
+    summary: result.summary,
+    suggestedVenues: result.suggestedVenues as Playground[],
   };
 }

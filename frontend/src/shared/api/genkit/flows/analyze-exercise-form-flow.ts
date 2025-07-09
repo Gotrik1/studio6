@@ -1,9 +1,9 @@
-'use server';
+"use server";
 
 // Define types locally to decouple from backend schemas.
 export type FormCorrection = {
-    part: string;
-    correction: string;
+  part: string;
+  correction: string;
 };
 
 export type AnalyzeExerciseFormInput = {
@@ -17,14 +17,16 @@ export type AnalyzeExerciseFormOutput = {
   positivePoints: string[];
 };
 
-export async function analyzeExerciseForm(input: AnalyzeExerciseFormInput): Promise<AnalyzeExerciseFormOutput> {
-  const response = await fetch('/api/ai/analyze-exercise-form', {
-    method: 'POST',
+export async function analyzeExerciseForm(
+  input: AnalyzeExerciseFormInput,
+): Promise<AnalyzeExerciseFormOutput> {
+  const response = await fetch("/api/ai/analyze-exercise-form", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

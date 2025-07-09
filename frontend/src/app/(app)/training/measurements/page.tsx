@@ -1,3 +1,3 @@
-import { MeasurementsPage } from '@/views/measurements';
+import { MeasurementsPage } from "@/views/measurements";
 
 export default MeasurementsPage;

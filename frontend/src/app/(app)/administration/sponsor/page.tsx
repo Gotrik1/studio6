@@ -1,3 +1,3 @@
-import { SponsorProfilePage } from '@/views/sponsor-profile-demo';
+import { SponsorProfilePage } from "@/views/sponsor-profile-demo";
 
 export default SponsorProfilePage;

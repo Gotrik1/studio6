@@ -1,5 +1,4 @@
-
-'use server';
+"use server";
 
 // Define types locally
 export type CreateTeamInput = {
@@ -11,14 +10,16 @@ export type CreateTeamOutput = {
   motto: string;
 };
 
-export async function createTeam(input: CreateTeamInput): Promise<CreateTeamOutput> {
-  const response = await fetch('/api/ai/create-team', {
-    method: 'POST',
+export async function createTeam(
+  input: CreateTeamInput,
+): Promise<CreateTeamOutput> {
+  const response = await fetch("/api/ai/create-team", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

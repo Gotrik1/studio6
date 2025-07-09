@@ -1,5 +1,3 @@
-
-
 import { getSession } from "@/features/auth/session";
 import { redirect } from "next/navigation";
 import { AppLayout } from "@/widgets/app-layout";
@@ -18,9 +16,7 @@ export default async function ApplicationLayout({
 
   return (
     <AppProviders>
-      <AppLayout user={session.user}>
-        {children}
-      </AppLayout>
+      <AppLayout user={session.user}>{children}</AppLayout>
     </AppProviders>
   );
 }

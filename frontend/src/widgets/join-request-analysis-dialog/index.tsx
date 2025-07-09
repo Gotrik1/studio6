@@ -1,8 +1,6 @@
+"use client";
 
-
-'use client';
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,18 +11,23 @@ import {
 } from "@/shared/ui/dialog";
 import { Button } from "@/shared/ui/button";
 import { BrainCircuit, Loader2, AlertCircle, Sparkles } from "lucide-react";
-import { analyzeJoinRequest, type AnalyzeJoinRequestOutput } from '@/shared/api/genkit/flows/analyze-join-request-flow';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/ui/alert';
-import { Badge } from '@/shared/ui/badge';
-import type { JoinRequest } from '@/entities/team-application/model/types';
+import {
+  analyzeJoinRequest,
+  type AnalyzeJoinRequestOutput,
+} from "@/shared/api/genkit/flows/analyze-join-request-flow";
+import { Alert, AlertDescription, AlertTitle } from "@/shared/ui/alert";
+import { Badge } from "@/shared/ui/badge";
+import type { JoinRequest } from "@/entities/team-application/model/types";
 
-
-const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
-    switch(confidence) {
-        case 'high': return 'text-green-500';
-        case 'medium': return 'text-yellow-500';
-        case 'low': return 'text-orange-500';
-    }
+const getConfidenceColor = (confidence: "high" | "medium" | "low") => {
+  switch (confidence) {
+    case "high":
+      return "text-green-500";
+    case "medium":
+      return "text-yellow-500";
+    case "low":
+      return "text-orange-500";
+  }
 };
 
 interface JoinRequestAnalysisDialogProps {
@@ -34,36 +37,45 @@ interface JoinRequestAnalysisDialogProps {
   teamNeeds: string;
 }
 
-export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamNeeds }: JoinRequestAnalysisDialogProps) {
+export function JoinRequestAnalysisDialog({
+  isOpen,
+  onOpenChange,
+  request,
+  teamNeeds,
+}: JoinRequestAnalysisDialogProps) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [aiResult, setAiResult] = useState<AnalyzeJoinRequestOutput | null>(null);
+  const [aiResult, setAiResult] = useState<AnalyzeJoinRequestOutput | null>(
+    null,
+  );
   const [aiError, setAiError] = useState<string | null>(null);
 
   const handleAnalyze = async () => {
-      if (!request) return;
+    if (!request) return;
 
-      setIsAnalyzing(true);
-      setAiResult(null);
-      setAiError(null);
+    setIsAnalyzing(true);
+    setAiResult(null);
+    setAiError(null);
 
-      const playerProfile = `
+    const playerProfile = `
         Player: ${request.user.name}
         Role: ${request.user.role}
         Profile Summary: ${request.statsSummary}
       `;
 
-      try {
-          const result = await analyzeJoinRequest({
-              teamNeeds,
-              playerProfile,
-          });
-          setAiResult(result);
-      } catch (e) {
-          console.error(e);
-          setAiError("Не удалось получить рекомендацию от ИИ. Пожалуйста, попробуйте позже.");
-      } finally {
-          setIsAnalyzing(false);
-      }
+    try {
+      const result = await analyzeJoinRequest({
+        teamNeeds,
+        playerProfile,
+      });
+      setAiResult(result);
+    } catch (e) {
+      console.error(e);
+      setAiError(
+        "Не удалось получить рекомендацию от ИИ. Пожалуйста, попробуйте позже.",
+      );
+    } finally {
+      setIsAnalyzing(false);
+    }
   };
 
   useEffect(() => {
@@ -80,7 +92,7 @@ export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamN
     }
     onOpenChange(open);
   };
-  
+
   if (!request) return null;
 
   return (
@@ -93,44 +105,56 @@ export function JoinRequestAnalysisDialog({ isOpen, onOpenChange, request, teamN
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 space-y-4">
-            {isAnalyzing && (
-                <div className="flex flex-col items-center justify-center h-40">
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground"/>
-                    <p className="mt-2 text-sm text-muted-foreground">Анализирую профиль...</p>
-                </div>
-            )}
-            {aiError && (
-                <Alert variant="destructive">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertTitle>Ошибка</AlertTitle>
-                    <AlertDescription>{aiError}</AlertDescription>
-                </Alert>
-            )}
-            {aiResult && (
-                <div className='space-y-4'>
-                    <Alert>
-                        <Sparkles className="h-4 w-4" />
-                        <AlertTitle className="flex justify-between items-center">
-                            <span>Рекомендация: {
-                                { 'accept': 'Принять', 'consider': 'Рассмотреть', 'decline': 'Отклонить' }[aiResult.recommendation]
-                            }</span>
-                             <Badge variant="outline" className={getConfidenceColor(aiResult.confidence)}>
-                                Уверенность: {aiResult.confidence}
-                            </Badge>
-                        </AlertTitle>
-                        <AlertDescription>
-                           {aiResult.reasoning}
-                        </AlertDescription>
-                    </Alert>
-                    <Button className="w-full" onClick={handleAnalyze}>
-                        <BrainCircuit className="mr-2 h-4 w-4" />
-                        Проанализировать снова
-                    </Button>
-                </div>
-            )}
+          {isAnalyzing && (
+            <div className="flex flex-col items-center justify-center h-40">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              <p className="mt-2 text-sm text-muted-foreground">
+                Анализирую профиль...
+              </p>
+            </div>
+          )}
+          {aiError && (
+            <Alert variant="destructive">
+              <AlertCircle className="h-4 w-4" />
+              <AlertTitle>Ошибка</AlertTitle>
+              <AlertDescription>{aiError}</AlertDescription>
+            </Alert>
+          )}
+          {aiResult && (
+            <div className="space-y-4">
+              <Alert>
+                <Sparkles className="h-4 w-4" />
+                <AlertTitle className="flex justify-between items-center">
+                  <span>
+                    Рекомендация:{" "}
+                    {
+                      {
+                        accept: "Принять",
+                        consider: "Рассмотреть",
+                        decline: "Отклонить",
+                      }[aiResult.recommendation]
+                    }
+                  </span>
+                  <Badge
+                    variant="outline"
+                    className={getConfidenceColor(aiResult.confidence)}
+                  >
+                    Уверенность: {aiResult.confidence}
+                  </Badge>
+                </AlertTitle>
+                <AlertDescription>{aiResult.reasoning}</AlertDescription>
+              </Alert>
+              <Button className="w-full" onClick={handleAnalyze}>
+                <BrainCircuit className="mr-2 h-4 w-4" />
+                Проанализировать снова
+              </Button>
+            </div>
+          )}
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChangeHandler(false)}>Закрыть</Button>
+          <Button variant="outline" onClick={() => onOpenChangeHandler(false)}>
+            Закрыть
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

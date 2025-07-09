@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 // Define types locally to decouple from backend schemas.
 export type AnalyzeReportInput = {
@@ -8,19 +8,21 @@ export type AnalyzeReportInput = {
 };
 
 export type AnalyzeReportOutput = {
-  recommendation: 'warning' | 'temp_ban' | 'perm_ban' | 'no_action';
+  recommendation: "warning" | "temp_ban" | "perm_ban" | "no_action";
   reasoning: string;
-  confidence: 'high' | 'medium' | 'low';
+  confidence: "high" | "medium" | "low";
 };
 
-export async function analyzeReport(input: AnalyzeReportInput): Promise<AnalyzeReportOutput> {
-  const response = await fetch('/api/ai/analyze-report', {
-    method: 'POST',
+export async function analyzeReport(
+  input: AnalyzeReportInput,
+): Promise<AnalyzeReportOutput> {
+  const response = await fetch("/api/ai/analyze-report", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

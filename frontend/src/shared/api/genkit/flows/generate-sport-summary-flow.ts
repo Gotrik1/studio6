@@ -1,7 +1,6 @@
+"use server";
 
-'use server';
-
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { fetchWithAuth } from "@/shared/lib/api-client";
 
 // Define types locally to decouple from backend schemas.
 export type GenerateSportSummaryInput = {
@@ -13,15 +12,20 @@ export type GenerateSportSummaryOutput = {
   funFact: string;
 };
 
-export async function generateSportSummary(input: GenerateSportSummaryInput): Promise<GenerateSportSummaryOutput> {
-  const result = await fetchWithAuth<GenerateSportSummaryOutput>('/ai/generate-sport-summary', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  });
+export async function generateSportSummary(
+  input: GenerateSportSummaryInput,
+): Promise<GenerateSportSummaryOutput> {
+  const result = await fetchWithAuth<GenerateSportSummaryOutput>(
+    "/ai/generate-sport-summary",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+    },
+  );
 
   if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);
-    throw new Error(result.error || 'Failed to generate sport summary.');
+    throw new Error(result.error || "Failed to generate sport summary.");
   }
 
   return result.data;

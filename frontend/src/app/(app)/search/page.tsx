@@ -1,3 +1,3 @@
-import { SearchPage } from '@/views/search';
+import { SearchPage } from "@/views/search";
 
 export default SearchPage;

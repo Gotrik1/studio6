@@ -8,7 +8,7 @@ export type Report = {
   id: string;
   category: string;
   description: string | null;
-  status: 'PENDING' | 'RESOLVED' | 'DISMISSED';
+  status: "PENDING" | "RESOLVED" | "DISMISSED";
   createdAt: string;
   reporter: ReportUser;
   reportedUser: ReportUser;

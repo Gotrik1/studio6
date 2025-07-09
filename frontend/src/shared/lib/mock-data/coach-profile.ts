@@ -3,9 +3,9 @@
 // It can be removed in a future cleanup phase.
 
 export const coachUser = {
-  id: 'coach-001',
+  id: "coach-001",
   name: 'Мария "Shadow" Петрова',
-  email: 'shadow.coach@prodvor.com',
-  role: 'Тренер',
-  avatar: 'https://placehold.co/100x100.png',
+  email: "shadow.coach@prodvor.com",
+  role: "Тренер",
+  avatar: "https://placehold.co/100x100.png",
 };

@@ -1,4 +1,3 @@
-
 import {
   Controller,
   Post,
@@ -134,9 +133,9 @@ import type { GeneratePlaygroundSummaryOutput } from "@/ai/flows/schemas/generat
 import type { GeneratePlaygroundChallengeOutput } from "@/ai/flows/schemas/generate-playground-challenge-schema";
 import { GenerateTeamAvatarDto } from "./dto/generate-team-avatar.dto";
 import type { GenerateTeamAvatarOutput } from "@/ai/flows/schemas/generate-team-avatar-schema";
-import type { GeneratePlaygroundTacticOutput } from '@/ai/flows/schemas/generate-playground-tactic-schema';
-import type { GeneratePlaygroundWorkoutOutput } from '@/ai/flows/schemas/generate-playground-workout-schema';
-import type { PlayerScoutOutput } from '@/ai/flows/player-scout-flow';
+import type { GeneratePlaygroundTacticOutput } from "@/ai/flows/schemas/generate-playground-tactic-schema";
+import type { GeneratePlaygroundWorkoutOutput } from "@/ai/flows/schemas/generate-playground-workout-schema";
+import type { PlayerScoutOutput } from "@/ai/flows/player-scout-flow";
 
 type AuthenticatedUser = {
   userId: string;

@@ -1,9 +1,7 @@
-
-
 export enum QuestType {
-  DAILY = 'DAILY',
-  WEEKLY = 'WEEKLY',
-  SPECIAL = 'SPECIAL',
+  DAILY = "DAILY",
+  WEEKLY = "WEEKLY",
+  SPECIAL = "SPECIAL",
 }
 
 export type Quest = {

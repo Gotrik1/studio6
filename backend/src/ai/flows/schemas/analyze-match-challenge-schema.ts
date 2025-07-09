@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TeamSchema as TeamDataSchema } from './team.schema'; // Renamed to avoid conflict
+import { TeamSchema as TeamDataSchema } from "./team.schema"; // Renamed to avoid conflict
 
 export const TeamSchema = TeamDataSchema.pick({
   name: true,
@@ -9,7 +9,6 @@ export const TeamSchema = TeamDataSchema.pick({
   rank: true,
   slug: true,
 });
-
 
 export const VenueSchema = z.object({
   id: z.string(),

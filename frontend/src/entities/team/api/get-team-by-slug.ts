@@ -1,28 +1,30 @@
+"use client";
 
-
-'use client';
-
-import type { TeamDetails, TeamRosterMember } from '@/entities/team/model/types';
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import type {
+  TeamDetails,
+  TeamRosterMember,
+} from "@/entities/team/model/types";
+import { fetchWithAuth } from "@/shared/lib/api-client";
 
 export type { TeamDetails };
 
 type BackendTeamMember = {
-    id: string;
-    name: string;
-    avatar: string | null;
-    role: string;
-    status: string;
-    adherence: number;
-}
+  id: string;
+  name: string;
+  avatar: string | null;
+  role: string;
+  status: string;
+  adherence: number;
+};
 
-type BackendTeamData = Omit<TeamDetails, 'roster'> & {
-    roster: BackendTeamMember[];
-}
-
+type BackendTeamData = Omit<TeamDetails, "roster"> & {
+  roster: BackendTeamMember[];
+};
 
 // Adapter function to map backend data to frontend TeamDetails type
-const adaptBackendTeamToFrontend = (backendData: BackendTeamData): TeamDetails => {
+const adaptBackendTeamToFrontend = (
+  backendData: BackendTeamData,
+): TeamDetails => {
   return {
     id: String(backendData.id),
     name: backendData.name,
@@ -38,32 +40,33 @@ const adaptBackendTeamToFrontend = (backendData: BackendTeamData): TeamDetails =
     captainId: String(backendData.captainId),
     slug: backendData.slug,
     homePlaygroundId: backendData.homePlaygroundId,
-    roster: (backendData.roster || []).map((member: BackendTeamMember): TeamRosterMember => ({
-      id: String(member.id),
-      name: member.name,
-      avatar: member.avatar || null,
-      role: member.role,
-      status: member.status,
-      adherence: member.adherence ?? 0,
-    })),
+    roster: (backendData.roster || []).map(
+      (member: BackendTeamMember): TeamRosterMember => ({
+        id: String(member.id),
+        name: member.name,
+        avatar: member.avatar || null,
+        role: member.role,
+        status: member.status,
+        adherence: member.adherence ?? 0,
+      }),
+    ),
   };
 };
 
-
 export async function getTeamBySlug(slug: string): Promise<TeamDetails | null> {
-    const result = await fetchWithAuth(`/teams/slug/${slug}`, {
-        cache: 'no-store',
-    });
+  const result = await fetchWithAuth(`/teams/slug/${slug}`, {
+    cache: "no-store",
+  });
 
-    if (!result.success) {
-        console.error(`Failed to fetch team by slug ${slug}:`, result.error);
-        return null; // Handle 404 or other errors gracefully
-    }
-    
-    const rawTeamData = result.data as BackendTeamData;
-    if (!rawTeamData) {
-        return null;
-    }
+  if (!result.success) {
+    console.error(`Failed to fetch team by slug ${slug}:`, result.error);
+    return null; // Handle 404 or other errors gracefully
+  }
 
-    return adaptBackendTeamToFrontend(rawTeamData);
+  const rawTeamData = result.data as BackendTeamData;
+  if (!rawTeamData) {
+    return null;
+  }
+
+  return adaptBackendTeamToFrontend(rawTeamData);
 }

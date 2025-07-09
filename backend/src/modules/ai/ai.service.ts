@@ -1,4 +1,3 @@
-
 import { Injectable } from "@nestjs/common";
 import {
   generateTeamConcept,
@@ -279,7 +278,11 @@ import {
   type PredictMatchOutcomeInput,
   type PredictMatchOutcomeOutput,
 } from "@/ai/flows/predict-match-outcome-flow";
-import { playerScout, type PlayerScoutOutput, type PlayerScoutInput } from '@/ai/flows/player-scout-flow';
+import {
+  playerScout,
+  type PlayerScoutOutput,
+  type PlayerScoutInput,
+} from "@/ai/flows/player-scout-flow";
 import { PromotionsService } from "../promotions/promotions.service";
 import type { Promotion } from "@prisma/client";
 import {
@@ -317,9 +320,9 @@ export class AiService {
     return createTeam(input);
   }
 
-  async generateTeamAvatar(
-    input: { prompt: string },
-  ): Promise<GenerateTeamAvatarOutput> {
+  async generateTeamAvatar(input: {
+    prompt: string;
+  }): Promise<GenerateTeamAvatarOutput> {
     return generateTeamAvatar(input);
   }
 

@@ -1,5 +1,4 @@
-
-'use server';
+"use server";
 
 // Define types locally
 export type GeneratePromotionDetailsInput = {
@@ -12,14 +11,16 @@ export type GeneratePromotionDetailsOutput = {
   prize: string;
 };
 
-export async function generatePromotionDetails(input: GeneratePromotionDetailsInput): Promise<GeneratePromotionDetailsOutput> {
-  const response = await fetch('/api/ai/generate-promotion-details', {
-    method: 'POST',
+export async function generatePromotionDetails(
+  input: GeneratePromotionDetailsInput,
+): Promise<GeneratePromotionDetailsOutput> {
+  const response = await fetch("/api/ai/generate-promotion-details", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

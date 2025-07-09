@@ -6,7 +6,13 @@ import {
 } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { User, Prisma, TrainingLogStatus, Role, UserStatus } from "@prisma/client";
+import {
+  User,
+  Prisma,
+  TrainingLogStatus,
+  Role,
+  UserStatus,
+} from "@prisma/client";
 import { differenceInYears, format, formatDistanceToNow } from "date-fns";
 import { LeaderboardPlayerDto } from "./dto/leaderboard-player.dto";
 import { PlayerStatsDto } from "./dto/player-stats.dto";
@@ -17,7 +23,7 @@ import type {
   CoachedPlayer,
   CoachedPlayerSummary,
   CareerHistoryItem,
-  GalleryItem
+  GalleryItem,
 } from "@/entities/user/model/types";
 import { ru } from "date-fns/locale";
 import { Cache } from "cache-manager";
@@ -181,7 +187,9 @@ export class UsersService {
         ).length;
         const totalRelevant = completed + skipped;
         const adherence =
-          totalRelevant > 0 ? Math.round((completed / totalRelevant) * 100) : 100;
+          totalRelevant > 0
+            ? Math.round((completed / totalRelevant) * 100)
+            : 100;
 
         return {
           id: String(player.id),

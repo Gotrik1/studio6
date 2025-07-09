@@ -1,5 +1,5 @@
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
 
 export default function PlayerScoutPage() {
-    redirect('/search?tab=players');
+  redirect("/search?tab=players");
 }

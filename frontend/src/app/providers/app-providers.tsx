@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { AccentThemeProvider } from "@/shared/context/accent-theme-provider";
 import { TrainingProvider } from "@/shared/context/training-provider";
@@ -10,30 +10,26 @@ import { MeasurementsProvider } from "@/shared/context/measurements-provider";
 import { CartProvider } from "@/shared/context/cart-provider";
 import { InventoryProvider } from "@/shared/context/inventory-provider";
 
-export function AppProviders({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-    return (
-        <InventoryProvider>
-            <CartProvider>
-                <AccentThemeProvider>
-                    <TrainingProvider>
-                        <NutritionProvider>
-                            <MeasurementsProvider>
-                                <PDEconomyProvider>
-                                    <LfgProvider>
-                                        <TrainingProposalProvider>
-                                            {children}
-                                        </TrainingProposalProvider>
-                                    </LfgProvider>
-                                </PDEconomyProvider>
-                            </MeasurementsProvider>
-                        </NutritionProvider>
-                    </TrainingProvider>
-                </AccentThemeProvider>
-            </CartProvider>
-        </InventoryProvider>
-    );
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <InventoryProvider>
+      <CartProvider>
+        <AccentThemeProvider>
+          <TrainingProvider>
+            <NutritionProvider>
+              <MeasurementsProvider>
+                <PDEconomyProvider>
+                  <LfgProvider>
+                    <TrainingProposalProvider>
+                      {children}
+                    </TrainingProposalProvider>
+                  </LfgProvider>
+                </PDEconomyProvider>
+              </MeasurementsProvider>
+            </NutritionProvider>
+          </TrainingProvider>
+        </AccentThemeProvider>
+      </CartProvider>
+    </InventoryProvider>
+  );
 }

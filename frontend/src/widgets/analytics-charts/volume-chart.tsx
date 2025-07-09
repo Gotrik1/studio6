@@ -1,10 +1,17 @@
+"use client";
 
-'use client';
-
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface VolumeChartProps {
-    data: { name: string, volume: number }[];
+  data: { name: string; volume: number }[];
 }
 
 export function VolumeChart({ data }: VolumeChartProps) {
@@ -13,7 +20,12 @@ export function VolumeChart({ data }: VolumeChartProps) {
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
-        <YAxis fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${Number(value) / 1000}k`} />
+        <YAxis
+          fontSize={12}
+          tickLine={false}
+          axisLine={false}
+          tickFormatter={(value) => `${Number(value) / 1000}k`}
+        />
         <Tooltip
           contentStyle={{
             background: "hsl(var(--background))",
@@ -22,7 +34,11 @@ export function VolumeChart({ data }: VolumeChartProps) {
           }}
           formatter={(value: number) => `${value.toLocaleString()} кг`}
         />
-        <Bar dataKey="volume" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+        <Bar
+          dataKey="volume"
+          fill="hsl(var(--primary))"
+          radius={[4, 4, 0, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
   );

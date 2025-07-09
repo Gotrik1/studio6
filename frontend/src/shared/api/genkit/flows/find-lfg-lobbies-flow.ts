@@ -1,10 +1,9 @@
-
-'use server';
+"use server";
 
 // Define types locally to decouple from backend schemas.
 export type LfgLobby = {
   id: string;
-  type: 'GAME' | 'TRAINING';
+  type: "GAME" | "TRAINING";
   sport: string;
   location: string;
   playgroundId?: string;
@@ -21,16 +20,17 @@ export type LfgLobby = {
 
 export type FindLfgLobbiesInput = string;
 export type FindLfgLobbiesOutput = {
-    recommendations: LfgLobby[];
+  recommendations: LfgLobby[];
 };
 
-
-export async function findLfgLobbies(input: FindLfgLobbiesInput): Promise<FindLfgLobbiesOutput> {
-  const response = await fetch('/api/ai/find-lfg-lobbies', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+export async function findLfgLobbies(
+  input: FindLfgLobbiesInput,
+): Promise<FindLfgLobbiesOutput> {
+  const response = await fetch("/api/ai/find-lfg-lobbies", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ input }),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

@@ -76,7 +76,6 @@ export type CoachedPlayer = CoachedPlayerSummary & {
   progress: number;
 };
 
-
 export type JudgedMatch = {
   id: string;
   team1: { name: string };

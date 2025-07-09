@@ -1,11 +1,21 @@
+"use client";
 
-
-'use client';
-
-import React, { createContext, useContext, useState, type ReactNode, useEffect, useCallback } from 'react';
-import type { LfgLobby } from '@/entities/lfg/model/types';
-import { fetchLobbies, createLobby, joinLobby as apiJoinLobby, type CreateLobbyApiData } from '@/entities/lfg/api/lfg';
-import { useToast } from '@/shared/hooks/use-toast';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  type ReactNode,
+  useEffect,
+  useCallback,
+} from "react";
+import type { LfgLobby } from "@/entities/lfg/model/types";
+import {
+  fetchLobbies,
+  createLobby,
+  joinLobby as apiJoinLobby,
+  type CreateLobbyApiData,
+} from "@/entities/lfg/api/lfg";
+import { useToast } from "@/shared/hooks/use-toast";
 
 export type { LfgLobby };
 
@@ -19,61 +29,70 @@ interface LfgContextType {
 const LfgContext = createContext<LfgContextType | undefined>(undefined);
 
 export const LfgProvider = ({ children }: { children: ReactNode }) => {
-    const [lobbies, setLobbies] = useState<LfgLobby[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const { toast } = useToast();
+  const [lobbies, setLobbies] = useState<LfgLobby[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
-    const loadLobbies = useCallback(async () => {
-        setIsLoading(true);
-        try {
-            const data = await fetchLobbies();
-            setLobbies(data);
-        } catch (e: unknown) {
-            const errorMessage = e instanceof Error ? e.message : "Произошла неизвестная ошибка";
-            toast({ variant: 'destructive', title: 'Ошибка', description: `Не удалось загрузить лобби: ${errorMessage}` });
-        } finally {
-            setIsLoading(false);
-        }
-    }, [toast]);
+  const loadLobbies = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const data = await fetchLobbies();
+      setLobbies(data);
+    } catch (e: unknown) {
+      const errorMessage =
+        e instanceof Error ? e.message : "Произошла неизвестная ошибка";
+      toast({
+        variant: "destructive",
+        title: "Ошибка",
+        description: `Не удалось загрузить лобби: ${errorMessage}`,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [toast]);
 
-    useEffect(() => {
-        loadLobbies();
-    }, [loadLobbies]);
+  useEffect(() => {
+    loadLobbies();
+  }, [loadLobbies]);
 
-    const addLobby = async (data: CreateLobbyApiData) => {
-         const result = await createLobby(data);
-         if (result.success) {
-            await loadLobbies(); // Refresh data
-            return true;
-         } else {
-            return false;
-         }
-    };
+  const addLobby = async (data: CreateLobbyApiData) => {
+    const result = await createLobby(data);
+    if (result.success) {
+      await loadLobbies(); // Refresh data
+      return true;
+    } else {
+      return false;
+    }
+  };
 
-    const joinLobby = async (lobbyId: string) => {
-        const result = await apiJoinLobby(lobbyId);
-        if (result.success) {
-            toast({
-                title: "Вы присоединились к лобби!",
-                description: `Вы успешно присоединились к активности.`,
-            });
-            await loadLobbies(); // Refresh data
-        } else {
-             toast({ variant: 'destructive', title: 'Ошибка', description: result.error });
-        }
-    };
+  const joinLobby = async (lobbyId: string) => {
+    const result = await apiJoinLobby(lobbyId);
+    if (result.success) {
+      toast({
+        title: "Вы присоединились к лобби!",
+        description: `Вы успешно присоединились к активности.`,
+      });
+      await loadLobbies(); // Refresh data
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Ошибка",
+        description: result.error,
+      });
+    }
+  };
 
-    return (
-        <LfgContext.Provider value={{ lobbies, isLoading, addLobby, joinLobby }}>
-            {children}
-        </LfgContext.Provider>
-    );
+  return (
+    <LfgContext.Provider value={{ lobbies, isLoading, addLobby, joinLobby }}>
+      {children}
+    </LfgContext.Provider>
+  );
 };
 
 export const useLfg = () => {
-    const context = useContext(LfgContext);
-    if (context === undefined) {
-        throw new Error('useLfg must be used within a LfgProvider');
-    }
-    return context;
+  const context = useContext(LfgContext);
+  if (context === undefined) {
+    throw new Error("useLfg must be used within a LfgProvider");
+  }
+  return context;
 };

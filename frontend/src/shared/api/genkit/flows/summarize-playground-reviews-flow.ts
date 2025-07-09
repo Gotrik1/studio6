@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 export type SummarizePlaygroundReviewsInput = {
   reviews: string[];
@@ -10,14 +10,16 @@ export type SummarizePlaygroundReviewsOutput = {
   averageRating: number;
 };
 
-export async function summarizePlaygroundReviews(input: SummarizePlaygroundReviewsInput): Promise<SummarizePlaygroundReviewsOutput> {
-  const response = await fetch('/api/ai/summarize-playground-reviews', {
-    method: 'POST',
+export async function summarizePlaygroundReviews(
+  input: SummarizePlaygroundReviewsInput,
+): Promise<SummarizePlaygroundReviewsOutput> {
+  const response = await fetch("/api/ai/summarize-playground-reviews", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

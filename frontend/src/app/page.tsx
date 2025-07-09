@@ -1,3 +1,3 @@
-import { LandingPage } from '@/views/landing';
+import { LandingPage } from "@/views/landing";
 
 export default LandingPage;

@@ -1,7 +1,6 @@
+"use server";
 
-'use server';
-
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { fetchWithAuth } from "@/shared/lib/api-client";
 
 // Define types locally to decouple from backend schemas.
 export type GeneratePromotionWizardInput = {
@@ -16,12 +15,17 @@ export type GeneratePromotionWizardOutput = {
   cost: string;
 };
 
-export async function generatePromotionWizard(input: GeneratePromotionWizardInput): Promise<GeneratePromotionWizardOutput> {
-  const result = await fetchWithAuth<GeneratePromotionWizardOutput>('/ai/generate-promotion-wizard', {
-    method: 'POST',
-    body: JSON.stringify(input),
-    cache: 'no-store',
-  });
+export async function generatePromotionWizard(
+  input: GeneratePromotionWizardInput,
+): Promise<GeneratePromotionWizardOutput> {
+  const result = await fetchWithAuth<GeneratePromotionWizardOutput>(
+    "/ai/generate-promotion-wizard",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+      cache: "no-store",
+    },
+  );
 
   if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);

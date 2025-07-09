@@ -1,22 +1,24 @@
-'use server';
+"use server";
 
 // Define types here to decouple from backend Zod schemas
 export type AnalyzePlayerPerformanceInput = {
-    trainingSummary: string;
-    recentWorkouts: string;
+  trainingSummary: string;
+  recentWorkouts: string;
 };
 
 export type AnalyzePlayerPerformanceOutput = {
-    strengths: string[];
-    weaknesses: string[];
+  strengths: string[];
+  weaknesses: string[];
 };
 
-export async function analyzePlayerPerformance(input: AnalyzePlayerPerformanceInput): Promise<AnalyzePlayerPerformanceOutput> {
-  const response = await fetch('/api/ai/analyze-player-performance', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+export async function analyzePlayerPerformance(
+  input: AnalyzePlayerPerformanceInput,
+): Promise<AnalyzePlayerPerformanceOutput> {
+  const response = await fetch("/api/ai/analyze-player-performance", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

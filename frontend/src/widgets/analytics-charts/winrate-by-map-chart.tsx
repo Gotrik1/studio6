@@ -1,7 +1,14 @@
+"use client";
 
-'use client';
-
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 interface WinrateByMapChartProps {
   data: { map: string; winrate: number }[];
@@ -12,12 +19,7 @@ export function WinrateByMapChart({ data }: WinrateByMapChartProps) {
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey="map"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-        />
+        <XAxis dataKey="map" fontSize={12} tickLine={false} axisLine={false} />
         <YAxis
           fontSize={12}
           tickLine={false}
@@ -31,7 +33,12 @@ export function WinrateByMapChart({ data }: WinrateByMapChartProps) {
             borderRadius: "var(--radius)",
           }}
         />
-        <Bar dataKey="winrate" name="Winrate" fill="hsl(var(--chart-2))" radius={[4, 4, 0, 0]} />
+        <Bar
+          dataKey="winrate"
+          name="Winrate"
+          fill="hsl(var(--chart-2))"
+          radius={[4, 4, 0, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
   );

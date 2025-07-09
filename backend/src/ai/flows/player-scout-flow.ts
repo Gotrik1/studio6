@@ -1,12 +1,18 @@
-
 "use server";
 
 import { ai } from "../genkit";
 import { z } from "zod";
-import { PlayerScoutInputSchema, PlayerScoutOutputSchema, PlayerProfileSchema } from "./schemas/player-scout-schema";
-import type { PlayerScoutInput, PlayerScoutOutput } from "./schemas/player-scout-schema";
+import {
+  PlayerScoutInputSchema,
+  PlayerScoutOutputSchema,
+  PlayerProfileSchema,
+} from "./schemas/player-scout-schema";
+import type {
+  PlayerScoutInput,
+  PlayerScoutOutput,
+} from "./schemas/player-scout-schema";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Role } from '@prisma/client';
+import { Role } from "@prisma/client";
 
 const prisma = new PrismaService();
 

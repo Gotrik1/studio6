@@ -1,3 +1,3 @@
-import { SettingsPage } from '@/views/settings';
+import { SettingsPage } from "@/views/settings";
 
 export default SettingsPage;

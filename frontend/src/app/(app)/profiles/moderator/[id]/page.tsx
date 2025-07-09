@@ -1,3 +1,3 @@
-import { ModeratorProfilePage } from '@/views/moderator-profile-demo';
+import { ModeratorProfilePage } from "@/views/moderator-profile-demo";
 
 export default ModeratorProfilePage;

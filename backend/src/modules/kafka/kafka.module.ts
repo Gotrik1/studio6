@@ -1,4 +1,3 @@
-
 import { Module, Global } from "@nestjs/common";
 import { KafkaService } from "./kafka.service";
 import { ChatConsumer } from "./consumers/chat.consumer";

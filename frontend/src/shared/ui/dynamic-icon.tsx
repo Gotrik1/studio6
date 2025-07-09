@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { icons } from 'lucide-react';
-import type { LucideProps } from 'lucide-react';
+import { icons } from "lucide-react";
+import type { LucideProps } from "lucide-react";
 
 interface DynamicIconProps extends LucideProps {
   name: keyof typeof icons;

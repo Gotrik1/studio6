@@ -1,21 +1,20 @@
-
-'use server';
+"use server";
 
 // These types are defined locally to decouple from backend schemas.
 // In a real project, these could be in a shared types package.
-import { icons } from 'lucide-react';
+import { icons } from "lucide-react";
 
 export type OnboardingSuggestion = {
-    icon: keyof typeof icons;
-    title: string;
-    description: string;
-    href: string;
-    reward?: string;
+  icon: keyof typeof icons;
+  title: string;
+  description: string;
+  href: string;
+  reward?: string;
 };
 
 export type OnboardingInput = {
-    userName: string;
-    userRole: string;
+  userName: string;
+  userRole: string;
 };
 
 export type OnboardingOutput = {
@@ -24,13 +23,14 @@ export type OnboardingOutput = {
   suggestions: OnboardingSuggestion[];
 };
 
-
-export async function getOnboardingSuggestions(input: OnboardingInput): Promise<OnboardingOutput> {
-  const response = await fetch('/api/ai/onboarding-assistant', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+export async function getOnboardingSuggestions(
+  input: OnboardingInput,
+): Promise<OnboardingOutput> {
+  const response = await fetch("/api/ai/onboarding-assistant", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

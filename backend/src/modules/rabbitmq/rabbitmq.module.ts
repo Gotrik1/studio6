@@ -1,4 +1,3 @@
-
 import { RabbitMQModule as NestRabbitMQModule } from "@golevelup/nestjs-rabbitmq";
 import { Global, Module } from "@nestjs/common";
 import { NotificationsConsumer } from "./consumers/notifications.consumer";

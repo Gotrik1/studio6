@@ -1,4 +1,3 @@
-
 import {
   Controller,
   Get,
@@ -62,7 +61,7 @@ export class UsersController {
     name: "role",
     required: false,
     description: "Фильтр по роли пользователя",
-    enum: Role
+    enum: Role,
   })
   findAll(@Query("role") role?: string) {
     return this.usersService.findAll({ role });

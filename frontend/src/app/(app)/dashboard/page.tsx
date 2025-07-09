@@ -1,3 +1,3 @@
-import { DashboardPage } from '@/views/dashboard';
+import { DashboardPage } from "@/views/dashboard";
 
 export default DashboardPage;

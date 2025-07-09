@@ -1,6 +1,6 @@
 export type Achievement = {
-    name: string;
-    description: string;
-    icon: string;
-    unlocked: boolean;
+  name: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
 };

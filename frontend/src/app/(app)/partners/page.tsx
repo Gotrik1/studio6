@@ -1,3 +1,3 @@
-import { PartnersPage } from '@/views/partners';
+import { PartnersPage } from "@/views/partners";
 
 export default PartnersPage;

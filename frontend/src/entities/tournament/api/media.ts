@@ -1,17 +1,20 @@
-'use server';
+"use server";
 
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { fetchWithAuth } from "@/shared/lib/api-client";
 
 export type CreateMediaData = {
-  type: 'IMAGE' | 'VIDEO' | 'AUDIO';
+  type: "IMAGE" | "VIDEO" | "AUDIO";
   src: string;
   description?: string;
   hint?: string;
 };
 
-export async function createTournamentMedia(tournamentId: string, data: CreateMediaData) {
+export async function createTournamentMedia(
+  tournamentId: string,
+  data: CreateMediaData,
+) {
   return fetchWithAuth(`/tournaments/${tournamentId}/media`, {
-    method: 'POST',
+    method: "POST",
     body: JSON.stringify(data),
   });
 }

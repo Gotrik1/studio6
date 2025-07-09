@@ -1,6 +1,5 @@
-
-import { SponsorProfilePage as SponsorProfileDemoPage } from '@/views/sponsor-profile-demo';
+import { SponsorProfilePage as SponsorProfileDemoPage } from "@/views/sponsor-profile-demo";
 
 export function SponsorProfilePage() {
-    return <SponsorProfileDemoPage />;
+  return <SponsorProfileDemoPage />;
 }

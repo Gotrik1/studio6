@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { SponsorshipOffersService } from './sponsorship-offers.service';
-import { SponsorshipOffersController } from './sponsorship-offers.controller';
+import { Module } from "@nestjs/common";
+import { SponsorshipOffersService } from "./sponsorship-offers.service";
+import { SponsorshipOffersController } from "./sponsorship-offers.controller";
 
 @Module({
   controllers: [SponsorshipOffersController],

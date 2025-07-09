@@ -1,4 +1,3 @@
-
 import {
   SubscribeMessage,
   WebSocketGateway,
@@ -7,29 +6,29 @@ import {
   OnGatewayConnection,
   OnGatewayDisconnect,
   MessageBody,
-} from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
-import { Socket, Server } from 'socket.io';
-import { KafkaService } from '../kafka/kafka.service';
-import type { ChatMessagePayload } from '../kafka/models/chat-message.payload';
-import { SocketEvents } from './events.enum';
+} from "@nestjs/websockets";
+import { Logger } from "@nestjs/common";
+import { Socket, Server } from "socket.io";
+import { KafkaService } from "../kafka/kafka.service";
+import type { ChatMessagePayload } from "../kafka/models/chat-message.payload";
+import { SocketEvents } from "./events.enum";
 
 @WebSocketGateway({
   cors: {
-    origin: '*', // For development, allow all origins
+    origin: "*", // For development, allow all origins
   },
 })
 export class EventsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
   @WebSocketServer() server: Server;
-  private logger: Logger = new Logger('EventsGateway');
+  private logger: Logger = new Logger("EventsGateway");
   private onlineUsers: Map<string, string> = new Map(); // Map socket.id to userId
 
   constructor(private readonly kafkaService: KafkaService) {}
 
   afterInit() {
-    this.logger.log('EventsGateway Initialized!');
+    this.logger.log("EventsGateway Initialized!");
   }
 
   handleConnection(client: Socket) {
@@ -51,7 +50,7 @@ export class EventsGateway
       this.onlineUsers.delete(client.id);
       this.broadcastOnlineStatus();
     } else {
-       this.logger.log(`Client disconnected: ${client.id} (anonymous)`);
+      this.logger.log(`Client disconnected: ${client.id} (anonymous)`);
     }
   }
 
@@ -61,11 +60,13 @@ export class EventsGateway
   }
 
   @SubscribeMessage(SocketEvents.CLIENT_SEND_MESSAGE)
-  async handleSendMessage(@MessageBody() payload: ChatMessagePayload): Promise<void> {
+  async handleSendMessage(
+    @MessageBody() payload: ChatMessagePayload,
+  ): Promise<void> {
     this.logger.log(
       `Received message, producing to Kafka: ${JSON.stringify(payload)}`,
     );
-    await this.kafkaService.produce('chat-messages', payload);
+    await this.kafkaService.produce("chat-messages", payload);
   }
 
   /**
@@ -75,9 +76,7 @@ export class EventsGateway
    */
   broadcastChatMessage(payload: ChatMessagePayload) {
     this.server.emit(SocketEvents.SERVER_BROADCAST_MESSAGE, payload);
-    this.logger.log(
-      `Broadcasted chat message: ${JSON.stringify(payload)}`,
-    );
+    this.logger.log(`Broadcasted chat message: ${JSON.stringify(payload)}`);
   }
 
   /**

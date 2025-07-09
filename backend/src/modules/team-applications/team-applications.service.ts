@@ -23,7 +23,11 @@ export class TeamApplicationsService {
       throw new ForbiddenException("Only the captain can view applications.");
     }
     const applications = await this.prisma.teamApplication.findMany({
-      where: { teamId, status: TeamApplicationStatus.PENDING, tournamentId: null },
+      where: {
+        teamId,
+        status: TeamApplicationStatus.PENDING,
+        tournamentId: null,
+      },
       include: {
         user: { select: { id: true, name: true, avatar: true, role: true } },
       },
@@ -55,7 +59,12 @@ export class TeamApplicationsService {
     }
 
     const existingApplication = await this.prisma.teamApplication.findFirst({
-      where: { teamId, userId, tournamentId: null, status: TeamApplicationStatus.PENDING },
+      where: {
+        teamId,
+        userId,
+        tournamentId: null,
+        status: TeamApplicationStatus.PENDING,
+      },
     });
     if (existingApplication) {
       throw new ConflictException("You have already applied to this team.");

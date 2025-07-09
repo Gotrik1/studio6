@@ -1,23 +1,25 @@
-'use server';
+"use server";
 
 // Define types locally since the schema file will be removed from the frontend.
 export type SuggestReplyInput = {
-    history: string;
-    teamId?: string;
+  history: string;
+  teamId?: string;
 };
 
 export type SuggestReplyOutput = {
-    suggestions: string[];
+  suggestions: string[];
 };
 
-export async function suggestReply(input: SuggestReplyInput): Promise<SuggestReplyOutput> {
-  const response = await fetch('/api/ai/suggest-reply', {
-    method: 'POST',
+export async function suggestReply(
+  input: SuggestReplyInput,
+): Promise<SuggestReplyOutput> {
+  const response = await fetch("/api/ai/suggest-reply", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

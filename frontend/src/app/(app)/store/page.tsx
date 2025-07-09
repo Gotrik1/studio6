@@ -1,3 +1,3 @@
-import { StorePage } from '@/views/store';
+import { StorePage } from "@/views/store";
 
 export default StorePage;

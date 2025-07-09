@@ -13,6 +13,6 @@ export type Challenge = {
   wager: number;
   creator: ChallengeCreator;
   opponent?: ChallengeCreator | null;
-  status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  status: "OPEN" | "IN_PROGRESS" | "COMPLETED" | "CANCELLED";
   result?: string | null;
 };

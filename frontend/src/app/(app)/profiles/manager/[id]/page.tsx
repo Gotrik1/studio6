@@ -1,3 +1,3 @@
-import { ManagerProfilePage } from '@/views/manager-profile-demo';
+import { ManagerProfilePage } from "@/views/manager-profile-demo";
 
 export default ManagerProfilePage;

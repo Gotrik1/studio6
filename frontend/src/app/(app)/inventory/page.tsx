@@ -1,3 +1,3 @@
-import { InventoryPage } from '@/views/inventory';
+import { InventoryPage } from "@/views/inventory";
 
 export default InventoryPage;

@@ -56,10 +56,7 @@ export class TrainingController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: "Обновить программу тренировок" })
-  updateProgram(
-    @Param("id") id: string,
-    @Body() updateDto: UpdateProgramData,
-  ) {
+  updateProgram(@Param("id") id: string, @Body() updateDto: UpdateProgramData) {
     // In a real app, you'd check if the user is the author or an admin
     return this.trainingService.updateProgram(id, updateDto);
   }

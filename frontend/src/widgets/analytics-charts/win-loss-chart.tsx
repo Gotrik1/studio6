@@ -1,19 +1,29 @@
-'use client';
+"use client";
 
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/shared/ui/card';
+import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/shared/ui/card";
 
 interface WinLossChartProps {
-  data: { wins: number, losses: number };
+  data: { wins: number; losses: number };
 }
 
 export function WinLossChart({ data: winLossData }: WinLossChartProps) {
-    const data = [
-      { name: 'Победы', value: winLossData.wins, fill: 'hsl(var(--chart-1))' },
-      { name: 'Поражения', value: winLossData.losses, fill: 'hsl(var(--chart-5))' },
-    ];
-    const total = winLossData.wins + winLossData.losses;
-    const winrate = total > 0 ? (winLossData.wins / total) * 100 : 0;
+  const data = [
+    { name: "Победы", value: winLossData.wins, fill: "hsl(var(--chart-1))" },
+    {
+      name: "Поражения",
+      value: winLossData.losses,
+      fill: "hsl(var(--chart-5))",
+    },
+  ];
+  const total = winLossData.wins + winLossData.losses;
+  const winrate = total > 0 ? (winLossData.wins / total) * 100 : 0;
   return (
     <Card className="flex flex-col">
       <CardHeader>
@@ -46,9 +56,11 @@ export function WinLossChart({ data: winLossData }: WinLossChartProps) {
             </Pie>
           </PieChart>
         </ResponsiveContainer>
-         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span className="font-headline text-3xl font-bold">{winrate.toFixed(1)}%</span>
-            <span className="text-sm text-muted-foreground">Winrate</span>
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+          <span className="font-headline text-3xl font-bold">
+            {winrate.toFixed(1)}%
+          </span>
+          <span className="text-sm text-muted-foreground">Winrate</span>
         </div>
       </CardContent>
     </Card>

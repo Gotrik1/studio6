@@ -1,3 +1,3 @@
-import { QuestsPage } from '@/views/quests';
+import { QuestsPage } from "@/views/quests";
 
 export default QuestsPage;

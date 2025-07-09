@@ -1,11 +1,15 @@
-'use server';
+"use server";
 
-import { fetchWithAuth } from '@/shared/lib/api-client';
-import { revalidateTag } from 'next/cache';
+import { fetchWithAuth } from "@/shared/lib/api-client";
+import { revalidateTag } from "next/cache";
 
-export async function reportPlaygroundIssue(data: { playgroundId: string; category: string; comment: string; }) {
-  const result = await fetchWithAuth('/playground-reports', {
-    method: 'POST',
+export async function reportPlaygroundIssue(data: {
+  playgroundId: string;
+  category: string;
+  comment: string;
+}) {
+  const result = await fetchWithAuth("/playground-reports", {
+    method: "POST",
     body: JSON.stringify(data),
   });
 

@@ -1,3 +1,3 @@
-import { NewTournamentWizardPage } from '@/views/tournament-create-wizard';
+import { NewTournamentWizardPage } from "@/views/tournament-create-wizard";
 
 export default NewTournamentWizardPage;

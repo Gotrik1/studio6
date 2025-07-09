@@ -1,12 +1,17 @@
-
 "use server";
 
 import { ai } from "../genkit";
 import { z } from "zod";
 import { PrismaService } from "@/prisma/prisma.service";
 import type { Match, Team, Message, User } from "@prisma/client";
-import { AiTeamAssistantInputSchema, AiTeamAssistantOutputSchema } from "./schemas/ai-team-assistant-schema";
-import type { AiTeamAssistantInput, AiTeamAssistantOutput } from "./schemas/ai-team-assistant-schema";
+import {
+  AiTeamAssistantInputSchema,
+  AiTeamAssistantOutputSchema,
+} from "./schemas/ai-team-assistant-schema";
+import type {
+  AiTeamAssistantInput,
+  AiTeamAssistantOutput,
+} from "./schemas/ai-team-assistant-schema";
 
 const prisma = new PrismaService();
 
@@ -99,9 +104,11 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
     // Add recent chat messages
     if (team.chat && team.chat.messages.length > 0) {
       teamActivity += "Последние сообщения в чате:\n";
-      team.chat.messages.reverse().forEach((msg: Message & { author: Pick<User, 'name'>}) => {
-        teamActivity += `- ${msg.author.name}: ${msg.content}\n`;
-      });
+      team.chat.messages
+        .reverse()
+        .forEach((msg: Message & { author: Pick<User, "name"> }) => {
+          teamActivity += `- ${msg.author.name}: ${msg.content}\n`;
+        });
     } else {
       teamActivity += "В чате команды пока нет сообщений.\n";
     }
@@ -119,9 +126,15 @@ const aiTeamAssistantFlow_Backend = ai.defineFlow(
       allMatches.forEach((match) => {
         const typedMatch = match as MatchWithTeams;
         const isTeam1 = typedMatch.team1Id === teamId;
-        const opponentName = isTeam1 ? typedMatch.team2.name : typedMatch.team1.name;
-        const teamScore = isTeam1 ? typedMatch.team1Score : typedMatch.team2Score;
-        const opponentScore = isTeam1 ? typedMatch.team2Score : typedMatch.team1Score;
+        const opponentName = isTeam1
+          ? typedMatch.team2.name
+          : typedMatch.team1.name;
+        const teamScore = isTeam1
+          ? typedMatch.team1Score
+          : typedMatch.team2Score;
+        const opponentScore = isTeam1
+          ? typedMatch.team2Score
+          : typedMatch.team1Score;
         let result: "Победа" | "Поражение" | "Ничья" = "Ничья";
         if (teamScore! > opponentScore!) result = "Победа";
         if (teamScore! < opponentScore!) result = "Поражение";

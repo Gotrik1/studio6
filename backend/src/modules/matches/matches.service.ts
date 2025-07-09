@@ -1,4 +1,3 @@
-
 import {
   Injectable,
   NotFoundException,
@@ -266,7 +265,7 @@ export class MatchesService {
       teamStats,
       media: match.tournament?.media || [],
       bracket: {
-          rounds: [], // This should be calculated based on all tournament matches
+        rounds: [], // This should be calculated based on all tournament matches
       },
     };
   }
@@ -349,11 +348,7 @@ export class MatchesService {
       participantIds,
     };
 
-    this.amqpConnection.publish(
-      PRODVOR_EXCHANGE,
-      "match.finished",
-      payload,
-    );
+    this.amqpConnection.publish(PRODVOR_EXCHANGE, "match.finished", payload);
 
     return updatedMatch;
   }

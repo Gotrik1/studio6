@@ -1,7 +1,6 @@
+"use server";
 
-'use server';
-
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { fetchWithAuth } from "@/shared/lib/api-client";
 
 export type GeneratePlaygroundWorkoutInput = {
   playgroundType: string;
@@ -9,9 +8,9 @@ export type GeneratePlaygroundWorkoutInput = {
 };
 
 export type WorkoutExercise = {
-    name: string;
-    sets: string;
-    reps: string;
+  name: string;
+  sets: string;
+  reps: string;
 };
 
 export type GeneratePlaygroundWorkoutOutput = {
@@ -20,12 +19,17 @@ export type GeneratePlaygroundWorkoutOutput = {
   exercises: WorkoutExercise[];
 };
 
-export async function generatePlaygroundWorkout(input: GeneratePlaygroundWorkoutInput): Promise<GeneratePlaygroundWorkoutOutput> {
-  const result = await fetchWithAuth<GeneratePlaygroundWorkoutOutput>('/ai/generate-playground-workout', {
-    method: 'POST',
-    body: JSON.stringify(input),
-    cache: 'no-store',
-  });
+export async function generatePlaygroundWorkout(
+  input: GeneratePlaygroundWorkoutInput,
+): Promise<GeneratePlaygroundWorkoutOutput> {
+  const result = await fetchWithAuth<GeneratePlaygroundWorkoutOutput>(
+    "/ai/generate-playground-workout",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+      cache: "no-store",
+    },
+  );
 
   if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);

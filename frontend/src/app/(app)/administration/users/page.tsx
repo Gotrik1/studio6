@@ -1,3 +1,3 @@
-import { UserManagementPage } from '@/views/user-management';
+import { UserManagementPage } from "@/views/user-management";
 
 export default UserManagementPage;

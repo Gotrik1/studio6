@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 // Define types locally to decouple from backend schemas.
 // In a real project, these might come from a shared package.
@@ -28,14 +28,16 @@ export type AnalyzeMatchChallengeOutput = {
   suggestedVenues: Venue[];
 };
 
-export async function analyzeMatchChallenge(input: AnalyzeMatchChallengeInput): Promise<AnalyzeMatchChallengeOutput> {
-  const response = await fetch('/api/ai/analyze-match-challenge', {
-    method: 'POST',
+export async function analyzeMatchChallenge(
+  input: AnalyzeMatchChallengeInput,
+): Promise<AnalyzeMatchChallengeOutput> {
+  const response = await fetch("/api/ai/analyze-match-challenge", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ input }),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

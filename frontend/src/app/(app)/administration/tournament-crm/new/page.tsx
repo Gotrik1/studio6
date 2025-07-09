@@ -1,3 +1,3 @@
-import { TournamentCrmCreatePage } from '@/views/tournament-crm-create';
+import { TournamentCrmCreatePage } from "@/views/tournament-crm-create";
 
 export default TournamentCrmCreatePage;

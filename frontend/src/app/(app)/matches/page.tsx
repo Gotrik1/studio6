@@ -1,5 +1,4 @@
-
-import { MatchesListPage } from '@/views/matches-list';
+import { MatchesListPage } from "@/views/matches-list";
 import { fetchMatches } from "@/entities/match/api/get-matches";
 
 export default async function MatchesPage() {

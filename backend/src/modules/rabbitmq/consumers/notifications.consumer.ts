@@ -1,4 +1,3 @@
-
 import { Injectable, Logger } from "@nestjs/common";
 import { RabbitSubscribe } from "@golevelup/nestjs-rabbitmq";
 import { NotificationsService } from "@/modules/notifications/notifications.service";
@@ -22,7 +21,7 @@ export class NotificationsConsumer {
     private readonly notificationsService: NotificationsService,
     private readonly eventsGateway: EventsGateway,
   ) {}
-  
+
   private async pushNotification(notification: Notification) {
     this.eventsGateway.emitToUser(
       notification.userId,
@@ -36,9 +35,14 @@ export class NotificationsConsumer {
     routingKey: "friend.request.created",
     queue: "notifications_queue",
   })
-  public async handleFriendRequestCreated(payload: FriendRequestCreatedPayload) {
-    this.logger.log(`Received friend request event: ${JSON.stringify(payload)}`);
-    const notification = await this.notificationsService.createFriendRequestNotification(payload);
+  public async handleFriendRequestCreated(
+    payload: FriendRequestCreatedPayload,
+  ) {
+    this.logger.log(
+      `Received friend request event: ${JSON.stringify(payload)}`,
+    );
+    const notification =
+      await this.notificationsService.createFriendRequestNotification(payload);
     await this.pushNotification(notification);
   }
 
@@ -48,8 +52,11 @@ export class NotificationsConsumer {
     queue: "notifications_queue",
   })
   public async handleMatchFinished(payload: MatchFinishedPayload) {
-    this.logger.log(`Received match finished event: ${JSON.stringify(payload)}`);
-    const notifications = await this.notificationsService.createMatchFinishedNotification(payload);
+    this.logger.log(
+      `Received match finished event: ${JSON.stringify(payload)}`,
+    );
+    const notifications =
+      await this.notificationsService.createMatchFinishedNotification(payload);
     for (const notification of notifications) {
       await this.pushNotification(notification);
     }
@@ -66,10 +73,11 @@ export class NotificationsConsumer {
     this.logger.log(
       `Received tournament announcement event: ${JSON.stringify(payload)}`,
     );
-    const notifications = await this.notificationsService.createTournamentAnnouncementNotification(
-      payload,
-    );
-     for (const notification of notifications) {
+    const notifications =
+      await this.notificationsService.createTournamentAnnouncementNotification(
+        payload,
+      );
+    for (const notification of notifications) {
       await this.pushNotification(notification);
     }
   }

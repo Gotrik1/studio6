@@ -1,3 +1,3 @@
-import { MedAccreditationPage } from '@/views/doc-med-accreditation';
+import { MedAccreditationPage } from "@/views/doc-med-accreditation";
 
 export default MedAccreditationPage;

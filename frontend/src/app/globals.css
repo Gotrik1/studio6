@@ -36,7 +36,7 @@ html {
     --border: 220 13% 80%;
     --input: 220 13% 85%;
     --ring: var(--primary);
-    
+
     /* Chart colors */
     --chart-1: 217 91% 60%; /* Primary Blue */
     --chart-2: 145 63% 59%; /* Accent Green */
@@ -66,27 +66,51 @@ html {
     --input: 220 60% 25%;
     --ring: var(--primary);
 
-     /* Chart colors */
+    /* Chart colors */
     --chart-1: 217 91% 60%; /* Primary Blue */
     --chart-2: 145 70% 55%; /* Accent Green */
     --chart-3: 30 70% 60%;
     --chart-4: 280 60% 65%;
     --chart-5: 340 70% 60%;
   }
-  
-  /* Accent color themes */
-  .theme-blue { --accent: 217 91% 60%; --accent-foreground: 210 40% 98%; }
-  .theme-green { --accent: 142 71% 45%; --accent-foreground: 142 71% 95%; }
-  .theme-yellow { --accent: 48 96% 51%; --accent-foreground: 48 96% 5%; }
-  .theme-orange { --accent: 25 95% 53%; --accent-foreground: 25 95% 95%; }
-  .theme-red { --accent: 0 84% 60%; --accent-foreground: 0 84% 98%; }
-  .theme-purple { --accent: 262 83% 58%; --accent-foreground: 262 83% 98%; }
-  .theme-pink { --accent: 340 95% 68%; --accent-foreground: 340 95% 5%; }
-  .theme-cyan { --accent: 199 98% 48%; --accent-foreground: 199 98% 98%; }
 
+  /* Accent color themes */
+  .theme-blue {
+    --accent: 217 91% 60%;
+    --accent-foreground: 210 40% 98%;
+  }
+  .theme-green {
+    --accent: 142 71% 45%;
+    --accent-foreground: 142 71% 95%;
+  }
+  .theme-yellow {
+    --accent: 48 96% 51%;
+    --accent-foreground: 48 96% 5%;
+  }
+  .theme-orange {
+    --accent: 25 95% 53%;
+    --accent-foreground: 25 95% 95%;
+  }
+  .theme-red {
+    --accent: 0 84% 60%;
+    --accent-foreground: 0 84% 98%;
+  }
+  .theme-purple {
+    --accent: 262 83% 58%;
+    --accent-foreground: 262 83% 98%;
+  }
+  .theme-pink {
+    --accent: 340 95% 68%;
+    --accent-foreground: 340 95% 5%;
+  }
+  .theme-cyan {
+    --accent: 199 98% 48%;
+    --accent-foreground: 199 98% 98%;
+  }
 
   /* Sidebar variables */
-  :root, .dark {
+  :root,
+  .dark {
     --sidebar-background: var(--background);
     --sidebar-foreground: var(--foreground);
     --sidebar-primary: var(--primary);
@@ -102,8 +126,13 @@ html {
   body {
     @apply bg-background text-foreground;
   }
-  h1,h2,h3,h4,h5,h6 {
-    font-family: theme('fontFamily.headline');
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: theme("fontFamily.headline");
   }
 }
 
@@ -120,13 +149,18 @@ html {
     overflow: hidden;
   }
   .shine-button::after {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     transform: translateX(-100%);
     width: 50%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
     animation: shine 4s infinite;
   }
 
@@ -152,9 +186,9 @@ html {
     animation: shimmer 2s infinite;
     content: "";
   }
-  
+
   .dark .hologram-skeleton::after {
-     background-image: linear-gradient(
+    background-image: linear-gradient(
       90deg,
       transparent 0,
       hsl(var(--primary) / 0.1) 20%,

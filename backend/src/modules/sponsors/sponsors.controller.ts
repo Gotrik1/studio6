@@ -16,9 +16,9 @@ export class SponsorsController {
   }
 
   @Public()
-  @Get(':id')
+  @Get(":id")
   @ApiOperation({ summary: "Получить спонсора по ID" })
-  findOne(@Param('id') id: string) {
+  findOne(@Param("id") id: string) {
     return this.sponsorsService.findOne(id);
   }
 }

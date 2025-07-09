@@ -1,21 +1,22 @@
-
-'use server';
+"use server";
 
 // Define types locally
 export type MultiSpeakerTtsInput = string;
 
 export type MultiSpeakerTtsOutput = {
-    audioDataUri: string;
+  audioDataUri: string;
 };
 
-export async function multiSpeakerTts(script: MultiSpeakerTtsInput): Promise<MultiSpeakerTtsOutput> {
-  const response = await fetch('/api/ai/multi-speaker-tts', {
-    method: 'POST',
+export async function multiSpeakerTts(
+  script: MultiSpeakerTtsInput,
+): Promise<MultiSpeakerTtsOutput> {
+  const response = await fetch("/api/ai/multi-speaker-tts", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ script }),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

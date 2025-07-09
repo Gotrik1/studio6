@@ -18,7 +18,7 @@ export class AchievementsService implements OnModuleInit {
 
     this.logger.log("Seeding achievements...");
     await this.prisma.achievement.createMany({
-      data: mockAchievements.map(a => ({
+      data: mockAchievements.map((a) => ({
         name: a.name,
         description: a.description,
         icon: a.icon,
@@ -30,32 +30,40 @@ export class AchievementsService implements OnModuleInit {
     const user = await this.prisma.user.findFirst();
     const achievementsToUnlock = await this.prisma.achievement.findMany({
       where: {
-        name: { in: ["Первая победа", "Командный игрок", "Железная воля", "Меткий удар", "Конструктор успеха"] }
-      }
+        name: {
+          in: [
+            "Первая победа",
+            "Командный игрок",
+            "Железная воля",
+            "Меткий удар",
+            "Конструктор успеха",
+          ],
+        },
+      },
     });
 
-    if(user && achievementsToUnlock.length > 0) {
-        await this.prisma.userAchievement.createMany({
-            data: achievementsToUnlock.map(ach => ({
-                userId: user.id,
-                achievementId: ach.id,
-            })),
-            skipDuplicates: true
-        })
+    if (user && achievementsToUnlock.length > 0) {
+      await this.prisma.userAchievement.createMany({
+        data: achievementsToUnlock.map((ach) => ({
+          userId: user.id,
+          achievementId: ach.id,
+        })),
+        skipDuplicates: true,
+      });
     }
     this.logger.log("Achievements seeded successfully.");
   }
-  
+
   async findAllForUser(userId: string) {
     const allAchievements = await this.prisma.achievement.findMany();
     const userAchievements = await this.prisma.userAchievement.findMany({
       where: { userId },
       select: { achievementId: true },
     });
-    
-    const unlockedIds = new Set(userAchievements.map(ua => ua.achievementId));
 
-    return allAchievements.map(ach => ({
+    const unlockedIds = new Set(userAchievements.map((ua) => ua.achievementId));
+
+    return allAchievements.map((ach) => ({
       name: ach.name,
       description: ach.description,
       icon: ach.icon,

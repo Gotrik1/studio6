@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 // Define types locally to decouple from backend schemas.
 export type AnalyzeSecurityInput = {
@@ -8,22 +8,23 @@ export type AnalyzeSecurityInput = {
 export type SecurityRecommendation = {
   title: string;
   description: string;
-  severity: 'low' | 'medium' | 'high';
+  severity: "low" | "medium" | "high";
 };
 
 export type AnalyzeSecurityOutput = {
   recommendations: SecurityRecommendation[];
 };
 
-
-export async function analyzeSecurity(input: AnalyzeSecurityInput): Promise<AnalyzeSecurityOutput> {
-  const response = await fetch('/api/ai/analyze-security', {
-    method: 'POST',
+export async function analyzeSecurity(
+  input: AnalyzeSecurityInput,
+): Promise<AnalyzeSecurityOutput> {
+  const response = await fetch("/api/ai/analyze-security", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

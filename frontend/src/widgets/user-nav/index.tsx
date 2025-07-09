@@ -1,13 +1,7 @@
+"use client";
 
-
-'use client';
-
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/shared/ui/avatar"
-import { Button } from "@/shared/ui/button"
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
+import { Button } from "@/shared/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,23 +10,28 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/shared/ui/dropdown-menu"
-import { logout } from "@/features/auth/actions"
-import type { User } from "@/shared/lib/types"
-import Link from 'next/link'
+} from "@/shared/ui/dropdown-menu";
+import { logout } from "@/features/auth/actions";
+import type { User } from "@/shared/lib/types";
+import Link from "next/link";
 
 export function UserNav({ user }: { user: User }) {
-  const initials = user?.name ? user.name
-    .split(' ')
-    .map((n: string) => n[0])
-    .join('') : '';
+  const initials = user?.name
+    ? user.name
+        .split(" ")
+        .map((n: string) => n[0])
+        .join("")
+    : "";
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={user?.avatar || undefined} alt={user?.name || ''} />
+            <AvatarImage
+              src={user?.avatar || undefined}
+              alt={user?.name || ""}
+            />
             <AvatarFallback>{initials}</AvatarFallback>
           </Avatar>
         </Button>
@@ -40,7 +39,9 @@ export function UserNav({ user }: { user: User }) {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.name || "Пользователь"}</p>
+            <p className="text-sm font-medium leading-none">
+              {user?.name || "Пользователь"}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
               {user?.email || ""}
             </p>
@@ -61,12 +62,10 @@ export function UserNav({ user }: { user: User }) {
         <DropdownMenuSeparator />
         <form action={logout}>
           <button type="submit" className="w-full text-left">
-            <DropdownMenuItem>
-              Выйти
-            </DropdownMenuItem>
+            <DropdownMenuItem>Выйти</DropdownMenuItem>
           </button>
         </form>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

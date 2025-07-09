@@ -1,7 +1,9 @@
-import { Controller } from '@nestjs/common';
-import { SponsorshipOffersService } from './sponsorship-offers.service';
+import { Controller } from "@nestjs/common";
+import { SponsorshipOffersService } from "./sponsorship-offers.service";
 
-@Controller('sponsorship-offers')
+@Controller("sponsorship-offers")
 export class SponsorshipOffersController {
-  constructor(private readonly sponsorshipOffersService: SponsorshipOffersService) {}
+  constructor(
+    private readonly sponsorshipOffersService: SponsorshipOffersService,
+  ) {}
 }

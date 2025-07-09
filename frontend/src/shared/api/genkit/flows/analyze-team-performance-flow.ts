@@ -1,37 +1,38 @@
-'use server';
+"use server";
 
 // Types are defined locally to decouple from backend schemas.
 export type AnalyzeTeamPerformanceInput = {
-    teamName: string;
-    recentMatches: string;
-    playerStats: {
-        name: string;
-        kda: string;
-        winRate: string;
-        recentPerformanceTrend: 'up' | 'down' | 'stable';
-    }[];
+  teamName: string;
+  recentMatches: string;
+  playerStats: {
+    name: string;
+    kda: string;
+    winRate: string;
+    recentPerformanceTrend: "up" | "down" | "stable";
+  }[];
 };
 
 export type AnalyzeTeamPerformanceOutput = {
-    teamStrengths: string[];
-    teamWeaknesses: string[];
-    playerInFocus: {
-        name: string;
-        reason: string;
-        suggestion: string;
-    };
-    trainingFocus: string;
+  teamStrengths: string[];
+  teamWeaknesses: string[];
+  playerInFocus: {
+    name: string;
+    reason: string;
+    suggestion: string;
+  };
+  trainingFocus: string;
 };
 
-
-export async function analyzeTeamPerformance(input: AnalyzeTeamPerformanceInput): Promise<AnalyzeTeamPerformanceOutput> {
+export async function analyzeTeamPerformance(
+  input: AnalyzeTeamPerformanceInput,
+): Promise<AnalyzeTeamPerformanceOutput> {
   const response = await fetch(`/api/ai/analyze-team-performance`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

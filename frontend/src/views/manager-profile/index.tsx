@@ -1,5 +1,5 @@
-import { ManagerProfilePage as ManagerProfileDemoPage } from '@/views/manager-profile-demo';
+import { ManagerProfilePage as ManagerProfileDemoPage } from "@/views/manager-profile-demo";
 
 export function ManagerProfilePage() {
-    return <ManagerProfileDemoPage />;
+  return <ManagerProfileDemoPage />;
 }

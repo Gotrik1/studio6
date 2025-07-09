@@ -1,5 +1,4 @@
-
-'use server';
+"use server";
 
 // Define types locally
 export type GenerateContentInput = {
@@ -12,14 +11,16 @@ export type GenerateContentOutput = {
   generatedText: string;
 };
 
-export async function generateContent(input: GenerateContentInput): Promise<GenerateContentOutput> {
-  const response = await fetch('/api/ai/generate-content', {
-    method: 'POST',
+export async function generateContent(
+  input: GenerateContentInput,
+): Promise<GenerateContentOutput> {
+  const response = await fetch("/api/ai/generate-content", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

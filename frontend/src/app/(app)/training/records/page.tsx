@@ -1,3 +1,3 @@
-import { PersonalRecordsPage } from '@/views/personal-records';
+import { PersonalRecordsPage } from "@/views/personal-records";
 
 export default PersonalRecordsPage;

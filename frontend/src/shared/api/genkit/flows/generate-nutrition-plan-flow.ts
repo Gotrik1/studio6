@@ -1,12 +1,11 @@
+"use server";
 
-'use server';
-
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { fetchWithAuth } from "@/shared/lib/api-client";
 
 // Define types locally
 export type GenerateNutritionPlanInput = {
-  goal: 'Набор массы' | 'Снижение веса' | 'Поддержание веса';
-  activityLevel: 'Низкий' | 'Средний' | 'Высокий';
+  goal: "Набор массы" | "Снижение веса" | "Поддержание веса";
+  activityLevel: "Низкий" | "Средний" | "Высокий";
   dietaryPreferences?: string;
 };
 
@@ -26,12 +25,17 @@ export type GenerateNutritionPlanOutput = {
   mealPlan: Meal[];
 };
 
-export async function generateNutritionPlan(input: GenerateNutritionPlanInput): Promise<GenerateNutritionPlanOutput> {
-  const result = await fetchWithAuth<GenerateNutritionPlanOutput>('/ai/generate-nutrition-plan', {
-    method: 'POST',
-    body: JSON.stringify(input),
-    cache: 'no-store',
-  });
+export async function generateNutritionPlan(
+  input: GenerateNutritionPlanInput,
+): Promise<GenerateNutritionPlanOutput> {
+  const result = await fetchWithAuth<GenerateNutritionPlanOutput>(
+    "/ai/generate-nutrition-plan",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+      cache: "no-store",
+    },
+  );
 
   if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);

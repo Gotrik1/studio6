@@ -1,3 +1,3 @@
-import { AuthPage } from '@/views/auth';
+import { AuthPage } from "@/views/auth";
 
 export default AuthPage;

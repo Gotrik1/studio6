@@ -1,3 +1,3 @@
-import { ChatsPage } from '@/views/chats';
+import { ChatsPage } from "@/views/chats";
 
 export default ChatsPage;

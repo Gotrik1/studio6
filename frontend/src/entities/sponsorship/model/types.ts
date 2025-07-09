@@ -1,23 +1,23 @@
-import type { Team } from '@/entities/team/model/types';
+import type { Team } from "@/entities/team/model/types";
 
 export type SponsoredTeam = Team & {
-    logoHint: string;
-    investment: string;
-    since: string;
+  logoHint: string;
+  investment: string;
+  since: string;
 };
 
 export type TeamSeekingSponsorship = {
-    slug: string;
-    name: string;
-    logo: string;
-    logoHint: string;
-    game: string;
-    pitch: string;
+  slug: string;
+  name: string;
+  logo: string;
+  logoHint: string;
+  game: string;
+  pitch: string;
 };
 
 export type SponsorshipDashboardData = {
-    sponsoredTeams: SponsoredTeam[];
-    teamsSeekingSponsorship: TeamSeekingSponsorship[];
+  sponsoredTeams: SponsoredTeam[];
+  teamsSeekingSponsorship: TeamSeekingSponsorship[];
 };
 
 export type SponsorshipOffer = {
@@ -28,6 +28,6 @@ export type SponsorshipOffer = {
     logoHint: string;
   };
   offerText: string;
-  status: 'PENDING' | 'ACCEPTED' | 'DECLINED';
+  status: "PENDING" | "ACCEPTED" | "DECLINED";
   teamId: string;
 };

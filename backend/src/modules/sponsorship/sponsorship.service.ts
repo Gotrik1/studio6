@@ -34,7 +34,7 @@ export class SponsorshipService implements OnModuleInit {
         name: s.team.name,
         logo: s.team.logo || "",
         logoHint: s.team.dataAiHint || "team logo",
-        investment: `${Number(s.amount).toLocaleString('ru-RU')} PD`,
+        investment: `${Number(s.amount).toLocaleString("ru-RU")} PD`,
         since: s.signedAt.toISOString().split("T")[0],
       })),
       teamsSeekingSponsorship: teamsSeekingSponsorship.map((t) => ({
@@ -43,7 +43,8 @@ export class SponsorshipService implements OnModuleInit {
         logo: t.logo || "",
         logoHint: t.dataAiHint || "team logo",
         game: t.game,
-        pitch: t.pitch || `Команда ${t.name} ищет поддержки для участия в турнирах.`,
+        pitch:
+          t.pitch || `Команда ${t.name} ищет поддержки для участия в турнирах.`,
       })),
     };
   }

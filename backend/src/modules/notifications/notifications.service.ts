@@ -1,4 +1,3 @@
-
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import { Notification, Prisma } from "@prisma/client";
@@ -10,7 +9,9 @@ import type { TournamentAnnouncementCreatedPayload } from "../rabbitmq/models/to
 export class NotificationsService {
   constructor(private prisma: PrismaService) {}
 
-  async createFriendRequestNotification(payload: FriendRequestCreatedPayload): Promise<Notification> {
+  async createFriendRequestNotification(
+    payload: FriendRequestCreatedPayload,
+  ): Promise<Notification> {
     return this.prisma.notification.create({
       data: {
         userId: payload.toUserId,
@@ -21,48 +22,52 @@ export class NotificationsService {
     });
   }
 
-  async createMatchFinishedNotification(payload: MatchFinishedPayload): Promise<Notification[]> {
-    const notificationsToCreate: Prisma.NotificationCreateManyInput[] = payload.participantIds.map((userId) => ({
-      userId,
-      type: "MATCH_RESULT",
-      message: `Матч ${payload.team1Name} vs ${payload.team2Name} завершился со счетом ${payload.score1}-${payload.score2}.`,
-      href: `/matches/${payload.matchId}`,
-      matchId: payload.matchId,
-    }));
+  async createMatchFinishedNotification(
+    payload: MatchFinishedPayload,
+  ): Promise<Notification[]> {
+    const notificationsToCreate: Prisma.NotificationCreateManyInput[] =
+      payload.participantIds.map((userId) => ({
+        userId,
+        type: "MATCH_RESULT",
+        message: `Матч ${payload.team1Name} vs ${payload.team2Name} завершился со счетом ${payload.score1}-${payload.score2}.`,
+        href: `/matches/${payload.matchId}`,
+        matchId: payload.matchId,
+      }));
 
     await this.prisma.notification.createMany({
       data: notificationsToCreate,
     });
-    
+
     return this.prisma.notification.findMany({
-        where: {
-            matchId: payload.matchId,
-            userId: { in: payload.participantIds },
-        },
+      where: {
+        matchId: payload.matchId,
+        userId: { in: payload.participantIds },
+      },
     });
   }
 
   async createTournamentAnnouncementNotification(
     payload: TournamentAnnouncementCreatedPayload,
   ): Promise<Notification[]> {
-    const notificationsToCreate: Prisma.NotificationCreateManyInput[] = payload.participantIds.map((userId) => ({
-      userId,
-      type: "ANNOUNCEMENT",
-      message: `Новое объявление в турнире "${payload.tournamentName}": ${payload.subject}`,
-      href: `/tournaments/${payload.tournamentSlug}`,
-      announcementId: payload.announcementId,
-    }));
+    const notificationsToCreate: Prisma.NotificationCreateManyInput[] =
+      payload.participantIds.map((userId) => ({
+        userId,
+        type: "ANNOUNCEMENT",
+        message: `Новое объявление в турнире "${payload.tournamentName}": ${payload.subject}`,
+        href: `/tournaments/${payload.tournamentSlug}`,
+        announcementId: payload.announcementId,
+      }));
 
     await this.prisma.notification.createMany({
       data: notificationsToCreate,
       skipDuplicates: true,
     });
-    
-     return this.prisma.notification.findMany({
-        where: {
-            announcementId: payload.announcementId,
-            userId: { in: payload.participantIds },
-        },
+
+    return this.prisma.notification.findMany({
+      where: {
+        announcementId: payload.announcementId,
+        userId: { in: payload.participantIds },
+      },
     });
   }
 

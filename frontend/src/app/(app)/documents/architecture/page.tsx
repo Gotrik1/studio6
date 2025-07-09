@@ -1,3 +1,3 @@
-import { ArchitecturePage } from '@/views/doc-architecture';
+import { ArchitecturePage } from "@/views/doc-architecture";
 
 export default ArchitecturePage;

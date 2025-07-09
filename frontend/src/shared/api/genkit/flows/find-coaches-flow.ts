@@ -1,35 +1,36 @@
-'use server';
+"use server";
 
 // Define types locally
 export type Coach = {
-    id: string;
-    name: string;
-    avatar: string | null;
-    avatarHint: string;
-    specialization: string;
-    description: string;
-    tags: string[];
-    rating: number;
-    price: string;
-    profileUrl: string;
+  id: string;
+  name: string;
+  avatar: string | null;
+  avatarHint: string;
+  specialization: string;
+  description: string;
+  tags: string[];
+  rating: number;
+  price: string;
+  profileUrl: string;
 };
 
 export type FindCoachesInput = string;
 
 export type FindCoachesOutput = {
-    recommendations: {
-        coach: Coach;
-        reasoning: string;
-    }[];
+  recommendations: {
+    coach: Coach;
+    reasoning: string;
+  }[];
 };
 
-
-export async function findCoaches(input: FindCoachesInput): Promise<FindCoachesOutput> {
-  const response = await fetch('/api/ai/find-coaches', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+export async function findCoaches(
+  input: FindCoachesInput,
+): Promise<FindCoachesOutput> {
+  const response = await fetch("/api/ai/find-coaches", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ input }),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

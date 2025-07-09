@@ -1,3 +1,3 @@
-import { SchemaAnalysisPage } from '@/views/doc-schema-analysis';
+import { SchemaAnalysisPage } from "@/views/doc-schema-analysis";
 
 export default SchemaAnalysisPage;

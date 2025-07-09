@@ -1,3 +1,3 @@
-import { PDEconomyPage } from '@/views/pd-economy';
+import { PDEconomyPage } from "@/views/pd-economy";
 
 export default PDEconomyPage;

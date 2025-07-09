@@ -1,6 +1,6 @@
 import type { z } from "zod";
 import type { AnalyzeMatchReportInputSchema } from "@/ai/flows/schemas/analyze-match-report-schema";
-import { MatchEventType } from '@prisma/client';
+import { MatchEventType } from "@prisma/client";
 
 export class AnalyzeMatchReportDto
   implements z.infer<typeof AnalyzeMatchReportInputSchema>

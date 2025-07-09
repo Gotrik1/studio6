@@ -1,14 +1,13 @@
+"use server";
 
-'use server';
-
-import { fetchWithAuth } from '@/shared/lib/api-client';
+import { fetchWithAuth } from "@/shared/lib/api-client";
 
 // Define types locally
 export type GenerateMatchPostInput = {
-    winningTeam: string;
-    losingTeam: string;
-    score: string;
-    matchSummary: string;
+  winningTeam: string;
+  losingTeam: string;
+  score: string;
+  matchSummary: string;
 };
 
 export type GenerateMatchPostOutput = {
@@ -16,12 +15,17 @@ export type GenerateMatchPostOutput = {
   imageDataUri: string;
 };
 
-export async function generateMatchPost(input: GenerateMatchPostInput): Promise<GenerateMatchPostOutput> {
-  const result = await fetchWithAuth<GenerateMatchPostOutput>('/ai/generate-match-post', {
-    method: 'POST',
-    body: JSON.stringify(input),
-    cache: 'no-store',
-  });
+export async function generateMatchPost(
+  input: GenerateMatchPostInput,
+): Promise<GenerateMatchPostOutput> {
+  const result = await fetchWithAuth<GenerateMatchPostOutput>(
+    "/ai/generate-match-post",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+      cache: "no-store",
+    },
+  );
 
   if (!result.success) {
     console.error("Backend API error:", result.error);

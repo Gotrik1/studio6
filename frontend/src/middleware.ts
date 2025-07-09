@@ -1,15 +1,15 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import {
   DEFAULT_LOGIN_REDIRECT,
   apiAuthPrefix,
   authRoutes,
   publicRoutes,
-} from '@/routes';
+} from "@/routes";
 
 export function middleware(request: NextRequest) {
   const { nextUrl } = request;
-  const session = request.cookies.get('session');
+  const session = request.cookies.get("session");
   const isLoggedIn = !!session;
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix);
@@ -26,15 +26,15 @@ export function middleware(request: NextRequest) {
     }
     return NextResponse.next();
   }
-  
+
   if (!isLoggedIn && !isPublicRoute) {
-    return NextResponse.redirect(new URL('/auth', nextUrl));
+    return NextResponse.redirect(new URL("/auth", nextUrl));
   }
-  
+
   return NextResponse.next();
 }
 
 // Optionally, don't invoke Middleware on some paths
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

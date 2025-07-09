@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 // Define types locally to decouple from the backend schema.
 // This establishes a clear API contract for the frontend.
@@ -20,12 +20,14 @@ export type PlayerScoutOutput = {
   }[];
 };
 
-export async function playerScout(input: PlayerScoutInput): Promise<PlayerScoutOutput> {
-  const response = await fetch('/api/ai/player-scout', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+export async function playerScout(
+  input: PlayerScoutInput,
+): Promise<PlayerScoutOutput> {
+  const response = await fetch("/api/ai/player-scout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ input }),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

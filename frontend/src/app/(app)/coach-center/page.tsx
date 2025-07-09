@@ -1,3 +1,3 @@
-import { CoachCenterPage } from '@/views/coach-center';
+import { CoachCenterPage } from "@/views/coach-center";
 
 export default CoachCenterPage;

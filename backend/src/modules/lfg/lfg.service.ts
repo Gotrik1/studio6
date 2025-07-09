@@ -43,7 +43,7 @@ export class LfgService {
         // We fetch lobbies that are not yet finished
         endTime: { gt: now },
         // And not explicitly cancelled
-        status: { not: 'CANCELLED' },
+        status: { not: "CANCELLED" },
       },
       include: {
         creator: { select: { id: true, name: true, avatar: true } },
@@ -57,12 +57,12 @@ export class LfgService {
     return lobbies.map((lobby) => {
       const playersJoined = lobby._count.players;
       let currentStatus: LfgLobbyStatus = lobby.status;
-      
+
       // Dynamically determine IN_PROGRESS status based on current time
       if (now >= lobby.startTime && now < lobby.endTime) {
-        currentStatus = 'IN_PROGRESS';
+        currentStatus = "IN_PROGRESS";
       }
-      
+
       return {
         id: lobby.id,
         type: lobby.type,
@@ -96,13 +96,15 @@ export class LfgService {
     if (lobby.endTime < new Date()) {
       throw new BadRequestException("Это лобби уже неактивно.");
     }
-    
-    if (lobby.status !== 'OPEN') {
-      throw new ConflictException("Лобби уже заполнено или не принимает участников.");
+
+    if (lobby.status !== "OPEN") {
+      throw new ConflictException(
+        "Лобби уже заполнено или не принимает участников.",
+      );
     }
 
     const isAlreadyJoined = await this.prisma.lfgLobby.findFirst({
-        where: { id: lobbyId, players: { some: { id: userId } } }
+      where: { id: lobbyId, players: { some: { id: userId } } },
     });
 
     if (isAlreadyJoined) {
@@ -123,7 +125,7 @@ export class LfgService {
     if (updatedLobby._count.players >= updatedLobby.playersNeeded) {
       return this.prisma.lfgLobby.update({
         where: { id: lobbyId },
-        data: { status: 'FULL' },
+        data: { status: "FULL" },
       });
     }
 

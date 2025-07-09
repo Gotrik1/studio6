@@ -1,3 +1,3 @@
-import { LeaderboardsPage } from '@/views/leaderboards';
+import { LeaderboardsPage } from "@/views/leaderboards";
 
 export default LeaderboardsPage;

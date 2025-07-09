@@ -1,50 +1,63 @@
-
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import type { UserTeam } from '@/entities/team/model/types';
+import type { UserTeam } from "@/entities/team/model/types";
 
 interface TeamsTabProps {
-    teams: UserTeam[];
-    isCurrentUser: boolean;
-    userName: string;
+  teams: UserTeam[];
+  isCurrentUser: boolean;
+  userName: string;
 }
 
 export function TeamsTab({ teams, isCurrentUser, userName }: TeamsTabProps) {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{isCurrentUser ? "Мои команды" : "Команды"}</CardTitle>
-                <CardDescription>{isCurrentUser ? "Команды, в которых вы состоите." : `Команды, в которых состоит ${userName}`}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {teams.map((team) => (
-                      <Link 
-                        href={`/teams/${team.slug}`} 
-                        key={team.name} 
-                        className="block h-full rounded-lg border p-6 flex flex-col items-center text-center transition-all hover:bg-muted/50 hover:border-primary"
-                      >
-                        <Image 
-                          src={team.logo || 'https://placehold.co/100x100.png'} 
-                          alt={`Логотип ${team.name}`} 
-                          width={80} 
-                          height={80} 
-                          className="rounded-full border"
-                          data-ai-hint={team.dataAiHint || 'team logo'}
-                        />
-                        <h4 className="mt-4 font-headline text-xl font-semibold">{team.name}</h4>
-                        <p className="text-sm text-muted-foreground">{team.role} в {team.game}</p>
-                         <div className="mt-4 flex-1 flex items-end">
-                            <Badge variant="secondary">Ранг: #{team.rank}</Badge>
-                        </div>
-                      </Link>
-                  ))}
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{isCurrentUser ? "Мои команды" : "Команды"}</CardTitle>
+        <CardDescription>
+          {isCurrentUser
+            ? "Команды, в которых вы состоите."
+            : `Команды, в которых состоит ${userName}`}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {teams.map((team) => (
+            <Link
+              href={`/teams/${team.slug}`}
+              key={team.name}
+              className="block h-full rounded-lg border p-6 flex flex-col items-center text-center transition-all hover:bg-muted/50 hover:border-primary"
+            >
+              <Image
+                src={team.logo || "https://placehold.co/100x100.png"}
+                alt={`Логотип ${team.name}`}
+                width={80}
+                height={80}
+                className="rounded-full border"
+                data-ai-hint={team.dataAiHint || "team logo"}
+              />
+              <h4 className="mt-4 font-headline text-xl font-semibold">
+                {team.name}
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                {team.role} в {team.game}
+              </p>
+              <div className="mt-4 flex-1 flex items-end">
+                <Badge variant="secondary">Ранг: #{team.rank}</Badge>
               </div>
-            </CardContent>
-        </Card>
-    );
+            </Link>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  );
 }

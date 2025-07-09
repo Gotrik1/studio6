@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 // These types are now defined locally as the schema file is removed from the frontend.
 export type User = {
@@ -37,14 +37,16 @@ export type SmartSearchOutput = {
   tournaments: Tournament[];
 };
 
-export async function smartSearch(query: SmartSearchInput): Promise<SmartSearchOutput> {
-  const response = await fetch('/api/ai/smart-search', {
-    method: 'POST',
+export async function smartSearch(
+  query: SmartSearchInput,
+): Promise<SmartSearchOutput> {
+  const response = await fetch("/api/ai/smart-search", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ query }),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

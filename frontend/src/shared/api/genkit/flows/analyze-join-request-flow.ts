@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 /**
  * @fileOverview An API client for analyzing a player's request to join a team via the backend.
@@ -15,20 +15,21 @@ export type AnalyzeJoinRequestInput = {
 };
 
 export type AnalyzeJoinRequestOutput = {
-  recommendation: 'accept' | 'consider' | 'decline';
+  recommendation: "accept" | "consider" | "decline";
   reasoning: string;
-  confidence: 'high' | 'medium' | 'low';
+  confidence: "high" | "medium" | "low";
 };
 
-
-export async function analyzeJoinRequest(input: AnalyzeJoinRequestInput): Promise<AnalyzeJoinRequestOutput> {
+export async function analyzeJoinRequest(
+  input: AnalyzeJoinRequestInput,
+): Promise<AnalyzeJoinRequestOutput> {
   const response = await fetch(`/api/ai/analyze-join-request`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

@@ -1,3 +1,3 @@
-import { PrivacyPolicyPage } from '@/views/doc-privacy';
+import { PrivacyPolicyPage } from "@/views/doc-privacy";
 
 export default PrivacyPolicyPage;

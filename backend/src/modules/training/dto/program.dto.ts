@@ -1,5 +1,14 @@
-import { IsString, IsNotEmpty, IsArray, ValidateNested, IsInt, IsEnum, IsBoolean, IsOptional } from 'class-validator';
-import { Type } from 'class-transformer';
+import {
+  IsString,
+  IsNotEmpty,
+  IsArray,
+  ValidateNested,
+  IsInt,
+  IsEnum,
+  IsBoolean,
+  IsOptional,
+} from "class-validator";
+import { Type } from "class-transformer";
 
 class ExerciseDetailDto {
   @IsString()
@@ -14,11 +23,11 @@ class ExerciseDetailDto {
   @IsString()
   @IsOptional()
   plannedWeight?: string;
-  
+
   @IsBoolean()
   @IsOptional()
   isSupersetWithPrevious?: boolean;
-  
+
   @IsString()
   @IsOptional()
   technique?: string;
@@ -46,12 +55,12 @@ export class CreateProgramData {
   @IsOptional()
   description?: string;
 
-  @IsEnum(['Набор массы', 'Снижение веса', 'Рельеф', 'Сила'])
-  goal: 'Набор массы' | 'Снижение веса' | 'Рельеф' | 'Сила';
+  @IsEnum(["Набор массы", "Снижение веса", "Рельеф", "Сила"])
+  goal: "Набор массы" | "Снижение веса" | "Рельеф" | "Сила";
 
-  @IsEnum(['Full-body', 'Split', 'Upper/Lower'])
-  splitType: 'Full-body' | 'Split' | 'Upper/Lower';
-  
+  @IsEnum(["Full-body", "Split", "Upper/Lower"])
+  splitType: "Full-body" | "Split" | "Upper/Lower";
+
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => WorkoutDayDto)

@@ -1,11 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from "@nestjs/common";
 import {
   S3Client,
   PutObjectCommand,
   DeleteObjectCommand,
-} from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { generateUniqueFileKey } from './storage.utils';
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { generateUniqueFileKey } from "./storage.utils";
 
 @Injectable()
 export class StorageService {
@@ -14,24 +14,26 @@ export class StorageService {
   private readonly bucketName: string;
 
   constructor() {
-    this.bucketName = process.env.S3_BUCKET_NAME || '';
+    this.bucketName = process.env.S3_BUCKET_NAME || "";
     if (!this.bucketName) {
-      this.logger.error('S3_BUCKET_NAME environment variable is not set.');
-      throw new Error('S3 bucket name is not configured.');
+      this.logger.error("S3_BUCKET_NAME environment variable is not set.");
+      throw new Error("S3 bucket name is not configured.");
     }
 
     this.s3Client = new S3Client({
       region: process.env.AWS_REGION,
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
       },
       // If using a local S3-compatible service like MinIO, endpoint is needed.
       endpoint: process.env.S3_ENDPOINT_URL || undefined,
       forcePathStyle: !!process.env.S3_ENDPOINT_URL, // Required for MinIO
     });
 
-    this.logger.log(`StorageService initialized for bucket: ${this.bucketName}`);
+    this.logger.log(
+      `StorageService initialized for bucket: ${this.bucketName}`,
+    );
   }
 
   async getPresignedUrlForUpload(fileName: string, fileType: string) {
@@ -55,8 +57,8 @@ export class StorageService {
         fileKey: uniqueKey,
       };
     } catch (error) {
-      this.logger.error('Error generating presigned URL', error);
-      throw new Error('Could not generate presigned URL.');
+      this.logger.error("Error generating presigned URL", error);
+      throw new Error("Could not generate presigned URL.");
     }
   }
 
@@ -80,7 +82,7 @@ export class StorageService {
       this.logger.log(`Successfully deleted file with key: ${key}`);
     } catch (error) {
       this.logger.error(`Error deleting file with key: ${key}`, error);
-      throw new Error('Could not delete file.');
+      throw new Error("Could not delete file.");
     }
   }
 }

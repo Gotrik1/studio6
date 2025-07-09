@@ -1,10 +1,16 @@
-
 "use server";
 
 import { ai } from "../genkit";
 import { z } from "zod";
-import { FindCoachesInputSchema, FindCoachesOutputSchema, CoachSchema } from "./schemas/find-coaches-schema";
-import type { FindCoachesInput, FindCoachesOutput } from "./schemas/find-coaches-schema";
+import {
+  FindCoachesInputSchema,
+  FindCoachesOutputSchema,
+  CoachSchema,
+} from "./schemas/find-coaches-schema";
+import type {
+  FindCoachesInput,
+  FindCoachesOutput,
+} from "./schemas/find-coaches-schema";
 import { PrismaService } from "@/prisma/prisma.service";
 import { Role } from "@prisma/client";
 
@@ -57,7 +63,7 @@ const findCoachesTool_Backend = ai.defineTool(
     });
 
     return coachesWithProfiles
-      .filter(user => user.coachProfile) // Ensure coachProfile exists
+      .filter((user) => user.coachProfile) // Ensure coachProfile exists
       .map((user) => ({
         id: user.coachProfile!.id,
         name: user.name,

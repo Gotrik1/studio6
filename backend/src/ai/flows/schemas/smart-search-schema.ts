@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TeamSchema as TeamDataSchema } from './team.schema';
+import { TeamSchema as TeamDataSchema } from "./team.schema";
 
 export const UserSchema = z.object({
   id: z.string(),

@@ -18,7 +18,7 @@ export class MetricsService implements OnModuleInit {
   incrementRequests() {
     // This is a simplified example. A real implementation would use interceptors
     // to dynamically get method, route and status code.
-    this.requestsCounter.inc({ method: 'GET', route: '/', status_code: '200' });
+    this.requestsCounter.inc({ method: "GET", route: "/", status_code: "200" });
   }
 
   getContentType(): string {

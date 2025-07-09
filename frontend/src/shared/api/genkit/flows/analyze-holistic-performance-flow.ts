@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 // Local types to avoid direct dependency on backend schemas
 export type AnalyzeHolisticPerformanceInput = {
@@ -15,12 +15,14 @@ export type AnalyzeHolisticPerformanceOutput = {
   recommendations: string[];
 };
 
-export async function analyzeHolisticPerformance(input: AnalyzeHolisticPerformanceInput): Promise<AnalyzeHolisticPerformanceOutput> {
-  const response = await fetch('/api/ai/analyze-holistic-performance', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+export async function analyzeHolisticPerformance(
+  input: AnalyzeHolisticPerformanceInput,
+): Promise<AnalyzeHolisticPerformanceOutput> {
+  const response = await fetch("/api/ai/analyze-holistic-performance", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

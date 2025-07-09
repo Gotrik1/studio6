@@ -36,14 +36,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
       path: httpAdapter.getRequestUrl(request),
       error: errorMessage,
     };
-    
+
     // Log the error using our structured logger
     this.logger.error(
       {
         ...responseBody,
         stack: exception instanceof Error ? exception.stack : undefined,
       },
-      'HttpException'
+      "HttpException",
     );
 
     httpAdapter.reply(ctx.getResponse(), responseBody, httpStatus);

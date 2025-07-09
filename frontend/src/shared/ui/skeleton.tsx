@@ -1,15 +1,10 @@
-import { cn } from "@/shared/lib/utils"
+import { cn } from "@/shared/lib/utils";
 
 function Skeleton({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("hologram-skeleton", className)}
-      {...props}
-    />
-  )
+  return <div className={cn("hologram-skeleton", className)} {...props} />;
 }
 
-export { Skeleton }
+export { Skeleton };

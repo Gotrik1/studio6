@@ -1,3 +1,3 @@
-import { MonetizationPage } from '@/views/monetization';
+import { MonetizationPage } from "@/views/monetization";
 
 export default MonetizationPage;

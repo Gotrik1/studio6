@@ -1,5 +1,4 @@
-
-'use server';
+"use server";
 
 import { fetchWithAuth } from "@/shared/lib/api-client";
 
@@ -13,13 +12,17 @@ export type GenerateMatchInterviewOutput = {
   script: string;
 };
 
-
-export async function generateMatchInterview(input: GenerateMatchInterviewInput): Promise<GenerateMatchInterviewOutput> {
-  const result = await fetchWithAuth<GenerateMatchInterviewOutput>('/ai/generate-match-interview', {
-    method: 'POST',
-    body: JSON.stringify(input),
-    cache: 'no-store',
-  });
+export async function generateMatchInterview(
+  input: GenerateMatchInterviewInput,
+): Promise<GenerateMatchInterviewOutput> {
+  const result = await fetchWithAuth<GenerateMatchInterviewOutput>(
+    "/ai/generate-match-interview",
+    {
+      method: "POST",
+      body: JSON.stringify(input),
+      cache: "no-store",
+    },
+  );
 
   if (!result.success || !result.data) {
     console.error("Backend API error:", result.error);

@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 type Player = {
   name: string;
@@ -8,10 +8,10 @@ type Player = {
 };
 
 type Event = {
-    time: string;
-    event: string;
-    player: string;
-    team: string;
+  time: string;
+  event: string;
+  player: string;
+  team: string;
 };
 
 export type AnalyzeMatchReportInput = {
@@ -35,12 +35,14 @@ export type AnalyzeMatchReportOutput = {
   team2Advice: string;
 };
 
-export async function analyzeMatchReport(input: AnalyzeMatchReportInput): Promise<AnalyzeMatchReportOutput> {
-  const response = await fetch('/api/ai/analyze-match-report', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+export async function analyzeMatchReport(
+  input: AnalyzeMatchReportInput,
+): Promise<AnalyzeMatchReportOutput> {
+  const response = await fetch("/api/ai/analyze-match-report", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {

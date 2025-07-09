@@ -1,4 +1,3 @@
-
-import { CoachesPage } from '@/views/coaches';
+import { CoachesPage } from "@/views/coaches";
 
 export default CoachesPage;

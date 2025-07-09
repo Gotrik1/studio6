@@ -10,7 +10,7 @@ export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly metricsService: MetricsService,
-    ) {}
+  ) {}
 
   @Public()
   @Get()
