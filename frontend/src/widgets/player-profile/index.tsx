@@ -164,6 +164,7 @@ const PhysicalPrepTab = dynamic(
     ssr: false,
   },
 );
+
 const PlayerActivityFeed = dynamic(
   () =>
     import("@/widgets/player-activity-feed").then(
