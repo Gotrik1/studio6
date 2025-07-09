@@ -1,3 +1,4 @@
+
 import globals from "globals";
 import js from "@eslint/js";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
@@ -47,6 +48,11 @@ export default [
     rules: {
       ...nextPlugin.configs.recommended.rules,
       ...nextPlugin.configs["core-web-vitals"].rules,
+    },
+    settings: {
+      next: {
+        rootDir: "frontend/",
+      },
     },
     languageOptions: {
       parser: tsParser,
