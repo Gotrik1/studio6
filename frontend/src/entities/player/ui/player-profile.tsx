@@ -57,10 +57,7 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from "@/features/profile-banner-generator";
 import { HolisticAnalysisTab } from "@/widgets/holistic-analysis-tab";
-import {
-  PlayerActivityFeed,
-  type PlayerActivityItem,
-} from "@/widgets/player-activity-feed";
+import { type PlayerActivityItem } from "@/widgets/player-activity-feed";
 import type {
   FullUserProfile,
   CareerHistoryItem,
@@ -387,9 +384,11 @@ export function PlayerProfile({
               <Cake className="h-6 w-6 text-pink-500" />
               <div>
                 <p className="font-semibold">
-                  {user.age} лет ({format(new Date(user.dateOfBirth), "d MMMM yyyy", {
+                  {user.age} лет (
+                  {format(new Date(user.dateOfBirth), "d MMMM yyyy", {
                     locale: ru,
-                  })})
+                  })}
+                  )
                 </p>
               </div>
             </div>
@@ -413,7 +412,7 @@ export function PlayerProfile({
           <div className="flex items-center gap-4">
             <Send className="h-6 w-6 text-purple-500" />
             <div className="flex flex-wrap gap-2">
-              {user.contacts.telegram ? (
+              {user.contacts.telegram && (
                 <Button variant="outline" size="sm" asChild>
                   <Link
                     href={`https://t.me/${user.contacts.telegram.slice(1)}`}
@@ -422,7 +421,7 @@ export function PlayerProfile({
                     Telegram
                   </Link>
                 </Button>
-              ) : null}
+              )}
               {user.contacts.discord && (
                 <TooltipProvider>
                   <Tooltip>

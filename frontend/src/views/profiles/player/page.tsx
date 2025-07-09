@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import dynamic from "next/dynamic";
@@ -153,6 +155,22 @@ const PhysicalPrepTab = dynamic(
   () =>
     import("@/entities/player/ui/player-profile-tabs/physical-prep-tab").then(
       (mod) => mod.PhysicalPrepTab,
+    ),
+  {
+    loading: () => (
+      <Card>
+        <CardContent>
+          <Skeleton className="h-64 w-full mt-6" />
+        </CardContent>
+      </Card>
+    ),
+    ssr: false,
+  },
+);
+const PlayerActivityFeed = dynamic(
+  () =>
+    import("@/widgets/player-activity-feed").then(
+      (mod) => mod.PlayerActivityFeed,
     ),
   {
     loading: () => (
@@ -369,9 +387,10 @@ export function PlayerProfile({
             <div>
               <p className="font-semibold">
                 {user.age} лет (
-                {format(new Date(user.dateOfBirth), "d MMMM yyyy", {
-                  locale: ru,
-                })}
+                {user.dateOfBirth &&
+                  format(new Date(user.dateOfBirth), "d MMMM yyyy", {
+                    locale: ru,
+                  })}
                 )
               </p>
             </div>
@@ -395,26 +414,30 @@ export function PlayerProfile({
           <div className="flex items-center gap-4">
             <Send className="h-6 w-6 text-purple-500" />
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link
-                  href={`https://t.me/${user.contacts.telegram.slice(1)}`}
-                  target="_blank"
-                >
-                  Telegram
-                </Link>
-              </Button>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      Discord
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{user.contacts.discord}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+              {user.contacts.telegram && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link
+                    href={`https://t.me/${user.contacts.telegram.slice(1)}`}
+                    target="_blank"
+                  >
+                    Telegram
+                  </Link>
+                </Button>
+              )}
+              {user.contacts.discord && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        Discord
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{user.contacts.discord}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
           </div>
         </CardContent>
