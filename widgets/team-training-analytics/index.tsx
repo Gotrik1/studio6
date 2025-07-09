@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import {
@@ -85,7 +87,7 @@ export function TeamTrainingAnalytics({ players }: TeamTrainingAnalyticsProps) {
           value={mostDiligent?.name || "-"}
           icon={TrendingUp}
           description={
-            mostDiligent ? `${mostDiligent.adherence}% посещаемости` : ""
+            mostDiligent ? `${mostDiligent.adherence || 0}% посещаемости` : ""
           }
         />
         <StatCard
@@ -93,7 +95,7 @@ export function TeamTrainingAnalytics({ players }: TeamTrainingAnalyticsProps) {
           value={leastDiligent?.name || "-"}
           icon={TrendingDown}
           description={
-            leastDiligent ? `${leastDiligent.adherence}% посещаемости` : ""
+            leastDiligent ? `${leastDiligent.adherence || 0}% посещаемости` : ""
           }
         />
       </div>
@@ -132,9 +134,9 @@ export function TeamTrainingAnalytics({ players }: TeamTrainingAnalyticsProps) {
                   <TableCell>Классический 3-дневный сплит</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Progress value={player.adherence} className="w-24 h-2" />
+                      <Progress value={player.adherence || 0} className="w-24 h-2" />
                       <span className="text-sm font-medium">
-                        {player.adherence}%
+                        {player.adherence || 0}%
                       </span>
                     </div>
                   </TableCell>

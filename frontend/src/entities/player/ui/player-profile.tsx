@@ -366,21 +366,20 @@ export function PlayerProfile({
         </CardContent>
 
         <CardContent className="grid gap-6 border-b p-6 sm:grid-cols-2 lg:grid-cols-4">
-          {user.age && user.dateOfBirth && (
+          {user.dateOfBirth && user.age !== null ? (
             <div className="flex items-center gap-4">
               <Cake className="h-6 w-6 text-pink-500" />
               <div>
                 <p className="font-semibold">
                   {user.age} лет (
-                  {user.dateOfBirth &&
-                    format(new Date(user.dateOfBirth), "d MMMM yyyy", {
-                      locale: ru,
-                    })}
+                  {format(new Date(user.dateOfBirth), "d MMMM yyyy", {
+                    locale: ru,
+                  })}
                   )
                 </p>
               </div>
             </div>
-          )}
+          ) : null}
           <div className="flex items-center gap-4">
             <MapPin className="h-6 w-6 text-blue-500" />
             <div>
@@ -400,7 +399,7 @@ export function PlayerProfile({
           <div className="flex items-center gap-4">
             <Send className="h-6 w-6 text-purple-500" />
             <div className="flex flex-wrap gap-2">
-              {user.contacts.telegram && (
+              {user.contacts.telegram ? (
                 <Button variant="outline" size="sm" asChild>
                   <Link
                     href={`https://t.me/${user.contacts.telegram.slice(1)}`}
@@ -409,7 +408,7 @@ export function PlayerProfile({
                     Telegram
                   </Link>
                 </Button>
-              )}
+              ) : null}
               {user.contacts.discord && (
                 <TooltipProvider>
                   <Tooltip>
