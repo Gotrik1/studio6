@@ -17,7 +17,7 @@ import {
   ApiQuery,
   ApiTags,
 } from "@nestjs/swagger";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 
 @ApiTags("Challenges")
 @Controller("challenges")
@@ -28,8 +28,11 @@ export class ChallengesController {
 
   @Post()
   @ApiOperation({ summary: "Создать новый вызов" })
-  create(@Body() createChallengeDto: CreateChallengeDto, @Req() req: Request) {
-    const userId = (req.user as any).userId;
+  create(
+    @Body() createChallengeDto: CreateChallengeDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const userId = req.user.userId;
     return this.challengesService.create(createChallengeDto, userId);
   }
 
@@ -38,16 +41,16 @@ export class ChallengesController {
   @ApiQuery({ name: "filter", enum: ["open", "my", "history"], required: true })
   findAll(
     @Query("filter") filter: "open" | "my" | "history",
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const userId = (req.user as any)?.userId;
+    const userId = req.user?.userId;
     return this.challengesService.findAll(filter, userId);
   }
 
   @Post(":id/accept")
   @ApiOperation({ summary: "Принять вызов" })
-  accept(@Param("id") id: string, @Req() req: Request) {
-    const userId = (req.user as any).userId;
+  accept(@Param("id") id: string, @Req() req: AuthenticatedRequest) {
+    const userId = req.user.userId;
     return this.challengesService.accept(id, userId);
   }
 }

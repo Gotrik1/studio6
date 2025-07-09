@@ -10,10 +10,10 @@ import {
 import { ActivitiesService } from "./activities.service";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
 import { CreateStatusActivityDto } from "./dto/create-status-activity.dto";
 import { CreateCheckInDto } from "./dto/create-check-in.dto";
 import { Public } from "../auth/decorators/public.decorator";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 
 @ApiTags("Activities")
 @Controller("activities")
@@ -33,9 +33,9 @@ export class ActivitiesController {
   @ApiOperation({ summary: "Опубликовать новый статус" })
   postStatus(
     @Body() createStatusDto: CreateStatusActivityDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const userId = (req.user as any).userId;
+    const userId = req.user.userId;
     return this.activitiesService.createStatusPost(
       userId,
       createStatusDto.text,
@@ -44,8 +44,11 @@ export class ActivitiesController {
 
   @Post("check-in")
   @ApiOperation({ summary: "Отметиться на площадке" })
-  postCheckIn(@Body() createCheckInDto: CreateCheckInDto, @Req() req: Request) {
-    const userId = (req.user as any).userId;
+  postCheckIn(
+    @Body() createCheckInDto: CreateCheckInDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const userId = req.user.userId;
     return this.activitiesService.createCheckInActivity(
       userId,
       createCheckInDto,

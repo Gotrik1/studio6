@@ -3,6 +3,7 @@ import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
 import { UsersService } from "../../users/users.service";
 import { Role } from "@prisma/client";
+import { JwtPayload } from "../types/jwt-payload";
 
 const roleMap: { [key: string]: Role } = {
   Игрок: Role.PLAYER,
@@ -26,7 +27,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: {
+    sub: string;
+    name: string;
+    role: string;
+  }): Promise<JwtPayload> {
     const user = await this.usersService.findById(payload.sub);
     if (!user) {
       throw new UnauthorizedException();

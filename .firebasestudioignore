@@ -1,0 +1,23 @@
+node_modules/
+dist/
+.git/
+docker/
+config/
+docs/
+backend/dist/
+frontend/.next/
+frontend/dist/
+
+# Игнорировать большие lock-файлы
+package-lock.json
+backend/package-lock.json
+frontend/package-lock.json
+
+# Игнорировать текстовые и отчётные файлы
+*.txt
+*.tsbuildinfo
+*.log
+
+# Игнорировать временные конфиги и логи
+tsc-errors*.txt
+eslint-report*.txt

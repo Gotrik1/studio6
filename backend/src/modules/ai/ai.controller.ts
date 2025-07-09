@@ -127,7 +127,7 @@ import type { OnboardingOutput } from "@/ai/flows/schemas/onboarding-assistant-s
 import type { PredictMatchOutcomeOutput } from "@/ai/flows/schemas/predict-match-outcome-schema";
 import { PlayerScoutDto } from "./dto/player-scout.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 import { GeneratePlaygroundChallengeDto } from "./dto/generate-playground-challenge.dto";
 import type { GeneratePlaygroundSummaryOutput } from "@/ai/flows/schemas/generate-playground-summary-schema";
 import type { GeneratePlaygroundChallengeOutput } from "@/ai/flows/schemas/generate-playground-challenge-schema";
@@ -136,12 +136,6 @@ import type { GenerateTeamAvatarOutput } from "@/ai/flows/schemas/generate-team-
 import type { GeneratePlaygroundTacticOutput } from "@/ai/flows/schemas/generate-playground-tactic-schema";
 import type { GeneratePlaygroundWorkoutOutput } from "@/ai/flows/schemas/generate-playground-workout-schema";
 import type { PlayerScoutOutput } from "@/ai/flows/player-scout-flow";
-
-type AuthenticatedUser = {
-  userId: string;
-  name: string;
-  role: string;
-};
 
 @ApiTags("AI")
 @Controller("ai")
@@ -190,9 +184,9 @@ export class AiController {
   })
   async createPromotionFromWizard(
     @Body() dto: GeneratePromotionWizardDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const user = req.user as AuthenticatedUser;
+    const user = req.user;
     return this.aiService.createPromotionFromWizard(dto.prompt, user.userId);
   }
 
@@ -534,9 +528,9 @@ export class AiController {
   @Get("dashboard-tip")
   @HttpCode(HttpStatus.OK)
   async generateDashboardTip(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ): Promise<GenerateDashboardTipOutput> {
-    const user = req.user as AuthenticatedUser;
+    const user = req.user;
     return this.aiService.generateDashboardTip(user.userId, user.name);
   }
 

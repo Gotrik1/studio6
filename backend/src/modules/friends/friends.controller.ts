@@ -11,7 +11,7 @@ import {
 import { FriendsService } from "./friends.service";
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 import { CreateFriendRequestDto } from "./dto/create-friend-request.dto";
 
 @ApiTags("Friends")
@@ -23,15 +23,15 @@ export class FriendsController {
 
   @Get()
   @ApiOperation({ summary: "Получить список друзей" })
-  findAll(@Req() req: Request) {
-    const userId = (req.user as any).userId;
+  findAll(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.userId;
     return this.friendsService.findAll(userId);
   }
 
   @Get("requests")
   @ApiOperation({ summary: "Получить входящие запросы в друзья" })
-  findRequests(@Req() req: Request) {
-    const userId = (req.user as any).userId;
+  findRequests(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.userId;
     return this.friendsService.findRequests(userId);
   }
 
@@ -44,29 +44,41 @@ export class FriendsController {
 
   @Post("requests")
   @ApiOperation({ summary: "Отправить запрос в друзья" })
-  sendRequest(@Body() dto: CreateFriendRequestDto, @Req() req: Request) {
-    const fromId = (req.user as any).userId;
+  sendRequest(
+    @Body() dto: CreateFriendRequestDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const fromId = req.user.userId;
     return this.friendsService.sendRequest(fromId, dto.toId);
   }
 
   @Post("requests/:id/accept")
   @ApiOperation({ summary: "Принять запрос в друзья" })
-  acceptRequest(@Param("id") requestId: string, @Req() req: Request) {
-    const userId = (req.user as any).userId;
+  acceptRequest(
+    @Param("id") requestId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const userId = req.user.userId;
     return this.friendsService.acceptRequest(requestId, userId);
   }
 
   @Delete("requests/:id")
   @ApiOperation({ summary: "Отклонить запрос в друзья" })
-  declineRequest(@Param("id") requestId: string, @Req() req: Request) {
-    const userId = (req.user as any).userId;
+  declineRequest(
+    @Param("id") requestId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const userId = req.user.userId;
     return this.friendsService.declineRequest(requestId, userId);
   }
 
   @Delete(":id")
   @ApiOperation({ summary: "Удалить друга" })
-  removeFriend(@Param("id") friendId: string, @Req() req: Request) {
-    const userId = (req.user as any).userId;
+  removeFriend(
+    @Param("id") friendId: string,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const userId = req.user.userId;
     return this.friendsService.removeFriend(userId, friendId);
   }
 }
