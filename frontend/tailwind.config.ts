@@ -2,7 +2,6 @@ import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
 import tailwindcssAnimate from "tailwindcss-animate";
 import tailwindcssTypography from "@tailwindcss/typography";
-import type { PluginAPI } from "tailwindcss/types/config";
 
 const config: Config = {
   darkMode: ["class"],
@@ -19,7 +18,6 @@ const config: Config = {
       fontFamily: {
         body: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
         headline: ["var(--font-space-grotesk)", ...defaultTheme.fontFamily.sans],
-        code: ["monospace", ...defaultTheme.fontFamily.mono],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -127,77 +125,9 @@ const config: Config = {
         "fade-in-up": "fade-in-up 0.5s ease-out forwards",
         "pulse-glow": "pulse-glow 2.5s infinite ease-in-out",
       },
-      animationDelay: {
-        "300": "300ms",
-        "400": "400ms",
-        "500": "500ms",
-        "600": "600ms",
-        "700": "700ms",
-      },
-      typography: ({ theme }: { theme: (path: string) => string }) => ({
-        DEFAULT: {
-          css: {
-            "--tw-prose-body": theme("colors.foreground"),
-            "--tw-prose-headings": theme("colors.foreground"),
-            "--tw-prose-lead": theme("colors.foreground"),
-            "--tw-prose-links": theme("colors.primary.DEFAULT"),
-            "--tw-prose-bold": theme("colors.foreground"),
-            "--tw-prose-counters": theme("colors.muted.foreground"),
-            "--tw-prose-bullets": theme("colors.muted.foreground"),
-            "--tw-prose-hr": theme("colors.border"),
-            "--tw-prose-quotes": theme("colors.foreground"),
-            "--tw-prose-quote-borders": theme("colors.primary.DEFAULT"),
-            "--tw-prose-captions": theme("colors.muted.foreground"),
-            "--tw-prose-code": theme("colors.foreground"),
-            "--tw-prose-pre-code": theme("colors.foreground"),
-            "--tw-prose-pre-bg": theme("colors.muted.DEFAULT"),
-            "--tw-prose-th-borders": theme("colors.border"),
-            "--tw-prose-td-borders": theme("colors.border"),
-            "--tw-prose-invert-body": theme("colors.foreground"),
-            "--tw-prose-invert-headings": theme("colors.foreground"),
-            "--tw-prose-invert-lead": theme("colors.foreground"),
-            "--tw-prose-invert-links": theme("colors.primary.DEFAULT"),
-            "--tw-prose-invert-bold": theme("colors.foreground"),
-            "--tw-prose-invert-counters": theme("colors.muted.foreground"),
-            "--tw-prose-invert-bullets": theme("colors.muted.foreground"),
-            "--tw-prose-invert-hr": theme("colors.border"),
-            "--tw-prose-invert-quotes": theme("colors.foreground"),
-            "--tw-prose-invert-quote-borders": theme("colors.primary.DEFAULT"),
-            "--tw-prose-invert-captions": theme("colors.muted.foreground"),
-            "--tw-prose-invert-code": theme("colors.foreground"),
-            "--tw-prose-invert-pre-code": theme("colors.foreground"),
-            "--tw-prose-invert-pre-bg": theme("colors.muted.DEFAULT"),
-            "--tw-prose-invert-th-borders": theme("colors.border"),
-            "--tw-prose-invert-td-borders": theme("colors.border"),
-          },
-        },
-      }),
     },
   },
-  plugins: [
-    tailwindcssAnimate,
-    tailwindcssTypography,
-    function ({ addUtilities, theme }: PluginAPI) {
-      const newUtilities = {
-        ".animation-delay-300": {
-          animationDelay: theme("animationDelay.300") as string,
-        },
-        ".animation-delay-400": {
-          animationDelay: theme("animationDelay.400") as string,
-        },
-        ".animation-delay-500": {
-          animationDelay: theme("animationDelay.500") as string,
-        },
-        ".animation-delay-600": {
-          animationDelay: theme("animationDelay.600") as string,
-        },
-        ".animation-delay-700": {
-          animationDelay: theme("animationDelay.700") as string,
-        },
-      };
-      addUtilities(newUtilities);
-    },
-  ],
+  plugins: [tailwindcssAnimate, tailwindcssTypography],
 };
 
 export default config;
