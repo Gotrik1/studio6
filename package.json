@@ -1,6 +1,7 @@
 {
   "name": "prodvor-monorepo",
   "private": true,
+  "type": "module",
   "workspaces": [
     "frontend",
     "backend"
