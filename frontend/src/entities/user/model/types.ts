@@ -68,7 +68,7 @@ export type CoachedPlayerSummary = {
   name: string;
   avatar: string | null;
   role: string;
-  mainSport?: string;
+  mainSport?: string | null;
   adherence?: number;
 };
 
@@ -76,7 +76,6 @@ export type CoachedPlayer = CoachedPlayerSummary & {
   avatarHint: string;
   stats: { kda: string; winRate: string; favoriteMap: string };
   matchHistory: string;
-  adherence: number;
   progress: number;
 };
 
@@ -98,13 +97,13 @@ export type FullUserProfile = {
   xp?: number;
   activitySummary?: string;
   profileUrl?: string;
-  location: string;
-  mainSport: string;
+  location: string | null;
+  mainSport: string | null;
   isVerified: boolean;
-  dateOfBirth: string;
-  age: number;
+  dateOfBirth: string | null;
+  age: number | null;
   preferredSports: string[];
-  contacts: { telegram: string; discord: string };
+  contacts: { telegram: string | null; discord: string | null };
   activities: Activity[];
   createdAt: string;
   updatedAt: string;

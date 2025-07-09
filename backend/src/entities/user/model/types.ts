@@ -60,15 +60,22 @@ export type PlayerStats = {
   };
 };
 
-export type CoachedPlayer = {
+export type CoachedPlayerSummary = {
   id: string;
   name: string;
   avatar: string | null;
-  avatarHint: string;
   role: string;
+  mainSport?: string | null;
+  adherence?: number;
+};
+
+export type CoachedPlayer = CoachedPlayerSummary & {
+  avatarHint: string;
   stats: { kda: string; winRate: string; favoriteMap: string };
   matchHistory: string;
+  progress: number;
 };
+
 
 export type JudgedMatch = {
   id: string;

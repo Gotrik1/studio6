@@ -260,6 +260,10 @@ export class MatchesService {
       },
       events: shapedEvents,
       teamStats,
+      media: match.media,
+      bracket: {
+          rounds: [], // This should be calculated based on all tournament matches
+      },
     };
   }
 

@@ -15,11 +15,16 @@ import type {
   TournamentCrm,
   JudgedMatch,
   CoachedPlayer,
+  CoachedPlayerSummary,
+  CareerHistoryItem,
+  GalleryItem
 } from "@/entities/user/model/types";
 import { ru } from "date-fns/locale";
 import { Cache } from "cache-manager";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { generateUserCacheKey } from "../cache/cache.utils";
+
+type FullUserProfile = any;
 
 @Injectable()
 export class UsersService {
@@ -166,7 +171,7 @@ export class UsersService {
       timestamp: m.finishedAt?.toISOString() || null,
     }));
 
-    const coachedPlayers: CoachedPlayer[] = (user.coaching || []).map(
+    const coachedPlayers: CoachedPlayerSummary[] = (user.coaching || []).map(
       (player: any) => {
         const completed = player.trainingLogs.filter(
           (log: any) => log.status === TrainingLogStatus.COMPLETED,
@@ -176,18 +181,15 @@ export class UsersService {
         ).length;
         const totalRelevant = completed + skipped;
         const adherence =
-          totalRelevant > 0
-            ? Math.round((completed / totalRelevant) * 100)
-            : 100;
+          totalRelevant > 0 ? Math.round((completed / totalRelevant) * 100) : 100;
 
         return {
           id: String(player.id),
           name: player.name,
           avatar: player.avatar || null,
-          avatarHint: 'player avatar',
           role: player.role,
-          stats: { kda: "1.25", winRate: "55%", favoriteMap: "Ascent" }, // mock
-          matchHistory: "W-L-W-W-L", // mock
+          mainSport: player.mainSport,
+          adherence,
         };
       },
     );
@@ -196,9 +198,10 @@ export class UsersService {
       ? new Date(user.dateOfBirth).toISOString().split("T")[0]
       : null;
 
-    const augmentedProfile = {
+    const augmentedProfile: FullUserProfile = {
       ...user,
       teams: userTeams,
+      gallery: [], // Mocked as there's no model for it
       organizedTournaments,
       judgedMatches,
       coaching: coachedPlayers,
