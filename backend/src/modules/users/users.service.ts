@@ -28,6 +28,20 @@ import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { generateUserCacheKey } from "../cache/cache.utils";
 
 type FullUserProfile = any;
+type CoachedPlayerFromDb = Prisma.UserGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    avatar: true;
+    role: true;
+    mainSport: true;
+    trainingLogs: {
+      select: {
+        status: true;
+      };
+    };
+  };
+}>;
 
 @Injectable()
 export class UsersService {
@@ -175,12 +189,12 @@ export class UsersService {
     }));
 
     const coachedPlayers: CoachedPlayerSummary[] = (user.coaching || []).map(
-      (player: any) => {
+      (player: CoachedPlayerFromDb) => {
         const completed = player.trainingLogs.filter(
-          (log: any) => log.status === TrainingLogStatus.COMPLETED,
+          (log) => log.status === TrainingLogStatus.COMPLETED,
         ).length;
         const skipped = player.trainingLogs.filter(
-          (log: any) => log.status === TrainingLogStatus.SKIPPED,
+          (log) => log.status === TrainingLogStatus.SKIPPED,
         ).length;
         const totalRelevant = completed + skipped;
         const adherence =
