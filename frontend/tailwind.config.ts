@@ -1,8 +1,7 @@
 import type { Config } from "tailwindcss";
+import defaultTheme from "tailwindcss/defaultTheme";
 
-const { fontFamily } = require("tailwindcss/defaultTheme");
-
-export default {
+const config: Config = {
   darkMode: ["class"],
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -15,9 +14,9 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ["var(--font-inter)", ...fontFamily.sans],
-        headline: ["var(--font-space-grotesk)", ...fontFamily.sans],
-        code: ["monospace", ...fontFamily.mono],
+        body: ["var(--font-inter)", ...defaultTheme.fontFamily.sans],
+        headline: ["var(--font-space-grotesk)", ...defaultTheme.fontFamily.sans],
+        code: ["monospace", ...defaultTheme.fontFamily.mono],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -185,7 +184,7 @@ export default {
   plugins: [
     require("tailwindcss-animate"),
     require("@tailwindcss/typography"),
-    function ({ addUtilities, theme }: { addUtilities: any; theme: any }) {
+    function ({ addUtilities, theme }: { addUtilities: (utilities: object) => void; theme: (path: string) => string }) {
       const newUtilities = {
         ".animation-delay-300": {
           animationDelay: theme("animationDelay.300"),
@@ -206,4 +205,6 @@ export default {
       addUtilities(newUtilities);
     },
   ],
-} satisfies Config;
+};
+
+export default config;

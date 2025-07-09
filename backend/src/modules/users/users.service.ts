@@ -21,6 +21,8 @@ import type {
   TournamentCrm,
   JudgedMatch,
   CoachedPlayerSummary,
+  CareerHistoryItem,
+  GalleryItem,
 } from "@/entities/user/model/types";
 import { ru } from "date-fns/locale";
 import { Cache } from "cache-manager";

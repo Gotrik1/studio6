@@ -20,7 +20,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/shared/ui/form";
 import { Input } from "@/shared/ui/input";
 import {
@@ -33,7 +32,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
 import { Calendar } from "@/shared/ui/calendar";
 import { cn } from "@/shared/lib/utils";
-import { CalendarIcon, Loader2, PlusCircle, UploadCloud } from "lucide-react";
+import { CalendarIcon, Loader2, PlusCircle } from "lucide-react";
 import { useToast } from "@/shared/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -477,6 +476,28 @@ export function ManualTournamentForm({
                     </FormItem>
                   )}
                 />
+                <FormItem>
+                  <FormLabel>Баннер акции</FormLabel>
+                  <FormControl>
+                    <label
+                      htmlFor="media-upload"
+                      className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-muted hover:bg-muted/80"
+                    >
+                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                        <UploadCloud className="w-8 h-8 mb-2 text-muted-foreground" />
+                        <p className="mb-2 text-sm text-muted-foreground">
+                          Нажмите, чтобы загрузить фото
+                        </p>
+                      </div>
+                      <input
+                        id="media-upload"
+                        type="file"
+                        className="hidden"
+                        accept="image/png, image/jpeg"
+                      />
+                    </label>
+                  </FormControl>
+                </FormItem>
               </div>
             </CardContent>
             <CardFooter>

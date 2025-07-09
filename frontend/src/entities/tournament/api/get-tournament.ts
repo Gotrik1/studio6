@@ -5,7 +5,6 @@ import type {
   BracketMatch,
   BracketRound,
   MatchEvent,
-  TournamentMedia as FrontendTournamentMedia,
 } from "@/entities/tournament/model/types";
 import { fetchWithAuth } from "@/shared/lib/api-client";
 

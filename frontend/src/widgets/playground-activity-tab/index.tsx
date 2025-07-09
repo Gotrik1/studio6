@@ -1,8 +1,7 @@
 "use client";
 
 import {
-  PlaygroundActivityFeed,
-  type PlaygroundActivity,
+  PlaygroundActivityFeed
 } from "@/widgets/playground-activity-feed";
 import { PlaygroundCurrentActivity } from "@/widgets/playground-current-activity";
 import { Skeleton } from "@/shared/ui/skeleton";

@@ -29,7 +29,7 @@ import type { TournamentDetails } from "@/entities/tournament/model/types";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { CrmTournamentMedical } from "@/widgets/crm-tournament-medical";
 import { CrmTournamentMatches } from "@/widgets/crm-tournament-matches";
-import { TournamentCrmParticipantsPage } from "@/views/tournament-crm-participants";
+import { CrmTournamentParticipantsWidget } from "@/widgets/crm-tournament-participants";
 
 interface TournamentCrmDetailsPageProps {
   tournamentId: string;
@@ -116,7 +116,7 @@ export function TournamentCrmDetailsPage({
         </TabsContent>
 
         <TabsContent value="participants" className="mt-4">
-          <TournamentCrmParticipantsPage tournamentId={tournament.id} />
+          <CrmTournamentParticipantsWidget tournamentId={tournament.id} />
         </TabsContent>
 
         <TabsContent value="rules" className="mt-4">

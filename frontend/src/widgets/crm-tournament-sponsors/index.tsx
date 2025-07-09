@@ -22,7 +22,6 @@ import { PlusCircle, Trash2 } from "lucide-react";
 import { useToast } from "@/shared/hooks/use-toast";
 import { Skeleton } from "@/shared/ui/skeleton";
 import {
-  assignSponsor,
   getAssignedSponsors,
   getAvailableSponsors,
   unassignSponsor,
@@ -52,6 +51,7 @@ const adaptSponsor = (
     id: String(sponsor.id),
     logo: sponsor.logo || "https://placehold.co/100x100.png",
     logoHint: sponsor.logoHint || "sponsor logo",
+    // Now expecting amount from the backend
     amount: sponsor.amount || 0,
   };
 };

@@ -6,13 +6,12 @@ import { Button } from "@/shared/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
+  CardDescription,
 } from "@/shared/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/shared/ui/alert";
 import {
-  BrainCircuit,
   Loader2,
   AlertCircle,
   Sparkles,
@@ -22,7 +21,6 @@ import {
   Download,
   Volume2,
   ImageIcon,
-  Trophy,
 } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import {

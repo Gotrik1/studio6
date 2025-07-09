@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { Avatar, AvatarImage, AvatarFallback } from "@/shared/ui/avatar";
 import { Badge } from "@/shared/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Card } from "@/shared/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/shared/ui/tabs";
 import { BrainCircuit, FileText, BarChart3, Users, Camera } from "lucide-react";
 import { OverviewTab } from "@/widgets/match-details-tabs/ui/overview-tab";

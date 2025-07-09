@@ -2,7 +2,6 @@
 
 import type {
   Playground,
-  PlaygroundReview,
   KingTeam,
 } from "@/entities/playground/model/types";
 import { revalidatePath } from "next/cache";

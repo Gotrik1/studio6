@@ -12,7 +12,7 @@ import {
 } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
-import { Loader2, Sparkles, PartyPopper, Trophy } from "lucide-react";
+import { Loader2, Sparkles, Trophy } from "lucide-react";
 import Image from "next/image";
 import { useToast } from "@/shared/hooks/use-toast";
 import { Textarea } from "@/shared/ui/textarea";

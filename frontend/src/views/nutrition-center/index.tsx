@@ -32,7 +32,6 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/shared/ui/popover";
 import { Calendar } from "@/shared/ui/calendar";
 import { format, addDays, subDays } from "date-fns";
 import { ru } from "date-fns/locale";
-import type { FoodLogEntry } from "@/entities/nutrition/model/types";
 import type { FoodItem } from "@/entities/nutrition/model/types";
 import { useToast } from "@/shared/hooks/use-toast";
 import { useNutrition } from "@/shared/context/nutrition-provider";
@@ -46,6 +45,7 @@ import { AddFoodDialog } from "@/widgets/add-food-dialog";
 import { getFoodItems } from "@/entities/nutrition/api/nutrition";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { MealType } from "@/entities/nutrition/model/enums";
+import type { FoodLogEntry } from "@/entities/nutrition/model/types";
 
 // Diary Tab Component
 function NutritionDiaryTab() {

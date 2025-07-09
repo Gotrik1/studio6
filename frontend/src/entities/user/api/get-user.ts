@@ -61,7 +61,7 @@ export async function getPlayerProfilePageData(
 
   const playerActivity: PlayerActivityItem[] = (
     profileResult.user.activities || []
-  ).map((activity) => {
+  ).map((activity: Activity) => {
     const metadata = activity.metadata as Record<string, string>;
     const IconName =
       (metadata.icon as keyof typeof LucideIcons) || "HelpCircle";
