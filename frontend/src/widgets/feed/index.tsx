@@ -138,6 +138,7 @@ export function Feed() {
       setIsLoading(true);
       const data = await getFeed();
       const formattedData: ActivityItem[] = data.map((item) => {
+        const metadata = item.metadata as Record<string, string>;
         const IconComponent =
           iconMap[item.type as keyof typeof iconMap] || iconMap.default;
         return {

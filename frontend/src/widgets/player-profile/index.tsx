@@ -68,6 +68,7 @@ import type {
 import type { UserTeam } from "@/entities/team/model/types";
 import type { Achievement } from "@/entities/achievement/model/types";
 import { ProposeTrainingDialog } from "@/widgets/propose-training-dialog";
+import * as React from "react";
 
 const CareerTab = dynamic(
   () =>
