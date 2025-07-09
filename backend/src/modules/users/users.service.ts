@@ -14,6 +14,9 @@ import {
   Role,
   UserStatus,
   Match,
+  Activity,
+  CareerHistory,
+  Promotion,
 } from "@prisma/client";
 import { differenceInYears, format, formatDistanceToNow } from "date-fns";
 import { LeaderboardPlayerDto } from "./dto/leaderboard-player.dto";
@@ -23,7 +26,6 @@ import type {
   TournamentCrm,
   JudgedMatch,
   CoachedPlayerSummary,
-  CareerHistoryItem,
   GalleryItem,
 } from "@/entities/user/model/types";
 import { ru } from "date-fns/locale";
@@ -72,11 +74,11 @@ type ShapedFullUserProfile = {
   profileUrl: string;
   contacts: { telegram: string | null; discord: string | null };
   dateOfBirth: string | null;
-  activities: (Prisma.ActivityGetPayload<{}>)[];
-  careerHistory: (Prisma.CareerHistoryGetPayload<{}>)[];
+  activities: Activity[];
+  careerHistory: CareerHistory[];
   organizedPromotions: ({
     sponsor: { name: string; logo: string | null } | null;
-  } & Prisma.PromotionGetPayload<{}>)[];
+  } & Promotion)[];
 };
 
 @Injectable()
