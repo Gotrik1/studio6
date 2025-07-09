@@ -13,7 +13,7 @@ RUN npm install
 COPY frontend/ ./frontend/
 
 # Copy root configs
-COPY tailwind.config.ts postcss.config.js tsconfig.json ./
+COPY tailwind.config.ts postcss.config.cjs tsconfig.json ./
 
 # Build the Next.js app
 RUN npm run build --workspace=prodvor-frontend
