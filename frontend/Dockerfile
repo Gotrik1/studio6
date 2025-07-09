@@ -1,26 +1,28 @@
-# 1. Base Image
 FROM node:20-alpine
 
-# 2. Set working directory
+# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# 3. Install pnpm
-RUN npm install -g pnpm
-
-# 4. Copy all package manifests and lockfile
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Копируем все манифесты пакетов
+COPY package.json ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# 5. Install dependencies
-RUN pnpm install
+# Устанавливаем все зависимости монорепозитория
+RUN npm install
 
-# 6. Copy the rest of the source code
-COPY . .
+# Копируем исходный код фронтенда
+COPY frontend/ ./frontend/
+COPY tailwind.config.ts postcss.config.js components.json tsconfig.json ./
 
-# 7. Build the frontend application
-RUN pnpm --filter prodvor-frontend build
+# Собираем фронтенд
+RUN npm run build --workspace=prodvor-frontend
 
-# 8. Expose port and set default command
+# Удаляем dev-зависимости для уменьшения размера образа
+RUN npm prune --production
+
+# Открываем порт
 EXPOSE 9002
+
+# Запускаем приложение в продакшен-режиме
 CMD ["npm", "start", "--workspace=prodvor-frontend"]

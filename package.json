@@ -1,7 +1,8 @@
 {
   "name": "prodvor-monorepo",
   "private": true,
-  "scripts": {
-    "dev": "npm run dev --workspace=frontend"
-  }
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
 }
