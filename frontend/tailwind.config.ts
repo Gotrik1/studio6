@@ -4,6 +4,7 @@ import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
 import tailwindcssAnimate from "tailwindcss-animate";
 import tailwindcssTypography from "@tailwindcss/typography";
+import type { PluginAPI } from "tailwindcss/types/config";
 
 const config: Config = {
   darkMode: ["class"],
@@ -188,7 +189,7 @@ const config: Config = {
   plugins: [
     tailwindcssAnimate,
     tailwindcssTypography,
-    function ({ addUtilities, theme }: any) {
+    function ({ addUtilities, theme }: PluginAPI) {
       const newUtilities = {
         ".animation-delay-300": {
           animationDelay: theme("animationDelay.300"),

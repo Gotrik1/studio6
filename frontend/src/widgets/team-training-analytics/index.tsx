@@ -134,9 +134,9 @@ export function TeamTrainingAnalytics({ players }: TeamTrainingAnalyticsProps) {
                   <TableCell>Классический 3-дневный сплит</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      <Progress value={player.adherence} className="w-24 h-2" />
+                      <Progress value={player.adherence || 0} className="w-24 h-2" />
                       <span className="text-sm font-medium">
-                        {player.adherence}%
+                        {player.adherence || 0}%
                       </span>
                     </div>
                   </TableCell>

@@ -167,6 +167,22 @@ const PhysicalPrepTab = dynamic(
     ssr: false,
   },
 );
+const PlayerActivityFeed = dynamic(
+  () =>
+    import("@/widgets/player-activity-feed").then(
+      (mod) => mod.PlayerActivityFeed,
+    ),
+  {
+    loading: () => (
+      <Card>
+        <CardContent>
+          <Skeleton className="h-64 w-full mt-6" />
+        </CardContent>
+      </Card>
+    ),
+    ssr: false,
+  },
+);
 
 type PlayerProfileProps = {
   user: FullUserProfile;
@@ -371,11 +387,9 @@ export function PlayerProfile({
               <Cake className="h-6 w-6 text-pink-500" />
               <div>
                 <p className="font-semibold">
-                  {user.age} лет (
-                  {format(new Date(user.dateOfBirth), "d MMMM yyyy", {
+                  {user.age} лет ({format(new Date(user.dateOfBirth), "d MMMM yyyy", {
                     locale: ru,
-                  })}
-                  )
+                  })})
                 </p>
               </div>
             </div>
