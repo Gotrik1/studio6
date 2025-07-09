@@ -6,7 +6,6 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "postinstall": "prisma generate",
     "build": "nest build",
     "build:docker": "npm install && npm run build",
     "format": "prettier --write \"src/**/*.ts\"",

@@ -6,20 +6,24 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+COPY backend/prisma/schema.prisma ./backend/prisma/
 
-# Copy prisma schema before installing dependencies
-COPY backend/prisma ./backend/prisma/
-
-# Install all dependencies for the monorepo
+# Install dependencies for the entire monorepo
 RUN npm install --frozen-lockfile
 
-# Copy the rest of the backend source code
-COPY backend/ ./backend/
+# Generate Prisma Client explicitly after installation
+RUN npx prisma generate --schema=./backend/prisma/schema.prisma
 
-# Build the NestJS app, which now includes prisma generate
-RUN npm run build:docker --workspace=prodvor-backend
+# Copy the rest of the source code
+COPY . .
 
-# Stage 2: Create the production image
+# Build the NestJS app
+RUN npm run build --workspace=prodvor-backend
+
+# Prune development dependencies
+RUN npm prune --production --workspace=prodvor-backend
+
+# Stage 2: Production Runner
 FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
 
@@ -32,6 +36,11 @@ COPY --from=builder /app/backend/package.json ./backend/
 COPY --from=builder /app/backend/dist ./backend/dist
 COPY --from=builder /app/backend/prisma ./backend/prisma
 
-# The command to run the application
+# Set the working directory for the backend
+WORKDIR /usr/src/app/backend
+
 EXPOSE 3001
-CMD [ "npm", "run", "start:prod", "--workspace=prodvor-backend" ]
+ENV PORT 3001
+
+# Run the production server
+CMD ["node", "dist/main"]
