@@ -291,7 +291,7 @@ export function ChatWindow({ chat }: ChatWindowProps) {
                     )}
                     <div
                       className={cn(
-                        "max-w-md rounded-lg p-3 text-sm shadow-sm",
+                        "max-w-xs rounded-lg p-3 text-sm shadow-sm",
                         message.sender === "user"
                           ? "bg-primary text-primary-foreground rounded-br-none"
                           : "bg-muted rounded-bl-none",

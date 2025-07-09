@@ -21,6 +21,7 @@ import { getFeed, type Activity } from "@/entities/feed/api/feed";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 import type { User } from "@/shared/lib/types";
+import * as React from "react";
 
 const iconMap: { [key: string]: React.ElementType } = {
   MATCH_PLAYED: Trophy,
@@ -57,6 +58,7 @@ type ActivityItem = {
   id: string;
   user: ActivityUser;
   timestamp: string;
+  createdAt: string; // Add this to match backend data
   icon: React.ElementType;
   text: string;
 };
@@ -144,6 +146,7 @@ export function Feed() {
           timestamp: item.createdAt,
           icon: IconComponent,
           text: formatActivityText(item),
+          createdAt: item.createdAt,
         };
       });
       setActivities(formattedData);

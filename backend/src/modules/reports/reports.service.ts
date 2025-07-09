@@ -3,6 +3,7 @@ import { PrismaService } from "@/prisma/prisma.service";
 import { ReportStatus, Report } from "@prisma/client";
 import { CreateReportDto } from "./dto/create-report.dto";
 import { ResolveReportDto } from "./dto/resolve-report.dto";
+import type { Prisma } from "@prisma/client";
 
 @Injectable()
 export class ReportsService {
@@ -23,7 +24,14 @@ export class ReportsService {
     });
   }
 
-  async findAll(status?: ReportStatus): Promise<any[]> {
+  async findAll(status?: ReportStatus): Promise<
+    Prisma.ReportGetPayload<{
+      include: {
+        reporter: { select: { id: true; name: true; avatar: true } };
+        reportedUser: { select: { id: true; name: true; avatar: true } };
+      };
+    }>[]
+  > {
     const where = status ? { status } : {};
     return this.prisma.report.findMany({
       where,

@@ -27,6 +27,7 @@ import {
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { ProposeTrainingDialog } from "@/widgets/propose-training-dialog";
+import * as React from "react";
 
 const FeatureCard = ({
   title,

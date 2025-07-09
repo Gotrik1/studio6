@@ -127,7 +127,7 @@ export class MatchesService {
       CANCELLED: "Отменен",
     };
 
-    return matches.map((match) => ({
+    return matches.map((match: any) => ({
       ...match,
       id: match.id,
       team1: {
@@ -301,7 +301,7 @@ export class MatchesService {
     };
   }
 
-  async findMatchOfTheWeek(): Promise<any> {
+  async findMatchOfTheWeek(): Promise<Match | null> {
     const recentFinishedMatches = await this.prisma.match.findMany({
       where: {
         status: "FINISHED",

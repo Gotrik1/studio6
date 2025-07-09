@@ -27,7 +27,33 @@ import { Cache } from "cache-manager";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
 import { generateUserCacheKey } from "../cache/cache.utils";
 
-type FullUserProfile = any;
+type FullUserProfile = Prisma.UserGetPayload<{
+  include: {
+    activities: true;
+    teamsAsMember: { include: { _count: { select: { members: true } } } };
+    organizedTournaments: { include: { _count: { select: { teams: true } } } };
+    organizedPromotions: {
+      include: { sponsor: { select: { name: true; logo: true } } };
+    };
+    careerHistory: true;
+    coaching: {
+      select: {
+        id: true;
+        name: true;
+        avatar: true;
+        role: true;
+        mainSport: true;
+        trainingLogs: { select: { status: true } };
+      };
+    };
+    judgedMatches: {
+      include: {
+        team1: { select: { name: true } };
+        team2: { select: { name: true } };
+      };
+    };
+  };
+}>;
 type CoachedPlayerFromDb = Prisma.UserGetPayload<{
   select: {
     id: true;
@@ -82,14 +108,14 @@ export class UsersService {
   async findAll(params?: { role?: string }): Promise<User[]> {
     const where: Prisma.UserWhereInput = {};
     if (params?.role) {
-      where.role = params.role as any;
+      where.role = params.role as Role;
     }
     return this.prisma.user.findMany({ where });
   }
 
-  async findOne(id: string): Promise<any | null> {
+  async findOne(id: string): Promise<FullUserProfile | null> {
     const cacheKey = generateUserCacheKey(id);
-    const cachedUser = await this.cacheManager.get<any>(cacheKey);
+    const cachedUser = await this.cacheManager.get<FullUserProfile>(cacheKey);
     if (cachedUser) {
       return cachedUser;
     }

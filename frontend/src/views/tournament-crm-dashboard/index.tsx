@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import {
   Card,
@@ -42,6 +42,7 @@ import { fetchCrmTournaments } from "@/entities/tournament/api/get-tournaments";
 import type { TournamentCrm } from "@/entities/user/model/types";
 import { useToast } from "@/shared/hooks/use-toast";
 import { Skeleton } from "@/shared/ui/skeleton";
+import * as React from "react";
 
 const StatCard = ({
   title,
@@ -75,23 +76,24 @@ export function TournamentCrmDashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
-  useEffect(() => {
-    async function loadData() {
-      setIsLoading(true);
-      const data = await fetchCrmTournaments();
-      if (data) {
-        setTournaments(data);
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Ошибка",
-          description: "Не удалось загрузить список турниров.",
-        });
-      }
-      setIsLoading(false);
+  const fetchTournaments = useCallback(async () => {
+    setIsLoading(true);
+    const data = await fetchCrmTournaments();
+    if (data) {
+      setTournaments(data);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Ошибка",
+        description: "Не удалось загрузить список турниров.",
+      });
     }
-    loadData();
+    setIsLoading(false);
   }, [toast]);
+
+  useEffect(() => {
+    fetchTournaments();
+  }, [fetchTournaments]);
 
   const filteredTournaments = useMemo(() => {
     return tournaments.filter((t) => {

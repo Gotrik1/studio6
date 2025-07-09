@@ -19,6 +19,7 @@ import { Progress } from "@/shared/ui/progress";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/ui/avatar";
 import { TrendingUp, TrendingDown, CheckCircle } from "lucide-react";
 import type { CoachedPlayer } from "@/entities/user/model/types";
+import * as React from "react";
 
 const StatCard = ({
   title,
