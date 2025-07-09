@@ -6,7 +6,7 @@ import {
 import { CreateTournamentDto } from "./dto/create-tournament.dto";
 import { UpdateTournamentDto } from "./dto/update-tournament.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Tournament, ActivityType, Prisma, MatchStatus } from "@prisma/client";
+import { Tournament, ActivityType, Prisma } from "@prisma/client";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { TournamentCrmDto } from "./dto/tournament-crm.dto";
@@ -177,7 +177,7 @@ export class TournamentsService {
     });
   }
 
-  async findAll(params?: { game?: string }): Promise<Tournament[]> {
+  async findAll(params?: { game?: string }): Promise<ShapedTournamentForList[]> {
     const where: Prisma.TournamentWhereInput = {};
     if (params?.game) {
       where.game = params.game;

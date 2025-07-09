@@ -16,6 +16,7 @@ import {
   TrainingLogStatus,
   Match as PrismaMatch,
   Role,
+  MatchStatus,
 } from "@prisma/client";
 import { LeaderboardTeamDto } from "./dto/leaderboard-team.dto";
 import { CACHE_MANAGER } from "@nestjs/cache-manager";
@@ -32,6 +33,33 @@ import {
   generateLeaderboardCacheKey,
   generateTeamCacheKey,
 } from "../cache/cache.utils";
+
+type TeamRosterMember = {
+  id: string;
+  name: string;
+  avatar: string | null;
+  role: string;
+  status: string;
+  adherence: number;
+};
+
+type TeamDetails = {
+  id: string;
+  name: string;
+  motto: string;
+  logo: string | null;
+  dataAiHint: string | null;
+  game: string;
+  rank: number;
+  wins: number;
+  losses: number;
+  draws: number;
+  membersCount: number;
+  captainId: string;
+  slug: string;
+  homePlaygroundId: string | null;
+  roster: TeamRosterMember[];
+};
 
 // Define a precise type for the match object with its relations
 type MatchWithRelations = PrismaMatch & {

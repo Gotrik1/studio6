@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
-import { ReportStatus, Report } from "@prisma/client";
+import { ReportStatus, Report, Prisma } from "@prisma/client";
 import { CreateReportDto } from "./dto/create-report.dto";
 import { ResolveReportDto } from "./dto/resolve-report.dto";
-import type { Prisma } from "@prisma/client";
 
 type ReportWithRelations = Prisma.ReportGetPayload<{
   include: {

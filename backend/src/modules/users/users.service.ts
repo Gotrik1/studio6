@@ -13,6 +13,9 @@ import {
   Role,
   UserStatus,
   Activity,
+  CareerHistory,
+  Tournament,
+  Match,
 } from "@prisma/client";
 import { differenceInYears, format, formatDistanceToNow } from "date-fns";
 import { LeaderboardPlayerDto } from "./dto/leaderboard-player.dto";
@@ -161,7 +164,7 @@ export class UsersService {
         },
         organizedPromotions: {
           include: {
-            sponsor: { select: { name: true; logo: true } },
+            sponsor: { select: { name: true, logo: true } },
           },
           orderBy: { createdAt: "desc" },
         },
@@ -209,7 +212,7 @@ export class UsersService {
     }));
 
     const organizedTournaments: TournamentCrm[] = user.organizedTournaments.map(
-      (t) => ({
+      (t: Tournament & { _count: { teams: number } }) => ({
         id: t.id,
         name: t.name,
         sport: t.game,
@@ -222,13 +225,15 @@ export class UsersService {
       }),
     );
 
-    const judgedMatches: JudgedMatch[] = user.judgedMatches.map((m) => ({
-      id: m.id,
-      team1: { name: m.team1.name },
-      team2: { name: m.team2.name },
-      resolution: `Счет ${m.team1Score}-${m.team2Score}`,
-      timestamp: m.finishedAt?.toISOString() || null,
-    }));
+    const judgedMatches: JudgedMatch[] = user.judgedMatches.map(
+      (m: Match & { team1: { name: string }; team2: { name: string } }) => ({
+        id: m.id,
+        team1: { name: m.team1.name },
+        team2: { name: m.team2.name },
+        resolution: `Счет ${m.team1Score}-${m.team2Score}`,
+        timestamp: m.finishedAt?.toISOString() || null,
+      }),
+    );
 
     const coachedPlayers: CoachedPlayerSummary[] = (user.coaching || []).map(
       (player: CoachedPlayerFromDb) => {
