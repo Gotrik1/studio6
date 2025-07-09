@@ -170,8 +170,7 @@ services:
       - "8180:8080"
     restart: on-failure
     healthcheck:
-      test:
-        ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/realms/master || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 20
