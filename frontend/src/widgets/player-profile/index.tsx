@@ -1,3 +1,4 @@
+
 "use client";
 
 import dynamic from "next/dynamic";
@@ -153,6 +154,22 @@ const PhysicalPrepTab = dynamic(
   () =>
     import("@/entities/player/ui/player-profile-tabs/physical-prep-tab").then(
       (mod) => mod.PhysicalPrepTab,
+    ),
+  {
+    loading: () => (
+      <Card>
+        <CardContent>
+          <Skeleton className="h-64 w-full mt-6" />
+        </CardContent>
+      </Card>
+    ),
+    ssr: false,
+  },
+);
+const PlayerActivityFeed = dynamic(
+  () =>
+    import("@/widgets/player-activity-feed").then(
+      (mod) => mod.PlayerActivityFeed,
     ),
   {
     loading: () => (
