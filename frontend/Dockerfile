@@ -1,34 +1,26 @@
-FROM node:20-slim AS base
+# 1. Base Image
+FROM node:20-alpine
 
-# 1. Установка зависимостей
-FROM base AS deps
+# 2. Set working directory
 WORKDIR /app
+
+# 3. Install pnpm
 RUN npm install -g pnpm
 
+# 4. Copy all package manifests and lockfile
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
+# 5. Install dependencies
 RUN pnpm install
 
-# 2. Сборка приложения
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# 6. Copy the rest of the source code
 COPY . .
+
+# 7. Build the frontend application
 RUN pnpm --filter prodvor-frontend build
 
-# 3. Финальный образ
-FROM base AS runner
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/frontend/package.json ./frontend/
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/frontend/.next ./frontend/.next
-COPY --from=builder /app/frontend/public ./frontend/public
-
+# 8. Expose port and set default command
 EXPOSE 9002
 CMD ["npm", "start", "--workspace=prodvor-frontend"]

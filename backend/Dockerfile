@@ -1,32 +1,29 @@
-FROM node:20-slim AS base
+# 1. Base Image
+FROM node:20-alpine
 
-# 1. Установка зависимостей
-FROM base AS deps
+# Install dependencies needed for Prisma
+RUN apk add --no-cache openssl
+
+# 2. Set working directory
 WORKDIR /usr/src/app
+
+# 3. Install pnpm
 RUN npm install -g pnpm
 
+# 4. Copy all package manifests and lockfile
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
+# 5. Install dependencies for the entire workspace
 RUN pnpm install
 
-# 2. Сборка приложения
-FROM base AS builder
-WORKDIR /usr/src/app
-COPY --from=deps /usr/src/app/node_modules ./node_modules
+# 6. Copy the rest of the source code
 COPY . .
 
+# 7. Build the backend application
 RUN pnpm --filter prodvor-backend build
 
-# 3. Финальный образ
-FROM base AS runner
-WORKDIR /usr/src/app
-
-COPY --from=builder /usr/src/app/package.json ./
-COPY --from=builder /usr/src/app/backend/package.json ./backend/
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/dist ./dist
-
-EXPOSE 3001
+# 8. Set the default command to run the app in production
+# This will be overridden by docker-compose.yml, but is good practice.
 CMD ["npm", "run", "start:prod", "--workspace=prodvor-backend"]
