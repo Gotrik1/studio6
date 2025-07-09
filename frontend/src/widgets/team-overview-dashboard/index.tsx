@@ -16,6 +16,7 @@ import type {
   TeamDetails,
   TeamRosterMember,
 } from "@/entities/team/model/types";
+import * as React from "react";
 
 interface TeamOverviewDashboardProps {
   team: TeamDetails;

@@ -1,8 +1,9 @@
+import globals from "globals";
 import js from "@eslint/js";
 import tsPlugin from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
 import prettier from "eslint-config-prettier";
-import globals from "globals";
+import nextPlugin from "@next/eslint-plugin-next";
 
 export default [
   {
@@ -14,25 +15,19 @@ export default [
       "**/*-lock.json",
       "**/.firebasestudioignore",
       "frontend/src/app/globals.css",
-      "backend/package-lock.json",
       "frontend/next-env.d.ts",
-      "next-env.d.ts",
+      "backend/package-lock.json",
     ],
   },
   js.configs.recommended,
   {
-    files: ["backend/**/*.ts", "frontend/**/*.ts", "frontend/**/*.tsx"],
+    files: ["backend/**/*.ts"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: ["./frontend/tsconfig.json", "./backend/tsconfig.json"],
-        sourceType: "module",
-        ecmaFeatures: {
-          jsx: true,
-        },
+        project: "./backend/tsconfig.json",
       },
       globals: {
-        ...globals.browser,
         ...globals.node,
       },
     },
@@ -41,8 +36,26 @@ export default [
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
+    },
+  },
+  {
+    files: ["frontend/**/*.ts", "frontend/**/*.tsx"],
+    plugins: {
+      "@next/next": nextPlugin,
+    },
+    rules: {
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs["core-web-vitals"].rules,
+    },
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: "./frontend/tsconfig.json",
+      },
+      globals: {
+        ...globals.browser,
+      },
     },
   },
   prettier,
