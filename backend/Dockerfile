@@ -1,33 +1,34 @@
-FROM node:20-alpine
+# Stage 1: Build
+FROM node:20-alpine AS builder
+WORKDIR /app
 
-# Устанавливаем рабочую директорию
-WORKDIR /usr/src/app
-
-# Устанавливаем openssl для Prisma
-RUN apk add --no-cache openssl
-
-# Копируем все манифесты пакетов
-COPY package.json ./
+# Copy all package manifests first to leverage Docker caching
+COPY package.json package-lock.json* ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+RUN npm install --frozen-lockfile
 
-# Устанавливаем все зависимости монорепозитория
-RUN npm install
-
-# Копируем весь исходный код
+# Copy the rest of the source code
 COPY . .
 
-# Генерируем Prisma-клиент
-RUN npx prisma generate --schema=./backend/prisma/schema.prisma
-
-# Собираем бэкенд
+# Build the NestJS app
 RUN npm run build --workspace=prodvor-backend
 
-# Удаляем dev-зависимости для уменьшения размера образа
-RUN npm prune --production
+# Stage 2: Production
+FROM node:20-alpine
+WORKDIR /usr/src/app
 
-# Открываем порт
+ENV NODE_ENV=production
+
+# Copy only necessary artifacts from the builder stage
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/backend/package.json ./backend/package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/backend/dist ./backend/dist
+COPY --from=builder /app/backend/prisma ./backend/prisma
+
+# Prisma generate is needed for the production container
+RUN npm run prisma:generate --workspace=prodvor-backend
+
 EXPOSE 3001
-
-# Запускаем приложение в продакшен-режиме
-CMD ["node", "backend/dist/main"]
+CMD [ "npm", "run", "start:prod", "--workspace=prodvor-backend" ]

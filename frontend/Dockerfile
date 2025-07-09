@@ -1,54 +1,36 @@
-# Dockerfile for the Next.js frontend application
-
-# Use the official Node.js 20 image as a parent image
-FROM node:20-alpine AS base
-
-# Set the working directory in the container
+# Stage 1: Dependencies & Build
+FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy root package.json and lockfile
+# Copy all package manifests first to leverage Docker caching
 COPY package.json package-lock.json* ./
-
-# Copy workspaces package.json files
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+RUN npm install --frozen-lockfile
 
-# Install dependencies for the entire monorepo
-RUN npm install
+# Copy the rest of the source code
+COPY . .
 
-# Copy the rest of the backend code
-COPY backend ./backend
-
-# Copy the rest of the frontend code
-COPY frontend ./frontend
-
-# Copy configuration files from the root to the app directory
-COPY tailwind.config.ts postcss.config.cjs tsconfig.json ./
-
-# Set NEXT_TELEMETRY_DISABLED to 1 to disable telemetry during the build
-ENV NEXT_TELEMETRY_DISABLED 1
-
-# Build the Next.js application for production
+# Build the Next.js app
 RUN npm run build --workspace=prodvor-frontend
 
-# Production stage
-FROM node:20-alpine AS production
-
+# Stage 2: Production Runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
-# Copy built assets from the previous stage
-COPY --from=base /app/frontend/.next ./frontend/.next
-COPY --from=base /app/frontend/public ./frontend/public
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/package.json ./package.json
-COPY --from=base /app/frontend/package.json ./frontend/package.json
-COPY --from=base /app/frontend/next.config.ts ./frontend/
-
-# Set environment variables
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED 1
-ENV PORT=9002
+
+# Copy necessary files from the builder stage
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/frontend/package.json ./frontend/package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/frontend/.next ./frontend/.next
+COPY --from=builder /app/frontend/public ./frontend/public
+COPY --from=builder /app/frontend/next.config.ts ./frontend/next.config.ts
+COPY --from=builder /app/postcss.config.js ./
+COPY --from=builder /app/tailwind.config.ts ./
 
 EXPOSE 9002
+ENV PORT 9002
 
 CMD ["npm", "start", "--workspace=prodvor-frontend"]
