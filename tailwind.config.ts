@@ -6,14 +6,7 @@ import type { PluginAPI } from "tailwindcss/types/config";
 
 const config: Config = {
   darkMode: ["class"],
-  content: [
-    "./frontend/src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./frontend/src/views/**/*.{js,ts,jsx,tsx,mdx}",
-    "./frontend/src/widgets/**/*.{js,ts,jsx,tsx,mdx}",
-    "./frontend/src/features/**/*.{js,ts,jsx,tsx,mdx}",
-    "./frontend/src/entities/**/*.{js,ts,jsx,tsx,mdx}",
-    "./frontend/src/shared/**/*.{js,ts,jsx,tsx,mdx}",
-  ],
+  content: ["./frontend/src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     container: {
       center: true,
