@@ -2,35 +2,22 @@
 
 import type { TrainingLogEntry, ExerciseLog, LoggedSet } from "../model/types";
 import { fetchWithAuth } from "@/shared/lib/api-client";
+import type { Prisma } from "@prisma/client";
 
 // Local types to avoid direct dependency on backend schemas
-type PrismaExercise = { id: string; name: string; [key: string]: any };
-type PrismaSet = {
-  id: string;
-  plannedReps: string | null;
-  plannedWeight: string | null;
-  loggedReps: number | null;
-  loggedWeight: number | null;
-  rpe: number | null;
-  isCompleted: boolean;
-};
-type RawLoggedExercise = {
-  id: string;
-  notes: string | null;
-  isSupersetWithPrevious: boolean | null;
-  exercise: PrismaExercise;
-  sets: PrismaSet[];
-};
-type RawTrainingLogEntry = {
-  id: string;
-  date: string;
-  workoutName: string | null;
-  status: "COMPLETED" | "PLANNED" | "SKIPPED";
-  mood: "GREAT" | "GOOD" | "OK" | "BAD" | null;
-  notes: string | null;
-  coachNotes: string | null;
-  exercises: RawLoggedExercise[];
-};
+const exerciseWithSets = Prisma.validator<Prisma.LoggedExerciseDefaultArgs>()({
+  include: { exercise: true, sets: true },
+});
+type PrismaLoggedExercise = Prisma.LoggedExerciseGetPayload<
+  typeof exerciseWithSets
+>;
+
+const logWithExercises = Prisma.validator<Prisma.TrainingLogDefaultArgs>()({
+  include: { exercises: { include: { exercise: true, sets: true } } },
+});
+type RawTrainingLogEntry = Prisma.TrainingLogGetPayload<
+  typeof logWithExercises
+>;
 
 function transformApiLogToFrontend(
   apiLog: RawTrainingLogEntry[],
@@ -49,7 +36,7 @@ function transformApiLogToFrontend(
       | "bad"
       | undefined,
     exercises: log.exercises.map(
-      (ex: RawLoggedExercise): ExerciseLog => ({
+      (ex: PrismaLoggedExercise): ExerciseLog => ({
         id: ex.id,
         exercise: {
           id: ex.exercise.id,
@@ -58,7 +45,7 @@ function transformApiLogToFrontend(
         notes: ex.notes,
         isSupersetWithPrevious: ex.isSupersetWithPrevious,
         sets: ex.sets.map(
-          (set: PrismaSet): LoggedSet => ({
+          (set): LoggedSet => ({
             id: set.id,
             plannedReps: set.plannedReps,
             plannedWeight: set.plannedWeight,

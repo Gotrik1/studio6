@@ -284,13 +284,23 @@ import {
   type PlayerScoutInput,
 } from "@/ai/flows/player-scout-flow";
 import { PromotionsService } from "../promotions/promotions.service";
-import type { Promotion } from "@prisma/client";
+import type { Promotion, Activity } from "@prisma/client";
 import {
   generatePlaygroundChallenge,
   type GeneratePlaygroundChallengeInput,
   type GeneratePlaygroundChallengeOutput,
 } from "@/ai/flows/generate-playground-challenge-flow";
 import { PrismaService } from "@/prisma/prisma.service";
+
+// Define a more specific type for activity metadata
+type ActivityMetadata = {
+  team?: string;
+  result?: string;
+  score?: string;
+  teamName?: string;
+  tournamentName?: string;
+  [key: string]: unknown; // Allow other properties
+};
 
 @Injectable()
 export class AiService {
@@ -560,14 +570,14 @@ export class AiService {
     userId: string,
     userName: string,
   ): Promise<GenerateDashboardTipOutput> {
-    const lastActivity = await this.prisma.activity.findFirst({
+    const lastActivity: Activity | null = await this.prisma.activity.findFirst({
       where: { userId },
       orderBy: { createdAt: "desc" },
     });
 
     let lastActivityText = "Начал пользоваться платформой.";
     if (lastActivity) {
-      const metadata = lastActivity.metadata as any;
+      const metadata = lastActivity.metadata as ActivityMetadata;
       switch (lastActivity.type) {
         case "MATCH_PLAYED":
           lastActivityText = `Сыграл матч за команду ${metadata.team}. Результат: ${metadata.result} (${metadata.score}).`;

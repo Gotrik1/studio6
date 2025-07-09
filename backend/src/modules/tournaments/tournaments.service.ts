@@ -6,7 +6,7 @@ import {
 import { CreateTournamentDto } from "./dto/create-tournament.dto";
 import { UpdateTournamentDto } from "./dto/update-tournament.dto";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Tournament, ActivityType, Prisma } from "@prisma/client";
+import { Tournament, ActivityType, Prisma, MatchStatus } from "@prisma/client";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { TournamentCrmDto } from "./dto/tournament-crm.dto";
@@ -31,6 +31,24 @@ type TournamentForDetails = Prisma.TournamentGetPayload<{
       select: { name: true; avatar: true };
     };
     media: true;
+  };
+}>;
+
+type ShapedTournamentForList = Tournament & {
+  prize: string;
+  date: string;
+  image: string;
+  dataAiHint: string;
+};
+
+type BracketMatchForShaping = Prisma.MatchGetPayload<{
+  include: {
+    team1: {
+      select: { id: true; name: true; logo: true; dataAiHint: true };
+    };
+    team2: {
+      select: { id: true; name: true; logo: true; dataAiHint: true };
+    };
   };
 }>;
 
@@ -172,7 +190,7 @@ export class TournamentsService {
     });
 
     // Map to frontend shape
-    return tournaments.map((t) => {
+    return tournaments.map((t): ShapedTournamentForList => {
       let statusText = "Завершен";
       if (t.status === "REGISTRATION") statusText = "Регистрация";
       if (t.status === "ONGOING") statusText = "Идет";
@@ -286,8 +304,8 @@ export class TournamentsService {
 
   private _shapeTournamentDetails(tournament: TournamentForDetails) {
     // --- Real Bracket Generation Logic ---
-    const roundsMap: Map<number, any[]> = new Map();
-    const matches = tournament.matches.map((m: any) => ({
+    const roundsMap: Map<number, BracketMatchForShaping[]> = new Map();
+    const matches = tournament.matches.map((m) => ({
       ...m,
       href: `/matches/${m.id}`,
       score:
@@ -330,7 +348,7 @@ export class TournamentsService {
       };
     });
 
-    let champion: any = null;
+    let champion = null;
     if (bracketRounds.length > 0) {
       const finalRound = bracketRounds[bracketRounds.length - 1];
       if (finalRound.matches.length === 1) {

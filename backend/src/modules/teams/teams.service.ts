@@ -53,6 +53,18 @@ type MatchWithRelations = PrismaMatch & {
   } | null;
 };
 
+type ShapedMatchForDashboard = {
+  id: string;
+  team1: { id: string; name: string; logo: string; logoHint: string };
+  team2: { id: string; name: string; logo: string; logoHint: string };
+  score: string;
+  tournament: string;
+  game: string;
+  date: string;
+  href: string;
+  status: MatchStatus;
+};
+
 @Injectable()
 export class TeamsService implements OnModuleInit {
   private readonly logger = new Logger(TeamsService.name);
@@ -206,9 +218,9 @@ export class TeamsService implements OnModuleInit {
     });
   }
 
-  async findBySlug(slug: string): Promise<any | null> {
+  async findBySlug(slug: string): Promise<TeamDetails | null> {
     const cacheKey = generateTeamCacheKey(slug);
-    const cachedTeam = await this.cacheManager.get<any>(cacheKey);
+    const cachedTeam = await this.cacheManager.get<TeamDetails>(cacheKey);
 
     if (cachedTeam) {
       this.logger.log(`Cache hit for team slug: ${slug}`);
@@ -265,12 +277,12 @@ export class TeamsService implements OnModuleInit {
       };
     });
 
-    const result = {
+    const result: TeamDetails = {
       id: team.id,
       name: team.name,
       motto: team.motto || "Девиз не указан",
       logo: team.logo || "https://placehold.co/100x100.png",
-      dataAiHint: team.dataAiHint || "team logo",
+      dataAiHint: team.dataAiHint,
       game: team.game,
       rank: team.rank,
       wins: team.wins,
@@ -565,7 +577,9 @@ export class TeamsService implements OnModuleInit {
     };
   }
 
-  private _shapeMatch(match: MatchWithRelations | null) {
+  private _shapeMatch(
+    match: MatchWithRelations | null,
+  ): ShapedMatchForDashboard | null {
     if (!match) return null;
     return {
       id: String(match.id),

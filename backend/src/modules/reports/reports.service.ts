@@ -5,6 +5,13 @@ import { CreateReportDto } from "./dto/create-report.dto";
 import { ResolveReportDto } from "./dto/resolve-report.dto";
 import type { Prisma } from "@prisma/client";
 
+type ReportWithRelations = Prisma.ReportGetPayload<{
+  include: {
+    reporter: { select: { id: true; name: true; avatar: true } };
+    reportedUser: { select: { id: true; name: true; avatar: true } };
+  };
+}>;
+
 @Injectable()
 export class ReportsService {
   constructor(private prisma: PrismaService) {}
@@ -24,20 +31,13 @@ export class ReportsService {
     });
   }
 
-  async findAll(status?: ReportStatus): Promise<
-    Prisma.ReportGetPayload<{
-      include: {
-        reporter: { select: { id: true; name: true; avatar: true } };
-        reportedUser: { select: { id: true; name: true; avatar: true } };
-      };
-    }>[]
-  > {
-    const where = status ? { status } : {};
+  async findAll(status?: ReportStatus): Promise<ReportWithRelations[]> {
+    const where: Prisma.ReportWhereInput = status ? { status } : {};
     return this.prisma.report.findMany({
       where,
       include: {
-        reporter: { select: { id: true, name: true, avatar: true } },
-        reportedUser: { select: { id: true, name: true, avatar: true } },
+        reporter: { select: { id: true; name: true; avatar: true } },
+        reportedUser: { select: { id: true; name: true; avatar: true } },
       },
       orderBy: { createdAt: "asc" },
     });

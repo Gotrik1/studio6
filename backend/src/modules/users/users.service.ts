@@ -12,6 +12,7 @@ import {
   TrainingLogStatus,
   Role,
   UserStatus,
+  Activity,
 } from "@prisma/client";
 import { differenceInYears, format, formatDistanceToNow } from "date-fns";
 import { LeaderboardPlayerDto } from "./dto/leaderboard-player.dto";
@@ -54,6 +55,20 @@ type FullUserProfile = Prisma.UserGetPayload<{
     };
   };
 }>;
+
+type ShapedFullUserProfile = FullUserProfile & {
+  teams: UserTeam[];
+  gallery: [];
+  organizedTournaments: TournamentCrm[];
+  judgedMatches: JudgedMatch[];
+  coaching: CoachedPlayerSummary[];
+  age: number | null;
+  activitySummary: string;
+  statsSummary: string;
+  profileUrl: string;
+  contacts: { telegram: string | null; discord: string | null };
+};
+
 type CoachedPlayerFromDb = Prisma.UserGetPayload<{
   select: {
     id: true;
@@ -113,9 +128,10 @@ export class UsersService {
     return this.prisma.user.findMany({ where });
   }
 
-  async findOne(id: string): Promise<FullUserProfile | null> {
+  async findOne(id: string): Promise<ShapedFullUserProfile | null> {
     const cacheKey = generateUserCacheKey(id);
-    const cachedUser = await this.cacheManager.get<FullUserProfile>(cacheKey);
+    const cachedUser =
+      await this.cacheManager.get<ShapedFullUserProfile>(cacheKey);
     if (cachedUser) {
       return cachedUser;
     }
@@ -145,7 +161,7 @@ export class UsersService {
         },
         organizedPromotions: {
           include: {
-            sponsor: { select: { name: true, logo: true } },
+            sponsor: { select: { name: true; logo: true } },
           },
           orderBy: { createdAt: "desc" },
         },
@@ -243,7 +259,7 @@ export class UsersService {
       ? new Date(user.dateOfBirth).toISOString().split("T")[0]
       : null;
 
-    const augmentedProfile: FullUserProfile = {
+    const augmentedProfile: ShapedFullUserProfile = {
       ...user,
       teams: userTeams,
       gallery: [], // Mocked as there's no model for it

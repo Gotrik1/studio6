@@ -2,12 +2,7 @@
 
 import { fetchWithAuth } from "@/shared/lib/api-client";
 import { revalidatePath } from "next/cache";
-
-type PrismaMatch = {
-  id: string;
-  tournamentId: string | null;
-  [key: string]: any;
-};
+import type { Match } from "@prisma/client";
 
 type ResolveDisputePayload = {
   winnerId: string;
@@ -20,13 +15,10 @@ export async function resolveDispute(
   matchId: string,
   payload: ResolveDisputePayload,
 ) {
-  const result = await fetchWithAuth<PrismaMatch>(
-    `/matches/${matchId}/resolve`,
-    {
-      method: "POST",
-      body: JSON.stringify(payload),
-    },
-  );
+  const result = await fetchWithAuth<Match>(`/matches/${matchId}/resolve`, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
 
   if (result.success && result.data) {
     revalidatePath("/judge-center");

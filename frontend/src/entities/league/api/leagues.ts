@@ -2,24 +2,24 @@
 
 import type { League, LeagueDetails } from "../model/types";
 import { fetchWithAuth } from "@/shared/lib/api-client";
+import type { Prisma } from "@prisma/client";
 
-type Team = {
-  id: string;
-  name: string;
-  logo: string | null;
-  dataAiHint: string | null;
-  [key: string]: any;
-};
+type Team = Prisma.TeamGetPayload<{
+  select: {
+    id: true;
+    name: true;
+    logo: true;
+    dataAiHint: true;
+    [key: string]: any; // Allow other properties
+  };
+}>;
 
-type Match = {
-  id: string;
-  team1: Team;
-  team2: Team;
-  team1Score: number | null;
-  team2Score: number | null;
-  scheduledAt: string;
-  [key: string]: any;
-};
+type Match = Prisma.MatchGetPayload<{
+  include: {
+    team1: true;
+    team2: true;
+  };
+}>;
 
 type BackendLeagueTeam = {
   team: Team;

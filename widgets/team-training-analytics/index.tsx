@@ -53,21 +53,21 @@ interface TeamTrainingAnalyticsProps {
 export function TeamTrainingAnalytics({ players }: TeamTrainingAnalyticsProps) {
   const overallAdherence =
     players.length > 0
-      ? players.reduce((acc, player) => acc + player.adherence, 0) /
+      ? players.reduce((acc, player) => acc + (player.adherence || 0), 0) /
         players.length
       : 0;
 
   const mostDiligent =
     players.length > 0
       ? players.reduce((prev, current) =>
-          prev.adherence > current.adherence ? prev : current,
+          (prev.adherence || 0) > (current.adherence || 0) ? prev : current,
         )
       : null;
 
   const leastDiligent =
     players.length > 0
       ? players.reduce((prev, current) =>
-          prev.adherence < current.adherence ? prev : current,
+          (prev.adherence || 0) < (current.adherence || 0) ? prev : current,
         )
       : null;
 

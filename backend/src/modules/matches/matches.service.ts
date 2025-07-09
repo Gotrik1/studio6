@@ -44,6 +44,16 @@ type MatchForDetails = Prisma.MatchGetPayload<{
   };
 }>;
 
+type ShapedMatchForList = Match & {
+  team1: { id: string; name: string; logo: string; logoHint: string };
+  team2: { id: string; name: string; logo: string; logoHint: string };
+  score: string;
+  tournament: string;
+  game: string;
+  date: string;
+  href: string;
+};
+
 @Injectable()
 export class MatchesService {
   constructor(
@@ -127,9 +137,8 @@ export class MatchesService {
       CANCELLED: "Отменен",
     };
 
-    return matches.map((match: any) => ({
+    return matches.map((match): ShapedMatchForList => ({
       ...match,
-      id: match.id,
       team1: {
         id: match.team1.id,
         name: match.team1.name,
@@ -151,11 +160,6 @@ export class MatchesService {
       date: format(new Date(match.scheduledAt), "yyyy-MM-dd"),
       status: statusMap[match.status],
       href: `/matches/${match.id}`,
-      playgroundId: match.playgroundId,
-      disputeReason: match.disputeReason,
-      timestamp:
-        match.disputeOpenedAt?.toISOString() || match.createdAt.toISOString(),
-      resolution: match.resolution,
     }));
   }
 
