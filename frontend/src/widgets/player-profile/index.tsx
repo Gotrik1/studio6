@@ -164,7 +164,6 @@ const PhysicalPrepTab = dynamic(
     ssr: false,
   },
 );
-
 const PlayerActivityFeed = dynamic(
   () =>
     import("@/widgets/player-activity-feed").then(
@@ -386,9 +385,10 @@ export function PlayerProfile({
               <div>
                 <p className="font-semibold">
                   {user.age} лет (
-                  {format(new Date(user.dateOfBirth), "d MMMM yyyy", {
-                    locale: ru,
-                  })}
+                  {user.dateOfBirth &&
+                    format(new Date(user.dateOfBirth), "d MMMM yyyy", {
+                      locale: ru,
+                    })}
                   )
                 </p>
               </div>
@@ -546,3 +546,4 @@ export function PlayerProfile({
     </>
   );
 }
+

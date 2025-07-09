@@ -412,7 +412,7 @@ export function PlayerProfile({
           <div className="flex items-center gap-4">
             <Send className="h-6 w-6 text-purple-500" />
             <div className="flex flex-wrap gap-2">
-              {user.contacts.telegram && (
+              {user.contacts.telegram ? (
                 <Button variant="outline" size="sm" asChild>
                   <Link
                     href={`https://t.me/${user.contacts.telegram.slice(1)}`}
@@ -421,7 +421,7 @@ export function PlayerProfile({
                     Telegram
                   </Link>
                 </Button>
-              )}
+              ) : null}
               {user.contacts.discord && (
                 <TooltipProvider>
                   <Tooltip>
