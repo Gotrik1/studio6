@@ -147,7 +147,11 @@ export class MatchesService {
             },
           },
         },
-        tournament: true,
+        tournament: {
+          include: {
+            media: true,
+          },
+        },
         events: {
           include: {
             player: { select: { name: true } },
@@ -260,7 +264,7 @@ export class MatchesService {
       },
       events: shapedEvents,
       teamStats,
-      media: match.media,
+      media: match.tournament?.media || [],
       bracket: {
           rounds: [], // This should be calculated based on all tournament matches
       },
