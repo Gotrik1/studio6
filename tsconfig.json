@@ -1,16 +1,7 @@
 {
-  "compilerOptions": {
-    "target": "ES2017",
-    "skipLibCheck": true,
-    "strict": false,
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "jsx": "preserve",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["frontend/src/*", "backend/src/*"]
-    }
-  },
-  "exclude": ["node_modules", "dist", ".next"]
+  "files": [],
+  "references": [
+    { "path": "./frontend" },
+    { "path": "./backend" }
+  ]
 }
