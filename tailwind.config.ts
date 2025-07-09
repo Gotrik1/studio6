@@ -1,6 +1,3 @@
-
-
-
 import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
 import tailwindcssAnimate from "tailwindcss-animate";
@@ -10,12 +7,12 @@ import type { PluginAPI } from "tailwindcss/types/config";
 const config: Config = {
   darkMode: ["class"],
   content: [
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/views/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/widgets/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/features/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/entities/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/shared/**/*.{js,ts,jsx,tsx,mdx}",
+    "./frontend/src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./frontend/src/views/**/*.{js,ts,jsx,tsx,mdx}",
+    "./frontend/src/widgets/**/*.{js,ts,jsx,tsx,mdx}",
+    "./frontend/src/features/**/*.{js,ts,jsx,tsx,mdx}",
+    "./frontend/src/entities/**/*.{js,ts,jsx,tsx,mdx}",
+    "./frontend/src/shared/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
