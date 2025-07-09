@@ -58,7 +58,6 @@ import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from "@/features/profile-banner-generator";
 import { HolisticAnalysisTab } from "@/widgets/holistic-analysis-tab";
 import {
-  PlayerActivityFeed,
   type PlayerActivityItem,
 } from "@/widgets/player-activity-feed";
 import type {
@@ -155,6 +154,22 @@ const PhysicalPrepTab = dynamic(
   () =>
     import("@/entities/player/ui/player-profile-tabs/physical-prep-tab").then(
       (mod) => mod.PhysicalPrepTab,
+    ),
+  {
+    loading: () => (
+      <Card>
+        <CardContent>
+          <Skeleton className="h-64 w-full mt-6" />
+        </CardContent>
+      </Card>
+    ),
+    ssr: false,
+  },
+);
+const PlayerActivityFeed = dynamic(
+  () =>
+    import("@/widgets/player-activity-feed").then(
+      (mod) => mod.PlayerActivityFeed,
     ),
   {
     loading: () => (
@@ -366,7 +381,7 @@ export function PlayerProfile({
         </CardContent>
 
         <CardContent className="grid gap-6 border-b p-6 sm:grid-cols-2 lg:grid-cols-4">
-          {user.dateOfBirth && user.age !== null && (
+          {user.dateOfBirth && user.age !== null ? (
             <div className="flex items-center gap-4">
               <Cake className="h-6 w-6 text-pink-500" />
               <div>
@@ -379,7 +394,7 @@ export function PlayerProfile({
                 </p>
               </div>
             </div>
-          )}
+          ) : null}
           <div className="flex items-center gap-4">
             <MapPin className="h-6 w-6 text-blue-500" />
             <div>
@@ -399,7 +414,7 @@ export function PlayerProfile({
           <div className="flex items-center gap-4">
             <Send className="h-6 w-6 text-purple-500" />
             <div className="flex flex-wrap gap-2">
-              {user.contacts.telegram && (
+              {user.contacts.telegram ? (
                 <Button variant="outline" size="sm" asChild>
                   <Link
                     href={`https://t.me/${user.contacts.telegram.slice(1)}`}
@@ -408,7 +423,7 @@ export function PlayerProfile({
                     Telegram
                   </Link>
                 </Button>
-              )}
+              ) : null}
               {user.contacts.discord && (
                 <TooltipProvider>
                   <Tooltip>
