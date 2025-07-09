@@ -127,7 +127,7 @@ import type { OnboardingOutput } from "../../ai/flows/schemas/onboarding-assista
 import type { PredictMatchOutcomeOutput } from "../../ai/flows/schemas/predict-match-outcome-schema";
 import { PlayerScoutDto } from "./dto/player-scout.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { AuthenticatedRequest } from "../../../shared/types/authenticated-request";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 import { GeneratePlaygroundChallengeDto } from "./dto/generate-playground-challenge.dto";
 import type { GeneratePlaygroundSummaryOutput } from "../../ai/flows/schemas/generate-playground-summary-schema";
 import type { GeneratePlaygroundChallengeOutput } from "../../ai/flows/schemas/generate-playground-challenge-schema";
