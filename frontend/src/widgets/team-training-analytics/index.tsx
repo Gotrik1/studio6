@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import {
@@ -54,21 +55,21 @@ interface TeamTrainingAnalyticsProps {
 export function TeamTrainingAnalytics({ players }: TeamTrainingAnalyticsProps) {
   const overallAdherence =
     players.length > 0
-      ? players.reduce((acc, player) => acc + (player.adherence ?? 0), 0) /
+      ? players.reduce((acc, player) => acc + (player.adherence || 0), 0) /
         players.length
       : 0;
 
   const mostDiligent =
     players.length > 0
       ? players.reduce((prev, current) =>
-          (prev.adherence ?? 0) > (current.adherence ?? 0) ? prev : current,
+          (prev.adherence || 0) > (current.adherence || 0) ? prev : current,
         )
       : null;
 
   const leastDiligent =
     players.length > 0
       ? players.reduce((prev, current) =>
-          (prev.adherence ?? 0) < (current.adherence ?? 0) ? prev : current,
+          (prev.adherence || 0) < (current.adherence || 0) ? prev : current,
         )
       : null;
 
@@ -86,7 +87,7 @@ export function TeamTrainingAnalytics({ players }: TeamTrainingAnalyticsProps) {
           value={mostDiligent?.name || "-"}
           icon={TrendingUp}
           description={
-            mostDiligent ? `${mostDiligent.adherence ?? 0}% посещаемости` : ""
+            mostDiligent ? `${mostDiligent.adherence || 0}% посещаемости` : ""
           }
         />
         <StatCard
@@ -94,7 +95,7 @@ export function TeamTrainingAnalytics({ players }: TeamTrainingAnalyticsProps) {
           value={leastDiligent?.name || "-"}
           icon={TrendingDown}
           description={
-            leastDiligent ? `${leastDiligent.adherence ?? 0}% посещаемости` : ""
+            leastDiligent ? `${leastDiligent.adherence || 0}% посещаемости` : ""
           }
         />
       </div>

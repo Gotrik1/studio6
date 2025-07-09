@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import dynamic from "next/dynamic";
@@ -56,10 +57,7 @@ import { format } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ProfileBannerGeneratorDialog } from "@/features/profile-banner-generator";
 import { HolisticAnalysisTab } from "@/widgets/holistic-analysis-tab";
-import {
-  PlayerActivityFeed,
-  type PlayerActivityItem,
-} from "@/widgets/player-activity-feed";
+import type { PlayerActivityItem } from "@/widgets/player-activity-feed";
 import type {
   FullUserProfile,
   CareerHistoryItem,
@@ -381,20 +379,23 @@ export function PlayerProfile({
         </CardContent>
 
         <CardContent className="grid gap-6 border-b p-6 sm:grid-cols-2 lg:grid-cols-4">
-          {user.age && user.dateOfBirth && (
-            <div className="flex items-center gap-4">
-              <Cake className="h-6 w-6 text-pink-500" />
-              <div>
-                <p className="font-semibold">
-                  {user.age} лет (
-                  {format(new Date(user.dateOfBirth), "d MMMM yyyy", {
-                    locale: ru,
-                  })}
-                  )
-                </p>
-              </div>
+          <div className="flex items-center gap-4">
+            <Cake className="h-6 w-6 text-pink-500" />
+            <div>
+              <p className="font-semibold">
+                {user.age} лет
+                {user.dateOfBirth && (
+                  <>
+                    {" ("}
+                    {format(new Date(user.dateOfBirth), "d MMMM yyyy", {
+                      locale: ru,
+                    })}
+                    )
+                  </>
+                )}
+              </p>
             </div>
-          )}
+          </div>
           <div className="flex items-center gap-4">
             <MapPin className="h-6 w-6 text-blue-500" />
             <div>
@@ -424,20 +425,18 @@ export function PlayerProfile({
                   </Link>
                 </Button>
               )}
-              {user.contacts.discord && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        Discord
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{user.contacts.discord}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="outline" size="sm">
+                      Discord
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{user.contacts.discord}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
         </CardContent>
