@@ -239,15 +239,15 @@ export class TournamentsService {
       where: { id },
       include: {
         teams: {
-          select: { name: true, logo: true, dataAiHint: true, slug: true },
+          select: { name: true; logo: true; dataAiHint: true; slug: true },
         },
         matches: {
           include: {
             team1: {
-              select: { id: true, name: true, logo: true, dataAiHint: true },
+              select: { id: true; name: true; logo: true; dataAiHint: true },
             },
             team2: {
-              select: { id: true, name: true, logo: true, dataAiHint: true },
+              select: { id: true; name: true; logo: true; dataAiHint: true },
             },
           },
           orderBy: {
@@ -255,7 +255,7 @@ export class TournamentsService {
           },
         },
         organizer: {
-          select: { name: true, avatar: true },
+          select: { name: true; avatar: true },
         },
         media: true,
       },
@@ -273,15 +273,15 @@ export class TournamentsService {
       where: { slug },
       include: {
         teams: {
-          select: { name: true, logo: true, dataAiHint: true, slug: true },
+          select: { name: true; logo: true; dataAiHint: true; slug: true },
         },
         matches: {
           include: {
             team1: {
-              select: { id: true, name: true, logo: true, dataAiHint: true },
+              select: { id: true; name: true; logo: true; dataAiHint: true },
             },
             team2: {
-              select: { id: true, name: true, logo: true, dataAiHint: true },
+              select: { id: true; name: true; logo: true; dataAiHint: true },
             },
           },
           orderBy: {
@@ -289,7 +289,7 @@ export class TournamentsService {
           },
         },
         organizer: {
-          select: { name: true, avatar: true },
+          select: { name: true; avatar: true },
         },
         media: true,
       },

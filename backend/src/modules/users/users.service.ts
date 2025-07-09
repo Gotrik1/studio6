@@ -22,6 +22,8 @@ import type {
   TournamentCrm,
   JudgedMatch,
   CoachedPlayerSummary,
+  CareerHistoryItem,
+  GalleryItem,
 } from "@/entities/user/model/types";
 import { ru } from "date-fns/locale";
 import { Cache } from "cache-manager";
@@ -58,7 +60,7 @@ type FullUserProfile = Prisma.UserGetPayload<{
 
 type ShapedFullUserProfile = FullUserProfile & {
   teams: UserTeam[];
-  gallery: [];
+  gallery: GalleryItem[];
   organizedTournaments: TournamentCrm[];
   judgedMatches: JudgedMatch[];
   coaching: CoachedPlayerSummary[];
