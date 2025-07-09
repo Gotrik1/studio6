@@ -14,6 +14,36 @@ import { AmqpConnection } from "@golevelup/nestjs-rabbitmq";
 import { PRODVOR_EXCHANGE } from "../rabbitmq/rabbitmq.config";
 import type { MatchFinishedPayload } from "../rabbitmq/models/match-finished.payload";
 
+type MatchForDetails = Prisma.MatchGetPayload<{
+  include: {
+    team1: {
+      include: {
+        members: {
+          select: { id: true; name: true; role: true; avatar: true };
+        };
+      };
+    };
+    team2: {
+      include: {
+        members: {
+          select: { id: true; name: true; role: true; avatar: true };
+        };
+      };
+    };
+    tournament: {
+      include: {
+        media: true;
+      };
+    };
+    events: {
+      include: {
+        player: { select: { name: true } };
+        team: { select: { name: true } };
+      };
+    };
+  };
+}>;
+
 @Injectable()
 export class MatchesService {
   constructor(
@@ -49,7 +79,7 @@ export class MatchesService {
     status?: MatchStatus;
     tournamentId?: string;
     teamId?: string;
-  }): Promise<any[]> {
+  }): Promise<Match[]> {
     const where: Prisma.MatchWhereInput = {};
     if (params?.status) {
       where.status = params.status;
@@ -98,6 +128,7 @@ export class MatchesService {
     };
 
     return matches.map((match) => ({
+      ...match,
       id: match.id,
       team1: {
         id: match.team1.id,
@@ -128,7 +159,7 @@ export class MatchesService {
     }));
   }
 
-  async findOne(id: string): Promise<any | null> {
+  async findOne(id: string): Promise<MatchForDetails | null> {
     const match = await this.prisma.match.findUnique({
       where: { id },
       include: {

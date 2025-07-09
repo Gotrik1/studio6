@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Playground, Prisma } from "@prisma/client";
+import { Playground, Team } from "@prisma/client";
 import { CreatePlaygroundDto } from "./dto/create-playground.dto";
 import { CreateReviewDto } from "./dto/create-review.dto";
 import { summarizePlaygroundReviews } from "@/ai/flows/summarize-playground-reviews-flow";
@@ -10,7 +10,9 @@ import type { PlaygroundReviewSummaryDto } from "./dto/playground-review-summary
 export class PlaygroundsService {
   constructor(private prisma: PrismaService) {}
 
-  private async _getKingOfTheCourt(playgroundId: string): Promise<any | null> {
+  private async _getKingOfTheCourt(
+    playgroundId: string,
+  ): Promise<(Team & { wins: number }) | null> {
     const matches = await this.prisma.match.findMany({
       where: {
         playgroundId,
@@ -66,7 +68,7 @@ export class PlaygroundsService {
     });
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(): Promise<Playground[]> {
     const playgrounds = await this.prisma.playground.findMany({
       where: { status: "APPROVED" },
       include: { creator: { select: { name: true, avatar: true } } },
@@ -82,7 +84,7 @@ export class PlaygroundsService {
     return playgroundsWithKings;
   }
 
-  async findOne(id: string): Promise<any> {
+  async findOne(id: string): Promise<Playground> {
     const playground = await this.prisma.playground.findUnique({
       where: { id },
       include: {
@@ -111,11 +113,17 @@ export class PlaygroundsService {
     return { ...playground, kingOfTheCourt };
   }
 
-  async getKingOfTheCourt(playgroundId: string): Promise<any | null> {
+  async getKingOfTheCourt(
+    playgroundId: string,
+  ): Promise<(Team & { wins: number }) | null> {
     return this._getKingOfTheCourt(playgroundId);
   }
 
-  async getPlaygroundLeaderboard(playgroundId: string): Promise<any[]> {
+  async getPlaygroundLeaderboard(
+    playgroundId: string,
+  ): Promise<
+    { id: string; rank: number; name: string; avatar: string | null; checkIns: number }[]
+  > {
     const checkIns = await this.prisma.activity.groupBy({
       by: ["userId"],
       where: {
@@ -236,7 +244,7 @@ export class PlaygroundsService {
     };
   }
 
-  async findSchedule(playgroundId: string): Promise<any[]> {
+  async findSchedule(playgroundId: string) {
     const now = new Date();
     const lobbies = await this.prisma.lfgLobby.findMany({
       where: {
@@ -253,7 +261,7 @@ export class PlaygroundsService {
     });
 
     return lobbies.map((lobby) => ({
-      id: lobby.id,
+      ...lobby,
       type: lobby.type,
       sport: lobby.sport,
       location: lobby.location,

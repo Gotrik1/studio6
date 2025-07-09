@@ -12,6 +12,28 @@ import { ru } from "date-fns/locale";
 import { TournamentCrmDto } from "./dto/tournament-crm.dto";
 import { CreateTournamentMediaDto } from "./dto/create-tournament-media.dto";
 
+type TournamentForDetails = Prisma.TournamentGetPayload<{
+  include: {
+    teams: {
+      select: { name: true; logo: true; dataAiHint: true; slug: true };
+    };
+    matches: {
+      include: {
+        team1: {
+          select: { id: true; name: true; logo: true; dataAiHint: true };
+        };
+        team2: {
+          select: { id: true; name: true; logo: true; dataAiHint: true };
+        };
+      };
+    };
+    organizer: {
+      select: { name: true; avatar: true };
+    };
+    media: true;
+  };
+}>;
+
 @Injectable()
 export class TournamentsService {
   constructor(private prisma: PrismaService) {}
@@ -137,7 +159,7 @@ export class TournamentsService {
     });
   }
 
-  async findAll(params?: { game?: string }): Promise<any[]> {
+  async findAll(params?: { game?: string }): Promise<Tournament[]> {
     const where: Prisma.TournamentWhereInput = {};
     if (params?.game) {
       where.game = params.game;
@@ -156,6 +178,7 @@ export class TournamentsService {
       if (t.status === "ONGOING") statusText = "Идет";
 
       return {
+        ...t,
         id: t.id,
         name: t.name,
         game: t.game,
@@ -193,7 +216,7 @@ export class TournamentsService {
     }));
   }
 
-  async findOne(id: string): Promise<any> {
+  async findOne(id: string) {
     const tournament = await this.prisma.tournament.findUnique({
       where: { id },
       include: {
@@ -227,7 +250,7 @@ export class TournamentsService {
     return this._shapeTournamentDetails(tournament);
   }
 
-  async findBySlug(slug: string): Promise<any> {
+  async findBySlug(slug: string) {
     const tournament = await this.prisma.tournament.findUnique({
       where: { slug },
       include: {
@@ -261,7 +284,7 @@ export class TournamentsService {
     return this._shapeTournamentDetails(tournament);
   }
 
-  private _shapeTournamentDetails(tournament: any) {
+  private _shapeTournamentDetails(tournament: TournamentForDetails) {
     // --- Real Bracket Generation Logic ---
     const roundsMap: Map<number, any[]> = new Map();
     const matches = tournament.matches.map((m: any) => ({
@@ -369,7 +392,7 @@ export class TournamentsService {
       teams: tournament.teams,
       rules: tournament.rules || "Правила не указаны.",
       bracket: { rounds: bracketRounds },
-      media: tournament.media.map((m: any) => ({ ...m, src: m.src })),
+      media: tournament.media.map((m) => ({ ...m, src: m.src })),
     };
   }
 

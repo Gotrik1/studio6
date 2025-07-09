@@ -23,7 +23,10 @@ import { Cache } from "cache-manager";
 import { CreatePracticeDto } from "./dto/create-practice.dto";
 import { format } from "date-fns";
 import { ru } from "date-fns/locale";
-import { analyzeTeamPerformance } from "@/ai/flows/analyze-team-performance-flow";
+import {
+  analyzeTeamPerformance,
+  type AnalyzeTeamPerformanceOutput,
+} from "@/ai/flows/analyze-team-performance-flow";
 import { UsersService } from "../users/users.service";
 import {
   generateLeaderboardCacheKey,
@@ -167,7 +170,7 @@ export class TeamsService implements OnModuleInit {
     return team;
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(): Promise<Team[]> {
     const teams = await this.prisma.team.findMany({
       include: {
         captain: {
@@ -181,6 +184,7 @@ export class TeamsService implements OnModuleInit {
 
     // Map Prisma result to the shape expected by the frontend
     return teams.map((team) => ({
+      ...team,
       id: team.id,
       name: team.name,
       motto: team.motto || "Девиз не указан",
@@ -589,7 +593,9 @@ export class TeamsService implements OnModuleInit {
     };
   }
 
-  async getCoachSummary(teamId: string): Promise<any> {
+  async getCoachSummary(
+    teamId: string,
+  ): Promise<AnalyzeTeamPerformanceOutput> {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
       include: { members: true },
