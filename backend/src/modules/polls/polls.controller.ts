@@ -12,7 +12,7 @@ import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { Public } from "../auth/decorators/public.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { VoteDto } from "./dto/vote.dto";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 
 @ApiTags("Polls")
 @Controller("polls")
@@ -31,11 +31,11 @@ export class PollsController {
   @ApiBearerAuth()
   @ApiOperation({ summary: "Проголосовать в опросе" })
   vote(
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Param("pollId") pollId: string,
     @Body() voteDto: VoteDto,
   ) {
-    const userId = (req.user as any).userId;
+    const userId = req.user.userId;
     return this.pollsService.vote({
       userId,
       pollId,

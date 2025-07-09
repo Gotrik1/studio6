@@ -17,7 +17,7 @@ import {
   ApiBody,
   ApiResponse,
 } from "@nestjs/swagger";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 
 @ApiTags("Tournaments")
 @Controller("tournaments/:tournamentId/announcements")
@@ -38,10 +38,10 @@ export class TournamentAnnouncementsController {
   @ApiResponse({ status: 201, description: "Объявление успешно создано." })
   create(
     @Param("tournamentId") tournamentId: string,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
     @Body() dto: CreateAnnouncementDto,
   ) {
-    const userId = (req.user as any).userId;
+    const userId = req.user.userId;
     return this.service.create(tournamentId, userId, dto);
   }
 }

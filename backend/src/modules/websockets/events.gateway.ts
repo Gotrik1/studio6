@@ -85,7 +85,7 @@ export class EventsGateway
    * @param event - The event type.
    * @param payload - The data to send.
    */
-  emitToUser(userId: string, event: SocketEvents, payload: any) {
+  emitToUser(userId: string, event: SocketEvents, payload: unknown) {
     this.server.to(userId).emit(event, payload);
     this.logger.log(`Emitted event '${event}' to user ${userId}`);
   }

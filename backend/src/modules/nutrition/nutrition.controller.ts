@@ -12,8 +12,8 @@ import { NutritionService } from "./nutrition.service";
 import { CreateFoodLogDto } from "./dto/create-food-log.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
 import { Public } from "../auth/decorators/public.decorator";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 
 @ApiTags("Nutrition")
 @Controller("nutrition")
@@ -33,8 +33,8 @@ export class NutritionController {
   @ApiOperation({
     summary: "Получить дневник питания для текущего пользователя",
   })
-  findUserLog(@Req() req: Request) {
-    const userId = (req.user as any).userId;
+  findUserLog(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.userId;
     return this.nutritionService.findLogForUser(userId);
   }
 
@@ -44,9 +44,9 @@ export class NutritionController {
   @ApiOperation({ summary: "Добавить запись в дневник питания" })
   createLogEntry(
     @Body() createFoodLogDto: CreateFoodLogDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const userId = (req.user as any).userId;
+    const userId = req.user.userId;
     return this.nutritionService.createLogEntry(userId, createFoodLogDto);
   }
 
@@ -54,8 +54,8 @@ export class NutritionController {
   @ApiBearerAuth()
   @Delete("log/:id")
   @ApiOperation({ summary: "Удалить запись из дневника питания" })
-  removeLogEntry(@Param("id") id: string, @Req() req: Request) {
-    const userId = (req.user as any).userId;
+  removeLogEntry(@Param("id") id: string, @Req() req: AuthenticatedRequest) {
+    const userId = req.user.userId;
     return this.nutritionService.deleteLogEntry(id, userId);
   }
 }

@@ -17,7 +17,7 @@ import { LeaderboardTeamDto } from "./dto/leaderboard-team.dto";
 import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { Public } from "../auth/decorators/public.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 import { SetHomePlaygroundDto } from "./dto/set-home-playground.dto";
 import { SetCaptainDto } from "./dto/set-captain.dto";
 import { CreatePracticeDto } from "./dto/create-practice.dto";
@@ -90,9 +90,9 @@ export class TeamsController {
   createPractice(
     @Param("teamId") teamId: string,
     @Body() createPracticeDto: CreatePracticeDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const captainId = (req.user as any).userId;
+    const captainId = req.user.userId;
     return this.teamsService.createPractice(
       teamId,
       captainId,
@@ -111,9 +111,9 @@ export class TeamsController {
   setHomePlayground(
     @Param("teamId") teamId: string,
     @Body() setHomePlaygroundDto: SetHomePlaygroundDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const captainId = (req.user as any).userId;
+    const captainId = req.user.userId;
     return this.teamsService.setHomePlayground(
       teamId,
       setHomePlaygroundDto.playgroundId,
@@ -127,9 +127,9 @@ export class TeamsController {
   removeMember(
     @Param("teamId") teamId: string,
     @Param("memberId") memberId: string,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const captainId = (req.user as any).userId;
+    const captainId = req.user.userId;
     return this.teamsService.removeMember(teamId, memberId, captainId);
   }
 
@@ -139,9 +139,9 @@ export class TeamsController {
   setCaptain(
     @Param("teamId") teamId: string,
     @Body() dto: SetCaptainDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const currentCaptainId = (req.user as any).userId;
+    const currentCaptainId = req.user.userId;
     return this.teamsService.setCaptain(
       teamId,
       dto.newCaptainId,

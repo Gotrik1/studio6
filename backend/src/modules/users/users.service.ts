@@ -20,10 +20,7 @@ import type {
   UserTeam,
   TournamentCrm,
   JudgedMatch,
-  CoachedPlayer,
   CoachedPlayerSummary,
-  CareerHistoryItem,
-  GalleryItem,
 } from "@/entities/user/model/types";
 import { ru } from "date-fns/locale";
 import { Cache } from "cache-manager";

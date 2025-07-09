@@ -15,7 +15,7 @@ import { ResolveReportDto } from "./dto/resolve-report.dto";
 import { ReportStatus } from "@prisma/client";
 import { ApiBearerAuth, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 
 @ApiTags("Reports")
 @Controller("reports")
@@ -25,8 +25,11 @@ export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
 
   @Post()
-  create(@Body() createReportDto: CreateReportDto, @Req() req: Request) {
-    const reporterId = (req.user as any).userId;
+  create(
+    @Body() createReportDto: CreateReportDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const reporterId = req.user.userId;
     return this.reportsService.create(reporterId, createReportDto);
   }
 
@@ -40,9 +43,9 @@ export class ReportsController {
   resolve(
     @Param("id") id: string,
     @Body() resolveReportDto: ResolveReportDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const resolverId = (req.user as any).userId;
+    const resolverId = req.user.userId;
     return this.reportsService.resolve(id, resolverId, resolveReportDto);
   }
 }

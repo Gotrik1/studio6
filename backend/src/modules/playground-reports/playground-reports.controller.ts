@@ -10,7 +10,7 @@ import {
 import { PlaygroundReportsService } from "./playground-reports.service";
 import { CreatePlaygroundReportDto } from "./dto/create-playground-report.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 import { ApiTags, ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 import { Public } from "../auth/decorators/public.decorator";
 
@@ -23,8 +23,11 @@ export class PlaygroundReportsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: "Отправить жалобу на площадку" })
-  create(@Req() req: Request, @Body() dto: CreatePlaygroundReportDto) {
-    const reporterId = (req.user as any).userId;
+  create(
+    @Req() req: AuthenticatedRequest,
+    @Body() dto: CreatePlaygroundReportDto,
+  ) {
+    const reporterId = req.user.userId;
     return this.service.createReport(reporterId, dto);
   }
 

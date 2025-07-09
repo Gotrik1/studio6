@@ -30,7 +30,10 @@ export class InventoryController {
 
   @Post()
   @ApiOperation({ summary: "Добавить предмет в инвентарь" })
-  create(@Body() createDto: CreateInventoryItemDto, @Req() req: AuthenticatedRequest) {
+  create(
+    @Body() createDto: CreateInventoryItemDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
     const userId = req.user.userId;
     return this.inventoryService.create(userId, createDto);
   }

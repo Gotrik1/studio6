@@ -15,7 +15,7 @@ import { UpdateTournamentDto } from "./dto/update-tournament.dto";
 import { RegisterTeamDto } from "./dto/register-team.dto";
 import { ApiBearerAuth, ApiQuery, ApiTags, ApiResponse } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 import { Public } from "../auth/decorators/public.decorator";
 import { TournamentCrmDto } from "./dto/tournament-crm.dto";
 import { CreateTournamentMediaDto } from "./dto/create-tournament-media.dto";
@@ -30,9 +30,9 @@ export class TournamentsController {
   @ApiBearerAuth()
   create(
     @Body() createTournamentDto: CreateTournamentDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const organizerId = (req.user as any).userId;
+    const organizerId = req.user.userId;
     return this.tournamentsService.create(createTournamentDto, organizerId);
   }
 

@@ -13,7 +13,7 @@ import { TrainingService } from "./training.service";
 import { ApiTags, ApiOperation, ApiBearerAuth } from "@nestjs/swagger";
 import { Public } from "../auth/decorators/public.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 import { AssignProgramDto } from "./dto/assign-program.dto";
 import { CreateProgramData, UpdateProgramData } from "./dto/program.dto";
 
@@ -47,8 +47,11 @@ export class TrainingController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: "Создать новую программу тренировок" })
-  createProgram(@Body() createDto: CreateProgramData, @Req() req: Request) {
-    const authorName = (req.user as any).name;
+  createProgram(
+    @Body() createDto: CreateProgramData,
+    @Req() req: AuthenticatedRequest,
+  ) {
+    const authorName = req.user.name;
     return this.trainingService.createProgram(createDto, authorName);
   }
 
@@ -76,8 +79,8 @@ export class TrainingController {
   @ApiOperation({
     summary: "Получить журнал тренировок для текущего пользователя",
   })
-  getTrainingLog(@Req() req: Request) {
-    const userId = (req.user as any).userId;
+  getTrainingLog(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.userId;
     return this.trainingService.getLogsForUser(userId);
   }
 

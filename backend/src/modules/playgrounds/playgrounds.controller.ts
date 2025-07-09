@@ -19,7 +19,7 @@ import {
 } from "@nestjs/swagger";
 import { Public } from "../auth/decorators/public.decorator";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 import { CreateReviewDto } from "./dto/create-review.dto";
 import { KingOfTheCourtDto } from "./dto/king-of-the-court.dto";
 import { PlaygroundReviewSummaryDto } from "./dto/playground-review-summary.dto";
@@ -35,9 +35,9 @@ export class PlaygroundsController {
   @ApiOperation({ summary: "Создать новую площадку" })
   create(
     @Body() createPlaygroundDto: CreatePlaygroundDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const userId = (req.user as any).userId;
+    const userId = req.user.userId;
     return this.playgroundsService.create(createPlaygroundDto, userId);
   }
 
@@ -111,9 +111,9 @@ export class PlaygroundsController {
   createReview(
     @Param("id") id: string,
     @Body() dto: CreateReviewDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const userId = (req.user as any).userId;
+    const userId = req.user.userId;
     return this.playgroundsService.addReview(id, userId, dto);
   }
 

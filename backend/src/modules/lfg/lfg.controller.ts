@@ -23,7 +23,10 @@ export class LfgController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: "Создать новое лобби" })
-  create(@Body() createLfgLobbyDto: CreateLfgLobbyDto, @Req() req: AuthenticatedRequest) {
+  create(
+    @Body() createLfgLobbyDto: CreateLfgLobbyDto,
+    @Req() req: AuthenticatedRequest,
+  ) {
     const userId = req.user.userId;
     return this.lfgService.create(createLfgLobbyDto, userId);
   }

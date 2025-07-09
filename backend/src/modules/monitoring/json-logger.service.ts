@@ -10,27 +10,27 @@ export class JsonLogger implements LoggerService {
     }
   }
 
-  log(message: any, context?: string) {
+  log(message: unknown, context?: string) {
     if (!this.isLevelEnabled("log")) return;
     this.printMessage(message, "log", context);
   }
 
-  error(message: any, trace?: string, context?: string) {
+  error(message: unknown, trace?: string, context?: string) {
     if (!this.isLevelEnabled("error")) return;
     this.printMessage(message, "error", context, trace);
   }
 
-  warn(message: any, context?: string) {
+  warn(message: unknown, context?: string) {
     if (!this.isLevelEnabled("warn")) return;
     this.printMessage(message, "warn", context);
   }
 
-  debug(message: any, context?: string) {
+  debug(message: unknown, context?: string) {
     if (!this.isLevelEnabled("debug")) return;
     this.printMessage(message, "debug", context);
   }
 
-  verbose(message: any, context?: string) {
+  verbose(message: unknown, context?: string) {
     if (!this.isLevelEnabled("verbose")) return;
     this.printMessage(message, "verbose", context);
   }
@@ -50,7 +50,7 @@ export class JsonLogger implements LoggerService {
   }
 
   private printMessage(
-    message: any,
+    message: unknown,
     level: LogLevel,
     context?: string,
     trace?: string,
