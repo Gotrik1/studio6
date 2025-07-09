@@ -28,6 +28,7 @@ import {
 } from "@/shared/ui/table";
 import { useToast } from "@/shared/hooks/use-toast";
 import type { SponsorshipDashboardData } from "@/entities/sponsorship/model/types";
+import * as React from "react";
 
 const StatCard = ({
   title,

@@ -10,6 +10,7 @@ import {
   FileText,
   Award,
 } from "lucide-react";
+import * as React from "react";
 
 const iconComponents: { [key: string]: React.ElementType } = {
   FileText,

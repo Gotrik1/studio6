@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/shared/ui/toaster";
 import { ThemeProvider } from "@/app/providers/theme-provider";
+import * as React from "react";
 
 const inter = Inter({
   subsets: ["latin", "cyrillic"],

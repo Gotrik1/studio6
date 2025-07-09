@@ -21,11 +21,12 @@ import {
   getPlayerProfile,
   type FullUserProfile,
 } from "@/entities/user/api/get-user";
-import { useTraining } from "@/shared/context/training-provider";
+import { useTraining } from "@/app/providers/training-provider";
 import type {
   CoachedPlayer,
   CoachedPlayerSummary,
 } from "@/entities/user/model/types";
+import * as React from "react";
 
 const StatCard = ({
   title,

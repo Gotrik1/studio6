@@ -20,6 +20,7 @@ import {
 import { getTrainingAnalytics } from "@/shared/lib/get-training-analytics";
 import { useTraining } from "@/shared/context/training-provider";
 import { useMeasurements } from "@/shared/context/measurements-provider";
+import * as React from "react";
 
 const StatCard = ({
   title,

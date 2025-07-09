@@ -29,6 +29,7 @@ import { cn } from "@/shared/lib/utils";
 import { Button } from "@/shared/ui/button";
 import Link from "next/link";
 import { usePDEconomy } from "@/shared/context/pd-provider";
+import * as React from "react";
 
 const StatCard = ({
   title,

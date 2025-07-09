@@ -24,6 +24,7 @@ import {
   analyzeExerciseForm,
   type AnalyzeExerciseFormOutput,
 } from "@/shared/api/genkit/flows/analyze-exercise-form-flow";
+import * as React from "react";
 
 interface AiFormCheckDialogProps {
   isOpen: boolean;

@@ -20,6 +20,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/shared/ui/form";
 import { Input } from "@/shared/ui/input";
 import {
@@ -32,7 +33,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/shared/ui/popover";
 import { Calendar } from "@/shared/ui/calendar";
 import { cn } from "@/shared/lib/utils";
-import { CalendarIcon, Loader2, PlusCircle } from "lucide-react";
+import { CalendarIcon, Loader2, PlusCircle, UploadCloud } from "lucide-react";
 import { useToast } from "@/shared/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";

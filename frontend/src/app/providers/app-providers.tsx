@@ -9,6 +9,7 @@ import { TrainingProposalProvider } from "@/app/providers/training-proposal-prov
 import { MeasurementsProvider } from "@/shared/context/measurements-provider";
 import { CartProvider } from "@/shared/context/cart-provider";
 import { InventoryProvider } from "@/shared/context/inventory-provider";
+import * as React from "react";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (

@@ -10,6 +10,7 @@ import {
   UserCheck,
   Eye,
 } from "lucide-react";
+import * as React from "react";
 
 const iconComponents: { [key: string]: React.ElementType } = {
   Gavel,

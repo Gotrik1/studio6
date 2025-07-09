@@ -18,6 +18,7 @@ import Image from "next/image";
 import { useToast } from "@/shared/hooks/use-toast";
 import { Loader } from "@/shared/ui/loader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import * as React from "react";
 
 interface UserAvatarGeneratorDialogProps {
   isOpen: boolean;

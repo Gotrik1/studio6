@@ -14,6 +14,7 @@ import { Textarea } from "@/shared/ui/textarea";
 import { Label } from "@/shared/ui/label";
 import { Loader2, CheckCircle, Upload } from "lucide-react";
 import Image from "next/image";
+import * as React from "react";
 
 interface PlaygroundCheckInDialogProps {
   isOpen: boolean;
@@ -96,7 +97,7 @@ export function PlaygroundCheckInDialog({
               ) : (
                 <div className="flex flex-col items-center justify-center pt-5 pb-6">
                   <Upload className="w-8 h-8 mb-2 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
+                  <p className="mb-2 text-sm text-muted-foreground">
                     Загрузить фото
                   </p>
                 </div>

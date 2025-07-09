@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Users, Trophy, Gavel, DollarSign } from "lucide-react";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { getAdminDashboardStats } from "@/entities/admin/api/dashboard";
+import * as React from "react";
 
 const StatCard = ({
   title,

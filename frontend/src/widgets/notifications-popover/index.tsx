@@ -27,6 +27,7 @@ import {
   markAllNotificationsAsRead,
   type Notification,
 } from "@/entities/notification/api/notifications";
+import * as React from "react";
 
 const iconMap: { [key: string]: React.ElementType } = {
   FRIEND_REQUEST: UserPlus,

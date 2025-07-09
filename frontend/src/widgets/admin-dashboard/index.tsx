@@ -9,6 +9,7 @@ import {
 } from "@/widgets/file-tree";
 import { AdminStatsCards } from "@/widgets/admin-stats-cards";
 import { Card, CardHeader, CardTitle } from "@/shared/ui/card";
+import * as React from "react";
 
 type AdminSectionCardProps = {
   title: string;

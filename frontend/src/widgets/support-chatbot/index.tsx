@@ -15,6 +15,7 @@ import { Bot, Loader2, Send, User } from "lucide-react";
 import { askSupportChatbot } from "@/shared/api/genkit/flows/support-chatbot-flow";
 import { cn } from "@/shared/lib/utils";
 import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
+import * as React from "react";
 
 type Message = {
   sender: "user" | "ai";

@@ -20,6 +20,7 @@ import { WinrateByMapChart } from "@/widgets/analytics-charts/winrate-by-map-cha
 import { KdaChart } from "@/widgets/analytics-charts/kda-chart";
 import type { PlayerStats } from "@/entities/user/model/types";
 import { Skeleton } from "@/shared/ui/skeleton";
+import * as React from "react";
 
 const StatCard = ({
   title,

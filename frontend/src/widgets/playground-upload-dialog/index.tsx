@@ -13,6 +13,7 @@ import { Button } from "@/shared/ui/button";
 import { useToast } from "@/shared/hooks/use-toast";
 import { Loader2, UploadCloud, PlusCircle } from "lucide-react";
 import Image from "next/image";
+import * as React from "react";
 
 type GalleryItem = {
   src: string;
