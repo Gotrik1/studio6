@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import dynamic from "next/dynamic";
@@ -365,7 +366,7 @@ export function PlayerProfile({
         </CardContent>
 
         <CardContent className="grid gap-6 border-b p-6 sm:grid-cols-2 lg:grid-cols-4">
-          {user.age && user.dateOfBirth && (
+          {user.dateOfBirth && user.age !== null && (
             <div className="flex items-center gap-4">
               <Cake className="h-6 w-6 text-pink-500" />
               <div>
