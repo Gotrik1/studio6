@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException, Logger } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
 import { Playground, Team } from "@prisma/client";
 import { CreatePlaygroundDto } from "./dto/create-playground.dto";
@@ -6,9 +6,13 @@ import { CreateReviewDto } from "./dto/create-review.dto";
 import { summarizePlaygroundReviews } from "@/ai/flows/summarize-playground-reviews-flow";
 import type { PlaygroundReviewSummaryDto } from "./dto/playground-review-summary.dto";
 
+// Define a new type that includes the kingOfTheCourt property
+type PlaygroundWithKing = Playground & { kingOfTheCourt: (Team & { wins: number }) | null };
+
+
 @Injectable()
 export class PlaygroundsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService, private readonly logger: Logger) {}
 
   private async _getKingOfTheCourt(
     playgroundId: string,
@@ -68,7 +72,7 @@ export class PlaygroundsService {
     });
   }
 
-  async findAll(): Promise<Playground[]> {
+  async findAll(): Promise<PlaygroundWithKing[]> {
     const playgrounds = await this.prisma.playground.findMany({
       where: { status: "APPROVED" },
       include: { creator: { select: { name: true, avatar: true } } },
@@ -84,7 +88,7 @@ export class PlaygroundsService {
     return playgroundsWithKings;
   }
 
-  async findOne(id: string): Promise<Playground> {
+  async findOne(id: string): Promise<PlaygroundWithKing> {
     const playground = await this.prisma.playground.findUnique({
       where: { id },
       include: {
