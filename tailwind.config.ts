@@ -6,7 +6,7 @@ import type { PluginAPI } from "tailwindcss/types/config";
 
 const config: Config = {
   darkMode: ["class"],
-  content: ["./frontend/src/**/*.{js,ts,jsx,tsx,mdx}"],
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"], // ✅ Укороченный путь для frontend
   theme: {
     container: {
       center: true,
@@ -80,8 +80,7 @@ const config: Config = {
       },
       boxShadow: {
         sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
-        DEFAULT:
-          "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        DEFAULT: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
         md: "0 8px 16px -4px rgb(0 0 0 / 0.2), 0 4px 6px -2px rgb(0 0 0 / 0.1)",
         lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
         xl: "0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.15)",
@@ -92,20 +91,12 @@ const config: Config = {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
         "fade-in-up": {
           "0%": {
@@ -162,7 +153,6 @@ const config: Config = {
             "--tw-prose-pre-bg": theme("colors.muted.DEFAULT"),
             "--tw-prose-th-borders": theme("colors.border"),
             "--tw-prose-td-borders": theme("colors.border"),
-            // Dark mode
             "--tw-prose-invert-body": theme("colors.foreground"),
             "--tw-prose-invert-headings": theme("colors.foreground"),
             "--tw-prose-invert-lead": theme("colors.foreground"),
