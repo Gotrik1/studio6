@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { UsersService } from "../users/users.service";
 import { TournamentsService } from "../tournaments/tournaments.service";
 import { MatchesService } from "../matches/matches.service";
-import { MatchStatus } from "@prisma/client";
+import { MatchStatus, Tournament } from "@prisma/client";
 
 @Injectable()
 export class AdminService {
@@ -19,8 +19,8 @@ export class AdminService {
       this.matchesService.findAll({ status: MatchStatus.DISPUTED }),
     ]);
 
-    const activeTournaments = allTournaments.filter(
-      (t: any) => t.status === "Идет" || t.status === "Регистрация",
+    const activeTournaments = (allTournaments as Tournament[]).filter(
+      (t) => t.status === "ONGOING" || t.status === "REGISTRATION",
     ).length;
 
     const openTickets = disputedMatches.length;
