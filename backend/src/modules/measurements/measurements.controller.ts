@@ -1,9 +1,16 @@
-import { Controller, Get, Post, Body, UseGuards, Req } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+} from "@nestjs/common";
 import { MeasurementsService } from "./measurements.service";
 import { CreateMeasurementDto } from "./dto/create-measurement.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 
 @ApiTags("Measurements")
 @Controller("measurements")
@@ -16,16 +23,16 @@ export class MeasurementsController {
   @ApiOperation({ summary: "Создать новую запись о замерах" })
   create(
     @Body() createMeasurementDto: CreateMeasurementDto,
-    @Req() req: Request,
+    @Req() req: AuthenticatedRequest,
   ) {
-    const userId = (req.user as any).userId;
+    const userId = req.user.userId;
     return this.measurementsService.create(userId, createMeasurementDto);
   }
 
   @Get()
   @ApiOperation({ summary: "Получить все замеры для текущего пользователя" })
-  findAll(@Req() req: Request) {
-    const userId = (req.user as any).userId;
+  findAll(@Req() req: AuthenticatedRequest) {
+    const userId = req.user.userId;
     return this.measurementsService.findAllForUser(userId);
   }
 }

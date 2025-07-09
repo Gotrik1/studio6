@@ -7,8 +7,9 @@ import {
   OnModuleInit,
 } from "@nestjs/common";
 import { PrismaService } from "@/prisma/prisma.service";
-import { Challenge, Role } from "@prisma/client";
+import { Challenge, Role, Prisma } from "@prisma/client";
 import { CreateChallengeDto } from "./dto/create-challenge.dto";
+import { ChallengeDto } from "./dto/challenge.dto";
 
 @Injectable()
 export class ChallengesService implements OnModuleInit {
@@ -91,9 +92,9 @@ export class ChallengesService implements OnModuleInit {
   async findAll(
     filter: "open" | "my" | "history",
     userId: string,
-  ): Promise<any[]> {
-    const where: any = {};
-    const include = {
+  ): Promise<ChallengeDto[]> {
+    const where: Prisma.ChallengeWhereInput = {};
+    const include: Prisma.ChallengeInclude = {
       creator: { select: { id: true, name: true, avatar: true } },
       opponent: { select: { id: true, name: true, avatar: true } },
       discipline: { select: { name: true } },

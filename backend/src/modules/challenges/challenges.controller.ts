@@ -18,6 +18,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
+import { ChallengeDto } from "./dto/challenge.dto";
 
 @ApiTags("Challenges")
 @Controller("challenges")
@@ -42,7 +43,7 @@ export class ChallengesController {
   findAll(
     @Query("filter") filter: "open" | "my" | "history",
     @Req() req: AuthenticatedRequest,
-  ) {
+  ): Promise<ChallengeDto[]> {
     const userId = req.user?.userId;
     return this.challengesService.findAll(filter, userId);
   }

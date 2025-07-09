@@ -11,8 +11,8 @@ import { LfgService } from "./lfg.service";
 import { CreateLfgLobbyDto } from "./dto/create-lfg-lobby.dto";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Request } from "express";
 import { Public } from "../auth/decorators/public.decorator";
+import { AuthenticatedRequest } from "@/shared/types/authenticated-request";
 
 @ApiTags("LFG")
 @Controller("lfg")
@@ -23,8 +23,8 @@ export class LfgController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: "Создать новое лобби" })
-  create(@Body() createLfgLobbyDto: CreateLfgLobbyDto, @Req() req: Request) {
-    const userId = (req.user as any).userId;
+  create(@Body() createLfgLobbyDto: CreateLfgLobbyDto, @Req() req: AuthenticatedRequest) {
+    const userId = req.user.userId;
     return this.lfgService.create(createLfgLobbyDto, userId);
   }
 
@@ -39,8 +39,8 @@ export class LfgController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: "Присоединиться к лобби" })
-  join(@Param("id") lobbyId: string, @Req() req: Request) {
-    const userId = (req.user as any).userId;
+  join(@Param("id") lobbyId: string, @Req() req: AuthenticatedRequest) {
+    const userId = req.user.userId;
     return this.lfgService.join(lobbyId, userId);
   }
 }

@@ -8,6 +8,7 @@ import { PrismaService } from "@/prisma/prisma.service";
 import { LfgLobby, LfgLobbyStatus, Prisma } from "@prisma/client";
 import { CreateLfgLobbyDto } from "./dto/create-lfg-lobby.dto";
 import { addMinutes } from "date-fns";
+import { LfgLobbyDto } from "./dto/lfg-lobby.dto";
 
 @Injectable()
 export class LfgService {
@@ -36,7 +37,7 @@ export class LfgService {
     });
   }
 
-  async findAll(): Promise<any[]> {
+  async findAll(): Promise<LfgLobbyDto[]> {
     const now = new Date();
     const lobbies = await this.prisma.lfgLobby.findMany({
       where: {
