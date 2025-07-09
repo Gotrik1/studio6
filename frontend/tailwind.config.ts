@@ -1,5 +1,6 @@
 
 
+
 import type { Config } from "tailwindcss";
 import defaultTheme from "tailwindcss/defaultTheme";
 import tailwindcssAnimate from "tailwindcss-animate";
@@ -192,19 +193,19 @@ const config: Config = {
     function ({ addUtilities, theme }: PluginAPI) {
       const newUtilities = {
         ".animation-delay-300": {
-          animationDelay: theme("animationDelay.300"),
+          animationDelay: theme("animationDelay.300") as string,
         },
         ".animation-delay-400": {
-          animationDelay: theme("animationDelay.400"),
+          animationDelay: theme("animationDelay.400") as string,
         },
         ".animation-delay-500": {
-          animationDelay: theme("animationDelay.500"),
+          animationDelay: theme("animationDelay.500") as string,
         },
         ".animation-delay-600": {
-          animationDelay: theme("animationDelay.600"),
+          animationDelay: theme("animationDelay.600") as string,
         },
         ".animation-delay-700": {
-          animationDelay: theme("animationDelay.700"),
+          animationDelay: theme("animationDelay.700") as string,
         },
       };
       addUtilities(newUtilities);
