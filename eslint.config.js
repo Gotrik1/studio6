@@ -14,12 +14,14 @@ export default [
       "**/*-lock.json",
       "**/.firebasestudioignore",
       "frontend/src/app/globals.css",
+      "backend/package-lock.json",
       "frontend/next-env.d.ts",
+      "next-env.d.ts",
     ],
   },
   js.configs.recommended,
   {
-    files: ["**/*.ts", "**/*.tsx"],
+    files: ["backend/**/*.ts", "frontend/**/*.ts", "frontend/**/*.tsx"],
     languageOptions: {
       parser: tsParser,
       parserOptions: {

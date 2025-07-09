@@ -498,6 +498,10 @@ export function ManualTournamentForm({
                       />
                     </label>
                   </FormControl>
+                  <FormDescription>
+                    Рекомендуемый размер 1200x400. Будет отображаться на
+                    странице акции.
+                  </FormDescription>
                 </FormItem>
               </div>
             </CardContent>

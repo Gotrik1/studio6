@@ -38,33 +38,110 @@ import {
   type Participant,
 } from "@/entities/tournament/api/participants";
 import { Badge } from "@/shared/ui/badge";
-import type { User } from "@/shared/lib/types";
 
-interface CrmTournamentParticipantsProps {
+interface CrmTournamentParticipantsWidgetProps {
   tournamentId: string;
-  applications: Application[];
-  participants: Participant[];
-  isLoading: boolean;
-  openCollapsibles: string[];
-  isActionPending: boolean;
-  toggleCollapsible: (id: string) => void;
-  handleAccept: (app: Application) => void;
-  handleDecline: (app: Application) => void;
-  handleRemove: (team: Participant) => void;
 }
 
-function CrmTournamentParticipantsWidget({
-  applications,
-  participants,
-  isLoading,
-  openCollapsibles,
-  isActionPending,
-  toggleCollapsible,
-  handleAccept,
-  handleDecline,
-  handleRemove,
-}: CrmTournamentParticipantsProps) {
+export function CrmTournamentParticipantsWidget({
+  tournamentId,
+}: CrmTournamentParticipantsWidgetProps) {
   const { toast } = useToast();
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [openCollapsibles, setOpenCollapsibles] = useState<string[]>([]);
+  const [isActionPending, startTransition] = useTransition();
+
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const [appsResult, participantsResult] = await Promise.all([
+        getTournamentApplications(tournamentId),
+        getTournamentParticipants(tournamentId),
+      ]);
+
+      if (appsResult.success && appsResult.data) {
+        setApplications(appsResult.data);
+      } else if (!appsResult.success) {
+        throw new Error(appsResult.error);
+      }
+
+      if (participantsResult.success && participantsResult.data) {
+        setParticipants(participantsResult.data);
+      } else if (!participantsResult.success) {
+        throw new Error(participantsResult.error);
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Не удалось загрузить данные участников";
+      toast({
+        variant: "destructive",
+        title: "Ошибка",
+        description: `Не удалось загрузить участников: ${errorMessage}`,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [tournamentId, toast]);
+
+  useEffect(() => {
+    if (tournamentId) {
+      fetchData();
+    }
+  }, [tournamentId, fetchData]);
+
+  const toggleCollapsible = (id: string) => {
+    setOpenCollapsibles((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
+
+  const handleAction = async (
+    action: () => Promise<{ success: boolean; error?: string }>,
+    successMsg: string,
+    errorMsg: string,
+  ) => {
+    startTransition(async () => {
+      const result = await action();
+      if (result.success) {
+        toast({ title: successMsg });
+        await fetchData();
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Ошибка",
+          description: result.error || errorMsg,
+        });
+      }
+    });
+  };
+
+  const handleAccept = (app: Application) => {
+    handleAction(
+      () => approveApplication(tournamentId, app.id),
+      "Заявка принята",
+      `Не удалось принять заявку от ${app.team.name}.`,
+    );
+  };
+
+  const handleDecline = (app: Application) => {
+    handleAction(
+      () => rejectApplication(tournamentId, app.id),
+      "Заявка отклонена",
+      `Не удалось отклонить заявку от ${app.team.name}.`,
+    );
+  };
+
+  const handleRemove = (team: Participant) => {
+    handleAction(
+      () => removeParticipant(tournamentId, team.id),
+      "Участник удален",
+      `Не удалось удалить команду ${team.name}.`,
+    );
+  };
 
   if (isLoading) {
     return (
@@ -124,7 +201,9 @@ function CrmTournamentParticipantsWidget({
                       <TableCell className="font-medium">
                         {app.team.name}
                       </TableCell>
-                      <TableCell>{app.team.captain?.name || "N/A"}</TableCell>
+                      <TableCell>
+                        {app.team.captain?.name || "Не назначен"}
+                      </TableCell>
                       <TableCell className="text-right space-x-1">
                         <Button
                           variant="ghost"
@@ -298,123 +377,5 @@ function CrmTournamentParticipantsWidget({
         </Card>
       </TabsContent>
     </Tabs>
-  );
-}
-
-export function TournamentCrmParticipantsPage({
-  tournamentId,
-}: {
-  tournamentId: string;
-}) {
-  const { toast } = useToast();
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [participants, setParticipants] = useState<Participant[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [openCollapsibles, setOpenCollapsibles] = useState<string[]>([]);
-  const [isActionPending, startTransition] = useTransition();
-
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const [appsResult, participantsResult] = await Promise.all([
-        getTournamentApplications(tournamentId),
-        getTournamentParticipants(tournamentId),
-      ]);
-
-      if (appsResult.success && appsResult.data) {
-        setApplications(appsResult.data);
-      } else if (!appsResult.success) {
-        throw new Error(appsResult.error);
-      }
-
-      if (participantsResult.success && participantsResult.data) {
-        setParticipants(participantsResult.data);
-      } else if (!participantsResult.success) {
-        throw new Error(participantsResult.error);
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Не удалось загрузить данные участников";
-      toast({
-        variant: "destructive",
-        title: "Ошибка",
-        description: `Не удалось загрузить участников: ${errorMessage}`,
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  }, [tournamentId, toast]);
-
-  useEffect(() => {
-    if (tournamentId) {
-      fetchData();
-    }
-  }, [tournamentId, fetchData]);
-
-  const toggleCollapsible = (id: string) => {
-    setOpenCollapsibles((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
-    );
-  };
-
-  const handleAction = async (
-    action: () => Promise<{ success: boolean; error?: string }>,
-    successMsg: string,
-    errorMsg: string,
-  ) => {
-    startTransition(async () => {
-      const result = await action();
-      if (result.success) {
-        toast({ title: successMsg });
-        await fetchData();
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Ошибка",
-          description: result.error || errorMsg,
-        });
-      }
-    });
-  };
-
-  const handleAccept = (app: Application) => {
-    handleAction(
-      () => approveApplication(tournamentId, app.id),
-      "Заявка принята",
-      `Не удалось принять заявку от ${app.team.name}.`,
-    );
-  };
-
-  const handleDecline = (app: Application) => {
-    handleAction(
-      () => rejectApplication(tournamentId, app.id),
-      "Заявка отклонена",
-      `Не удалось отклонить заявку от ${app.team.name}.`,
-    );
-  };
-
-  const handleRemove = (team: Participant) => {
-    handleAction(
-      () => removeParticipant(tournamentId, team.id),
-      "Участник удален",
-      `Не удалось удалить команду ${team.name}.`,
-    );
-  };
-
-  return (
-    <CrmTournamentParticipantsWidget
-      tournamentId={tournamentId}
-      applications={applications}
-      participants={participants}
-      isLoading={isLoading}
-      openCollapsibles={openCollapsibles}
-      isActionPending={isActionPending}
-      toggleCollapsible={toggleCollapsible}
-      handleAccept={handleAccept}
-      handleDecline={handleDecline}
-      handleRemove={handleRemove}
-    />
   );
 }

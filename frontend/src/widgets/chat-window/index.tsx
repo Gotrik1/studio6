@@ -15,6 +15,7 @@ import { io, type Socket } from "socket.io-client";
 import { getChatHistory } from "@/entities/chat/api/get-chat-history";
 import { Skeleton } from "@/shared/ui/skeleton";
 import type { ChatContact, ChatMessage } from "@/entities/chat/model/types";
+import * as React from "react";
 
 type UIMessage = {
   sender: "user" | "ai" | "other";
@@ -138,7 +139,7 @@ export function ChatWindow({ chat }: ChatWindowProps) {
       };
       setMessages((prev) => [...prev, thinkingMessage]);
       setIsThinking(true);
-      const query = text.replace(/^\/ai\s*|^\@ai\s*/, "");
+      const query = text.replace(/^\/ai\s*|^@ai\s*/, "");
 
       try {
         const aiResponseText = await askTeamChatbot({
