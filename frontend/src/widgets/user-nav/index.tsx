@@ -14,6 +14,7 @@ import {
 import { logout } from "@/features/auth/actions";
 import type { User } from "@/shared/lib/types";
 import Link from "next/link";
+import * as React from "react";
 
 export function UserNav({ user }: { user: User }) {
   const initials = user?.name

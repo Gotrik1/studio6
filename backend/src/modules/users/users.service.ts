@@ -12,9 +12,6 @@ import {
   TrainingLogStatus,
   Role,
   UserStatus,
-  Activity,
-  CareerHistory,
-  Tournament,
   Match,
 } from "@prisma/client";
 import { differenceInYears, format, formatDistanceToNow } from "date-fns";
@@ -212,7 +209,11 @@ export class UsersService {
     }));
 
     const organizedTournaments: TournamentCrm[] = user.organizedTournaments.map(
-      (t: Tournament & { _count: { teams: number } }) => ({
+      (
+        t: Prisma.TournamentGetPayload<{
+          include: { _count: { select: { teams: true } } };
+        }>,
+      ) => ({
         id: t.id,
         name: t.name,
         sport: t.game,

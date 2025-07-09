@@ -8,7 +8,6 @@ import reactPlugin from "eslint-plugin-react";
 import reactHooksPlugin from "eslint-plugin-react-hooks";
 
 export default [
-  // Игнорируемые файлы и директории
   {
     ignores: [
       "**/dist/**",
@@ -21,16 +20,13 @@ export default [
       "**/*.log",
       "**/*.config.*",
       "frontend/src/app/globals.css",
+      "frontend/next-env.d.ts",
       "tailwind.config.ts",
       "backend/package-lock.json",
-      "next-env.d.ts",
+      "package-lock.json",
     ],
   },
-
-  // Базовая конфигурация для JS
   js.configs.recommended,
-
-  // Backend: TypeScript (NestJS)
   {
     files: ["backend/**/*.ts"],
     languageOptions: {
@@ -49,13 +45,18 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       "@typescript-eslint/no-explicit-any": "warn",
-      "no-unused-vars": ["warn", { vars: "all", args: "after-used", ignoreRestSiblings: true }],
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
     },
   },
-
-  // Frontend: React + Next.js + TypeScript
   {
     files: ["frontend/**/*.ts", "frontend/**/*.tsx"],
+    plugins: {
+      react: reactPlugin,
+      "react-hooks": reactHooksPlugin,
+      "@next/next": nextPlugin,
+      "@typescript-eslint": tsPlugin,
+    },
     languageOptions: {
       parser: tsParser,
       parserOptions: {
@@ -66,19 +67,13 @@ export default [
       },
       globals: {
         ...globals.browser,
-        React: "readonly",
         process: "readonly",
+        React: "readonly",
       },
     },
     settings: {
       react: { version: "detect" },
       next: { rootDir: "frontend/" },
-    },
-    plugins: {
-      react: reactPlugin,
-      "react-hooks": reactHooksPlugin,
-      "@next/next": nextPlugin,
-      "@typescript-eslint": tsPlugin,
     },
     rules: {
       ...reactPlugin.configs.recommended.rules,
@@ -86,12 +81,12 @@ export default [
       ...nextPlugin.configs.recommended.rules,
       ...tsPlugin.configs.recommended.rules,
       "react/react-in-jsx-scope": "off",
-      "no-undef": "off",
-      "no-unused-vars": ["warn", { vars: "all", args: "after-used", ignoreRestSiblings: true }],
+      "react/prop-types": "off",
+      "no-undef": "error",
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
     },
   },
-
-  // Prettier override — отключает конфликтующие правила
   prettier,
 ];
