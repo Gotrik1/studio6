@@ -1,3 +1,4 @@
+
 import {
   Injectable,
   OnModuleInit,
@@ -36,7 +37,7 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
     }
   }
 
-  async produce(topic: string, message: Record<string, unknown>) {
+  async produce(topic: string, message: Record<string, any>) {
     if (!this.isConnected) {
       this.logger.warn("Kafka Producer is not connected. Message not sent.");
       return;
