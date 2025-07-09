@@ -35,8 +35,8 @@ export class ReportsService {
     return this.prisma.report.findMany({
       where,
       include: {
-        reporter: { select: { id: true; name: true; avatar: true } },
-        reportedUser: { select: { id: true; name: true; avatar: true } },
+        reporter: { select: { id: true, name: true, avatar: true } },
+        reportedUser: { select: { id: true, name: true, avatar: true } },
       },
       orderBy: { createdAt: "asc" },
     });

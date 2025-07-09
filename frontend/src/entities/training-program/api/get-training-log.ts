@@ -3,6 +3,7 @@
 import type { TrainingLogEntry, ExerciseLog, LoggedSet } from "../model/types";
 import { fetchWithAuth } from "@/shared/lib/api-client";
 import type { Prisma } from "@prisma/client";
+import type { Exercise } from "@/entities/exercise/model/types";
 
 // Local types to avoid direct dependency on backend schemas
 const exerciseWithSets = Prisma.validator<Prisma.LoggedExerciseDefaultArgs>()({
@@ -10,14 +11,16 @@ const exerciseWithSets = Prisma.validator<Prisma.LoggedExerciseDefaultArgs>()({
 });
 type PrismaLoggedExercise = Prisma.LoggedExerciseGetPayload<
   typeof exerciseWithSets
->;
+> & { exercise: Exercise };
 
 const logWithExercises = Prisma.validator<Prisma.TrainingLogDefaultArgs>()({
   include: { exercises: { include: { exercise: true, sets: true } } },
 });
 type RawTrainingLogEntry = Prisma.TrainingLogGetPayload<
   typeof logWithExercises
->;
+> & {
+  exercises: PrismaLoggedExercise[];
+};
 
 function transformApiLogToFrontend(
   apiLog: RawTrainingLogEntry[],

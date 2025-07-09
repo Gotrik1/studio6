@@ -256,7 +256,7 @@ export class MatchesService {
 
     // Map Prisma result to the frontend's MatchDetails shape
     return {
-      id: match.id,
+      ...match,
       tournament: match.tournament?.name || "Товарищеский матч",
       status:
         match.status === "FINISHED"
@@ -273,12 +273,12 @@ export class MatchesService {
       location: match.location || "Место не указано",
       referee: { name: match.refereeName || "Судья не назначен" },
       team1: {
-        name: match.team1.name,
+        ...match.team1,
         logo: match.team1.logo || "https://placehold.co/100x100.png",
         logoHint: match.team1.dataAiHint || "team logo",
       },
       team2: {
-        name: match.team2.name,
+        ...match.team2,
         logo: match.team2.logo || "https://placehold.co/100x100.png",
         logoHint: match.team2.dataAiHint || "team logo",
       },

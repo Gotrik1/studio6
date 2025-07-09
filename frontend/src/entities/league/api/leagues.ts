@@ -10,7 +10,9 @@ type Team = Prisma.TeamGetPayload<{
     name: true;
     logo: true;
     dataAiHint: true;
-    [key: string]: any; // Allow other properties
+    slug: true;
+    rank: true;
+    game: true;
   };
 }>;
 
@@ -71,6 +73,9 @@ export async function getLeagueById(id: string): Promise<LeagueDetails | null> {
       draws: lt.draws,
       losses: lt.losses,
       points: lt.points,
+      slug: lt.team.slug, // Include slug
+      game: lt.team.game, // Include game
+      rank: lt.team.rank, // Include rank
     })),
     matches: rawData.matches.map((m: BackendMatch) => ({
       id: m.id,
