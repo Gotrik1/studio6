@@ -10,10 +10,11 @@ export default [
       "**/dist/*",
       "**/node_modules/*",
       "**/.next/*",
+      "**/package-lock.json",
       "**/*-lock.json",
       "**/.firebasestudioignore",
       "frontend/src/app/globals.css",
-      "backend/package-lock.json"
+      "frontend/next-env.d.ts",
     ],
   },
   js.configs.recommended,
@@ -29,9 +30,8 @@ export default [
         },
       },
       globals: {
-        ...globals.node,
         ...globals.browser,
-        ...globals.jest,
+        ...globals.node,
       },
     },
     plugins: {
@@ -39,9 +39,7 @@ export default [
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
-      "@typescript-eslint/interface-name-prefix": "off",
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/no-explicit-any": "warn",
     },
   },

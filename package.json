@@ -7,10 +7,7 @@
     "backend"
   ],
   "devDependencies": {
-    "@eslint/css": "^0.9.0",
     "@eslint/js": "^9.30.1",
-    "@eslint/json": "^0.12.0",
-    "@eslint/markdown": "^6.6.0",
     "eslint": "^9.30.1",
     "globals": "^16.3.0",
     "typescript-eslint": "^8.36.0"
