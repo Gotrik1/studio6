@@ -186,7 +186,7 @@ const config: Config = {
   plugins: [
     tailwindcssAnimate,
     tailwindcssTypography,
-    function ({ addUtilities, theme }: { addUtilities: (utilities: object) => void; theme: (path: string) => string }) {
+    function ({ addUtilities, theme }: any) {
       const newUtilities = {
         ".animation-delay-300": {
           animationDelay: theme("animationDelay.300"),

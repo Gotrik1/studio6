@@ -165,6 +165,22 @@ const PhysicalPrepTab = dynamic(
     ssr: false,
   },
 );
+const PlayerActivityFeed = dynamic(
+  () =>
+    import("@/widgets/player-activity-feed").then(
+      (mod) => mod.PlayerActivityFeed,
+    ),
+  {
+    loading: () => (
+      <Card>
+        <CardContent>
+          <Skeleton className="h-64 w-full mt-6" />
+        </CardContent>
+      </Card>
+    ),
+    ssr: false,
+  },
+);
 
 type PlayerProfileProps = {
   user: FullUserProfile;

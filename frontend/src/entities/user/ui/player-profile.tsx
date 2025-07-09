@@ -317,9 +317,7 @@ export function PlayerProfile({
               </div>
               <div className="flex flex-wrap justify-center gap-2 pt-2 sm:justify-start">
                 <Badge>{user.role}</Badge>
-                <Badge variant="secondary">
-                  {user.status === "ACTIVE" ? "Активен" : "Забанен"}
-                </Badge>
+                <Badge variant="secondary">{user.status}</Badge>
                 <Badge variant="outline">PRO Пользователь</Badge>
                 {rank && (
                   <TooltipProvider>
@@ -370,11 +368,16 @@ export function PlayerProfile({
             <Cake className="h-6 w-6 text-pink-500" />
             <div>
               <p className="font-semibold">
-                {user.age} лет (
-                {format(new Date(user.dateOfBirth), "d MMMM yyyy", {
-                  locale: ru,
-                })}
-                )
+                {user.age} лет
+                {user.dateOfBirth && (
+                  <>
+                    {" ("}
+                    {format(new Date(user.dateOfBirth), "d MMMM yyyy", {
+                      locale: ru,
+                    })}
+                    )
+                  </>
+                )}
               </p>
             </div>
           </div>
@@ -397,14 +400,16 @@ export function PlayerProfile({
           <div className="flex items-center gap-4">
             <Send className="h-6 w-6 text-purple-500" />
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm" asChild>
-                <Link
-                  href={`https://t.me/${user.contacts.telegram.slice(1)}`}
-                  target="_blank"
-                >
-                  Telegram
-                </Link>
-              </Button>
+              {user.contacts.telegram && (
+                <Button variant="outline" size="sm" asChild>
+                  <Link
+                    href={`https://t.me/${user.contacts.telegram.slice(1)}`}
+                    target="_blank"
+                  >
+                    Telegram
+                  </Link>
+                </Button>
+              )}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
