@@ -150,7 +150,6 @@ services:
       context: ./backend
       dockerfile: Dockerfile.keycloak
     container_name: keycloak
-    command: ["start", "--optimized"]
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -187,14 +186,14 @@ services:
     container_name: kong-db
     restart: on-failure
     environment:
-      POSTGRES_USER: ${KONG_DB_USER:-kong}
+      POSTGRES_USER: kong
       POSTGRES_PASSWORD: ${KONG_PG_PASSWORD}
-      POSTGRES_DB: ${KONG_DB_DATABASE:-kong}
+      POSTGRES_DB: kong
       PGPASSWORD: ${KONG_PG_PASSWORD}
     volumes:
       - kong_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${KONG_DB_USER:-kong} -d ${KONG_DB_DATABASE:-kong}"]
+      test: ["CMD-SHELL", "pg_isready -U kong -d kong"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -211,7 +210,7 @@ services:
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
-      KONG_PG_USER: ${KONG_DB_USER:-kong}
+      KONG_PG_USER: kong
       KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
     restart: on-failure
     networks:
@@ -229,7 +228,7 @@ services:
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
-      KONG_PG_USER: ${KONG_DB_USER:-kong}
+      KONG_PG_USER: kong
       KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
       KONG_ADMIN_LISTEN: ${KONG_ADMIN_LISTEN}
       KONG_PROXY_LISTEN: ${KONG_PROXY_LISTEN}
