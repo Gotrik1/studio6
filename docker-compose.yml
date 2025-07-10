@@ -148,8 +148,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak
-    command: ["start", "--optimized"]
+    command: ["start-dev", "--import-realm"]
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -164,12 +163,24 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
-      KC_PROXY: "edge"
       KC_HOSTNAME_STRICT: "false"
       KC_HOSTNAME: "localhost"
+      KC_PROXY: "edge"
+    volumes:
+      - ./config/keycloak:/opt/keycloak/data/import
     ports:
       - "8180:8080"
     restart: on-failure
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:8080/health/ready || exit 1",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 40
+      start_period: 200s
     networks:
       - prodvor-network
 
@@ -216,7 +227,7 @@ services:
       kong-migrations:
         condition: service_completed_successfully
       keycloak:
-        condition: service_started # Changed from service_healthy
+        condition: service_healthy
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
@@ -326,7 +337,7 @@ services:
       rabbitmq:
         condition: service_healthy
       keycloak:
-        condition: service_started # Changed from service_healthy
+        condition: service_healthy
     command: npm run start:prod --workspace=prodvor-backend
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:3001 || exit 1"]
