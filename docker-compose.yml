@@ -150,12 +150,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.keycloak
     container_name: keycloak
-    command: >
-      start 
-      --optimized 
-      --hostname=localhost 
-      --http-enabled=true 
-      --hostname-strict=false
+    command: ["start", "--optimized"]
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -167,8 +162,11 @@ services:
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
       KC_PROXY: "edge"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME: localhost
     volumes:
       - ./config/keycloak:/opt/keycloak/data/import
     ports:
@@ -189,14 +187,14 @@ services:
     container_name: kong-db
     restart: on-failure
     environment:
-      POSTGRES_USER: ${KONG_DB_USER}
-      POSTGRES_PASSWORD: ${KONG_DB_PASSWORD}
-      POSTGRES_DB: ${KONG_DB_DATABASE}
-      PGPASSWORD: ${KONG_DB_PASSWORD}
+      POSTGRES_USER: ${KONG_DB_USER:-kong}
+      POSTGRES_PASSWORD: ${KONG_PG_PASSWORD}
+      POSTGRES_DB: ${KONG_DB_DATABASE:-kong}
+      PGPASSWORD: ${KONG_PG_PASSWORD}
     volumes:
       - kong_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${KONG_DB_USER} -d ${KONG_DB_DATABASE}"]
+      test: ["CMD-SHELL", "pg_isready -U ${KONG_DB_USER:-kong} -d ${KONG_DB_DATABASE:-kong}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -213,8 +211,8 @@ services:
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
-      KONG_PG_USER: ${KONG_DB_USER}
-      KONG_PG_PASSWORD: ${KONG_DB_PASSWORD}
+      KONG_PG_USER: ${KONG_DB_USER:-kong}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
     restart: on-failure
     networks:
       - prodvor-network
@@ -231,8 +229,8 @@ services:
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
-      KONG_PG_USER: ${KONG_DB_USER}
-      KONG_PG_PASSWORD: ${KONG_DB_PASSWORD}
+      KONG_PG_USER: ${KONG_DB_USER:-kong}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
       KONG_ADMIN_LISTEN: ${KONG_ADMIN_LISTEN}
       KONG_PROXY_LISTEN: ${KONG_PROXY_LISTEN}
       KONG_PLUGINS: bundled,oidc
