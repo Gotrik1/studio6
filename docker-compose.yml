@@ -148,7 +148,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak
-    command: start-dev
+    command: ["start", "--optimized"]
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -162,14 +162,13 @@ services:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HTTP_ENABLED: "true"
-      KC_HEALTH_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"       # ✅ явно включен health endpoint
+      KC_METRICS_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
-      KC_HOSTNAME: "localhost"        # укажи реальный хост для продакшена
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HOSTNAME: "localhost"
       KC_PROXY: "edge"
-      KC_CACHE: "local"               # <-- важно!
-      KC_CACHE_STACK: "local"         # <-- это гасит кластеризацию JGroups
-    # Можно явно задать discovery протокол, но обычно не нужно:
-    # KC_JGROUPS_DISCOVERY_PROTOCOL: "JDBC_PING"
+      KC_CACHE: "local"
     ports:
       - "8180:8080"
     restart: on-failure
