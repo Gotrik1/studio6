@@ -151,7 +151,7 @@ services:
       context: backend
       dockerfile: Dockerfile.keycloak
     container_name: keycloak
-    command: ["start", "--optimized", "--hostname=localhost", "--http-enabled=true"]
+    command: ["start-dev"]
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -175,9 +175,9 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9000/health/ready || exit 1"]
       interval: 15s
-      timeout: 10s
+      timeout: 5s
       retries: 40
-      start_period: 200s
+      start_period: 240s
     networks:
       - prodvor-network
 

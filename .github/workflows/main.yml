@@ -25,8 +25,8 @@ jobs:
           POSTGRES_DB_SECRET: ${{ secrets.POSTGRES_DB }}
           PGADMIN_DEFAULT_EMAIL_SECRET: ${{ secrets.PGADMIN_DEFAULT_EMAIL }}
           PGADMIN_DEFAULT_PASSWORD_SECRET: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-          KC_BOOTSTRAP_ADMIN_USERNAME_SECRET: ${{ secrets.KEYCLOAK_ADMIN }}
-          KC_BOOTSTRAP_ADMIN_PASSWORD_SECRET: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+          KC_BOOTSTRAP_ADMIN_USERNAME_SECRET: ${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
+          KC_BOOTSTRAP_ADMIN_PASSWORD_SECRET: ${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
           KONG_ADMIN_LISTEN_SECRET: ${{ secrets.KONG_ADMIN_LISTEN }}
           KONG_PROXY_LISTEN_SECRET: ${{ secrets.KONG_PROXY_LISTEN }}
           RABBITMQ_DEFAULT_USER_SECRET: ${{ secrets.RABBITMQ_DEFAULT_USER }}
@@ -65,37 +65,37 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y curl
 
       - name: Build and launch all services
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
 
       - name: Run Prisma migrations
-        run: docker compose exec backend npm run prisma:migrate:deploy
+        run: docker compose --verbose exec backend npm run prisma:migrate:deploy
 
       - name: Check container statuses
-        run: docker compose ps
+        run: docker compose --verbose ps
 
       - name: Show Main DB logs on failure
         if: failure()
-        run: docker compose logs db
+        run: docker compose --verbose logs db
 
       - name: Show Keycloak DB logs on failure
         if: failure()
-        run: docker compose logs keycloak-db
+        run: docker compose --verbose logs keycloak-db
 
       - name: Show backend logs on failure
         if: failure()
-        run: docker compose logs backend
+        run: docker compose --verbose logs backend
 
       - name: Show frontend logs on failure
         if: failure()
-        run: docker compose logs frontend
+        run: docker compose --verbose logs frontend
 
       - name: Show Keycloak logs on failure
         if: failure()
-        run: docker compose logs keycloak
+        run: docker compose --verbose logs keycloak
 
       - name: Show Kafka logs on failure
         if: failure()
-        run: docker compose logs kafka
+        run: docker compose --verbose logs kafka
 
       - name: Install dependencies
         run: npm install
@@ -115,4 +115,4 @@ jobs:
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml down -v
