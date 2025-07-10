@@ -129,12 +129,12 @@ services:
   keycloak-db:
     image: postgres:15
     container_name: keycloak-db
-    restart: on-failure
     environment:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      PGPASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5435:5432"
     volumes:
       - ./database_data/keycloak:/var/lib/postgresql/data
     healthcheck:
@@ -142,8 +142,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-    networks:
-      - prodvor-network
 
     keycloak:
       image: quay.io/keycloak/keycloak:26.1.1
