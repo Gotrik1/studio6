@@ -81,6 +81,9 @@ jobs:
       - name: Build and launch all services
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
 
+      - name: Show Keycloak logs
+        run: docker compose --verbose logs keycloak
+
       - name: Run Prisma migrations
         run: docker compose --verbose exec backend npm run prisma:migrate:deploy
 
@@ -132,4 +135,3 @@ jobs:
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml down -v
 
     
-
