@@ -146,9 +146,10 @@ services:
       - prodvor-network
 
   keycloak:
-    image: quay.io/keycloak/keycloak:23.0.4
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.keycloak
     container_name: keycloak
-    command: ["start-dev"]
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -158,6 +159,7 @@ services:
       KC_DB_URL_DATABASE: ${KC_DB_DATABASE}
       KC_DB_USERNAME: ${KC_DB_USERNAME}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KC_DB_SCHEMA: public
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_HTTP_ENABLED: "true"

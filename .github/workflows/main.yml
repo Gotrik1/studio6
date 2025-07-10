@@ -73,9 +73,9 @@ jobs:
       - name: Clean up previous run
         run: docker compose down -v --remove-orphans
 
-      - name: Build images
-        run: docker compose build
-          
+      - name: Build optimized Keycloak image
+        run: docker compose run --rm keycloak build --db=postgres
+
       - name: Launch all services
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
 
