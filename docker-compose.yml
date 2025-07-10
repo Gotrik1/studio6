@@ -164,9 +164,12 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
-      KC_HOSTNAME: "localhost" # или реальный хост в production
+      KC_HOSTNAME: "localhost"        # укажи реальный хост для продакшена
       KC_PROXY: "edge"
-      KC_CACHE: "local"
+      KC_CACHE: "local"               # <-- важно!
+      KC_CACHE_STACK: "local"         # <-- это гасит кластеризацию JGroups
+    # Можно явно задать discovery протокол, но обычно не нужно:
+    # KC_JGROUPS_DISCOVERY_PROTOCOL: "JDBC_PING"
     ports:
       - "8180:8080"
     restart: on-failure
@@ -177,7 +180,7 @@ services:
       retries: 40
       start_period: 180s
     networks:
-    - prodvor-network
+      - prodvor-network
 
   kong-db:
     image: postgres:15.1-alpine
