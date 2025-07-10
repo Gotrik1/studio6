@@ -174,10 +174,10 @@ services:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
       interval: 15s
       timeout: 10s
-      retries: 20
-      start_period: 120s
+      retries: 40
+      start_period: 180s
     networks:
-      - prodvor-network
+    - prodvor-network
 
   kong-db:
     image: postgres:15.1-alpine
