@@ -166,6 +166,7 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
       KC_PROXY: "edge"
+      KC_HEALTH_ENABLED: "true"
     volumes:
       - ./config/keycloak:/opt/keycloak/data/import
     ports:
@@ -388,5 +389,3 @@ volumes:
   rabbitmq_data:
   prometheus_data:
   grafana_data:
-
-    
