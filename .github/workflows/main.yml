@@ -32,6 +32,9 @@ jobs:
           KC_DB_DATABASE_SECRET: ${{ secrets.KC_DB_DATABASE }}
           KONG_ADMIN_LISTEN_SECRET: ${{ secrets.KONG_ADMIN_LISTEN }}
           KONG_PROXY_LISTEN_SECRET: ${{ secrets.KONG_PROXY_LISTEN }}
+          KONG_DB_USER_SECRET: ${{ secrets.KONG_DB_USER }}
+          KONG_DB_PASSWORD_SECRET: ${{ secrets.KONG_DB_PASSWORD }}
+          KONG_DB_DATABASE_SECRET: ${{ secrets.KONG_DB_DATABASE }}
           RABBITMQ_DEFAULT_USER_SECRET: ${{ secrets.RABBITMQ_DEFAULT_USER }}
           RABBITMQ_DEFAULT_PASSWORD_SECRET: ${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
         run: |
@@ -39,33 +42,41 @@ jobs:
           if [ -z "$POSTGRES_PASSWORD_SECRET" ]; then echo "::error::Required secret POSTGRES_PASSWORD is not set." >&2; exit 1; fi
           if [ -z "$RABBITMQ_DEFAULT_USER_SECRET" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_USER is not set." >&2; exit 1; fi
           if [ -z "$RABBITMQ_DEFAULT_PASSWORD_SECRET" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "$KC_DB_PASSWORD_SECRET" ]; then echo "::error::Required secret KC_DB_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "$KONG_DB_PASSWORD_SECRET" ]; then echo "::error::Required secret KONG_DB_PASSWORD is not set." >&2; exit 1; fi
 
           # Create .env file
           cat > .env <<EOF
           POSTGRES_USER=${POSTGRES_USER_SECRET:-postgres}
-          POSTGRES_PASSWORD=${POSTGRES_PASSWORD_SECRET:-postgres}
+          POSTGRES_PASSWORD=${POSTGRES_PASSWORD_SECRET}
           POSTGRES_DB=${POSTGRES_DB_SECRET:-prodvor}
           PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL_SECRET:-admin@example.com}
           PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD_SECRET:-admin}
           KC_BOOTSTRAP_ADMIN_USERNAME=${KC_BOOTSTRAP_ADMIN_USERNAME_SECRET:-admin}
           KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD_SECRET:-admin}
           KC_DB_USERNAME=${KC_DB_USERNAME_SECRET:-keycloak}
-          KC_DB_PASSWORD=${KC_DB_PASSWORD_SECRET:-keycloak_password}
+          KC_DB_PASSWORD=${KC_DB_PASSWORD_SECRET}
           KC_DB_DATABASE=${KC_DB_DATABASE_SECRET:-keycloak}
           KONG_ADMIN_LISTEN=${KONG_ADMIN_LISTEN_SECRET:-0.0.0.0:8001}
           KONG_PROXY_LISTEN=${KONG_PROXY_LISTEN_SECRET:-0.0.0.0:8000}
-          DATABASE_URL=postgresql://${POSTGRES_USER_SECRET:-postgres}:${POSTGRES_PASSWORD_SECRET:-postgres}@db:5432/${POSTGRES_DB_SECRET:-prodvor}?schema=public
+          KONG_DB_USER=${KONG_DB_USER_SECRET:-kong}
+          KONG_DB_PASSWORD=${KONG_DB_PASSWORD_SECRET}
+          KONG_DB_DATABASE=${KONG_DB_DATABASE_SECRET:-kong}
+          DATABASE_URL=postgresql://${POSTGRES_USER_SECRET:-postgres}:${POSTGRES_PASSWORD_SECRET}@db:5432/${POSTGRES_DB_SECRET:-prodvor}?schema=public
           REDIS_URL=redis://redis:6379
           KAFKA_BROKERS=kafka:9092
           KEYCLOAK_URL=http://keycloak:8080
           KEYCLOAK_REALM=prodvor
           KEYCLOAK_CLIENT_ID=prodvor-frontend
-          RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER_SECRET:-user}
-          RABBITMQ_DEFAULT_PASSWORD=${RABBITMQ_DEFAULT_PASSWORD_SECRET:-password}
-          RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER_SECRET:-user}:${RABBITMQ_DEFAULT_PASSWORD_SECRET:-password}@rabbitmq:5672
+          RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER_SECRET}
+          RABBITMQ_DEFAULT_PASSWORD=${RABBITMQ_DEFAULT_PASSWORD_SECRET}
+          RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER_SECRET}:${RABBITMQ_DEFAULT_PASSWORD_SECRET}@rabbitmq:5672
           NEXT_PUBLIC_BACKEND_URL=http://kong:8000
-          PGPASSWORD=${POSTGRES_PASSWORD_SECRET:-postgres}
+          PGPASSWORD=${POSTGRES_PASSWORD_SECRET}
           EOF
+
+      - name: Install dependencies
+        run: sudo apt-get update && sudo apt-get install -y wget
 
       - name: Build and launch all services
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
@@ -121,3 +132,4 @@ jobs:
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml down -v
 
     
+
