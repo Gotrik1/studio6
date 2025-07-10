@@ -61,9 +61,6 @@ jobs:
           PGPASSWORD=${POSTGRES_PASSWORD_SECRET:-postgres}
           EOF
 
-      - name: Install curl for healthchecks
-        run: sudo apt-get update && sudo apt-get install -y curl
-
       - name: Build and launch all services
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --build --wait
 
@@ -116,3 +113,5 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml down -v
+
+    
