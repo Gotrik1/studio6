@@ -165,9 +165,6 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_HTTP_ENABLED: "true"
       KC_PROXY: "edge"
-      # These are now set in the Dockerfile during build
-      # KC_HEALTH_ENABLED: "true"
-      # KC_METRICS_ENABLED: "true"
     volumes:
       - ./config/keycloak:/opt/keycloak/data/import
     ports:
@@ -179,7 +176,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 40
-      start_period: 240s
+      start_period: 300s
     networks:
       - prodvor-network
 
