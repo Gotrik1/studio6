@@ -64,6 +64,13 @@ jobs:
           PGPASSWORD=${POSTGRES_PASSWORD_SECRET:-postgres}
           EOF
 
+      - name: Initialize Keycloak
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d keycloak-db db
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm keycloak start-dev --health-enabled=true
+          echo "Keycloak initialized, stopping..."
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml down
+
       - name: Launch all services
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
 
