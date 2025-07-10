@@ -169,11 +169,19 @@ services:
       - "8180:8080"
     restart: on-failure
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/realms/master || exit 1"]
+      test:
+        - CMD-SHELL
+        - >
+          exec 3<>/dev/tcp/localhost/8080;
+          echo -e "GET /health/ready HTTP/1.1\nhost: localhost:8080\n" >&3;
+          timeout --preserve-status 2 cat <&3 | grep -m1 status | grep -m1 UP;
+          ERROR=$$?;
+          exec 3<&-; exec 3>&-;
+          exit $$ERROR
       interval: 15s
       timeout: 10s
       retries: 40
-      start_period: 200s
+      start_period: 180s
     networks:
       - prodvor-network
 
