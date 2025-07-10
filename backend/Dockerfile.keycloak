@@ -1,13 +1,22 @@
-FROM quay.io/keycloak/keycloak:latest AS builder
+# Используем официальный образ Keycloak
+FROM quay.io/keycloak/keycloak:23.0.4 as builder
 
+# На этапе сборки включаем необходимые функции
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
-ENV KC_FEATURES=token-exchange,docker
-
 WORKDIR /opt/keycloak
 
+# Запускаем сборку для оптимизации
 RUN /opt/keycloak/bin/kc.sh build
 
-FROM quay.io/keycloak/keycloak:latest
+# Создаем финальный образ
+FROM quay.io/keycloak/keycloak:23.0.4
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
+
+# Устанавливаем wget для healthcheck
+USER root
+RUN microdnf install -y wget && microdnf clean all
+USER keycloak
+
+# Точка входа для запуска сервера
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]

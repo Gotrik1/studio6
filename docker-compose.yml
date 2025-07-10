@@ -146,10 +146,9 @@ services:
       - prodvor-network
 
   keycloak:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.keycloak
+    image: quay.io/keycloak/keycloak:23.0.4
     container_name: keycloak
+    command: ["start-dev"]
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -164,8 +163,6 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
       KC_PROXY: "edge"
-      KC_HOSTNAME_STRICT: "false"
-      KC_HOSTNAME: localhost
     volumes:
       - ./config/keycloak:/opt/keycloak/data/import
     ports:

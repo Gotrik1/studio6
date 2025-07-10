@@ -75,29 +75,6 @@ jobs:
 
       - name: Build images
         run: docker compose build
-
-      - name: Start database services
-        run: docker compose up -d keycloak-db db
-
-      - name: Wait for Keycloak DB to be healthy
-        run: |
-          until [ "`docker inspect -f {{.State.Health.Status}} keycloak-db`" = "healthy" ]; do
-            sleep 5;
-            echo "Waiting for Keycloak DB...";
-          done
-
-      - name: Run Keycloak Database Migrations
-        env:
-            KC_DB_USERNAME: ${{ secrets.KC_DB_USERNAME }}
-            KC_DB_PASSWORD: ${{ secrets.KC_DB_PASSWORD }}
-            KC_DB_DATABASE: ${{ secrets.KC_DB_DATABASE }}
-        run: |
-          docker compose run --rm keycloak build \
-            --db=postgres \
-            --db-url-host=keycloak-db \
-            --db-username=${KC_DB_USERNAME:-keycloak} \
-            --db-password=${KC_DB_PASSWORD} \
-            --db-database=${KC_DB_DATABASE:-keycloak}
           
       - name: Launch all services
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
