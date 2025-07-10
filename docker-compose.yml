@@ -148,7 +148,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    command: ["start", "--optimized"]
+    command: ["start-dev"]
     depends_on:
       keycloak-db:
         condition: service_healthy
