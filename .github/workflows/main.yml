@@ -1,3 +1,4 @@
+
 name: Docker Compose CI
 
 on:
@@ -24,8 +25,8 @@ jobs:
           POSTGRES_DB_SECRET: ${{ secrets.POSTGRES_DB }}
           PGADMIN_DEFAULT_EMAIL_SECRET: ${{ secrets.PGADMIN_DEFAULT_EMAIL }}
           PGADMIN_DEFAULT_PASSWORD_SECRET: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-          KEYCLOAK_ADMIN_SECRET: ${{ secrets.KEYCLOAK_ADMIN }}
-          KEYCLOAK_ADMIN_PASSWORD_SECRET: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
+          KC_BOOTSTRAP_ADMIN_USERNAME_SECRET: ${{ secrets.KEYCLOAK_ADMIN }}
+          KC_BOOTSTRAP_ADMIN_PASSWORD_SECRET: ${{ secrets.KEYCLOAK_ADMIN_PASSWORD }}
           KONG_ADMIN_LISTEN_SECRET: ${{ secrets.KONG_ADMIN_LISTEN }}
           KONG_PROXY_LISTEN_SECRET: ${{ secrets.KONG_PROXY_LISTEN }}
           RABBITMQ_DEFAULT_USER_SECRET: ${{ secrets.RABBITMQ_DEFAULT_USER }}
@@ -47,8 +48,8 @@ jobs:
           POSTGRES_DB=${POSTGRES_DB_SECRET:-prodvor}
           PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL_SECRET:-admin@example.com}
           PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD_SECRET:-admin}
-          KC_BOOTSTRAP_ADMIN_USERNAME=${KEYCLOAK_ADMIN_SECRET:-admin}
-          KC_BOOTSTRAP_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD_SECRET:-admin}
+          KC_BOOTSTRAP_ADMIN_USERNAME=${KC_BOOTSTRAP_ADMIN_USERNAME_SECRET:-admin}
+          KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD_SECRET:-admin}
           KONG_ADMIN_LISTEN=${KONG_ADMIN_LISTEN_SECRET:-0.0.0.0:8001}
           KONG_PROXY_LISTEN=${KONG_PROXY_LISTEN_SECRET:-0.0.0.0:8000}
           DATABASE_URL=postgresql://${POSTGRES_USER_SECRET:-postgres}:${POSTGRES_PASSWORD_SECRET:-postgres}@db:5432/${POSTGRES_DB_SECRET:-prodvor}?schema=public
@@ -67,7 +68,7 @@ jobs:
       - name: Initialize Keycloak database
         run: |
           docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d db keycloak-db
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm keycloak build
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm keycloak start-dev --import-realm
           docker compose -f docker-compose.yml -f docker-compose.ci.yml down
 
       - name: Launch all services
