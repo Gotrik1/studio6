@@ -148,7 +148,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:latest
-    command: ["start-dev", "--import-realm"]
+    command: start --optimized
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -170,13 +170,10 @@ services:
       - ./config/keycloak:/opt/keycloak/data/import
     ports:
       - "8180:8080"
+      - "9000:9000"
     restart: on-failure
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "curl -f http://localhost:9000/health/ready || exit 1",
-        ]
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/health/ready || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 40
