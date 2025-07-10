@@ -173,7 +173,7 @@ services:
         - CMD-SHELL
         - >
           exec 3<>/dev/tcp/localhost/8080;
-          echo -e "GET /health/ready HTTP/1.1\nhost: localhost:8080\n" >&3;
+          echo -e "GET /health/ready HTTP/1.1\nHost: localhost:8080\n" >&3;
           timeout --preserve-status 2 cat <&3 | grep -m1 status | grep -m1 UP;
           ERROR=$$?;
           exec 3<&-; exec 3>&-;
