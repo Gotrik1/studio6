@@ -1,3 +1,4 @@
+
 # This Docker Compose file sets up a complete development environment
 # that mirrors the production architecture described in the documentation.
 # It includes the frontend, backend, databases, and critical infrastructure
@@ -150,11 +151,11 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.keycloak
+    container_name: keycloak
     command: >
       start
       --optimized
-      --proxy-headers=x-forwarded
-    container_name: keycloak
+      --proxy-headers=xforwarded
     depends_on:
       keycloak-db:
         condition: service_healthy
