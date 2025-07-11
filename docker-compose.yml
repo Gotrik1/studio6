@@ -155,11 +155,13 @@ services:
     command: >
       start
       --optimized
+      --http-enabled=true
       --proxy-headers=xforwarded
     depends_on:
       keycloak-db:
         condition: service_healthy
     environment:
+      KC_DB: postgres
       KC_DB_URL_HOST: keycloak-db
       KC_DB_URL_DATABASE: ${KC_DB_DATABASE}
       KC_DB_USERNAME: ${KC_DB_USERNAME}
