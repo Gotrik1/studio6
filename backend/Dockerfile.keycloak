@@ -1,8 +1,9 @@
-# Stage 1: Build the optimized Keycloak image
+# Stage 1: Build the optimized Keycloak image with required features
 FROM quay.io/keycloak/keycloak:25.0.1 as builder
 
 WORKDIR /opt/keycloak
-# This build command bakes the necessary features into the optimized image
+
+# Enable health and metrics support
 RUN /opt/keycloak/bin/kc.sh build \
     --db=postgres \
     --health-enabled=true \
@@ -16,8 +17,11 @@ WORKDIR /opt/keycloak
 COPY --from=builder /opt/keycloak/ .
 
 # Copy the realm configuration file into the image
-# This ensures the realm is available for import on first run
 COPY ./config/keycloak/realm-export.json /opt/keycloak/data/import/realm-export.json
 
-# Ensure the keycloak user owns the import directory
+# Ensure the keycloak user owns the imported files to prevent permission issues
+USER root
 RUN chown -R keycloak:keycloak /opt/keycloak/data/import
+USER keycloak
+
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]

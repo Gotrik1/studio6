@@ -151,7 +151,7 @@ services:
       context: .
       dockerfile: backend/Dockerfile.keycloak
     container_name: keycloak
-    command: start --optimized --proxy=xforwarded --hostname-strict=false --http-enabled=true
+    command: start --optimized --proxy-headers=xforwarded --hostname-strict=false --http-enabled=true
     depends_on:
       keycloak-db:
         condition: service_healthy
