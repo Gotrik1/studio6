@@ -1,7 +1,15 @@
+# Используем официальный образ Keycloak
 FROM quay.io/keycloak/keycloak:26.3.1
 
-# This build step is performed only once when the image is built.
-RUN /opt/keycloak/bin/kc.sh build --db=postgres
+# Этап сборки: Выполняем build с параметрами, которые должны быть "запечены" в образ.
+# --db=postgres : Указываем, что будем использовать PostgreSQL.
+# --health-enabled=true : Включаем эндпоинт /health.
+# --metrics-enabled=true : Включаем эндпоинт /metrics.
+RUN /opt/keycloak/bin/kc.sh build \
+    --db=postgres \
+    --health-enabled=true \
+    --metrics-enabled=true
 
-# The CMD is now handled by docker-compose.yml to pass runtime arguments correctly.
-# No CMD here allows for more flexible runtime configuration.
+# Команда по умолчанию для запуска контейнера.
+# Runtime-параметры будут добавлены через docker-compose.
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]

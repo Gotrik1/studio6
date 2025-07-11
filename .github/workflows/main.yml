@@ -30,7 +30,7 @@ jobs:
           KC_DB_PASSWORD_SECRET: ${{ secrets.KC_DB_PASSWORD }}
           KC_DB_DATABASE_SECRET: ${{ secrets.KC_DB_DATABASE }}
           KC_HOSTNAME_SECRET: localhost
-          KC_HOSTNAME_PORT_SECRET: 8080
+          KC_HOSTNAME_PORT_SECRET: 8180
           KC_HOSTNAME_STRICT_SECRET: false
           KONG_ADMIN_LISTEN_SECRET: ${{ secrets.KONG_ADMIN_LISTEN }}
           KONG_PROXY_LISTEN_SECRET: ${{ secrets.KONG_PROXY_LISTEN }}
