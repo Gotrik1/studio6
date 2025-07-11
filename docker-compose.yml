@@ -151,7 +151,7 @@ services:
       context: .
       dockerfile: backend/Dockerfile.keycloak
     container_name: keycloak
-    command: start-dev --import-realm
+    command: start-dev
     environment:
       KC_DB: postgres
       KC_DB_URL_HOST: keycloak-db
@@ -164,8 +164,6 @@ services:
       KC_HOSTNAME_STRICT: "false"
       KC_HTTP_ENABLED: "true"
       KC_PROXY_HEADERS: "xforwarded"
-    volumes:
-      - ./config/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     ports:
       - "8180:8080"
     restart: on-failure
@@ -173,7 +171,7 @@ services:
       keycloak-db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/realms/prodvor || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 15

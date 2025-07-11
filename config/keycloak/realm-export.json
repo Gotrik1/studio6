@@ -1,3 +1,4 @@
+
 {
   "realm": "prodvor",
   "enabled": true,
@@ -9,20 +10,9 @@
       "publicClient": true,
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "redirectUris": [
-        "http://localhost:9002/*",
-        "http://kong:8000/*"
-      ],
-      "webOrigins": [
-        "http://localhost:9002",
-        "http://kong:8000"
-      ],
-      "defaultClientScopes": [
-        "web-origins",
-        "role_list",
-        "profile",
-        "email"
-      ],
+      "redirectUris": ["http://localhost:9002/*", "http://kong:8000/*"],
+      "webOrigins": ["http://localhost:9002", "http://kong:8000"],
+      "defaultClientScopes": ["web-origins", "role_list", "profile", "email"],
       "optionalClientScopes": [
         "address",
         "phone",
@@ -30,5 +20,19 @@
         "microprofile-jwt"
       ]
     }
-  ]
+  ],
+  "roles": {
+    "realm": [
+      {"name": "ADMINISTRATOR"},
+      {"name": "MODERATOR"},
+      {"name": "CAPTAIN"},
+      {"name": "PLAYER"},
+      {"name": "JUDGE"},
+      {"name": "MANAGER"},
+      {"name": "ORGANIZER"},
+      {"name": "SPONSOR"},
+      {"name": "FAN"},
+      {"name": "COACH"}
+    ]
+  }
 }
