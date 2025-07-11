@@ -151,6 +151,7 @@ services:
       context: .
       dockerfile: backend/Dockerfile.keycloak
     container_name: keycloak
+    command: start-dev --import-realm
     environment:
       KC_DB: postgres
       KC_DB_URL_HOST: keycloak-db
@@ -164,6 +165,8 @@ services:
       KC_PROXY: "edge"
     ports:
       - "8180:8080"
+    volumes:
+      - ./config/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     restart: on-failure
     depends_on:
       keycloak-db:
