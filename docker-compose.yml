@@ -149,6 +149,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.keycloak
+    image: prodvor/keycloak:ci
     container_name: keycloak
     depends_on:
       keycloak-db:
@@ -159,13 +160,13 @@ services:
       KC_DB_URL_DATABASE: ${KC_DB_DATABASE}
       KC_DB_USERNAME: ${KC_DB_USERNAME}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
-      KC_HOSTNAME: localhost:8180
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
       KC_PROXY: "edge"
-      KEYCLOAK_ADMIN: ${KC_BOOTSTRAP_ADMIN_USERNAME}
-      KEYCLOAK_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      KC_HOSTNAME_STRICT: "false"
     volumes:
       - ./config/keycloak:/opt/keycloak/data/import
     ports:
@@ -173,7 +174,7 @@ services:
       - "9000:9000"
     restart: on-failure
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider --tries=1 --timeout=5 http://localhost:9000/health/ready || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider --tries=1 --timeout=5 http://localhost:8080/health/ready || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 40
