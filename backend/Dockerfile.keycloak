@@ -1,20 +1,15 @@
-FROM quay.io/keycloak/keycloak:26.3.1 as builder
+# Stage 1: Builder - Используем образ, где есть пакетный менеджер
+FROM registry.access.redhat.com/ubi8-minimal AS builder
 
-# Enable health and metrics support
-ENV KC_HEALTH_ENABLED=true
-ENV KC_METRICS_ENABLED=true
+# Устанавливаем wget
+RUN microdnf install -y wget && microdnf clean all
 
-# Install wget for healthcheck
-RUN dnf install -y wget && dnf clean all
-
-# Configure the build
-RUN /opt/keycloak/bin/kc.sh build
-
+# Stage 2: Final Image - Используем официальный образ Keycloak
 FROM quay.io/keycloak/keycloak:26.3.1
-COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
-# Install wget for healthcheck
-RUN dnf install -y wget && dnf clean all
+# Копируем только нужный нам бинарный файл из builder-стадии
+COPY --from=builder /usr/bin/wget /usr/bin/wget
 
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+# Команда по умолчанию для запуска сервера с оптимизациями.
+# Этот шаг предполагает, что команда `build` будет вызвана отдельно (например, в CI).
 CMD ["start", "--optimized"]
