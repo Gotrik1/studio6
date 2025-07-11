@@ -1,16 +1,3 @@
-FROM registry.access.redhat.com/ubi8-minimal AS builder
-
-# Install wget in the builder stage
-RUN microdnf install -y wget && microdnf clean all
-
-# Main Keycloak image
-FROM quay.io/keycloak/keycloak:26.3.1
-
-# Copy wget from the builder stage
-COPY --from=builder /usr/bin/wget /usr/bin/wget
-
-# This command builds the server with the necessary providers and features.
-# It runs only once when the Docker image is built.
+FROM quay.io/keycloak/keycloak:26.3.1 as keycloak
 RUN /opt/keycloak/bin/kc.sh build --db=postgres --health-enabled=true --metrics-enabled=true
-
-# The default CMD from the base image is `start --optimized`, which is what we want.
+CMD ["start", "--optimized"]
