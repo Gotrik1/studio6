@@ -1,12 +1,12 @@
-# Используем официальный образ Keycloak
-FROM quay.io/keycloak/keycloak:25.0.1
+FROM quay.io/keycloak/keycloak:25.0.1 as builder
 
-# Keycloak запускается от пользователя 'keycloak' (uid 1000)
-# Устанавливаем рабочую директорию
-WORKDIR /opt/keycloak
+# Enable health and metrics support
+RUN /opt/keycloak/bin/kc.sh build --health-enabled=true --metrics-enabled=true --db=postgres
 
-# Копируем файл конфигурации реалма в специальную директорию для импорта
-COPY ./config/keycloak/realm-export.json /opt/keycloak/data/import/
+# Copy the realm configuration into the image
+COPY ./config/keycloak/realm-export.json /opt/keycloak/data/import/realm-export.json
 
-# Меняем владельца директории на пользователя keycloak, чтобы избежать проблем с правами доступа в CI
-RUN chown -R keycloak:keycloak /opt/keycloak/data/import
+# Set correct permissions for the imported realm file
+RUN chown keycloak:keycloak /opt/keycloak/data/import/realm-export.json
+
+EXPOSE 8080
