@@ -1,15 +1,5 @@
-# Stage 1: Builder - Используем образ, где есть пакетный менеджер
 FROM registry.access.redhat.com/ubi8-minimal AS builder
-
-# Устанавливаем wget
 RUN microdnf install -y wget && microdnf clean all
 
-# Stage 2: Final Image - Используем официальный образ Keycloak
 FROM quay.io/keycloak/keycloak:26.3.1
-
-# Копируем только нужный нам бинарный файл из builder-стадии
 COPY --from=builder /usr/bin/wget /usr/bin/wget
-
-# Команда по умолчанию для запуска сервера с оптимизациями.
-# Этот шаг предполагает, что команда `build` будет вызвана отдельно (например, в CI).
-CMD ["start", "--optimized"]

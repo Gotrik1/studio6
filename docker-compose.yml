@@ -146,9 +146,7 @@ services:
       - prodvor-network
 
   keycloak:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.keycloak
+    image: quay.io/keycloak/keycloak:26.3.1
     container_name: keycloak
     depends_on:
       keycloak-db:
