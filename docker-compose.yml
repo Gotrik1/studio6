@@ -154,11 +154,10 @@ services:
     command: >
       start
       --optimized
-      --hostname-port=8180
-      --hostname=localhost
-      --hostname-strict=false
       --proxy-headers=xforwarded
+      --hostname-strict=false
       --http-enabled=true
+      --http-port=8080
     depends_on:
       keycloak-db:
         condition: service_healthy
