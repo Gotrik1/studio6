@@ -1,27 +1,19 @@
 # Используем официальный образ Keycloak
 FROM quay.io/keycloak/keycloak:25.0.1 as builder
 
-# Этап сборки для оптимизации
-RUN /opt/keycloak/bin/kc.sh build \
-    --db=postgres \
-    --health-enabled=true \
-    --metrics-enabled=true
+# Этап сборки: оптимизируем Keycloak для работы с PostgreSQL
+# Это нужно делать один раз при создании образа
+RUN /opt/keycloak/bin/kc.sh build --db=postgres
 
 # Финальный образ
 FROM quay.io/keycloak/keycloak:25.0.1
 
-# Копируем оптимизированные файлы из сборщика
+# Копируем оптимизированные файлы из этапа сборки
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
-# Копируем конфигурацию реалма
-COPY ./config/keycloak/realm-export.json /opt/keycloak/data/import/realm-export.json
+# Устанавливаем рабочую директорию
+WORKDIR /opt/keycloak
 
-# Переключаемся на root для изменения прав
-USER root
-# Устанавливаем правильного владельца для директории импорта
-RUN chown -R keycloak:keycloak /opt/keycloak/data/import
-# Возвращаемся к пользователю keycloak для безопасности
-USER keycloak
-
-# Команда запуска будет указана в docker-compose.yml
-# ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+# Задаем команду по умолчанию, которая будет запускать сервер.
+# Все параметры будут передаваться через docker-compose.yml
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]

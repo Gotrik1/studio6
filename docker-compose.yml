@@ -161,6 +161,9 @@ services:
       KEYCLOAK_ADMIN: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KEYCLOAK_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_PROXY: edge
+      KC_HOSTNAME_STRICT: "false"
+    volumes:
+      - ./config/keycloak:/opt/keycloak/data/import
     ports:
       - "8180:8080"
     restart: on-failure
@@ -169,9 +172,6 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "exit 0"]
-      interval: 5s
-      timeout: 2s
-      retries: 5
     networks:
       - prodvor-network
 
