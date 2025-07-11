@@ -147,7 +147,7 @@ services:
 
   keycloak:
     build:
-      context: backend
+      context: ./backend
       dockerfile: Dockerfile.keycloak
     container_name: keycloak
     depends_on:
@@ -159,12 +159,13 @@ services:
       KC_DB_URL_DATABASE: ${KC_DB_DATABASE}
       KC_DB_USERNAME: ${KC_DB_USERNAME}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
-      KEYCLOAK_ADMIN: ${KC_BOOTSTRAP_ADMIN_USERNAME}
-      KEYCLOAK_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      KC_HOSTNAME: localhost:8180
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
       KC_METRICS_ENABLED: "true"
       KC_PROXY: "edge"
+      KEYCLOAK_ADMIN: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
     volumes:
       - ./config/keycloak:/opt/keycloak/data/import
     ports:
