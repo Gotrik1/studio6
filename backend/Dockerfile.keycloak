@@ -1,13 +1,18 @@
+# Используем официальный образ Keycloak
 FROM quay.io/keycloak/keycloak:25.0.1 as builder
 
+# Рабочая директория
 WORKDIR /opt/keycloak
 
-RUN /opt/keycloak/bin/kc.sh build \
-    --db=postgres \
-    --health-enabled=true \
-    --metrics-enabled=true
+# Запускаем build для оптимизации и включения нужных фич (например, db)
+# Это создает оптимизированный сервер в /opt/keycloak/bin/kc.sh
+RUN /opt/keycloak/bin/kc.sh build --health-enabled=true --metrics-enabled=true --db=postgres
 
+# Финальный образ
 FROM quay.io/keycloak/keycloak:25.0.1
+
+# Копируем оптимизированные файлы из builder'а
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
-COPY ./config/keycloak/realm-export.json /opt/keycloak/data/import/realm-export.json
-RUN chown keycloak:keycloak /opt/keycloak/data/import/realm-export.json
+
+# Запускаем Keycloak
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
