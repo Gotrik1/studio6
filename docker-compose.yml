@@ -146,7 +146,9 @@ services:
       - prodvor-network
 
   keycloak:
-    image: prodvor/keycloak:ci
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.keycloak
     container_name: keycloak
     depends_on:
       keycloak-db:
@@ -164,10 +166,13 @@ services:
       KC_HOSTNAME: ${KC_HOSTNAME}
       KC_HOSTNAME_PORT: ${KC_HOSTNAME_PORT}
       KC_HOSTNAME_STRICT: ${KC_HOSTNAME_STRICT}
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
     volumes:
       - ./config/keycloak:/opt/keycloak/data/import
     ports:
       - "8180:8080"
+      - "9000:9000"
     restart: on-failure
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider --tries=1 --timeout=5 http://localhost:8080/health/ready || exit 1"]
