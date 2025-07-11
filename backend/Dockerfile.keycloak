@@ -1,22 +1,25 @@
+# Используем официальный образ Keycloak
 FROM quay.io/keycloak/keycloak:26.3.1 as builder
 
+# ========== СБОРКА ==========
+# На этом этапе мы создаем оптимизированный сервер с нужными нам функциями.
+# Эти параметры "запекаются" в итоговый образ.
 WORKDIR /opt/keycloak
-
-# Perform the build step with all necessary build-time options
 RUN /opt/keycloak/bin/kc.sh build \
     --db=postgres \
     --health-enabled=true \
-    --metrics-enabled=true \
-    --cache=local
+    --metrics-enabled=true
 
-# Create the final image
+# ========== ФИНАЛЬНЫЙ ОБРАЗ ==========
+# Создаем чистый образ, копируя только необходимые артефакты.
 FROM quay.io/keycloak/keycloak:26.3.1
 WORKDIR /opt/keycloak
 
-# Copy the optimized server from the builder stage
-COPY --from=builder /opt/keycloak/ .
+# Копируем оптимизированную сборку из предыдущего этапа
+COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
 
-# The CMD is now handled by the docker-compose.yml `command` directive
-# This ensures a clean separation of build-time and run-time configuration.
+# Копируем кастомные темы или провайдеры, если они есть
+# COPY --from=builder /opt/keycloak/providers/ /opt/keycloak/providers/
 
-    
+# Команда запуска будет определена в docker-compose.yml
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]

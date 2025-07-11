@@ -129,4 +129,3 @@ jobs:
         if: always()
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml down -v
 
-    
