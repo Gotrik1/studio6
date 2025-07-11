@@ -1,4 +1,9 @@
 FROM quay.io/keycloak/keycloak:26.3.1 as keycloak
-WORKDIR /opt/keycloak
-RUN /opt/keycloak/bin/kc.sh build --db=postgres
+
+# This build step configures the server for an optimized run.
+# All build-time options MUST be specified here to avoid configuration mismatches at runtime.
+RUN /opt/keycloak/bin/kc.sh build --db=postgres --health-enabled=true --metrics-enabled=true
+
+# This is the default command that will be executed when the container starts.
+# It uses the optimized server built in the previous step.
 CMD ["start", "--optimized"]

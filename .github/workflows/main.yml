@@ -71,8 +71,8 @@ jobs:
       - name: Clean up previous run
         run: docker compose down -v --remove-orphans
 
-      - name: Build and Tag Keycloak Image
-        run: docker build -t prodvor/keycloak:ci -f backend/Dockerfile.keycloak backend/
+      - name: Build services
+        run: docker compose build
 
       - name: Launch all services
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
