@@ -1,19 +1,12 @@
-# Используем официальный образ Keycloak
-FROM quay.io/keycloak/keycloak:25.0.1 as builder
-
-# Рабочая директория
-WORKDIR /opt/keycloak
-
-# Запускаем сборку для включения необходимых провайдеров (например, для PostgreSQL)
-# Это оптимизирует запуск контейнера
-RUN /opt/keycloak/bin/kc.sh build --db=postgres
-
-# --- Финальный образ ---
+# Используем официальный образ Keycloak как базовый
 FROM quay.io/keycloak/keycloak:25.0.1
 
-# Копируем предварительно собранные файлы из builder'а
-COPY --from=builder /opt/keycloak/ /opt/keycloak/
+# Переключаемся на пользователя root для установки пакетов
+USER root
 
-# Устанавливаем команду по умолчанию для запуска в режиме разработки
-# --import-realm гарантирует, что реалм будет импортирован при первом запуске
-CMD ["start-dev", "--import-realm"]
+# Устанавливаем curl, так как он отсутствует в минималистичном образе,
+# и очищаем кэш, чтобы уменьшить размер слоя.
+RUN microdnf install -y curl && microdnf clean all
+
+# Возвращаемся к пользователю без root-прав для безопасности
+USER keycloak

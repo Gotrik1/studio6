@@ -1,4 +1,3 @@
-
 # This Docker Compose file sets up a complete development environment
 # that mirrors the production architecture described in the documentation.
 # It includes the frontend, backend, databases, and critical infrastructure
