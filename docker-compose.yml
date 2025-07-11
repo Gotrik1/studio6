@@ -172,7 +172,7 @@ services:
       - "9000:9000"
     restart: on-failure
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider --tries=1 --timeout=5 http://localhost:9000/health/ready || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider --tries=1 --timeout=5 http://localhost:8080/health/ready || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 40

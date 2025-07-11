@@ -1,2 +1,4 @@
 FROM quay.io/keycloak/keycloak:26.3.1 as keycloak
-CMD ["start", "--optimized"]
+
+# The default command is `start`, which will use the --optimized flag if a build was performed.
+# We don't need to specify it here.
