@@ -1,5 +1,12 @@
 FROM quay.io/keycloak/keycloak:26.3.1
-RUN /opt/keycloak/bin/kc.sh build --db=postgres --health-enabled=true
-CMD ["start", "--optimized", "--proxy=edge"]
 
-    
+# Perform the build step within the Dockerfile to create an optimized image.
+# This ensures that all necessary configurations are "baked in".
+RUN /opt/keycloak/bin/kc.sh build \
+    --db=postgres \
+    --health-enabled=true \
+    --metrics-enabled=true \
+    --proxy-headers=x-forwarded
+
+# The default command from the base image is `start`. We add `--optimized`.
+CMD ["start", "--optimized"]
