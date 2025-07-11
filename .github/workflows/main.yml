@@ -68,7 +68,6 @@ jobs:
       - name: Clean up previous run and volumes
         run: |
           docker compose down -v --remove-orphans || true
-          docker volume rm $(docker volume ls -q | grep keycloak_db_data) || true
 
       - name: Build services
         run: docker compose build
@@ -128,4 +127,3 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml down -v
-

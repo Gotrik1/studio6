@@ -1,25 +1,20 @@
-# Используем официальный образ Keycloak
 FROM quay.io/keycloak/keycloak:26.3.1 as builder
 
-# ========== СБОРКА ==========
-# На этом этапе мы создаем оптимизированный сервер с нужными нам функциями.
-# Эти параметры "запекаются" в итоговый образ.
-WORKDIR /opt/keycloak
+ENV KC_DB=postgres
+
+# "Запекаем" конфигурацию в образ
 RUN /opt/keycloak/bin/kc.sh build \
     --db=postgres \
     --health-enabled=true \
     --metrics-enabled=true
 
-# ========== ФИНАЛЬНЫЙ ОБРАЗ ==========
-# Создаем чистый образ, копируя только необходимые артефакты.
 FROM quay.io/keycloak/keycloak:26.3.1
+COPY --from=builder /opt/keycloak/ /opt/keycloak/
+
+# Копируем файл импорта реалма в образ
+COPY ./config/keycloak/realm-export.json /opt/keycloak/data/import/realm-export.json
+
+# Устанавливаем правильные права доступа
+RUN chown -R keycloak:keycloak /opt/keycloak/data/import
+
 WORKDIR /opt/keycloak
-
-# Копируем оптимизированную сборку из предыдущего этапа
-COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
-
-# Копируем кастомные темы или провайдеры, если они есть
-# COPY --from=builder /opt/keycloak/providers/ /opt/keycloak/providers/
-
-# Команда запуска будет определена в docker-compose.yml
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]

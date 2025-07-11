@@ -151,13 +151,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile.keycloak
     container_name: keycloak
-    command: >
-      start
-      --optimized
-      --proxy-headers=xforwarded
-      --hostname-strict=false
-      --http-enabled=true
-      --http-port=8080
+    command: start --optimized --proxy=xforwarded --http-enabled=true --hostname-strict=false --hostname=keycloak
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -170,13 +164,14 @@ services:
       KC_CACHE: local
       KEYCLOAK_ADMIN: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KEYCLOAK_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-    volumes:
-      - ./config/keycloak:/opt/keycloak/data/import
+      KC_HTTP_PORT: 8080
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_HOSTNAME_URL: http://keycloak:8080/auth
     ports:
       - "8180:8080"
     restart: on-failure
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      test: ["CMD-SHELL", "/opt/keycloak/bin/kc.sh", "show-config"]
       interval: 15s
       timeout: 10s
       retries: 20
