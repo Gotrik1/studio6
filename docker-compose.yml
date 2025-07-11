@@ -10,7 +10,7 @@
 # - Frontend (Next.js): http://localhost:9002
 # - Backend (NestJS): http://localhost:3001 (for direct access)
 # - Kong API Gateway: http://localhost:8000 (main entry point)
-# - Keycloak (IdP): http://localhost:8180
+# - Keycloak (IdP): http://localhost:8180 (Admin Console) / http://localhost:9000 (Management)
 # - pgAdmin (DB UI): http://localhost:5050
 # - RabbitMQ UI: http://localhost:15672
 # - Grafana (Monitoring): http://localhost:3000
@@ -160,20 +160,19 @@ services:
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
       KEYCLOAK_ADMIN: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KEYCLOAK_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      KC_HTTP_PORT: 8080
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
     ports:
       - "8180:8080"
       - "9000:9000"
     volumes:
-      - ./config/keycloak:/opt/keycloak/data/import
+      - ./config/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     restart: on-failure
     depends_on:
       keycloak-db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/health/ready || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 30

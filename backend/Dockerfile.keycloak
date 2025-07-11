@@ -1,12 +1,22 @@
-# Используем официальный образ Keycloak как базовый
-FROM quay.io/keycloak/keycloak:25.0.1
+# Используем последнюю стабильную версию Keycloak
+FROM quay.io/keycloak/keycloak:26.3.1 as builder
 
-# Переключаемся на пользователя root для установки пакетов
+# Этап сборки: оптимизируем Keycloak для работы с PostgreSQL
+# Это нужно делать на этапе сборки, чтобы не замедлять запуск в CI
+RUN /opt/keycloak/bin/kc.sh build --db=postgres
+
+# Финальный образ
+FROM quay.io/keycloak/keycloak:26.3.1
+
+# Копируем оптимизированный сервер из сборщика
+COPY --from=builder /opt/keycloak/ /opt/keycloak/
+
+# Переключаемся на root, чтобы установить curl, так как в базовом образе его нет
 USER root
-
-# Устанавливаем curl, так как он отсутствует в минималистичном образе,
-# и очищаем кэш, чтобы уменьшить размер слоя.
 RUN microdnf install -y curl && microdnf clean all
 
-# Возвращаемся к пользователю без root-прав для безопасности
+# Возвращаемся к пользователю без привилегий для безопасности
 USER keycloak
+
+# Команда для запуска сервера с автоматическим импортом реалма
+CMD ["start-dev", "--import-realm"]
