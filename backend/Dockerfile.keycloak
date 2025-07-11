@@ -1,27 +1,12 @@
-# Используем официальный образ Keycloak как основу для сборщика
-FROM quay.io/keycloak/keycloak:25.0.1 as builder
-
-# Рабочая директория
-WORKDIR /opt/keycloak
-
-# Запускаем сборку с необходимыми фичами
-RUN /opt/keycloak/bin/kc.sh build \
-    --db=postgres \
-    --health-enabled=true \
-    --metrics-enabled=true
-
-# --- Финальный образ ---
+# Используем официальный образ Keycloak
 FROM quay.io/keycloak/keycloak:25.0.1
 
-# Копируем оптимизированный Keycloak из сборщика
-COPY --from=builder /opt/keycloak/ .
+# Keycloak запускается от пользователя 'keycloak' (uid 1000)
+# Устанавливаем рабочую директорию
+WORKDIR /opt/keycloak
 
-# Копируем файл для импорта реалма. Docker будет искать этот файл
-# относительно контекста сборки, указанного в docker-compose.yml
-COPY ./config/keycloak/realm-export.json /opt/keycloak/data/import/realm-export.json
+# Копируем файл конфигурации реалма в специальную директорию для импорта
+COPY ./config/keycloak/realm-export.json /opt/keycloak/data/import/
 
-# Устанавливаем права на директорию импорта, чтобы у процесса Keycloak был доступ
+# Меняем владельца директории на пользователя keycloak, чтобы избежать проблем с правами доступа в CI
 RUN chown -R keycloak:keycloak /opt/keycloak/data/import
-
-# Запуск по умолчанию будет переопределен в docker-compose.yml
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
