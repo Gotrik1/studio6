@@ -35,14 +35,12 @@ jobs:
           RABBITMQ_DEFAULT_USER_SECRET: ${{ secrets.RABBITMQ_DEFAULT_USER }}
           RABBITMQ_DEFAULT_PASSWORD_SECRET: ${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
         run: |
-          # Fail fast if critical secrets are missing
           if [ -z "$POSTGRES_PASSWORD_SECRET" ]; then echo "::error::Required secret POSTGRES_PASSWORD is not set." >&2; exit 1; fi
           if [ -z "$RABBITMQ_DEFAULT_USER_SECRET" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_USER is not set." >&2; exit 1; fi
           if [ -z "$RABBITMQ_DEFAULT_PASSWORD_SECRET" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_PASSWORD is not set." >&2; exit 1; fi
           if [ -z "$KC_DB_PASSWORD_SECRET" ]; then echo "::error::Required secret KC_DB_PASSWORD is not set." >&2; exit 1; fi
           if [ -z "$KONG_PG_PASSWORD_SECRET" ]; then echo "::error::Required secret KONG_PG_PASSWORD is not set." >&2; exit 1; fi
 
-          # Create .env file
           cat > .env <<EOF
           POSTGRES_USER=${POSTGRES_USER_SECRET:-postgres}
           POSTGRES_PASSWORD=${POSTGRES_PASSWORD_SECRET}
