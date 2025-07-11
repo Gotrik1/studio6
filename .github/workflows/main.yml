@@ -33,12 +33,16 @@ jobs:
           KONG_PG_PASSWORD_SECRET: ${{ secrets.KONG_PG_PASSWORD }}
           RABBITMQ_DEFAULT_USER_SECRET: ${{ secrets.RABBITMQ_DEFAULT_USER }}
           RABBITMQ_DEFAULT_PASSWORD_SECRET: ${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
+          MINIO_ROOT_USER_SECRET: ${{ secrets.MINIO_ROOT_USER }}
+          MINIO_ROOT_PASSWORD_SECRET: ${{ secrets.MINIO_ROOT_PASSWORD }}
         run: |
           if [ -z "$POSTGRES_PASSWORD_SECRET" ]; then echo "::error::Required secret POSTGRES_PASSWORD is not set." >&2; exit 1; fi
           if [ -z "$RABBITMQ_DEFAULT_USER_SECRET" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_USER is not set." >&2; exit 1; fi
           if [ -z "$RABBITMQ_DEFAULT_PASSWORD_SECRET" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_PASSWORD is not set." >&2; exit 1; fi
           if [ -z "$KC_DB_PASSWORD_SECRET" ]; then echo "::error::Required secret KC_DB_PASSWORD is not set." >&2; exit 1; fi
           if [ -z "$KONG_PG_PASSWORD_SECRET" ]; then echo "::error::Required secret KONG_PG_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "$MINIO_ROOT_USER_SECRET" ]; then echo "::error::Required secret MINIO_ROOT_USER is not set." >&2; exit 1; fi
+          if [ -z "$MINIO_ROOT_PASSWORD_SECRET" ]; then echo "::error::Required secret MINIO_ROOT_PASSWORD is not set." >&2; exit 1; fi
 
           cat > .env <<EOF
           POSTGRES_USER=${POSTGRES_USER_SECRET:-postgres}
@@ -54,13 +58,20 @@ jobs:
           KONG_PG_PASSWORD=${KONG_PG_PASSWORD_SECRET}
           RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER_SECRET}
           RABBITMQ_DEFAULT_PASSWORD=${RABBITMQ_DEFAULT_PASSWORD_SECRET}
-          DATABASE_URL=postgresql://${POSTGRES_USER_SECRET:-postgres}:${POSTGRES_PASSWORD_SECRET}@db:5432/${POSTGRES_DB_SECRET:-prodvor}?schema=public
+          MINIO_ROOT_USER=${MINIO_ROOT_USER_SECRET}
+          MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD_SECRET}
+          DATABASE_URL=postgresql://\${POSTGRES_USER_SECRET:-\postgres}:\${POSTGRES_PASSWORD_SECRET}@db:5432/\${POSTGRES_DB_SECRET:-prodvor}?schema=public
           REDIS_URL=redis://redis:6379
           KAFKA_BROKERS=kafka:9092
           KEYCLOAK_URL=http://keycloak:8080
           KEYCLOAK_REALM=prodvor
           KEYCLOAK_CLIENT_ID=prodvor-frontend
-          RABBITMQ_URL=amqp://${RABBITMQ_DEFAULT_USER_SECRET}:${RABBITMQ_DEFAULT_PASSWORD_SECRET}@rabbitmq:5672
+          RABBITMQ_URL=amqp://\${RABBITMQ_DEFAULT_USER_SECRET}:\${RABBITMQ_DEFAULT_PASSWORD_SECRET}@rabbitmq:5672
+          S3_ENDPOINT_URL=http://minio:9005
+          S3_BUCKET_NAME=prodvor
+          AWS_REGION=us-east-1
+          AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER_SECRET}
+          AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD_SECRET}
           NEXT_PUBLIC_BACKEND_URL=http://kong:8000
           PGPASSWORD=${POSTGRES_PASSWORD_SECRET}
           EOF
