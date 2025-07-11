@@ -21,14 +21,19 @@ async function bootstrap() {
     logger: logger,
   });
 
+  app.enableCors({
+    origin: "*", // Be more specific in production
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  });
+
   app.useGlobalPipes(new ValidationPipe());
   app.useWebSocketAdapter(new IoAdapter(app));
 
   // Global interceptors and filters for observability
   app.useGlobalInterceptors(new HttpLoggingInterceptor(logger));
-  app.useGlobalFilters(
-    new HttpExceptionFilter(app.get(HttpAdapterHost), logger),
-  );
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter, logger));
 
   // Swagger Configuration
   const config = new DocumentBuilder()

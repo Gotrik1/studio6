@@ -16,22 +16,19 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
-    ],
-  },
-  /**
-   * Rewrites are used as a development proxy to avoid CORS issues.
-   * This is the Next.js equivalent of using a `proxy.conf.js` in frameworks like Angular.
-   * It tells the Next.js development server to proxy any requests starting with `/api`
-   * to our backend service (in this case, the Kong API Gateway).
-   * This configuration only applies to development and is not used in production.
-   */
-  async rewrites() {
-    return [
       {
-        source: "/api/:path*",
-        destination: `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://kong:8000"}/:path*`,
+        protocol: "http",
+        hostname: "localhost",
+        port: "9005",
+        pathname: "/**",
       },
-    ];
+      {
+        protocol: "http",
+        hostname: "minio",
+        port: "9005",
+        pathname: "/**",
+      }
+    ],
   },
 };
 
