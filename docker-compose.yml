@@ -14,7 +14,6 @@
 # - pgAdmin (DB UI): http://localhost:5050
 # - RabbitMQ UI: http://localhost:15672
 # - Grafana (Monitoring): http://localhost:3000
-# - MinIO (S3 Storage): http://localhost:9001 (Console)
 
 services:
   # ---------------------------------------------------
@@ -148,7 +147,9 @@ services:
       - prodvor-network
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.3.1
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.keycloak
     container_name: keycloak
     command: start-dev --import-realm
     environment:
@@ -157,8 +158,8 @@ services:
       KC_DB_URL_DATABASE: ${KC_DB_DATABASE}
       KC_DB_USERNAME: ${KC_DB_USERNAME}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
-      KEYCLOAK_ADMIN: ${KC_BOOTSTRAP_ADMIN_USERNAME}
-      KEYCLOAK_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_HTTP_ENABLED: "true"
       KC_HEALTH_ENABLED: "true"
     ports:
@@ -171,7 +172,7 @@ services:
       keycloak-db:
         condition: service_healthy
     healthcheck:
-      test: ['CMD-SHELL', '[ -f /tmp/HealthCheck.java ] || echo "public class HealthCheck { public static void main(String[] args) throws java.lang.Throwable { System.exit(java.net.HttpURLConnection.HTTP_OK == ((java.net.HttpURLConnection)new java.net.URL(args[0]).openConnection()).getResponseCode() ? 0 : 1); } }" > /tmp/HealthCheck.java && java /tmp/HealthCheck.java http://localhost:9000/health/ready']
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/health/ready || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 30
@@ -261,45 +262,6 @@ services:
       - prodvor-network
 
   # ---------------------------------------------------
-  # S3-Compatible Storage (MinIO)
-  # ---------------------------------------------------
-  minio:
-    image: minio/minio:latest
-    container_name: minio
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
-    ports:
-      - "9001:9001" # Console
-      - "9005:9005" # API
-    volumes:
-      - minio_data:/data
-    healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - prodvor-network
-
-  create-minio-bucket:
-    image: minio/mc:latest
-    container_name: create-minio-bucket
-    depends_on:
-      minio:
-        condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "
-      /usr/bin/mc config host add local http://minio:9005 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
-      /usr/bin/mc mb -p local/prodvor;
-      /usr/bin/mc policy set public local/prodvor;
-      exit 0;
-      "
-    networks:
-      - prodvor-network
-
-  # ---------------------------------------------------
   # Monitoring & Observability
   # ---------------------------------------------------
   prometheus:
@@ -372,10 +334,6 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_healthy
-      minio:
-        condition: service_healthy
-      create-minio-bucket:
-        condition: service_completed_successfully
     command: npm run start:prod --workspace=prodvor-backend
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:3001 || exit 1"]
@@ -429,4 +387,3 @@ volumes:
   rabbitmq_data:
   prometheus_data:
   grafana_data:
-  minio_data:
