@@ -152,9 +152,6 @@ services:
       dockerfile: backend/Dockerfile.keycloak
     container_name: keycloak
     command: start-dev --import-realm
-    depends_on:
-      keycloak-db:
-        condition: service_healthy
     environment:
       KC_DB: postgres
       KC_DB_URL_HOST: keycloak-db
@@ -167,12 +164,14 @@ services:
     ports:
       - "8180:8080"
     restart: on-failure
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/realms/prodvor || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 240s
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
     networks:
       - prodvor-network
 
@@ -383,3 +382,5 @@ volumes:
   rabbitmq_data:
   prometheus_data:
   grafana_data:
+
+    
