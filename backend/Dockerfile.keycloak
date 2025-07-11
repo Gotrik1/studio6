@@ -1,16 +1,4 @@
-# This Dockerfile is used specifically for building a pre-configured Keycloak image in CI.
-# It performs the `build` step so that the resulting image can be started with the `--optimized` flag.
-FROM quay.io/keycloak/keycloak:26.3.1 as builder
-
-# The build command configures the server for production.
-# It MUST be run before the first start with the --optimized flag.
+FROM quay.io/keycloak/keycloak:26.3.1 as keycloak
+WORKDIR /opt/keycloak
 RUN /opt/keycloak/bin/kc.sh build --db=postgres
-
-# The final image starts from the official Keycloak image
-FROM quay.io/keycloak/keycloak:26.3.1
-
-# Copy the pre-built, optimized server data from the builder stage.
-COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
-
-# Set the default command to start the server in production mode.
 CMD ["start", "--optimized"]
