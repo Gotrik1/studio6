@@ -1,22 +1,20 @@
-# Используем официальный образ Keycloak
-FROM quay.io/keycloak/keycloak:23.0.4 as builder
+FROM quay.io/keycloak/keycloak:26.3.1 as builder
 
-# На этапе сборки включаем необходимые функции
+# Enable health and metrics support
 ENV KC_HEALTH_ENABLED=true
 ENV KC_METRICS_ENABLED=true
-WORKDIR /opt/keycloak
 
-# Запускаем сборку для оптимизации
+# Install wget for healthcheck
+RUN dnf install -y wget && dnf clean all
+
+# Configure the build
 RUN /opt/keycloak/bin/kc.sh build
 
-# Создаем финальный образ
-FROM quay.io/keycloak/keycloak:23.0.4
+FROM quay.io/keycloak/keycloak:26.3.1
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
-# Устанавливаем wget для healthcheck
-USER root
-RUN microdnf install -y wget && microdnf clean all
-USER keycloak
+# Install wget for healthcheck
+RUN dnf install -y wget && dnf clean all
 
-# Точка входа для запуска сервера
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+CMD ["start", "--optimized"]
