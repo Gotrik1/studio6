@@ -77,7 +77,6 @@ jobs:
       - name: Clean up previous run
         run: |
           docker compose down -v --remove-orphans
-          docker compose rm -fsv keycloak-db
 
       - name: Build services
         run: docker compose build

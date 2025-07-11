@@ -131,7 +131,6 @@ services:
     image: postgres:15
     container_name: keycloak-db
     restart: on-failure
-    init: true
     environment:
       POSTGRES_DB: ${KC_DB_DATABASE}
       POSTGRES_USER: ${KC_DB_USERNAME}
@@ -155,8 +154,8 @@ services:
     command: >
       start
       --optimized
-      --http-enabled=true
       --proxy-headers=xforwarded
+      --http-enabled=true
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -182,7 +181,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 40
-      start_period: 300s
+      start_period: 90s
     networks:
       - prodvor-network
 
