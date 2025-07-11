@@ -1,2 +1,3 @@
 FROM quay.io/keycloak/keycloak:26.3.1
-CMD ["start", "--optimized"]
+# This Dockerfile is minimal, as the build and start commands are handled in docker-compose.yml
+# to ensure proper sequencing and dependency management in CI/CD.

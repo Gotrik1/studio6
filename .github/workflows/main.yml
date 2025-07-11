@@ -80,13 +80,6 @@ jobs:
       - name: Build services
         run: docker compose build
 
-      - name: Configure Keycloak
-        run: |
-          docker compose run --rm keycloak build \
-            --db=postgres \
-            --health-enabled=true \
-            --metrics-enabled=true
-
       - name: Launch all services
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
 

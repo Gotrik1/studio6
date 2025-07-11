@@ -145,14 +145,24 @@ services:
     networks:
       - prodvor-network
 
+  keycloak-build:
+    image: quay.io/keycloak/keycloak:26.3.1
+    container_name: keycloak-build
+    command: build --db=postgres --health-enabled=true --metrics-enabled=true
+    # This service only runs to build the optimized config and then exits.
+    # It does not need ports or a restart policy.
+    networks:
+      - prodvor-network
+
   keycloak:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.keycloak
+    image: quay.io/keycloak/keycloak:26.3.1
     container_name: keycloak
     depends_on:
       keycloak-db:
         condition: service_healthy
+      keycloak-build:
+        condition: service_completed_successfully
+    command: start --optimized
     environment:
       KC_DB: postgres
       KC_DB_URL_HOST: keycloak-db
@@ -163,11 +173,6 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_HTTP_ENABLED: "true"
       KC_PROXY: "edge"
-      KC_HOSTNAME: ${KC_HOSTNAME}
-      KC_HOSTNAME_PORT: ${KC_HOSTNAME_PORT}
-      KC_HOSTNAME_STRICT: ${KC_HOSTNAME_STRICT}
-      KC_HEALTH_ENABLED: "true"
-      KC_METRICS_ENABLED: "true"
     volumes:
       - ./config/keycloak:/opt/keycloak/data/import
     ports:
