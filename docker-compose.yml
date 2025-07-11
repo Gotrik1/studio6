@@ -130,6 +130,7 @@ services:
     image: postgres:15
     container_name: keycloak-db
     restart: on-failure
+    init: true
     environment:
       POSTGRES_DB: ${KC_DB_DATABASE}
       POSTGRES_USER: ${KC_DB_USERNAME}
@@ -161,9 +162,7 @@ services:
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      KC_HTTP_ENABLED: "true"
-      KC_HEALTH_ENABLED: "true"
-      KC_PROXY: "edge"
+      KC_PROXY_HEADERS: "x-forwarded"
       KC_HOSTNAME: ${KC_HOSTNAME}
       KC_HOSTNAME_PORT: ${KC_HOSTNAME_PORT}
       KC_HOSTNAME_STRICT: "${KC_HOSTNAME_STRICT}"
@@ -389,5 +388,3 @@ volumes:
   rabbitmq_data:
   prometheus_data:
   grafana_data:
-
-    

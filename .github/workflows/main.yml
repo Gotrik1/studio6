@@ -30,7 +30,7 @@ jobs:
           KC_DB_PASSWORD_SECRET: ${{ secrets.KC_DB_PASSWORD }}
           KC_DB_DATABASE_SECRET: ${{ secrets.KC_DB_DATABASE }}
           KC_HOSTNAME_SECRET: localhost
-          KC_HOSTNAME_PORT_SECRET: 8180
+          KC_HOSTNAME_PORT_SECRET: 8080
           KC_HOSTNAME_STRICT_SECRET: false
           KONG_ADMIN_LISTEN_SECRET: ${{ secrets.KONG_ADMIN_LISTEN }}
           KONG_PROXY_LISTEN_SECRET: ${{ secrets.KONG_PROXY_LISTEN }}
@@ -75,7 +75,9 @@ jobs:
           EOF
 
       - name: Clean up previous run
-        run: docker compose down -v --remove-orphans
+        run: |
+          docker compose down -v --remove-orphans
+          docker compose rm -fsv keycloak-db
 
       - name: Build services
         run: docker compose build
@@ -135,5 +137,3 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml down -v
-
-    
