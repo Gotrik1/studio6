@@ -32,8 +32,8 @@ async function bootstrap() {
 
   // Global interceptors and filters for observability
   app.useGlobalInterceptors(new HttpLoggingInterceptor(logger));
-  const { httpAdapter } = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new HttpExceptionFilter(httpAdapter, logger));
+  const httpAdapterHost = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost, logger));
 
   // Swagger Configuration
   const config = new DocumentBuilder()
