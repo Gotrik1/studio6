@@ -2,18 +2,15 @@
 FROM quay.io/keycloak/keycloak:25.0.1 as builder
 
 # Этап сборки: оптимизируем Keycloak для работы с PostgreSQL
-# Это нужно делать один раз при создании образа
+# Это позволяет избежать долгой пересборки при каждом запуске контейнера.
 RUN /opt/keycloak/bin/kc.sh build --db=postgres
 
 # Финальный образ
 FROM quay.io/keycloak/keycloak:25.0.1
-
-# Копируем оптимизированные файлы из этапа сборки
+# Копируем оптимизированные файлы из сборщика
 COPY --from=builder /opt/keycloak/ /opt/keycloak/
 
-# Устанавливаем рабочую директорию
-WORKDIR /opt/keycloak
+# Устанавливаем правильные права на директорию, если это необходимо
+# RUN chown -R keycloak:keycloak /opt/keycloak
 
-# Задаем команду по умолчанию, которая будет запускать сервер.
-# Все параметры будут передаваться через docker-compose.yml
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
