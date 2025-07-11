@@ -24,16 +24,8 @@ jobs:
           POSTGRES_DB_SECRET: ${{ secrets.POSTGRES_DB }}
           PGADMIN_DEFAULT_EMAIL_SECRET: ${{ secrets.PGADMIN_DEFAULT_EMAIL }}
           PGADMIN_DEFAULT_PASSWORD_SECRET: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-          KC_BOOTSTRAP_ADMIN_USERNAME_SECRET: ${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
-          KC_BOOTSTRAP_ADMIN_PASSWORD_SECRET: ${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
           KC_DB_USERNAME_SECRET: ${{ secrets.KC_DB_USERNAME }}
           KC_DB_PASSWORD_SECRET: ${{ secrets.KC_DB_PASSWORD }}
-          KC_DB_DATABASE_SECRET: ${{ secrets.KC_DB_DATABASE }}
-          KC_HOSTNAME_SECRET: localhost
-          KC_HOSTNAME_PORT_SECRET: 8180
-          KC_HOSTNAME_STRICT_SECRET: false
-          KONG_ADMIN_LISTEN_SECRET: ${{ secrets.KONG_ADMIN_LISTEN }}
-          KONG_PROXY_LISTEN_SECRET: ${{ secrets.KONG_PROXY_LISTEN }}
           KONG_PG_PASSWORD_SECRET: ${{ secrets.KONG_PG_PASSWORD }}
           RABBITMQ_DEFAULT_USER_SECRET: ${{ secrets.RABBITMQ_DEFAULT_USER }}
           RABBITMQ_DEFAULT_PASSWORD_SECRET: ${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
@@ -50,16 +42,8 @@ jobs:
           POSTGRES_DB=${POSTGRES_DB_SECRET:-prodvor}
           PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL_SECRET:-admin@example.com}
           PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD_SECRET:-admin}
-          KC_BOOTSTRAP_ADMIN_USERNAME=${KC_BOOTSTRAP_ADMIN_USERNAME_SECRET:-admin}
-          KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD_SECRET:-admin}
           KC_DB_USERNAME=${KC_DB_USERNAME_SECRET:-keycloak}
           KC_DB_PASSWORD=${KC_DB_PASSWORD_SECRET}
-          KC_DB_DATABASE=${KC_DB_DATABASE_SECRET:-keycloak}
-          KC_HOSTNAME=${KC_HOSTNAME_SECRET}
-          KC_HOSTNAME_PORT=${KC_HOSTNAME_PORT_SECRET}
-          KC_HOSTNAME_STRICT=${KC_HOSTNAME_STRICT_SECRET}
-          KONG_ADMIN_LISTEN=${KONG_ADMIN_LISTEN_SECRET:-0.0.0.0:8001}
-          KONG_PROXY_LISTEN=${KONG_PROXY_LISTEN_SECRET:-0.0.0.0:8000}
           KONG_PG_PASSWORD=${KONG_PG_PASSWORD_SECRET}
           RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER_SECRET}
           RABBITMQ_DEFAULT_PASSWORD=${RABBITMQ_DEFAULT_PASSWORD_SECRET}
@@ -77,6 +61,7 @@ jobs:
       - name: Clean up previous run and volumes
         run: |
           docker compose down -v --remove-orphans
+          docker volume rm $(docker volume ls -q | grep keycloak_db_data) || true
 
       - name: Build services
         run: docker compose build

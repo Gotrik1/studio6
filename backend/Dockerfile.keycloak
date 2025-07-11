@@ -1,9 +1,13 @@
-# Используем официальный образ Keycloak
-FROM quay.io/keycloak/keycloak:25.0.1
+FROM quay.io/keycloak/keycloak:26.3.1 as builder
 
-# Этот этап выполняется при сборке образа (`docker compose build`)
-# Он оптимизирует Keycloak для работы с PostgreSQL.
-RUN /opt/keycloak/bin/kc.sh build --db=postgres
+WORKDIR /opt/keycloak
 
-# Команда по умолчанию для запуска контейнера (`docker compose up`)
-CMD ["start", "--optimized"]
+RUN /opt/keycloak/bin/kc.sh build \
+    --db=postgres \
+    --health-enabled=true \
+    --metrics-enabled=true
+
+FROM quay.io/keycloak/keycloak:26.3.1
+WORKDIR /opt/keycloak
+COPY --from=builder /opt/keycloak/lib/quarkus/ /opt/keycloak/lib/quarkus/
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
