@@ -150,6 +150,12 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.keycloak
+    command: >
+      start
+      --optimized
+      --health-enabled=true
+      --metrics-enabled=true
+      --proxy-headers=x-forwarded
     container_name: keycloak
     depends_on:
       keycloak-db:
@@ -162,7 +168,6 @@ services:
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      KC_PROXY_HEADERS: "x-forwarded"
       KC_HOSTNAME: ${KC_HOSTNAME}
       KC_HOSTNAME_PORT: ${KC_HOSTNAME_PORT}
       KC_HOSTNAME_STRICT: "${KC_HOSTNAME_STRICT}"

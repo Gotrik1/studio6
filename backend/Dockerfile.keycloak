@@ -1,12 +1,7 @@
 FROM quay.io/keycloak/keycloak:26.3.1
 
-# Perform the build step within the Dockerfile to create an optimized image.
-# This ensures that all necessary configurations are "baked in".
-RUN /opt/keycloak/bin/kc.sh build \
-    --db=postgres \
-    --health-enabled=true \
-    --metrics-enabled=true \
-    --proxy-headers=x-forwarded
+# This build step is performed only once when the image is built.
+RUN /opt/keycloak/bin/kc.sh build --db=postgres
 
-# The default command from the base image is `start`. We add `--optimized`.
-CMD ["start", "--optimized"]
+# The CMD is now handled by docker-compose.yml to pass runtime arguments correctly.
+# No CMD here allows for more flexible runtime configuration.
