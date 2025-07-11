@@ -74,7 +74,7 @@ jobs:
           PGPASSWORD=${POSTGRES_PASSWORD_SECRET}
           EOF
 
-      - name: Clean up previous run
+      - name: Clean up previous run and volumes
         run: |
           docker compose down -v --remove-orphans
 

@@ -156,6 +156,8 @@ services:
       --optimized
       --proxy-headers=xforwarded
       --http-enabled=true
+      --health-enabled=true
+      --metrics-enabled=true
     depends_on:
       keycloak-db:
         condition: service_healthy
@@ -165,6 +167,7 @@ services:
       KC_DB_URL_DATABASE: ${KC_DB_DATABASE}
       KC_DB_USERNAME: ${KC_DB_USERNAME}
       KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KC_CACHE: local
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
       KC_HOSTNAME: ${KC_HOSTNAME}
@@ -181,7 +184,7 @@ services:
       interval: 15s
       timeout: 10s
       retries: 40
-      start_period: 90s
+      start_period: 120s
     networks:
       - prodvor-network
 
