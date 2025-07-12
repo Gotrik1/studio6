@@ -2,10 +2,6 @@
   "name": "prodvor-monorepo",
   "private": true,
   "type": "module",
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
   "scripts": {
     "dev": "pnpm --filter prodvor-frontend dev",
     "build": "pnpm --filter \"./**\" build",
