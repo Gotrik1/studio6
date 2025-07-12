@@ -1,48 +1,59 @@
-# -----------------------------------------------------------------------------
-# Этап 1: Установка базовых зависимостей
-# -----------------------------------------------------------------------------
+# === Base Stage: Common setup for all other stages ===
 FROM node:20-alpine AS base
 WORKDIR /usr/src/app
 
-# -----------------------------------------------------------------------------
-# Этап 2: Установка зависимостей
-# -----------------------------------------------------------------------------
+# === Dependencies Stage: Install all dependencies (prod + dev) ===
+# This stage installs all dependencies needed for building and linting.
+# It leverages Docker caching by only copying package.json files first.
 FROM base AS dependencies
-# Копируем корневые package.json и lock-файл
+
+# Копируем package.json и lock-файл из корня монорепозитория
 COPY package.json package-lock.json ./
+
 # Копируем package.json бэкенда
 COPY package.json ./backend/
+
 # Устанавливаем все зависимости, включая devDependencies (они нужны для сборки и prisma generate)
 RUN npm install --workspace=prodvor-backend
 
-# -----------------------------------------------------------------------------
-# Этап 3: Сборка приложения
-# -----------------------------------------------------------------------------
-FROM dependencies AS builder
-# Копируем весь исходный код
+# === Build Stage: Compile TypeScript to JavaScript ===
+# This stage uses the installed dependencies to build the application.
+FROM dependencies AS build
+
+# Копируем весь исходный код бэкенда и сгенерированный Prisma клиент
 COPY . .
-# Генерируем Prisma Client
+
+# Устанавливаем PATH, чтобы Nest CLI был доступен
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
+# Генерируем Prisma Client (необходимо после копирования schema.prisma)
 RUN npm run prisma:generate --workspace=prodvor-backend
-# Собираем приложение
+
+# Собираем NestJS приложение
 RUN npm run build --workspace=prodvor-backend
 
-# -----------------------------------------------------------------------------
-# Этап 4: Финальный образ для запуска
-# -----------------------------------------------------------------------------
-from base AS runner
-# Добавляем бинарники node_modules в PATH для доступа к `nest` CLI
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
-# Копируем собранные файлы и зависимости
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
-COPY --from=builder /usr/src/app/package.json .
-COPY --from=builder /usr/src/app/backend/package.json ./backend/
-COPY --from=builder /usr/src/app/prisma ./prisma
-COPY --from=builder /usr/src/app/backend/.env ./backend/
+# === Runner Stage: Final, lightweight image for production ===
+# This stage creates the final image, copying only the necessary built files.
+FROM base AS runner
 
-# Открываем порт, на котором будет работать приложение
+# Копируем package.json и lock-файл из корня монорепозитория
+COPY package.json package-lock.json ./
+
+# Копируем package.json бэкенда
+COPY package.json ./backend/
+
+# Устанавливаем только production зависимости для уменьшения размера образа
+RUN npm install --workspace=prodvor-backend --omit=dev
+
+# Устанавливаем PATH, чтобы Nest CLI был доступен для start:prod
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
+# Копируем собранные файлы и Prisma клиент из стадии 'build'
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client
+COPY --from=build /usr/src/app/prisma/schema.prisma ./prisma/schema.prisma
+
 EXPOSE 3001
 
 # Команда для запуска приложения
-CMD ["npm", "run", "start:dev", "--workspace=prodvor-backend"]
+CMD ["npm", "run", "start:prod", "--workspace=prodvor-backend"]

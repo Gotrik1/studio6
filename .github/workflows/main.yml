@@ -58,8 +58,8 @@ jobs:
       - name: Build and cache backend image
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
-          dockerfile: ./backend/Dockerfile
+          context: ./
+          file: ./backend/Dockerfile
           load: true
           tags: prodvor/backend:latest
           cache-from: type=gha,scope=backend
@@ -68,8 +68,8 @@ jobs:
       - name: Build and cache frontend image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
-          dockerfile: ./frontend/Dockerfile
+          context: ./
+          file: ./frontend/Dockerfile
           load: true
           tags: prodvor/frontend:latest
           cache-from: type=gha,scope=frontend
