@@ -1,65 +1,37 @@
-# Stage 1: Install dependencies
-FROM node:20-alpine AS dependencies
+# ---- Base ----
+# Use a specific Node.js version for consistency
+FROM node:20-alpine AS base
 
+# ---- Dependencies ----
+# Install all dependencies, including devDependencies for the build step
+FROM base AS dependencies
 WORKDIR /usr/src/app
-
-# Copy all package.json and package-lock.json files
 COPY package.json package-lock.json ./
 COPY backend/package.json ./backend/
-COPY frontend/package.json ./frontend/
+# Note: We are now installing ALL dependencies, not just production ones
+# This is necessary for the build step which requires @nestjs/cli
+RUN npm install --workspace=prodvor-backend
 
-# Install all dependencies (including devDependencies for the build stage)
-RUN npm install
-
-# Stage 2: Build the application
-FROM node:20-alpine AS builder
-
+# ---- Build ----
+# Build the application
+FROM dependencies AS build
 WORKDIR /usr/src/app
-
-# Copy all source code
 COPY . .
-
-# Copy node_modules from the dependencies stage
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-
-# Generate Prisma Client
-RUN npm run prisma:generate --workspace=prodvor-backend
-
-# Build the specific backend workspace
 RUN npm run build --workspace=prodvor-backend
 
-# Stage 3: Setup production dependencies
-FROM node:20-alpine as prod-dependencies
-
+# ---- Runner ----
+# Final, smaller image for running the application
+FROM base AS runner
 WORKDIR /usr/src/app
 
-# Copy all package.json and package-lock.json files
-COPY package.json package-lock.json ./
-COPY backend/package.json ./backend/
-COPY frontend/package.json ./frontend/
+# Set the PATH to include node_modules/.bin to find the nest command
+ENV PATH /usr/src/app/backend/node_modules/.bin:$PATH
 
-# Install only production dependencies
-RUN npm install --omit=dev
+# Copy only necessary files from previous stages
+COPY --from=build /usr/src/app/dist ./dist
+COPY --from=build /usr/src/app/package.json ./package.json
+COPY --from=build /usr/src/app/backend/package.json ./backend/
+COPY --from=build /usr/src/app/backend/node_modules ./backend/node_modules
 
-
-# Stage 4: Create the final, lean production image
-FROM node:20-alpine AS runner
-
-WORKDIR /usr/src/app
-
-# Copy production node_modules from the prod-dependencies stage
-COPY --from=prod-dependencies /usr/src/app/node_modules ./node_modules
-
-# Copy Prisma Client and schema
-COPY --from=builder /usr/src/app/node_modules/.prisma ./.prisma
-COPY --from=builder /usr/src/app/backend/prisma/schema.prisma ./prisma/schema.prisma
-
-# Copy the built application from the builder stage
-COPY --from=builder /usr/src/app/backend/dist ./dist
-
-# Copy package.json files needed for runtime
-COPY package.json ./
-COPY backend/package.json ./backend/
-
-# The command to run the application
-CMD ["node", "dist/main.js"]
+# The command to run the application (start:dev needs devDependencies)
+CMD ["npm", "run", "start:dev", "--workspace=prodvor-backend"]
