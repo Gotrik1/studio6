@@ -168,7 +168,7 @@ services:
       keycloak-db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      test: ["CMD-SHELL", "wget -q --spider --timeout=5 http://localhost:8080/health/ready || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 30
@@ -424,3 +424,5 @@ volumes:
   prometheus_data:
   grafana_data:
   minio_data:
+
+    
