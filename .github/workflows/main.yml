@@ -21,22 +21,22 @@ jobs:
       - name: Create .env file from secrets
         run: |
           cat > .env <<EOF
-          POSTGRES_USER=${{ secrets.POSTGRES_USER || 'postgres' }}
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB || 'prodvor' }}
-          PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL || 'admin@example.com' }}
-          PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD || 'admin' }}
-          KC_DB_DATABASE=${{ secrets.KC_DB_DATABASE || 'keycloak' }}
-          KC_DB_USERNAME=${{ secrets.KC_DB_USERNAME || 'keycloak' }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
+          PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
+          KC_DB_DATABASE=${{ secrets.KC_DB_DATABASE }}
+          KC_DB_USERNAME=${{ secrets.KC_DB_USERNAME }}
           KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
-          KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME || 'admin' }}
-          KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD || 'admin' }}
+          KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
+          KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
           KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
           RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
           RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
           MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
           MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
-          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER || 'postgres' }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB || 'prodvor' }}?schema=public
+          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
           REDIS_URL=redis://redis:6379
           KAFKA_BROKERS=kafka:9092
           KEYCLOAK_URL=http://keycloak:8080
@@ -55,31 +55,26 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Cache Docker layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
-
-      - name: Build and cache Docker images
+      - name: Build and cache backend image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./docker-compose.yml
+          context: ./backend
+          dockerfile: ./backend/Dockerfile
           load: true
-          tags: |
-            prodvor/frontend:latest
-            prodvor/backend:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-      
-      - name: Move cache
-        run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          tags: prodvor/backend:latest
+          cache-from: type=gha,scope=backend
+          cache-to: type=gha,mode=max,scope=backend
 
+      - name: Build and cache frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          dockerfile: ./frontend/Dockerfile
+          load: true
+          tags: prodvor/frontend:latest
+          cache-from: type=gha,scope=frontend
+          cache-to: type=gha,mode=max,scope=frontend
+      
       - name: Launch all services
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
 
