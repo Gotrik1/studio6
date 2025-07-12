@@ -1,54 +1,50 @@
-# Этап 1: Установка зависимостей
+# 1. Base image with pnpm installed
 FROM node:20-alpine AS base
 RUN npm install -g pnpm
 
+# 2. Dependencies stage
+# This stage installs all dependencies for the entire monorepo
 FROM base AS dependencies
 WORKDIR /usr/src/app
 
-# Копируем корневой package.json и pnpm-lock.yaml
-COPY package.json pnpm-lock.yaml ./
-# Копируем package.json воркспейсов
+# Copy dependency definition files from root and workspaces
+COPY pnpm-lock.yaml .
+COPY package.json .
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-# Копируем pnpm-workspace.yaml
-COPY pnpm-workspace.yaml ./
 
-# Устанавливаем ВСЕ зависимости монорепозитория
-RUN pnpm install --frozen-lockfile --prod=false
+# Install all dependencies
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Этап 2: Сборка бэкенда
+# 3. Builder stage
+# This stage builds the backend application
 FROM base AS builder
 WORKDIR /usr/src/app
 
-# Копируем зависимости из предыдущего этапа
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=dependencies /usr/src/app/backend ./backend
-COPY --from=dependencies /usr/src/app/package.json .
-COPY --from=dependencies /usr/src/app/pnpm-lock.yaml .
-COPY --from=dependencies /usr/src/app/pnpm-workspace.yaml .
+# Copy all files from dependencies stage (including node_modules)
+COPY --from=dependencies /usr/src/app/ .
 
-
-# Копируем остальные файлы, необходимые для сборки
-COPY backend/tsconfig.json ./backend/
+# Copy backend source code and other necessary files
+COPY backend/ ./backend/
+COPY prisma/ ./prisma/
 COPY tsconfig.json .
-COPY backend/nest-cli.json ./backend/
-COPY backend/src ./backend/src
-COPY backend/prisma ./backend/prisma
 
-# Собираем только бэкенд
+# Build the backend
 RUN pnpm --filter prodvor-backend build
 
-# Этап 3: Финальный образ для запуска
+# 4. Runner stage
+# This is the final, optimized image
 FROM base AS runner
 WORKDIR /usr/src/app
 
-# Копируем только необходимые для запуска файлы из builder
+# Copy production dependencies and built code from the builder stage
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/backend/package.json ./package.json
+COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
+COPY --from=builder /usr/src/app/package.json .
 
-# Копируем схему Prisma, она нужна для запуска
-COPY --from=builder /usr/src/app/backend/prisma ./prisma
+# Copy Prisma schema, it's needed at runtime
+COPY --from=builder /usr/src/app/prisma ./prisma
 
 EXPOSE 3001
-CMD ["node", "dist/main.js"]
+CMD ["pnpm", "start:backend"]
