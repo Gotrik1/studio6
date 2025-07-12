@@ -8,6 +8,7 @@ backend/dist/
 frontend/.next/
 frontend/dist/
 /.next/
+.next/
 
 # Игнорировать большие lock-файлы
 package-lock.json
