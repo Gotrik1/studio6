@@ -16,7 +16,7 @@ const techStack = [
 ];
 
 const launchSteps = [
-  { title: "Установите зависимости:", code: "npm install" },
+  { title: "Установите зависимости:", code: "pnpm install" },
   { title: "Настройте переменные окружения:", code: "GOOGLE_API_KEY=..." },
   { title: "Запустите сервер для разработки (Next.js):", code: "npm run dev" },
   {
