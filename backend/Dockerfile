@@ -1,56 +1,47 @@
-# ----------------- Base Stage -----------------
-# Используем официальный образ Node.js
-FROM node:20-alpine as base
+# /home/user/studio/backend/Dockerfile
 
+# 1. Base Stage: Use a specific Node.js version for reproducibility
+FROM node:20-alpine AS base
 WORKDIR /usr/src/app
 
-# Устанавливаем npm в качестве пакетного менеджера по умолчанию
-# npm уже включен в этот образ, так что дополнительных установок не требуется
-
-# ----------------- Dependencies Stage -----------------
-# Этот этап устанавливает все зависимости, включая devDependencies
-FROM base as dependencies
-
-# Копируем package.json и package-lock.json для установки зависимостей
-# Копируем корневой package.json для определения воркспейсов
+# 2. Dependencies Stage: Install dependencies, including devDependencies for build tools
+FROM base AS dependencies
+# Устанавливаем рабочую директорию на уровень выше, чтобы правильно скопировать структуру монорепозитория
+WORKDIR /usr/src/app
+# Копируем корневые package.json и lock-файл
 COPY package.json package-lock.json ./
 # Копируем package.json бэкенда
 COPY backend/package.json ./backend/
-
 # Устанавливаем все зависимости, включая devDependencies (они нужны для сборки и prisma generate)
-RUN npm install
+RUN npm install --workspace=prodvor-backend
 
-# ----------------- Build Stage -----------------
-# Этот этап собирает приложение
-FROM dependencies as builder
-
-# Копируем исходный код
+# 3. Build Stage: Copy source code and build the application
+FROM dependencies AS build
+WORKDIR /usr/src/app
 COPY . .
-
-# Генерируем Prisma Client. Это критически важный шаг перед сборкой.
+# Генерируем Prisma Client
 RUN npm run prisma:generate --workspace=prodvor-backend
-
-# Собираем приложение
+# Собираем NestJS приложение
 RUN npm run build --workspace=prodvor-backend
 
-# ----------------- Runner Stage -----------------
-# Финальный, легковесный образ для запуска приложения
-FROM node:20-alpine as runner
-
+# 4. Runner Stage: Create a slim production image
+FROM base as runner
 WORKDIR /usr/src/app
 
-# Копируем production-зависимости из 'dependencies'
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=dependencies /usr/src/app/package.json ./package.json
-COPY --from=dependencies /usr/src/app/backend/package.json ./backend/package.json
-
-# Копируем скомпилированное приложение из 'builder'
-COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-# Копируем схему Prisma, она нужна для Prisma Client в рантайме
-COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
-
-# Указываем путь к исполняемым файлам из node_modules
+# Устанавливаем PATH, чтобы NestJS CLI был доступен
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
-# Команда для запуска приложения в режиме разработки (с --watch)
+# Копируем только production-зависимости из builder
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/package.json ./
+COPY --from=build /usr/src/app/backend/package.json ./backend/
+
+# Копируем скомпилированное приложение
+COPY --from=build /usr/src/app/backend/dist ./backend/dist
+COPY --from=build /usr/src/app/backend/prisma ./backend/prisma
+
+# Expose the port the app runs on
+EXPOSE 3001
+
+# The command to run the application
 CMD ["npm", "run", "start:dev", "--workspace=prodvor-backend"]
