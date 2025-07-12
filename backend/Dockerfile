@@ -1,49 +1,47 @@
-# 1. Builder stage: Устанавливаем зависимости и собираем приложение
+# 1. Builder stage: Install dependencies and build the backend app
 FROM node:20-alpine AS builder
 
-# Устанавливаем рабочую директорию
 WORKDIR /usr/src/app
 
-# Устанавливаем pnpm
-RUN npm install -g pnpm@9.15.9
-
-# Добавляем путь к исполняемым файлам pnpm в PATH
+# Add pnpm binaries to PATH
 ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 
-# Копируем файлы манифеста для установки зависимостей
+# Copy manifest files for dependency installation (cache efficient)
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем ВСЕ зависимости, включая devDependencies
+# Install ALL dependencies (including devDependencies)
 RUN pnpm install --frozen-lockfile
 
-# Копируем остальной исходный код
+# Copy the rest of the source code
 COPY . .
 
-# Генерируем Prisma-клиент
+# Generate Prisma client
 RUN pnpm --filter prodvor-backend prisma:generate
 
-# Собираем бэкенд-приложение
+# Build the backend application
 RUN pnpm --filter prodvor-backend build
 
-# 2. Runner stage: production-образ
+# 2. Runner stage: Create a slim image for production
 FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
-# Устанавливаем pnpm (нужно для install)
-RUN npm install -g pnpm@9.15.9
-
+# Copy manifest files for installing only production dependencies
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 
-# Production-зависимости только для запуска
+# Install ONLY production dependencies
 RUN pnpm install --prod --frozen-lockfile
 
-# Копируем скомпилированный код, prisma и клиент
+# Copy built backend code from builder stage
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+
+# Copy Prisma schema for migrations (if needed in CI/CD)
 COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
+
+# Copy generated Prisma client for runtime
 COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
 
 EXPOSE 3001

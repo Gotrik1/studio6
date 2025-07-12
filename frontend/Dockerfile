@@ -9,7 +9,7 @@ RUN npm install -g pnpm@9.15.9
 # Копируем файлы манифеста для установки зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY frontend/package.json ./frontend/
-COPY backend/package.json ./backend/  # Если нужно для сборки фронта
+COPY backend/package.json ./backend/ 
 
 # Устанавливаем все зависимости (dev и prod)
 RUN pnpm install --frozen-lockfile
