@@ -1,33 +1,36 @@
-# ==============================================================================
-# Этап 1: Base - Общая основа для установки зависимостей
-# ==============================================================================
+# -----------------------------------------------------------------------------
+# Base Stage: Installs dependencies and prepares the base environment.
+# -----------------------------------------------------------------------------
 FROM node:20-alpine AS base
 WORKDIR /usr/src/app
 
-# Устанавливаем pnpm глобально
-RUN npm install -g pnpm
+# Install OpenSSL, a dependency for Prisma Client
+RUN apk add --no-cache openssl
 
-# ==============================================================================
-# Этап 2: Dependencies - Установка всех зависимостей проекта
-# ==============================================================================
+# -----------------------------------------------------------------------------
+# Dependencies Stage: Installs npm packages.
+# Using pnpm for efficient dependency management in a monorepo.
+# -----------------------------------------------------------------------------
 FROM base AS dependencies
+WORKDIR /usr/src/app
 
-# Копируем корневые package.json и pnpm-lock.yaml, а также файл конфигурации воркспейсов
-COPY pnpm-workspace.yaml ./
-COPY package.json pnpm-lock.yaml* ./
+# Копируем корневой package.json и pnpm-lock.yaml для установки зависимостей
+COPY pnpm-lock.yaml ./
+COPY package.json ./
 
 # Копируем package.json бэкенда
-COPY backend/package.json ./backend/
+COPY package.json ./backend/
 
 # Устанавливаем все зависимости, включая devDependencies (они нужны для сборки и prisma generate)
-RUN pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# ==============================================================================
-# Этап 3: Build - Сборка приложения
-# ==============================================================================
-FROM dependencies AS build
+# -----------------------------------------------------------------------------
+# Build Stage: Compiles the NestJS application.
+# -----------------------------------------------------------------------------
+from dependencies AS builder
+WORKDIR /usr/src/app
 
-# Копируем весь исходный код
+# Копируем исходный код бэкенда и Prisma-схему
 COPY . .
 
 # Генерируем Prisma Client (требует devDependencies, установленных ранее)
@@ -36,27 +39,30 @@ RUN pnpm --filter prodvor-backend prisma:generate
 # Собираем приложение
 RUN pnpm --filter prodvor-backend build
 
-# ==============================================================================
-# Этап 4: Runner - Финальный, легковесный образ для запуска
-# ==============================================================================
-from base as runner
+# -----------------------------------------------------------------------------
+# Runner Stage: Creates the final, lightweight image for production.
+# -----------------------------------------------------------------------------
+FROM base AS runner
 WORKDIR /usr/src/app
 
-# Устанавливаем переменную окружения для production
+# Устанавливаем переменные окружения для Node
 ENV NODE_ENV production
 
-# Добавляем бинарники из node_modules в PATH
-# Это необходимо для запуска `nest` без полного пути
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+# Копируем только production-зависимости из builder-стадии
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/package.json ./
+COPY --from=builder /usr/src/app/backend/package.json ./backend/
 
-# Копируем только production-зависимости из этапа 'build'
-COPY --from=build /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/backend/node_modules ./backend/node_modules
-COPY --from=build /usr/src/app/package.json ./package.json
+# Копируем скомпилированное приложение
+COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+# Копируем Prisma-схему для runtime
+COPY --from=builder /usr/src/app/prisma ./prisma
+# Копируем сгенерированный Prisma Client
+COPY --from=builder /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client
 
-# Копируем собранное приложение
-COPY --from=build /usr/src/app/backend/dist ./backend/dist
-COPY --from=build /usr/src/app/backend/prisma ./backend/prisma
 
-# Запускаем приложение в production-режиме
-CMD ["pnpm", "--filter", "prodvor-backend", "start:prod"]
+# Открываем порт, на котором будет работать приложение
+EXPOSE 3001
+
+# Команда для запуска приложения
+CMD ["pnpm", "start:backend"]
