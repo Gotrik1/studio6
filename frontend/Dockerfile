@@ -3,18 +3,18 @@ FROM node:20-alpine AS builder
 
 WORKDIR /usr/src/app
 
-# Добавляем путь к исполняемым файлам pnpm в PATH
-ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
+# Устанавливаем pnpm глобально
+RUN npm install -g pnpm@9.15.9
 
 # Копируем файлы манифеста для установки зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+COPY backend/package.json ./backend/  # Если нужно для сборки фронта
 
-# Устанавливаем все зависимости
+# Устанавливаем все зависимости (dev и prod)
 RUN pnpm install --frozen-lockfile
 
-# Копируем исходный код
+# Копируем весь исходный код
 COPY . .
 
 # Собираем фронтенд
@@ -25,19 +25,24 @@ FROM node:20-alpine
 
 WORKDIR /usr/src/app
 
-# Копируем файлы манифеста для установки ТОЛЬКО production-зависимостей
+# Устанавливаем pnpm глобально (для запуска)
+RUN npm install -g pnpm@9.15.9
+
+# Копируем package.json и lock файлы, чтобы корректно ставились prod-зависимости
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY frontend/package.json ./frontend/
 
 # Устанавливаем только production-зависимости
 RUN pnpm install --prod --frozen-lockfile
 
-# Копируем собранное приложение из builder-стадии
+# Копируем собранный фронтенд
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+COPY --from=builder /usr/src/app/frontend/next.config.js ./frontend/next.config.js
+COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
 
-# Открываем порт, на котором будет работать приложение
+# Открываем порт для Next.js
 EXPOSE 9002
 
-# Команда для запуска приложения
+# Запуск сервера Next.js
 CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
