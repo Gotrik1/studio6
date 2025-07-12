@@ -170,11 +170,8 @@ services:
       keycloak-db:
         condition: service_healthy
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "bash -c 'exec 9<>/dev/tcp/localhost/9000 && echo -e \"GET /health/ready HTTP/1.1\\r\\nhost: localhost\\r\\nConnection: close\\r\\n\\r\\n\" >&9 && head -n 1 <&9 | grep \"HTTP/1.1 200\"'",
-        ]
+      test: >
+        bash -c "exec 9<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n' >&9 && head -n 1 <&9 | grep 'HTTP/1.1 200'"
       interval: 15s
       timeout: 5s
       retries: 30
@@ -264,6 +261,44 @@ services:
       - prodvor-network
 
   # ---------------------------------------------------
+  # Object Storage (S3-compatible)
+  # ---------------------------------------------------
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    ports:
+      - "9005:9005" # API
+      - "9001:9001" # Console
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9005/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - prodvor-network
+
+  create-minio-bucket:
+    image: minio/mc
+    container_name: create-minio-bucket
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set local http://minio:9005 ${MINIO_ROOT_USER:-minioadmin} ${MINIO_ROOT_PASSWORD:-minioadmin};
+      /usr/bin/mc mb local/${S3_BUCKET_NAME:-prodvor} --ignore-existing;
+      /usr/bin/mc policy set public local/${S3_BUCKET_NAME:-prodvor};
+      "
+    networks:
+      - prodvor-network
+
+  # ---------------------------------------------------
   # Monitoring & Observability
   # ---------------------------------------------------
   prometheus:
@@ -336,7 +371,9 @@ services:
         condition: service_healthy
       keycloak:
         condition: service_healthy
-    command: npm run start:prod --workspace=prodvor-backend
+      create-minio-bucket:
+        condition: service_completed_successfully
+    command: npm run start:dev --workspace=prodvor-backend
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://localhost:3001 || exit 1"]
       interval: 10s
@@ -389,3 +426,6 @@ volumes:
   rabbitmq_data:
   prometheus_data:
   grafana_data:
+  minio_data:
+
+    
