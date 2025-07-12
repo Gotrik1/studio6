@@ -1,4 +1,4 @@
-# 1. Base stage with pnpm
+# 1. Base stage
 FROM node:20-alpine AS base
 RUN npm install -g pnpm
 
@@ -7,12 +7,13 @@ FROM base AS dependencies
 WORKDIR /usr/src/app
 
 # Копируем корневой package.json и pnpm-lock.yaml
-COPY package.json pnpm-lock.yaml ./
+COPY pnpm-lock.yaml .
+COPY package.json .
 # Копируем package.json воркспейсов
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем все зависимости
+# Устанавливаем все зависимости монорепозитория
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # 3. Builder stage
@@ -21,13 +22,16 @@ FROM base AS builder
 ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 WORKDIR /usr/src/app
 
-# Копируем все из предыдущего стейджа, включая node_modules
+# Копируем установленные зависимости
 COPY --from=dependencies /usr/src/app/ .
 
-# Копируем исходный код бэкенда и другие необходимые файлы
+# Копируем исходный код бэкенда и Prisma схему
 COPY backend/ ./backend/
-COPY backend/prisma/ ./prisma/
+COPY prisma/ ./prisma/
 COPY tsconfig.json .
+
+# Генерируем Prisma клиент
+RUN pnpm --filter prodvor-backend prisma:generate
 
 # Собираем бэкенд
 RUN pnpm --filter prodvor-backend build
@@ -38,13 +42,12 @@ FROM base AS runner
 ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 WORKDIR /usr/src/app
 
-# Копируем только необходимые для запуска файлы из builder'а
-COPY --from=builder /usr/src/app/dist ./dist
+# Копируем только необходимые для запуска файлы из builder
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package.json .
-COPY --from=builder /usr/src/app/backend/package.json ./backend/
+COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
 # Копируем схему Prisma, она нужна для запуска
-COPY --from=builder /usr/src/app/prisma ./prisma/
+COPY --from=builder /usr/src/app/prisma ./prisma
 
 EXPOSE 3001
-CMD [ "node", "dist/main.js" ]
+CMD ["pnpm", "start:backend"]
