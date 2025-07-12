@@ -1,37 +1,56 @@
-# ---- Base ----
-# Use a specific Node.js version for consistency
-FROM node:20-alpine AS base
+# ----------------- Base Stage -----------------
+# Используем официальный образ Node.js
+FROM node:20-alpine as base
 
-# ---- Dependencies ----
-# Install all dependencies, including devDependencies for the build step
-FROM base AS dependencies
 WORKDIR /usr/src/app
+
+# Устанавливаем npm в качестве пакетного менеджера по умолчанию
+# npm уже включен в этот образ, так что дополнительных установок не требуется
+
+# ----------------- Dependencies Stage -----------------
+# Этот этап устанавливает все зависимости, включая devDependencies
+FROM base as dependencies
+
+# Копируем package.json и package-lock.json для установки зависимостей
+# Копируем корневой package.json для определения воркспейсов
 COPY package.json package-lock.json ./
+# Копируем package.json бэкенда
 COPY backend/package.json ./backend/
-# Note: We are now installing ALL dependencies, not just production ones
-# This is necessary for the build step which requires @nestjs/cli
-RUN npm install --workspace=prodvor-backend
 
-# ---- Build ----
-# Build the application
-FROM dependencies AS build
-WORKDIR /usr/src/app
+# Устанавливаем все зависимости, включая devDependencies (они нужны для сборки и prisma generate)
+RUN npm install
+
+# ----------------- Build Stage -----------------
+# Этот этап собирает приложение
+FROM dependencies as builder
+
+# Копируем исходный код
 COPY . .
+
+# Генерируем Prisma Client. Это критически важный шаг перед сборкой.
+RUN npm run prisma:generate --workspace=prodvor-backend
+
+# Собираем приложение
 RUN npm run build --workspace=prodvor-backend
 
-# ---- Runner ----
-# Final, smaller image for running the application
-FROM base AS runner
+# ----------------- Runner Stage -----------------
+# Финальный, легковесный образ для запуска приложения
+FROM node:20-alpine as runner
+
 WORKDIR /usr/src/app
 
-# Set the PATH to include node_modules/.bin to find the nest command
-ENV PATH /usr/src/app/backend/node_modules/.bin:$PATH
+# Копируем production-зависимости из 'dependencies'
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=dependencies /usr/src/app/package.json ./package.json
+COPY --from=dependencies /usr/src/app/backend/package.json ./backend/package.json
 
-# Copy only necessary files from previous stages
-COPY --from=build /usr/src/app/dist ./dist
-COPY --from=build /usr/src/app/package.json ./package.json
-COPY --from=build /usr/src/app/backend/package.json ./backend/
-COPY --from=build /usr/src/app/backend/node_modules ./backend/node_modules
+# Копируем скомпилированное приложение из 'builder'
+COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+# Копируем схему Prisma, она нужна для Prisma Client в рантайме
+COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
 
-# The command to run the application (start:dev needs devDependencies)
+# Указываем путь к исполняемым файлам из node_modules
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
+# Команда для запуска приложения в режиме разработки (с --watch)
 CMD ["npm", "run", "start:dev", "--workspace=prodvor-backend"]
