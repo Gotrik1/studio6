@@ -26,7 +26,7 @@ COPY --from=dependencies /usr/src/app/ .
 
 # Copy backend source code and other necessary files
 COPY backend/ ./backend/
-COPY prisma/ ./prisma/
+COPY backend/prisma/ ./prisma/
 COPY tsconfig.json .
 
 # Build the backend
