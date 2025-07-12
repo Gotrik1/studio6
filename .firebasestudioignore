@@ -7,6 +7,7 @@ docs/
 backend/dist/
 frontend/.next/
 frontend/dist/
+/.next/
 
 # Игнорировать большие lock-файлы
 package-lock.json
