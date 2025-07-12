@@ -42,7 +42,7 @@ COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
 
 # Copy the generated Prisma client to the final image
-COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
 # An alternative and safer path for prisma client
 COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
 
