@@ -1,35 +1,29 @@
-# Dockerfile for NestJS Backend
-
-# ---- Base ----
+# Stage 1: Base image with Node.js
 FROM node:20-alpine AS base
 WORKDIR /usr/src/app
 
-# ---- Dependencies ----
+# Stage 2: Install dependencies
+# Copy all package.json files and the lock file first
 FROM base AS dependencies
-# Копируем package.json и package-lock.json всего монорепозитория
 COPY package.json package-lock.json ./
-# Устанавливаем зависимости только для backend
-RUN npm install --workspace=prodvor-backend --omit=dev
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+# Install ALL dependencies for the monorepo
+RUN npm install --omit=dev
 
-# ---- Builder ----
+# Stage 3: Build the backend application
+# Copy the source code and use the installed node_modules
 FROM base AS builder
-# Копируем зависимости из предыдущего шага
+COPY . .
 COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=dependencies /usr/src/app/package.json ./package.json
-# Копируем исходный код бэкенда
-COPY backend/ ./
-# Генерируем Prisma Client
-RUN npx prisma generate
-# Собираем приложение
 RUN npm run build --workspace=prodvor-backend
 
-# ---- Production ----
+# Stage 4: Production image
+# Copy only the necessary files from the builder stage
 FROM base AS production
-ENV NODE_ENV=production
-# Копируем собранное приложение и зависимости
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=dependencies /usr/src/app/package.json ./package.json
-COPY backend/prisma ./prisma
-# Запускаем приложение
+COPY backend/package.json ./backend/package.json
+
+EXPOSE 3001
 CMD ["node", "dist/main.js"]
