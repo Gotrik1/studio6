@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "install:all": "pnpm install",
     "dev": "pnpm --filter prodvor-frontend dev",
     "build": "pnpm --filter \"./**\" build",
     "lint": "pnpm --filter \"./**\" lint",
