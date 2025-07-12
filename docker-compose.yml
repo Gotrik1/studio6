@@ -427,4 +427,3 @@ volumes:
   grafana_data:
   minio_data:
 
-    
