@@ -1,73 +1,55 @@
-# -----------------------------------------------------------------------------
-# Этап 1: Установка зависимостей
-# -----------------------------------------------------------------------------
+# Stage 1: Установка зависимостей
 FROM node:20-alpine AS dependencies
-
 WORKDIR /usr/src/app
 
-# Установка OpenSSL
-RUN apk add --no-cache openssl
+# Устанавливаем pnpm глобально
+RUN npm install -g pnpm
 
-# Копируем корневые файлы для установки зависимостей воркспейса
-COPY pnpm-workspace.yaml ./
+# Копируем package.json и pnpm-lock.yaml из корня монорепозитория
+COPY pnpm-lock.yaml ./
 COPY package.json ./
 
 # Копируем package.json бэкенда
-COPY backend/package.json ./backend/
-
+COPY package.json ./backend/
 # Устанавливаем все зависимости, включая devDependencies (они нужны для сборки и prisma generate)
-RUN --mount=type=cache,id=pnpm-store,target=/root/.pnpm-store \
-    pnpm install --frozen-lockfile --filter prodvor-backend
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # -----------------------------------------------------------------------------
-# Этап 2: Сборка проекта
-# -----------------------------------------------------------------------------
-FROM node:20-alpine AS builder
 
+# Stage 2: Сборка приложения
+FROM dependencies AS builder
 WORKDIR /usr/src/app
 
-# Копируем зависимости из предыдущего этапа
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=dependencies /usr/src/app/backend/node_modules ./backend/node_modules
+# Копируем исходный код бэкенда
+COPY ./backend/ ./backend/
 
-# Копируем исходный код
-COPY backend/ ./backend/
-COPY prisma/ ./prisma/
-# Копируем корневой tsconfig, чтобы NestJS мог его найти
-COPY tsconfig.json .
-COPY package.json .
-
-# Добавляем nest в PATH
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
-
-# Генерируем Prisma Client
+# Генерируем Prisma Client (требует devDependencies, установленных ранее)
 RUN pnpm --filter prodvor-backend prisma:generate
 
 # Собираем приложение
 RUN pnpm --filter prodvor-backend build
 
 # -----------------------------------------------------------------------------
-# Финальный этап: Production-образ
-# -----------------------------------------------------------------------------
-FROM node:20-alpine AS runner
 
+# Stage 3: Финальный образ
+from node:20-alpine as runner
 WORKDIR /usr/src/app
 
-# Установка OpenSSL для Prisma
+ENV NODE_ENV=production
+
+# Устанавливаем OpenSSL
 RUN apk add --no-cache openssl
 
-# Копируем только production-зависимости
+# Копируем только production-зависимости из builder-стадии
 COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
 
-# Копируем собранный код
+# Копируем собранное приложение
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
-COPY --from=builder /usr/src/app/prisma ./prisma
-COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /usr/src/app/backend/package.json ./backend/
 
-USER node
+# Копируем Prisma schema для runtime
+COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
 
 EXPOSE 3001
-
 CMD ["node", "backend/dist/main"]
