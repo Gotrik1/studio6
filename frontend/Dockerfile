@@ -1,60 +1,43 @@
-# 1. Base stage with pnpm
-FROM node:20-alpine AS base
+# 1. Base stage
+FROM docker.io/library/node:20-alpine as base
 RUN npm install -g pnpm
 
 # 2. Dependencies stage
-FROM base AS dependencies
-WORKDIR /usr/src/app
-
-# Копируем корневой package.json и pnpm-lock.yaml
+FROM base as dependencies
+WORKDIR /app
 COPY pnpm-lock.yaml .
 COPY package.json .
-COPY pnpm-workspace.yaml .
-# Копируем package.json воркспейсов
-COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-
-# Устанавливаем все зависимости для всех воркспейсов
+COPY backend/package.json ./backend/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-
 # 3. Builder stage
-FROM base AS builder
+FROM base as builder
 WORKDIR /app
-
-# Явно добавляем путь к бинарным файлам pnpm в PATH
+# Add the node_modules/.bin to the PATH
 ENV PATH="/app/node_modules/.bin:$PATH"
-
-# Копируем установленные зависимости из предыдущего этапа
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=dependencies /usr/src/app/package.json ./package.json
-COPY --from=dependencies /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=dependencies /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
-COPY --from=dependencies /usr/src/app/frontend/package.json ./frontend/
-
-# Копируем исходный код фронтенда
+COPY --from=dependencies /app/ .
 COPY frontend/ ./frontend/
 COPY tsconfig.json .
-
-# Устанавливаем переменные окружения для сборки
-ARG NEXT_PUBLIC_BACKEND_URL
-ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
-
-# Собираем фронтенд
+COPY tailwind.config.ts .
+COPY postcss.config.mjs .
+COPY next.config.mjs .
 RUN pnpm --filter prodvor-frontend build
 
 # 4. Runner stage
-FROM base AS runner
+FROM base as runner
 WORKDIR /app
-
-# Явно добавляем путь к бинарным файлам pnpm в PATH
+# Add the node_modules/.bin to the PATH
 ENV PATH="/app/node_modules/.bin:$PATH"
 
-# Копируем только необходимые для запуска артефакты
+# Copy production dependencies
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=dependencies /app/package.json .
+COPY --from=dependencies /app/frontend/package.json ./frontend/
+
+# Copy built app
 COPY --from=builder /app/frontend/.next ./frontend/.next
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/frontend/package.json ./frontend/
 COPY --from=builder /app/frontend/public ./frontend/public
 
 EXPOSE 9002
-CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
+CMD ["pnpm", "start:frontend"]
