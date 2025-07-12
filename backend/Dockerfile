@@ -1,51 +1,63 @@
-# 1. Base stage for installing pnpm
-FROM node:20-alpine AS base
+# ---- Base Stage ----
+FROM node:20-slim AS base
+WORKDIR /usr/src/app
 RUN npm install -g pnpm
 
-# 2. Dependencies stage
-FROM base AS dependencies
+# ---- Dependencies Stage ----
+FROM base AS deps
 WORKDIR /usr/src/app
-COPY pnpm-lock.yaml .
-COPY package.json .
-COPY pnpm-workspace.yaml .
+
+# Копируем только файлы манифестов для кэширования зависимостей
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# 3. Builder stage
+# Устанавливаем ВСЕ зависимости, включая devDependencies для сборки
+RUN pnpm install --frozen-lockfile
+
+# ---- Builder Stage ----
 FROM base AS builder
 WORKDIR /usr/src/app
 
-# This is the crucial step that makes workspace binaries available.
+# Копируем зависимости из предыдущего этапа
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY --from=deps /usr/src/app/backend/package.json ./backend/package.json
+COPY --from=deps /usr/src/app/package.json ./package.json
+
+# Копируем исходный код бэкенда и Prisma схему
+COPY backend/ ./backend/
+
+# Устанавливаем PATH, чтобы Docker мог найти исполняемые файлы pnpm (prisma, nest)
 ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 
-COPY --from=dependencies /usr/src/app/ .
-COPY backend/ ./backend/
-COPY tsconfig.json .
-
-# Generate Prisma client
+# Генерируем Prisma клиент
 RUN pnpm --filter prodvor-backend prisma:generate
 
-# Build the backend
+# Собираем бэкенд
 RUN pnpm --filter prodvor-backend build
 
-# 4. Runner stage
+# ---- Runner Stage (Final) ----
 FROM base AS runner
 WORKDIR /usr/src/app
 
-# Again, set the PATH to find node_modules binaries
-ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
+# Копируем манифесты для установки ТОЛЬКО production зависимостей
+COPY --from=builder /usr/src/app/package.json \
+     /usr/src/app/pnpm-lock.yaml \
+     /usr/src/app/pnpm-workspace.yaml \
+     ./
+COPY --from=builder /usr/src/app/backend/package.json ./backend/
 
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=dependencies /usr/src/app/backend/node_modules ./backend/node_modules
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
+# Устанавливаем только production зависимости, чтобы уменьшить размер образа
+RUN pnpm install --prod --frozen-lockfile
 
-# Copy the generated Prisma client to the final image
-COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
-# An alternative and safer path for prisma client
-COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
+# Копируем собранный код из builder stage
+COPY --from=builder /usr/src/app/backend/dist ./backend/dist
 
+# Копируем сгенерированный Prisma-клиент
+COPY --from=builder /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client
+
+# Копируем схему Prisma, необходимую для работы клиента в рантайме
+COPY --from=builder /usr/src/app/backend/prisma/schema.prisma ./backend/prisma/schema.prisma
 
 EXPOSE 3001
-CMD ["pnpm", "start:backend"]
+CMD ["node", "backend/dist/main"]
