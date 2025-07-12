@@ -1,7 +1,6 @@
 # Docker
 .docker
 .dockerignore
-Dockerfile
 docker-compose.yml
 docker-compose.ci.yml
 
@@ -47,4 +46,3 @@ pnpm-debug.log*
 LICENSE
 *.txt
 *.lock
-pnpm-lock.yaml
