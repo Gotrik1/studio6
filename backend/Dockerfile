@@ -1,52 +1,51 @@
-# 1. Base stage
-FROM node:20-alpine as base
+# Dockerfile для бэкенда (NestJS)
+
+# 1. Base stage для установки pnpm
+FROM node:20-alpine AS base
 RUN npm install -g pnpm
 
-# 2. Dependencies stage
-FROM base as dependencies
+# 2. Dependencies stage для установки зависимостей
+FROM base AS dependencies
 WORKDIR /usr/src/app
-
 COPY pnpm-lock.yaml .
 COPY package.json .
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --filter prodvor-backend...
 
-# This is the crucial step for monorepo installs.
-# It ensures all workspace dependencies are installed correctly.
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-
-
-# 3. Builder stage
-FROM base as builder
+# 3. Builder stage для сборки приложения
+FROM base AS builder
+ENV NODE_ENV=production
+# Добавляем путь к исполняемым файлам pnpm
+ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 WORKDIR /usr/src/app
 
-# This is the crucial step to make sure executables are found.
-ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
-
-# Copy dependencies and source code
+# Копируем зависимости из предыдущего стейджа
 COPY --from=dependencies /usr/src/app/ .
+
+# Копируем исходный код бэкенда
 COPY backend/ ./backend/
 COPY backend/prisma/ ./prisma/
 COPY tsconfig.json .
 
-# Build the backend
+# Генерируем Prisma-клиент
+RUN pnpm --filter prodvor-backend prisma:generate
+
+# Собираем бэкенд
 RUN pnpm --filter prodvor-backend build
 
-# 4. Runner stage
-FROM base as runner
+# 4. Runner stage для запуска приложения
+FROM base AS runner
+ENV NODE_ENV=production
+# Добавляем путь к исполняемым файлам pnpm
+ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 WORKDIR /usr/src/app
 
-# This is the crucial step to make sure executables are found.
-ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
-
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
+# Копируем собранные файлы и зависимости
 COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
-COPY --from=builder /usr/src/app/package.json .
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=dependencies /usr/src/app/package.json .
+COPY --from=dependencies /usr/src/app/backend/package.json ./backend/package.json
 
-# Prisma client needs to be available in the final image
-COPY --from=builder /usr/src/app/backend/prisma/schema.prisma ./backend/prisma/schema.prisma
-
-EXPOSE 3001
+# Команда для запуска приложения
 CMD ["pnpm", "start:backend"]
