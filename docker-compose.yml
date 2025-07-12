@@ -161,7 +161,6 @@ services:
       KC_HEALTH_ENABLED: "true"
     ports:
       - "8180:8080"
-      - "9000:9000"
     volumes:
       - ./config/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
     restart: on-failure
@@ -426,4 +425,3 @@ volumes:
   grafana_data:
   minio_data:
 
-    
