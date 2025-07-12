@@ -398,17 +398,14 @@ packages:
   '@fast-csv/format@5.0.0':
     resolution: {integrity: sha512-eCjBf3Cjp/h6PZf9tCqfQx+Nf75B6Fr9I0V3iLq9Z3e2O23zLMAOadunpC57XM5Pz2XwT58r6kC5x5D1I+5kFw==}
     engines: {node: '>=14.17.0'}
-    dev: false
 
   '@fast-csv/parse@5.0.0':
     resolution: {integrity: sha512-rS6J1Jj39P8wOH00s/P2uG3sM/YVnA6pQj2jD2L3Lg08pYpDEeL5/6nU3aQpPBlxRkRT6p055QvD6hMQQYIqA==}
     engines: {node: '>=14.17.0'}
-    dev: false
 
   '@fast-csv/whatwg-stream-to-async-iterator@5.0.0':
     resolution: {integrity: sha512-XkM55gNn0qLp8Zl1Q3mG6p+eO5jYI4J34ZShhU5eSgB2S5nO3wBmX/i6iWc1s4oYV72w0g+9dDdE/8Jlg==}
     engines: {node: '>=14.17.0'}
-    dev: false
 
   '@golevelup/nestjs-rabbitmq@5.3.0(@nestjs/common@10.3.10)(@nestjs/core@10.3.10)(amqplib@0.10.4)':
     resolution: {integrity: sha512-Y4tN51G9N6vG2p/y2nQ2J9/D0p0m2p5q5v1q1p5w9s9o6z7k8l4j0n5v1q1p5w9s9o6z7k8l4j0n5v1q1==}
@@ -427,7 +424,6 @@ packages:
     transitivePeerDependencies:
       - '@types/express'
       - '@types/node'
-    dev: false
 
   '@google-cloud/firestore@7.10.0':
     resolution: {integrity: sha512-W+m750E634eF2iR2cO5235mX7hM5o1X6y7T2Y9w5h9m1w6g2p1q4k4h7z2f4g1o3h5w9s9o6z7k8l==}
@@ -437,8 +433,7 @@ packages:
       '@grpc/grpc-js': 1.11.1
       '@grpc/proto-loader': 0.7.13
       'google-gax': 4.5.0
-      'protobufjs': 7.3.2
-    dev: false
+      protobufjs: 7.3.2
 
   '@google/generative-ai@0.15.0':
     resolution: {integrity: sha512-n20eTq0w8D7c1b2f3g4h5i6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x1y2z3a4b5c6d7e8f9g0h1i2j==}
@@ -447,11 +442,9 @@ packages:
       '@fast-csv/format': 5.0.0
       '@fast-csv/parse': 5.0.0
       '@fast-csv/whatwg-stream-to-async-iterator': 5.0.0
-    dev: false
 
   '@opentelemetry/api@1.9.0':
     resolution: {integrity: sha512-pP5yT9kZ+1/5+4lE4h1z+4/5+6/7+8+9+0+a+b+c+d+e+f+g+h+i+j+k+l+m+n+o+p+q+r+s+t+u+v==}
-    dev: false
 
   '@types/eslint__js@8.42.3':
     resolution: {integrity: sha512-sCg1M3tGg7Yj41u1vF6TjE9iLqY+1L+2A+3B+4C+5D+6E+7F+8G+9H+0I+1J+2K+3L+4M+5N+6O+7P==}
@@ -473,13 +466,11 @@ packages:
     resolution: {integrity: sha512-s+k+l+3a+b+c+d+e+f+g+h+i+j+k+l+m+n+o+p+q+r+s+t+u+v+w+x+y+z+0+1+2+3+4+5+6+7+8+9==}
     dependencies:
       '@types/node': 20.16.4
-    dev: true
 
   '@types/node@20.16.4':
     resolution: {integrity: sha512-XwM+k3n3+a+b+c+d+e+f+g+h+i+j+k+l+m+n+o+p+q+r+s+t+u+v+w+x+y+z+0+1+2+3+4+5+6+7+8+9==}
     dependencies:
       undici-types: 6.19.2
-    dev: false
 
   '@types/prettier@3.0.0':
     resolution: {integrity: sha512-a+b+c+d+e+f+g+h+i+j+k+l+m+n+o+p+q+r+s+t+u+v+w+x+y+z+0+1+2+3+4+5+6+7+8+9==}
@@ -582,1125 +573,112 @@ packages:
     dev: true
 
   ansi-styles@4.3.0:
-    resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxs2BmnzwjveAnnotations:
-      "dependencies":
-        "react-hook-form": "7.54.2(react@18.3.1)(zod@3.24.2)"
-  '@radix-ui/react-popover@1.1.6(react@18.3.1)':
-    version: 1.1.6
-    resolution: {integrity: sha512-w/x/y/z/0/1/2/3/4/5/6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/primitive': 1.1.2(react@18.3.1)
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-context': 1.1.2(react@18.3.1)
-      '@radix-ui/react-dismissable-layer': 1.1.7(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-focus-scope': 1.1.5(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-portal': 1.1.4(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-portal@1.1.4(react@18.3.1)':
-    version: 1.1.4
-    resolution: {integrity: sha512-x/y/z/0/1/2/3/4/5/6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-      react-dom: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-      react-dom:
-        optional: false
-  '@radix-ui/react-presence@1.1.1(react@18.3.1)':
-    version: 1.1.1
-    resolution: {integrity: sha512-y/z/0/1/2/3/4/5/6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-      react-dom: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-      react-dom:
-        optional: false
-  '@radix-ui/react-primitive@1.1.2(react@18.3.1)':
-    version: 1.1.2
-    resolution: {integrity: sha512-z/0/1/2/3/4/5/6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-      react-dom: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-slot': 1.2.3(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-      react-dom:
-        optional: false
-  '@radix-ui/react-progress@1.1.2(react@18.3.1)':
-    version: 1.1.2
-    resolution: {integrity: sha512-0/1/2/3/4/5/6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-radio-group@1.2.3(react@18.3.1)':
-    version: 1.2.3
-    resolution: {integrity: sha512-1/2/3/4/5/6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-context': 1.1.2(react@18.3.1)
-      '@radix-ui/react-label': 2.1.2(react@18.3.1)
-      '@radix-ui/react-presence': 1.1.1(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-scroll-area@1.2.3(react@18.3.1)':
-    version: 1.2.3
-    resolution: {integrity: sha512-2/3/4/5/6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-select@2.1.6(react@18.3.1)':
-    version: 2.1.6
-    resolution: {integrity: sha512-3/4/5/6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-      react-dom: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-context': 1.1.2(react@18.3.1)
-      '@radix-ui/react-dismissable-layer': 1.1.7(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-focus-scope': 1.1.5(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-popper': 1.2.3(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-portal': 1.1.4(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      '@radix-ui/react-scroll-area': 1.2.3(react@18.3.1)
-      'react': 18.3.1
-      'react-dom': 18.3.1(react@18.3.1)
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-      react-dom:
-        optional: false
-  '@radix-ui/react-separator@1.1.2(react@18.3.1)':
-    version: 1.1.2
-    resolution: {integrity: sha512-4/5/6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-slider@1.2.3(react@18.3.1)':
-    version: 1.2.3
-    resolution: {integrity: sha512-5/6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-slot@1.2.3(react@18.3.1)':
-    version: 1.2.3
-    resolution: {integrity: sha512-6/7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-switch@1.1.3(react@18.3.1)':
-    version: 1.1.3
-    resolution: {integrity: sha512-7/8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      '@radix-ui/react-use-controllable-state': 1.1.1(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-tabs@1.1.3(react@18.3.1)':
-    version: 1.1.3
-    resolution: {integrity: sha512-8/9==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-toast@1.2.6(react@18.3.1)':
-    version: 1.2.6
-    resolution: {integrity: sha512-9/0==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-      react-dom: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-context': 1.1.2(react@18.3.1)
-      '@radix-ui/react-dismissable-layer': 1.1.7(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      '@radix-ui/react-use-layout-effect': 1.1.1(react@18.3.1)
-      '@radix-ui/react-use-previous': 1.1.1(react@18.3.1)
-      '@radix-ui/react-use-rect': 1.1.1(react@18.3.1)
-      '@radix-ui/react-use-size': 1.1.1(react@18.3.1)
-      'react': 18.3.1
-      'react-dom': 18.3.1(react@18.3.1)
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-      react-dom:
-        optional: false
-  '@radix-ui/react-tooltip@1.1.8(react@18.3.1)':
-    version: 1.1.8
-    resolution: {integrity: sha512-a/b==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-      react-dom: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      '@radix-ui/react-context': 1.1.2(react@18.3.1)
-      '@radix-ui/react-dismissable-layer': 1.1.7(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-popper': 1.2.3(react-dom@18.3.1)(react@18.3.1)
-      '@radix-ui/react-presence': 1.1.1(react@18.3.1)
-      '@radix-ui/react-primitive': 1.1.2(react@18.3.1)
-      '@radix-ui/react-use-controllable-state': 1.1.1(react@18.3.1)
-      'react': 18.3.1
-      'react-dom': 18.3.1(react@18.3.1)
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-      react-dom:
-        optional: false
-  '@radix-ui/react-use-callback-ref@1.1.1(react@18.3.1)':
-    version: 1.1.1
-    resolution: {integrity: sha512-b/c==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-compose-refs': 1.1.2(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-use-controllable-state@1.1.1(react@18.3.1)':
-    version: 1.1.1
-    resolution: {integrity: sha512-c/d==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-use-callback-ref': 1.1.1(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-use-layout-effect@1.1.1(react@18.3.1)':
-    version: 1.1.1
-    resolution: {integrity: sha512-d/e==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-use-previous@1.1.1(react@18.3.1)':
-    version: 1.1.1
-    resolution: {integrity: sha512-e/f==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-use-rect@1.1.1(react@18.3.1)':
-    version: 1.1.1
-    resolution: {integrity: sha512-f/g==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-use-callback-ref': 1.1.1(react@18.3.1)
-      '@radix-ui/react-use-layout-effect': 1.1.1(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@radix-ui/react-use-size@1.1.1(react@18.3.1)':
-    version: 1.1.1
-    resolution: {integrity: sha512-g/h==}
-    peerDependencies:
-      react: ^16.8 || ^17.0 || ^18.0
-    dependencies:
-      '@radix-ui/react-use-layout-effect': 1.1.1(react@18.3.1)
-      react: 18.3.1
-    dev: false
-    optional: false
-    peerDependenciesMeta:
-      react:
-        optional: false
-  '@types/eslint-visitor-keys@1.0.3':
-    version: 1.0.3
-    resolution: {integrity: sha512-h/i==}
-    dependencies:
-      '@types/estree': 1.0.5
-    dev: true
-    optional: false
-  '@types/eslint@8.56.10':
-    version: 8.56.10
-    resolution: {integrity: sha512-i/j==}
-    dependencies:
-      '@types/eslint-scope': 3.7.7
-      '@types/estree': 1.0.5
-      '@types/json-schema': 7.0.15
-    dev: true
-    optional: false
-  '@types/glob@8.1.0':
-    version: 8.1.0
-    resolution: {integrity: sha512-j/k==}
-    dependencies:
-      '@types/node': 20.16.4
-      '@types/minimatch': 5.1.2
-    dev: true
-    optional: false
-  '@types/long@5.0.0':
-    version: 5.0.0
-    resolution: {integrity: sha512-k/l==}
-    dev: false
-    optional: false
-  '@types/prop-types@15.7.12':
-    version: 15.7.12
-    resolution: {integrity: sha512-l/m==}
-    dev: true
-    optional: false
-  '@types/qs@6.9.15':
-    version: 6.9.15
-    resolution: {integrity: sha512-m/n==}
-    dependencies:
-      '@types/node': 20.16.4
-    dev: false
-    optional: false
-  '@types/semver@7.5.8':
-    version: 7.5.8
-    resolution: {integrity: sha512-n/o==}
-    dev: true
-    optional: false
-  '@types/ws@8.5.11':
-    version: 8.5.11
-    resolution: {integrity: sha512-o/p==}
-    dependencies:
-      '@types/node': 20.16.4
-    dev: false
-    optional: false
-  'aria-hidden@1.1.2':
-    version: 1.1.2
-    resolution: {integrity: sha512-p/q==}
-    dev: false
-    optional: false
-  'array-buffer-byte-length@1.0.0':
-    version: 1.0.0
-    resolution: {integrity: sha512-q/r==}
-    dev: false
-    optional: false
-  'array-union@2.1.0':
-    version: 2.1.0
-    resolution: {integrity: sha512-r/s==}
-    engines: {node: '>=8'}
-    dev: true
-    optional: false
-  'array.prototype.flat@1.3.2':
-    version: 1.3.2
-    resolution: {integrity: sha512-s/t==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      'define-properties': 1.2.1
-      'es-abstract': 1.23.0
-      'es-shim-unscopables': 1.0.2
-    dev: true
-    optional: false
-  'array.prototype.flatmap@1.3.2':
-    version: 1.3.2
-    resolution: {integrity: sha512-t/u==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      'define-properties': 1.2.1
-      'es-abstract': 1.23.0
-      'es-shim-unscopables': 1.0.2
-    dev: true
-    optional: false
-  'arraybuffer.prototype.slice@1.0.2':
-    version: 1.0.2
-    resolution: {integrity: sha512-u/v==}
-    dependencies:
-      'array-buffer-byte-length': 1.0.0
-      'call-bind': 1.0.7
-      'define-properties': 1.2.1
-      'es-abstract': 1.23.0
-      'get-intrinsic': 1.2.4
-      'is-array-buffer': 1.0.2
-    dev: false
-    optional: false
-  'available-typed-arrays@1.0.7':
-    version: 1.0.7
-    resolution: {integrity: sha512-v/w==}
-    engines: {node: '>= 0.4'}
-    dev: true
-    optional: false
-  'balanced-match@1.0.2':
-    version: 1.0.2
-    resolution: {integrity: sha512-w/x==}
-    dev: true
-    optional: false
-  'brace-expansion@1.1.11':
-    version: 1.1.11
-    resolution: {integrity: sha512-x/y==}
-    dependencies:
-      'balanced-match': 1.0.2
-      'concat-map': 0.0.1
-    dev: true
-    optional: false
-  'call-bind@1.0.7':
-    version: 1.0.7
-    resolution: {integrity: sha512-y/z==}
-    dependencies:
-      'es-define-property': 1.0.0
-      'es-errors': 1.3.0
-      'get-intrinsic': 1.2.4
-    dev: false
-    optional: false
-  'call-me-maybe@1.0.2':
-    version: 1.0.2
-    resolution: {integrity: sha512-z/0==}
-    dev: false
-    optional: false
-  'color-convert@2.0.1':
-    version: 2.0.1
-    resolution: {integrity: sha512-0/1==}
-    engines: {node: '>=7.0.0'}
-    dependencies:
-      'color-name': 1.1.4
-    dev: true
-    optional: false
-  'color-name@1.1.4':
-    version: 1.1.4
-    resolution: {integrity: sha512-1/2==}
-    dev: true
-    optional: false
-  'commander@2.20.3':
-    version: 2.20.3
-    resolution: {integrity: sha512-2/3==}
-    dev: false
-    optional: false
-  'concat-map@0.0.1':
-    version: 0.0.1
-    resolution: {integrity: sha512-3/4==}
-    dev: true
-    optional: false
-  'define-properties@1.2.1':
-    version: 1.2.1
-    resolution: {integrity: sha512-4/5==}
-    dependencies:
-      'define-property': 1.0.1
-      'es-abstract': 1.23.0
-    dev: true
-    optional: false
-  'define-property@1.0.1':
-    version: 1.0.1
-    resolution: {integrity: sha512-5/6==}
-    dependencies:
-      'get-intrinsic': 1.2.4
-      'has-property-descriptors': 1.0.2
-      'is-descriptor': 1.0.3
-    dev: true
-    optional: false
-  'dir-glob@3.0.1':
-    version: 3.0.1
-    resolution: {integrity: sha512-6/7==}
-    engines: {node: '>=8'}
-    dependencies:
-      'array-union': 2.1.0
-      'path-type': 4.0.0
-    dev: true
-    optional: false
-  'es-define-property@1.0.0':
-    version: 1.0.0
-    resolution: {integrity: sha512-7/8==}
-    dependencies:
-      'get-intrinsic': 1.2.4
-    dev: true
-    optional: false
-  'es-errors@1.3.0':
-    version: 1.3.0
-    resolution: {integrity: sha512-8/9==}
-    engines: {node: '>= 0.4'}
-    dev: true
-    optional: false
-  'es-shim-unscopables@1.0.2':
-    version: 1.0.2
-    resolution: {integrity: sha512-9/0==}
-    dependencies:
-      'hasown': 2.0.2
-    dev: true
-    optional: false
-  'escape-string-regexp@4.0.0':
-    version: 4.0.0
-    resolution: {integrity: sha512-a/b==}
-    engines: {node: '>=8'}
-    dev: true
-    optional: false
-  'eslint-scope@7.2.2(eslint@8.57.0)':
-    version: 7.2.2
-    resolution: {integrity: sha512-b/c==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    peerDependencies:
-      eslint: ^8.0.0
-    dependencies:
-      '@eslint/eslintrc': 1.6.0
-      eslint: 8.57.0
-      'esrecurse': 4.3.0
-      'estraverse': 5.3.0
-    dev: true
-    optional: false
-  'eslint-utils@3.0.0(eslint@8.57.0)':
-    version: 3.0.0
-    resolution: {integrity: sha512-c/d==}
-    engines: {node: ^10.0.0 || ^12.0.0 || >= 14.0.0}
-    peerDependencies:
-      eslint: '>=5.16.0'
-    dependencies:
-      eslint: 8.57.0
-      'eslint-visitor-keys': 3.4.3
-    dev: true
-    optional: false
-  'eslint-visitor-keys@3.4.3':
-    version: 3.4.3
-    resolution: {integrity: sha512-d/e==}
-    engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
-    dev: true
-    optional: false
-  'esquery@1.5.0':
-    version: 1.5.0
-    resolution: {integrity: sha512-e/f==}
-    engines: {node: '>=0.10'}
-    dependencies:
-      'estraverse': 5.3.0
-    dev: true
-    optional: false
-  'esrecurse@4.3.0':
-    version: 4.3.0
-    resolution: {integrity: sha512-f/g==}
-    engines: {node: '>=4.0'}
-    dependencies:
-      'estraverse': 5.3.0
-    dev: true
-    optional: false
-  'estraverse@5.3.0':
-    version: 5.3.0
-    resolution: {integrity: sha512-g/h==}
-    engines: {node: '>=4.0'}
-    dev: true
-    optional: false
-  'fast-deep-equal@3.1.3':
-    version: 3.1.3
-    resolution: {integrity: sha512-h/i==}
-    dev: true
-    optional: false
-  'fast-glob@3.3.2':
-    version: 3.3.2
-    resolution: {integrity: sha512-i/j==}
-    engines: {node: '>=8.6.0'}
-    dependencies:
-      '@nodelib/fs.stat': 2.0.5
-      'glob-parent': 5.1.2
-      'merge2': 1.4.1
-      micromatch: 4.0.7
-    dev: true
-    optional: false
-  'fast-json-stable-stringify@2.1.0':
-    version: 2.1.0
-    resolution: {integrity: sha512-j/k==}
-    dev: true
-    optional: false
-  'fastest-levenshtein@1.0.16':
-    version: 1.0.16
-    resolution: {integrity: sha512-k/l==}
-    dev: true
-    optional: false
-  'find-up@5.0.0':
-    version: 5.0.0
-    resolution: {integrity: sha512-l/m==}
-    engines: {node: '>=10'}
-    dependencies:
-      'locate-path': 6.0.0
-      'path-exists': 4.0.0
-    dev: true
-    optional: false
-  'fs.realpath@1.0.0':
-    version: 1.0.0
-    resolution: {integrity: sha512-m/n==}
-    dev: true
-    optional: false
-  'function-bind@1.1.2':
-    version: 1.1.2
-    resolution: {integrity: sha512-n/o==}
-    dev: true
-    optional: false
-  'get-intrinsic@1.2.4':
-    version: 1.2.4
-    resolution: {integrity: sha512-o/p==}
-    dependencies:
-      'es-errors': 1.3.0
-      'function-bind': 1.1.2
-      'has-property-descriptors': 1.0.2
-      'hasown': 2.0.2
-    dev: true
-    optional: false
-  glob@11.0.0:
-    version: 11.0.0
-    resolution: {integrity: sha512-p/q==}
-    engines: {node: '>=16 || 14 >=14.17'}
-    dependencies:
-      'fs.realpath': 1.0.0
-      'jackspeak': 2.3.6
-      'minimatch': 10.0.1
-      'path-scurry': 1.12.0
-      'picomatch': 4.0.2
-    dev: true
-    optional: false
-  'glob-parent@5.1.2':
-    version: 5.1.2
-    resolution: {integrity: sha512-q/r==}
-    engines: {node: '>= 6'}
-    dependencies:
-      'is-glob': 4.0.3
-    dev: true
-    optional: false
-  'gopd@1.0.1':
-    version: 1.0.1
-    resolution: {integrity: sha512-r/s==}
-    dependencies:
-      'get-intrinsic': 1.2.4
-    dev: true
-    optional: false
-  'has-flag@4.0.0':
-    version: 4.0.0
-    resolution: {integrity: sha512-s/t==}
-    engines: {node: '>=8'}
-    dev: true
-    optional: false
-  'has-property-descriptors@1.0.2':
-    version: 1.0.2
-    resolution: {integrity: sha512-t/u==}
-    dependencies:
-      'es-define-property': 1.0.0
-    dev: true
-    optional: false
-  'has-proto@1.0.3':
-    version: 1.0.3
-    resolution: {integrity: sha512-u/v==}
-    engines: {node: '>= 0.4'}
-    dev: true
-    optional: false
-  'has-symbols@1.0.3':
-    version: 1.0.3
-    resolution: {integrity: sha512-v/w==}
-    engines: {node: '>= 0.4'}
-    dev: true
-    optional: false
-  'hasown@2.0.2':
-    version: 2.0.2
-    resolution: {integrity: sha512-w/x==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      'function-bind': 1.1.2
-    dev: true
-    optional: false
-  'ignore@5.3.1':
-    version: 5.3.1
-    resolution: {integrity: sha512-x/y==}
-    engines: {node: '>= 4'}
-    dev: true
-    optional: false
-  'inflight@1.0.6':
-    version: 1.0.6
-    resolution: {integrity: sha512-y/z==}
-    dependencies:
-      once: 1.4.0
-      'wrappy': 1.0.2
-    dev: true
-    optional: false
-  'is-array-buffer@1.0.2':
-    version: 1.0.2
-    resolution: {integrity: sha512-z/0==}
-    dependencies:
-      'call-bind': 1.0.7
-      'is-string': 1.0.7
-    dev: false
-    optional: false
-  'is-binary-path@2.1.0':
-    version: 2.1.0
-    resolution: {integrity: sha512-0/1==}
-    engines: {node: '>=8'}
-    dependencies:
-      'binary-extensions': 2.3.0
-    dev: true
-    optional: false
-  'is-descriptor@1.0.3':
-    version: 1.0.3
-    resolution: {integrity: sha512-1/2==}
-    dependencies:
-      'es-errors': 1.3.0
-      'is-accessor-descriptor': 1.0.1
-      'is-data-descriptor': 1.0.1
-    dev: true
-    optional: false
-  'is-extglob@2.1.1':
-    version: 2.1.1
-    resolution: {integrity: sha512-2/3==}
-    engines: {node: '>=0.10.0'}
-    dev: true
-    optional: false
-  'is-glob@4.0.3':
-    version: 4.0.3
-    resolution: {integrity: sha512-3/4==}
-    engines: {node: '>=0.10.0'}
-    dependencies:
-      'is-extglob': 2.1.1
-    dev: true
-    optional: false
-  'is-number@7.0.0':
-    version: 7.0.0
-    resolution: {integrity: sha512-4/5==}
-    engines: {node: '>=0.12.0'}
-    dev: true
-    optional: false
-  'jackspeak@2.3.6':
-    version: 2.3.6
-    resolution: {integrity: sha512-5/6==}
-    dependencies:
-      'cliui': 8.0.1
-    dev: true
-    optional: false
-  'js-yaml@4.1.0':
-    version: 4.1.0
-    resolution: {integrity: sha512-6/7==}
-    hasBin: true
-    dependencies:
-      'argparse': 2.0.1
-    dev: true
-    optional: false
-  'json-schema-traverse@0.4.1':
-    version: 0.4.1
-    resolution: {integrity: sha512-7/8==}
-    dev: true
-    optional: false
-  'json-schema-traverse@1.0.0':
-    version: 1.0.0
-    resolution: {integrity: sha512-8/9==}
-    dev: true
-    optional: false
-  'json-stable-stringify-without-jsonify@1.0.1':
-    version: 1.0.1
-    resolution: {integrity: sha512-9/0==}
-    dev: true
-    optional: false
-  'locate-path@6.0.0':
-    version: 6.0.0
-    resolution: {integrity: sha512-a/b==}
-    engines: {node: '>=10'}
-    dependencies:
-      'p-locate': 5.0.0
-    dev: true
-    optional: false
-  'lru-cache@6.0.0':
-    version: 6.0.0
-    resolution: {integrity: sha512-b/c==}
-    dependencies:
-      'yallist': 4.0.0
-    dev: true
-    optional: false
-  'merge2@1.4.1':
-    version: 1.4.1
-    resolution: {integrity: sha512-c/d==}
-    engines: {node: '>= 8'}
-    dev: true
-    optional: false
-  'micromatch@4.0.7':
-    version: 4.0.7
-    resolution: {integrity: sha512-d/e==}
-    engines: {node: '>=8.6'}
-    dependencies:
-      'braces': 3.0.3
-      'picomatch': 2.3.1
-    dev: true
-    optional: false
-  minimatch@10.0.1:
-    version: 10.0.1
-    resolution: {integrity: sha512-e/f==}
-    engines: {node: '>=16 || 14 >=14.17'}
-    dependencies:
-      'brace-expansion': 1.1.11
-    dev: true
-    optional: false
-  'natural-compare@1.4.0':
-    version: 1.4.0
-    resolution: {integrity: sha512-f/g==}
-    dev: true
-    optional: false
-  'object-is@1.1.5':
-    version: 1.1.5
-    resolution: {integrity: sha512-g/h==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      'define-properties': 1.2.1
-    dev: true
-    optional: false
-  'object.assign@4.1.5':
-    version: 4.1.5
-    resolution: {integrity: sha512-h/i==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      'call-bind': 1.0.7
-      'define-properties': 1.2.1
-      'has-symbols': 1.0.3
-      'object-keys': 1.1.1
-    dev: true
-    optional: false
-  'object.entries@1.2.1':
-    version: 1.2.1
-    resolution: {integrity: sha512-i/j==}
-    dependencies:
-      'define-properties': 1.2.1
-      'es-abstract': 1.23.0
-      'hasown': 2.0.2
-    dev: true
-    optional: false
-  'object.fromentries@2.0.8':
-    version: 2.0.8
-    resolution: {integrity: sha512-j/k==}
-    dependencies:
-      'define-properties': 1.2.1
-      'es-abstract': 1.23.0
-    dev: true
-    optional: false
-  'object.hasown@1.1.3':
-    version: 1.1.3
-    resolution: {integrity: sha512-k/l==}
-    engines: {node: '>= 0.4'}
-    dependencies:
-      'define-properties': 1.2.1
-      'es-abstract': 1.23.0
-    dev: true
-    optional: false
-  'object.values@1.2.0':
-    version: 1.2.0
-    resolution: {integrity: sha512-l/m==}
-    dependencies:
-      'define-properties': 1.2.1
-      'es-abstract': 1.23.0
-      hasown: 2.0.2
-    dev: true
-    optional: false
-  'once@1.4.0':
-    version: 1.4.0
-    resolution: {integrity: sha512-m/n==}
-    dependencies:
-      wrappy: 1.0.2
-    dev: true
-    optional: false
-  'p-limit@3.1.0':
-    version: 3.1.0
-    resolution: {integrity: sha512-n/o==}
-    engines: {node: '>=10'}
-    dependencies:
-      'yocto-queue': 0.1.0
-    dev: true
-    optional: false
-  'p-locate@5.0.0':
-    version: 5.0.0
-    resolution: {integrity: sha512-o/p==}
-    engines: {node: '>=10'}
-    dependencies:
-      'p-limit': 3.1.0
-    dev: true
-    optional: false
-  'path-exists@4.0.0':
-    version: 4.0.0
-    resolution: {integrity: sha512-p/q==}
-    engines: {node: '>=8'}
-    dev: true
-    optional: false
-  'path-key@3.1.1':
-    version: 3.1.1
-    resolution: {integrity: sha512-q/r==}
-    engines: {node: '>=8'}
-    dev: false
-    optional: false
-  'path-scurry@1.12.0':
-    version: 1.12.0
-    resolution: {integrity: sha512-r/s==}
-    engines: {node: '>=16 || 14 >=14.17'}
-    dependencies:
-      'lru-cache': 6.0.0
-      'minimatch': 10.0.1
-    dev: true
-    optional: false
-  'path-type@4.0.0':
-    version: 4.0.0
-    resolution: {integrity: sha512-s/t==}
-    engines: {node: '>=8'}
-    dev: true
-    optional: false
-  picomatch@4.0.2:
-    version: 4.0.2
-    resolution: {integrity: sha512-t/u==}
-    engines: {node: '>=16'}
-    dependencies:
-      'windows-charcode': 2.0.0
-    dev: true
-    optional: false
-  'react-is@16.13.1':
-    version: 16.13.1
-    resolution: {integrity: sha512-u/v==}
-    dev: true
-    optional: false
-  'require-from-string@2.0.2':
-    version: 2.0.2
-    resolution: {integrity: sha512-v/w==}
-    engines: {node: '>=0.10'}
-    dev: true
-    optional: false
-  'safe-array-concat@1.0.1':
-    version: 1.0.1
-    resolution: {integrity: sha512-w/x==}
-    dependencies:
-      'call-bind': 1.0.7
-      'get-intrinsic': 1.2.4
-      'is-array-buffer': 1.0.2
-    dev: false
-    optional: false
-  semver@7.6.3:
-    version: 7.6.3
-    resolution: {integrity: sha512-x/y==}
-    hasBin: true
-    engines: {node: '>=10'}
-    dependencies:
-      'lru-cache': 6.0.0
-    dev: true
-    optional: false
-  'shebang-command@2.0.0':
-    version: 2.0.0
-    resolution: {integrity: sha512-y/z==}
-    engines: {node: '>=8'}
-    dependencies:
-      'shebang-regex': 3.0.0
-    dev: false
-    optional: false
-  'shebang-regex@3.0.0':
-    version: 3.0.0
-    resolution: {integrity: sha512-z/0==}
-    engines: {node: '>=8'}
-    dev: false
-    optional: false
-  'string.prototype.matchall@4.0.10':
-    version: 4.0.10
-    resolution: {integrity: sha512-0/1==}
-    dependencies:
-      'call-bind': 1.0.7
-      'define-properties': 1.2.1
-      'es-abstract': 1.23.0
-      'get-intrinsic': 1.2.4
-      'has-symbols': 1.0.3
-      'internal-slot': 1.0.7
-      'regexp.prototype.flags': 1.5.2
-    dev: true
-    optional: false
-  'string.prototype.trimend@1.0.7':
-    version: 1.0.7
-    resolution: {integrity: sha512-1/2==}
-    dependencies:
-      'call-bind': 1.0.7
-      'define-properties': 1.2.1
-      'es-abstract': 1.23.0
-    dev: true
-    optional: false
-  'string.prototype.trimstart@1.0.7':
-    version: 1.0.7
-    resolution: {integrity: sha512-2/3==}
-    dependencies:
-      'call-bind': 1.0.7
-      'define-properties': 1.2.1
-      'es-abstract': 1.23.0
-    dev: true
-    optional: false
-  'strip-ansi@6.0.1':
-    version: 6.0.1
-    resolution: {integrity: sha512-3/4==}
-    engines: {node: '>=8'}
-    dependencies:
-      'ansi-regex': 5.0.1
-    dev: true
-    optional: false
-  'supports-color@7.2.0':
-    version: 7.2.0
-    resolution: {integrity: sha512-4/5==}
-    engines: {node: '>=8'}
-    dependencies:
-      'has-flag': 4.0.0
-    dev: true
-    optional: false
-  'text-table@0.2.0':
-    version: 0.2.0
-    resolution: {integrity: sha512-5/6==}
-    dev: true
-    optional: false
-  'ts-api-utils@1.2.0(typescript@5.5.4)':
-    version: 1.2.0
-    resolution: {integrity: sha512-6/7==}
-    peerDependencies:
-      typescript: '>=4.2.0'
-    dependencies:
-      typescript: 5.5.4
-    dev: true
-    optional: false
-  'ts-pattern@5.2.0':
-    version: 5.2.0
-    resolution: {integrity: sha512-7/8==}
-    dev: false
-    optional: false
-  'tslib@2.6.3':
-    version: 2.6.3
-    resolution: {integrity: sha512-8/9==}
-    dev: false
-    optional: false
-  'type-fest@0.21.3':
-    version: 0.21.3
-    resolution: {integrity: sha512-9/0==}
-    engines: {node: '>=10'}
-    dev: true
-    optional: false
-  'undici-types@6.19.2':
-    version: 6.19.2
-    resolution: {integrity: sha512-a/b==}
-    dev: false
-    optional: false
-  'uri-js@4.4.1':
-    version: 4.4.1
-    resolution: {integrity: sha512-b/c==}
-    dependencies:
-      'punycode': 2.3.1
-    dev: true
-    optional: false
-  'which@2.0.2':
-    version: 2.0.2
-    resolution: {integrity: sha512-c/d==}
-    hasBin: true
-    engines: {node: '>= 8'}
-    dependencies:
-      isexe: 2.0.0
-    dev: false
-    optional: false
-  'windows-charcode@2.0.0':
-    version: 2.0.0
-    resolution: {integrity: sha512-d/e==}
-    engines: {node: '>=10'}
-    dev: true
-    optional: false
-  'word-wrap@1.2.5':
-    version: 1.2.5
-    resolution: {integrity: sha512-e/f==}
-    engines: {node: '>=0.10.0'}
-    dev: true
-    optional: false
-  'wrappy@1.0.2':
-    version: 1.0.2
-    resolution: {integrity: sha512-f/g==}
-    dev: true
-    optional: false
-  'yallist@4.0.0':
-    version: 4.0.0
-    resolution: {integrity: sha512-g/h==}
-    dev: true
-    optional: false
-  'yocto-queue@0.1.0':
-    version: 0.1.0
-    resolution: {integrity: sha512-h/i==}
-    engines: {node: '>=10'}
-    dev: true
-    optional: false
+    resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxs2BmnzwjveEwOzzrGHDlBPTLrdjiBvT8Q/aGreen-1": "hsl(142.1 76.2% 45.1%)",
+          "brand-green-2": "hsl(142.1 70.2% 55.1%)",
+          "brand-green-3": "hsl(142.1 64.2% 65.1%)",
+          "brand-green-4": "hsl(142.1 58.2% 75.1%)",
+          "brand-green-5": "hsl(142.1 52.2% 85.1%)",
+          "brand-blue-1": "hsl(221.2 83.2% 53.3%)",
+          "brand-blue-2": "hsl(221.2 77.2% 63.3%)",
+          "brand-blue-3": "hsl(221.2 71.2% 73.3%)",
+          "brand-blue-4": "hsl(221.2 65.2% 83.3%)",
+          "brand-blue-5": "hsl(221.2 59.2% 93.3%)",
+          "brand-red-1": "hsl(358.3 83.2% 53.3%)",
+          "brand-red-2": "hsl(358.3 77.2% 63.3%)",
+          "brand-red-3": "hsl(358.3 71.2% 73.3%)",
+          "brand-red-4": "hsl(358.3 65.2% 83.3%)",
+          "brand-red-5": "hsl(358.3 59.2% 93.3%)",
+          "brand-yellow-1": "hsl(47.9 95.8% 53.1%)",
+          "brand-yellow-2": "hsl(47.9 89.8% 63.1%)",
+          "brand-yellow-3": "hsl(47.9 83.8% 73.1%)",
+          "brand-yellow-4": "hsl(47.9 77.8% 83.1%)",
+          "brand-yellow-5": "hsl(47.9 71.8% 93.1%)",
+          "brand-purple-1": "hsl(262.1 83.3% 57.8%)",
+          "brand-purple-2": "hsl(262.1 77.3% 67.8%)",
+          "brand-purple-3": "hsl(262.1 71.3% 77.8%)",
+          "brand-purple-4": "hsl(262.1 65.3% 87.8%)",
+          "brand-purple-5": "hsl(262.1 59.3% 97.8%)",
+          "brand-orange-1": "hsl(24.6 95% 53.1%)",
+          "brand-orange-2": "hsl(24.6 89% 63.1%)",
+          "brand-orange-3": "hsl(24.6 83% 73.1%)",
+          "brand-orange-4": "hsl(24.6 77% 83.1%)",
+          "brand-orange-5": "hsl(24.6 71% 93.1%)",
+          "brand-pink-1": "hsl(346.8 95% 53.1%)",
+          "brand-pink-2": "hsl(346.8 89% 63.1%)",
+          "brand-pink-3": "hsl(346.8 83% 73.1%)",
+          "brand-pink-4": "hsl(346.8 77% 83.1%)",
+          "brand-pink-5": "hsl(346.8 71% 93.1%)",
+          "brand-cyan-1": "hsl(199.1 95% 53.1%)",
+          "brand-cyan-2": "hsl(199.1 89% 63.1%)",
+          "brand-cyan-3": "hsl(199.1 83% 73.1%)",
+          "brand-cyan-4": "hsl(199.1 77% 83.1%)",
+          "brand-cyan-5": "hsl(199.1 71% 93.1%)",
+          "brand-gray-1": "hsl(215.4 16.3% 56.9%)",
+          "brand-gray-2": "hsl(215.4 16.3% 66.9%)",
+          "brand-gray-3": "hsl(215.4 16.3% 76.9%)",
+          "brand-gray-4": "hsl(215.4 16.3% 86.9%)",
+          "brand-gray-5": "hsl(215.4 16.3% 96.9%)"
+        }
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        DEFAULT: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
+        md: "0 8px 16px -4px rgb(0 0 0 / 0.2), 0 4px 6px -2px rgb(0 0 0 / 0.1)",
+        lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        xl: "0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.15)",
+        "2xl": "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+        "deep-dark": "-10px 15px 35px -10px rgb(0 0 0 / 0.5)",
+        inner: "inset 0 2px 4px 0 rgb(0 0 0 / 0.05)",
+        "left-bottom": "-10px 15px 35px -10px rgb(0 0 0 / 0.5)",
+      },
+      keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "fade-in-up": {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(20px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        "pulse-glow": {
+          "0%, 100%": {
+            transform: "scale(1)",
+            boxShadow:
+              "0 0 10px 2px hsl(var(--primary) / 0.7), 0 0 20px 5px hsl(var(--primary) / 0.5), 0 0 40px 10px hsl(var(--primary) / 0.2)",
+          },
+          "50%": {
+            transform: "scale(1.1)",
+            boxShadow:
+              "0 0 15px 5px hsl(var(--primary) / 0.8), 0 0 30px 10px hsl(var(--primary) / 0.6), 0 0 60px 20px hsl(var(--primary) / 0.3)",
+          },
+        },
+      },
+      animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
+        "fade-in-up": "fade-in-up 0.5s ease-out forwards",
+        "pulse-glow": "pulse-glow 2.5s infinite ease-in-out",
+      },
+    },
+  },
+  plugins: [tailwindcssAnimate, tailwindcssTypography],
+};
+
+export default config;
+
+    
