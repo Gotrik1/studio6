@@ -424,4 +424,3 @@ volumes:
   prometheus_data:
   grafana_data:
   minio_data:
-
