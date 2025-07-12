@@ -171,7 +171,7 @@ services:
         condition: service_healthy
     healthcheck:
       test: >
-        bash -c "exec 9<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n' >&9 && head -n 1 <&9 | grep 'HTTP/1.1 200'"
+        bash -c "exec 9<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n' >&9 && head -n 1 <&9 | grep -E '200 OK|302 Found'"
       interval: 15s
       timeout: 5s
       retries: 30

@@ -1,48 +1,36 @@
-# Stage 1: Install dependencies
-FROM node:20-alpine AS dependencies
+# ---- Base Stage ----
+FROM node:20-alpine AS base
 WORKDIR /usr/src/app
+RUN npm install -g pnpm
 
-# Copy all package.json files from the monorepo root and workspaces
-COPY package.json package-lock.json ./
+# ---- Dependencies Stage ----
+FROM base AS dependencies
+WORKDIR /usr/src/app
+COPY package.json pnpm-lock.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+RUN pnpm install --frozen-lockfile
 
-# Install all dependencies (including devDependencies for the build step)
-RUN npm install
-
-# Stage 2: Build the backend application
-FROM node:20-alpine AS builder
+# ---- Build Stage ----
+FROM base AS builder
 WORKDIR /usr/src/app
-
-# Copy all source files for the entire monorepo
-COPY . .
-
-# Copy the installed node_modules from the 'dependencies' stage
 COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY . .
+RUN pnpm --filter prodvor-backend run prisma:generate
+RUN pnpm --filter prodvor-backend run build
 
-# Generate the Prisma client based on the schema
-RUN npm run prisma:generate --workspace=prodvor-backend
-
-# Build the NestJS application
-RUN npm run build --workspace=prodvor-backend
-
-# Stage 3: Create the final production image
-FROM node:20-alpine as runner
+# ---- Production Stage ----
+FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
+ENV NODE_ENV=production
+RUN npm install -g pnpm
 
-# Copy the built application from the 'builder' stage
-# The output is in /backend/dist, so we copy from there.
 COPY --from=builder /usr/src/app/backend/dist ./dist
-
-# Copy production dependencies definition
-COPY package.json ./
-COPY backend/package.json ./backend/
-
-# Install only production dependencies
-RUN npm install --omit=dev
-
-# Copy prisma schema and client for runtime
+# We need the full node_modules from the builder stage for production run
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/package.json ./package.json
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
+COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
 COPY --from=builder /usr/src/app/backend/prisma/schema.prisma ./prisma/schema.prisma
-COPY --from=builder /usr/src/app/node_modules/.prisma ./.prisma
 
 CMD ["node", "dist/main"]
