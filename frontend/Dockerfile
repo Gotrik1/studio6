@@ -1,4 +1,4 @@
-# 1. Base stage
+# 1. Base stage with pnpm
 FROM node:20-alpine AS base
 RUN npm install -g pnpm
 
@@ -9,46 +9,52 @@ WORKDIR /usr/src/app
 # Копируем корневой package.json и pnpm-lock.yaml
 COPY pnpm-lock.yaml .
 COPY package.json .
+COPY pnpm-workspace.yaml .
 # Копируем package.json воркспейсов
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем все зависимости монорепозитория
+# Устанавливаем все зависимости для всех воркспейсов
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
 
 # 3. Builder stage
 FROM base AS builder
-# Добавляем бинарники pnpm в PATH
-ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Копируем установленные зависимости
-COPY --from=dependencies /usr/src/app/ .
+# Явно добавляем путь к бинарным файлам pnpm в PATH
+ENV PATH="/app/node_modules/.bin:$PATH"
+
+# Копируем установленные зависимости из предыдущего этапа
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=dependencies /usr/src/app/package.json ./package.json
+COPY --from=dependencies /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=dependencies /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+COPY --from=dependencies /usr/src/app/frontend/package.json ./frontend/
 
 # Копируем исходный код фронтенда
 COPY frontend/ ./frontend/
 COPY tsconfig.json .
-COPY tailwind.config.ts .
-COPY postcss.config.js .
+
+# Устанавливаем переменные окружения для сборки
+ARG NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
 
 # Собираем фронтенд
 RUN pnpm --filter prodvor-frontend build
 
 # 4. Runner stage
 FROM base AS runner
-# Добавляем бинарники pnpm в PATH
-ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Копируем только необходимые для запуска файлы из builder
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/frontend ./frontend
-COPY --from=builder /usr/src/app/package.json .
+# Явно добавляем путь к бинарным файлам pnpm в PATH
+ENV PATH="/app/node_modules/.bin:$PATH"
 
-# Копируем public и .next/standalone директории
-COPY --from=builder /usr/src/app/frontend/.next/standalone ./frontend/.next/standalone
-COPY --from=builder /usr/src/app/frontend/.next/static ./frontend/.next/static
-COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+# Копируем только необходимые для запуска артефакты
+COPY --from=builder /app/frontend/.next ./frontend/.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/frontend/package.json ./frontend/
+COPY --from=builder /app/frontend/public ./frontend/public
 
 EXPOSE 9002
-CMD ["pnpm", "start:frontend"]
+CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
