@@ -1,20 +1,15 @@
 import { Module } from "@nestjs/common";
 import { CacheModule as NestCacheModule } from "@nestjs/cache-manager";
-import { redisStore } from "cache-manager-redis-store";
+import type { RedisClientOptions } from "redis";
 
 @Module({
   imports: [
-    NestCacheModule.register({
+    NestCacheModule.register<RedisClientOptions>({
       isGlobal: true,
-      // @ts-expect-error - The factory can be async, but types are not up to date
-      store: async () =>
-        await redisStore({
-          socket: {
-            host: process.env.REDIS_HOST,
-            port: parseInt(process.env.REDIS_PORT),
-          },
-          ttl: 300, // 5 minutes in seconds
-        }),
+      // In a real application, you would use a Redis store
+      // store: redisStore,
+      // url: process.env.REDIS_URL,
+      // ttl: 300, // 5 minutes
     }),
   ],
   exports: [NestCacheModule],

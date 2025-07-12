@@ -1,50 +1,50 @@
-# 1. Base image with pnpm installed
+# 1. Base stage with pnpm
 FROM node:20-alpine AS base
 RUN npm install -g pnpm
 
 # 2. Dependencies stage
-# This stage installs all dependencies for the entire monorepo
 FROM base AS dependencies
 WORKDIR /usr/src/app
 
-# Copy dependency definition files from root and workspaces
-COPY pnpm-lock.yaml .
-COPY package.json .
+# Копируем корневой package.json и pnpm-lock.yaml
+COPY package.json pnpm-lock.yaml ./
+# Копируем package.json воркспейсов
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Install all dependencies
+# Устанавливаем все зависимости
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # 3. Builder stage
-# This stage builds the backend application
 FROM base AS builder
+# Добавляем бинарники pnpm в PATH
+ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 WORKDIR /usr/src/app
 
-# Copy all files from dependencies stage (including node_modules)
+# Копируем все из предыдущего стейджа, включая node_modules
 COPY --from=dependencies /usr/src/app/ .
 
-# Copy backend source code and other necessary files
+# Копируем исходный код бэкенда и другие необходимые файлы
 COPY backend/ ./backend/
 COPY backend/prisma/ ./prisma/
 COPY tsconfig.json .
 
-# Build the backend
+# Собираем бэкенд
 RUN pnpm --filter prodvor-backend build
 
 # 4. Runner stage
-# This is the final, optimized image
 FROM base AS runner
+# Добавляем бинарники pnpm в PATH
+ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 WORKDIR /usr/src/app
 
-# Copy production dependencies and built code from the builder stage
+# Копируем только необходимые для запуска файлы из builder'а
 COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
 COPY --from=builder /usr/src/app/package.json .
-
-# Copy Prisma schema, it's needed at runtime
-COPY --from=builder /usr/src/app/prisma ./prisma
+COPY --from=builder /usr/src/app/backend/package.json ./backend/
+# Копируем схему Prisma, она нужна для запуска
+COPY --from=builder /usr/src/app/prisma ./prisma/
 
 EXPOSE 3001
-CMD ["pnpm", "start:backend"]
+CMD [ "node", "dist/main.js" ]
