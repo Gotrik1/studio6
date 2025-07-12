@@ -19,61 +19,45 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Create .env file from secrets
-        env:
-          POSTGRES_USER_SECRET: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD_SECRET: ${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB_SECRET: ${{ secrets.POSTGRES_DB }}
-          PGADMIN_DEFAULT_EMAIL_SECRET: ${{ secrets.PGADMIN_DEFAULT_EMAIL }}
-          PGADMIN_DEFAULT_PASSWORD_SECRET: ${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-          KC_DB_DATABASE_SECRET: ${{ secrets.KC_DB_DATABASE }}
-          KC_DB_USERNAME_SECRET: ${{ secrets.KC_DB_USERNAME }}
-          KC_DB_PASSWORD_SECRET: ${{ secrets.KC_DB_PASSWORD }}
-          KC_BOOTSTRAP_ADMIN_USERNAME_SECRET: ${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
-          KC_BOOTSTRAP_ADMIN_PASSWORD_SECRET: ${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
-          KONG_PG_PASSWORD_SECRET: ${{ secrets.KONG_PG_PASSWORD }}
-          RABBITMQ_DEFAULT_USER_SECRET: ${{ secrets.RABBITMQ_DEFAULT_USER }}
-          RABBITMQ_DEFAULT_PASSWORD_SECRET: ${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
-          MINIO_ROOT_USER_SECRET: ${{ secrets.MINIO_ROOT_USER }}
-          MINIO_ROOT_PASSWORD_SECRET: ${{ secrets.MINIO_ROOT_PASSWORD }}
         run: |
-          if [ -z "$POSTGRES_PASSWORD_SECRET" ]; then echo "::error::Required secret POSTGRES_PASSWORD is not set." >&2; exit 1; fi
-          if [ -z "$RABBITMQ_DEFAULT_USER_SECRET" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_USER is not set." >&2; exit 1; fi
-          if [ -z "$RABBITMQ_DEFAULT_PASSWORD_SECRET" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_PASSWORD is not set." >&2; exit 1; fi
-          if [ -z "$KC_DB_PASSWORD_SECRET" ]; then echo "::error::Required secret KC_DB_PASSWORD is not set." >&2; exit 1; fi
-          if [ -z "$KONG_PG_PASSWORD_SECRET" ]; then echo "::error::Required secret KONG_PG_PASSWORD is not set." >&2; exit 1; fi
-          if [ -z "$MINIO_ROOT_USER_SECRET" ]; then echo "::error::Required secret MINIO_ROOT_USER is not set." >&2; exit 1; fi
-          if [ -z "$MINIO_ROOT_PASSWORD_SECRET" ]; then echo "::error::Required secret MINIO_ROOT_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.POSTGRES_PASSWORD }}" ]; then echo "::error::Required secret POSTGRES_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.RABBITMQ_DEFAULT_USER }}" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_USER is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}" ]; then echo "::error::Required secret RABBITMQ_DEFAULT_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.KC_DB_PASSWORD }}" ]; then echo "::error::Required secret KC_DB_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.KONG_PG_PASSWORD }}" ]; then echo "::error::Required secret KONG_PG_PASSWORD is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.MINIO_ROOT_USER }}" ]; then echo "::error::Required secret MINIO_ROOT_USER is not set." >&2; exit 1; fi
+          if [ -z "${{ secrets.MINIO_ROOT_PASSWORD }}" ]; then echo "::error::Required secret MINIO_ROOT_PASSWORD is not set." >&2; exit 1; fi
 
           cat > .env <<EOF
-          POSTGRES_USER=${POSTGRES_USER_SECRET:-postgres}
-          POSTGRES_PASSWORD=${POSTGRES_PASSWORD_SECRET}
-          POSTGRES_DB=${POSTGRES_DB_SECRET:-prodvor}
-          PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL_SECRET:-admin@example.com}
-          PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD_SECRET:-admin}
-          KC_DB_DATABASE=${KC_DB_DATABASE_SECRET:-keycloak}
-          KC_DB_USERNAME=${KC_DB_USERNAME_SECRET:-keycloak}
-          KC_DB_PASSWORD=${KC_DB_PASSWORD_SECRET}
-          KC_BOOTSTRAP_ADMIN_USERNAME=${KC_BOOTSTRAP_ADMIN_USERNAME_SECRET:-admin}
-          KC_BOOTSTRAP_ADMIN_PASSWORD=${KC_BOOTSTRAP_ADMIN_PASSWORD_SECRET:-admin}
-          KONG_PG_PASSWORD=${KONG_PG_PASSWORD_SECRET}
-          RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER_SECRET}
-          RABBITMQ_DEFAULT_PASSWORD=${RABBITMQ_DEFAULT_PASSWORD_SECRET}
-          MINIO_ROOT_USER=${MINIO_ROOT_USER_SECRET}
-          MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD_SECRET}
-          DATABASE_URL=postgresql://\${POSTGRES_USER_SECRET:-\postgres}:\${POSTGRES_PASSWORD_SECRET}@db:5432/\${POSTGRES_DB_SECRET:-prodvor}?schema=public
+          POSTGRES_USER=${{ secrets.POSTGRES_USER || 'postgres' }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB || 'prodvor' }}
+          PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL || 'admin@example.com' }}
+          PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD || 'admin' }}
+          KC_DB_DATABASE=${{ secrets.KC_DB_DATABASE || 'keycloak' }}
+          KC_DB_USERNAME=${{ secrets.KC_DB_USERNAME || 'keycloak' }}
+          KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
+          KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME || 'admin' }}
+          KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD || 'admin' }}
+          KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
+          RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
+          RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
+          MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
+          MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
+          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER || 'postgres' }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB || 'prodvor' }}?schema=public
           REDIS_URL=redis://redis:6379
           KAFKA_BROKERS=kafka:9092
           KEYCLOAK_URL=http://keycloak:8080
           KEYCLOAK_REALM=prodvor
           KEYCLOAK_CLIENT_ID=prodvor-frontend
-          RABBITMQ_URL=amqp://\${RABBITMQ_DEFAULT_USER_SECRET}:\${RABBITMQ_DEFAULT_PASSWORD_SECRET}@rabbitmq:5672
+          RABBITMQ_URL=amqp://${{ secrets.RABBITMQ_DEFAULT_USER }}:${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}@rabbitmq:5672
           S3_ENDPOINT_URL=http://minio:9005
           S3_BUCKET_NAME=prodvor
           AWS_REGION=us-east-1
-          AWS_ACCESS_KEY_ID=${MINIO_ROOT_USER_SECRET}
-          AWS_SECRET_ACCESS_KEY=${MINIO_ROOT_PASSWORD_SECRET}
+          AWS_ACCESS_KEY_ID=${{ secrets.MINIO_ROOT_USER }}
+          AWS_SECRET_ACCESS_KEY=${{ secrets.MINIO_ROOT_PASSWORD }}
           NEXT_PUBLIC_BACKEND_URL=http://kong:8000
-          PGPASSWORD=${POSTGRES_PASSWORD_SECRET}
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           EOF
 
       - name: Clean up previous run
