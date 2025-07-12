@@ -1,27 +1,30 @@
-# Stage 1: Установка зависимостей
-FROM node:20-alpine AS dependencies
-WORKDIR /usr/src/app
+# -----------------------------------------------------------------------------
+# Этап 1: Установка всех зависимостей, включая devDependencies
+# -----------------------------------------------------------------------------
+FROM node:20-alpine as dependencies
 
-# Устанавливаем pnpm глобально
+# Устанавливаем pnpm глобально, чтобы он был доступен
 RUN npm install -g pnpm
 
-# Копируем package.json и pnpm-lock.yaml из корня монорепозитория
-COPY pnpm-lock.yaml ./
-COPY package.json ./
+# Устанавливаем OpenSSL для корректной работы Prisma
+RUN apk add --no-cache openssl
 
+WORKDIR /usr/src/app
+
+# Копируем корневой package.json и lock-файл
+COPY package.json pnpm-lock.yaml ./
 # Копируем package.json бэкенда
-COPY package.json ./backend/
+COPY backend/package.json ./backend/
 # Устанавливаем все зависимости, включая devDependencies (они нужны для сборки и prisma generate)
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
 # -----------------------------------------------------------------------------
+# Этап 2: Сборка приложения
+# -----------------------------------------------------------------------------
+FROM dependencies as builder
 
-# Stage 2: Сборка приложения
-FROM dependencies AS builder
-WORKDIR /usr/src/app
-
-# Копируем исходный код бэкенда
-COPY ./backend/ ./backend/
+# Копируем исходный код
+COPY . .
 
 # Генерируем Prisma Client (требует devDependencies, установленных ранее)
 RUN pnpm --filter prodvor-backend prisma:generate
@@ -30,26 +33,30 @@ RUN pnpm --filter prodvor-backend prisma:generate
 RUN pnpm --filter prodvor-backend build
 
 # -----------------------------------------------------------------------------
+# Этап 3: Создание чистового образа для продакшена
+# -----------------------------------------------------------------------------
+FROM node:20-alpine as runner
 
-# Stage 3: Финальный образ
-from node:20-alpine as runner
 WORKDIR /usr/src/app
 
-ENV NODE_ENV=production
-
-# Устанавливаем OpenSSL
+# Устанавливаем OpenSSL, так как он нужен Prisma Client для работы
 RUN apk add --no-cache openssl
 
-# Копируем только production-зависимости из builder-стадии
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
+# Копируем корневой package.json и lock-файл
+COPY package.json pnpm-lock.yaml ./
+# Копируем package.json бэкенда
+COPY backend/package.json ./backend/
 
-# Копируем собранное приложение
+# Устанавливаем ТОЛЬКО production-зависимости
+RUN npm install -g pnpm && \
+    pnpm install --prod --frozen-lockfile
+
+# Копируем собранное приложение и сгенерированный Prisma Client из этапа сборки
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-COPY --from=builder /usr/src/app/backend/package.json ./backend/
-
-# Копируем Prisma schema для runtime
-COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+# Копируем схему Prisma, она нужна для запуска
+COPY prisma ./prisma
 
 EXPOSE 3001
+
 CMD ["node", "backend/dist/main"]
