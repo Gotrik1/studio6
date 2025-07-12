@@ -115,6 +115,14 @@ jobs:
       - name: Show Kafka logs on failure
         if: failure()
         run: docker compose --verbose logs kafka
+      
+      - name: Show Kong logs on failure
+        if: failure()
+        run: docker compose --verbose logs kong
+      
+      - name: Show Minio logs on failure
+        if: failure()
+        run: docker compose --verbose logs minio
 
       - name: Install dependencies
         run: npm install
