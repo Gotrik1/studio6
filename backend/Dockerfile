@@ -1,49 +1,42 @@
-# Этап 1: Установка зависимостей с использованием pnpm
-FROM node:20-alpine AS dependencies
-
+# ---- Base Node ----
+FROM node:20-alpine AS base
 WORKDIR /usr/src/app
 
+# ---- Dependencies ----
+FROM base AS dependencies
 # Копируем файлы package.json и pnpm-lock.yaml из корня и из каждого воркспейса
-COPY package.json pnpm-lock.yaml ./
+COPY pnpm-lock.yaml .
+COPY package.json .
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-
-# Устанавливаем все зависимости монорепозитория
+# Устанавливаем зависимости для всего монорепозитория
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Этап 2: Сборка бэкенда
-FROM node:20-alpine AS builder
-
-WORKDIR /usr/src/app
-
-# Копируем все зависимости, установленные на предыдущем этапе
-COPY --from=dependencies /usr/src/app/ .
-
-# Копируем исходный код бэкенда и Prisma схему
+# ---- Builder ----
+FROM base AS builder
+# Копируем установленные зависимости
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=dependencies /usr/src/app/backend/node_modules ./backend/node_modules
+# Копируем исходный код
 COPY backend/ ./backend/
-COPY backend/prisma/ ./prisma/
+COPY backend/prisma/ ./backend/prisma/
+# Копируем корневой tsconfig, чтобы NestJS мог его найти
 COPY tsconfig.json .
-
-# Запускаем генерацию Prisma клиента и сборку NestJS приложения
+# Генерируем Prisma Client
 RUN pnpm --filter prodvor-backend prisma:generate
+# Собираем приложение
 RUN pnpm --filter prodvor-backend build
 
-# Этап 3: Создание легковесного финального образа
-FROM node:20-alpine AS runner
-
-WORKDIR /usr/src/app
-
-# Копируем только необходимые для запуска артефакты из образа builder
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+# ---- Runner ----
+FROM base AS runner
+# Копируем необходимые node_modules для запуска
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/backend/dist ./backend/dist
 COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
-COPY --from=builder /usr/src/app/package.json .
-
+COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
 # Копируем схему Prisma, она нужна для запуска
-COPY --from=builder /usr/src/app/prisma ./prisma/
+COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
 
 EXPOSE 3001
-
-# Команда для запуска приложения
-# Заметьте, что мы используем pnpm для запуска, а не npm
-CMD ["pnpm", "start:backend"]
+CMD ["node", "backend/dist/main.js"]
