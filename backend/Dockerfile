@@ -1,51 +1,51 @@
-# Dockerfile для бэкенда (NestJS)
-
-# 1. Base stage для установки pnpm
+# 1. Base stage for installing pnpm
 FROM node:20-alpine AS base
 RUN npm install -g pnpm
 
-# 2. Dependencies stage для установки зависимостей
+# 2. Dependencies stage
 FROM base AS dependencies
 WORKDIR /usr/src/app
 COPY pnpm-lock.yaml .
 COPY package.json .
+COPY pnpm-workspace.yaml .
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --filter prodvor-backend...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# 3. Builder stage для сборки приложения
+# 3. Builder stage
 FROM base AS builder
-ENV NODE_ENV=production
-# Добавляем путь к исполняемым файлам pnpm
-ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 WORKDIR /usr/src/app
 
-# Копируем зависимости из предыдущего стейджа
-COPY --from=dependencies /usr/src/app/ .
+# This is the crucial step that makes workspace binaries available.
+ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 
-# Копируем исходный код бэкенда
+COPY --from=dependencies /usr/src/app/ .
 COPY backend/ ./backend/
-COPY backend/prisma/ ./prisma/
 COPY tsconfig.json .
 
-# Генерируем Prisma-клиент
+# Generate Prisma client
 RUN pnpm --filter prodvor-backend prisma:generate
 
-# Собираем бэкенд
+# Build the backend
 RUN pnpm --filter prodvor-backend build
 
-# 4. Runner stage для запуска приложения
+# 4. Runner stage
 FROM base AS runner
-ENV NODE_ENV=production
-# Добавляем путь к исполняемым файлам pnpm
-ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 WORKDIR /usr/src/app
 
-# Копируем собранные файлы и зависимости
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=dependencies /usr/src/app/package.json .
-COPY --from=dependencies /usr/src/app/backend/package.json ./backend/package.json
+# Again, set the PATH to find node_modules binaries
+ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
 
-# Команда для запуска приложения
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=dependencies /usr/src/app/backend/node_modules ./backend/node_modules
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
+
+# Copy the generated Prisma client to the final image
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+# An alternative and safer path for prisma client
+COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
+
+
+EXPOSE 3001
 CMD ["pnpm", "start:backend"]

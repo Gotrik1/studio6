@@ -1,48 +1,44 @@
-# Dockerfile для фронтенда (Next.js)
-
-# 1. Base stage для установки pnpm
+# 1. Base stage for installing pnpm
 FROM node:20-alpine AS base
 RUN npm install -g pnpm
 
-# 2. Dependencies stage для установки зависимостей
+# 2. Dependencies stage
 FROM base AS dependencies
 WORKDIR /app
 COPY pnpm-lock.yaml .
 COPY package.json .
+COPY pnpm-workspace.yaml .
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile --filter prodvor-frontend...
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# 3. Builder stage для сборки приложения
+# 3. Builder stage
 FROM base AS builder
-ENV NODE_ENV=production
-# Добавляем путь к исполняемым файлам pnpm
-ENV PATH="/app/node_modules/.bin:$PATH"
 WORKDIR /app
 
-# Копируем зависимости из предыдущего стейджа
+# This is the crucial step that makes workspace binaries available.
+ENV PATH="/app/node_modules/.bin:$PATH"
+
 COPY --from=dependencies /app/ .
-
-# Копируем исходный код фронтенда
 COPY frontend/ .
+COPY tsconfig.json .
 
-# Собираем фронтенд
+# Build the frontend
 RUN pnpm --filter prodvor-frontend build
 
-# 4. Runner stage для запуска приложения
+# 4. Runner stage
 FROM base AS runner
-ENV NODE_ENV=production
-# Добавляем путь к исполняемым файлам pnpm
-ENV PATH="/app/node_modules/.bin:$PATH"
 WORKDIR /app
 
-# Копируем собранные файлы и зависимости
-COPY --from=builder /app/.next ./.next
-COPY --from=dependencies /app/node_modules ./node_modules
-COPY --from=dependencies /app/package.json .
-COPY --from=dependencies /app/frontend/package.json ./frontend/
-COPY frontend/public ./public
-COPY frontend/next.config.js .
+# Set user and create necessary directories
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+USER nextjs
 
-# Команда для запуска приложения
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/.next ./.next
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/package.json ./
+COPY --from=builder --chown=nextjs:nodejs /app/frontend/public ./public
+
+EXPOSE 9002
 CMD ["pnpm", "start:frontend"]
