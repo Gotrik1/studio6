@@ -370,7 +370,7 @@ services:
         condition: service_healthy
       create-minio-bucket:
         condition: service_completed_successfully
-    command: npm run start:prod --workspace=prodvor-backend
+    command: pnpm start:backend
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider --timeout=5 http://localhost:8080/health/ready || exit 1"]
       interval: 10s
@@ -402,7 +402,7 @@ services:
         condition: service_healthy
       kong-setup:
         condition: service_completed_successfully
-    command: npm start --workspace=prodvor-frontend
+    command: pnpm start:frontend
     logging:
       driver: loki
       options:

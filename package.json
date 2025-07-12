@@ -7,7 +7,6 @@
     "build": "pnpm --filter \"./**\" build",
     "lint": "pnpm --filter \"./**\" lint",
     "typecheck": "pnpm --filter \"./**\" typecheck",
-    "install:all": "pnpm install",
     "start:backend": "pnpm --filter prodvor-backend start:prod",
     "start:frontend": "pnpm --filter prodvor-frontend start"
   },
