@@ -1,68 +1,73 @@
 # -----------------------------------------------------------------------------
-# Base Stage: Installs dependencies and prepares the base environment.
+# Этап 1: Установка зависимостей
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS base
+FROM node:20-alpine AS dependencies
+
 WORKDIR /usr/src/app
 
-# Install OpenSSL, a dependency for Prisma Client
+# Установка OpenSSL
 RUN apk add --no-cache openssl
 
-# -----------------------------------------------------------------------------
-# Dependencies Stage: Installs npm packages.
-# Using pnpm for efficient dependency management in a monorepo.
-# -----------------------------------------------------------------------------
-FROM base AS dependencies
-WORKDIR /usr/src/app
-
-# Копируем корневой package.json и pnpm-lock.yaml для установки зависимостей
-COPY pnpm-lock.yaml ./
+# Копируем корневые файлы для установки зависимостей воркспейса
+COPY pnpm-workspace.yaml ./
 COPY package.json ./
 
 # Копируем package.json бэкенда
-COPY package.json ./backend/
+COPY backend/package.json ./backend/
 
 # Устанавливаем все зависимости, включая devDependencies (они нужны для сборки и prisma generate)
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN --mount=type=cache,id=pnpm-store,target=/root/.pnpm-store \
+    pnpm install --frozen-lockfile --filter prodvor-backend
 
 # -----------------------------------------------------------------------------
-# Build Stage: Compiles the NestJS application.
+# Этап 2: Сборка проекта
 # -----------------------------------------------------------------------------
-from dependencies AS builder
+FROM node:20-alpine AS builder
+
 WORKDIR /usr/src/app
 
-# Копируем исходный код бэкенда и Prisma-схему
-COPY . .
+# Копируем зависимости из предыдущего этапа
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=dependencies /usr/src/app/backend/node_modules ./backend/node_modules
 
-# Генерируем Prisma Client (требует devDependencies, установленных ранее)
+# Копируем исходный код
+COPY backend/ ./backend/
+COPY prisma/ ./prisma/
+# Копируем корневой tsconfig, чтобы NestJS мог его найти
+COPY tsconfig.json .
+COPY package.json .
+
+# Добавляем nest в PATH
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
+
+# Генерируем Prisma Client
 RUN pnpm --filter prodvor-backend prisma:generate
 
 # Собираем приложение
 RUN pnpm --filter prodvor-backend build
 
 # -----------------------------------------------------------------------------
-# Runner Stage: Creates the final, lightweight image for production.
+# Финальный этап: Production-образ
 # -----------------------------------------------------------------------------
-FROM base AS runner
+FROM node:20-alpine AS runner
+
 WORKDIR /usr/src/app
 
-# Устанавливаем переменные окружения для Node
-ENV NODE_ENV production
+# Установка OpenSSL для Prisma
+RUN apk add --no-cache openssl
 
-# Копируем только production-зависимости из builder-стадии
+# Копируем только production-зависимости
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/package.json ./
-COPY --from=builder /usr/src/app/backend/package.json ./backend/
+COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
 
-# Копируем скомпилированное приложение
+# Копируем собранный код
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-# Копируем Prisma-схему для runtime
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
 COPY --from=builder /usr/src/app/prisma ./prisma
-# Копируем сгенерированный Prisma Client
-COPY --from=builder /usr/src/app/node_modules/.prisma/client ./node_modules/.prisma/client
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
 
+USER node
 
-# Открываем порт, на котором будет работать приложение
 EXPOSE 3001
 
-# Команда для запуска приложения
-CMD ["pnpm", "start:backend"]
+CMD ["node", "backend/dist/main"]

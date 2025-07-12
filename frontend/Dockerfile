@@ -1,60 +1,72 @@
 # -----------------------------------------------------------------------------
-# Этап 1: base
-# Установка базовых зависимостей, которые редко меняются
+# Этап 1: Установка зависимостей
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS base
-WORKDIR /usr/src/app
-# Глобальная установка pnpm
-RUN npm install -g pnpm
+FROM node:20-alpine AS dependencies
 
-# -----------------------------------------------------------------------------
-# Этап 2: dependencies
-# Установка всех зависимостей проекта. Этот слой будет кешироваться,
-# если файлы package.json или pnpm-lock.yaml не изменились.
-# -----------------------------------------------------------------------------
-FROM base as dependencies
 WORKDIR /usr/src/app
 
-# Копируем корневые файлы для pnpm workspaces
-COPY package.json pnpm-lock.yaml ./
+# Копируем корневые файлы для установки зависимостей воркспейса
+COPY pnpm-workspace.yaml ./
+COPY package.json ./
+
 # Копируем package.json фронтенда
 COPY frontend/package.json ./frontend/
-# Копируем package.json бэкенда, чтобы pnpm мог найти воркспейс
-COPY backend/package.json ./backend/
 
-# Устанавливаем все зависимости, включая devDependencies
-RUN pnpm install
+# Устанавливаем все зависимости, включая devDependencies (они нужны для сборки)
+RUN --mount=type=cache,id=pnpm-store,target=/root/.pnpm-store \
+    pnpm install --frozen-lockfile --filter prodvor-frontend
 
 # -----------------------------------------------------------------------------
-# Этап 3: builder
-# Сборка проекта. Этот слой будет пересобираться только если изменился исходный код.
+# Этап 2: Сборка проекта
 # -----------------------------------------------------------------------------
-FROM dependencies AS builder
+FROM node:20-alpine AS builder
+
 WORKDIR /usr/src/app
 
-# Копируем весь исходный код фронтенда
-COPY ./frontend .
+# Копируем зависимости из предыдущего этапа
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=dependencies /usr/src/app/frontend/node_modules ./frontend/node_modules
+
+# Копируем package.json фронтенда, чтобы Next.js мог его найти
+COPY frontend/package.json ./frontend/
+
+# Копируем исходный код фронтенда
+COPY frontend/ ./frontend/
+# Копируем корневой tsconfig, чтобы Next.js мог его найти
+COPY tsconfig.json .
+
+# Устанавливаем NEXT_PUBLIC_BACKEND_URL во время сборки
+# Это пример, в реальном CI/CD это будет передаваться через --build-arg
+ARG NEXT_PUBLIC_BACKEND_URL=http://kong:8000
+ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
 
 # Собираем приложение
 RUN pnpm --filter prodvor-frontend build
 
 # -----------------------------------------------------------------------------
-# Этап 4: runner
-# Создание финального, легковесного образа для запуска приложения.
+# Финальный этап: Production-образ
 # -----------------------------------------------------------------------------
-FROM base as runner
+FROM node:20-alpine AS runner
+
 WORKDIR /usr/src/app
 
-# Копируем только необходимые файлы из предыдущих этапов
-COPY --from=dependencies /usr/src/app/package.json /usr/src/app/pnpm-lock.yaml ./
-COPY --from=dependencies /usr/src/app/frontend/package.json ./frontend/
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/.next ./frontend/.next
-COPY --from=builder /usr/src/app/public ./frontend/public
+ENV NODE_ENV=production
 
-# ENV NODE_ENV production
-# Это важно для Next.js, чтобы он работал в режиме продакшена
+# Копируем только production-зависимости (если они есть)
+# Next.js standalone output включает node_modules, но этот шаг на всякий случай
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/frontend/node_modules ./frontend/node_modules
+
+# Копируем собранный проект (Next.js standalone build)
+COPY --from=builder /usr/src/app/frontend/.next/standalone ./
+COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+COPY --from=builder /usr/src/app/frontend/.next/static ./frontend/.next/static
+
+# Устанавливаем правильного пользователя
+USER node
 
 EXPOSE 9002
 
-CMD ["pnpm", "start:frontend"]
+ENV PORT=9002
+
+CMD ["node", "frontend/server.js"]
