@@ -51,6 +51,20 @@ jobs:
           NEXT_PUBLIC_BACKEND_URL=http://kong:8000
           PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           EOF
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -79,7 +93,7 @@ jobs:
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
 
       - name: Run Prisma migrations
-        run: docker compose --verbose exec backend npm run prisma:migrate:deploy
+        run: docker compose --verbose exec backend pnpm prisma:migrate:deploy
 
       - name: Check container statuses
         run: docker compose --verbose ps
@@ -116,21 +130,14 @@ jobs:
         if: failure()
         run: docker compose --verbose logs minio
 
-      - name: Install dependencies
-        run: npm install
-
       - name: Lint code
-        run: |
-          npm run lint --workspace=frontend
-          npm run lint --workspace=backend
+        run: pnpm run lint
 
       - name: Typecheck code
-        run: |
-          npm run typecheck --workspace=frontend
-          npm run typecheck --workspace=backend
+        run: pnpm run typecheck
 
       - name: Build frontend
-        run: npm run build --workspace=frontend
+        run: pnpm --filter prodvor-frontend build
 
       - name: Tear down
         if: always()

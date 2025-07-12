@@ -1,37 +1,60 @@
-# Stage 1: Dependencies & Build
-FROM node:20-alpine AS builder
-WORKDIR /app
+# -----------------------------------------------------------------------------
+# Этап 1: base
+# Установка базовых зависимостей, которые редко меняются
+# -----------------------------------------------------------------------------
+FROM node:20-alpine AS base
+WORKDIR /usr/src/app
+# Глобальная установка pnpm
+RUN npm install -g pnpm
 
-# Copy all package manifests first to leverage Docker caching
-COPY package.json package-lock.json* ./
-COPY backend/package.json ./backend/
+# -----------------------------------------------------------------------------
+# Этап 2: dependencies
+# Установка всех зависимостей проекта. Этот слой будет кешироваться,
+# если файлы package.json или pnpm-lock.yaml не изменились.
+# -----------------------------------------------------------------------------
+FROM base as dependencies
+WORKDIR /usr/src/app
+
+# Копируем корневые файлы для pnpm workspaces
+COPY package.json pnpm-lock.yaml ./
+# Копируем package.json фронтенда
 COPY frontend/package.json ./frontend/
-RUN npm install --frozen-lockfile
+# Копируем package.json бэкенда, чтобы pnpm мог найти воркспейс
+COPY backend/package.json ./backend/
 
-# Copy the rest of the source code
-COPY . .
+# Устанавливаем все зависимости, включая devDependencies
+RUN pnpm install
 
-# Build the Next.js app
-RUN npm run build --workspace=prodvor-frontend
+# -----------------------------------------------------------------------------
+# Этап 3: builder
+# Сборка проекта. Этот слой будет пересобираться только если изменился исходный код.
+# -----------------------------------------------------------------------------
+FROM dependencies AS builder
+WORKDIR /usr/src/app
 
-# Stage 2: Production Runner
-FROM node:20-alpine AS runner
-WORKDIR /app/frontend
+# Копируем весь исходный код фронтенда
+COPY ./frontend .
 
-ENV NODE_ENV=production
+# Собираем приложение
+RUN pnpm --filter prodvor-frontend build
 
-# Copy necessary files from the builder stage
-COPY --from=builder /app/node_modules ../node_modules
-COPY --from=builder /app/package.json ../package.json
-COPY --from=builder /app/frontend/package.json ./package.json
+# -----------------------------------------------------------------------------
+# Этап 4: runner
+# Создание финального, легковесного образа для запуска приложения.
+# -----------------------------------------------------------------------------
+FROM base as runner
+WORKDIR /usr/src/app
 
-COPY --from=builder /app/frontend/.next ./.next
-COPY --from=builder /app/frontend/public ./public
-COPY --from=builder /app/frontend/next.config.ts ./next.config.ts
-COPY --from=builder /app/frontend/tailwind.config.ts ./tailwind.config.ts
-COPY --from=builder /app/frontend/postcss.config.cjs ./postcss.config.cjs
+# Копируем только необходимые файлы из предыдущих этапов
+COPY --from=dependencies /usr/src/app/package.json /usr/src/app/pnpm-lock.yaml ./
+COPY --from=dependencies /usr/src/app/frontend/package.json ./frontend/
+COPY --from=dependencies /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/.next ./frontend/.next
+COPY --from=builder /usr/src/app/public ./frontend/public
+
+# ENV NODE_ENV production
+# Это важно для Next.js, чтобы он работал в режиме продакшена
 
 EXPOSE 9002
-ENV PORT 9002
 
-CMD ["npm", "start", "--workspace=prodvor-frontend"]
+CMD ["pnpm", "start:frontend"]

@@ -7,8 +7,13 @@
     "backend"
   ],
   "scripts": {
-    "lint": "npm run lint --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present"
+    "dev": "pnpm --filter prodvor-frontend dev",
+    "build": "pnpm --filter \"./**\" build",
+    "lint": "pnpm --filter \"./**\" lint",
+    "typecheck": "pnpm --filter \"./**\" typecheck",
+    "install:all": "pnpm install",
+    "start:backend": "pnpm --filter prodvor-backend start:prod",
+    "start:frontend": "pnpm --filter prodvor-frontend start"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
@@ -20,6 +25,7 @@
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "globals": "^16.3.0",
+    "pnpm": "^9.10.0",
     "typescript-eslint": "^8.36.0"
   }
 }
