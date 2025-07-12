@@ -99,11 +99,11 @@ packages:
   - 
     name: error
     message: |
-      failed to solve: process "/bin/sh -c npm install --workspace=***-backend" did not complete successfully: exit code: 1
+      failed to solve: process "/bin/sh -c npm install --workspace=prodvor-backend" did not complete successfully: exit code: 1
       
       ERROR: failed to build: failed to solve: failed to compute cache key: failed to calculate checksum of ref 7ap50x7kz80pg082upmkcbrpy::d5mvnmxhfapherblhonnfslbz: "/backend/package.json": not found
       
-      ERROR: failed to build: failed to solve: process "/bin/sh -c npm install --workspace=***-backend" did not complete successfully: exit code: 1
+      ERROR: failed to build: failed to solve: process "/bin/sh -c npm install --workspace=prodvor-backend" did not complete successfully: exit code: 1
       
       ERROR: failed to build: failed to solve: dockerfile parse error on line 18: unknown instruction: services:
   - 
@@ -111,12 +111,12 @@ packages:
     message: |
       process "/bin/sh -c nest build" did not complete successfully: exit code: 1
       
-      process "/bin/sh -c npm run build --workspace=***-backend" did not complete successfully: exit code: 1
+      process "/bin/sh -c npm run build --workspace=prodvor-backend" did not complete successfully: exit code: 1
   - 
     name: error
     message: 'Process completed with exit code 1.'
 error: "Dependencies lock file is not found in /home/runner/work/studio6/studio6. Supported file patterns: pnpm-lock.yaml"
-failed to solve: process "/bin/sh -c npm install --workspace=***-backend" did not complete successfully: exit code: 1
+failed to solve: process "/bin/sh -c npm install --workspace=prodvor-backend" did not complete successfully: exit code: 1
 failed to solve: process "/bin/sh -c nest build" did not complete successfully: exit code: 1
 failed to solve: failed to compute cache key: failed to calculate checksum of ref zxg3atihcagtegxrmwbdaf5xb::svwulinpea09ijkg6e3n9h5rh: "/backend/package.json": not found
 failed to solve: failed to compute cache key: failed to calculate checksum of ref 7ap50x7kz80pg082upmkcbrpy::d5mvnmxhfapherblhonnfslbz: "/backend/package.json": not found
@@ -128,23 +128,21 @@ The "workspaces" field in package.json is not supported by pnpm. Create a "pnpm-
 The default database encoding has accordingly been set to "UTF8".
 The default text search configuration will be set to "english".
 Data page checksums are disabled.
-The files belonging to this database system will be owned by *** "***".
-This *** must also own the server process.
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
 initdb: warning: enabling "trust" authentication for local connections
 initdb: hint: You can change this by editing pg_hba.conf or using the option -A, or --auth-local and --auth-host, the next time you run initdb.
 The "workspaces" field in package.json is not supported by pnpm. Create a "pnpm-workspace.yaml" file instead.
 sh: nest: not found
-npm error Lifecycle script `start:dev` failed with error:
-npm error code 127
-npm error path /usr/src/app/backend
-npm error workspace ***-backend@0.0.1
-npm error location /usr/src/app/backend
-npm error command failed
-npm error command sh -c nest start --watch
-npm error No workspaces found:
-npm error   --workspace=***-backend
-npm error A complete log of this run can be found in: /root/.npm/_logs/2025-07-12T11_08_18_088Z-debug-0.log
-npm error Lifecycle script `build` failed with error:
+npm err! Lifecycle script `start:dev` failed with error:
+npm err! Error: command failed
+npm err! command sh -c nest start --watch
+npm err! code 127
+npm err! path /usr/src/app/backend
+npm err! workspace prodvor-backend@0.0.1
+npm err! location /usr/src/app/backend
+npm err! A complete log of this run can be found in: /root/.npm/_logs/2025-07-12T11_08_18_088Z-debug-0.log
+npm err! Lifecycle script `build` failed with error:
 Found 91 error(s).
 relation "migration_model" does not exist at character 25
 STATEMENT: SELECT ID, VERSION FROM MIGRATION_MODEL ORDER BY UPDATE_TIME DESC
@@ -202,3 +200,5 @@ Namespace '"/usr/src/app/node_modules/.prisma/client/default".Prisma' has no exp
 Namespace '"/usr/src/app/node_modules/.prisma/client/default".Prisma' has no exported member 'TournamentWhereInput'.
 'Unexpected input(s) 'dockerfile', valid inputs are ['add-hosts', 'allow', 'annotations', 'attests', 'build-args', 'build-contexts', 'builder', 'cache-from', 'cache-to', 'cgroup-parent', 'context', 'file', 'labels', 'load', 'network', 'no-cache', 'no-cache-filters', 'outputs', 'platforms', 'provenance', 'pull', 'push', 'sbom', 'secrets', 'secret-envs', 'secret-files', 'shm-size', 'ssh', 'tags', 'target', 'ulimit', 'github-token']'
 Unexpected input(s) 'dockerfile', valid inputs are ['add-hosts', 'allow', 'annotations', 'attests', 'build-args', 'build-contexts', 'builder', 'cache-from', 'cache-to', 'cgroup-parent', 'context', 'file', 'labels', 'load', 'network', 'no-cache', 'no-cache-filters', 'outputs', 'platforms', 'provenance', 'pull', 'push', 'sbom', 'secrets', 'secret-envs', 'secret-files', 'shm-size', 'ssh', 'tags', 'target', 'ulimit', 'github-token']
+```
+You can safely ignore these warnings.

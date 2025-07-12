@@ -1,59 +1,62 @@
-# -----------------------------------------------------------------------------
-# Этап 1: base
-# Установка базовых зависимостей, которые редко меняются
-# -----------------------------------------------------------------------------
+# ==============================================================================
+# Этап 1: Base - Общая основа для установки зависимостей
+# ==============================================================================
 FROM node:20-alpine AS base
 WORKDIR /usr/src/app
-# Глобальная установка pnpm
+
+# Устанавливаем pnpm глобально
 RUN npm install -g pnpm
 
-# -----------------------------------------------------------------------------
-# Этап 2: dependencies
-# Установка всех зависимостей проекта. Этот слой будет кешироваться,
-# если файлы package.json или pnpm-lock.yaml не изменились.
-# -----------------------------------------------------------------------------
-FROM base as dependencies
-WORKDIR /usr/src/app
+# ==============================================================================
+# Этап 2: Dependencies - Установка всех зависимостей проекта
+# ==============================================================================
+FROM base AS dependencies
 
-# Копируем корневые файлы для pnpm workspaces
-COPY package.json pnpm-lock.yaml ./
+# Копируем корневые package.json и pnpm-lock.yaml, а также файл конфигурации воркспейсов
+COPY pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml* ./
+
 # Копируем package.json бэкенда
 COPY backend/package.json ./backend/
-# Копируем package.json фронтенда, чтобы pnpm мог найти воркспейс
-COPY frontend/package.json ./frontend/
 
 # Устанавливаем все зависимости, включая devDependencies (они нужны для сборки и prisma generate)
-RUN pnpm install
+RUN pnpm install --frozen-lockfile
 
-# -----------------------------------------------------------------------------
-# Этап 3: builder
-# Сборка проекта. Этот слой будет пересобираться только если изменился исходный код.
-# -----------------------------------------------------------------------------
-FROM dependencies AS builder
-WORKDIR /usr/src/app
+# ==============================================================================
+# Этап 3: Build - Сборка приложения
+# ==============================================================================
+FROM dependencies AS build
 
-# Копируем весь исходный код бэкенда
-COPY ./backend .
+# Копируем весь исходный код
+COPY . .
 
 # Генерируем Prisma Client (требует devDependencies, установленных ранее)
-RUN pnpm prisma:generate
+RUN pnpm --filter prodvor-backend prisma:generate
 
 # Собираем приложение
-RUN pnpm build
+RUN pnpm --filter prodvor-backend build
 
-# -----------------------------------------------------------------------------
-# Этап 4: runner
-# Создание финального, легковесного образа для запуска приложения.
-# -----------------------------------------------------------------------------
+# ==============================================================================
+# Этап 4: Runner - Финальный, легковесный образ для запуска
+# ==============================================================================
 from base as runner
 WORKDIR /usr/src/app
 
-# Копируем только необходимые файлы из предыдущих этапов
-COPY --from=dependencies /usr/src/app/package.json /usr/src/app/pnpm-lock.yaml ./
-COPY --from=dependencies /usr/src/app/backend/package.json ./backend/
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/dist ./dist
+# Устанавливаем переменную окружения для production
+ENV NODE_ENV production
 
-EXPOSE 3001
+# Добавляем бинарники из node_modules в PATH
+# Это необходимо для запуска `nest` без полного пути
+ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
-CMD ["pnpm", "start:backend"]
+# Копируем только production-зависимости из этапа 'build'
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/backend/node_modules ./backend/node_modules
+COPY --from=build /usr/src/app/package.json ./package.json
+
+# Копируем собранное приложение
+COPY --from=build /usr/src/app/backend/dist ./backend/dist
+COPY --from=build /usr/src/app/backend/prisma ./backend/prisma
+
+# Запускаем приложение в production-режиме
+CMD ["pnpm", "--filter", "prodvor-backend", "start:prod"]
