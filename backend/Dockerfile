@@ -27,7 +27,7 @@ COPY --from=dependencies /usr/src/app/ .
 
 # Копируем исходный код бэкенда и Prisma схему
 COPY backend/ ./backend/
-COPY prisma/ ./prisma/
+COPY backend/prisma/ ./prisma/
 COPY tsconfig.json .
 
 # Генерируем Prisma клиент
