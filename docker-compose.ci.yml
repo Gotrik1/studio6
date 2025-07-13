@@ -26,4 +26,3 @@ services:
     image: prodvor/frontend:latest # Ensure we use the freshly built image
     logging:
       driver: "json-file"
-

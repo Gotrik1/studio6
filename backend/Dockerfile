@@ -1,36 +1,56 @@
-# --- Base Stage ---
-FROM node:20-alpine AS base
-WORKDIR /usr/src/app
-RUN npm install -g pnpm
 
 # --- Builder Stage ---
-# Устанавливает все зависимости, включая devDependencies,
-# генерирует Prisma-клиент и собирает приложение.
-FROM base AS builder
+# This stage installs all dependencies (including dev) and builds the application.
+FROM node:20-alpine AS builder
+
 WORKDIR /usr/src/app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY frontend/package.json ./frontend/
+
+# Копируем корневые файлы для pnpm workspace
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+
+# Копируем package.json для каждого воркспейса
 COPY backend/package.json ./backend/
-COPY prisma ./prisma/
-RUN pnpm install --no-frozen-lockfile
-COPY . .
-# Генерируем Prisma-клиент перед сборкой
+COPY frontend/package.json ./frontend/
+
+# Устанавливаем ВСЕ зависимости, включая devDependencies, для сборки
+RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --no-frozen-lockfile
+
+# Копируем исходный код бэкенда и Prisma схему
+COPY backend ./backend
+COPY prisma ./prisma
+
+# Генерируем Prisma Client (необходимо до сборки)
 RUN pnpm --filter prodvor-backend prisma:generate
-# Собираем только backend
+
+# Собираем только backend, так как это Dockerfile для бэкенда
 RUN pnpm --filter prodvor-backend build
 
 # --- Runner Stage ---
-# Устанавливает только production зависимости и копирует
-# собранные файлы из builder-стадии.
-FROM base AS runner
+# This stage creates the final, optimized image for production.
+FROM node:20-alpine AS runner
+
 WORKDIR /usr/src/app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Копируем корневые файлы для pnpm workspace
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+
+# Копируем package.json для каждого воркспейса
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-COPY prisma ./prisma/
-# Копируем production-зависимости, сгенерированный клиент и собранное приложение из builder
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
+
+# Устанавливаем только production зависимости
+RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --prod --frozen-lockfile
+
+# Копируем скомпилированный код из builder-стадии
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
 
-CMD ["pnpm", "start:backend"]
+# Копируем Prisma схему и сгенерированный клиент из builder-стадии
+COPY --from=builder /usr/src/app/prisma ./prisma
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+
+# Команда для запуска приложения
+CMD ["node", "backend/dist/main.js"]

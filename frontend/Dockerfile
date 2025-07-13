@@ -1,29 +1,47 @@
-# --- Base Stage ---
-FROM node:20-alpine AS base
-WORKDIR /app
-RUN npm install -g pnpm
 
 # --- Builder Stage ---
-# Устанавливает все зависимости и собирает приложение.
-FROM base AS builder
+# This stage installs all dependencies (including dev) and builds the application.
+FROM node:20-alpine AS builder
+
 WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY frontend/package.json ./frontend/
+
+# Копируем корневые файлы для pnpm workspace
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+
+# Копируем package.json для каждого воркспейса
 COPY backend/package.json ./backend/
-RUN pnpm install --no-frozen-lockfile
-COPY . .
+COPY frontend/package.json ./frontend/
+
+# Устанавливаем ВСЕ зависимости, включая devDependencies, для сборки
+RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --no-frozen-lockfile
+
+# Копируем весь исходный код фронтенда
+COPY ./frontend ./frontend
+
+# Собираем только frontend, так как это Dockerfile для фронтенда
 RUN pnpm --filter prodvor-frontend build
 
 # --- Runner Stage ---
-# Копирует собранные файлы и production-зависимости.
-FROM base AS runner
+# This stage creates the final, optimized image for production.
+FROM node:20-alpine AS runner
+
 WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY frontend/package.json ./frontend/
-COPY backend/package.json ./backend/
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/frontend/node_modules ./frontend/node_modules
+
+# Устанавливаем только production зависимости
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/pnpm-lock.yaml ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/frontend/package.json ./frontend/
+COPY --from=builder /app/backend/package.json ./backend/
+RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --prod --frozen-lockfile
+
+# Копируем скомпилированный код фронтенда из builder-стадии
 COPY --from=builder /app/frontend/.next ./frontend/.next
 COPY --from=builder /app/frontend/public ./frontend/public
+COPY --from=builder /app/frontend/package.json ./frontend/package.json
+
+EXPOSE 9002
 
 CMD ["pnpm", "start:frontend"]
