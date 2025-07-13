@@ -1,45 +1,45 @@
 # --- Base Stage ---
-FROM node:20-alpine as base
+# Используем один и тот же базовый образ для всех стадий, чтобы обеспечить консистентность
+FROM node:20-alpine AS base
 RUN npm install -g pnpm@10.13.1
 
 # --- Builder Stage ---
-FROM base as builder
+# Эта стадия устанавливает все зависимости, генерирует Prisma-клиент и собирает production-билд
+FROM base AS builder
 WORKDIR /usr/src/app
 
-# Копируем манифесты зависимостей
+# Копируем только файлы манифестов для кэширования зависимостей
+# Это самый важный шаг для корректной работы pnpm в монорепозитории
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY tsconfig.json ./
-# Копируем package.json каждого воркспейса
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-# Копируем Prisma схему до установки зависимостей
+# Копируем prisma schema до установки зависимостей, чтобы postinstall скрипт сработал
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем ВСЕ зависимости, включая devDependencies
-# Это необходимо для доступа к CLI `prisma` и `nest`
-# `postinstall` скрипт автоматически вызовет `prisma generate`
+# Устанавливаем все зависимости, включая devDependencies.
+# Это запустит `prisma generate` через `postinstall` скрипт.
 RUN pnpm install --frozen-lockfile
 
-# Копируем весь остальной код
+# Копируем весь остальной код проекта
 COPY . .
 
-# Собираем только backend
+# Собираем только backend, так как это Dockerfile для бэкенда
 RUN pnpm --filter prodvor-backend build
 
-# --- Pruner Stage (для production-зависимостей) ---
-FROM base as pruner
-WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/ .
-RUN pnpm --filter prodvor-backend deploy --prod /prod/backend
-
-# --- Runner Stage (финальный, легкий образ) ---
-FROM base as runner
+# --- Runner Stage ---
+# Финальная, легковесная стадия, которая содержит только то, что нужно для запуска
+FROM base AS runner
 WORKDIR /usr/src/app
 
-COPY --from=pruner /prod/backend/dist ./backend/dist
-COPY --from=pruner /prod/backend/node_modules ./backend/node_modules
-COPY --from=pruner /prod/backend/package.json ./backend/package.json
+# Копируем необходимые артефакты из builder-стадии
+COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
+# Копируем сгенерированную схему, если она нужна в рантайме (например, для миграций)
+COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
 
-WORKDIR /usr/src/app/backend
+ENV NODE_ENV=production
+
 EXPOSE 3001
-CMD ["node", "dist/main"]
+
+CMD ["pnpm", "start:backend"]
