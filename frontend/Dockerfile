@@ -1,51 +1,55 @@
-# Frontend Dockerfile
+# 1. Builder stage: Установка зависимостей и сборка приложения
+FROM node:20 AS builder
 
-# --- 1. Builder Stage ---
-# This stage installs dependencies, builds the frontend, and prepares production assets.
-FROM node:20-alpine AS builder
+# Установка рабочей директории
 WORKDIR /usr/src/app
 
-# Set PATH to include pnpm's bin directory. Critical for finding commands like 'next'.
-ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
+# Копируем файлы манифеста из корня монорепозитория
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy package manager configs first to leverage Docker cache
-# This layer only gets rebuilt if these files change.
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
-
-# Copy package.json files for each workspace
-COPY frontend/package.json ./frontend/
+# Копируем package.json каждого воркспейса для корректного кэширования pnpm install
 COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
 
-# Install all dependencies for all workspaces
+# Установка зависимостей с помощью pnpm
+RUN npm install -g pnpm@9.15.9
 RUN pnpm install --frozen-lockfile
 
-# Copy the rest of the source code
+# Копируем весь исходный код проекта
 COPY . .
 
-# Build the frontend application
+# Собираем фронтенд приложение. Команда `next build` создаст оптимизированную сборку в папке `.next`
 RUN pnpm --filter prodvor-frontend build
 
+# 2. Runner stage: Создание легковесного образа для продакшена
+FROM node:20-slim AS runner
 
-# --- 2. Runner Stage ---
-# This stage creates the final, lean image for running the application.
-FROM node:20-alpine AS runner
+# Установка рабочей директории
 WORKDIR /usr/src/app
 
-# Set PATH to include pnpm's bin directory for running 'next'
-ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
-ENV NODE_ENV=production
+# Устанавливаем pnpm для запуска приложения
+RUN npm install -g pnpm@9.15.9
 
-# Copy only the production-relevant files from the builder stage
+# Копируем package.json фронтенда
+COPY frontend/package.json ./frontend/
+# Копируем корневой package.json, чтобы pnpm мог найти воркспейс
+COPY package.json .
+
+# Устанавливаем ТОЛЬКО production-зависимости
+RUN pnpm install --prod --frozen-lockfile
+
+# Копируем скомпилированное приложение из builder-стадии
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
+
+# Копируем публичные ассеты
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+
+# Копируем next.config.mjs, если он существует
 COPY --from=builder /usr/src/app/frontend/next.config.mjs ./frontend/next.config.mjs
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
 
-# Expose the port Next.js runs on
-EXPOSE 9002
+# Копируем команду для старта из корневого package.json
+COPY --from=builder /usr/src/app/package.json .
 
-# The command to start the Next.js server in production mode
-# Since we are in a pnpm workspace, we still need to filter.
-# `pnpm --filter prodvor-frontend start` will execute `next start -p 9002`
-# as defined in frontend/package.json
-CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
+# Указываем команду для запуска приложения
+# Мы используем скрипт из корневого package.json для консистентности
+CMD ["pnpm", "start:frontend"]
