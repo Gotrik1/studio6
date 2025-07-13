@@ -1,47 +1,33 @@
-
-# --- Builder Stage ---
-# This stage installs all dependencies (including dev) and builds the application.
-FROM node:20-alpine AS builder
-
+# ---- Base Stage ----
+FROM node:20-alpine AS base
 WORKDIR /app
-
-# Копируем корневые файлы для pnpm workspace
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-
-# Копируем package.json для каждого воркспейса
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем ВСЕ зависимости, включая devDependencies, для сборки
-RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --no-frozen-lockfile
+# ---- Dependencies Stage ----
+FROM base AS deps
+RUN npm install -g pnpm@10.13.1
+RUN pnpm install --frozen-lockfile --prod=false
 
-# Копируем весь исходный код фронтенда
-COPY ./frontend ./frontend
-
-# Собираем только frontend, так как это Dockerfile для фронтенда
+# ---- Builder Stage ----
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm install -g pnpm@10.13.1
 RUN pnpm --filter prodvor-frontend build
 
-# --- Runner Stage ---
-# This stage creates the final, optimized image for production.
-FROM node:20-alpine AS runner
-
+# ---- Runner Stage ----
+FROM base AS runner
 WORKDIR /app
+ENV NODE_ENV=production
+RUN npm install -g pnpm@10.13.1
 
-# Устанавливаем только production зависимости
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/pnpm-lock.yaml ./
-COPY --from=builder /app/pnpm-workspace.yaml ./
-COPY --from=builder /app/frontend/package.json ./frontend/
-COPY --from=builder /app/backend/package.json ./backend/
-RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --prod --frozen-lockfile
-
-# Копируем скомпилированный код фронтенда из builder-стадии
 COPY --from=builder /app/frontend/.next ./frontend/.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/frontend/package.json ./frontend/
 COPY --from=builder /app/frontend/public ./frontend/public
-COPY --from=builder /app/frontend/package.json ./frontend/package.json
 
 EXPOSE 9002
 
-CMD ["pnpm", "start:frontend"]
+CMD ["pnpm", "--filter", "prodvor-frontend", "start"]

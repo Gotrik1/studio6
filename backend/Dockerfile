@@ -1,56 +1,30 @@
-
-# --- Builder Stage ---
-# This stage installs all dependencies (including dev) and builds the application.
-FROM node:20-alpine AS builder
-
+# ---- Base Stage ----
+FROM node:20-alpine AS base
 WORKDIR /usr/src/app
-
-# Копируем корневые файлы для pnpm workspace
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-
-# Копируем package.json для каждого воркспейса
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем ВСЕ зависимости, включая devDependencies, для сборки
-RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --no-frozen-lockfile
+# ---- Dependencies Stage ----
+FROM base AS deps
+RUN npm install -g pnpm@10.13.1
+RUN pnpm install --frozen-lockfile --prod=false
 
-# Копируем исходный код бэкенда и Prisma схему
-COPY backend ./backend
-COPY prisma ./prisma
-
-# Генерируем Prisma Client (необходимо до сборки)
+# ---- Builder Stage ----
+FROM base AS builder
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+COPY . .
+RUN npm install -g pnpm@10.13.1
 RUN pnpm --filter prodvor-backend prisma:generate
-
-# Собираем только backend, так как это Dockerfile для бэкенда
 RUN pnpm --filter prodvor-backend build
 
-# --- Runner Stage ---
-# This stage creates the final, optimized image for production.
-FROM node:20-alpine AS runner
-
-WORKDIR /usr/src/app
-
-# Копируем корневые файлы для pnpm workspace
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-COPY pnpm-workspace.yaml ./
-
-# Копируем package.json для каждого воркспейса
-COPY backend/package.json ./backend/
-COPY frontend/package.json ./frontend/
-
-# Устанавливаем только production зависимости
-RUN --mount=type=cache,target=/root/.pnpm-store pnpm install --prod --frozen-lockfile
-
-# Копируем скомпилированный код из builder-стадии
+# ---- Runner Stage ----
+FROM base AS runner
+RUN npm install -g pnpm@10.13.1
+COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-
-# Копируем Prisma схему и сгенерированный клиент из builder-стадии
-COPY --from=builder /usr/src/app/prisma ./prisma
-COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
-
-# Команда для запуска приложения
-CMD ["node", "backend/dist/main.js"]
+COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
+COPY --from=builder /usr/src/app/backend/package.json ./backend/
+# The command to run the application is now in the docker-compose file
+EXPOSE 3001
+CMD ["pnpm", "--filter", "prodvor-backend", "start:prod"]
