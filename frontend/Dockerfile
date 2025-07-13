@@ -1,69 +1,44 @@
 # --- Base Stage ---
-# Используем базовый образ Node.js
-FROM node:20-alpine as base
-
-# Устанавливаем pnpm глобально
+# Используем легковесный образ с Node.js
+FROM node:20-alpine AS base
 RUN npm install -g pnpm@10.13.1
 
 # --- Builder Stage ---
-# На этой стадии мы устанавливаем все зависимости (включая dev) и собираем проект.
-FROM base AS builder
-
-# Устанавливаем рабочую директорию в корень проекта
+# Эта стадия используется для сборки TypeScript в JavaScript
+FROM base as builder
 WORKDIR /usr/src/app
 
-# Копируем файлы манифеста, чтобы кэшировать слой с зависимостями
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc* ./
-
-# Копируем package.json каждого воркспейса, чтобы pnpm понял, что их нужно установить
+# Копируем только файлы манифеста, чтобы кэшировать слой зависимостей
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json .npmrc* ./
+# Копируем package.json каждого воркспейса для корректной установки
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем ВСЕ зависимости (включая devDependencies) для всех воркспейсов.
+# Устанавливаем ВСЕ зависимости, включая devDependencies
 RUN pnpm install --frozen-lockfile
 
-# Копируем остальной исходный код
+# Копируем весь остальной исходный код
 COPY . .
 
 # Собираем только frontend, так как это Dockerfile для фронтенда
 RUN pnpm --filter prodvor-frontend build
 
-# --- Pruner Stage ---
-# На этой стадии мы удаляем devDependencies, чтобы финальный образ был меньше.
-FROM base AS pruner
-
+# --- Runner Stage ---
+# Это финальный, легковесный образ для запуска приложения
+FROM base as runner
 WORKDIR /usr/src/app
 
-# Копируем все из builder
-COPY --from=builder /usr/src/app/ ./
-
-# Удаляем все devDependencies, оставляя только production-зависимости
-RUN pnpm prune --prod
-
-
-# --- Runner Stage ---
-# Финальный, легковесный образ для запуска приложения.
-FROM base as runner
-
-WORKDIR /app
-
-ENV NODE_ENV=production
-
-# Копируем только production-зависимости из pruner
-COPY --from=pruner /usr/src/app/node_modules ./node_modules
-COPY --from=pruner /usr/src/app/frontend/node_modules ./frontend/node_modules
-COPY --from=pruner /usr/src/app/package.json .
-COPY --from=pruner /usr/src/app/frontend/package.json ./frontend/
-
-# Копируем собранное приложение из builder
+# Копируем только необходимые артефакты из builder'а
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
+COPY --from=builder /usr/src/app/frontend/next.config.mjs ./frontend/
+# Копируем production node_modules
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/frontend/node_modules ./frontend/node_modules
 
-# Устанавливаем пользователя без root прав для безопасности
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S nextjs -u 1001
-USER nextjs
 
 EXPOSE 9002
 
-CMD ["pnpm", "start:frontend"]
+# Команда для запуска production-сборки
+CMD ["pnpm", "--filter", "prodvor-frontend", "start"]

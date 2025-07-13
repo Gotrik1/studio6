@@ -1,62 +1,44 @@
 # --- Base Stage ---
-# Используем базовый образ Node.js
-FROM node:20-alpine as base
-
-# Устанавливаем pnpm глобально
+# Используем легковесный образ с Node.js
+FROM node:20-alpine AS base
 RUN npm install -g pnpm@10.13.1
 
 # --- Builder Stage ---
-# На этой стадии мы устанавливаем все зависимости (включая dev) и собираем проект.
-FROM base AS builder
-
-# Устанавливаем рабочую директорию в корень проекта
+# Эта стадия используется для сборки TypeScript в JavaScript
+FROM base as builder
 WORKDIR /usr/src/app
 
-# Копируем файлы манифеста, чтобы кэшировать слой с зависимостями
+# Копируем только файлы манифеста, чтобы кэшировать слой зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json .npmrc* ./
-
-# Копируем package.json каждого воркспейса, чтобы pnpm понял, что их нужно установить
+# Копируем package.json каждого воркспейса для корректной установки
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Копируем схему Prisma, так как она нужна для `prisma generate`
+# Копируем схему Prisma до установки, так как postinstall скрипт её использует
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем ВСЕ зависимости (включая devDependencies) для всех воркспейсов.
-# `prisma generate` запустится автоматически через postinstall скрипт.
+# Устанавливаем ВСЕ зависимости, включая devDependencies, чтобы были доступны CLI-инструменты
 RUN pnpm install --frozen-lockfile
 
-# Копируем остальной исходный код
+# Копируем весь остальной исходный код
 COPY . .
 
 # Собираем только backend, так как это Dockerfile для бэкенда
+# Prisma generate вызывается автоматически через postinstall скрипт в package.json
 RUN pnpm --filter prodvor-backend build
 
-# --- Pruner Stage ---
-# На этой стадии мы удаляем devDependencies, чтобы финальный образ был меньше.
-FROM base AS pruner
-
-WORKDIR /usr/src/app
-
-# Копируем все из builder
-COPY --from=builder /usr/src/app/ ./
-
-# Удаляем все devDependencies, оставляя только production-зависимости
-RUN pnpm prune --prod
-
 # --- Runner Stage ---
-# Финальный, легковесный образ для запуска приложения.
-FROM base AS runner
-
+# Это финальный, легковесный образ для запуска приложения
+FROM base as runner
 WORKDIR /usr/src/app
 
-# Копируем скомпилированный код из builder
+# Копируем только необходимые артефакты из builder'а
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-
-# Копируем только production-зависимости из pruner
-COPY --from=pruner /usr/src/app/backend/node_modules ./backend/node_modules
-COPY --from=pruner /usr/src/app/package.json .
-COPY --from=pruner /usr/src/app/backend/package.json ./backend/
+# Копируем production node_modules вместе со сгенерированным Prisma клиентом
+COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
 
 EXPOSE 3001
-CMD ["pnpm", "start:backend"]
+
+# Команда для запуска production-сборки
+CMD ["node", "backend/dist/main"]
