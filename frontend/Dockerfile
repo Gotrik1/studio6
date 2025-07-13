@@ -1,38 +1,38 @@
-# --- Builder Stage ---
-FROM node:20-slim AS builder
 
+# --- Base Stage ---
+# Устанавливаем базовый образ с нужной версией Node.js
+FROM node:20-alpine AS base
+WORKDIR /app
+RUN npm install -g pnpm
+
+# --- Builder Stage ---
+# Здесь мы устанавливаем ВСЕ зависимости (включая dev) и собираем проект
+FROM base AS builder
 WORKDIR /app
 
-# Устанавливаем pnpm глобально
-RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
-
-# Копируем корневые файлы конфигурации монорепозитория
+# Копируем корневые файлы для установки зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Копируем package.json для каждого воркспейса
+# Копируем package.json каждого воркспейса
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем ВСЕ зависимости
+# Устанавливаем ВСЕ зависимости для всех воркспейсов
+# --no-frozen-lockfile нужен для CI, если lock-файл мог устареть
 RUN pnpm install --no-frozen-lockfile
 
-# Копируем ВЕСЬ исходный код
-COPY . .
+# Копируем весь исходный код frontend
+COPY frontend ./frontend
 
 # Собираем только frontend
 RUN pnpm --filter prodvor-frontend build
 
 # --- Runner Stage ---
-FROM node:20-slim AS runner
-
+# Здесь мы создаем чистый образ только с production-зависимостями и собранным кодом
+FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
-
-# Устанавливаем pnpm
-RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
-
-# Копируем только необходимые для production установки файлы
+# Копируем корневые файлы и package.json воркспейсов
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
@@ -40,16 +40,11 @@ COPY frontend/package.json ./frontend/
 # Устанавливаем только production зависимости
 RUN pnpm install --prod --no-frozen-lockfile
 
-# Явно запускаем prisma generate на всякий случай, если он понадобится
-RUN pnpm --filter prodvor-backend exec prisma generate
-
-
-# Копируем собранный фронтенд из builder-стадии
+# Копируем собранный код из builder-стадии
 COPY --from=builder /app/frontend/.next ./frontend/.next
 COPY --from=builder /app/frontend/public ./frontend/public
-COPY --from=builder /app/frontend/package.json ./frontend/package.json
+COPY --from=builder /app/frontend/package.json ./frontend/
 
+# Открываем порт и запускаем приложение
 EXPOSE 9002
-
-# Команда для запуска фронтенда в production режиме
 CMD ["pnpm", "start:frontend"]
