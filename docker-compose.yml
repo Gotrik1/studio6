@@ -168,7 +168,8 @@ services:
       keycloak-db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider --timeout=5 http://localhost:8080/health/ready || exit 1"]
+      test: >
+        bash -c "exec 9<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n' >&9 && head -n 1 <&9 | grep 'HTTP/1.1 200'"
       interval: 15s
       timeout: 5s
       retries: 30
