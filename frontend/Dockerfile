@@ -6,7 +6,7 @@ FROM node:20 AS builder
 WORKDIR /app
 
 # Глобально устанавливаем pnpm для надежности
-RUN npm install -g pnpm@9.15.9
+RUN npm install -g pnpm@10.13.1
 
 # Копируем файлы манифеста для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -39,7 +39,7 @@ COPY --from=builder /app/backend/package.json ./backend/
 COPY --from=builder /app/frontend/package.json ./frontend/
 
 # Устанавливаем только production зависимости
-RUN npm install -g pnpm@9.15.9 && \
+RUN npm install -g pnpm@10.13.1 && \
     pnpm install --prod --frozen-lockfile
 
 # Копируем собранное Next.js приложение

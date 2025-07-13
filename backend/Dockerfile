@@ -7,7 +7,7 @@ FROM node:20 AS builder
 WORKDIR /usr/src/app
 
 # Глобально устанавливаем pnpm для надежности
-RUN npm install -g pnpm@9.15.9
+RUN npm install -g pnpm@10.13.1
 
 # Устанавливаем OpenSSL, необходимый для Prisma
 RUN apt-get update && apt-get install -y openssl
@@ -47,7 +47,7 @@ COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
 
 # Устанавливаем только production зависимости, используя уже обновленный lock-файл
 # Это делает финальный образ легковесным
-RUN npm install -g pnpm@9.15.9 && \
+RUN npm install -g pnpm@10.13.1 && \
     pnpm install --prod --frozen-lockfile
 
 # Копируем схему Prisma для runtime
