@@ -1,45 +1,51 @@
-# 1. Builder stage: Build the Next.js application
+#
+# Этап 1: Сборщик (Builder)
+#
 FROM node:20 AS builder
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Явно устанавливаем pnpm глобально
+# Глобально устанавливаем pnpm для надежности
 RUN npm install -g pnpm@9.15.9
 
-# Копируем файлы манифеста для установки зависимостей
+# Копируем файлы манифеста для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем все зависимости
-RUN pnpm install --frozen-lockfile
+# Устанавливаем все зависимости. 
+# Используем --no-frozen-lockfile, чтобы pnpm мог обновить lock-файл, если он не соответствует package.json.
+RUN pnpm install --no-frozen-lockfile
 
-# Копируем весь исходный код
+# Копируем весь исходный код проекта
 COPY . .
 
-# Собираем фронтенд
+# Собираем frontend приложение
 RUN pnpm --filter prodvor-frontend build
 
-# 2. Runner stage: Create a slim image for production
-FROM node:20-slim AS runner
+#
+# Этап 2: Запуск (Runner)
+#
+FROM node:20-slim
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-ENV NODE_ENV=production
+# Копируем файлы манифеста из builder-стадии (включая обновленный pnpm-lock.yaml)
+COPY --from=builder /app/package.json \
+                    /app/pnpm-lock.yaml \
+                    /app/pnpm-workspace.yaml \
+                    ./
+COPY --from=builder /app/backend/package.json ./backend/
+COPY --from=builder /app/frontend/package.json ./frontend/
 
-# Копируем только необходимые для запуска production-зависимости из builder-стадии
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
-COPY --from=builder /usr/src/app/package.json ./package.json
-COPY --from=builder /usr/src/app/pnpm-lock.yaml ./
+# Устанавливаем только production зависимости
+RUN npm install -g pnpm@9.15.9 && \
+    pnpm install --prod --frozen-lockfile
 
-RUN npm install -g pnpm@9.15.9
-RUN pnpm install --prod --frozen-lockfile
+# Копируем собранное Next.js приложение
+COPY --from=builder /app/frontend/.next ./frontend/.next
+COPY --from=builder /app/frontend/public ./frontend/public
+COPY --from=builder /app/frontend/next.config.mjs ./frontend/
 
-# Копируем собранный Next.js-бандл
-COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
-COPY --from=builder /usr/src/app/frontend/public ./frontend/public
-COPY --from=builder /usr/src/app/frontend/next.config.mjs ./frontend/next.config.mjs
-
-EXPOSE 9002
-
-CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
+# Указываем команду для запуска
+CMD ["pnpm", "start:frontend"]
