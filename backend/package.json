@@ -37,7 +37,7 @@
     "@nestjs/platform-socket.io": "^10.3.10",
     "@nestjs/swagger": "^7.4.0",
     "@nestjs/websockets": "^10.3.10",
-    "@prisma/client": "^5.17.0",
+    "@prisma/client": "^5.22.0",
     "amqplib": "^0.10.4",
     "cache-manager": "^5.7.0",
     "class-transformer": "^0.5.1",
