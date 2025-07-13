@@ -1,34 +1,40 @@
-# --- Base Stage ---
-FROM node:20-alpine AS base
+# --- Builder Stage ---
+FROM node:20-alpine AS builder
+
+# Устанавливаем pnpm глобально
 RUN npm install -g pnpm@10.13.1
 
-# --- Builder Stage ---
-FROM base AS builder
+# Устанавливаем рабочую директорию в корень проекта
 WORKDIR /usr/src/app
 
-# Копируем корневые манифесты и tsconfig
+# Копируем файлы манифеста для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json .npmrc* ./
 
-# Устанавливаем ВСЕ зависимости (включая dev) для всех воркспейсов
-RUN pnpm install --no-frozen-lockfile
+# Устанавливаем ВСЕ зависимости
+RUN pnpm install
 
-# Копируем весь остальной код
+# Копируем весь остальной исходный код
 COPY . .
 
 # Собираем только frontend
 RUN pnpm --filter prodvor-frontend build
 
 # --- Runner Stage ---
-FROM base as runner
-WORKDIR /app
+FROM node:20-alpine as runner
 
-# Копируем только необходимые артефакты из builder
+# Устанавливаем рабочую директорию
+WORKDIR /usr/src/app
+
+# Копируем package.json фронтенда для запуска
+COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
+
+# Копируем только production-зависимости из builder-стадии
+COPY --from=builder /usr/src/app/frontend/node_modules ./frontend/node_modules
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+# Копируем собранный Next.js проект
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
-COPY --from=builder /usr/src/app/package.json ./package.json
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/frontend/node_modules ./frontend/node_modules
 
-EXPOSE 9002
-CMD ["pnpm", "start:frontend"]
+# Указываем команду для запуска приложения
+CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
