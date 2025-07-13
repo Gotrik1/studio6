@@ -1,20 +1,16 @@
-# 1. Builder stage: Build the application
+# 1. Builder stage: Устанавливаем зависимости и собираем приложение
 FROM node:20 AS builder
 
-WORKDIR /usr/src/app
-
-# --- DEBUGGING PRISMA ---
-# Устанавливаем openssl, необходимый для Prisma
+# Устанавливаем OpenSSL, необходимый для Prisma
 RUN apt-get update && apt-get install -y openssl
 
-# Включаем corepack для управления pnpm
-# RUN corepack enable
-
-# Явно устанавливаем pnpm глобально, чтобы избежать проблем с corepack в Docker
+# Устанавливаем pnpm глобально
 RUN npm install -g pnpm@9.15.9
 
-# Копируем файлы манифеста для установки зависимостей
-# Это позволяет Docker кэшировать зависимости, если файлы не менялись
+# Устанавливаем рабочую директорию
+WORKDIR /usr/src/app
+
+# Копируем файлы манифеста для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
@@ -23,38 +19,37 @@ COPY frontend/package.json ./frontend/
 RUN pnpm install --frozen-lockfile
 
 # Копируем весь исходный код проекта
+# Это делается после установки зависимостей для лучшего кэширования
 COPY . .
 
 # Генерируем Prisma Client
 RUN pnpm --filter prodvor-backend prisma:generate
 
-# Собираем бэкенд приложение
+# Собираем бэкенд-приложение
 RUN pnpm --filter prodvor-backend build
 
-# 2. Runner stage: Create a slim image for production
-FROM node:20-slim AS runner
+
+# 2. Runner stage: Создаем легковесный образ для запуска
+FROM node:20-slim
+
+# Устанавливаем OpenSSL, необходимый для Prisma в production
+RUN apt-get update && apt-get install -y openssl
 
 WORKDIR /usr/src/app
 
-# Снова устанавливаем openssl, так как это новая стадия
-RUN apt-get update && apt-get install -y openssl
-
-# Копируем только необходимые для запуска production-зависимости из builder-стадии
-COPY --from=builder /usr/src/app/pnpm-lock.yaml ./
-COPY --from=builder /usr/src/app/backend/package.json ./backend/
-COPY --from=builder /usr/src/app/package.json ./
-
-# Устанавливаем ТОЛЬКО production-зависимости
-# Это делает финальный образ значительно меньше
-RUN npm install -g pnpm@9.15.9
-RUN pnpm install --prod --frozen-lockfile
+# Копируем только production-зависимости из builder-стадии
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
+COPY --from=builder /usr/src/app/package.json ./package.json
+COPY --from=builder /usr/src/app/pnpm-lock.yaml .
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml .
 
 # Копируем собранное приложение из builder-стадии
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-COPY --from=builder /usr/src/app/prisma ./prisma
+COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
 
 # Копируем сгенерированный Prisma Client
 COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
 
 # Указываем команду для запуска приложения
-CMD ["node", "backend/dist/main"]
+CMD ["pnpm", "start:backend"]
