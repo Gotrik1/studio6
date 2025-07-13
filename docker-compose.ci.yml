@@ -1,3 +1,4 @@
+
 # This file overrides the default docker-compose.yml for CI environments.
 
 services:
@@ -11,6 +12,7 @@ services:
       - ./.env
     networks:
       - prodvor-network
+    restart: "no"
 
   backend:
     image: prodvor/backend:latest # Ensure we use the freshly built image
@@ -24,3 +26,4 @@ services:
     image: prodvor/frontend:latest # Ensure we use the freshly built image
     logging:
       driver: "json-file"
+
