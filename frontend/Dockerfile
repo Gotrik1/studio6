@@ -1,39 +1,40 @@
 # --- Base Stage ---
-FROM node:20-alpine AS base
+FROM node:20-alpine as base
 RUN npm install -g pnpm@10.13.1
 
 # --- Builder Stage ---
 FROM base AS builder
 WORKDIR /usr/src/app
 
-# Копируем все манифесты и ключевые конфиги
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json .npmrc* ./
+# Копируем манифесты зависимостей
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Копируем package.json каждого воркспейса
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем ВСЕ зависимости, включая devDependencies, чтобы были доступны CLI
+# Устанавливаем ВСЕ зависимости, включая devDependencies
 RUN pnpm install --frozen-lockfile
 
-# Копируем остальной исходный код
+# Копируем весь остальной код
 COPY . .
 
-# Собираем только frontend, так как это Dockerfile для фронтенда
+# Собираем только frontend
 RUN pnpm --filter prodvor-frontend build
 
+# --- Pruner Stage (для production-зависимостей) ---
+FROM base AS pruner
+WORKDIR /usr/src/app
+COPY --from=builder /usr/src/app/ .
+RUN pnpm --filter prodvor-frontend deploy --prod /prod/frontend
+
 # --- Runner Stage ---
-FROM base as runner
-WORKDIR /app
+FROM base AS runner
+WORKDIR /usr/src/app
 
-# Копируем только необходимые артефакты из builder-стадии
-COPY --from=builder /usr/src/app/frontend/public ./frontend/public
-COPY --from=builder /usr/src/app/frontend/.next/standalone ./frontend
-COPY --from=builder /usr/src/app/frontend/.next/static ./frontend/.next/static
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
+COPY --from=pruner /prod/frontend/.next/standalone ./
+COPY --from=pruner /prod/frontend/.next/static ./frontend/.next/static
+COPY --from=pruner /prod/frontend/public ./frontend/public
 
+WORKDIR /usr/src/app/frontend
 EXPOSE 9002
-
-ENV PORT 9002
-ENV HOSTNAME "0.0.0.0"
-
-# Команда для запуска production-сервера
-CMD ["node", "frontend/server.js"]
+CMD ["node", "server.js"]
