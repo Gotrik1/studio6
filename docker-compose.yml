@@ -171,7 +171,8 @@ services:
       keycloak-db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      test: >
+        bash -c "exec 9<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n' >&9 && head -n 1 <&9 | grep 'HTTP/1.1 200'"
       interval: 15s
       timeout: 5s
       retries: 20
@@ -373,7 +374,7 @@ services:
         condition: service_healthy
       create-minio-bucket:
         condition: service_completed_successfully
-    command: pnpm start:backend
+    command: ["pnpm", "start:backend"]
     logging:
       driver: loki
       options:
