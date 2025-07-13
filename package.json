@@ -3,7 +3,7 @@
   "name": "prodvor-monorepo",
   "private": true,
   "type": "module",
-  "packageManager": "pnpm@9.15.9",
+  "packageManager": "pnpm@10.13.1",
   "scripts": {
     "install:all": "pnpm install --frozen-lockfile",
     "dev": "pnpm --filter prodvor-frontend dev",
