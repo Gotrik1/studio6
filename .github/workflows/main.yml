@@ -65,6 +65,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
 
+      - name: Create logs directory
+        run: mkdir -p logs
+        
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -130,14 +133,21 @@ jobs:
         run: docker compose --verbose logs minio
 
       - name: Lint code
-        run: pnpm run lint
+        run: pnpm run lint 2>&1 | tee logs/lint-errors.log
 
       - name: Typecheck code
-        run: pnpm run typecheck
+        run: pnpm run typecheck 2>&1 | tee logs/typecheck-errors.log
 
       - name: Build frontend
-        run: pnpm --filter prodvor-frontend build
+        run: pnpm --filter prodvor-frontend build 2>&1 | tee logs/build-errors.log
 
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-logs
+          path: logs/
+          
       - name: Tear down
         if: always()
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml down -v
