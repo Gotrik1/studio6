@@ -2,8 +2,10 @@
 
 services:
   migrations:
-    image: prodvor/backend:latest
-    command: pnpm --filter prodvor-backend prisma:migrate:deploy
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      target: migrations # Указываем использовать стадию 'migrations'
     depends_on:
       db:
         condition: service_healthy

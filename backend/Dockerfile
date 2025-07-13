@@ -1,46 +1,57 @@
 # --- Base Stage ---
-# Используем Alpine для легковесности
+# Общий базовый слой для установки Node.js и pnpm.
 FROM node:20-alpine as base
-WORKDIR /app
 # Устанавливаем OpenSSL, необходимый для Prisma
 RUN apk add --no-cache openssl
 # Устанавливаем pnpm глобально
 RUN npm install -g pnpm@10.13.1
 
 # --- Builder Stage ---
-# На этой стадии мы установим все зависимости и соберем проект
-FROM base as builder
+# Эта стадия собирает приложение и устанавливает ВСЕ зависимости.
+FROM base AS builder
 WORKDIR /usr/src/app
 
-# Копируем файлы-манифесты для всех воркспейсов, чтобы pnpm мог их увидеть
+# Копируем манифесты для установки всех зависимостей монорепозитория
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Копируем package.json воркспейсов, чтобы pnpm понял, что устанавливать
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-COPY tsconfig.json .npmrc* ./
-
-# Копируем схему Prisma до установки зависимостей
-# Это критично, так как 'prisma generate' вызывается в postinstall
+# Копируем схему Prisma ДО установки зависимостей
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем все зависимости. pnpm автоматически определит воркспейсы
-# и выполнит postinstall скрипт для prisma generate.
+# Устанавливаем все зависимости, включая devDependencies.
+# На этом шаге Prisma Client генерируется автоматически через postinstall.
 RUN pnpm install --frozen-lockfile
 
 # Копируем весь остальной код
 COPY . .
 
-# Собираем только backend, так как это Dockerfile для бэкенда
+# Собираем только backend
 RUN pnpm --filter prodvor-backend build
 
-# --- Runner Stage ---
-# Финальный, легковесный образ для запуска приложения
-FROM base as runner
+# --- Migrations Stage ---
+# Эта стадия предназначена для запуска миграций в CI.
+# Она содержит devDependencies, такие как Prisma CLI.
+FROM builder AS migrations
 WORKDIR /app
+COPY --from=builder /usr/src/app .
 
-# Копируем только необходимые для запуска артефакты из builder
-COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
-COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
+# --- Pruner Stage (для production-зависимостей) ---
+# Эта стадия нужна, чтобы отделить только production-зависимости.
+FROM builder AS pruner
+WORKDIR /app
+# Копируем только нужные файлы для pnpm deploy
+COPY --from=builder /usr/src/app/backend /app/backend
+COPY --from=builder /usr/src/app/package.json /app/
+COPY --from=builder /usr/src/app/pnpm-lock.yaml /app/
+# Устанавливаем ТОЛЬКО production-зависимости для бэкенда
+RUN pnpm deploy --prod backend
 
-# Указываем команду для запуска скомпилированного приложения
-CMD ["node", "backend/dist/main"]
+# --- Runner Stage (финальный образ для production) ---
+# Этот образ будет использоваться для запуска самого приложения.
+# Он легковесный и содержит только то, что нужно для работы.
+FROM base AS runner
+WORKDIR /app
+COPY --from=pruner /app/backend /app/backend
+COPY --from=pruner /app/package.json /app/
+CMD ["pnpm", "--filter", "prodvor-backend", "start:prod"]
