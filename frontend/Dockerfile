@@ -1,48 +1,53 @@
-# 1. Builder stage
+# Dockerfile для фронтенда (Next.js)
+
+# --- Этап 1: Сборщик (Builder) ---
 FROM node:20-alpine AS builder
 
+# Установка зависимостей pnpm
+RUN npm install -g pnpm
+
 WORKDIR /usr/src/app
 
-# Устанавливаем pnpm глобально
-RUN npm install -g pnpm@9.15.9
-
-# Копируем файлы манифеста для установки зависимостей
+# Копирование файлов манифеста для эффективного кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY frontend/package.json ./frontend/
-COPY backend/package.json ./backend/ 
+COPY backend/package.json ./backend/
 
-# Устанавливаем все зависимости (dev и prod)
+# Установка всех зависимостей, включая devDependencies
 RUN pnpm install --frozen-lockfile
 
-# Копируем весь исходный код
-COPY . .
+# Копирование исходного кода фронтенда
+COPY frontend/ ./frontend/
 
-# Собираем фронтенд
+# Явно указываем путь к исполняемым файлам pnpm
+ENV PATH="/usr/src/app/node_modules/.bin:$PATH"
+
+# Сборка Next.js приложения
 RUN pnpm --filter prodvor-frontend build
 
-# 2. Runner stage
-FROM node:20-alpine
+# --- Этап 2: Запуск (Runner) ---
+FROM node:20-alpine AS runner
 
 WORKDIR /usr/src/app
 
-# Устанавливаем pnpm глобально (для запуска)
-RUN npm install -g pnpm@9.15.9
+# Установка зависимостей pnpm
+RUN npm install -g pnpm
 
-# Копируем package.json и lock файлы, чтобы корректно ставились prod-зависимости
+# Копирование файлов манифеста для установки только production-зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY frontend/package.json ./frontend/
+COPY backend/package.json ./backend/
 
-# Устанавливаем только production-зависимости
+# Установка только production-зависимостей для уменьшения размера образа
 RUN pnpm install --prod --frozen-lockfile
 
-# Копируем собранный фронтенд
+# Копирование собранного приложения из builder
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
-COPY --from=builder /usr/src/app/frontend/next.config.js ./frontend/next.config.js
 COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
 
-# Открываем порт для Next.js
-EXPOSE 9002
+# Установка текущего пользователя как "node" для безопасности
+USER node
 
-# Запуск сервера Next.js
-CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
+# Команда для запуска приложения
+CMD ["pnpm", "start:frontend"]
