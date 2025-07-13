@@ -1,5 +1,5 @@
-# This file overrides the default docker-compose.yml for CI environments
-# where the loki logging driver plugin is not available.
+# This file overrides the default docker-compose.yml for CI environments.
+
 services:
   migrations:
     image: prodvor/backend:latest
@@ -13,6 +13,7 @@ services:
       - prodvor-network
 
   backend:
+    image: prodvor/backend:latest # Ensure we use the freshly built image
     logging:
       driver: "json-file"
     depends_on:
@@ -20,5 +21,6 @@ services:
         condition: service_completed_successfully
 
   frontend:
+    image: prodvor/frontend:latest # Ensure we use the freshly built image
     logging:
       driver: "json-file"

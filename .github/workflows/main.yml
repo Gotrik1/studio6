@@ -105,6 +105,10 @@ jobs:
         if: failure()
         run: docker compose --verbose logs keycloak-db
 
+      - name: Show migrations logs on failure
+        if: failure()
+        run: docker compose --verbose logs migrations
+        
       - name: Show backend logs on failure
         if: failure()
         run: docker compose --verbose logs backend
