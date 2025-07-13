@@ -5,16 +5,20 @@ docker/
 config/
 docs/
 backend/dist/
+backend/node_modules
 frontend/.next/
 frontend/dist/
+frontend/node_modules
 /.next/
 .next/
+
+
 
 # Игнорировать большие lock-файлы
 package-lock.json
 backend/package-lock.json
 frontend/package-lock.json
-
+tsconfig.tsbuildinfo
 
 # Игнорировать текстовые и отчётные файлы
 *.txt
