@@ -95,43 +95,43 @@ jobs:
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
 
       - name: Check container statuses
-        run: docker compose --verbose ps
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml ps
 
       - name: Show Main DB logs on failure
         if: failure()
-        run: docker compose --verbose logs db
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs db
 
       - name: Show Keycloak DB logs on failure
         if: failure()
-        run: docker compose --verbose logs keycloak-db
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak-db
 
       - name: Show migrations logs on failure
         if: failure()
-        run: docker compose --verbose logs migrations
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs migrations
         
       - name: Show backend logs on failure
         if: failure()
-        run: docker compose --verbose logs backend
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs backend
 
       - name: Show frontend logs on failure
         if: failure()
-        run: docker compose --verbose logs frontend
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs frontend
 
       - name: Show Keycloak logs on failure
         if: failure()
-        run: docker compose --verbose logs keycloak
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak
 
       - name: Show Kafka logs on failure
         if: failure()
-        run: docker compose --verbose logs kafka
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
       
       - name: Show Kong logs on failure
         if: failure()
-        run: docker compose --verbose logs kong
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs kong
       
       - name: Show Minio logs on failure
         if: failure()
-        run: docker compose --verbose logs minio
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs minio
 
       - name: Lint code
         run: pnpm run lint 2>&1 | tee logs/lint-errors.log

@@ -20,7 +20,7 @@ services:
   # Application Databases & Tooling
   # ---------------------------------------------------
   db:
-    image: postgres:15
+    image: postgres:17
     container_name: db
     restart: on-failure
     environment:
@@ -128,7 +128,7 @@ services:
   # Identity & API Gateway (Keycloak & Kong)
   # ---------------------------------------------------
   keycloak-db:
-    image: postgres:15
+    image: postgres:17
     container_name: keycloak-db
     restart: on-failure
     environment:
