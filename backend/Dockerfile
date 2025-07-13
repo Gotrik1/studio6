@@ -1,63 +1,58 @@
-#
-# Этап 1: Сборщик (Builder)
-#
-FROM node:20 AS builder
+# Используем официальный образ Node.js v20 в качестве базового
+# Это наша "строительная" стадия, где будут установлены все зависимости и произведена сборка
+FROM node:20-slim AS builder
 
-# Устанавливаем рабочую директорию
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /usr/src/app
 
-# Глобально устанавливаем pnpm для надежности
-RUN npm install -g pnpm@10.13.1
+# Устанавливаем pnpm глобально, используя corepack
+RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
 
-# Устанавливаем OpenSSL, необходимый для Prisma
-RUN apt-get update && apt-get install -y openssl
-
-# Копируем файлы манифеста для кэширования зависимостей
+# Копируем корневые файлы конфигурации монорепозитория
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Копируем package.json для каждого воркспейса (backend и frontend)
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем все зависимости, включая devDependencies. 
-# Используем --no-frozen-lockfile, чтобы pnpm мог обновить lock-файл, если он не соответствует package.json.
+# Устанавливаем ВСЕ зависимости (включая devDependencies), чтобы были доступны инструменты сборки
+# --no-frozen-lockfile нужен для CI, если lock-файл мог устареть
 RUN pnpm install --no-frozen-lockfile
 
-# Копируем весь исходный код проекта
-COPY . .
+# Копируем исходный код бэкенда и фронтенда
+COPY backend ./backend
+COPY frontend ./frontend
 
-# Генерируем Prisma Client, чтобы он был доступен во время сборки
-RUN pnpm --filter prodvor-backend prisma:generate
-
-# Собираем backend приложение
+# Собираем только backend, так как это Dockerfile для бэкенда
 RUN pnpm --filter prodvor-backend build
 
-#
-# Этап 2: Запуск (Runner)
-#
-FROM node:20-slim
+# --- Runner Stage ---
+# Это наша "исполнительная" стадия, которая будет содержать только то, что нужно для запуска приложения
+FROM node:20-slim AS runner
 
 WORKDIR /usr/src/app
 
-# Копируем файлы манифеста из builder-стадии (включая обновленный pnpm-lock.yaml)
-COPY --from=builder /usr/src/app/package.json \
-                    /usr/src/app/pnpm-lock.yaml \
-                    /usr/src/app/pnpm-workspace.yaml \
-                    ./
+# Копируем корневые файлы конфигурации
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Копируем package.json для каждого воркспейса из builder-стадии
 COPY --from=builder /usr/src/app/backend/package.json ./backend/
 COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
 
-# Устанавливаем только production зависимости, используя уже обновленный lock-файл
-# Это делает финальный образ легковесным
-RUN npm install -g pnpm@10.13.1 && \
-    pnpm install --prod --frozen-lockfile
+# Устанавливаем только production зависимости
+RUN corepack enable && corepack prepare pnpm@10.13.1 --activate && pnpm install --prod --no-frozen-lockfile
 
-# Копируем схему Prisma для runtime
-COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
+# Явно запускаем prisma generate, чтобы создать Prisma Client в node_modules
+RUN pnpm --filter prodvor-backend exec prisma generate
 
-# Копируем собранное приложение из builder-стадии
+# Копируем собранный код бэкенда из builder-стадии
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
 
-# Копируем сгенерированный Prisma Client
-COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
+# Копируем схему Prisma для runtime
+COPY backend/prisma ./backend/prisma
 
-# Указываем команду для запуска приложения
+# Указываем, что контейнер будет слушать порт 3001
+EXPOSE 3001
+
+# Команда по умолчанию для запуска приложения
 CMD ["pnpm", "start:backend"]
