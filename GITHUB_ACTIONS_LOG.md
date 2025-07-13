@@ -13,7 +13,7 @@
     2. Копируются **только** корневые файлы манифеста (`package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.npmrc`) и `tsconfig.json`.
     3. **Важно:** Копируются файлы `package.json` **каждого** воркспейса в их соответствующие директории (например, `COPY backend/package.json ./backend/`). Это необходимо, чтобы `pnpm` понял, что нужно устанавливать зависимости для этих воркспейсов.
     4. Копируется `prisma/schema.prisma` бэкенда в соответствующую директорию (`backend/prisma/schema.prisma`).
-    5. Запускается `pnpm install --frozen-lockfile` для установки **всех** зависимостей, включая `devDependencies` для всех воркспейсов. Это критично для доступа к `prisma` и `nest` CLI.
+    5. Запускается `pnpm install --frozen-lockfile` для установки **всех** зависимостей, включая `devDependencies` для всех воркспейсов. Это критично для доступа к `prisma` и `nest` CLI. На этом же этапе автоматически срабатывает `postinstall` скрипт для `prisma generate`.
     6. **После `pnpm install`** копируется **весь остальной исходный код** (`COPY . .`).
     7. Запускается `pnpm --filter prodvor-backend build` для компиляции TypeScript-кода, который теперь видит сгенерированный на предыдущем шаге Prisma Client.
 
