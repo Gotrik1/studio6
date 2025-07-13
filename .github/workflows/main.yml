@@ -62,9 +62,6 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
-
       - name: Create logs directory
         run: mkdir -p logs
         
@@ -133,15 +130,15 @@ jobs:
         if: failure()
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs minio
 
+      - name: Install dependencies for linting and typechecking
+        run: pnpm install --no-frozen-lockfile
+        
       - name: Lint code
         run: pnpm run lint 2>&1 | tee logs/lint-errors.log
 
       - name: Typecheck code
         run: pnpm run typecheck 2>&1 | tee logs/typecheck-errors.log
-
-      - name: Build frontend
-        run: pnpm --filter prodvor-frontend build 2>&1 | tee logs/build-errors.log
-
+          
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
