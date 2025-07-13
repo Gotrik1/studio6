@@ -1,33 +1,35 @@
-# ---- Base Stage ----
+# --- Base Stage ---
 FROM node:20-alpine AS base
 WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY backend/package.json ./backend/
-COPY frontend/package.json ./frontend/
 
-# ---- Dependencies Stage ----
-FROM base AS deps
+# --- Dependencies Stage ---
+FROM base AS dependencies
 RUN npm install -g pnpm@10.13.1
-RUN pnpm install --frozen-lockfile --prod=false
+COPY frontend/package.json ./frontend/
+COPY backend/package.json ./backend/
+RUN pnpm install --frozen-lockfile
 
-# ---- Builder Stage ----
+# --- Builder Stage ---
 FROM base AS builder
-COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY --from=dependencies /app/frontend/node_modules ./frontend/node_modules
+COPY --from=dependencies /app/backend/node_modules ./backend/node_modules
 RUN npm install -g pnpm@10.13.1
 RUN pnpm --filter prodvor-frontend build
 
-# ---- Runner Stage ----
+# --- Runner Stage ---
 FROM base AS runner
-WORKDIR /app
-ENV NODE_ENV=production
 RUN npm install -g pnpm@10.13.1
+ENV NODE_ENV production
 
-COPY --from=builder /app/frontend/.next ./frontend/.next
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
 COPY --from=builder /app/frontend/package.json ./frontend/
 COPY --from=builder /app/frontend/public ./frontend/public
+COPY --from=builder /app/frontend/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/frontend/node_modules ./frontend/node_modules
 
 EXPOSE 9002
-
-CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
+CMD ["pnpm", "start:frontend"]

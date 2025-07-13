@@ -52,16 +52,6 @@ jobs:
           PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           EOF
           
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.13.1
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
       - name: Create logs directory
         run: mkdir -p logs
         
@@ -129,7 +119,12 @@ jobs:
       - name: Show Minio logs on failure
         if: failure()
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs minio
-
+        
+      - name: Setup pnpm for Linting/Typechecking
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+          
       - name: Install dependencies for linting and typechecking
         run: pnpm install --no-frozen-lockfile
         
@@ -149,4 +144,3 @@ jobs:
       - name: Tear down
         if: always()
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml down -v
-
