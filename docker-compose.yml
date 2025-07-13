@@ -374,11 +374,6 @@ services:
       create-minio-bucket:
         condition: service_completed_successfully
     command: pnpm start:backend
-    healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider --timeout=5 http://localhost:8080/health/ready || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
     logging:
       driver: loki
       options:
