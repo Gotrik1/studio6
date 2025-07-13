@@ -1,57 +1,58 @@
-# 1. Builder stage: Установка зависимостей, компиляция и генерация Prisma
+# 1. Builder stage: Устанавливаем зависимости и собираем приложение
 FROM node:20 AS builder
-
-# Установка рабочей директории
 WORKDIR /usr/src/app
 
-# Копируем файлы манифеста из корня монорепозитория
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Устанавливаем pnpm, используя встроенный corepack
+RUN corepack enable
+RUN corepack prepare pnpm@9.15.9 --activate
 
-# Копируем package.json каждого воркспейса для корректного кэширования pnpm install
+# Устанавливаем системные зависимости, необходимые для Prisma
+RUN apt-get update && apt-get install -y openssl
+
+# Копируем файлы манифеста для кэширования зависимостей
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Установка системных зависимостей, необходимых для Prisma (например, OpenSSL)
-RUN apt-get update && apt-get install -y openssl
-
-# Установка зависимостей с помощью pnpm
-RUN npm install -g pnpm@9.15.9
+# Устанавливаем все зависимости, включая devDependencies для сборки
 RUN pnpm install --frozen-lockfile
 
-# Копируем весь исходный код проекта
+# Копируем остальной исходный код
 COPY . .
 
-# Генерируем Prisma Client, чтобы он был доступен во время сборки
+# Генерируем Prisma Client
 RUN pnpm --filter prodvor-backend prisma:generate
 
-# Собираем бэкенд приложение. Команда `nest build` скомпилирует TS в JS в папку `dist`
+# Собираем бэкенд-приложение
 RUN pnpm --filter prodvor-backend build
 
-# 2. Runner stage: Создание легковесного образа для продакшена
+# 2. Runner stage: Создаем легковесный образ для production
 FROM node:20-slim AS runner
-
-# Установка рабочей директории
 WORKDIR /usr/src/app
 
-# Копируем файлы манифеста из корня монорепозитория
+# Устанавливаем системные зависимости, необходимые для Prisma, в production-образе
+RUN apt-get update && apt-get install -y openssl
+
+# Устанавливаем pnpm, используя встроенный corepack
+RUN corepack enable
+RUN corepack prepare pnpm@9.15.9 --activate
+
+# Копируем только необходимые для production файлы
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-
-# Копируем package.json бэкенда
 COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
 
-# Устанавливаем ТОЛЬКО production-зависимости. Dev-зависимости не нужны в production-образе.
-RUN npm install -g pnpm@9.15.9
+# Устанавливаем только production-зависимости
 RUN pnpm install --prod --frozen-lockfile
 
-# Копируем скомпилированный код из builder-стадии
+# Копируем собранное приложение из builder-стадии
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-
-# Копируем схему Prisma для выполнения миграций в CI/CD
+# Копируем Prisma schema для генерации клиента в production
 COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
 
-# Копируем сгенерированный Prisma Client и его движки из builder-стадии
-COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
-COPY --from=builder /usr/src/app/node_modules/.pnpm/@prisma+engines* ./node_modules/.pnpm/@prisma+engines
+# Генерируем Prisma Client уже в production-окружении
+# Это гарантирует, что будут использованы правильные бинарные файлы движков
+RUN pnpm --filter prodvor-backend prisma:generate
 
 # Указываем команду для запуска приложения
 CMD ["node", "backend/dist/main"]
