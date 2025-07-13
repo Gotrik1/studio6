@@ -1,45 +1,46 @@
 # --- Base Stage ---
+# Используем Alpine для легковесности
 FROM node:20-alpine as base
 WORKDIR /app
+# Устанавливаем OpenSSL, необходимый для Prisma
+RUN apk add --no-cache openssl
+# Устанавливаем pnpm глобально
 RUN npm install -g pnpm@10.13.1
 
 # --- Builder Stage ---
-FROM base AS builder
+# На этой стадии мы установим все зависимости и соберем проект
+FROM base as builder
 WORKDIR /usr/src/app
 
-# Копируем манифесты
+# Копируем файлы-манифесты для всех воркспейсов, чтобы pnpm мог их увидеть
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY frontend/package.json ./frontend/
 COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY tsconfig.json .npmrc* ./
 
-# Копируем схему Prisma ДО установки зависимостей
+# Копируем схему Prisma до установки зависимостей
+# Это критично, так как 'prisma generate' вызывается в postinstall
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем зависимости ТОЛЬКО для бэкенда
-RUN pnpm install --filter prodvor-backend --frozen-lockfile
+# Устанавливаем все зависимости. pnpm автоматически определит воркспейсы
+# и выполнит postinstall скрипт для prisma generate.
+RUN pnpm install --frozen-lockfile
 
 # Копируем весь остальной код
 COPY . .
 
-# Явно генерируем Prisma Client
-RUN pnpm --filter prodvor-backend prisma:generate
-
-# Собираем только backend
+# Собираем только backend, так как это Dockerfile для бэкенда
 RUN pnpm --filter prodvor-backend build
 
 # --- Runner Stage ---
+# Финальный, легковесный образ для запуска приложения
 FROM base as runner
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Копируем только необходимые для запуска артефакты
-COPY --from=builder /usr/src/app/backend/package.json ./backend/
+# Копируем только необходимые для запуска артефакты из builder
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-# Копируем только production-зависимости, установленные на предыдущем шаге
-COPY --from=builder /usr/src/app/node_modules ./node_modules
 COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
-# Копируем сгенерированный Prisma Client
-COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
 
-
-EXPOSE 3001
+# Указываем команду для запуска скомпилированного приложения
 CMD ["node", "backend/dist/main"]
