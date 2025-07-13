@@ -91,11 +91,8 @@ jobs:
           cache-from: type=gha,scope=frontend
           cache-to: type=gha,mode=max,scope=frontend
       
-      - name: Launch all services
+      - name: Launch all services (including migrations)
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
-
-      - name: Run Prisma migrations
-        run: docker compose --verbose exec backend pnpm prisma:migrate:deploy
 
       - name: Check container statuses
         run: docker compose --verbose ps

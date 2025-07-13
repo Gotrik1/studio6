@@ -1,9 +1,24 @@
 # This file overrides the default docker-compose.yml for CI environments
 # where the loki logging driver plugin is not available.
 services:
+  migrations:
+    image: prodvor/backend:latest
+    command: pnpm prisma:migrate:deploy
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - ./.env
+    networks:
+      - prodvor-network
+
   backend:
     logging:
       driver: "json-file"
+    depends_on:
+      migrations:
+        condition: service_completed_successfully
+
   frontend:
     logging:
       driver: "json-file"
