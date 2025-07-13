@@ -2,36 +2,38 @@
 
 import type { League, LeagueDetails } from "../model/types";
 import { fetchWithAuth } from "@/shared/lib/api-client";
-import type { Prisma } from "@prisma/client";
 
-type Team = Prisma.TeamGetPayload<{
-  select: {
-    id: true;
-    name: true;
-    logo: true;
-    dataAiHint: true;
-    slug: true;
-    rank: true;
-    game: true;
-  };
-}>;
+// Define local types to represent the data shape from the backend API
+// This avoids a direct dependency on Prisma types in the frontend.
+type TeamFromApi = {
+  id: string;
+  name: string;
+  logo: string | null;
+  dataAiHint: string | null;
+  slug: string;
+  rank: number;
+  game: string;
+};
 
-type Match = Prisma.MatchGetPayload<{
-  include: {
-    team1: true;
-    team2: true;
-  };
-}>;
+type MatchFromApi = {
+  id: string;
+  team1: TeamFromApi;
+  team2: TeamFromApi;
+  team1Score: number | null;
+  team2Score: number | null;
+  scheduledAt: string;
+};
 
 type BackendLeagueTeam = {
-  team: Team;
+  team: TeamFromApi;
   played: number;
   wins: number;
   draws: number;
   losses: number;
   points: number;
 };
-type BackendMatch = Match;
+
+type BackendMatch = MatchFromApi;
 
 type RawBackendLeagueDetails = Omit<League, "teams" | "matches"> & {
   teams: BackendLeagueTeam[];
@@ -89,7 +91,10 @@ export async function getLeagueById(id: string): Promise<LeagueDetails | null> {
         logo: m.team2.logo || "https://placehold.co/100x100.png",
         logoHint: m.team2.dataAiHint || "team logo",
       },
-      score: `${m.team1Score}-${m.team2Score}`,
+      score:
+        m.team1Score !== null && m.team2Score !== null
+          ? `${m.team1Score}-${m.team2Score}`
+          : "VS",
       date: new Date(m.scheduledAt).toISOString(),
     })),
   };
