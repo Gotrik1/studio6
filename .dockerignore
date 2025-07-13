@@ -39,9 +39,6 @@ pnpm-debug.log*
 # Misc
 .DS_Store
 *.log
-/frontend/public/mock-images
-/frontend/src/shared/lib/mock-data
-/backend/src/shared/lib/mock-data
 *.md
 LICENSE
 *.txt
