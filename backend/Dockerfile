@@ -1,36 +1,36 @@
 # --- Base Stage ---
 FROM node:20-alpine AS base
-WORKDIR /usr/src/app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-
-# --- Dependencies Stage ---
-FROM base AS dependencies
 RUN npm install -g pnpm@10.13.1
-COPY frontend/package.json ./frontend/
-COPY backend/package.json ./backend/
-RUN pnpm install --frozen-lockfile
 
 # --- Builder Stage ---
 FROM base AS builder
+WORKDIR /usr/src/app
+
+# Копируем корневые манифесты и tsconfig
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json .npmrc* ./
+
+# Копируем схему Prisma до установки зависимостей
+COPY backend/prisma ./backend/prisma
+
+# Устанавливаем ВСЕ зависимости (включая dev) для всех воркспейсов
+RUN pnpm install --no-frozen-lockfile
+
+# Копируем весь остальной код
 COPY . .
-COPY --from=dependencies /usr/src/app/node_modules ./node_modules
-COPY --from=dependencies /usr/src/app/backend/node_modules ./backend/node_modules
-COPY --from=dependencies /usr/src/app/frontend/node_modules ./frontend/node_modules
-RUN npm install -g pnpm@10.13.1
-RUN pnpm --filter prodvor-backend prisma:generate
+
+# Собираем только backend, так как это Dockerfile для бэкенда
+# Prisma generate вызывается автоматически через postinstall скрипт в package.json
 RUN pnpm --filter prodvor-backend build
 
 # --- Runner Stage ---
-FROM base AS runner
-RUN npm install -g pnpm@10.13.1
-COPY --from=builder /usr/src/app/package.json /usr/src/app/pnpm-lock.yaml /usr/src/app/pnpm-workspace.yaml ./
-COPY --from=builder /usr/src/app/backend/package.json ./backend/
-COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
-COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
+FROM base as runner
+WORKDIR /usr/src/app
 
-# Убедимся, что Prisma Client есть в production-образе
-COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+# Копируем только необходимые артефакты из builder
+COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/backend/node_modules ./backend/node_modules
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
 
 EXPOSE 3001
 CMD ["pnpm", "start:backend"]
