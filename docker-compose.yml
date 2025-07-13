@@ -374,7 +374,7 @@ services:
         condition: service_healthy
       create-minio-bucket:
         condition: service_completed_successfully
-    command: ["pnpm", "start:backend"]
+    command: ["pnpm", "start:backend:dev"]
     logging:
       driver: loki
       options:
@@ -397,8 +397,6 @@ services:
     env_file:
       - ./.env
     depends_on:
-      backend:
-        condition: service_healthy
       kong-setup:
         condition: service_completed_successfully
     command: pnpm start:frontend
@@ -423,5 +421,3 @@ volumes:
   prometheus_data:
   grafana_data:
   minio_data:
-
-    

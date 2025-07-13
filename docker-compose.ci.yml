@@ -15,13 +15,19 @@ services:
 
   backend:
     image: prodvor/backend:latest
-    logging:
-      driver: "json-file"
+    command: pnpm --filter prodvor-backend start:prod
     depends_on:
       migrations:
         condition: service_completed_successfully
+    env_file:
+      - ./.env
+    ports:
+      - "3001:3001"
+    networks:
+      - prodvor-network
+    restart: on-failure
 
   frontend:
     image: prodvor/frontend:latest
-    logging:
-      driver: "json-file"
+    depends_on:
+      - backend
