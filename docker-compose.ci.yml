@@ -3,7 +3,7 @@
 services:
   migrations:
     image: prodvor/backend:latest
-    command: pnpm prisma:migrate:deploy
+    command: pnpm --filter prodvor-backend prisma:migrate:deploy
     depends_on:
       db:
         condition: service_healthy
