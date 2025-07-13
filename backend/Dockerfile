@@ -1,70 +1,62 @@
 # 1. Builder stage: Install dependencies, build the app
 FROM node:20-slim AS builder
+
 WORKDIR /usr/src/app
 
-# Enable corepack for pnpm management
+# Включаем corepack для управления pnpm
 RUN corepack enable
 
-# Copy only necessary files to leverage Docker cache for dependencies
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY backend/package.json ./backend/
-COPY frontend/package.json ./frontend/
+# Копируем package.json и pnpm-lock.yaml из корня монорепозитория
+COPY package.json pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
 
-# Install all dependencies for the monorepo
-# --frozen-lockfile ensures we use the exact versions from the lockfile
+# Копируем package.json из каждого воркспейса
+COPY frontend/package.json ./frontend/package.json
+COPY backend/package.json ./backend/package.json
+
+# Устанавливаем OpenSSL, который необходим для Prisma Engine
+RUN apt-get update && apt-get install -y openssl
+
+# Устанавливаем все зависимости для всего монорепозитория
 RUN pnpm install --frozen-lockfile
 
-# Copy the rest of the source code
+# Копируем весь исходный код
 COPY . .
 
-# Set the PATH to include node_modules/.bin for this and subsequent commands
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
+# Генерируем Prisma Client
+RUN pnpm --filter prodvor-backend prisma:generate
 
-# --- DEBUGGING PRISMA ---
-# Проверим, что prisma установлен и доступен через pnpm
-RUN pnpm --filter prodvor-backend exec prisma --version
-# Проверим содержимое prisma директории
-RUN ls -la /usr/src/app/backend/prisma/
-# --- END DEBUGGING ---
-
-# Generate Prisma client based on the schema
-# This needs to run *before* the build to ensure types are available
-RUN pnpm --filter prodvor-backend prisma:generate --verbose
-
-# --- DEBUGGING PRISMA (POST-GENERATION) ---
-# Проверим, что создалось после генерации
-RUN ls -la /usr/src/app/backend/node_modules/ | grep prisma
-RUN ls -la /usr/src/app/backend/node_modules/.prisma/ || echo "No .prisma directory found"
-# --- END DEBUGGING ---
-
-
-# Build the NestJS application
+# Собираем бэкенд приложение
 RUN pnpm --filter prodvor-backend build
 
 # 2. Runner stage: Create a slim image for production
 FROM node:20-slim AS runner
+
 WORKDIR /usr/src/app
 
-# Enable corepack for pnpm management
+# Включаем corepack для управления pnpm
 RUN corepack enable
 
-# Copy necessary files for production installation
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY backend/package.json ./backend/
+# Копируем только необходимые для production-установки файлы
+COPY package.json pnpm-lock.yaml ./
+COPY pnpm-workspace.yaml ./
+COPY frontend/package.json ./frontend/package.json
+COPY backend/package.json ./backend/package.json
 
-# Install only production dependencies
+# Устанавливаем ТОЛЬКО production зависимости
 RUN pnpm install --prod --frozen-lockfile
 
-# Copy build artifacts and necessary files from the builder stage
-# Copy the compiled application code
+# Копируем скомпилированный код бэкенда
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-# Copy the prisma schema required for migrations
+
+# Копируем Prisma schema для миграций в production
 COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
-# Copy the generated Prisma client
+
+# Копируем сгенерированный Prisma client
 COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
 
-# Expose the port the app runs on
-EXPOSE 3001
+# Копируем корневой package.json для запуска скриптов
+COPY --from=builder /usr/src/app/package.json ./package.json
 
-# The command to run the application
+# Команда для запуска приложения
 CMD ["pnpm", "start:backend"]
