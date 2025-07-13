@@ -19,6 +19,7 @@ package-lock.json
 backend/package-lock.json
 frontend/package-lock.json
 tsconfig.tsbuildinfo
+pnpm-lock.yaml
 
 # Игнорировать текстовые и отчётные файлы
 *.txt
