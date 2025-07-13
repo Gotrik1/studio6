@@ -1,44 +1,39 @@
 # --- Base Stage ---
-# Используем легковесный образ с Node.js
 FROM node:20-alpine AS base
 RUN npm install -g pnpm@10.13.1
 
 # --- Builder Stage ---
-# Эта стадия используется для сборки TypeScript в JavaScript
-FROM base as builder
+FROM base AS builder
 WORKDIR /usr/src/app
 
-# Копируем только файлы манифеста, чтобы кэшировать слой зависимостей
+# Копируем все манифесты и ключевые конфиги
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json .npmrc* ./
-# Копируем package.json каждого воркспейса для корректной установки
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем ВСЕ зависимости, включая devDependencies
+# Устанавливаем ВСЕ зависимости, включая devDependencies, чтобы были доступны CLI
 RUN pnpm install --frozen-lockfile
 
-# Копируем весь остальной исходный код
+# Копируем остальной исходный код
 COPY . .
 
 # Собираем только frontend, так как это Dockerfile для фронтенда
 RUN pnpm --filter prodvor-frontend build
 
 # --- Runner Stage ---
-# Это финальный, легковесный образ для запуска приложения
 FROM base as runner
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Копируем только необходимые артефакты из builder'а
-COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
+# Копируем только необходимые артефакты из builder-стадии
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+COPY --from=builder /usr/src/app/frontend/.next/standalone ./frontend
+COPY --from=builder /usr/src/app/frontend/.next/static ./frontend/.next/static
 COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
-COPY --from=builder /usr/src/app/frontend/next.config.mjs ./frontend/
-# Копируем production node_modules
-COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/frontend/node_modules ./frontend/node_modules
-
 
 EXPOSE 9002
 
-# Команда для запуска production-сборки
-CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
+ENV PORT 9002
+ENV HOSTNAME "0.0.0.0"
+
+# Команда для запуска production-сервера
+CMD ["node", "frontend/server.js"]
