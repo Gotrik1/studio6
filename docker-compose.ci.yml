@@ -40,3 +40,15 @@ services:
       - "9002:9002"
     networks:
       - prodvor-network
+
+  keycloak:
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
+    healthcheck:
+      test: >
+        bash -c "exec 9<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n' >&9 && head -n 1 <&9 | grep 'HTTP/1.1 200'"
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
