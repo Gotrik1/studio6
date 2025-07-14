@@ -58,28 +58,17 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and cache backend image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./backend/Dockerfile
-          load: true
-          tags: prodvor/backend:latest
-          cache-from: type=gha,scope=backend
-          cache-to: type=gha,mode=max,scope=backend
+      - name: Build backend and frontend images
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
 
-      - name: Build and cache frontend image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./frontend/Dockerfile
-          load: true
-          tags: prodvor/frontend:latest
-          cache-from: type=gha,scope=frontend
-          cache-to: type=gha,mode=max,scope=frontend
-      
       - name: Launch all services (including migrations)
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up --wait
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for all services to start..."
+          sleep 30
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
       - name: Check container statuses
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml ps
