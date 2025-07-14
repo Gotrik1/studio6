@@ -10,7 +10,7 @@
 
 - **Стадия `builder`:**
     1. Устанавливаем `WORKDIR /usr/src/app`.
-    2. Копируются **только** корневые файлы манифеста (`package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.npmrc`) и `tsconfig.json`.
+    2. Копируются **только** корневые файлы манифеста (`package.json`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`, `.npmrc`).
     3. **Важно:** Копируются файлы `package.json` **каждого** воркспейса в их соответствующие директории (например, `COPY backend/package.json ./backend/`). Это необходимо, чтобы `pnpm` понял, что нужно устанавливать зависимости для этих воркспейсов.
     4. Копируется `prisma/schema.prisma` бэкенда в соответствующую директорию (`COPY backend/prisma ./backend/prisma`).
     5. Запускается `pnpm install --frozen-lockfile`. Этот шаг установит **все** зависимости (включая `devDependencies`) для **всех** воркспейсов, так как он "видит" их `package.json`. На этом же этапе автоматически сработает `postinstall` скрипт для `prisma generate`.
@@ -19,9 +19,9 @@
 
 - **Стадия `pruner` (для оптимизации `node_modules`):**
     1. Используем базовый образ.
-    2. Копируем `pnpm-workspace.yaml`, чтобы команда `pnpm deploy` знала о структуре воркспейса.
+    2. **Важно:** Копируем `pnpm-workspace.yaml`, чтобы команда `pnpm deploy` знала о структуре воркспейса.
     3. Копируем `dist` и `package.json` из `builder`.
-    4. Запускаем `pnpm deploy --prod <имя воркспейса>`, чтобы создать папку `node_modules` только с production-зависимостями.
+    4. Запускаем `pnpm deploy --prod --filter prodvor-backend`, чтобы создать папку `node_modules` только с production-зависимостями.
 
 - **Стадия `runner` (финальный образ):**
     1. Используется легковесный базовый образ (например, `node:20-alpine`).

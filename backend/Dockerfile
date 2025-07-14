@@ -1,64 +1,74 @@
 # --- Base Stage ---
-# Общая база для всех последующих стадий
-FROM node:20-alpine AS base
+# Используем базовый образ Node.js на Alpine для легковесности.
+# Устанавливаем OpenSSL, необходимый для Prisma.
+FROM node:20-alpine as base
 RUN apk add --no-cache openssl
 
 # --- Builder Stage (для сборки проекта) ---
-# На этой стадии мы устанавливаем ВСЕ зависимости (включая dev) и компилируем код
+# На этой стадии устанавливаются ВСЕ зависимости (включая devDependencies) и происходит сборка.
 FROM base as builder
 WORKDIR /usr/src/app
 
-# Копируем только файлы-манифесты для кэширования зависимостей
+# Устанавливаем pnpm нужной версии
+RUN npm install -g pnpm@10.13.1
+
+# Копируем только файлы манифестов для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# ВАЖНО: Копируем package.json КАЖДОГО воркспейса, чтобы pnpm понял, что нужно ставить
+# Копируем package.json каждого воркспейса, чтобы pnpm понял, что устанавливать
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Копируем схему Prisma ДО установки зависимостей, т.к. postinstall ее использует
+# Копируем схему Prisma ДО установки зависимостей
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем ВСЕ зависимости. На этом шаге сработает postinstall и prisma generate
+# Устанавливаем все зависимости. pnpm автоматически вызовет 'postinstall' скрипт,
+# который в свою очередь выполнит 'prisma generate'.
 RUN pnpm install --frozen-lockfile
 
-# Копируем ВЕСЬ остальной код проекта
+# Копируем весь остальной исходный код
 COPY . .
 
 # Собираем только backend, так как это Dockerfile для бэкенда
 RUN pnpm --filter prodvor-backend build
 
+
 # --- Pruner Stage (для production-зависимостей) ---
-# На этой стадии мы создаем "чистую" папку node_modules только с production-зависимостями
+# Эта стадия нужна для того, чтобы создать легковесную node_modules только с production-зависимостями.
 FROM base as pruner
 WORKDIR /app
 
-COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
-COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
+RUN npm install -g pnpm@10.13.1
 
-RUN pnpm deploy --prod ./backend
+# Копируем скомпилированный бэкенд и его package.json из builder-стадии
+COPY --from=builder /usr/src/app/backend /app/backend
+COPY --from=builder /usr/src/app/package.json /app/
+COPY --from=builder /usr/src/app/pnpm-lock.yaml /app/
+# КРИТИЧЕСКИ ВАЖНО: копируем pnpm-workspace.yaml, чтобы deploy работал
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml /app/
+
+# Устанавливаем ТОЛЬКО production-зависимости для бэкенда
+RUN pnpm --filter prodvor-backend deploy --prod ./backend
+
 
 # --- Runner Stage (финальный образ для production) ---
-# Самый легковесный образ, содержащий только необходимое для запуска
-FROM node:20-alpine AS runner
+# Это финальный, легковесный образ, который будет запускаться в production.
+FROM base AS runner
 WORKDIR /app
 
-# Устанавливаем переменные окружения для production
-ENV NODE_ENV=production
+# Копируем скомпилированный код из builder-стадии
+COPY --from=builder /usr/src/app/backend/dist ./dist
 
-# Копируем скомпилированный код и production-зависимости
-COPY --from=pruner /app/backend/dist ./backend/dist
-COPY --from=pruner /app/node_modules ./node_modules
-COPY --from=pruner /app/backend/package.json ./backend/package.json
+# Копируем production-версию node_modules из pruner-стадии
+COPY --from=pruner /app/backend/node_modules ./node_modules
+COPY --from=pruner /app/backend/package.json ./package.json
 
-# Запускаем приложение
-CMD ["node", "backend/dist/main.js"]
+# Команда для запуска приложения
+CMD ["node", "dist/main.js"]
 
 
-# --- Migrations Stage ---
-# Отдельная стадия для выполнения миграций в CI/CD
-# Она основана на builder, так как содержит все dev-зависимости (включая Prisma CLI)
+# --- Migrations Stage (для CI/CD) ---
+# Эта стадия содержит все зависимости (включая dev), необходимые для запуска миграций.
 FROM builder AS migrations
-WORKDIR /usr/src/app
-
+# Команда для запуска миграций в CI
 CMD ["pnpm", "prisma:migrate:deploy"]

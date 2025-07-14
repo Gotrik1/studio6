@@ -1,46 +1,51 @@
 # --- Base Stage ---
-# Общая база для всех последующих стадий
-FROM node:20-alpine AS base
-RUN apk add --no-cache openssl
+# Используем базовый образ Node.js на Alpine.
+FROM node:20-alpine as base
+WORKDIR /app
 
-# --- Builder Stage (для сборки проекта) ---
-# На этой стадии мы устанавливаем ВСЕ зависимости (включая dev) и компилируем код
+# --- Builder Stage ---
+# На этой стадии устанавливаются ВСЕ зависимости (включая devDependencies) и происходит сборка.
 FROM base as builder
 WORKDIR /usr/src/app
 
-# Копируем только файлы-манифесты для кэширования зависимостей
+# Устанавливаем pnpm нужной версии
+RUN npm install -g pnpm@10.13.1
+
+# Копируем только файлы манифестов для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# ВАЖНО: Копируем package.json КАЖДОГО воркспейса, чтобы pnpm понял, что нужно ставить
+# Копируем package.json каждого воркспейса, чтобы pnpm понял, что устанавливать
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Копируем схему Prisma ДО установки зависимостей, т.к. postinstall ее использует
-COPY backend/prisma ./backend/prisma
-
-# Устанавливаем ВСЕ зависимости. На этом шаге сработает postinstall и prisma generate
+# Устанавливаем все зависимости
 RUN pnpm install --frozen-lockfile
 
-# Копируем ВЕСЬ остальной код проекта
+# Копируем весь остальной исходный код
 COPY . .
 
 # Собираем только frontend
 RUN pnpm --filter prodvor-frontend build
 
+
 # --- Runner Stage (финальный образ для production) ---
-# Самый легковесный образ, содержащий только необходимое для запуска
+# Это финальный, легковесный образ, который будет запускаться в production.
 FROM base AS runner
 WORKDIR /app
 
-# Устанавливаем переменные окружения для production
 ENV NODE_ENV=production
 
-# Копируем package.json самого воркспейса для корректного запуска
-COPY --from=builder /usr/src/app/frontend/package.json .
-COPY --from=builder /usr/src/app/frontend/.next ./.next
-COPY --from=builder /usr/src/app/frontend/public ./public
-# Копируем node_modules, которые нужны для работы Next.js сервера
-COPY --from=builder /usr/src/app/node_modules ./node_modules
+# Копируем скомпилированный фронтенд из builder-стадии
+COPY --from=builder /usr/src/app/frontend/.next /app/frontend/.next
+COPY --from=builder /usr/src/app/frontend/public /app/frontend/public
+COPY --from=builder /usr/src/app/frontend/package.json /app/frontend/package.json
 
-# Запускаем приложение
-CMD ["pnpm", "start"]
+# Устанавливаем pnpm и production-зависимости
+RUN npm install -g pnpm@10.13.1
+WORKDIR /app/frontend
+RUN pnpm install --prod
+
+WORKDIR /app
+
+# Команда для запуска приложения
+CMD ["pnpm", "start:frontend"]

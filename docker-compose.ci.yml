@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
-      target: migrations # Указываем использовать стадию 'migrations'
+      target: migrations
     depends_on:
       db:
         condition: service_healthy
@@ -17,7 +17,7 @@ services:
 
   backend:
     image: prodvor/backend:latest
-    command: pnpm --filter prodvor-backend start:prod
+    command: node dist/main.js
     depends_on:
       migrations:
         condition: service_completed_successfully
@@ -31,5 +31,12 @@ services:
 
   frontend:
     image: prodvor/frontend:latest
+    command: pnpm start:frontend
     depends_on:
       - backend
+    env_file:
+      - ./.env
+    ports:
+      - "9002:9002"
+    networks:
+      - prodvor-network
