@@ -31,7 +31,7 @@ services:
 
   frontend:
     image: prodvor/frontend:latest
-    command: pnpm start:frontend
+    command: pnpm start
     depends_on:
       - backend
     env_file:
