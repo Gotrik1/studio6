@@ -6,7 +6,7 @@
 
 **Проблема:** Постоянные ошибки `prisma: not found`, `nest: not found` и ошибки типов TypeScript (`Module '"@prisma/client"' has no exported member '...'`) во время сборки в CI. Это происходило из-за неверного порядка копирования файлов и установки зависимостей, в результате чего Prisma Client не генерировался до начала компиляции.
 
-**Рабочее решение:** Использование многоэтапной сборки (multi-stage build) с **критически важной и строгой последовательностью** команд для `pnpm`.
+**Рабочее решение:** Использование многоэтапной сборки (multi-stage build) с **критически важной и строгой последовательностью** команд для `pnpm`. **Оба Dockerfile (`backend/` и `frontend/`) должны быть симметричными и следовать этому паттерну.**
 
 - **Стадия `builder`:**
     1. Устанавливаем `WORKDIR /usr/src/app`.
@@ -15,13 +15,13 @@
     4. Копируется `prisma/schema.prisma` бэкенда в соответствующую директорию (`COPY backend/prisma ./backend/prisma`).
     5. Запускается `pnpm install --frozen-lockfile`. Этот шаг установит **все** зависимости (включая `devDependencies`) для **всех** воркспейсов, так как он "видит" их `package.json`. На этом же этапе автоматически сработает `postinstall` скрипт для `prisma generate`.
     6. **После `pnpm install`** копируется **весь остальной исходный код** (`COPY . .`).
-    7. Запускается `pnpm --filter prodvor-backend build` для компиляции TypeScript-кода, который теперь видит сгенерированный на предыдущем шаге Prisma Client.
+    7. Запускается `pnpm --filter <workspace> build` для компиляции TypeScript-кода, который теперь видит сгенерированный на предыдущем шаге Prisma Client.
 
 - **Стадия `pruner` (для оптимизации `node_modules`):**
     1. Используем базовый образ.
     2. **Важно:** Копируем `pnpm-workspace.yaml`, чтобы команда `pnpm deploy` знала о структуре воркспейса.
     3. Копируем `dist` и `package.json` из `builder`.
-    4. Запускаем `pnpm deploy --prod --filter prodvor-backend`, чтобы создать папку `node_modules` только с production-зависимостями.
+    4. Запускаем `pnpm deploy --prod --filter <workspace>`, чтобы создать папку `node_modules` только с production-зависимостями.
 
 - **Стадия `runner` (финальный образ):**
     1. Используется легковесный базовый образ (например, `node:20-alpine`).

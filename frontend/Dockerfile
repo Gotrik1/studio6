@@ -1,51 +1,50 @@
-# --- Base Stage ---
-# Используем базовый образ Node.js на Alpine.
+# --- Base Stage (для общих зависимостей) ---
 FROM node:20-alpine as base
+RUN apk add --no-cache openssl
 WORKDIR /app
-
-# --- Builder Stage ---
-# На этой стадии устанавливаются ВСЕ зависимости (включая devDependencies) и происходит сборка.
-FROM base as builder
-WORKDIR /usr/src/app
-
-# Устанавливаем pnpm нужной версии
 RUN npm install -g pnpm@10.13.1
 
-# Копируем только файлы манифестов для кэширования зависимостей
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# --- Builder Stage (для сборки приложения) ---
+FROM base AS builder
+WORKDIR /usr/src/app
 
-# Копируем package.json каждого воркспейса, чтобы pnpm понял, что устанавливать
+# Копируем ВСЕ манифесты, чтобы pnpm видел всю структуру воркспейса
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+
+# Копируем схему Prisma, так как она нужна для postinstall
+COPY backend/prisma ./backend/prisma
 
 # Устанавливаем все зависимости
 RUN pnpm install --frozen-lockfile
 
-# Копируем весь остальной исходный код
+# Копируем весь остальной код
 COPY . .
 
 # Собираем только frontend
 RUN pnpm --filter prodvor-frontend build
 
+# --- Pruner Stage (для production-зависимостей) ---
+FROM base AS pruner
+WORKDIR /app
+
+# Копируем собранный проект из builder
+COPY --from=builder /usr/src/app/frontend /app/frontend
+COPY --from=builder /usr/src/app/package.json /app/
+COPY --from=builder /usr/src/app/pnpm-lock.yaml /app/
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml /app/
+
+# Устанавливаем ТОЛЬКО production-зависимости для фронтенда
+RUN pnpm deploy --prod --filter prodvor-frontend
 
 # --- Runner Stage (финальный образ для production) ---
-# Это финальный, легковесный образ, который будет запускаться в production.
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
+# Копируем только необходимые для запуска артефакты
+COPY --from=pruner /app/frontend /app/frontend
+COPY --from=pruner /app/node_modules /app/node_modules
 
-# Копируем скомпилированный фронтенд из builder-стадии
-COPY --from=builder /usr/src/app/frontend/.next /app/frontend/.next
-COPY --from=builder /usr/src/app/frontend/public /app/frontend/public
-COPY --from=builder /usr/src/app/frontend/package.json /app/frontend/package.json
-
-# Устанавливаем pnpm и production-зависимости
-RUN npm install -g pnpm@10.13.1
-WORKDIR /app/frontend
-RUN pnpm install --prod
-
-WORKDIR /app
-
-# Команда для запуска приложения
-CMD ["pnpm", "start:frontend"]
+# Устанавливаем NEXT_TELEMETRY=0 для отключения сбора телеметрии Next.js
+ENV NEXT_TELEMETRY=0
