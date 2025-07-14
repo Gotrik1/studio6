@@ -10,7 +10,7 @@
     "build": "pnpm --filter \"./**\" build",
     "lint": "pnpm --filter \"./**\" lint",
     "typecheck": "pnpm --filter \"./**\" typecheck",
-    "start:backend": "pnpm --filter prodvor-backend start:prod",
+    "start:backend": "pnpm --filter prodvor-backend start",
     "start:frontend": "pnpm --filter prodvor-frontend start"
   },
   "devDependencies": {}
