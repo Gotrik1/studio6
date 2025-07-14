@@ -79,7 +79,7 @@ jobs:
           cache-to: type=gha,mode=max,scope=frontend
       
       - name: Launch all services (including migrations)
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
+        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml up --wait
 
       - name: Check container statuses
         run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml ps
