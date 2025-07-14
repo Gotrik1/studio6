@@ -8,11 +8,21 @@
     "install:all": "pnpm install --no-frozen-lockfile",
     "dev": "pnpm --filter prodvor-frontend dev",
     "build": "pnpm --filter \"./**\" build",
-    "lint": "pnpm --filter \"./**\" lint",
-    "typecheck": "pnpm --filter \"./**\" typecheck",
+    "lint": "pnpm --parallel lint",
+    "typecheck": "pnpm --parallel typecheck",
     "start:backend": "pnpm --filter prodvor-backend start",
     "start:frontend": "pnpm --filter prodvor-frontend start"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@eslint/js": "^9.8.0",
+    "@next/eslint-plugin-next": "^14.2.5",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.8.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.35.0",
+    "eslint-plugin-react-hooks": "^5.1.1",
+    "globals": "^15.8.0",
+    "typescript": "^5.5.4"
+  }
 }
-
