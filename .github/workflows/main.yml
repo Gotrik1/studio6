@@ -58,51 +58,47 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build backend and frontend images
+      - name: Build all images
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
 
-      - name: Launch all services (including migrations)
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
+      - name: Launch all services in background
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
 
       - name: Check container statuses
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
-      - name: Show Main DB logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs db
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for all services to become healthy..."
+          end_time=$((SECONDS+300)) # 5 minute timeout
+          while [ $SECONDS -lt $end_time ]; do
+            status_output=$(docker compose -f docker-compose.yml -f docker-compose.ci.yml ps --format json)
+            unhealthy_services=$(echo "$status_output" | jq -r '.[] | select(.State=="running" and .Health=="unhealthy") | .Name')
+            starting_services=$(echo "$status_output" | jq -r '.[] | select(.State=="running" and .Health=="starting") | .Name')
+            exited_services=$(echo "$status_output" | jq -r '.[] | select(.State=="exited") | .Name')
 
-      - name: Show Keycloak DB logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak-db
+            if [ -n "$exited_services" ]; then
+              echo "::error::One or more services have exited unexpectedly: $exited_services"
+              exit 1
+            fi
+            
+            if [ -z "$unhealthy_services" ] && [ -z "$starting_services" ]; then
+              echo "All services are healthy."
+              break
+            fi
+            
+            echo "Waiting for: $(echo $unhealthy_services $starting_services | xargs)"
+            sleep 10
+          done
 
-      - name: Show migrations logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs migrations
-        
-      - name: Show backend logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
+          if [ $SECONDS -ge $end_time ]; then
+            echo "::error::Timeout waiting for services to become healthy."
+            exit 1
+          fi
 
-      - name: Show frontend logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs frontend
-
-      - name: Show Keycloak logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak
-
-      - name: Show Kafka logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
+      - name: Re-check container statuses after wait
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
       
-      - name: Show Kong logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong
-      
-      - name: Show Minio logs on failure
-        if: failure()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs minio
-        
       - name: Enable Corepack
         run: corepack enable
 
@@ -119,7 +115,38 @@ jobs:
 
       - name: Typecheck code
         run: pnpm run typecheck 2>&1 | tee logs/typecheck-errors.log
-          
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "::group::DB Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs db
+          echo "::endgroup::"
+          echo "::group::Keycloak DB Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak-db
+          echo "::endgroup::"
+          echo "::group::Migrations Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs migrations
+          echo "::endgroup::"
+          echo "::group::Backend Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
+          echo "::endgroup::"
+          echo "::group::Frontend Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs frontend
+          echo "::endgroup::"
+          echo "::group::Keycloak Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak
+          echo "::endgroup::"
+          echo "::group::Kafka Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
+          echo "::endgroup::"
+          echo "::group::Kong Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong
+          echo "::endgroup::"
+          echo "::group::Minio Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs minio
+          echo "::endgroup::"
+
       - name: Upload logs on failure
         if: failure()
         uses: actions/upload-artifact@v4
