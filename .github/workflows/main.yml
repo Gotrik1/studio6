@@ -62,52 +62,46 @@ jobs:
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
 
       - name: Launch all services (including migrations)
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
-
-      - name: Wait for services to be healthy
-        run: |
-          echo "Waiting for all services to start..."
-          sleep 30
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d --wait
 
       - name: Check container statuses
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml ps
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
       - name: Show Main DB logs on failure
         if: failure()
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs db
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs db
 
       - name: Show Keycloak DB logs on failure
         if: failure()
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak-db
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak-db
 
       - name: Show migrations logs on failure
         if: failure()
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs migrations
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs migrations
         
       - name: Show backend logs on failure
         if: failure()
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs backend
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
 
       - name: Show frontend logs on failure
         if: failure()
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs frontend
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs frontend
 
       - name: Show Keycloak logs on failure
         if: failure()
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak
 
       - name: Show Kafka logs on failure
         if: failure()
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
       
       - name: Show Kong logs on failure
         if: failure()
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs kong
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong
       
       - name: Show Minio logs on failure
         if: failure()
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml logs minio
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml logs minio
         
       - name: Enable Corepack
         run: corepack enable
@@ -135,4 +129,4 @@ jobs:
           
       - name: Tear down
         if: always()
-        run: docker compose --verbose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v

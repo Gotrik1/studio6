@@ -7,9 +7,9 @@
   "scripts": {
     "install:all": "pnpm install --no-frozen-lockfile",
     "dev": "pnpm --filter prodvor-frontend dev",
-    "build": "pnpm --filter \"./**\" build",
-    "lint": "pnpm --parallel lint",
-    "typecheck": "pnpm --parallel typecheck",
+    "build": "pnpm --parallel --filter \"./**\" build",
+    "lint": "pnpm --parallel --filter \"./**\" lint",
+    "typecheck": "pnpm --parallel --filter \"./**\" typecheck",
     "start:backend": "pnpm --filter prodvor-backend start",
     "start:frontend": "pnpm --filter prodvor-frontend start"
   },
