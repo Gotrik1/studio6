@@ -31,7 +31,7 @@ COPY --from=builder /usr/src/app/package.json /app/package.json
 COPY --from=builder /usr/src/app/pnpm-lock.yaml /app/pnpm-lock.yaml
 COPY --from=builder /usr/src/app/pnpm-workspace.yaml /app/pnpm-workspace.yaml
 # Устанавливаем ТОЛЬКО production-зависимости для фронтенда
-RUN pnpm deploy --prod --filter prodvor-frontend
+RUN pnpm install --prod --filter prodvor-frontend
 
 # --- Runner Stage (финальный образ для production) ---
 FROM base AS runner
