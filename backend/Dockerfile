@@ -1,7 +1,7 @@
 # --- Base Stage (для установки системных зависимостей) ---
     FROM node:20-alpine as base
-    RUN apk add --no-cache openssl1.1 \
-        && npm install -g pnpm@10.13.1
+    RUN apk add --no-cache openssl && npm install -g pnpm@10.13.1
+
     
     # --- Builder Stage (для сборки TypeScript и генерации Prisma) ---
     FROM base as builder

@@ -1,7 +1,6 @@
-# --- Base Stage ---
 FROM node:20-alpine as base
-# Устанавливаем pnpm глобально в нужной версии
-RUN npm install -g pnpm@10.13.1
+RUN apk add --no-cache openssl && npm install -g pnpm@10.13.1
+
 
 # --- Builder Stage (для сборки и установки всех зависимостей) ---
 FROM base AS builder
