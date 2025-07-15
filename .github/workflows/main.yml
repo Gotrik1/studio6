@@ -1,5 +1,3 @@
-# .github/workflows/main.yml
-
 name: Docker Compose CI
 
 on:
@@ -71,6 +69,15 @@ jobs:
 
       - name: Install dependencies for linting and typechecking
         run: pnpm install --no-frozen-lockfile
+
+      - name: Install backend dependencies with allowed scripts
+        run: pnpm --filter prodvor-backend install --config.allow-scripts=true
+
+      - name: Generate Prisma Client
+        run: pnpm --filter prodvor-backend prisma:generate
+
+      - name: Run Prisma migrations
+        run: pnpm --filter prodvor-backend prisma:migrate:deploy
 
       - name: Lint code
         run: pnpm run lint 2>&1 | tee logs/lint-errors.log

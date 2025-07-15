@@ -1,9 +1,4 @@
-version: '3.8'
-
 services:
-  # Только специфичные для CI сервисы — например, миграции или тестовые моки.
-  # Остальные сервисы (backend, db, frontend, keycloak, minio и т.д.) у тебя должны быть описаны в основном docker-compose.yml!
-
   migrations:
     image: node:20-alpine
     depends_on:
