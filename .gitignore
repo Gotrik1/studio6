@@ -9,6 +9,8 @@
 /build
 /.next/
 /out/
+/frontend/.next
+/backend/node_modules
 
 # Local Environment Variables
 .env.local
