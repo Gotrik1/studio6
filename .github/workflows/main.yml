@@ -64,10 +64,6 @@ jobs:
           PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           EOF
 
-      # Вот этот шаг — ключевой! Копирует .env из корня в backend/.env
-      - name: Copy .env to backend
-        run: cp .env backend/.env
-
       - name: Create logs directory
         run: mkdir -p logs
 
@@ -79,9 +75,6 @@ jobs:
 
       - name: Generate Prisma Client
         run: pnpm --filter prodvor-backend prisma:generate
-
-      - name: Run Prisma migrations
-        run: pnpm --filter prodvor-backend prisma:migrate:deploy
 
       - name: Lint code
         run: pnpm run lint 2>&1 | tee logs/lint-errors.log
@@ -97,9 +90,6 @@ jobs:
 
       - name: Launch all services in background
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
-
-      - name: Check container statuses
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
       - name: Wait for services to be healthy
         run: |
@@ -129,6 +119,9 @@ jobs:
             echo "::error::Timeout waiting for services to become healthy."
             exit 1
           fi
+
+      - name: Run Prisma migrations (inside container)
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
 
       - name: Re-check container statuses after wait
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
