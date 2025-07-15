@@ -64,6 +64,10 @@ jobs:
           PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           EOF
 
+      # Вот этот шаг — ключевой! Копирует .env из корня в backend/.env
+      - name: Copy .env to backend
+        run: cp .env backend/.env
+
       - name: Create logs directory
         run: mkdir -p logs
 
