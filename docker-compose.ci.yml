@@ -1,17 +1,35 @@
+version: '3.9'
+
 services:
+  db:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-prodvor}
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   migrations:
     image: node:20-alpine
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     working_dir: /app
     volumes:
       - ./backend:/app
-    entrypoint: ["pnpm", "--filter", "prodvor-backend", "prisma:migrate:deploy"]
+      - ./.env:/app/.env:ro   # << ПРОБРОС .env!
+    entrypoint: ["sh", "-c", "npm install -g pnpm@10.13.1 && pnpm install && pnpm --filter prodvor-backend prisma:migrate:deploy"]
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      DATABASE_URL: ${DATABASE_URL}
     networks:
       - default
 
 networks:
   default:
-    external: false
