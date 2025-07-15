@@ -17,6 +17,8 @@
     # Копируем Prisma-схему ДО установки зависимостей
     COPY backend/prisma ./backend/prisma
     
+    RUN apk add --no-cache openssl1.1-compat || apk add --no-cache openssl
+
     # Устанавливаем все зависимости, включая devDependencies, и генерируем Prisma Client
     RUN --mount=type=cache,id=pnpm-store,target=/root/.pnpm-store \
         pnpm install --frozen-lockfile
