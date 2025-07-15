@@ -30,39 +30,40 @@ jobs:
         with:
           version: 10.13.1
 
-      - name: Create .env file from secrets
-        run: |
-          cat > .env <<EOF
-          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-          PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
-          PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-          KC_DB_DATABASE=${{ secrets.KC_DB_DATABASE }}
-          KC_DB_USERNAME=${{ secrets.KC_DB_USERNAME }}
-          KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
-          KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
-          KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
-          KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
-          RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
-          RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
-          MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
-          MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
-          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
-          REDIS_URL=redis://redis:6379
-          KAFKA_BROKERS=kafka:9092
-          KEYCLOAK_URL=http://keycloak:8080
-          KEYCLOAK_REALM=prodvor
-          KEYCLOAK_CLIENT_ID=prodvor-frontend
-          RABBITMQ_URL=amqp://${{ secrets.RABBITMQ_DEFAULT_USER }}:${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}@rabbitmq:5672
-          S3_ENDPOINT_URL=http://minio:9005
-          S3_BUCKET_NAME=prodvor
-          AWS_REGION=us-east-1
-          AWS_ACCESS_KEY_ID=${{ secrets.MINIO_ROOT_USER }}
-          AWS_SECRET_ACCESS_KEY=${{ secrets.MINIO_ROOT_PASSWORD }}
-          NEXT_PUBLIC_BACKEND_URL=http://kong:8000
-          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-          EOF
+      - - name: Create .env file from secrets
+  run: |
+    cat > .env <<EOF
+    POSTGRES_USER=$\{{ secrets.POSTGRES_USER }}
+    POSTGRES_PASSWORD=$\{{ secrets.POSTGRES_PASSWORD }}
+    POSTGRES_DB=$\{{ secrets.POSTGRES_DB }}
+    PGADMIN_DEFAULT_EMAIL=$\{{ secrets.PGADMIN_DEFAULT_EMAIL }}
+    PGADMIN_DEFAULT_PASSWORD=$\{{ secrets.PGADMIN_DEFAULT_PASSWORD }}
+    KC_DB_DATABASE=$\{{ secrets.KC_DB_DATABASE }}
+    KC_DB_USERNAME=$\{{ secrets.KC_DB_USERNAME }}
+    KC_DB_PASSWORD=$\{{ secrets.KC_DB_PASSWORD }}
+    KC_BOOTSTRAP_ADMIN_USERNAME=$\{{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
+    KC_BOOTSTRAP_ADMIN_PASSWORD=$\{{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
+    KONG_PG_PASSWORD=$\{{ secrets.KONG_PG_PASSWORD }}
+    RABBITMQ_DEFAULT_USER=$\{{ secrets.RABBITMQ_DEFAULT_USER }}
+    RABBITMQ_DEFAULT_PASSWORD=$\{{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
+    MINIO_ROOT_USER=$\{{ secrets.MINIO_ROOT_USER }}
+    MINIO_ROOT_PASSWORD=$\{{ secrets.MINIO_ROOT_PASSWORD }}
+    DATABASE_URL=postgresql://$\{{ secrets.POSTGRES_USER }}:$\{{ secrets.POSTGRES_PASSWORD }}@db:5432/$\{{ secrets.POSTGRES_DB }}?schema=public
+    REDIS_URL=redis://redis:6379
+    KAFKA_BROKERS=kafka:9092
+    KEYCLOAK_URL=http://keycloak:8080
+    KEYCLOAK_REALM=prodvor
+    KEYCLOAK_CLIENT_ID=prodvor-frontend
+    RABBITMQ_URL=amqp://$\{{ secrets.RABBITMQ_DEFAULT_USER }}:$\{{ secrets.RABBITMQ_DEFAULT_PASSWORD }}@rabbitmq:5672
+    S3_ENDPOINT_URL=http://minio:9005
+    S3_BUCKET_NAME=prodvor
+    AWS_REGION=us-east-1
+    AWS_ACCESS_KEY_ID=$\{{ secrets.MINIO_ROOT_USER }}
+    AWS_SECRET_ACCESS_KEY=$\{{ secrets.MINIO_ROOT_PASSWORD }}
+    NEXT_PUBLIC_BACKEND_URL=http://kong:8000
+    PGPASSWORD=$\{{ secrets.POSTGRES_PASSWORD }}
+    EOF
+
 
       - name: Create logs directory
         run: mkdir -p logs
