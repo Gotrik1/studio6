@@ -19,6 +19,7 @@ out/
 frontend/.next/
 backend/dist/
 backend/node_modules/
+frontend/node_modules
 
 # --- Local env files ---
 .env*
