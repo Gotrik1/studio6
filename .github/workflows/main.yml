@@ -85,6 +85,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Install Loki Docker Logging Plugin
+        run: |
+          docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
+
       - name: Build all images
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
 
