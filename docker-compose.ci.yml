@@ -1,44 +1,172 @@
-# This file overrides the default docker-compose.yml for CI environments.
+name: Docker Compose CI
 
-services:
-  migrations:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-      target: migrations
-    depends_on:
-      db:
-        condition: service_healthy
-    env_file:
-      - ./.env
-    networks:
-      - prodvor-network
-    restart: "no"
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
 
-  backend:
-    image: prodvor/backend:latest
-    command: node dist/main.js
-    depends_on:
-      migrations:
-        condition: service_completed_successfully
-      keycloak:
-        condition: service_healthy
-    env_file:
-      - ./.env
-    ports:
-      - "3001:3001"
-    networks:
-      - prodvor-network
-    restart: on-failure
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
 
-  frontend:
-    image: prodvor/frontend:latest
-    command: pnpm start
-    depends_on:
-      - backend
-    env_file:
-      - ./.env
-    ports:
-      - "9002:9002"
-    networks:
-      - prodvor-network
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js and Corepack
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Enable Corepack (for pnpm)
+        run: corepack enable
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+
+      - name: Create .env file from secrets
+        run: |
+          cat > .env <<EOF
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
+          PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
+          KC_DB_DATABASE=${{ secrets.KC_DB_DATABASE }}
+          KC_DB_USERNAME=${{ secrets.KC_DB_USERNAME }}
+          KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
+          KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
+          KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
+          KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
+          RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
+          RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
+          MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
+          MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
+          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
+          REDIS_URL=redis://redis:6379
+          KAFKA_BROKERS=kafka:9092
+          KEYCLOAK_URL=http://keycloak:8080
+          KEYCLOAK_REALM=prodvor
+          KEYCLOAK_CLIENT_ID=prodvor-frontend
+          RABBITMQ_URL=amqp://${{ secrets.RABBITMQ_DEFAULT_USER }}:${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}@rabbitmq:5672
+          S3_ENDPOINT_URL=http://minio:9005
+          S3_BUCKET_NAME=prodvor
+          AWS_REGION=us-east-1
+          AWS_ACCESS_KEY_ID=${{ secrets.MINIO_ROOT_USER }}
+          AWS_SECRET_ACCESS_KEY=${{ secrets.MINIO_ROOT_PASSWORD }}
+          NEXT_PUBLIC_BACKEND_URL=http://kong:8000
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          EOF
+
+      - name: Create logs directory
+        run: mkdir -p logs
+
+      - name: Install dependencies for linting and typechecking
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Install backend dependencies with allowed scripts
+        run: pnpm --filter prodvor-backend install --config.allow-scripts=true
+
+      - name: Generate Prisma Client
+        run: pnpm --filter prodvor-backend prisma:generate
+
+      - name: Run Prisma migrations
+        run: pnpm --filter prodvor-backend prisma:migrate:deploy
+
+      - name: Lint code
+        run: pnpm run lint 2>&1 | tee logs/lint-errors.log
+
+      - name: Typecheck code
+        run: pnpm run typecheck 2>&1 | tee logs/typecheck-errors.log
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build all images
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
+
+      - name: Launch all services in background
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+
+      - name: Check container statuses
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
+
+      - name: Wait for services to be healthy
+        run: |
+          echo "Waiting for all services to become healthy..."
+          end_time=$((SECONDS+300)) # 5 minutes
+          while [ $SECONDS -lt $end_time ]; do
+            status_output=$(docker compose -f docker-compose.yml -f docker-compose.ci.yml ps --format json)
+            unhealthy_services=$(echo "$status_output" | jq -r '.[] | select(.State=="running" and .Health=="unhealthy") | .Name')
+            starting_services=$(echo "$status_output" | jq -r '.[] | select(.State=="running" and .Health=="starting") | .Name')
+            exited_services=$(echo "$status_output" | jq -r '.[] | select(.State=="exited") | .Name')
+
+            if [ -n "$exited_services" ]; then
+              echo "::error::One or more services have exited unexpectedly: $exited_services"
+              exit 1
+            fi
+
+            if [ -z "$unhealthy_services" ] && [ -z "$starting_services" ]; then
+              echo "All services are healthy."
+              break
+            fi
+
+            echo "Waiting for: $(echo $unhealthy_services $starting_services | xargs)"
+            sleep 10
+          done
+
+          if [ $SECONDS -ge $end_time ]; then
+            echo "::error::Timeout waiting for services to become healthy."
+            exit 1
+          fi
+
+      - name: Re-check container statuses after wait
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
+
+      - name: Show logs on failure
+        if: failure()
+        run: |
+          echo "::group::DB Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs db
+          echo "::endgroup::"
+          echo "::group::Keycloak DB Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak-db
+          echo "::endgroup::"
+          echo "::group::Migrations Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs migrations
+          echo "::endgroup::"
+          echo "::group::Backend Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
+          echo "::endgroup::"
+          echo "::group::Frontend Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs frontend
+          echo "::endgroup::"
+          echo "::group::Keycloak Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak
+          echo "::endgroup::"
+          echo "::group::Kafka Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
+          echo "::endgroup::"
+          echo "::group::Kong Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong
+          echo "::endgroup::"
+          echo "::group::Minio Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs minio
+          echo "::endgroup::"
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: error-logs
+          path: logs/
+
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
