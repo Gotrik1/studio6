@@ -46,6 +46,9 @@
     FROM base as migrations
     WORKDIR /app
     
+    # 👇 Вот здесь добавляем netcat!
+    RUN apt-get update && apt-get install -y netcat
+    
     COPY --from=builder /usr/src/app ./
     RUN pnpm --filter prodvor-backend install --config.allow-scripts=true
     
