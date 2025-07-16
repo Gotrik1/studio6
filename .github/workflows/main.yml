@@ -30,9 +30,11 @@ jobs:
         with:
           version: 10.13.1
 
-      - name: Create .env file from secrets
+      # Создаём .env для backend
+      - name: Create .env file from secrets (backend)
         run: |
-          cat > .env <<EOF
+          mkdir -p backend
+          cat > backend/.env <<EOF
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
@@ -64,17 +66,28 @@ jobs:
           PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           EOF
 
+      # Если нужен .env в корне, раскомментируй ниже
+      # - name: Create .env file from secrets (root)
+      #   run: |
+      #     cat > .env <<EOF
+      #     DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
+      #     EOF
+
       - name: Create logs directory
         run: mkdir -p logs
 
-      - name: Install dependencies for linting and typechecking
-        run: pnpm install --no-frozen-lockfile
-
+      # Установка зависимостей в backend для генерации Prisma
       - name: Install backend dependencies with allowed scripts
-        run: pnpm --filter prodvor-backend install --config.allow-scripts=true
+        working-directory: ./backend
+        run: pnpm install --config.allow-scripts=true
 
       - name: Generate Prisma Client
-        run: pnpm --filter prodvor-backend prisma:generate
+        working-directory: ./backend
+        run: pnpm prisma:generate
+
+      # Линтинг и типизация (можно запускать из корня, если package.json)
+      - name: Install dependencies for linting and typechecking
+        run: pnpm install --no-frozen-lockfile
 
       - name: Lint code
         run: pnpm run lint 2>&1 | tee logs/lint-errors.log
@@ -85,7 +98,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Установка Loki Docker Logging Plugin
+      # Loki — по необходимости, можешь закомментировать если не требуется
       - name: Install Loki Docker Logging Plugin
         run: |
           docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
@@ -125,7 +138,6 @@ jobs:
             exit 1
           fi
 
-      # Миграции теперь делаются тут, когда БД уже поднята и готова!
       - name: Run Prisma migrations (inside container)
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
 
