@@ -1,4 +1,4 @@
-FROM node:20-alpine as base
+FROM node:20  AS base
 RUN apk add --no-cache openssl && npm install -g pnpm@10.13.1
 
 

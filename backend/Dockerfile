@@ -1,5 +1,5 @@
 # --- Base Stage (для установки системных зависимостей) ---
-    FROM node:20-alpine as base
+    FROM node:20 AS base
 
     # Установка всех нужных библиотек для Prisma (openssl, zlib, libgcc)
     RUN apk add --no-cache openssl zlib libgcc \
@@ -9,7 +9,7 @@
     ENV PRISMA_CLI_BINARY_TARGETS=linux-musl
     
     # --- Builder Stage (для сборки TypeScript и генерации Prisma) ---
-    FROM base as builder
+    FROM base AS builder
     WORKDIR /usr/src/app
     
     COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -25,7 +25,7 @@
     RUN pnpm --filter prodvor-backend build
     
     # --- Pruner Stage (для production-зависимостей) ---
-    FROM base as pruner
+    FROM base AS pruner
     WORKDIR /app
     
     COPY --from=builder /usr/src/app/backend ./backend
