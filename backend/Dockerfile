@@ -1,11 +1,11 @@
-# --- Base Stage (debian, не alpine!) ---
-    FROM node:20 as base
+# --- Base Stage (Debian, не Alpine!) ---
+    FROM node:20 AS base
 
     RUN npm install -g pnpm@10.13.1
     ENV PRISMA_CLI_BINARY_TARGETS=debian-openssl-3.0.x
     
     # --- Builder Stage ---
-    FROM base as builder
+    FROM base AS builder
     WORKDIR /usr/src/app
     
     COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -20,7 +20,7 @@
     RUN pnpm --filter prodvor-backend build
     
     # --- Pruner Stage ---
-    FROM base as pruner
+    FROM base AS pruner
     WORKDIR /app
     
     COPY --from=builder /usr/src/app/backend ./backend
@@ -32,7 +32,7 @@
     RUN pnpm --filter prodvor-backend install --prod --config.allow-scripts=true
     
     # --- Runner Stage ---
-    FROM base as runner
+    FROM base AS runner
     WORKDIR /app
     
     COPY --from=pruner /app/backend/dist ./dist
@@ -43,10 +43,10 @@
     CMD ["node", "dist/main.js"]
     
     # --- Migrations Stage ---
-    FROM base as migrations
+    FROM base AS migrations
     WORKDIR /app
     
-    # 👇 Вот здесь добавляем netcat!
+    # Устанавливаем netcat-openbsd для healthchecks и ожидания БД
     RUN apt-get update && apt-get install -y netcat-openbsd
     
     COPY --from=builder /usr/src/app ./
