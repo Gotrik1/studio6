@@ -1,7 +1,12 @@
 # --- Base Stage (для установки системных зависимостей) ---
     FROM node:20-alpine as base
-    RUN apk add --no-cache openssl && npm install -g pnpm@10.13.1
 
+    # Установка всех нужных библиотек для Prisma
+    RUN apk add --no-cache openssl zlib libgcc \
+        && npm install -g pnpm@10.13.1
+    
+    # Обязательно: корректный бинарный таргет для Prisma в Alpine/CI
+    ENV PRISMA_CLI_BINARY_TARGETS=linux-musl
     
     # --- Builder Stage (для сборки TypeScript и генерации Prisma) ---
     FROM base as builder
@@ -21,6 +26,7 @@
     # --- Pruner Stage (для production-зависимостей) ---
     FROM base as pruner
     WORKDIR /app
+    
     COPY --from=builder /usr/src/app/backend ./backend
     COPY --from=builder /usr/src/app/package.json ./package.json
     COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
@@ -32,6 +38,7 @@
     # --- Runner Stage (финальный образ для production) ---
     FROM base as runner
     WORKDIR /app
+    
     COPY --from=pruner /app/backend/dist ./dist
     COPY --from=pruner /app/backend/package.json ./package.json
     COPY --from=pruner /app/node_modules ./node_modules
@@ -42,6 +49,8 @@
     # --- Migrations Stage (для запуска миграций в CI) ---
     FROM builder as migrations
     WORKDIR /app
+    
     COPY --from=builder /usr/src/app .
+    
     CMD ["pnpm", "--filter", "prodvor-backend", "prisma:migrate:deploy"]
     
