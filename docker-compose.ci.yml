@@ -12,9 +12,12 @@ services:
       - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 30
+      start_period: 60s
+    networks:
+      - default
 
   migrations:
     build:
@@ -26,10 +29,20 @@ services:
         condition: service_healthy
     working_dir: /app
     env_file:
-      - .env  # Генерится в пайплайне, и в нём должно быть ...@db:5432...
+      - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
-    command: ["pnpm", "--filter", "prodvor-backend", "prisma:migrate:deploy"]
+    # Ждём открытия порта 5432 на сервисе db вручную
+    command: >
+      sh -c "
+        echo 'Wait for DB up...';
+        for i in `seq 1 60`; do
+          nc -z db 5432 && echo 'DB is up!' && break
+          echo 'Waiting for db:5432...'
+          sleep 3
+        done
+        pnpm --filter prodvor-backend prisma:migrate:deploy
+      "
     networks:
       - default
 
