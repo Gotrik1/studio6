@@ -145,7 +145,7 @@ export function QuestsPage() {
       quests.filter((q) => q.type === QuestType.DAILY).map((q: Quest) => q.id),
     );
     setClaimedQuests(
-      (prev) => new Set([...prev].filter((id) => !dailyIds.has(id))),
+      (prev) => new Set(Array.from(prev).filter((id) => !dailyIds.has(id))),
     );
     toast({ title: "Ежедневные квесты обновлены!" });
   };

@@ -51,9 +51,9 @@ export function HolisticAnalysisTab({ stats }: HolisticAnalysisTabProps) {
 
   // State for Form Check
   const { personalRecords } = getTrainingAnalytics(log);
-  const uniqueExercisesWithRecords = [
-    ...new Set(personalRecords.map((pr) => pr.exercise)),
-  ];
+  const uniqueExercisesWithRecords = Array.from(
+    new Set(personalRecords.map((pr) => pr.exercise)),
+  );
   const [isFormCheckOpen, setIsFormCheckOpen] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState(
     uniqueExercisesWithRecords[0] || "",

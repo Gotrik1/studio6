@@ -41,7 +41,7 @@ const getMetrics = (completedWorkouts: TrainingLogEntry[]) => {
     });
   });
 
-  const sortedExercises = [...exerciseCounts.entries()].sort(
+  const sortedExercises = Array.from(exerciseCounts.entries()).sort(
     (a, b) => b[1] - a[1],
   );
   const favoriteExercise =
