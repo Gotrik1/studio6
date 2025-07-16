@@ -17,7 +17,6 @@ services:
       retries: 5
 
   migrations:
-    # Используй кастомный stage миграций из своего Dockerfile!
     build:
       context: .
       dockerfile: backend/Dockerfile
@@ -26,9 +25,8 @@ services:
       db:
         condition: service_healthy
     working_dir: /app
-    # Не нужен отдельный volume .env, будет смонтирован через env_file или переменные окружения
     env_file:
-      - .env  # Файл в корне проекта
+      - .env  # Генерится в пайплайне, и в нём должно быть ...@db:5432...
     environment:
       DATABASE_URL: ${DATABASE_URL}
     command: ["pnpm", "--filter", "prodvor-backend", "prisma:migrate:deploy"]

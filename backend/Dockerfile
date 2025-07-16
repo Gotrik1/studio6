@@ -1,14 +1,11 @@
-# --- Base Stage (для установки системных зависимостей) ---
-    FROM node:20 AS base
+# --- Base Stage (debian, не alpine!) ---
+    FROM node:20 as base
 
-    # Никаких apk! Только pnpm
     RUN npm install -g pnpm@10.13.1
-    
-    # Корректный бинарный таргет для Prisma (можно и без этой переменной)
     ENV PRISMA_CLI_BINARY_TARGETS=debian-openssl-3.0.x
     
-    # --- Builder Stage (для сборки TypeScript и генерации Prisma) ---
-    FROM base AS builder
+    # --- Builder Stage ---
+    FROM base as builder
     WORKDIR /usr/src/app
     
     COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -22,8 +19,8 @@
     COPY . .
     RUN pnpm --filter prodvor-backend build
     
-    # --- Pruner Stage (для production-зависимостей) ---
-    FROM base AS pruner
+    # --- Pruner Stage ---
+    FROM base as pruner
     WORKDIR /app
     
     COPY --from=builder /usr/src/app/backend ./backend
@@ -34,7 +31,7 @@
     
     RUN pnpm --filter prodvor-backend install --prod --config.allow-scripts=true
     
-    # --- Runner Stage (финальный образ для production) ---
+    # --- Runner Stage ---
     FROM base as runner
     WORKDIR /app
     
@@ -45,7 +42,7 @@
     
     CMD ["node", "dist/main.js"]
     
-    # --- Migrations Stage (для запуска миграций в CI) ---
+    # --- Migrations Stage ---
     FROM base as migrations
     WORKDIR /app
     
