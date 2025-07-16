@@ -47,7 +47,7 @@
     WORKDIR /app
     
     # 👇 Вот здесь добавляем netcat!
-    RUN apt-get update && apt-get install -y netcat
+    RUN apt-get update && apt-get install -y netcat-openbsd
     
     COPY --from=builder /usr/src/app ./
     RUN pnpm --filter prodvor-backend install --config.allow-scripts=true
