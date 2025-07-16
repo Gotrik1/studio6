@@ -1,11 +1,11 @@
 # --- Base Stage (для установки системных зависимостей) ---
     FROM node:20-alpine as base
 
-    # Установка всех нужных библиотек для Prisma
+    # Установка всех нужных библиотек для Prisma (openssl, zlib, libgcc)
     RUN apk add --no-cache openssl zlib libgcc \
         && npm install -g pnpm@10.13.1
     
-    # Обязательно: корректный бинарный таргет для Prisma в Alpine/CI
+    # Корректный бинарный таргет для Prisma в Alpine/CI
     ENV PRISMA_CLI_BINARY_TARGETS=linux-musl
     
     # --- Builder Stage (для сборки TypeScript и генерации Prisma) ---
@@ -17,6 +17,7 @@
     COPY frontend/package.json ./frontend/
     COPY backend/prisma ./backend/prisma
     
+    # Разрешить скрипты!
     RUN pnpm --filter prodvor-backend install --config.allow-scripts=true
     RUN pnpm --filter prodvor-backend prisma:generate
     
@@ -47,10 +48,12 @@
     CMD ["node", "dist/main.js"]
     
     # --- Migrations Stage (для запуска миграций в CI) ---
-    FROM builder as migrations
+    FROM base as migrations
     WORKDIR /app
     
-    COPY --from=builder /usr/src/app .
+    COPY --from=builder /usr/src/app ./
+    # Обязательно установка зависимостей и разрешение скриптов!
+    RUN pnpm --filter prodvor-backend install --config.allow-scripts=true
     
     CMD ["pnpm", "--filter", "prodvor-backend", "prisma:migrate:deploy"]
     
