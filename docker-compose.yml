@@ -127,58 +127,58 @@ services:
   # ---------------------------------------------------
   # Identity & API Gateway (Keycloak & Kong)
   # ---------------------------------------------------
-  keycloak-db:
-    image: postgres:17
-    container_name: keycloak-db
-    restart: on-failure
-    environment:
-      POSTGRES_DB: ${KC_DB_DATABASE}
-      POSTGRES_USER: ${KC_DB_USERNAME}
-      POSTGRES_PASSWORD: ${KC_DB_PASSWORD}
-      PGPASSWORD: ${KC_DB_PASSWORD}
-    volumes:
-      - keycloak_db_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${KC_DB_USERNAME} -d ${KC_DB_DATABASE}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - prodvor-network
+  #keycloak-db:
+    #image: postgres:17
+    #container_name: keycloak-db
+    #restart: on-failure
+    #environment:
+      #POSTGRES_DB: ${KC_DB_DATABASE}
+      #POSTGRES_USER: ${KC_DB_USERNAME}
+      #POSTGRES_PASSWORD: ${KC_DB_PASSWORD}
+      #PGPASSWORD: ${KC_DB_PASSWORD}
+    #volumes:
+      #- keycloak_db_data:/var/lib/postgresql/data
+    #healthcheck:
+      #test: ["CMD-SHELL", "pg_isready -U ${KC_DB_USERNAME} -d ${KC_DB_DATABASE}"]
+      #interval: 10s
+      #timeout: 5s
+      #retries: 5
+    #networks:
+      #- prodvor-network
 
-  keycloak:
-    image: quay.io/keycloak/keycloak:latest
-    container_name: keycloak
-    command: start-dev --import-realm
-    environment:
-      KC_DB: postgres
-      KC_DB_URL_HOST: keycloak-db
-      KC_DB_URL_DATABASE: ${KC_DB_DATABASE}
-      KC_DB_USERNAME: ${KC_DB_USERNAME}
-      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      KC_HEALTH_ENABLED: "true"
-      KC_HTTP_ENABLED: "true"
-      KC_HOSTNAME_STRICT: "false"
-      KC_HOSTNAME_STRICT_HTTPS: "false"
-    ports:
-      - "8180:8080"
-    volumes:
-      - ./config/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
-    restart: on-failure
-    depends_on:
-      keycloak-db:
-        condition: service_healthy
-    healthcheck:
-      test: >
-        bash -c "exec 9<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n' >&9 && head -n 1 <&9 | grep 'HTTP/1.1 200'"
-      interval: 15s
-      timeout: 5s
-      retries: 20
-      start_period: 30s
-    networks:
-      - prodvor-network
+  #keycloak:
+    #image: quay.io/keycloak/keycloak:latest
+    #container_name: keycloak
+    #command: start-dev --import-realm
+    #environment:
+      #KC_DB: postgres
+      #KC_DB_URL_HOST: keycloak-db
+      #KC_DB_URL_DATABASE: ${KC_DB_DATABASE}
+      #KC_DB_USERNAME: ${KC_DB_USERNAME}
+      #KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      #KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
+      #KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      #KC_HEALTH_ENABLED: "true"
+      #KC_HTTP_ENABLED: "true"
+      #KC_HOSTNAME_STRICT: "false"
+      #KC_HOSTNAME_STRICT_HTTPS: "false"
+    #ports:
+      #- "8180:8080"
+    #volumes:
+      #- ./config/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
+    #restart: on-failure
+    #depends_on:
+      #keycloak-db:
+        #condition: service_healthy
+    #healthcheck:
+      #test: >
+        #bash -c "exec 9<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n' >&9 && head -n 1 <&9 | grep 'HTTP/1.1 200'"
+      #interval: 15s
+      #timeout: 5s
+      #retries: 20
+      #start_period: 30s
+    #networks:
+      #- prodvor-network
 
   kong-db:
     image: postgres:15.1-alpine
