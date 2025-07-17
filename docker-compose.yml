@@ -222,8 +222,8 @@ services:
     depends_on:
       kong-migrations:
         condition: service_completed_successfully
-      keycloak:
-        condition: service_healthy
+      #keycloak:
+        #condition: service_healthy
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
@@ -373,8 +373,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      keycloak:
-        condition: service_healthy
+      #keycloak:
+        #condition: service_healthy
       create-minio-bucket:
         condition: service_completed_successfully
     command: ["pnpm", "start:backend:dev"]
@@ -415,7 +415,7 @@ networks:
 
 volumes:
   postgres_data:
-  keycloak_db_data:
+  #keycloak_db_data:
   kong_db_data:
   pgadmin_data:
   redis_data:
