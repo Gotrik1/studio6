@@ -30,17 +30,17 @@ jobs:
         with:
           version: 10.13.1
 
-      # Создаём .env для backend
-      - name: Create .env file from secrets (backend)
+      - name: Create .env file
         run: |
-          mkdir -p backend
-          cat > backend/.env <<EOF
+          cat > .env <<EOF
           POSTGRES_USER=${{ secrets.POSTGRES_USER }}
           POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          KONG_PG_USER=${{ secrets.KONG_PG_USER }}
+          KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
+          KONG_PG_DATABASE=${{ secrets.KONG_PG_DATABASE }}
           PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
           PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-          KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
           RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
           RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
           MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
@@ -61,16 +61,6 @@ jobs:
       - name: Create logs directory
         run: mkdir -p logs
 
-      # Установка зависимостей в backend для генерации Prisma
-      - name: Install backend dependencies with allowed scripts
-        working-directory: ./backend
-        run: pnpm install --config.allow-scripts=true
-
-      - name: Generate Prisma Client
-        working-directory: ./backend
-        run: pnpm prisma:generate
-
-      # Линтинг и типизация
       - name: Install dependencies for linting and typechecking
         run: pnpm install --no-frozen-lockfile
 
@@ -83,37 +73,46 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Установка Loki для логирования
-      - name: Install Loki Docker Logging Plugin
-        run: |
-          docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
-
       - name: Build all images
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
+
+      - name: Wait for Kong DB to be ready
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d kong-db
+          echo "Waiting for Kong PostgreSQL to be ready..."
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T kong-db pg_isready -U ${KONG_PG_USER:-kong} -d ${KONG_PG_DATABASE:-kong_db}
+          sleep 5
+
+      - name: Run Kong migrations (inside container)
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm kong-migrations-ci
 
       - name: Launch all services in background
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
 
-      # Шаг для явной инициализации базы данных
-      - name: Wait for DB to be ready
+      - name: Wait for App DB to be ready
         run: |
-          echo "Waiting for PostgreSQL to be ready..."
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T db pg_isready -U $POSTGRES_USER
+          echo "Waiting for App PostgreSQL to be ready..."
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T db pg_isready -U ${POSTGRES_USER:-postgres}
           sleep 5
-      
-      - name: Run Kong migrations (inside container)
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm kong-migrations-ci
 
-      # Проверка статуса контейнеров перед миграциями
       - name: Check container status before migrations
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
       - name: Run Prisma migrations (inside container)
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
 
-      # Проверка статуса контейнеров после миграций
       - name: Re-check container statuses after migration
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
+
+      - name: Verify Kong is running
+        run: |
+          echo "Waiting for Kong to be available..."
+          for i in `seq 1 30`; do
+            curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 && echo " Kong is up!" && break
+            echo "Waiting for Kong..."
+            sleep 2
+          done
+          curl -s http://localhost:8000 | grep "Kong" || (echo "Kong check failed" && exit 1)
 
       - name: Show logs on failure
         if: failure()
@@ -121,23 +120,20 @@ jobs:
           echo "::group::DB Logs"
           docker compose -f docker-compose.yml -f docker-compose.ci.yml logs db
           echo "::endgroup::"
-          echo "::group::Migrations Logs"
+          echo "::group::Kong DB Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong-db
+          echo "::endgroup::"
+          echo "::group::Kong Migrations Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong-migrations-ci
+          echo "::endgroup::"
+          echo "::group::Prisma Migrations Logs"
           docker compose -f docker-compose.yml -f docker-compose.ci.yml logs migrations
-          echo "::endgroup::"
-          echo "::group::Backend Logs"
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
-          echo "::endgroup::"
-          echo "::group::Frontend Logs"
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs frontend
-          echo "::endgroup::"
-          echo "::group::Kafka Logs"
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kafka
           echo "::endgroup::"
           echo "::group::Kong Logs"
           docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong
           echo "::endgroup::"
-          echo "::group::Minio Logs"
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs minio
+          echo "::group::Backend Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
           echo "::endgroup::"
 
       - name: Upload logs on failure

@@ -10,7 +10,6 @@
 # - Frontend (Next.js): http://localhost:9002
 # - Backend (NestJS): http://localhost:3001 (for direct access)
 # - Kong API Gateway: http://localhost:8000 (main entry point)
-# - Keycloak (IdP): http://localhost:8180 (Admin Console)
 # - pgAdmin (DB UI): http://localhost:5050
 # - RabbitMQ UI: http://localhost:15672
 # - Grafana (Monitoring): http://localhost:3000
@@ -125,74 +124,20 @@ services:
       - prodvor-network
 
   # ---------------------------------------------------
-  # Identity & API Gateway (Keycloak & Kong)
+  # API Gateway (Kong)
   # ---------------------------------------------------
-  #keycloak-db:
-    #image: postgres:17
-    #container_name: keycloak-db
-    #restart: on-failure
-    #environment:
-      #POSTGRES_DB: ${KC_DB_DATABASE}
-      #POSTGRES_USER: ${KC_DB_USERNAME}
-      #POSTGRES_PASSWORD: ${KC_DB_PASSWORD}
-      #PGPASSWORD: ${KC_DB_PASSWORD}
-    #volumes:
-      #- keycloak_db_data:/var/lib/postgresql/data
-    #healthcheck:
-      #test: ["CMD-SHELL", "pg_isready -U ${KC_DB_USERNAME} -d ${KC_DB_DATABASE}"]
-      #interval: 10s
-      #timeout: 5s
-      #retries: 5
-    #networks:
-      #- prodvor-network
-
-  #keycloak:
-    #image: quay.io/keycloak/keycloak:latest
-    #container_name: keycloak
-    #command: start-dev --import-realm
-    #environment:
-      #KC_DB: postgres
-      #KC_DB_URL_HOST: keycloak-db
-      #KC_DB_URL_DATABASE: ${KC_DB_DATABASE}
-      #KC_DB_USERNAME: ${KC_DB_USERNAME}
-      #KC_DB_PASSWORD: ${KC_DB_PASSWORD}
-      #KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
-      #KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-      #KC_HEALTH_ENABLED: "true"
-      #KC_HTTP_ENABLED: "true"
-      #KC_HOSTNAME_STRICT: "false"
-      #KC_HOSTNAME_STRICT_HTTPS: "false"
-    #ports:
-      #- "8180:8080"
-    #volumes:
-      #- ./config/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json
-    #restart: on-failure
-    #depends_on:
-      #keycloak-db:
-        #condition: service_healthy
-    #healthcheck:
-      #test: >
-        #bash -c "exec 9<>/dev/tcp/localhost/8080 && echo -e 'GET /health/ready HTTP/1.1\r\nhost: localhost\r\nConnection: close\r\n\r\n' >&9 && head -n 1 <&9 | grep 'HTTP/1.1 200'"
-      #interval: 15s
-      #timeout: 5s
-      #retries: 20
-      #start_period: 30s
-    #networks:
-      #- prodvor-network
-
   kong-db:
-    image: postgres:15.1-alpine
+    image: postgres:15-alpine
     container_name: kong-db
     restart: on-failure
     environment:
-      POSTGRES_USER: kong
+      POSTGRES_USER: ${KONG_PG_USER}
       POSTGRES_PASSWORD: ${KONG_PG_PASSWORD}
-      POSTGRES_DB: kong
-      PGPASSWORD: ${KONG_PG_PASSWORD}
+      POSTGRES_DB: ${KONG_PG_DATABASE}
     volumes:
       - kong_db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U kong -d kong"]
+      test: ["CMD-SHELL", "pg_isready -U ${KONG_PG_USER} -d ${KONG_PG_DATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -209,8 +154,9 @@ services:
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
-      KONG_PG_USER: kong
+      KONG_PG_USER: ${KONG_PG_USER}
       KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE}
     restart: on-failure
     networks:
       - prodvor-network
@@ -219,16 +165,12 @@ services:
     image: kong:latest
     container_name: kong
     restart: always
-    depends_on:
-      kong-migrations:
-        condition: service_completed_successfully
-      #keycloak:
-        #condition: service_healthy
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
-      KONG_PG_USER: kong
+      KONG_PG_USER: ${KONG_PG_USER}
       KONG_PG_PASSWORD: ${KONG_PG_PASSWORD}
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE}
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
       KONG_PROXY_LISTEN: 0.0.0.0:8000
       KONG_PLUGINS: bundled,oidc
@@ -236,30 +178,14 @@ services:
       KONG_ADMIN_ACCESS_LOG: /dev/stdout
       KONG_PROXY_ERROR_LOG: /dev/stderr
       KONG_ADMIN_ERROR_LOG: /dev/stderr
-    healthcheck:
-      test: ["CMD-SHELL", "kong health"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
     ports:
       - "8000:8000"
-      - "8443:8443"
       - "8001:8001"
     networks:
       - prodvor-network
-
-  kong-setup:
-    image: kong/deck:latest
-    container_name: kong-setup
-    command: >
-      deck sync -s /config/kong.yml --kong-addr http://kong:8001
-    volumes:
-      - ./config/kong:/config
     depends_on:
-      kong:
-        condition: service_healthy
-    networks:
-      - prodvor-network
+      kong-migrations:
+        condition: service_completed_successfully
 
   # ---------------------------------------------------
   # Object Storage (S3-compatible)
@@ -373,10 +299,10 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      #keycloak:
-        #condition: service_healthy
       create-minio-bucket:
         condition: service_completed_successfully
+      kong:
+        condition: service_started
     command: ["pnpm", "start:backend:dev"]
     logging:
       driver: loki
@@ -415,7 +341,6 @@ networks:
 
 volumes:
   postgres_data:
-  #keycloak_db_data:
   kong_db_data:
   pgadmin_data:
   redis_data:

@@ -18,14 +18,14 @@ services:
       - default
 
   kong-db:
-    image: postgres:15.1-alpine
+    image: postgres:15-alpine
     restart: on-failure
     environment:
-      POSTGRES_USER: kong
-      POSTGRES_PASSWORD: ${KONG_PG_PASSWORD:-kong}
-      POSTGRES_DB: kong
+      POSTGRES_USER: ${KONG_PG_USER:-kong}
+      POSTGRES_PASSWORD: ${KONG_PG_PASSWORD:-kongpassword}
+      POSTGRES_DB: ${KONG_PG_DATABASE:-kong_db}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U kong -d kong"]
+      test: ["CMD-SHELL", "pg_isready -U ${KONG_PG_USER} -d ${KONG_PG_DATABASE}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,15 +34,16 @@ services:
 
   kong-migrations-ci:
     image: kong:latest
-    command: "kong migrations up -y"
+    command: kong migrations up -y
     depends_on:
       kong-db:
         condition: service_healthy
     environment:
       KONG_DATABASE: postgres
       KONG_PG_HOST: kong-db
-      KONG_PG_USER: kong
-      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kong}
+      KONG_PG_USER: ${KONG_PG_USER:-kong}
+      KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kongpassword}
+      KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong_db}
     networks:
       - default
 
