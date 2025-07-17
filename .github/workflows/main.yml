@@ -109,12 +109,14 @@ jobs:
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T db pg_isready -U $POSTGRES_USER
           sleep 5  # Подождите немного для устойчивости соединения
 
+      # Проверка статуса контейнеров перед миграциями
       - name: Check container status before migrations
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
       - name: Run Prisma migrations (inside container)
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
 
+      # Проверка статуса контейнеров после миграций
       - name: Re-check container statuses after migration
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
