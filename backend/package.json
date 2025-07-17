@@ -1,6 +1,7 @@
 
 {
   "name": "prodvor-backend",
+  "type": "module",
   "version": "0.0.1",
   "description": "Backend for ProDvor platform",
   "author": "ProDvor Team",

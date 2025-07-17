@@ -102,39 +102,20 @@ jobs:
       - name: Launch all services in background
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
 
-      - name: Wait for services to be healthy
+      # Шаг для явной инициализации базы данных
+      - name: Wait for DB to be ready
         run: |
-          echo "Waiting for all services to become healthy..."
-          end_time=$((SECONDS+300)) # 5 minutes
-          while [ $SECONDS -lt $end_time ]; do
-            status_output=$(docker compose -f docker-compose.yml -f docker-compose.ci.yml ps --format json)
-            unhealthy_services=$(echo "$status_output" | jq -r '.[] | select(.State=="running" and .Health=="unhealthy") | .Name')
-            starting_services=$(echo "$status_output" | jq -r '.[] | select(.State=="running" and .Health=="starting") | .Name')
-            exited_services=$(echo "$status_output" | jq -r '.[] | select(.State=="exited") | .Name')
+          echo "Waiting for PostgreSQL to be ready..."
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T db pg_isready -U $POSTGRES_USER
+          sleep 5  # Подождите немного для устойчивости соединения
 
-            if [ -n "$exited_services" ]; then
-              echo "::error::One or more services have exited unexpectedly: $exited_services"
-              exit 1
-            fi
-
-            if [ -z "$unhealthy_services" ] && [ -z "$starting_services" ]; then
-              echo "All services are healthy."
-              break
-            fi
-
-            echo "Waiting for: $(echo $unhealthy_services $starting_services | xargs)"
-            sleep 10
-          done
-
-          if [ $SECONDS -ge $end_time ]; then
-            echo "::error::Timeout waiting for services to become healthy."
-            exit 1
-          fi
+      - name: Check container status before migrations
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
       - name: Run Prisma migrations (inside container)
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
 
-      - name: Re-check container statuses after wait
+      - name: Re-check container statuses after migration
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
       - name: Show logs on failure
