@@ -1,14 +1,14 @@
 
-import globals from "globals";
-import js from "@eslint/js";
-import tsPlugin from "@typescript-eslint/eslint-plugin";
-import tsParser from "@typescript-eslint/parser";
-import prettier from "eslint-config-prettier";
-import nextPlugin from "@next/eslint-plugin-next";
-import reactPlugin from "eslint-plugin-react";
-import reactHooksPlugin from "eslint-plugin-react-hooks";
+const globals = require("globals");
+const js = require("@eslint/js");
+const tsPlugin = require("@typescript-eslint/eslint-plugin");
+const tsParser = require("@typescript-eslint/parser");
+const prettier = require("eslint-config-prettier");
+const nextPlugin = require("@next/eslint-plugin-next");
+const reactPlugin = require("eslint-plugin-react");
+const reactHooksPlugin = require("eslint-plugin-react-hooks");
 
-export default [
+module.exports = [
   {
     ignores: [
       "**/dist/**",
@@ -25,6 +25,8 @@ export default [
       "tailwind.config.ts",
       "backend/package-lock.json",
       "package-lock.json",
+      "postcss.config.cjs",
+      "eslint.config.mjs"
     ],
   },
   js.configs.recommended,
