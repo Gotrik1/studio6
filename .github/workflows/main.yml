@@ -40,11 +40,6 @@ jobs:
           POSTGRES_DB=${{ secrets.POSTGRES_DB }}
           PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
           PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-          KC_DB_DATABASE=${{ secrets.KC_DB_DATABASE }}
-          KC_DB_USERNAME=${{ secrets.KC_DB_USERNAME }}
-          KC_DB_PASSWORD=${{ secrets.KC_DB_PASSWORD }}
-          KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
-          KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
           KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
           RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
           RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
@@ -53,9 +48,6 @@ jobs:
           DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
           REDIS_URL=redis://redis:6379
           KAFKA_BROKERS=kafka:9092
-          KEYCLOAK_URL=http://keycloak:8080
-          KEYCLOAK_REALM=prodvor
-          KEYCLOAK_CLIENT_ID=prodvor-frontend
           RABBITMQ_URL=amqp://${{ secrets.RABBITMQ_DEFAULT_USER }}:${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}@rabbitmq:5672
           S3_ENDPOINT_URL=http://minio:9005
           S3_BUCKET_NAME=prodvor
@@ -107,7 +99,7 @@ jobs:
         run: |
           echo "Waiting for PostgreSQL to be ready..."
           docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T db pg_isready -U $POSTGRES_USER
-          sleep 5  # Подождите немного для устойчивости соединения
+          sleep 5
 
       # Проверка статуса контейнеров перед миграциями
       - name: Check container status before migrations
@@ -126,9 +118,6 @@ jobs:
           echo "::group::DB Logs"
           docker compose -f docker-compose.yml -f docker-compose.ci.yml logs db
           echo "::endgroup::"
-          echo "::group::Keycloak DB Logs"
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak-db
-          echo "::endgroup::"
           echo "::group::Migrations Logs"
           docker compose -f docker-compose.yml -f docker-compose.ci.yml logs migrations
           echo "::endgroup::"
@@ -137,9 +126,6 @@ jobs:
           echo "::endgroup::"
           echo "::group::Frontend Logs"
           docker compose -f docker-compose.yml -f docker-compose.ci.yml logs frontend
-          echo "::endgroup::"
-          echo "::group::Keycloak Logs"
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs keycloak
           echo "::endgroup::"
           echo "::group::Kafka Logs"
           docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kafka

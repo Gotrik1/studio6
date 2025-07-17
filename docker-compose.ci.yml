@@ -30,7 +30,6 @@ services:
       - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
-    # Ждём открытия порта 5432 на сервисе db вручную
     command: >
       sh -c "
         echo 'Wait for DB up...';
