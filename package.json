@@ -1,3 +1,4 @@
+
 {
   "name": "prodvor-monorepo",
   "private": true,
@@ -7,7 +8,7 @@
     "install:all": "pnpm install --no-frozen-lockfile",
     "dev": "pnpm --filter prodvor-frontend dev",
     "build": "pnpm --parallel --filter \"./**\" build",
-    "lint": "pnpm --parallel --filter \"./**\" lint",
+    "lint": "eslint . --fix",
     "typecheck": "pnpm --parallel --filter \"./**\" typecheck",
     "start:backend": "pnpm --filter prodvor-backend start",
     "start:frontend": "pnpm --filter prodvor-frontend start"
