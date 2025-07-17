@@ -66,13 +66,6 @@ jobs:
           PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           EOF
 
-      # Если нужен .env в корне, раскомментируй ниже
-      # - name: Create .env file from secrets (root)
-      #   run: |
-      #     cat > .env <<EOF
-      #     DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
-      #     EOF
-
       - name: Create logs directory
         run: mkdir -p logs
 
@@ -85,7 +78,7 @@ jobs:
         working-directory: ./backend
         run: pnpm prisma:generate
 
-      # Линтинг и типизация (можно запускать из корня, если package.json)
+      # Линтинг и типизация
       - name: Install dependencies for linting and typechecking
         run: pnpm install --no-frozen-lockfile
 
@@ -98,7 +91,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Loki — по необходимости, можешь закомментировать если не требуется
+      # Установка Loki для логирования
       - name: Install Loki Docker Logging Plugin
         run: |
           docker plugin install grafana/loki-docker-driver:latest --alias loki --grant-all-permissions
