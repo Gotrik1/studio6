@@ -200,9 +200,9 @@ services:
       - prodvor-network
 
   kong-migrations:
-    image: kong:3.0.1-alpine
+    image: kong:latest
     container_name: kong-migrations
-    command: "kong migrations bootstrap"
+    command: "kong migrations up"
     depends_on:
       kong-db:
         condition: service_healthy
