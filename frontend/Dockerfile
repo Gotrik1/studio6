@@ -5,14 +5,12 @@ FROM node:20 as base
 FROM base AS builder
 WORKDIR /usr/src/app
 
-# Copy root manifests
+# Copy dependency definition files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-
-# Copy workspace manifests
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Install ALL dependencies
+# Install dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     corepack enable && \
     pnpm install --frozen-lockfile
@@ -23,33 +21,34 @@ COPY . .
 # Build the frontend application
 RUN pnpm --filter prodvor-frontend build
 
-# ---- Pruner Stage ----
-FROM base as pruner
+# ---- Pruner Stage (for production dependencies only) ----
+FROM base AS pruner
 WORKDIR /usr/src/app
-
-COPY pnpm-workspace.yaml ./
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
 COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
+COPY --from=builder /usr/src/app/frontend/next.config.js ./frontend/
 
-# Install only production dependencies
-RUN corepack enable && \
+# Create production node_modules
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    corepack enable && \
     pnpm deploy --prod --filter prodvor-frontend ./frontend
 
-# ---- Runner Stage ----
-FROM node:20-alpine AS runner
+# ---- Runner Stage (final, lightweight image) ----
+FROM node:20-alpine as runner
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy production dependencies and build artifacts
+# Copy the pruned dependencies and built app
+COPY --from=pruner /usr/src/app/frontend/package.json ./package.json
 COPY --from=pruner /usr/src/app/frontend/node_modules ./node_modules
-COPY --from=pruner /usr/src/app/frontend/.next ./.next
 COPY --from=pruner /usr/src/app/frontend/public ./public
-COPY --from=pruner /usr/src/app/frontend/package.json ./
+COPY --from=pruner /usr/src/app/frontend/.next ./.next
 
-# Expose the port the app runs on
+# Expose the application port
 EXPOSE 9002
 
-# Set the command to run the application
+# The command to run the application
 CMD ["pnpm", "start"]

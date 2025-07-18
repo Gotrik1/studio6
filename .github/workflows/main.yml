@@ -29,7 +29,7 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
-      
+
       - name: Create .env file
         run: |
           cat > .env <<EOF
@@ -60,7 +60,7 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
-      
+
       - name: Generate Prisma Client
         run: pnpm --filter prodvor-backend prisma:generate
 
@@ -104,7 +104,7 @@ jobs:
             sleep 2
           done
           echo "Kong DB is up!"
-          
+
       - name: Run Kong migrations (inside container)
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm kong-migrations-ci
 
