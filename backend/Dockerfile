@@ -1,60 +1,61 @@
-# ---- Base Stage ----
-# Используем полный образ Node.js для доступа ко всем необходимым инструментам сборки
+# /backend/Dockerfile
+
+# ---- Base ----
 FROM node:20 as base
-
-# Устанавливаем OpenSSL, необходимый для Prisma
+# Install OpenSSL, needed for Prisma
 RUN apt-get update && apt-get install -y openssl
+# Enable pnpm via corepack
+RUN corepack enable
 
-# Устанавливаем рабочую директорию
 WORKDIR /usr/src/app
 
-# ---- Builder Stage ----
-# На этом этапе мы устанавливаем все зависимости и компилируем проект
+# ---- Builder ----
 FROM base as builder
 
-# Копируем только файлы манифеста для кэширования зависимостей
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+# Copy root manifests
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc* ./
+# A wildcard for .npmrc is used to also match .npmrc-local if it exists
+
+# Copy workspace package.json files
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Копируем схему Prisma до установки зависимостей
+# Copy prisma schema
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем ВСЕ зависимости, включая devDependencies, для всех воркспейсов
-# На этом этапе автоматически выполнится `prisma generate`
+# Install ALL dependencies (including dev) and run prisma generate
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Копируем весь остальной исходный код
+# Copy the rest of the source code
 COPY . .
 
-# Компилируем только бэкенд
+# Build the backend
 RUN pnpm --filter prodvor-backend build
 
-# ---- Pruner Stage ----
-# Этот этап нужен для того, чтобы в финальном образе были только production-зависимости
+# ---- Pruner ----
 FROM base as pruner
-COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
+WORKDIR /usr/src/app
+
+# Copy only necessary files from the builder stage
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml .
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
+COPY --from=builder /usr/src/app/backend/package.json ./backend/
+# Also copy prisma schema for runtime
+COPY --from=builder /usr/src/app/backend/prisma ./backend/prisma
 
-# Устанавливаем только production-зависимости для бэкенда
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --filter prodvor-backend
+# Install ONLY production dependencies
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm --filter prodvor-backend deploy --prod ./backend
 
-# ---- Runner Stage (Final Image) ----
-# Собираем финальный, легковесный образ для запуска
-FROM base as runner
-
-# Устанавливаем рабочую директорию
+# ---- Runner ----
+FROM node:20-alpine as runner
 WORKDIR /app
 
-# Копируем скомпилированный код и production-версию node_modules
-COPY --from=pruner /usr/src/app/backend/package.json ./backend/package.json
-COPY --from=pruner /usr/src/app/backend/dist ./backend/dist
-COPY --from=pruner /usr/src/app/node_modules ./node_modules
-COPY --from=pruner /usr/src/app/backend/node_modules ./backend/node_modules
+# Set NODE_ENV to production
+ENV NODE_ENV production
 
-# Открываем порт
+# Copy built app and node_modules from the pruner stage
+COPY --from=pruner /usr/src/app/backend .
+
+# Expose port and start the app
 EXPOSE 3001
-
-# Команда для запуска приложения
-CMD ["node", "backend/dist/main"]
+CMD ["node", "dist/main"]
