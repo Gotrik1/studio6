@@ -147,7 +147,7 @@ services:
   kong-migrations:
     image: kong:latest
     container_name: kong-migrations
-    command: "kong migrations up -y"
+    command: "kong migrations bootstrap"
     depends_on:
       kong-db:
         condition: service_healthy

@@ -25,7 +25,7 @@ services:
       POSTGRES_PASSWORD: ${KONG_PG_PASSWORD:-kongpassword}
       POSTGRES_DB: ${KONG_PG_DATABASE:-kong_db}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${KONG_PG_USER} -d ${KONG_PG_DATABASE}"]
+      test: ["CMD-SHELL", "pg_isready -U ${KONG_PG_USER:-kong} -d ${KONG_PG_DATABASE:-kong_db}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,7 +34,7 @@ services:
 
   kong-migrations-ci:
     image: kong:latest
-    command: kong migrations up -y
+    command: kong migrations bootstrap
     depends_on:
       kong-db:
         condition: service_healthy

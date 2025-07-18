@@ -30,7 +30,6 @@ jobs:
         with:
           version: 10.13.1
       
-      # Установка OpenSSL для Prisma
       - name: Install OpenSSL
         run: sudo apt-get update && sudo apt-get install -y openssl
 
@@ -82,16 +81,6 @@ jobs:
 
       - name: Build all images
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
-
-      - name: Wait for Kong DB to be ready
-        run: |
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d kong-db
-          echo "Waiting for Kong PostgreSQL to be ready..."
-          for i in `seq 1 30`; do
-            docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T kong-db pg_isready -U "${KONG_PG_USER:-kong}" -d "${KONG_PG_DATABASE:-kong_db}" && echo "Kong DB is up!" && break
-            echo "Waiting for Kong DB..."
-            sleep 2
-          done
 
       - name: Run Kong migrations (inside container)
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm kong-migrations-ci
