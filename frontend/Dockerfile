@@ -1,66 +1,57 @@
-# -- STAGE 1: BUILDER --
-FROM node:20 AS builder
-
-# 1. Устанавливаем рабочую директорию
+# Этап 1: Установка зависимостей и сборка проекта
+FROM node:20 as builder
 WORKDIR /usr/src/app
 
-# 2. Копируем только файлы-манифесты для кэширования зависимостей
+# Включаем pnpm через corepack
+RUN corepack enable
+
+# Копируем только файлы манифеста для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Копируем package.json каждого воркспейса для корректной установки
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# 3. Устанавливаем все зависимости, включая devDependencies
-# Это необходимо для этапа сборки, который требует TypeScript, Nest CLI и т.д.
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    corepack enable && \
-    pnpm install --frozen-lockfile
+# Копируем схему Prisma, т.к. она может быть нужна для типов, даже если фронтенд не использует сам клиент
+COPY backend/prisma ./backend/prisma
 
-# 4. Копируем весь исходный код
+# Устанавливаем все зависимости. Это сгенерирует Prisma Client, типы которого могут быть полезны
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+# Копируем остальной код проекта ПОСЛЕ установки зависимостей
 COPY . .
 
-# 5. Собираем только фронтенд-воркспейс
+# Собираем только фронтенд
 RUN pnpm --filter prodvor-frontend build
 
-
-# -- STAGE 2: PRUNER --
-# Этот этап нужен для того, чтобы в финальном образе были только production-зависимости,
-# что значительно уменьшает его размер.
-FROM node:20 AS pruner
-
-# 1. Устанавливаем рабочую директорию
+# Этап 2: Оптимизация node_modules для production
+FROM node:20 as pruner
 WORKDIR /usr/src/app
 
-# 2. Активируем pnpm
+# Включаем pnpm через corepack
 RUN corepack enable
 
-# 3. Копируем скомпилированный проект и файлы-манифесты
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
-COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
+# Копируем только необходимые для деплоя манифесты
+COPY pnpm-workspace.yaml ./
+COPY frontend/package.json ./frontend/
+COPY backend/package.json ./backend/
+
+# Копируем только скомпилированный фронтенд
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
-COPY --from=builder /usr/src/app/frontend/next.config.mjs ./frontend/next.config.mjs
 
-# 4. Устанавливаем ТОЛЬКО production-зависимости
-RUN pnpm deploy --legacy --prod --filter prodvor-frontend
+# Устанавливаем ТОЛЬКО production-зависимости для фронтенда
+RUN pnpm deploy --legacy --prod --filter prodvor-frontend ./
 
-
-# -- STAGE 3: RUNNER --
-# Финальный, легковесный образ для запуска приложения.
-FROM node:20-alpine AS runner
-
-# 1. Устанавливаем рабочую директорию
+# Этап 3: Финальный легковесный образ
+FROM node:20-alpine as runner
 WORKDIR /app
 
-# 2. Копируем собранный проект и production-зависимости
-COPY --from=pruner /usr/src/app/frontend .
+# Копируем production-версию node_modules, скомпилированный проект и публичные файлы
+COPY --from=pruner /usr/src/app .
 
-# 3. Устанавливаем пользователя без root-прав для безопасности
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-USER nextjs
+# Копируем package.json фронтенда, чтобы Next.js мог его найти
+COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
 
-# 4. Указываем порт
-EXPOSE 9002
-
-# 5. Команда для запуска
-CMD ["pnpm", "start"]
+# Запускаем приложение
+CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
