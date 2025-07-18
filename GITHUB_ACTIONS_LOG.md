@@ -7,11 +7,11 @@
 - **Симптомы:** ~360 ошибок TypeScript вида `Property '...' does not exist on type 'PrismaService'` или `Module '"@prisma/client"' has no exported member '...'`.
 - **Причина:** Неправильный порядок команд в `Dockerfile`. Команда `COPY . .` перезаписывала сгенерированный `PrismaClient` в `node_modules` перед сборкой.
 - **Рабочее решение (✅ ЗАФИКСИРОВАНО):** Использовать многоэтапный Docker-файл со строгой последовательностью команд на этапе `builder`:
-  1.  `COPY` **только** файлов манифеста (`package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`) и `package.json` **каждого** воркспейса.
-  2.  `COPY` схемы Prisma (`backend/prisma/schema.prisma`).
-  3.  `RUN pnpm install`. Этот шаг установит все зависимости и запустит `postinstall` скрипт, который содержит `prisma generate`.
-  4.  `COPY . .` **ПОСЛЕ** установки зависимостей, чтобы скопировать исходный код, не затрагивая `node_modules`.
-  5.  `RUN pnpm ... build`.
+  1. `COPY` **только** файлов манифеста (`package.json`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`) и `package.json` **каждого** воркспейса.
+  2. `COPY` схемы Prisma (`backend/prisma/schema.prisma`).
+  3. `RUN pnpm install`. Этот шаг установит все зависимости и запустит `postinstall` скрипт, который содержит `prisma generate`.
+  4. `COPY . .` **ПОСЛЕ** установки зависимостей, чтобы скопировать исходный код, не затрагивая `node_modules`.
+  5. `RUN pnpm ... build`.
 
 ## 2. Проблема: `pnpm: not found` в Docker
 

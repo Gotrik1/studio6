@@ -1,50 +1,54 @@
-# 1. Этап "builder": Сборка приложения и генерация Prisma
-FROM node:20 as builder
+# === BASE STAGE ===
+FROM node:20 as base
+RUN apt-get update && apt-get install -y openssl
 WORKDIR /usr/src/app
-
-# Активируем pnpm
 RUN corepack enable
 
-# Копируем только файлы манифеста для кэширования зависимостей
+# === BUILDER STAGE ===
+FROM base as builder
+
+# 1. Copy only manifest files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+
+# 2. Copy Prisma schema before installing dependencies
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем ВСЕ зависимости, включая devDependencies, чтобы запустить скрипты
+# 3. Install ALL dependencies (including dev) to run build and generate prisma client
+# This step also runs the `postinstall` script which runs `prisma generate`
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Копируем остальной код
+# 4. Copy the rest of the source code
 COPY . .
 
-# Собираем только бэкенд
+# 5. Build the application
 RUN pnpm --filter prodvor-backend build
 
-
-# 2. Этап "pruner": Установка только production-зависимостей
-FROM node:20 as pruner
+# === PRUNER STAGE ===
+# Install only production dependencies
+FROM base as pruner
 WORKDIR /prod
-RUN corepack enable
 
-# Копируем только нужные манифесты в пустую директорию
-COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
-COPY --from=builder /usr/src/app/backend/package.json ./backend/
-COPY --from=builder /usr/src/app/package.json ./
+# Copy only the necessary files for deployment
+COPY pnpm-workspace.yaml ./
+COPY backend/package.json ./backend/package.json
 
-# Устанавливаем только production-зависимости для бэкенда в текущую директорию (/prod)
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm deploy --legacy --prod --filter prodvor-backend ./
+# Deploy production dependencies into a clean subdirectory
+RUN pnpm deploy --legacy --prod --filter prodvor-backend ./backend
 
-# Копируем скомпилированный код
+# Copy the compiled output from the builder stage
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
 
 
-# 3. Этап "runner": Финальный легковесный образ
-FROM node:20-alpine
+# === RUNNER STAGE ===
+# Final, small production image
+FROM node:20-alpine as runner
 WORKDIR /app
 
-# Копируем production-зависимости и скомпилированный код из "pruner"
+# Copy the pruned dependencies and the compiled code
 COPY --from=pruner /prod .
 
-# Указываем команду для запуска приложения
-CMD ["node", "backend/dist/main.js"]
+# Expose port and run the application
+EXPOSE 3001
+CMD [ "node", "backend/dist/main" ]
