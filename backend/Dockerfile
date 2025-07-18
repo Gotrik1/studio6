@@ -1,63 +1,49 @@
-# Этап 1: Сборщик (Builder)
-# Используем полный образ Node для обеспечения наличия всех сборочных зависимостей
+# Этап 1: Сборка приложения
 FROM node:20 as builder
 
-# Устанавливаем системные зависимости для Prisma
-RUN apt-get update && apt-get install -y openssl
+WORKDIR /app
 
-# Устанавливаем рабочую директорию
-WORKDIR /usr/src/app
-
-# Включаем pnpm через corepack
-RUN corepack enable
-
-# Копируем только файлы манифеста для кэширования зависимостей
+# Копируем только необходимые для установки зависимостей файлы
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-
-# Копируем схему Prisma до установки зависимостей
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем все зависимости, включая devDependencies для сборки и генерации
-# Запускаем prisma generate через postinstall скрипт
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Устанавливаем все зависимости (включая dev) и генерируем Prisma Client
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    corepack enable && \
+    pnpm install --frozen-lockfile
 
-# Копируем весь остальной исходный код
+# Копируем остальной код
 COPY . .
 
 # Собираем только бэкенд
 RUN pnpm --filter prodvor-backend build
 
-# Этап 2: Очистка (Pruner)
-# Используем тот же базовый образ, что и builder, чтобы pnpm работал корректно
+# Этап 2: Подготовка production-зависимостей
 FROM node:20 as pruner
 
-WORKDIR /usr/src/app
-RUN corepack enable
+WORKDIR /app
 
-# Копируем только необходимые для деплоя артефакты
-COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
-COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
-COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+# Копируем только манифесты и скомпилированный код
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/backend/package.json ./backend/
+COPY --from=builder /app/backend/dist ./backend/dist
 
-# Устанавливаем только production-зависимости для бэкенда
-# ./ указывает, что установка должна производиться в текущую директорию (/usr/src/app)
-# которая на данном шаге содержит только манифесты.
-RUN pnpm deploy --legacy --prod --filter prodvor-backend ./
+# Устанавливаем ТОЛЬКО production-зависимости, необходимые для бэкенда
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    corepack enable && \
+    pnpm deploy --legacy --prod --filter prodvor-backend ./
 
-# Этап 3: Финальный образ (Runner)
-# Используем легковесный alpine-образ для production
+# Этап 3: Финальный легковесный образ
 FROM node:20-alpine as runner
 
 WORKDIR /app
 
-# Устанавливаем системные зависимости для Prisma (openssl)
-RUN apk add --no-cache openssl
+# Копируем production-зависимости и скомпилированный код из pruner'а
+COPY --from=pruner /app/node_modules ./node_modules
+COPY --from=pruner /app/backend ./backend
 
-# Копируем собранный код и production-зависимости из pruner'а
-COPY --from=pruner /usr/src/app/backend ./backend
-COPY --from=pruner /usr/src/app/node_modules ./node_modules
+EXPOSE 3001
 
-# Указываем команду для запуска приложения
 CMD ["node", "backend/dist/main.js"]

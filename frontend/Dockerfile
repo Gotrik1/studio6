@@ -1,55 +1,50 @@
-# Этап 1: Сборщик (Builder)
+# Этап 1: Сборка приложения
 FROM node:20 as builder
 
-# Устанавливаем рабочую директорию
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Включаем pnpm через corepack
-RUN corepack enable
-
-# Копируем только файлы манифеста для кэширования зависимостей
+# Копируем только необходимые для установки зависимостей файлы
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем все зависимости, включая devDependencies для сборки
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Устанавливаем все зависимости (включая dev)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    corepack enable && \
+    pnpm install --frozen-lockfile
 
-# Копируем весь остальной исходный код
+# Копируем остальной код
 COPY . .
 
 # Собираем только фронтенд
 RUN pnpm --filter prodvor-frontend build
 
-# Этап 2: Очистка (Pruner)
-# Используем тот же базовый образ, что и builder
+# Этап 2: Подготовка production-зависимостей
 FROM node:20 as pruner
 
-WORKDIR /usr/src/app
-RUN corepack enable
+WORKDIR /app
 
-# Копируем только необходимые для деплоя артефакты
-COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
-COPY --from=builder /usr/src/app/frontend/public ./frontend/public
-COPY --from=builder /usr/src/app/frontend/.next/standalone ./frontend/.next/standalone
-COPY --from=builder /usr/src/app/frontend/.next/static ./frontend/.next/static
+# Копируем только манифесты и скомпилированный код
+COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
+COPY --from=builder /app/frontend/package.json ./frontend/
+COPY --from=builder /app/frontend/.next ./frontend/.next
+COPY --from=builder /app/frontend/public ./frontend/public
 
-# Устанавливаем только production-зависимости для фронтенда
-RUN pnpm deploy --legacy --prod --filter prodvor-frontend ./
+# Устанавливаем ТОЛЬКО production-зависимости, необходимые для фронтенда
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    corepack enable && \
+    pnpm deploy --legacy --prod --filter prodvor-frontend ./
 
-# Этап 3: Финальный образ (Runner)
-# Используем легковесный alpine-образ для production
+
+# Этап 3: Финальный легковесный образ
 FROM node:20-alpine as runner
 
 WORKDIR /app
 
-ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
+# Копируем production-зависимости и скомпилированный код из pruner'а
+COPY --from=pruner /app/node_modules ./node_modules
+COPY --from=pruner /app/frontend ./frontend
 
-# Копируем собранный код и production-зависимости из pruner'а
-COPY --from=pruner /usr/src/app/frontend ./frontend
-COPY --from=pruner /usr/src/app/node_modules ./node_modules
+EXPOSE 9002
 
-# Указываем команду для запуска приложения
-CMD ["node", "frontend/standalone/server.js"]
+CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
