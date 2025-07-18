@@ -1,53 +1,60 @@
-# 1. Этап "builder": Сборка приложения
-FROM node:20 as builder
+# === Base Stage: Установка зависимостей ===
+FROM node:20 AS base
+
+# === Builder Stage: Сборка приложения ===
+FROM base AS builder
 WORKDIR /usr/src/app
 
-# Активируем pnpm
+# Установка pnpm
 RUN corepack enable
 
-# Копируем только файлы манифеста для кэширования зависимостей
+# Копируем ТОЛЬКО файлы манифеста для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+COPY backend/package.json ./backend/
 
-# Устанавливаем ВСЕ зависимости, включая devDependencies
+# Установка всех зависимостей, включая devDependencies для сборки
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Копируем остальной код
+# Копируем весь остальной код ПОСЛЕ установки зависимостей
 COPY . .
 
-# Собираем только фронтенд
+# Сборка фронтенда
 RUN pnpm --filter prodvor-frontend build
 
-
-# 2. Этап "pruner": Установка только production-зависимостей
-FROM node:20 as pruner
+# === Pruner Stage: Подготовка production-зависимостей ===
+FROM base AS pruner
 WORKDIR /prod
+
+# Установка pnpm
 RUN corepack enable
 
-# Копируем только нужные манифесты в пустую директорию
-COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
-COPY --from=builder /usr/src/app/package.json ./
+# Копируем манифесты в корень /prod
+COPY pnpm-workspace.yaml package.json ./
+COPY frontend/package.json ./frontend/package.json
 
-# Устанавливаем только production-зависимости для фронтенда в текущую директорию (/prod)
+# Установка ТОЛЬКО production-зависимостей
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm deploy --legacy --prod --filter prodvor-frontend ./
 
 # Копируем скомпилированный код
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
+COPY --from=builder /usr/src/app/public ./public
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
 
-
-# 3. Этап "runner": Финальный легковесный образ
-FROM node:20-alpine
+# === Runner Stage: Финальный образ ===
+FROM node:20-alpine AS runner
 WORKDIR /app
 
-ENV NODE_ENV=production
+# Копируем production-зависимости и скомпилированный код
+COPY --from=pruner /prod/node_modules ./node_modules
+COPY --from=pruner /prod/frontend ./frontend
+COPY --from=pruner /prod/public ./public
 
-# Копируем production-зависимости и скомпилированный код из "pruner"
-COPY --from=pruner /prod .
+# Устанавливаем пользователя без root прав для безопасности
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
 
-# Указываем команду для запуска приложения
+EXPOSE 9002
+
 CMD ["pnpm", "--filter", "prodvor-frontend", "start"]

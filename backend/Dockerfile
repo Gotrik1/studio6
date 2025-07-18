@@ -1,54 +1,59 @@
-# === BASE STAGE ===
-FROM node:20 as base
+# === Base Stage: Установка зависимостей ===
+FROM node:20 AS base
 RUN apt-get update && apt-get install -y openssl
+
+# === Builder Stage: Сборка приложения ===
+FROM base AS builder
 WORKDIR /usr/src/app
+
+# Установка pnpm
 RUN corepack enable
 
-# === BUILDER STAGE ===
-FROM base as builder
-
-# 1. Copy only manifest files
+# Копируем ТОЛЬКО файлы манифеста для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-
-# 2. Copy Prisma schema before installing dependencies
 COPY backend/prisma ./backend/prisma
 
-# 3. Install ALL dependencies (including dev) to run build and generate prisma client
-# This step also runs the `postinstall` script which runs `prisma generate`
+# Установка всех зависимостей, включая devDependencies для сборки и генерации Prisma
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# 4. Copy the rest of the source code
+# Копируем весь остальной код ПОСЛЕ установки зависимостей
 COPY . .
 
-# 5. Build the application
+# Сборка бэкенда
 RUN pnpm --filter prodvor-backend build
 
-# === PRUNER STAGE ===
-# Install only production dependencies
-FROM base as pruner
-WORKDIR /prod
+# === Pruner Stage: Подготовка production-зависимостей ===
+FROM base AS pruner
+WORKDIR /usr/src/app
 
-# Copy only the necessary files for deployment
-COPY pnpm-workspace.yaml ./
-COPY backend/package.json ./backend/package.json
+# Установка pnpm
+RUN corepack enable
 
-# Deploy production dependencies into a clean subdirectory
-RUN pnpm deploy --legacy --prod --filter prodvor-backend ./backend
+# Копируем манифесты
+COPY package.json pnpm-workspace.yaml ./
+COPY backend/package.json ./backend/
 
-# Copy the compiled output from the builder stage
+# Копируем скомпилированный код
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
 
+# Установка ТОЛЬКО production-зависимостей
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm deploy --legacy --prod --filter prodvor-backend .
 
-# === RUNNER STAGE ===
-# Final, small production image
-FROM node:20-alpine as runner
+# === Runner Stage: Финальный образ ===
+FROM node:20-alpine AS runner
 WORKDIR /app
 
-# Copy the pruned dependencies and the compiled code
-COPY --from=pruner /prod .
+# Копируем production-зависимости и скомпилированный код
+COPY --from=pruner /usr/src/app/node_modules ./node_modules
+COPY --from=pruner /usr/src/app/backend ./backend
 
-# Expose port and run the application
+# Устанавливаем пользователя без root прав для безопасности
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
 EXPOSE 3001
-CMD [ "node", "backend/dist/main" ]
+
+CMD ["node", "backend/dist/main.js"]

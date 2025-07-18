@@ -9,7 +9,8 @@
     "build": "pnpm --parallel --filter \"./**\" build",
     "lint": "eslint . --fix",
     "typecheck": "pnpm --parallel --filter \"./**\" typecheck",
-    "start:backend": "pnpm --filter prodvor-backend start",
+    "start:backend:dev": "pnpm --filter prodvor-backend start:dev",
+    "start:backend": "pnpm --filter prodvor-backend start:prod",
     "start:frontend": "pnpm --filter prodvor-frontend start"
   },
   "devDependencies": {
