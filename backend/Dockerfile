@@ -15,7 +15,7 @@
     # 3. Копируем весь проект
     COPY . .
     
-    # 4. Устанавливаем @prisma/client, если его не было
+    # 4. Устанавливаем @prisma/client (на всякий случай)
     RUN pnpm --filter prodvor-backend add @prisma/client
     
     # 5. Генерация Prisma Client
@@ -35,7 +35,6 @@
     COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
     COPY --from=builder /usr/src/app/backend/dist ./backend/dist
     COPY --from=builder /usr/src/app/backend/node_modules/@prisma ./node_modules/@prisma
-    COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./node_modules/.prisma
     
     RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
         corepack enable && pnpm install --prod --frozen-lockfile --ignore-scripts
