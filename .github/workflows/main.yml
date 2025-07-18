@@ -62,12 +62,14 @@ jobs:
         run: mkdir -p logs
 
       - name: Install dependencies for linting and typechecking
+        # Этот шаг теперь нужен только для локальных проверок в CI, а не для сборки
         run: pnpm install --no-frozen-lockfile
 
       - name: Lint code
         run: pnpm run lint 2>&1 | tee logs/lint-errors.log
 
       - name: Typecheck code
+        # Этот шаг должен пройти, так как Prisma Client генерируется внутри Dockerfile
         run: pnpm run typecheck 2>&1 | tee logs/typecheck-errors.log
 
       - name: Set up Docker Buildx
@@ -87,6 +89,7 @@ jobs:
             i=$((i+1))
             if [ $i -ge 30 ]; then
               echo "App DB failed to start in time."
+              docker compose logs db
               exit 1
             fi
             echo "Waiting for App DB..."
@@ -102,6 +105,7 @@ jobs:
             i=$((i+1))
             if [ $i -ge 30 ]; then
               echo "Kong DB failed to start in time."
+              docker compose logs kong-db
               exit 1
             fi
             echo "Waiting for Kong DB..."
@@ -121,21 +125,24 @@ jobs:
       - name: Re-check container statuses after migration
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
-      - name: Verify Kong is running
+      - name: Wait for Kong to be ready
         run: |
           echo "Waiting for Kong to be available..."
           i=0
-          until curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -q 200; do
+          # We check the admin API on port 8001 as it's the first to respond
+          until curl -s -o /dev/null -w "%{http_code}" http://localhost:8001 | grep -E "200|401"; do
             i=$((i+1))
             if [ $i -ge 30 ]; then
               echo "Kong failed to start in time."
+              docker compose logs kong
               exit 1
             fi
             echo "Waiting for Kong..."
             sleep 2
           done
           echo "Kong is up!"
-          curl -s http://localhost:8000 | grep "Kong" || (echo "Kong check failed" && exit 1)
+          # Check that the main proxy on port 8000 is also responding
+          curl -s http://localhost:8000 | grep "Kong" || (echo "Kong proxy check failed" && exit 1)
 
       - name: Show logs on failure
         if: failure()

@@ -1,43 +1,67 @@
-# Этап 1: Базовый образ
-FROM node:20 as base
+# === Этап 1: Builder - Сборка проекта ===
+FROM node:20 AS builder
+
+# Установка системных зависимостей, если они понадобятся
+# RUN apt-get update && apt-get install -y openssl
+
+# Установка рабочей директории
 WORKDIR /usr/src/app
 
-# Этап 2: Установка зависимостей и сборка
-FROM base as builder
-# Копируем только файлы манифеста для кэширования зависимостей
+# Копируем только файлы, необходимые для установки зависимостей, чтобы кэшировать этот слой
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Устанавливаем все зависимости (включая dev)
+# Активация pnpm через corepack
+RUN corepack enable
+
+# Установка всех зависимостей. pnpm автоматически вызовет `prisma generate`, если он в postinstall
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Копируем весь остальной код проекта
+# Копируем остальной исходный код
 COPY . .
 
-# Собираем только frontend
+# Сборка фронтенд-приложения
 RUN pnpm --filter prodvor-frontend build
 
-# Этап 3: Подготовка production-зависимостей
-FROM base as pruner
+# === Этап 2: Pruner - Подготовка production-зависимостей ===
+FROM builder AS pruner
+
+# Создание директории для production-сборки
+WORKDIR /usr/src/app
+
+# Важно: pnpm deploy требует наличия pnpm-workspace.yaml для корректной работы в воркспейсе
+COPY pnpm-workspace.yaml ./
+
+# Копируем артефакты сборки и package.json для установки только production-зависимостей
+COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
-COPY --from=builder /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
-COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --prod --filter prodvor-frontend
+# Установка только production-зависимостей
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm deploy --prod --filter prodvor-frontend ./frontend
 
-# Этап 4: Финальный образ
-FROM node:20-alpine as runner
+# === Этап 3: Runner - Финальный образ ===
+FROM node:20-alpine AS runner
+
 WORKDIR /app
+
+# Установка системных зависимостей, если они нужны для работы приложения
+# RUN apk add --no-cache openssl
+
+# Устанавливаем пользователя без root-прав для безопасности
+USER node
+
+# Копируем собранное приложение и production-зависимости из предыдущего этапа
+COPY --from=pruner --chown=node:node /usr/src/app/frontend ./frontend
+COPY --from=pruner --chown=node:node /usr/src/app/node_modules ./node_modules
+COPY --from=builder --chown=node:node /usr/src/app/package.json ./
+
+# Установка переменной окружения для Next.js
 ENV NODE_ENV=production
 
-COPY --from=pruner /usr/src/app/frontend/public ./public
-COPY --from=pruner /usr/src/app/frontend/.next/standalone ./
-COPY --from=pruner /usr/src/app/frontend/.next/static ./.next/static
-COPY --from=pruner /usr/src/app/node_modules ./node_modules
-
+# Открываем порт, на котором работает приложение
 EXPOSE 9002
-CMD ["node", "server.js"]
+
+# Команда для запуска приложения
+CMD ["pnpm", "start:frontend"]
