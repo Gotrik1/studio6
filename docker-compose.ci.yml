@@ -55,25 +55,5 @@ services:
     networks:
       - default
 
-  # Сервис для выполнения миграций Prisma
-  # Использует уже собранный образ 'backend', чтобы не пересобирать его
-  migrations:
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
-    # Зависит от готовности основной базы данных
-    depends_on:
-      db:
-        condition: service_healthy
-    working_dir: /usr/src/app
-    env_file:
-      - .env
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-    # Команда применяет уже созданные миграции
-    command: pnpm --filter prodvor-backend prisma:migrate:deploy
-    networks:
-      - default
-
 networks:
   default:
