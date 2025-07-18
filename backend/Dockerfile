@@ -1,56 +1,52 @@
-# --- Base Stage (Debian, не Alpine!) ---
-    FROM node:20 AS base
+# Этап 1: Установка зависимостей и сборка
+FROM node:20-alpine AS builder
 
-    RUN npm install -g pnpm@10.13.1
-    ENV PRISMA_CLI_BINARY_TARGETS=debian-openssl-3.0.x
-    
-    # --- Builder Stage ---
-    FROM base AS builder
-    WORKDIR /usr/src/app
-    
-    COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-    COPY backend/package.json ./backend/
-    COPY frontend/package.json ./frontend/
-    COPY backend/prisma ./backend/prisma
-    
-    RUN pnpm --filter prodvor-backend install --config.allow-scripts=true
-    RUN pnpm --filter prodvor-backend prisma:generate
-    
-    COPY . .
-    RUN pnpm --filter prodvor-backend build
-    
-    # --- Pruner Stage ---
-    FROM base AS pruner
-    WORKDIR /app
-    
-    COPY --from=builder /usr/src/app/backend ./backend
-    COPY --from=builder /usr/src/app/package.json ./package.json
-    COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
-    COPY --from=builder /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
-    COPY --from=builder /usr/src/app/node_modules/.pnpm ./node_modules/.pnpm
-    
-    RUN pnpm --filter prodvor-backend install --prod --config.allow-scripts=true
-    
-    # --- Runner Stage ---
-    FROM base AS runner
-    WORKDIR /app
-    
-    COPY --from=pruner /app/backend/dist ./dist
-    COPY --from=pruner /app/backend/package.json ./package.json
-    COPY --from=pruner /app/node_modules ./node_modules
-    COPY --from=pruner /app/backend/prisma ./prisma
-    
-    CMD ["node", "dist/main.js"]
-    
-    # --- Migrations Stage ---
-    FROM base AS migrations
-    WORKDIR /app
-    
-    # Устанавливаем netcat-openbsd для healthchecks и ожидания БД
-    RUN apt-get update && apt-get install -y netcat-openbsd
-    
-    COPY --from=builder /usr/src/app ./
-    RUN pnpm --filter prodvor-backend install --config.allow-scripts=true
-    
-    CMD ["pnpm", "--filter", "prodvor-backend", "prisma:migrate:deploy"]
-    
+# Устанавливаем OpenSSL, необходимый для Prisma
+RUN apk add --no-cache openssl
+
+WORKDIR /usr/src/app
+
+# Копируем манифесты пакетов и schema.prisma
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
+COPY backend/prisma ./backend/prisma
+
+# Устанавливаем ВСЕ зависимости, включая devDependencies, чтобы запустить 'prisma generate' и 'build'
+# 'pnpm install' автоматически вызовет 'prisma generate' через 'postinstall' скрипт
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+# Копируем остальной исходный код
+COPY . .
+
+# Собираем только бэкенд
+RUN pnpm --filter prodvor-backend build
+
+# Этап 2: Подготовка production-зависимостей
+FROM node:20-alpine AS pruner
+
+WORKDIR /usr/src/app
+
+# Копируем собранный код и package.json из builder'а
+COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+COPY --from=builder /usr/src/app/backend/package.json ./backend/
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
+
+# Устанавливаем ТОЛЬКО production-зависимости
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --filter prodvor-backend
+
+# Этап 3: Финальный образ для запуска
+FROM node:20-alpine AS runner
+
+# Устанавливаем OpenSSL, необходимый для Prisma в runtime
+RUN apk add --no-cache openssl
+
+WORKDIR /app
+
+# Копируем production-зависимости и собранный код
+COPY --from=pruner /usr/src/app/backend/dist ./dist
+COPY --from=pruner /usr/src/app/backend/node_modules ./node_modules
+COPY --from=pruner /usr/src/app/backend/package.json ./
+
+# Запускаем приложение
+CMD ["node", "dist/main.js"]
