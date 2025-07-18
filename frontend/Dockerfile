@@ -1,58 +1,55 @@
-# === Stage 1: Builder ===
-# This stage installs all dependencies (dev and prod) and builds the Next.js application.
+# Этап 1: Установка зависимостей и сборка приложения
 FROM node:20 AS builder
 WORKDIR /usr/src/app
 
-# Copy manifests first to leverage Docker cache for dependencies
+# Копируем манифесты зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Enable pnpm and install all dependencies
-RUN corepack enable
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Копируем Prisma schema для генерации клиента
+COPY backend/prisma ./backend/prisma
 
-# Copy the rest of the source code
+# Устанавливаем ВСЕ зависимости
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    corepack enable && \
+    pnpm install --frozen-lockfile
+
+# Копируем остальной код
 COPY . .
 
-# Build the Next.js application
+# Генерируем Prisma Client (на всякий случай, если он понадобится для сборки фронта)
+RUN pnpm --filter prodvor-backend prisma:generate
+
+# Собираем production-сборку фронтенда
 RUN pnpm --filter prodvor-frontend build
 
-# === Stage 2: Pruner ===
-# This stage prunes the node_modules to only include production dependencies.
+# Этап 2: Подготовка production-ready node_modules
 FROM node:20 AS pruner
 WORKDIR /usr/src/app
 
-# Enable pnpm
-RUN corepack enable
-
-# Copy only necessary package manifests
+# Копируем манифесты для установки только production зависимостей
 COPY --from=builder /usr/src/app/package.json ./
 COPY --from=builder /usr/src/app/pnpm-lock.yaml ./
 COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
+COPY --from=builder /usr/src/app/backend/package.json ./backend/
 COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
 
-# Copy the built application artifacts from the 'builder' stage
+# Копируем скомпилированный код фронтенда
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
 
-# Install only production dependencies
-# --ignore-scripts is not strictly necessary here but is good practice
-RUN pnpm install --prod --ignore-scripts
+# Устанавливаем только production-зависимости, пропуская postinstall скрипты
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    corepack enable && \
+    pnpm install --prod --frozen-lockfile --ignore-scripts
 
-# === Stage 3: Runner ===
-# This is the final, lightweight production image.
+# Этап 3: Финальный легковесный образ
 FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
 
-# Set environment to production
-ENV NODE_ENV=production
+# Копируем все production-ready артефакты из pruner
+COPY --from=pruner /usr/src/app/ .
 
-# Copy all production-ready files from the 'pruner' stage
-COPY --from=pruner /usr/src/app/ ./
-
-# Expose the application port
 EXPOSE 9002
-
-# The command to run the application
 CMD ["pnpm", "start:frontend"]
