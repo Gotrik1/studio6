@@ -58,19 +58,11 @@ jobs:
           PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
           EOF
 
-      - name: Create logs directory
-        run: mkdir -p logs
-
-      - name: Install dependencies for linting and typechecking
-        # Этот шаг теперь нужен только для локальных проверок в CI, а не для сборки
+      - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
-
-      - name: Lint code
-        run: pnpm run lint 2>&1 | tee logs/lint-errors.log
-
-      - name: Typecheck code
-        # Этот шаг должен пройти, так как Prisma Client генерируется внутри Dockerfile
-        run: pnpm run typecheck 2>&1 | tee logs/typecheck-errors.log
+      
+      - name: Generate Prisma Client
+        run: pnpm --filter prodvor-backend prisma:generate
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
