@@ -1,57 +1,63 @@
-# ---- Base Stage ----
-FROM node:20 as base
-# No specific system dependencies needed for the frontend base
+# Этап 1: Сборка проекта
+FROM node:20 as builder
 
-# ---- Builder Stage ----
-FROM base as builder
+# Устанавливаем рабочую директорию
 WORKDIR /usr/src/app
 
-# Copy dependency manifests
+# Включаем corepack для управления pnpm
+RUN corepack enable
+
+# Копируем корневые файлы манифеста
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Copy workspace-specific manifests
+# Копируем package.json каждого воркспейса, чтобы pnpm понял структуру
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Install ALL dependencies (including dev)
-RUN corepack enable && pnpm install --frozen-lockfile
+# Копируем схему Prisma (хотя она и не нужна для фронтенда, делаем для консистентности)
+COPY backend/prisma ./backend/prisma
 
-# Copy the rest of the source code
+# Устанавливаем ВСЕ зависимости, включая devDependencies, чтобы сработали все скрипты
+# (включая prisma generate для backend)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+# Копируем ВЕСЬ остальной код
 COPY . .
 
-# Build the frontend application
+# Собираем конкретный воркспейс (frontend)
 RUN pnpm --filter prodvor-frontend build
 
-# ---- Pruner Stage ----
-# This stage creates a lean node_modules with only production dependencies
-FROM base as pruner
+# Этап 2: Подготовка production-зависимостей
+FROM node:20 as pruner
+
+# Устанавливаем рабочую директорию
 WORKDIR /usr/src/app
 
+# Включаем corepack
 RUN corepack enable
 
+# Копируем pnpm-workspace.yaml, чтобы deploy знал о структуре
 COPY pnpm-workspace.yaml ./
+
+# Копируем собранный проект и его package.json
+COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
 
-# Deploy to /prod/frontend to create the correct directory structure
-RUN pnpm deploy --legacy --prod --filter prodvor-frontend /prod/frontend
+# Устанавливаем ТОЛЬКО production-зависимости для фронтенда
+RUN pnpm deploy --prod --filter prodvor-frontend /prod
 
-# ---- Runner Stage ----
-# This is the final, lightweight image
+# Этап 3: Финальный образ
 FROM node:20-alpine as runner
-WORKDIR /app
 
-ENV NODE_ENV=production
-
-# Copy production dependencies and compiled code from the pruner stage
-COPY --from=pruner /prod .
-
-# The WORKDIR is already /app, and the deploy command puts the frontend files in ./frontend
+# Устанавливаем рабочую директорию
 WORKDIR /app/frontend
 
-# The start script is defined in the root package.json, so we need pnpm to run it.
-# We'll install only pnpm itself for the runner.
-RUN npm install -g pnpm
+# Копируем production-зависимости и собранный проект
+COPY --from=pruner /prod/node_modules ./node_modules
+COPY --from=pruner /prod/frontend/.next ./.next
+COPY --from=pruner /prod/frontend/public ./public
+COPY --from=pruner /prod/frontend/package.json .
 
+# Запускаем приложение
 CMD ["pnpm", "start"]
