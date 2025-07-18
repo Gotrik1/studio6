@@ -1,4 +1,8 @@
+# Этот файл содержит переопределения для непрерывной интеграции (CI)
+# Он не предназначен для запуска всех сервисов, а только для сборки и тестирования
+
 services:
+  # Сервис для базы данных приложения, используемый в CI
   db:
     image: postgres:16
     restart: always
@@ -17,6 +21,7 @@ services:
     networks:
       - default
 
+  # Сервис для базы данных Kong
   kong-db:
     image: postgres:15-alpine
     restart: on-failure
@@ -32,9 +37,12 @@ services:
     networks:
       - default
 
+  # Сервис для выполнения миграций Kong в CI
+  # Он запускается как одноразовая задача
   kong-migrations-ci:
-    image: kong:latest
-    command: kong migrations bootstrap
+    build:
+      context: .
+      dockerfile: Dockerfile.kong
     depends_on:
       kong-db:
         condition: service_healthy
@@ -44,32 +52,28 @@ services:
       KONG_PG_USER: ${KONG_PG_USER:-kong}
       KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kongpassword}
       KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong_db}
+    # Команда bootstrap создаст схему, если ее нет
+    command: kong migrations bootstrap
     networks:
       - default
 
+  # Сервис для выполнения миграций Prisma
+  # Использует уже собранный образ 'backend', чтобы не пересобирать его
   migrations:
     build:
       context: .
       dockerfile: backend/Dockerfile
-      target: migrations
+    # Зависит от готовности основной базы данных
     depends_on:
       db:
         condition: service_healthy
-    working_dir: /app
+    working_dir: /usr/src/app
     env_file:
       - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
-    command: >
-      sh -c "
-        echo 'Wait for DB up...';
-        for i in `seq 1 60`; do
-          nc -z db 5432 && echo 'DB is up!' && break
-          echo 'Waiting for db:5432...'
-          sleep 3
-        done
-        pnpm --filter prodvor-backend prisma:migrate:deploy
-      "
+    # Команда применяет уже созданные миграции
+    command: pnpm --filter prodvor-backend prisma:migrate:deploy
     networks:
       - default
 
