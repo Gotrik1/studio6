@@ -1,62 +1,61 @@
-# 1. Builder Stage: Build the application
-FROM node:20 as builder
+# Этап 1: Сборка приложения с dev-зависимостями
+FROM node:20 AS builder
+
 WORKDIR /usr/src/app
 
-# Install pnpm
-RUN corepack enable
-
-# Copy manifests and prisma schema first for caching
+# Сначала копируем только манифесты для кэширования pnpm install
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+
+# Копируем схему Prisma до установки зависимостей, чтобы Prisma Client мог быть сгенерирован
 COPY backend/prisma ./backend/prisma
 
-# Install all dependencies (including dev)
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Устанавливаем ВСЕ зависимости, включая devDependencies, чтобы был доступен Prisma CLI
+# и запускался postinstall скрипт
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    corepack enable && pnpm install --frozen-lockfile
 
-# Generate Prisma Client
+# Явная генерация Prisma Client, чтобы гарантировать его наличие
 RUN pnpm --filter prodvor-backend prisma:generate
 
-# Copy the rest of the source code
+# Теперь копируем весь остальной код
 COPY . .
 
-# Build the application
+# Собираем приложение
 RUN pnpm --filter prodvor-backend build
 
-# 2. Pruner Stage: Create production-only node_modules
-FROM node:20 as pruner
-WORKDIR /app
+# Этап 2: Установка только production-зависимостей
+FROM node:20 AS pruner
 
-# Install pnpm
-RUN corepack enable
+WORKDIR /usr/src/app
 
-# Copy manifests
+# Копируем только манифесты
 COPY --from=builder /usr/src/app/package.json ./
 COPY --from=builder /usr/src/app/pnpm-lock.yaml ./
 COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
 COPY --from=builder /usr/src/app/backend/package.json ./backend/
 COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
 
-# Copy the generated Prisma Client from the builder stage
-COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /usr/src/app/node_modules/@prisma ./node_modules/@prisma
-
-# Install only production dependencies, ignoring scripts like prisma:generate
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile --ignore-scripts
-
-# 3. Runner Stage: Create the final lightweight image
-FROM node:20-alpine as runner
-WORKDIR /app
-
-# Install required system dependencies for Prisma
-RUN apk add --no-cache openssl
-
-# Copy production node_modules and built code from pruner and builder
-COPY --from=pruner /app/node_modules ./node_modules
+# Копируем скомпилированный код
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
 
-# Expose the port the app runs on
-EXPOSE 3001
+# Копируем сгенерированный Prisma Client
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /usr/src/app/node_modules/@prisma/client ./node_modules/@prisma/client
 
-# Run the application
+# Устанавливаем только production-зависимости, игнорируя скрипты (Prisma уже сгенерирован)
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    corepack enable && pnpm install --prod --ignore-scripts
+
+# Этап 3: Создание финального, легковесного образа
+FROM node:20-alpine AS runner
+
+WORKDIR /usr/src/app
+
+# Копируем production-зависимости и скомпилированный код из pruner
+COPY --from=pruner /usr/src/app/node_modules ./node_modules
+COPY --from=pruner /usr/src/app/backend/dist ./backend/dist
+
+# Запускаем приложение
 CMD ["node", "backend/dist/main.js"]
