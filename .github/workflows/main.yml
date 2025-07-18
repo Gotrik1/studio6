@@ -64,9 +64,6 @@ jobs:
       - name: Install dependencies for linting and typechecking
         run: pnpm install --no-frozen-lockfile
 
-      - name: Generate Prisma Client # Ключевой шаг!
-        run: pnpm --filter prodvor-backend prisma:generate
-
       - name: Lint code
         run: pnpm run lint 2>&1 | tee logs/lint-errors.log
 
@@ -85,7 +82,13 @@ jobs:
       - name: Wait for App DB to be ready
         run: |
           echo "Waiting for App PostgreSQL to be ready..."
+          i=0
           until docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T db pg_isready -U "${POSTGRES_USER:-postgres}"; do
+            i=$((i+1))
+            if [ $i -ge 30 ]; then
+              echo "App DB failed to start in time."
+              exit 1
+            fi
             echo "Waiting for App DB..."
             sleep 2
           done
@@ -94,7 +97,13 @@ jobs:
       - name: Wait for Kong DB to be ready
         run: |
           echo "Waiting for Kong PostgreSQL to be ready..."
+          i=0
           until docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T kong-db pg_isready -U "${KONG_PG_USER:-kong}"; do
+            i=$((i+1))
+            if [ $i -ge 30 ]; then
+              echo "Kong DB failed to start in time."
+              exit 1
+            fi
             echo "Waiting for Kong DB..."
             sleep 2
           done
@@ -115,7 +124,13 @@ jobs:
       - name: Verify Kong is running
         run: |
           echo "Waiting for Kong to be available..."
+          i=0
           until curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -q 200; do
+            i=$((i+1))
+            if [ $i -ge 30 ]; then
+              echo "Kong failed to start in time."
+              exit 1
+            fi
             echo "Waiting for Kong..."
             sleep 2
           done

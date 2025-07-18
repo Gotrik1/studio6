@@ -1,60 +1,59 @@
-# Этап 1: Сборка проекта
+# Этап 1: Установка зависимостей и сборка проекта
 FROM node:20 as builder
 
-# Устанавливаем системные зависимости, необходимые для Prisma
+# Устанавливаем OpenSSL, необходимый для Prisma
 RUN apt-get update && apt-get install -y openssl
 
-# Устанавливаем рабочую директорию
 WORKDIR /usr/src/app
 
 # Включаем corepack для управления версией pnpm
 RUN corepack enable
 
-# Копируем только файлы манифеста для кэширования зависимостей
+# Копируем только необходимые для установки зависимостей файлы
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем зависимости (включая devDependencies для сборки и генерации Prisma)
+# Устанавливаем все зависимости. На этом шаге сработает `prisma generate`.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Копируем остальной исходный код
+# Копируем остальной код проекта (ВАЖНО: после pnpm install)
 COPY . .
 
-# Собираем бэкенд
+# Собираем только бэкенд
 RUN pnpm --filter prodvor-backend build
 
-# Этап 2: Оптимизация node_modules для продакшена
+# Этап 2: Подготовка production-версии node_modules
 FROM node:20 as pruner
-
 WORKDIR /usr/src/app
 
 # Включаем corepack
 RUN corepack enable
 
-# Копируем только необходимые для деплоя файлы из сборщика
 COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
+COPY --from=builder /usr/src/app/package.json ./
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-COPY --from=builder /usr/src/app/backend/package.json ./backend/
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
 
 # Устанавливаем только production-зависимости
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm --filter prodvor-backend deploy --prod ./backend
+RUN pnpm --filter prodvor-backend deploy --prod backend/
 
-# Этап 3: Финальный образ
+# Этап 3: Создание финального легковесного образа
 FROM node:20-alpine as runner
-
-# Устанавливаем OpenSSL, необходимый для Prisma в рантайме
-RUN apk add --no-cache openssl
-
 WORKDIR /app
 
-# Устанавливаем переменные окружения
-ENV NODE_ENV=production
+# Устанавливаем OpenSSL, необходимый для Prisma Client в рантайме
+RUN apk add --no-cache openssl
 
-# Копируем оптимизированные node_modules и собранный проект из pruner
+# Копируем скомпилированный код из builder
+COPY --from=builder /usr/src/app/backend/dist ./dist
+COPY --from=builder /usr/src/app/backend/prisma ./prisma
+
+# Копируем production-версию node_modules из pruner
 COPY --from=pruner /usr/src/app/backend/node_modules ./node_modules
-COPY --from=pruner /usr/src/app/backend/dist ./dist
-COPY --from=pruner /usr/src/app/backend/package.json ./
+COPY --from=pruner /usr/src/app/backend/package.json .
 
-# Указываем команду для запуска приложения
-CMD ["node", "dist/main.js"]
+# Открываем порт и запускаем приложение
+EXPOSE 3001
+CMD ["node", "dist/main"]
