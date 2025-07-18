@@ -1,60 +1,38 @@
-# === Base Stage: Установка зависимостей ===
-FROM node:20 AS base
+# 1. Base stage with Node.js and system dependencies
+FROM node:20 as base
+RUN apt-get update && apt-get install -y openssl
 
-# === Builder Stage: Сборка приложения ===
-FROM base AS builder
+# Set working directory
 WORKDIR /usr/src/app
 
-# Установка pnpm
+# 2. Builder stage: Install all dependencies and build the app
+FROM base as builder
 RUN corepack enable
-
-# Копируем ТОЛЬКО файлы манифеста для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY frontend/package.json ./frontend/
 COPY backend/package.json ./backend/
-
-# Установка всех зависимостей, включая devDependencies для сборки
+COPY frontend/package.json ./frontend/
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-
-# Копируем весь остальной код ПОСЛЕ установки зависимостей
 COPY . .
-
-# Сборка фронтенда
 RUN pnpm --filter prodvor-frontend build
 
-# === Pruner Stage: Подготовка production-зависимостей ===
-FROM base AS pruner
-WORKDIR /prod
-
-# Установка pnpm
+# 3. Pruner stage: Install only production dependencies
+FROM base as pruner
 RUN corepack enable
-
-# Копируем манифесты в корень /prod
-COPY pnpm-workspace.yaml package.json ./
-COPY frontend/package.json ./frontend/package.json
-
-# Установка ТОЛЬКО production-зависимостей
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm deploy --legacy --prod --filter prodvor-frontend ./
-
-# Копируем скомпилированный код
+WORKDIR /usr/src/app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY backend/package.json ./backend/
+COPY frontend/package.json ./frontend/
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
-COPY --from=builder /usr/src/app/public ./public
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
-# === Runner Stage: Финальный образ ===
-FROM node:20-alpine AS runner
+# 4. Runner stage: Create the final, lightweight image
+FROM node:20-alpine as runner
 WORKDIR /app
-
-# Копируем production-зависимости и скомпилированный код
-COPY --from=pruner /prod/node_modules ./node_modules
-COPY --from=pruner /prod/frontend ./frontend
-COPY --from=pruner /prod/public ./public
-
-# Устанавливаем пользователя без root прав для безопасности
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
-
+COPY --from=pruner /usr/src/app/node_modules ./node_modules
+COPY --from=pruner /usr/src/app/frontend/node_modules ./frontend/node_modules
+COPY --from=pruner /usr/src/app/frontend/package.json ./frontend/package.json
+COPY --from=pruner /usr/src/app/frontend/.next ./frontend/.next
+COPY --from=pruner /usr/src/app/frontend/public ./frontend/public
 EXPOSE 9002
-
-CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
+CMD ["pnpm", "start:frontend"]

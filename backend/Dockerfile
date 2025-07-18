@@ -1,59 +1,38 @@
-# === Base Stage: Установка зависимостей ===
-FROM node:20 AS base
+# 1. Base stage with Node.js and system dependencies
+FROM node:20 as base
 RUN apt-get update && apt-get install -y openssl
 
-# === Builder Stage: Сборка приложения ===
-FROM base AS builder
+# Set working directory
 WORKDIR /usr/src/app
 
-# Установка pnpm
+# 2. Builder stage: Install all dependencies, generate code, and build the app
+FROM base as builder
 RUN corepack enable
-
-# Копируем ТОЛЬКО файлы манифеста для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 COPY backend/prisma ./backend/prisma
-
-# Установка всех зависимостей, включая devDependencies для сборки и генерации Prisma
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-
-# Копируем весь остальной код ПОСЛЕ установки зависимостей
 COPY . .
-
-# Сборка бэкенда
 RUN pnpm --filter prodvor-backend build
 
-# === Pruner Stage: Подготовка production-зависимостей ===
-FROM base AS pruner
-WORKDIR /usr/src/app
-
-# Установка pnpm
+# 3. Pruner stage: Install only production dependencies
+FROM base as pruner
 RUN corepack enable
-
-# Копируем манифесты
-COPY package.json pnpm-workspace.yaml ./
+WORKDIR /usr/src/app
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
-
-# Копируем скомпилированный код
+COPY frontend/package.json ./frontend/
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
-# Установка ТОЛЬКО production-зависимостей
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm deploy --legacy --prod --filter prodvor-backend .
-
-# === Runner Stage: Финальный образ ===
-FROM node:20-alpine AS runner
+# 4. Runner stage: Create the final, lightweight image
+FROM node:20-alpine as runner
 WORKDIR /app
-
-# Копируем production-зависимости и скомпилированный код
 COPY --from=pruner /usr/src/app/node_modules ./node_modules
-COPY --from=pruner /usr/src/app/backend ./backend
-
-# Устанавливаем пользователя без root прав для безопасности
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
-
+COPY --from=pruner /usr/src/app/backend/node_modules ./backend/node_modules
+COPY --from=pruner /usr/src/app/backend/package.json ./backend/package.json
+COPY --from=pruner /usr/src/app/backend/dist ./backend/dist
+COPY backend/prisma ./backend/prisma
 EXPOSE 3001
-
-CMD ["node", "backend/dist/main.js"]
+CMD ["node", "backend/dist/main"]
