@@ -1,10 +1,8 @@
 # Этот файл содержит переопределения для непрерывной интеграции (CI)
-# Он не предназначен для запуска всех сервисов, а только для сборки и тестирования
-
 services:
   # Сервис для базы данных приложения, используемый в CI
   db:
-    image: postgres:17
+    image: postgres:17-alpine # Используем Alpine для CI, т.к. он легче
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -37,8 +35,7 @@ services:
     networks:
       - default
 
-  # Сервис для выполнения миграций Kong в CI
-  # Он запускается как одноразовая задача
+  # Сервис для выполнения миграций Kong в CI (одноразовая задача)
   kong-migrations-ci:
     image: kong:latest
     depends_on:
@@ -50,8 +47,21 @@ services:
       KONG_PG_USER: ${KONG_PG_USER:-kong}
       KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kongpassword}
       KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong_db}
-    # Команда bootstrap создаст схему, если ее нет
-    command: kong migrations bootstrap
+    command: kong migrations bootstrap # Используем bootstrap для пустой базы
+    networks:
+      - default
+
+  # Сервис для выполнения миграций Prisma в CI (одноразовая задача)
+  migrations:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    command: pnpm --filter prodvor-backend prisma:migrate:deploy
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
     networks:
       - default
 

@@ -1,57 +1,60 @@
-# Этап 1: Установка зависимостей и сборка проекта
-FROM node:20 AS builder
-
-# Устанавливаем OpenSSL, необходимый для Prisma
-RUN apt-get update && apt-get install -y openssl
-
+# Stage 1: Установка зависимостей и сборка
+FROM node:20 as builder
 WORKDIR /usr/src/app
 
-# Включаем corepack для управления pnpm
+# Включаем corepack для управления версией pnpm
 RUN corepack enable
 
-# Копируем только файлы манифеста для кэширования зависимостей
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc* ./
+# Копируем корневые файлы манифеста
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./.npmrc* ./
+
+# Копируем package.json каждого воркспейса, чтобы pnpm понял структуру
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-COPY backend/prisma/schema.prisma ./backend/prisma/
 
-# Устанавливаем ВСЕ зависимости (включая dev), чтобы сработал prisma generate
-# Prisma Client будет сгенерирован на этом шаге через хук postinstall
+# Копируем схему Prisma, она нужна для postinstall
+COPY backend/prisma ./backend/prisma
+
+# Устанавливаем ВСЕ зависимости, включая devDependencies.
+# На этом шаге также должен запускаться `prisma generate` через postinstall,
+# но мы дублируем его в CI для надежности.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Копируем остальной код проекта ПОСЛЕ установки зависимостей
+# Копируем ВЕСЬ исходный код
 COPY . .
 
-# Собираем только бэкенд
+# Собираем проект
 RUN pnpm --filter prodvor-backend build
 
-# Этап 2: Подготовка production-версии node_modules
-FROM node:20 AS pruner
-
+# Stage 2: Оптимизация node_modules для production
+FROM node:20 as pruner
 WORKDIR /usr/src/app
 
-# Включаем corepack для управления pnpm
+# Включаем corepack
 RUN corepack enable
 
-COPY pnpm-workspace.yaml ./
-COPY backend/package.json ./backend/
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
 
-# Устанавливаем только production-зависимости для бэкенда
-RUN pnpm deploy --prod --filter prodvor-backend ./backend
+# Устанавливаем только production-зависимости
+RUN pnpm --filter prodvor-backend deploy --prod ./backend
 
-# Этап 3: Финальный легковесный образ
-FROM node:20-slim AS runner
-
+# Stage 3: Финальный образ
+FROM node:20-alpine as runner
 WORKDIR /app
 
-# Устанавливаем OpenSSL для runtime
-RUN apt-get update && apt-get install -y openssl
+ENV NODE_ENV production
 
-# Копируем только скомпилированный код и production-зависимости
+# Устанавливаем OpenSSL, т.к. Prisma Client для Node.js его требует
+RUN apk add --no-cache openssl
+
 COPY --from=pruner /usr/src/app/backend/dist ./dist
 COPY --from=pruner /usr/src/app/backend/node_modules ./node_modules
 COPY --from=pruner /usr/src/app/backend/package.json ./package.json
+
+# Копируем сгенерированную схему, которая нужна Prisma Client во время выполнения
+COPY --from=builder /usr/src/app/backend/prisma/schema.prisma ./prisma/schema.prisma
 
 EXPOSE 3001
 
