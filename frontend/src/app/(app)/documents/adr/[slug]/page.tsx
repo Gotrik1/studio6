@@ -3,11 +3,12 @@ import path from "path";
 import AdrClient from "./client";
 import { notFound } from "next/navigation";
 
-export default async function AdrPage({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function AdrPage(
+  props: {
+    params: Promise<{ slug: string }>;
+  }
+) {
+  const params = await props.params;
   const docPath = path.join(
     process.cwd(),
     "src/shared/lib/mock-data/adr",

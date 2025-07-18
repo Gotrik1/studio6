@@ -3,11 +3,12 @@ import { getPlayerProfile } from "@/entities/user/api/get-user";
 import { notFound } from "next/navigation";
 import { getAchievementsForUser } from "@/entities/achievement/api/achievements";
 
-export default async function JudgeProfileRoute({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function JudgeProfileRoute(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const profileData = await getPlayerProfile(params.id);
   const achievements = await getAchievementsForUser(params.id);
 

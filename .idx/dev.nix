@@ -1,25 +1,35 @@
 { pkgs, ... }:
+
+let
+  # Заменяем стандартный pnpm на нужную версию через overrideAttrs
+  pnpm_10 = pkgs.nodePackages.pnpm.overrideAttrs (old: {
+    version = "10.13.1";
+    src = pkgs.fetchurl {
+      url = "https://registry.npmjs.org/pnpm/-/pnpm-10.13.1.tgz";
+      sha256 = "sha256-D57UjYCJlq4AeDX7XEZBz5owDe8u3cnpV9m75HaMXyg=";
+    };
+  });
+in
 {
   channel = "stable-24.11";
 
   packages = [
     pkgs.nodejs_20
-    pkgs.pnpm
-    pkgs.zulu       # Java — только если требуется
-    pkgs.docker     # ⚙️ Docker CLI
-    pkgs.openssl    # 🟢 Добавил OpenSSL — для Prisma!
+    pnpm_10
+    pkgs.zulu
+    pkgs.docker
+    pkgs.openssl
   ];
 
   env = { };
 
   services = {
-    docker.enable = true;   # включаем демон Docker
+    docker.enable = true;
     firebase.emulators = {
       detect = true;
       projectId = "demo-app";
       services = [ "auth" "firestore" ];
     };
-    # (Postgres убрал, чтобы не было ошибок)
   };
 
   idx = {

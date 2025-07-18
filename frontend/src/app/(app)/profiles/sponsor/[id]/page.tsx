@@ -7,14 +7,15 @@ import {
 } from "@/entities/sponsor/api/sponsors";
 import { notFound } from "next/navigation";
 import type { SponsoredTeam } from "@/entities/sponsorship/model/types";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import type { Team } from "@/entities/team/model/types";
 
-export default function SponsorProfileRoute({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function SponsorProfileRoute(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = use(props.params);
   const [sponsorDetails, setSponsorDetails] = useState<SponsorDetails | null>(
     null,
   );

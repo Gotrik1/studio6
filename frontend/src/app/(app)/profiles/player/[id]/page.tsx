@@ -3,11 +3,12 @@ import { getPlayerProfilePageData } from "@/entities/user/api/get-user";
 import { getSession } from "@/features/auth/session";
 import { notFound } from "next/navigation";
 
-export default async function PlayerProfileRoute({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default async function PlayerProfileRoute(
+  props: {
+    params: Promise<{ id: string }>;
+  }
+) {
+  const params = await props.params;
   const [pageData, session] = await Promise.all([
     getPlayerProfilePageData(params.id),
     getSession(),
