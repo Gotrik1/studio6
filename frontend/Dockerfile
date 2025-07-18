@@ -1,54 +1,64 @@
-# ---- Base Stage ----
+#
+# BASE
+#
 FROM node:20 as base
+RUN apt-get update && apt-get install -y openssl
 
-# ---- Builder Stage ----
-FROM base AS builder
+#
+# BUILDER
+#
+FROM base as builder
 WORKDIR /usr/src/app
 
-# Copy dependency definition files
+RUN corepack enable
+
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy workspace package.json files
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Install dependencies
+COPY backend/prisma ./backend/prisma
+
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    corepack enable && \
     pnpm install --frozen-lockfile
 
-# Copy the rest of the source code
+RUN pnpm --filter prodvor-backend prisma:generate
+
 COPY . .
 
-# Build the frontend application
 RUN pnpm --filter prodvor-frontend build
 
-# ---- Pruner Stage (for production dependencies only) ----
-FROM base AS pruner
+#
+# PRUNER
+#
+FROM base as pruner
 WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
-COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
+
+RUN corepack enable
+
+COPY --from=builder /usr/src/app/frontend/dist ./frontend/dist
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+COPY --from=builder /usr/src/app/frontend/.next/standalone ./frontend/
+COPY --from=builder /usr/src/app/frontend/.next/static ./frontend/.next/static
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
 COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
-COPY --from=builder /usr/src/app/frontend/next.config.js ./frontend/
 
-# Create production node_modules
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    corepack enable && \
-    pnpm deploy --prod --filter prodvor-frontend ./frontend
+RUN pnpm deploy --legacy --prod --filter prodvor-frontend /prod
 
-# ---- Runner Stage (final, lightweight image) ----
+#
+# RUNNER
+#
 FROM node:20-alpine as runner
 WORKDIR /app
 
-ENV NODE_ENV=production
+RUN apk add --no-cache openssl
 
-# Copy the pruned dependencies and built app
-COPY --from=pruner /usr/src/app/frontend/package.json ./package.json
-COPY --from=pruner /usr/src/app/frontend/node_modules ./node_modules
-COPY --from=pruner /usr/src/app/frontend/public ./public
-COPY --from=pruner /usr/src/app/frontend/.next ./.next
+ENV NODE_ENV production
 
-# Expose the application port
-EXPOSE 9002
+COPY --from=pruner /prod/frontend ./frontend
+COPY --from=pruner /prod/node_modules ./node_modules
 
-# The command to run the application
-CMD ["pnpm", "start"]
+WORKDIR /app/frontend
+
+CMD ["node", "server.js"]
