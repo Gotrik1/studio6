@@ -21,10 +21,10 @@
     1. Используем базовый образ.
     2. **Важно:** Копируем `pnpm-workspace.yaml`, чтобы команда `pnpm deploy` знала о структуре воркспейса.
     3. Копируем `dist` и `package.json` из `builder`.
-    4. Запускаем `pnpm deploy --prod --filter <workspace>`, чтобы создать папку `node_modules` только с production-зависимостями.
+    4. Запускаем `pnpm deploy --legacy --prod --filter <workspace>`, чтобы создать папку `node_modules` только с production-зависимостями.
 
 - **Стадия `runner` (финальный образ):**
-    1. Используется легковесный базовый образ (например, `node:20-`).
+    1. Используется легковесный базовый образ (например, `node:20-alpine`).
     2. Устанавливаем `WORKDIR /app`.
     3. Из стадии `pruner` копируются **только** необходимые для запуска артефакты: скомпилированный проект и production-версия `node_modules`.
 
@@ -37,7 +37,7 @@
 **Рабочее решение:**
 
 - **Явное использование всех compose-файлов:** Все вызовы `docker compose` в `.github/workflows/main.yml` должны явно включать все необходимые файлы: `docker compose -f docker-compose.yml -f docker-compose.ci.yml <command>`.
-- **Явная сборка образов перед запуском:** В `.github/workflows/main.yml` перед `docker compose up` необходимо принудительно собрать свежие образы с помощью `docker/build-push-action@v5` с опцией `load: true`.
+- **Явная сборка образов перед запуском:** В `.github/workflows/main.yml` перед `docker compose up` необходимо принудительно собрать свежие образы с помощью `docker compose build`.
 - **Правильная последовательность запуска:**
     1.  Сервис `db` имеет `healthcheck`.
     2.  Сервис `migrations` в `docker-compose.ci.yml` зависит от `db` (`depends_on: { db: { condition: service_healthy } }`).
@@ -68,7 +68,7 @@
   ```dockerfile
   FROM node:20 as base
   # Устанавливаем OpenSSL, необходимый для Prisma
-  RUN apk add --no-cache openssl
+  RUN apt-get update && apt-get install -y openssl
   # ... остальные команды
   ```
 - **Порядок:** Этот шаг должен выполняться **до** `pnpm install`, чтобы к моменту запуска `prisma generate` библиотека уже была доступна в системе.
