@@ -1,59 +1,46 @@
-# Этап 1: Установка зависимостей и сборка проекта
-FROM node:20 as builder
-
-# Устанавливаем OpenSSL, необходимый для Prisma
+# Этап 1: Базовый образ с системными зависимостями
+FROM node:20 as base
+WORKDIR /usr/src/app
+# Устанавливаем OpenSSL, необходимый для Prisma в Alpine
+# RUN apk add --no-cache openssl
+# Для Debian/Ubuntu-based образов (node:20) это может не понадобиться, но на всякий случай:
 RUN apt-get update && apt-get install -y openssl
 
-WORKDIR /usr/src/app
-
-# Включаем corepack для управления версией pnpm
-RUN corepack enable
-
-# Копируем только необходимые для установки зависимостей файлы
+# Этап 2: Установка зависимостей и сборка
+FROM base as builder
+# Копируем только файлы манифеста для кэширования зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+
+# Копируем схему Prisma ДО установки, чтобы `prisma generate` сработал
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем все зависимости. На этом шаге сработает `prisma generate`.
+# Устанавливаем все зависимости (включая dev), что триггерит `prisma generate`
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Копируем остальной код проекта (ВАЖНО: после pnpm install)
+# Копируем весь остальной код проекта
 COPY . .
 
-# Собираем только бэкенд
+# Собираем только backend
 RUN pnpm --filter prodvor-backend build
 
-# Этап 2: Подготовка production-версии node_modules
-FROM node:20 as pruner
-WORKDIR /usr/src/app
-
-# Включаем corepack
-RUN corepack enable
-
-COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
-COPY --from=builder /usr/src/app/package.json ./
+# Этап 3: Подготовка production-зависимостей
+FROM base as pruner
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
 COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
+COPY --from=builder /usr/src/app/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 
-# Устанавливаем только production-зависимости
-RUN pnpm --filter prodvor-backend deploy --prod backend/
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm install --prod --filter prodvor-backend
 
-# Этап 3: Создание финального легковесного образа
+# Этап 4: Финальный образ
 FROM node:20-alpine as runner
 WORKDIR /app
+COPY --from=pruner /usr/src/app/backend/dist ./dist
+COPY --from=pruner /usr/src/app/node_modules ./node_modules
+COPY --from=pruner /usr/src/app/backend/package.json ./package.json
 
-# Устанавливаем OpenSSL, необходимый для Prisma Client в рантайме
-RUN apk add --no-cache openssl
-
-# Копируем скомпилированный код из builder
-COPY --from=builder /usr/src/app/backend/dist ./dist
-COPY --from=builder /usr/src/app/backend/prisma ./prisma
-
-# Копируем production-версию node_modules из pruner
-COPY --from=pruner /usr/src/app/backend/node_modules ./node_modules
-COPY --from=pruner /usr/src/app/backend/package.json .
-
-# Открываем порт и запускаем приложение
 EXPOSE 3001
-CMD ["node", "dist/main"]
+CMD ["node", "dist/main.js"]
