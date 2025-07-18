@@ -1,38 +1,61 @@
-# 1. Base stage with Node.js and system dependencies
-FROM node:20 as base
-RUN apt-get update && apt-get install -y openssl
+# Этап 1: Сборка приложения
+FROM node:20 AS builder
 
-# Set working directory
 WORKDIR /usr/src/app
 
-# 2. Builder stage: Install all dependencies and build the app
-FROM base as builder
+# Включаем pnpm
 RUN corepack enable
+
+# Копируем манифесты зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Копируем package.json каждого воркспейса для корректной установки
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+
+# Устанавливаем ВСЕ зависимости (включая devDependencies)
+# Это нужно для сборки
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
+# Копируем весь остальной код
 COPY . .
+
+# Собираем фронтенд
 RUN pnpm --filter prodvor-frontend build
 
-# 3. Pruner stage: Install only production dependencies
-FROM base as pruner
-RUN corepack enable
+# Этап 2: Подготовка production-зависимостей
+FROM node:20 AS pruner
+
 WORKDIR /usr/src/app
+
+# Включаем pnpm
+RUN corepack enable
+
+# Копируем манифесты
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
+
+# Устанавливаем ТОЛЬКО production-зависимости
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --ignore-scripts
+
+# Этап 3: Финальный образ
+FROM node:20-alpine AS runner
+
+WORKDIR /usr/src/app
+
+# Копируем production-зависимости из pruner
+COPY --from=pruner /usr/src/app/node_modules ./node_modules
+COPY --from=pruner /usr/src/app/frontend/package.json ./frontend/package.json
+
+# Копируем собранный код из builder
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
-# 4. Runner stage: Create the final, lightweight image
-FROM node:20-alpine as runner
-WORKDIR /app
-COPY --from=pruner /usr/src/app/node_modules ./node_modules
-COPY --from=pruner /usr/src/app/frontend/node_modules ./frontend/node_modules
-COPY --from=pruner /usr/src/app/frontend/package.json ./frontend/package.json
-COPY --from=pruner /usr/src/app/frontend/.next ./frontend/.next
-COPY --from=pruner /usr/src/app/frontend/public ./frontend/public
-EXPOSE 9002
-CMD ["pnpm", "start:frontend"]
+# Устанавливаем пользователя
+USER node
+
+# Команда для запуска приложения (используем pnpm для консистентности)
+# CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
+# Прямой вызов Next.js может быть надежнее в production
+CMD ["node", "frontend/node_modules/next/dist/bin/next", "start", "-p", "9002"]
