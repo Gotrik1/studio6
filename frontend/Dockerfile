@@ -1,52 +1,63 @@
-# Этап 1: Установка зависимостей и сборка проекта
-FROM node:20 AS builder
+# === STAGE 1: Builder ===
+# Этот этап устанавливает все зависимости (включая dev) и компилирует проект.
+FROM node:20 as builder
 
+# Устанавливаем рабочую директорию
 WORKDIR /usr/src/app
 
-# Включаем corepack для управления pnpm
+# Включаем corepack для управления версией pnpm
 RUN corepack enable
 
-# Копируем только файлы манифеста для кэширования зависимостей
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc* ./
+# Копируем корневые файлы манифеста
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+
+# Копируем package.json каждого воркспейса
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
-COPY backend/prisma/schema.prisma ./backend/prisma/
 
-# Устанавливаем ВСЕ зависимости (включая dev), чтобы prisma client был доступен для typecheck
+# Устанавливаем все зависимости, включая devDependencies для сборки.
+# --frozen-lockfile используется для CI для гарантии соответствия версий.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Копируем остальной код проекта ПОСЛЕ установки зависимостей
+# Копируем ВЕСЬ остальной исходный код (после установки зависимостей, чтобы не перезаписывать node_modules)
 COPY . .
 
-# Собираем только фронтенд
+# Собираем только фронтенд-проект
 RUN pnpm --filter prodvor-frontend build
 
-# Этап 2: Подготовка production-версии node_modules
-FROM node:20 AS pruner
+# === STAGE 2: Pruner ===
+# Этот этап удаляет все dev-зависимости, оставляя только production.
+FROM node:20 as pruner
 
 WORKDIR /usr/src/app
 
-# Включаем corepack для управления pnpm
+# Включаем corepack
 RUN corepack enable
 
-COPY pnpm-workspace.yaml ./
-COPY frontend/package.json ./frontend/
-COPY --from=builder /usr/src/app/frontend/.next/standalone ./frontend/
+# Копируем только артефакты сборки и package.json из builder'а
+COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
+COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./pnpm-workspace.yaml
 
-# Устанавливаем только production-зависимости для фронтенда
-RUN pnpm deploy --prod --filter prodvor-frontend ./frontend
+# Устанавливаем ТОЛЬКО production-зависимости для фронтенда.
+# Команда `deploy` специально создана для таких сценариев.
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm deploy --prod --filter prodvor-frontend ./frontend
 
-# Этап 3: Финальный легковесный образ
-FROM node:20-slim AS runner
+# === STAGE 3: Runner ===
+# Финальный, легковесный образ для запуска приложения.
+FROM node:20-alpine
 
 WORKDIR /app
 
-ENV NODE_ENV=production
+# Копируем собранный проект и production-версию node_modules
+COPY --from=pruner /usr/src/app/frontend/.next ./.next
+COPY --from=pruner /usr/src/app/frontend/public ./public
+COPY --from=pruner /usr/src/app/frontend/package.json ./package.json
+COPY --from=pruner /usr/src/app/frontend/node_modules ./node_modules
 
-# Копируем только скомпилированный проект и production-зависимости
-COPY --from=pruner /usr/src/app/frontend .
-
+# Открываем порт
 EXPOSE 9002
 
-CMD ["node", "server.js"]
+# Устанавливаем команду для запуска
+CMD ["pnpm", "start"]
