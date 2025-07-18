@@ -1,63 +1,68 @@
-# Этап 1: Сборка проекта
-FROM node:20 as builder
+#
+# ---- 1. Base Stage: Установка зависимостей ----
+FROM node:20 as base
+RUN apt-get update && apt-get install -y openssl
 
-# Устанавливаем рабочую директорию
+#
+# ---- 2. Builder Stage: Сборка приложения ----
+FROM base as builder
 WORKDIR /usr/src/app
 
-# Включаем corepack для управления pnpm
-RUN corepack enable
-
-# Копируем корневые файлы манифеста
+# Копируем только манифесты для установки зависимостей
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
-# Копируем package.json каждого воркспейса, чтобы pnpm понял структуру
+# Копируем package.json каждого воркспейса
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Копируем схему Prisma (хотя она и не нужна для фронтенда, делаем для консистентности)
+# Копируем схему Prisma, чтобы Prisma Client мог сгенерироваться
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем ВСЕ зависимости, включая devDependencies, чтобы сработали все скрипты
-# (включая prisma generate для backend)
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+# Устанавливаем все зависимости, включая devDependencies.
+# На этом шаге автоматически запускается `prisma generate` через postinstall.
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    corepack enable && \
+    pnpm install --frozen-lockfile
 
-# Копируем ВЕСЬ остальной код
+# Копируем весь остальной исходный код
 COPY . .
 
-# Собираем конкретный воркспейс (frontend)
+# Собираем конкретный воркспейс
 RUN pnpm --filter prodvor-frontend build
 
-# Этап 2: Подготовка production-зависимостей
-FROM node:20 as pruner
-
-# Устанавливаем рабочую директорию
+#
+# ---- 3. Pruner Stage: Подготовка production-зависимостей ----
+FROM base as pruner
 WORKDIR /usr/src/app
 
-# Включаем corepack
-RUN corepack enable
-
-# Копируем pnpm-workspace.yaml, чтобы deploy знал о структуре
-COPY pnpm-workspace.yaml ./
-
-# Копируем собранный проект и его package.json
+# Копируем артефакты сборки и необходимые манифесты
 COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
+COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+COPY --from=builder /usr/src/app/frontend/next.config.mjs ./frontend/
 
-# Устанавливаем ТОЛЬКО production-зависимости для фронтенда
-RUN pnpm deploy --prod --filter prodvor-frontend /prod
+# Устанавливаем только production-зависимости
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+    pnpm deploy --prod --filter prodvor-frontend ./frontend
 
-# Этап 3: Финальный образ
+#
+# ---- 4. Runner Stage: Финальный легковесный образ ----
 FROM node:20-alpine as runner
+WORKDIR /app
 
-# Устанавливаем рабочую директорию
-WORKDIR /app/frontend
+# Устанавливаем системные зависимости
+RUN apk add --no-cache openssl
 
-# Копируем production-зависимости и собранный проект
-COPY --from=pruner /prod/node_modules ./node_modules
-COPY --from=pruner /prod/frontend/.next ./.next
-COPY --from=pruner /prod/frontend/public ./public
-COPY --from=pruner /prod/frontend/package.json .
+# Копируем собранное приложение и production-зависимости
+COPY --from=pruner /usr/src/app/frontend ./frontend
+COPY --from=pruner /usr/src/app/node_modules ./node_modules
+
+# Устанавливаем пользователя без root-прав для безопасности
+# RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# USER appuser
+
+EXPOSE 9002
 
 # Запускаем приложение
-CMD ["pnpm", "start"]
+CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
