@@ -1,73 +1,67 @@
-# === Этап 1: Builder - Сборка и компиляция ===
-FROM node:20 AS builder
+# Этап 1: Установка зависимостей и сборка проекта
+FROM node:20 as builder
 
-# Prisma требует OpenSSL для работы с БД
+# Устанавливаем OpenSSL, необходимый для Prisma
 RUN apt-get update && apt-get install -y openssl
 
-# Установка рабочей директории
 WORKDIR /usr/src/app
 
-# Копируем только файлы, необходимые для установки зависимостей, чтобы кэшировать этот слой
-# Это самый важный шаг для корректной работы pnpm в монорепозитории
+# Включаем corepack для управления версией pnpm
+RUN corepack enable
+
+# Копируем корневые манифесты
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Копируем манифесты КАЖДОГО воркспейса, чтобы pnpm "увидел" их
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Активация pnpm через corepack
-RUN corepack enable
-
 # Копируем схему Prisma ДО установки зависимостей
-# Это критично для того, чтобы `prisma generate` сработал на следующем шаге
 COPY backend/prisma ./backend/prisma
 
-# Установка ВСЕХ зависимостей, включая devDependencies.
-# pnpm автоматически вызовет `prisma generate` из-за `postinstall` в package.json
+# Устанавливаем ВСЕ зависимости, включая devDependencies. 
+# На этом шаге автоматически запустится `prisma generate` из postinstall скрипта.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Теперь, когда Prisma Client сгенерирован, копируем остальной исходный код
+# Копируем ВЕСЬ остальной код
 COPY . .
 
-# Компиляция TypeScript в JavaScript
+# Компилируем TypeScript в JavaScript. Prisma Client уже сгенерирован и доступен.
 RUN pnpm --filter prodvor-backend build
 
-# === Этап 2: Pruner - Подготовка production-зависимостей ===
-FROM builder AS pruner
+# Этап 2: Подготовка production-версии node_modules
+FROM node:20 as pruner
 
 WORKDIR /usr/src/app
 
-# Важно: pnpm deploy требует наличия pnpm-workspace.yaml для корректной работы
+# Включаем corepack для управления версией pnpm
+RUN corepack enable
+
+# Копируем только то, что нужно для production-установки
 COPY pnpm-workspace.yaml ./
-
-# Копируем скомпилированный проект и package.json из этапа builder
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-COPY --from=builder /usr/src/app/backend/package.json ./backend/package.json
-COPY --from=builder /usr/src/app/backend/node_modules/.prisma ./backend/node_modules/.prisma
+COPY --from=builder /usr/src/app/backend/package.json ./backend/
+COPY --from=builder /usr/src/app/node_modules/prisma ./node_modules/prisma
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
 
-# Устанавливаем только production-зависимости
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm deploy --prod --filter prodvor-backend ./backend
+# Устанавливаем только production-зависимости для бэкенда
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --filter prodvor-backend
 
-# === Этап 3: Runner - Финальный, легковесный образ ===
-FROM node:20-alpine AS runner
+# Этап 3: Финальный легковесный образ
+FROM node:20-alpine as runner
 
 WORKDIR /app
 
-# Установка OpenSSL, необходимого для работы Prisma Client в runtime
+# Устанавливаем OpenSSL, который нужен Prisma для работы
 RUN apk add --no-cache openssl
 
-# Создаем пользователя без root-прав для безопасности
+# Копируем скомпилированный код и production-зависимости
+COPY --from=pruner /usr/src/app/backend/dist ./dist
+COPY --from=pruner /usr/src/app/node_modules ./node_modules
+COPY --from=pruner /usr/src/app/backend/package.json ./package.json
+
+# Указываем пользователя для безопасности
 USER node
 
-# Копируем скомпилированное приложение и production-зависимости из этапа pruner
-COPY --from=pruner --chown=node:node /usr/src/app/backend/dist ./backend/dist
-COPY --from=pruner --chown=node:node /usr/src/app/backend/node_modules ./backend/node_modules
-COPY --from=builder --chown=node:node /usr/src/app/backend/package.json ./backend/package.json
-COPY --from=builder --chown=node:node /usr/src/app/backend/prisma ./backend/prisma
-
-# Установка переменной окружения
-ENV NODE_ENV=production
-
-# Открываем порт, на котором работает приложение
-EXPOSE 3001
-
 # Команда для запуска приложения
-CMD ["node", "backend/dist/main.js"]
+CMD ["node", "dist/main.js"]

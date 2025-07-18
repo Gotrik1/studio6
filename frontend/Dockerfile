@@ -1,67 +1,60 @@
-# === Этап 1: Builder - Сборка проекта ===
-FROM node:20 AS builder
+# Этап 1: Установка зависимостей и сборка проекта
+FROM node:20 as builder
 
-# Установка системных зависимостей, если они понадобятся
-# RUN apt-get update && apt-get install -y openssl
-
-# Установка рабочей директории
 WORKDIR /usr/src/app
 
-# Копируем только файлы, необходимые для установки зависимостей, чтобы кэшировать этот слой
+# Включаем corepack для управления версией pnpm
+RUN corepack enable
+
+# Копируем корневые манифесты
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Копируем манифесты КАЖДОГО воркспейса
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Активация pnpm через corepack
-RUN corepack enable
+# Копируем схему Prisma, так как она может быть нужна для типов
+COPY backend/prisma ./backend/prisma
 
-# Установка всех зависимостей. pnpm автоматически вызовет `prisma generate`, если он в postinstall
+# Устанавливаем ВСЕ зависимости, включая devDependencies.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 
-# Копируем остальной исходный код
+# Копируем ВЕСЬ остальной код
 COPY . .
 
-# Сборка фронтенд-приложения
+# Собираем фронтенд
 RUN pnpm --filter prodvor-frontend build
 
-# === Этап 2: Pruner - Подготовка production-зависимостей ===
-FROM builder AS pruner
+# Этап 2: Подготовка production-версии node_modules
+FROM node:20 as pruner
 
-# Создание директории для production-сборки
 WORKDIR /usr/src/app
 
-# Важно: pnpm deploy требует наличия pnpm-workspace.yaml для корректной работы в воркспейсе
-COPY pnpm-workspace.yaml ./
+# Включаем corepack для управления версией pnpm
+RUN corepack enable
 
-# Копируем артефакты сборки и package.json для установки только production-зависимостей
-COPY --from=builder /usr/src/app/frontend/package.json ./frontend/package.json
+# Копируем только то, что нужно для production-установки
+COPY pnpm-workspace.yaml ./
 COPY --from=builder /usr/src/app/frontend/.next ./frontend/.next
 COPY --from=builder /usr/src/app/frontend/public ./frontend/public
+COPY --from=builder /usr/src/app/frontend/package.json ./frontend/
 
-# Установка только production-зависимостей
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm deploy --prod --filter prodvor-frontend ./frontend
+# Устанавливаем только production-зависимости для фронтенда
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --filter prodvor-frontend
 
-# === Этап 3: Runner - Финальный образ ===
-FROM node:20-alpine AS runner
+# Этап 3: Финальный легковесный образ
+FROM node:20-alpine as runner
 
 WORKDIR /app
 
-# Установка системных зависимостей, если они нужны для работы приложения
-# RUN apk add --no-cache openssl
+# Копируем скомпилированный код и production-зависимости
+COPY --from=pruner /usr/src/app/frontend/.next ./frontend/.next
+COPY --from=pruner /usr/src/app/frontend/public ./frontend/public
+COPY --from=pruner /usr/src/app/node_modules ./node_modules
+COPY --from=pruner /usr/src/app/frontend/package.json ./frontend/package.json
 
-# Устанавливаем пользователя без root-прав для безопасности
+# Указываем пользователя для безопасности
 USER node
 
-# Копируем собранное приложение и production-зависимости из предыдущего этапа
-COPY --from=pruner --chown=node:node /usr/src/app/frontend ./frontend
-COPY --from=pruner --chown=node:node /usr/src/app/node_modules ./node_modules
-COPY --from=builder --chown=node:node /usr/src/app/package.json ./
-
-# Установка переменной окружения для Next.js
-ENV NODE_ENV=production
-
-# Открываем порт, на котором работает приложение
-EXPOSE 9002
-
 # Команда для запуска приложения
-CMD ["pnpm", "start:frontend"]
+CMD ["pnpm", "--filter", "prodvor-frontend", "start"]
