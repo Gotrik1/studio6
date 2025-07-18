@@ -10,6 +10,7 @@
 # - Frontend (Next.js): http://localhost:9002
 # - Backend (NestJS): http://localhost:3001 (for direct access)
 # - Kong API Gateway: http://localhost:8000 (main entry point)
+# - Keycloak (IdP): http://localhost:8180
 # - pgAdmin (DB UI): http://localhost:5050
 # - RabbitMQ UI: http://localhost:15672
 # - Grafana (Monitoring): http://localhost:3000
@@ -120,6 +121,49 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+    networks:
+      - prodvor-network
+
+  # ---------------------------------------------------
+  # Identity Provider (Keycloak)
+  # ---------------------------------------------------
+  keycloak-db:
+    image: postgres:17
+    container_name: keycloak-db
+    restart: on-failure
+    environment:
+      POSTGRES_USER: ${KONG_PG_USER:-keycloak}
+      POSTGRES_PASSWORD: ${KONG_PG_PASSWORD:-password}
+      POSTGRES_DB: ${KONG_PG_DATABASE:-keycloak}
+    volumes:
+      - keycloak_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${KONG_PG_USER:-keycloak} -d ${KONG_PG_DATABASE:-keycloak}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - prodvor-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3.1
+    container_name: keycloak
+    command: start-dev --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: keycloak-db
+      KC_DB_USERNAME: ${KONG_PG_USER:-keycloak}
+      KC_DB_PASSWORD: ${KONG_PG_PASSWORD:-password}
+      KC_DB_URL_DATABASE: ${KONG_PG_DATABASE:-keycloak}
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8180:8080"
+    volumes:
+      - ./config/keycloak:/opt/keycloak/data/import
+    depends_on:
+      keycloak-db:
+        condition: service_healthy
     networks:
       - prodvor-network
 
@@ -342,6 +386,7 @@ networks:
 volumes:
   postgres_data:
   kong_db_data:
+  keycloak_db_data:
   pgadmin_data:
   redis_data:
   rabbitmq_data:
