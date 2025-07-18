@@ -4,7 +4,7 @@
 services:
   # Сервис для базы данных приложения, используемый в CI
   db:
-    image: postgres:16
+    image: postgres:17
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -40,9 +40,7 @@ services:
   # Сервис для выполнения миграций Kong в CI
   # Он запускается как одноразовая задача
   kong-migrations-ci:
-    build:
-      context: .
-      dockerfile: Dockerfile.kong
+    image: kong:latest
     depends_on:
       kong-db:
         condition: service_healthy
