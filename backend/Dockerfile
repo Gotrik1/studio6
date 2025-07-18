@@ -1,54 +1,60 @@
-# Этап 1: Базовый образ для зависимостей и сборки
+# ---- Base Stage: Common setup for builder and pruner ----
 FROM node:20 as base
 RUN apt-get update && apt-get install -y openssl
 
-# Этап 2: Установка зависимостей и сборка проекта
+# ---- Builder Stage: Build the application ----
 FROM base as builder
 WORKDIR /usr/src/app
 
-# Копируем только файлы манифеста для кэширования зависимостей
+# Copy manifest files
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
+# Copy workspace-specific package.json
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 
-# Копируем схему Prisma до установки зависимостей
+# Copy prisma schema
 COPY backend/prisma ./backend/prisma
 
-# Устанавливаем зависимости и ГАРАНТИРОВАННО генерируем Prisma Client
+# Enable pnpm and install dependencies
+# This step will also trigger `prisma generate` due to the postinstall script
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     corepack enable && \
-    pnpm install --frozen-lockfile && \
-    pnpm --filter prodvor-backend prisma:generate
+    pnpm install --frozen-lockfile
 
-# Копируем весь остальной код ПОСЛЕ генерации клиента
+# Copy the rest of the source code
 COPY . .
 
-# Собираем проект
+# Build the application
 RUN pnpm --filter prodvor-backend build
 
-# Этап 3: Подготовка production-зависимостей
+# ---- Pruner Stage: Create production-only node_modules ----
 FROM base as pruner
 WORKDIR /usr/src/app
 
-# Копируем собранный проект и необходимые манифесты
-COPY --from=builder /usr/src/app/backend/dist ./backend/dist
+# Enable pnpm
+RUN corepack enable
+
+# Copy necessary files for deployment
 COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
 COPY --from=builder /usr/src/app/backend/package.json ./backend/
+COPY --from=builder /usr/src/app/backend/dist ./backend/dist
 
-# Устанавливаем ТОЛЬКО production-зависимости
+# Install only production dependencies
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    corepack enable && \
     pnpm deploy --legacy --prod --filter prodvor-backend ./backend
 
-# Этап 4: Финальный, легковесный образ
+# ---- Runner Stage: Final lightweight image ----
 FROM node:20-alpine as runner
 WORKDIR /app
 
-# Устанавливаем OpenSSL, т.к. он нужен Prisma для работы
+# Install openssl for Prisma runtime
 RUN apk add --no-cache openssl
 
-# Копируем production-зависимости и собранный код
+# Copy artifacts from pruner
 COPY --from=pruner /usr/src/app/backend ./backend
+COPY --from=pruner /usr/src/app/node_modules ./node_modules
 
-# Указываем, какую команду запускать
+# Expose port and start the application
+EXPOSE 3001
 CMD ["node", "backend/dist/main.js"]
