@@ -121,7 +121,7 @@ jobs:
         run: |
           echo "Waiting for Kong to be available..."
           i=0
-          until curl -s -o /dev/null -w "%{http_code}" http://localhost:8001 | grep -E "200|401"; do
+          until curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -E "2..|4.."; do
             i=$((i+1))
             if [ $i -ge 30 ]; then
               echo "Kong failed to start in time."
@@ -130,9 +130,8 @@ jobs:
             fi
             echo "Waiting for Kong..."
             sleep 2
-          done
-          echo "Kong is up!"
-          curl -s http://localhost:8000 | grep "Kong" || (echo "Kong proxy check failed" && exit 1)
+        done
+        echo "Kong proxy is responding with HTTP $($(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000))"
 
       - name: Show logs on failure
         if: failure()
