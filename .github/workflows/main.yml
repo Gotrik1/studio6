@@ -30,6 +30,12 @@ jobs:
         with:
           version: 10.13.1
 
+      - name: Set up Docker CLI
+        uses: docker/setup-docker@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Create .env file
         run: |
           cat > .env <<EOF
@@ -63,12 +69,6 @@ jobs:
 
       - name: Generate Prisma Client
         run: pnpm --filter prodvor-backend prisma:generate
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Set up Docker CLI
-        uses: docker/setup-docker-action@v4  
 
       - name: Build all images
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
@@ -117,8 +117,8 @@ jobs:
       - name: Run Prisma migrations (inside container)
         run: |
           unset PNPM_HOME PATH
-          unset PATH
           docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
+
       - name: Re-check container statuses after migration
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
@@ -126,7 +126,6 @@ jobs:
         run: |
           echo "Waiting for Kong to be available..."
           i=0
-          # We check the admin API on port 8001 as it's the first to respond
           until curl -s -o /dev/null -w "%{http_code}" http://localhost:8001 | grep -E "200|401"; do
             i=$((i+1))
             if [ $i -ge 30 ]; then
@@ -138,7 +137,6 @@ jobs:
             sleep 2
           done
           echo "Kong is up!"
-          # Check that the main proxy on port 8000 is also responding
           curl -s http://localhost:8000 | grep "Kong" || (echo "Kong proxy check failed" && exit 1)
 
       - name: Show logs on failure
