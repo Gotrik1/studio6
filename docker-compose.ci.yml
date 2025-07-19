@@ -63,7 +63,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
       PNPM_HOME: "/pnpm"
-      PATH: "/pnpm:$PATH"
+      PATH: "/pnpm:/usr/local/bin:/usr/bin:/bin"
     networks:
       - default
 
