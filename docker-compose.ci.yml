@@ -1,8 +1,10 @@
 # Этот файл содержит переопределения для непрерывной интеграции (CI)
+version: "3.8"
+
 services:
   # Сервис для базы данных приложения, используемый в CI
   db:
-    image: postgres:17-alpine # Используем Alpine для CI, т.к. он легче
+    image: postgres:17-alpine
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -11,7 +13,7 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-prodvor}"]
       interval: 5s
       timeout: 5s
       retries: 30
@@ -47,7 +49,7 @@ services:
       KONG_PG_USER: ${KONG_PG_USER:-kong}
       KONG_PG_PASSWORD: ${KONG_PG_PASSWORD:-kongpassword}
       KONG_PG_DATABASE: ${KONG_PG_DATABASE:-kong_db}
-    command: kong migrations bootstrap # Используем bootstrap для пустой базы
+    command: kong migrations bootstrap
     networks:
       - default
 
@@ -65,5 +67,21 @@ services:
     networks:
       - default
 
+  # 👇 Keycloak в CI (без GUI, dev‑режим)
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    command:
+      - start-dev
+      - --http-port=8080
+      - --hostname-strict=false
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+
 networks:
   default:
+    driver: bridge
