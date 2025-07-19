@@ -5,10 +5,14 @@ FROM node:20 AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-ENV SHELL="/bin/bash"
+ENV SHELL="/bin/sh"
 
 RUN corepack enable && \
-    curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=10.13.1 SHELL="/bin/bash" bash -
+    curl -fsSL https://get.pnpm.io/install.sh \
+      | PNPM_VERSION=10.13.1 \
+        ENV="$PNPM_HOME/.shrc" \
+        SHELL="/bin/sh" \
+        sh -
 
 ################################################################################
 # Этап 1: сборка и генерация Prisma Client
@@ -45,7 +49,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --prod --frozen-lockfile --ignore-scripts
 
 ################################################################################
-# Этап 3: финальный runtime-образ
+# Этап 3: runtime-образ
 ################################################################################
 FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
