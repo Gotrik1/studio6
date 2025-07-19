@@ -52,3 +52,5 @@ WORKDIR /usr/src/app
 COPY --from=pruner /usr/src/app/ .
 EXPOSE 3001
 CMD ["node", "backend/dist/main.js"]
+
+RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
