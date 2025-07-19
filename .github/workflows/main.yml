@@ -2,11 +2,9 @@ name: Docker Compose CI
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
   pull_request:
-    branches:
-      - master
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -14,14 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-
-      # ✅ Установим Docker CLI (если вдруг недоступно в ruunner)
-      - name: Set up Docker CLI
-        uses: docker/setup-docker-action@v4  # официально от Docker :contentReference[oaicite:1]{index=1}
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3      # для сборки образов :contentReference[oaicite:2]{index=2}
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Node.js and Corepack
         uses: actions/setup-node@v4
@@ -39,32 +31,30 @@ jobs:
       - name: Create .env file
         run: |
           cat > .env <<EOF
-POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-POSTGRES_DB=${{ secrets.POSTGRES_DB }}
-KONG_PG_USER=${{ secrets.KONG_PG_USER }}
-KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
-KONG_PG_DATABASE=${{ secrets.KONG_PG_DATABASE }}
-PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
-PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
-RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
-RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
-MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
-MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
-DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
-REDIS_URL=redis://redis:6379
-KAFKA_BROKERS=kafka:9092
-RABBITMQ_URL=amqp://${{ secrets.RABBITMQ_DEFAULT_USER }}:${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}@rabbitmq:5672
-S3_ENDPOINT_URL=http://minio:9005
-S3_BUCKET_NAME=prodvor
-AWS_REGION=us-east-1
-AWS_ACCESS_KEY_ID=${{ secrets.MINIO_ROOT_USER }}
-AWS_SECRET_ACCESS_KEY=${{ secrets.MINIO_ROOT_PASSWORD }}
-NEXT_PUBLIC_BACKEND_URL=http://kong:8000
-PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
-KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
-EOF
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+          KONG_PG_USER=${{ secrets.KONG_PG_USER }}
+          KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
+          KONG_PG_DATABASE=${{ secrets.KONG_PG_DATABASE }}
+          PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
+          PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
+          RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
+          RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
+          MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
+          MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
+          DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
+          REDIS_URL=redis://redis:6379
+          KAFKA_BROKERS=kafka:9092
+          RABBITMQ_URL=amqp://${{ secrets.RABBITMQ_DEFAULT_USER }}:${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}@rabbitmq:5672
+          S3_ENDPOINT_URL=http://minio:9005
+          S3_BUCKET_NAME=prodvor
+          AWS_REGION=us-east-1
+          AWS_ACCESS_KEY_ID=${{ secrets.MINIO_ROOT_USER }}
+          AWS_SECRET_ACCESS_KEY=${{ secrets.MINIO_ROOT_PASSWORD }}
+          NEXT_PUBLIC_BACKEND_URL=http://kong:8000
+          PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          EOF
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -72,64 +62,61 @@ EOF
       - name: Generate Prisma Client
         run: pnpm --filter prodvor-backend prisma:generate
 
+      # ⚙️ Устанавливаем Docker CLI и Buildx перед сборкой образов
+      - name: Set up QEMU (for Buildx)
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Set up Docker CLI
+        uses: docker/setup-docker-action@v4  # устанавливает Docker CE в runner :contentReference[oaicite:1]{index=1}
+
       - name: Build all images
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml build
 
-      - name: Launch all services in background
+      - name: Launch all services
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
 
-      - name: Wait for App DB to be ready
+      - name: Wait for App DB
         run: |
-          echo "Waiting for App PostgreSQL to be ready…"
           i=0
-          until docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T db pg_isready -U "${POSTGRES_USER:-postgres}"; do
-            ((i++)) || true
-            if [ $i -ge 30 ]; then
-              echo "App DB failed to start."
-              docker compose logs db
-              exit 1
-            fi
+          until docker compose exec -T db pg_isready -U "${POSTGRES_USER:-postgres}"; do
+            ((i++)) && ((i==30)) && { docker compose logs db; exit 1; }
+            sleep 2
+          done
+
+      - name: Wait for Kong DB
+        run: |
+          i=0
+          until docker compose exec -T kong-db pg_isready -U "${KONG_PG_USER:-kong}"; do
+            ((i++)) && ((i==30)) && { docker compose logs kong-db; exit 1; }
             sleep 2
           done
 
       - name: Run Kong migrations
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm kong-migrations-ci
+        run: docker compose run --rm kong-migrations-ci
 
       - name: Run Prisma migrations
         run: |
           unset PNPM_HOME PATH
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
+          docker compose run --rm migrations
 
-      - name: Re-check container statuses
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
-
-      - name: Wait for Kong to be ready
+      - name: Wait for Kong to start
         run: |
-          echo "Waiting for Kong…"
           i=0
           until curl -s -o /dev/null -w "%{http_code}" http://localhost:8001 | grep -E "200|401"; do
-            ((i++)) || true
-            if [ $i -ge 30 ]; then
-              echo "Kong failed to start."
-              docker compose logs kong
-              exit 1
-            fi
+            ((i++)) && ((i==30)) && { docker compose logs kong; exit 1; }
             sleep 2
           done
 
       - name: Show logs on failure
         if: failure()
         run: |
-          echo "::group::DB Logs"
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs db
-          echo "::endgroup::"
-          echo "::group::Kong DB Logs"
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong-db
-          echo "::endgroup::"
-          echo "::group::Backend Logs"
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
-          echo "::endgroup::"
+          for svc in db kong-db kong-migrations-ci migrations kong backend; do
+            echo "::group::$svc logs"
+            docker compose logs $svc || true
+            echo "::endgroup::"
+          done
 
       - name: Tear down
         if: always()
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
+        run: docker compose down -v
