@@ -14,17 +14,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
+      # ✅ Установим Docker CLI (если вдруг недоступно в ruunner)
       - name: Set up Docker CLI
-        uses: docker/setup-docker-action@v4
-
-      - name: Set up QEMU (для multi-platform, если нужно)
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-docker-action@v4  # официально от Docker :contentReference[oaicite:1]{index=1}
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v3      # для сборки образов :contentReference[oaicite:2]{index=2}
 
       - name: Set up Node.js and Corepack
         uses: actions/setup-node@v4
@@ -42,8 +39,32 @@ jobs:
       - name: Create .env file
         run: |
           cat > .env <<EOF
-          ... ваш .env ...
-          EOF
+POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+KONG_PG_USER=${{ secrets.KONG_PG_USER }}
+KONG_PG_PASSWORD=${{ secrets.KONG_PG_PASSWORD }}
+KONG_PG_DATABASE=${{ secrets.KONG_PG_DATABASE }}
+PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
+PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
+RABBITMQ_DEFAULT_USER=${{ secrets.RABBITMQ_DEFAULT_USER }}
+RABBITMQ_DEFAULT_PASSWORD=${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}
+MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
+MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
+DATABASE_URL=postgresql://${{ secrets.POSTGRES_USER }}:${{ secrets.POSTGRES_PASSWORD }}@db:5432/${{ secrets.POSTGRES_DB }}?schema=public
+REDIS_URL=redis://redis:6379
+KAFKA_BROKERS=kafka:9092
+RABBITMQ_URL=amqp://${{ secrets.RABBITMQ_DEFAULT_USER }}:${{ secrets.RABBITMQ_DEFAULT_PASSWORD }}@rabbitmq:5672
+S3_ENDPOINT_URL=http://minio:9005
+S3_BUCKET_NAME=prodvor
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=${{ secrets.MINIO_ROOT_USER }}
+AWS_SECRET_ACCESS_KEY=${{ secrets.MINIO_ROOT_PASSWORD }}
+NEXT_PUBLIC_BACKEND_URL=http://kong:8000
+PGPASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+KC_BOOTSTRAP_ADMIN_USERNAME=${{ secrets.KC_BOOTSTRAP_ADMIN_USERNAME }}
+KC_BOOTSTRAP_ADMIN_PASSWORD=${{ secrets.KC_BOOTSTRAP_ADMIN_PASSWORD }}
+EOF
 
       - name: Install dependencies
         run: pnpm install --no-frozen-lockfile
@@ -57,26 +78,44 @@ jobs:
       - name: Launch all services in background
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
 
-      - name: Wait for DBs, migrations и Kong
+      - name: Wait for App DB to be ready
         run: |
-          # ... ваши ожидалки ...
+          echo "Waiting for App PostgreSQL to be ready…"
+          i=0
+          until docker compose -f docker-compose.yml -f docker-compose.ci.yml exec -T db pg_isready -U "${POSTGRES_USER:-postgres}"; do
+            ((i++)) || true
+            if [ $i -ge 30 ]; then
+              echo "App DB failed to start."
+              docker compose logs db
+              exit 1
+            fi
+            sleep 2
+          done
 
       - name: Run Kong migrations
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm kong-migrations-ci
 
-      - name: Run Prisma migrations (inside container)
+      - name: Run Prisma migrations
         run: |
           unset PNPM_HOME PATH
           docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
 
-      - name: Проверка доступности pnpm
-        run: |
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations \
-            sh -lc "which pnpm && pnpm -v"
+      - name: Re-check container statuses
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
       - name: Wait for Kong to be ready
         run: |
-          # ... проверки Kong ...
+          echo "Waiting for Kong…"
+          i=0
+          until curl -s -o /dev/null -w "%{http_code}" http://localhost:8001 | grep -E "200|401"; do
+            ((i++)) || true
+            if [ $i -ge 30 ]; then
+              echo "Kong failed to start."
+              docker compose logs kong
+              exit 1
+            fi
+            sleep 2
+          done
 
       - name: Show logs on failure
         if: failure()
@@ -84,7 +123,12 @@ jobs:
           echo "::group::DB Logs"
           docker compose -f docker-compose.yml -f docker-compose.ci.yml logs db
           echo "::endgroup::"
-          # ... далее остальные логгруппы ...
+          echo "::group::Kong DB Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs kong-db
+          echo "::endgroup::"
+          echo "::group::Backend Logs"
+          docker compose -f docker-compose.yml -f docker-compose.ci.yml logs backend
+          echo "::endgroup::"
 
       - name: Tear down
         if: always()
