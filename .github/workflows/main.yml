@@ -2,11 +2,9 @@ name: Docker Compose CI
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
   pull_request:
-    branches:
-      - master
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -108,30 +106,25 @@ jobs:
       - name: Run Kong migrations (inside container)
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm kong-migrations-ci
 
-      - name: Check container status before migrations
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
-
       - name: Run Prisma migrations (inside container)
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
 
-      - name: Re-check container statuses after migration
-        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
-
-      - name: Wait for Kong to be ready
+      - name: Wait for Kong proxy to be ready
         run: |
-          echo "Waiting for Kong to be available..."
+          echo "Waiting for Kong proxy to respond on port 8000..."
           i=0
-          until curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -E "2..|4.."; do
+          until curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -E "^2|^4"; do
             i=$((i+1))
             if [ $i -ge 30 ]; then
-              echo "Kong failed to start in time."
+              echo "Kong proxy failed to start in time."
               docker compose logs kong
               exit 1
             fi
-            echo "Waiting for Kong..."
+            echo "Waiting for Kong proxy..."
             sleep 2
-        done
-        echo "Kong proxy is responding with HTTP $($(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000))"
+          done
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000)
+          echo "✅ Kong proxy is responding with HTTP $STATUS on port 8000"
 
       - name: Show logs on failure
         if: failure()
