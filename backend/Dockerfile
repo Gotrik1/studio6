@@ -5,9 +5,10 @@ FROM node:20 AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+ENV SHELL="/bin/bash"
 
 RUN corepack enable && \
-    curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=10.13.1 sh
+    curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=10.13.1 SHELL="/bin/bash" bash -
 
 ################################################################################
 # Этап 1: сборка и генерация Prisma Client
@@ -15,7 +16,6 @@ RUN corepack enable && \
 FROM base AS builder
 WORKDIR /usr/src/app
 
-# Кэшируем зависимости и устанавливаем их
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
@@ -29,7 +29,7 @@ RUN pnpm --filter prodvor-backend prisma:generate
 RUN pnpm --filter prodvor-backend build
 
 ################################################################################
-# Этап 2: прод-установка зависимостей
+# Этап 2: установка production-зависимостей
 ################################################################################
 FROM base AS pruner
 WORKDIR /usr/src/app
@@ -51,6 +51,5 @@ FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
 
 COPY --from=pruner /usr/src/app/ .
-
 EXPOSE 3001
 CMD ["node", "backend/dist/main.js"]
