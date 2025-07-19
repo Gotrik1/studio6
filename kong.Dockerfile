@@ -1,18 +1,18 @@
-FROM kong:3.6
+# Используем образ Kong
+FROM kong:2.8
 
 USER root
 
-RUN apt-get update && apt-get install -y \
-    git \
-    unzip \
-    luarocks \
-    gcc \
-    libpcre3-dev \
-    libssl-dev \
-    make \
- && git clone https://github.com/zmartzone/lua-resty-openidc /opt/lua-resty-openidc \
- && cp -r /opt/lua-resty-openidc/lib/resty /usr/local/share/lua/5.1/ \
- && git clone https://github.com/nokia/kong-oidc /usr/local/share/lua/5.1/kong/plugins/oidc \
- && apt-get clean
+# Устанавливаем зависимости
+RUN apt-get update && \
+    apt-get install -y git luarocks libpcre3-dev libssl-dev gcc make unzip && \
+    luarocks install lua-resty-openidc
 
+# Клонируем плагин и копируем его правильно
+RUN git clone https://github.com/nokia/kong-oidc /tmp/kong-oidc && \
+    mkdir -p /usr/local/share/lua/5.1/kong/plugins/oidc && \
+    cp /tmp/kong-oidc/kong/plugins/oidc/*.lua /usr/local/share/lua/5.1/kong/plugins/oidc/ && \
+    rm -rf /tmp/kong-oidc
+
+# Убедись, что запускаемся не под root
 USER kong
