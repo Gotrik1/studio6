@@ -348,10 +348,10 @@ services:
       kong:
         condition: service_started
     command: ["pnpm", "start:backend:dev"]
-    logging:
-      driver: loki
-      options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
+    #logging:
+      #driver: loki
+      #options:
+        #loki-url: "http://localhost:3100/loki/api/v1/push"
     networks:
       - prodvor-network
 
@@ -372,10 +372,10 @@ services:
     depends_on:
       - backend
     command: pnpm start:frontend
-    logging:
-      driver: loki
-      options:
-        loki-url: "http://localhost:3100/loki/api/v1/push"
+    #logging:
+      #driver: loki
+      #options:
+        #loki-url: "http://localhost:3100/loki/api/v1/push"
     networks:
       - prodvor-network
 
