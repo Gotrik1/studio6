@@ -62,6 +62,8 @@ services:
       sh -lc "pnpm --filter prodvor-backend prisma:migrate:deploy"
     environment:
       DATABASE_URL: ${DATABASE_URL}
+      PNPM_HOME: "/pnpm"
+      PATH: "/pnpm:$PATH"
     networks:
       - default
 
