@@ -1,8 +1,6 @@
-# Этот файл содержит переопределения для непрерывной интеграции (CI)
 version: "3.8"
 
 services:
-  # Сервис для базы данных приложения, используемый в CI
   db:
     image: postgres:17-alpine
     restart: always
@@ -21,7 +19,6 @@ services:
     networks:
       - default
 
-  # Сервис для базы данных Kong
   kong-db:
     image: postgres:15-alpine
     restart: on-failure
@@ -37,7 +34,6 @@ services:
     networks:
       - default
 
-  # Сервис для выполнения миграций Kong в CI (одноразовая задача)
   kong-migrations-ci:
     image: kong:latest
     depends_on:
@@ -53,21 +49,26 @@ services:
     networks:
       - default
 
-  # Сервис для выполнения миграций Prisma в CI (одноразовая задача)
   migrations:
     build:
       context: .
       dockerfile: backend/Dockerfile
+    working_dir: /usr/src/app
     depends_on:
       db:
         condition: service_healthy
-    command: pnpm --filter prodvor-backend prisma:migrate:deploy
+    command:
+      - bash
+      - "-lc"
+      - |
+        corepack enable &&
+        pnpm install --frozen-lockfile &&
+        pnpm --filter prodvor-backend prisma:migrate:deploy
     environment:
       DATABASE_URL: ${DATABASE_URL}
     networks:
       - default
 
-  # 👇 Keycloak в CI (без GUI, dev‑режим)
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     command:
@@ -75,8 +76,8 @@ services:
       - --http-port=8080
       - --hostname-strict=false
     environment:
-      KC_BOOTSTRAP_ADMIN_USERNAME: ${KC_BOOTSTRAP_ADMIN_USERNAME}
-      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
     ports:
       - "8080:8080"
     networks:
