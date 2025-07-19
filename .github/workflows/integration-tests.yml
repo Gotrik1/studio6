@@ -1,0 +1,56 @@
+# .github/workflows/build-and-test.yml
+
+name: integration-tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ... предыдущие шаги: setup Node, .env, build images ...
+
+      - name: Launch all services
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up -d
+
+      # ... шаги с ожиданием БД и миграциями ...
+
+      - name: Wait for Kong proxy
+        run: |
+          echo "Waiting for Kong on 8000..."
+          i=0
+          until curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -E "2..|4.."; do
+            i=$((i+1))
+            [ $i -ge 60 ] && (echo "Kong didn't come up" && docker compose logs kong && exit 1)
+            sleep 2
+          done
+          echo "Kong proxy is up"
+
+      - name: Run integration tests
+        run: |
+          set -e
+          echo "→ Проверяем /health"
+          curl -s http://localhost:8000/health | grep -q '"status":"ok"'
+          echo "ok"
+
+          echo "→ Проверяем /graphql (пример)"
+          http_code=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:8000/graphql \
+            -H "Content-Type: application/json" \
+            --data '{"query":"{ health { status } }"}')
+          [ "$http_code" = "200" ] && echo "ok" || (echo "GraphQL returned $http_code" && exit 1)
+
+          echo "→ Проверяем UI страницы (пример)"
+          curl -s http://localhost:8000/ | grep -q '<html' && echo "ok" || (echo "UI root missing" && exit 1)
+
+      - name: Tear down
+        if: always()
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml down -v
