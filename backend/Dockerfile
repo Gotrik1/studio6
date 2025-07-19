@@ -1,21 +1,17 @@
 ################################################################################
-# Этап 0: базовый образ с pnpm@10.13.1
+# Этап 0: базовый образ с pnpm@10.13.1 через Corepack
 ################################################################################
-FROM node:20 AS base
+FROM node:20-slim AS base
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-ENV SHELL="/bin/sh"
 
-RUN corepack enable && \
-    curl -fsSL https://get.pnpm.io/install.sh \
-      | PNPM_VERSION=10.13.1 \
-        ENV="$PNPM_HOME/.shrc" \
-        SHELL="/bin/sh" \
-        sh -
+# Включаем Corepack и принудительно устанавливаем нужную версию pnpm
+RUN corepack enable \
+ && corepack prepare pnpm@10.13.1 --activate
 
 ################################################################################
-# Этап 1: сборка и генерация Prisma Client
+# Этап 1: сборка + генерация Prisma
 ################################################################################
 FROM base AS builder
 WORKDIR /usr/src/app
@@ -43,13 +39,12 @@ COPY --from=builder /usr/src/app/pnpm-lock.yaml ./
 COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
 COPY --from=builder /usr/src/app/backend/package.json ./backend/
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
-COPY --from=builder /usr/src/app/backend/node_modules/@prisma ./node_modules/@prisma
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --prod --frozen-lockfile --ignore-scripts
 
 ################################################################################
-# Этап 3: runtime-образ
+# Этап 3: финальный runtime-образ
 ################################################################################
 FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
