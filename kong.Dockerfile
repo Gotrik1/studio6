@@ -1,15 +1,14 @@
-FROM kong:2.8
+FROM kong:2.8-alpine
 
 USER root
 
 RUN apk update && \
-    apk add --no-cache git unzip luarocks pcre-dev openssl-dev gcc make curl
+    apk add --no-cache \
+      git unzip curl pcre-dev openssl-dev gcc make lua5.1 lua5.1-dev luarocks && \
+    # Устанавливаем lua-resty-openidc напрямую
+    apk add --no-cache lua-resty-openidc
 
-# 👇 фиксированная версия rockspec
-RUN curl -L -o /tmp/lua-resty-openidc-0.7.5-1.rockspec https://raw.githubusercontent.com/zmartzone/lua-resty-openidc/master/lua-resty-openidc-0.7.5-1.rockspec && \
-    luarocks install /tmp/lua-resty-openidc-0.7.5-1.rockspec
-
-# Плагин kong-oidc вручную
+# Клонируем и копируем плагины OIDC, если нужно вручную
 RUN git clone https://github.com/nokia/kong-oidc /tmp/kong-oidc && \
     mkdir -p /usr/local/share/lua/5.1/kong/plugins/oidc && \
     cp /tmp/kong-oidc/kong/plugins/oidc/*.lua /usr/local/share/lua/5.1/kong/plugins/oidc/ && \
