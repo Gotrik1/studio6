@@ -21,6 +21,9 @@ COPY backend/package.json ./backend/
 COPY frontend/package.json ./frontend/
 COPY backend/prisma ./backend/prisma
 
+# Повторно включаем corepack на всякий случай (особенность многоэтапных сборок)
+RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
+
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile
 
@@ -40,6 +43,8 @@ COPY --from=builder /usr/src/app/pnpm-workspace.yaml ./
 COPY --from=builder /usr/src/app/backend/package.json ./backend/
 COPY --from=builder /usr/src/app/backend/dist ./backend/dist
 
+RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
+
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --prod --frozen-lockfile --ignore-scripts
 
@@ -49,8 +54,10 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
 
-COPY --from=pruner /usr/src/app/ .
-EXPOSE 3001
-CMD ["node", "backend/dist/main.js"]
-
+# Повторно включаем corepack и pnpm, если вдруг будем использовать
 RUN corepack enable && corepack prepare pnpm@10.13.1 --activate
+
+COPY --from=pruner /usr/src/app/ ./
+EXPOSE 3001
+
+CMD ["node", "backend/dist/main.js"]
