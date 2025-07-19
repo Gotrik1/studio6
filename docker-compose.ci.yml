@@ -53,11 +53,11 @@ services:
     build:
       context: .
       dockerfile: backend/Dockerfile
+      target: migrator
     working_dir: /usr/src/app
     depends_on:
       db:
         condition: service_healthy
-  # Однострочная команда через sh, pnpm уже доступен
     command: >
       sh -lc "pnpm --filter prodvor-backend prisma:migrate:deploy"
     environment:

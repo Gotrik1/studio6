@@ -112,9 +112,7 @@ jobs:
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
 
       - name: Run Prisma migrations (inside container)
-        run: |
-          unset PNPM_HOME
-          docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
+        run: docker compose -f docker-compose.yml -f docker-compose.ci.yml run --rm migrations
 
       - name: Re-check container statuses after migration
         run: docker compose -f docker-compose.yml -f docker-compose.ci.yml ps
