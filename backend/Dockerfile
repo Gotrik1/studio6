@@ -1,5 +1,5 @@
 ################################################################################
-# Этап 0: базовый образ с заранее настроенным pnpm@10.13.1
+# Этап 0: базовый образ с предустановленным pnpm 10.13.1
 ################################################################################
 FROM node:20 AS base
 
@@ -7,9 +7,9 @@ ENV PNPM_HOME="/pnpm" \
     PATH="$PNPM_HOME:$PATH" \
     COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
-# Обновляем Corepack (чтобы избежать ошибок верификации), включаем pnpm
-RUN npm install -g corepack@0.31.0 && \
-    corepack enable pnpm@10.13.1
+# Обновляем Corepack до последней версии и устанавливаем pnpm 10.13.1
+RUN npm install -g corepack@latest && \
+    corepack install --global pnpm@10.13.1
 
 ################################################################################
 # Этап 1: сборка и генерация Prisma Client
@@ -32,7 +32,7 @@ RUN pnpm --filter prodvor-backend prisma:generate
 RUN pnpm --filter prodvor-backend build
 
 ################################################################################
-# Этап 2: production-зависимости
+# Этап 2: установка production-зависимостей
 ################################################################################
 FROM base AS pruner
 WORKDIR /usr/src/app
@@ -49,7 +49,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --prod --frozen-lockfile --ignore-scripts
 
 ################################################################################
-# Этап 3: лёгкий runtime-образ
+# Этап 3: runtime-образ
 ################################################################################
 FROM node:20-alpine AS runner
 WORKDIR /usr/src/app
