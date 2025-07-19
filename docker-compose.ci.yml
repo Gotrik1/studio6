@@ -57,13 +57,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command:
-      - bash
-      - "-lc"
-      - |
-        corepack enable &&
-        pnpm install --frozen-lockfile &&
-        pnpm --filter prodvor-backend prisma:migrate:deploy
+    command: >
+      bash -lc "corepack enable &&
+               pnpm install --frozen-lockfile &&
+               pnpm --filter prodvor-backend prisma:migrate:deploy"
     environment:
       DATABASE_URL: ${DATABASE_URL}
     networks:
