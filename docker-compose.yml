@@ -209,6 +209,7 @@ services:
     build:
       context: .
       dockerfile: kong.Dockerfile
+    image: prodvor-kong-custom:2.8
     container_name: kong
     restart: always
     environment:
