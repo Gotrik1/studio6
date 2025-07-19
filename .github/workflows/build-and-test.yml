@@ -1,14 +1,35 @@
-   - name: Wait for Kong to be ready
-     run: |
-       echo "Waiting for Kong..."
-       i=0
-       until curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -E "2..|4.."; do
-         i=$((i+1))
-         if [ $i -ge 30 ]; then
-           echo "Kong failed to start in time."
-           docker compose logs kong
-           exit 1
-         fi
-         sleep 2
-       done
-       echo "Kong proxy ok"
+name: Docker Compose CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      # ... другие шаги ...
+
+      - name: Wait for Kong to be ready
+        run: |
+          echo "Waiting for Kong to be available..."
+          i=0
+          until curl -s -o /dev/null -w "%{http_code}" http://localhost:8000 | grep -E "2..|4.."; do
+            i=$((i+1))
+            if [ $i -ge 30 ]; then
+              echo "Kong failed to start in time."
+              docker compose logs kong
+              exit 1
+            fi
+            echo "Waiting for Kong..."
+            sleep 2
+          done
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000)
+          echo "Kong proxy is responding with HTTP $HTTP_CODE"
