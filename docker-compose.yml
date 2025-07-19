@@ -206,7 +206,9 @@ services:
       - prodvor-network
 
   kong:
-    image: kong:latest
+    build:
+      context: .
+      dockerfile: kong.Dockerfile
     container_name: kong
     restart: always
     environment:
